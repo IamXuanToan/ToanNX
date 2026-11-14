@@ -1,0 +1,43 @@
+{
+  "feedback": {
+    "saved": "Đã lưu thay đổi."
+  },
+  "validation": {
+    "emailInvalid": "Email không hợp lệ.",
+    "passwordMin": "Mật khẩu tối thiểu 10 ký tự.",
+    "required": "Trường này là bắt buộc."
+  },
+  "users": {
+    "title": "Người dùng",
+    "description": "Tài khoản chỉ do quản trị viên tạo.",
+    "detailDescription": "Thông tin và trạng thái tài khoản.",
+    "searchPlaceholder": "Tìm theo email, tên...",
+    "empty": "Không có người dùng phù hợp.",
+    "superuser": "Superuser",
+    "create": "Tạo người dùng",
+    "createDescription": "Người dùng mới đăng nhập bằng email và mật khẩu này.",
+    "profile": "Thông tin tài khoản",
+    "columns": {
+      "user": "Người dùng",
+      "status": "Trạng thái",
+      "lastLogin": "Đăng nhập gần nhất",
+      "access": "Quyền truy cập"
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Mật khẩu",
+      "newPassword": "Mật khẩu mới",
+      "newPasswordHint": "Để trống nếu không đổi. Đổi mật khẩu sẽ đăng xuất mọi phiên của người dùng.",
+      "firstName": "Tên",
+      "lastName": "Họ",
+      "isActive": "Đang hoạt động",
+      "isActiveHint": "Tắt để khóa tài khoản và thu hồi mọi phiên.",
+      "isStaff": "Truy cập quản trị",
+      "isStaffHint": "Cho phép vào khu vực quản trị; từng chức năng vẫn cần quyền.",
+      "isNovel": "Nhóm Novel",
+      "isNovelHint": "Chỉ đánh dấu nhóm nghiệp vụ Novel, không tự cấp quyền."
+    },
+    "staff": "Quản trị",
+    "novel": "Novel"
+  }
+}

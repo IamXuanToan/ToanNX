@@ -1,0 +1,39 @@
+{
+  "feedback": {
+    "saved": "Changes saved."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "codeFormat": "Use UPPERCASE letters, digits and underscores; start with a letter."
+  },
+  "roles": {
+    "title": "Roles",
+    "description": "Roles group permissions to assign to users.",
+    "empty": "No roles yet.",
+    "system": "System",
+    "create": "Create role",
+    "createDescription": "Assign permissions on the detail page after creating.",
+    "info": "Role information",
+    "permissions": "Permissions",
+    "permissionsHint": "Toggle the role's permissions. You can only grant permissions you have.",
+    "systemHint": "System role; only superusers can change it.",
+    "columns": {
+      "role": "Role",
+      "permissions": "Permissions",
+      "users": "Users",
+      "status": "Status"
+    },
+    "fields": {
+      "code": "Role code",
+      "codeHint": "For example: NOVEL_EDITOR. Cannot be changed later.",
+      "name": "Role name",
+      "description": "Description",
+      "isActive": "Active"
+    }
+  },
+  "userRoles": {
+    "title": "Roles",
+    "hint": "A user's permissions are the union of their active roles.",
+    "superuserHint": "Superusers have full access; roles have no effect."
+  }
+}

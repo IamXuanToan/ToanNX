@@ -1,0 +1,39 @@
+{
+  "feedback": {
+    "saved": "Đã lưu thay đổi."
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc.",
+    "codeFormat": "Mã gồm CHỮ IN HOA, số, dấu gạch dưới; bắt đầu bằng chữ cái."
+  },
+  "roles": {
+    "title": "Vai trò",
+    "description": "Vai trò gom nhóm quyền để gán cho người dùng.",
+    "empty": "Chưa có vai trò.",
+    "system": "Hệ thống",
+    "create": "Tạo vai trò",
+    "createDescription": "Sau khi tạo, gán quyền ở trang chi tiết.",
+    "info": "Thông tin vai trò",
+    "permissions": "Quyền",
+    "permissionsHint": "Bật/tắt quyền của vai trò. Bạn chỉ cấp được quyền mà bạn đang có.",
+    "systemHint": "Vai trò hệ thống, chỉ superuser được thay đổi.",
+    "columns": {
+      "role": "Vai trò",
+      "permissions": "Số quyền",
+      "users": "Số người dùng",
+      "status": "Trạng thái"
+    },
+    "fields": {
+      "code": "Mã vai trò",
+      "codeHint": "Ví dụ: NOVEL_EDITOR. Không đổi được sau khi tạo.",
+      "name": "Tên vai trò",
+      "description": "Mô tả",
+      "isActive": "Đang hoạt động"
+    }
+  },
+  "userRoles": {
+    "title": "Vai trò",
+    "hint": "Quyền của người dùng là tổng hợp quyền từ các vai trò đang bật.",
+    "superuserHint": "Superuser có toàn quyền; vai trò không ảnh hưởng."
+  }
+}

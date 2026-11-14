@@ -1,0 +1,30 @@
+{
+  "feedback": {
+    "saved": "Module updated."
+  },
+  "modules": {
+    "title": "Modules",
+    "description": "Installed modules. Disabling a module keeps its data.",
+    "core": "Core",
+    "columns": {
+      "module": "Module",
+      "version": "Version",
+      "dependencies": "Dependencies",
+      "enabled": "Enabled"
+    }
+  },
+  "icon": {
+    "edit": "Change icon of module {name}",
+    "title": "Icon of module {name}",
+    "description": "Pick a lucide-react icon by name, or upload your own SVG file.",
+    "usingSvg": "Using the uploaded SVG icon.",
+    "usingLucide": "Using lucide icon: {icon}",
+    "lucideLabel": "lucide-react icon",
+    "lucideHint": "Kebab-case name, e.g. shield-check. Leave empty to use the default icon. Browse at",
+    "invalidName": "There is no lucide icon with this name.",
+    "svgLabel": "SVG icon",
+    "svgHint": "Only .svg files (no scripts, no external links). The SVG takes priority over the lucide icon.",
+    "upload": "Upload SVG",
+    "removeSvg": "Remove SVG"
+  }
+}

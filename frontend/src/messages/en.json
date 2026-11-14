@@ -1,0 +1,114 @@
+{
+  "common": {
+    "seo": {
+      "title": "TOANNX",
+      "description": "ToanNX's personal website."
+    },
+    "home": {
+      "title": "TOANNX",
+      "description": "A personal platform under construction. New modules are coming soon."
+    },
+    "nav": {
+      "login": "Sign in",
+      "admin": "Admin",
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "roles": "Roles",
+      "modules": "Modules",
+      "detail": "Detail"
+    },
+    "theme": {
+      "toggle": "Change theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "label": "Language",
+      "vi": "Tiếng Việt",
+      "en": "English"
+    },
+    "password": {
+      "show": "Show password",
+      "hide": "Hide password"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "total": "{total, plural, one {# record} other {# records}}",
+      "previous": "Previous page",
+      "next": "Next page",
+      "page": "Page {page}/{totalPages}"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Create",
+      "save": "Save"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Locked"
+    }
+  },
+  "errors": {
+    "codes": {
+      "UNKNOWN": "Something went wrong, please try again.",
+      "NETWORK_ERROR": "Cannot reach the server. Check your connection and try again.",
+      "TIMEOUT": "The server took too long to respond, please try again.",
+      "INVALID_RESPONSE": "The server returned an invalid response.",
+      "VALIDATION_ERROR": "Some data is invalid.",
+      "PARSE_ERROR": "The submitted data could not be read.",
+      "NOT_FOUND": "Not found.",
+      "METHOD_NOT_ALLOWED": "This action is not supported.",
+      "UNSUPPORTED_MEDIA_TYPE": "Unsupported data format.",
+      "CONFLICT": "The data conflicts with existing data.",
+      "BUSINESS_RULE_VIOLATION": "This action violates a business rule.",
+      "RATE_LIMITED": "Too many attempts, please try again in a few minutes.",
+      "INTERNAL_ERROR": "The system encountered an error, please try again later.",
+      "SERVICE_UNAVAILABLE": "The system is temporarily unavailable.",
+      "AUTH_NOT_AUTHENTICATED": "Please sign in to continue.",
+      "AUTH_INVALID_CREDENTIALS": "Incorrect email or password.",
+      "AUTH_USER_INACTIVE": "This account is locked.",
+      "AUTH_TOKEN_EXPIRED": "Your access has expired.",
+      "AUTH_TOKEN_INVALID": "Your access is invalid.",
+      "AUTH_SESSION_INVALID": "Your session is no longer valid.",
+      "AUTH_REFRESH_INVALID": "Your session is invalid.",
+      "AUTH_REFRESH_EXPIRED": "Your session has expired.",
+      "AUTH_REFRESH_REVOKED": "Your session has been revoked.",
+      "AUTH_REFRESH_REUSED": "Your session is no longer secure, please sign in again.",
+      "AUTH_REFRESH_CONFLICT": "Your session was just refreshed, please try again.",
+      "AUTH_CSRF_FAILED": "Your page session is invalid, please reload the page.",
+      "PERMISSION_DENIED": "You don't have permission to do this.",
+      "ADMIN_ACCESS_REQUIRED": "You don't have access to the admin area.",
+      "ACCOUNT_EMAIL_EXISTS": "This email is already in use.",
+      "ACCOUNT_PASSWORD_WEAK": "Password is too weak (at least 10 characters, not common, not all digits).",
+      "ACCOUNT_LAST_SUPERUSER": "The last superuser cannot be disabled.",
+      "ACCOUNT_SELF_MODIFICATION": "You cannot change your own status or access.",
+      "ACCOUNT_PRIVILEGE_ESCALATION": "Only a superuser can grant or remove superuser access.",
+      "ACCOUNT_SUPERUSER_PROTECTED": "Only a superuser can edit a superuser account.",
+      "IAM_ROLE_CODE_EXISTS": "This role code already exists.",
+      "IAM_ROLE_INACTIVE": "This role is disabled.",
+      "IAM_SELF_MODIFICATION": "You cannot change your own privileges.",
+      "IAM_PRIVILEGE_ESCALATION": "You cannot grant more privileges than you have.",
+      "IAM_SYSTEM_ROLE_PROTECTED": "Only a superuser can edit system roles.",
+      "MODULE_NOT_INSTALLED": "This module is not installed.",
+      "MODULE_DISABLED": "This module is disabled.",
+      "MODULE_CORE_LOCKED": "Core modules cannot be disabled.",
+      "MODULE_DEPENDENCY_DISABLED": "Enable the required modules first.",
+      "MODULE_REQUIRED_BY_OTHERS": "Other modules depend on this module."
+    },
+    "generic": {
+      "title": "Could not load data",
+      "description": "An error occurred while loading data.",
+      "retry": "Try again"
+    },
+    "forbidden": {
+      "title": "Access denied",
+      "description": "Your account is not allowed to access the admin area."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "This link does not exist or has changed.",
+      "backHome": "Back to home"
+    }
+  }
+}

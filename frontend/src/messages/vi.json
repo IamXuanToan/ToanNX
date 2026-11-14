@@ -1,0 +1,114 @@
+{
+  "common": {
+    "seo": {
+      "title": "TOANNX",
+      "description": "Website cá nhân của ToanNX."
+    },
+    "home": {
+      "title": "TOANNX",
+      "description": "Nền tảng cá nhân đang được xây dựng. Các module mới sẽ sớm xuất hiện."
+    },
+    "nav": {
+      "login": "Đăng nhập",
+      "admin": "Quản trị",
+      "dashboard": "Tổng quan",
+      "users": "Người dùng",
+      "roles": "Vai trò",
+      "modules": "Module",
+      "detail": "Chi tiết"
+    },
+    "theme": {
+      "toggle": "Đổi giao diện",
+      "light": "Sáng",
+      "dark": "Tối",
+      "system": "Theo hệ thống"
+    },
+    "language": {
+      "label": "Ngôn ngữ",
+      "vi": "Tiếng Việt",
+      "en": "English"
+    },
+    "password": {
+      "show": "Hiện mật khẩu",
+      "hide": "Ẩn mật khẩu"
+    },
+    "pagination": {
+      "label": "Phân trang",
+      "total": "{total, plural, other {# bản ghi}}",
+      "previous": "Trang trước",
+      "next": "Trang sau",
+      "page": "Trang {page}/{totalPages}"
+    },
+    "actions": {
+      "cancel": "Hủy",
+      "create": "Tạo",
+      "save": "Lưu"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "inactive": "Đã khóa"
+    }
+  },
+  "errors": {
+    "codes": {
+      "UNKNOWN": "Đã xảy ra lỗi, vui lòng thử lại.",
+      "NETWORK_ERROR": "Không kết nối được máy chủ. Kiểm tra mạng và thử lại.",
+      "TIMEOUT": "Máy chủ phản hồi quá lâu, vui lòng thử lại.",
+      "INVALID_RESPONSE": "Phản hồi từ máy chủ không hợp lệ.",
+      "VALIDATION_ERROR": "Dữ liệu chưa hợp lệ.",
+      "PARSE_ERROR": "Dữ liệu gửi lên không đọc được.",
+      "NOT_FOUND": "Không tìm thấy dữ liệu.",
+      "METHOD_NOT_ALLOWED": "Thao tác không được hỗ trợ.",
+      "UNSUPPORTED_MEDIA_TYPE": "Định dạng dữ liệu không được hỗ trợ.",
+      "CONFLICT": "Dữ liệu bị xung đột.",
+      "BUSINESS_RULE_VIOLATION": "Thao tác vi phạm quy tắc nghiệp vụ.",
+      "RATE_LIMITED": "Bạn thao tác quá nhanh, vui lòng thử lại sau ít phút.",
+      "INTERNAL_ERROR": "Hệ thống gặp lỗi, vui lòng thử lại sau.",
+      "SERVICE_UNAVAILABLE": "Hệ thống tạm thời không sẵn sàng.",
+      "AUTH_NOT_AUTHENTICATED": "Bạn cần đăng nhập để tiếp tục.",
+      "AUTH_INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng.",
+      "AUTH_USER_INACTIVE": "Tài khoản đã bị khóa.",
+      "AUTH_TOKEN_EXPIRED": "Phiên truy cập đã hết hạn.",
+      "AUTH_TOKEN_INVALID": "Phiên truy cập không hợp lệ.",
+      "AUTH_SESSION_INVALID": "Phiên đăng nhập không còn hiệu lực.",
+      "AUTH_REFRESH_INVALID": "Phiên đăng nhập không hợp lệ.",
+      "AUTH_REFRESH_EXPIRED": "Phiên đăng nhập đã hết hạn.",
+      "AUTH_REFRESH_REVOKED": "Phiên đăng nhập đã bị thu hồi.",
+      "AUTH_REFRESH_REUSED": "Phiên không còn an toàn, vui lòng đăng nhập lại.",
+      "AUTH_REFRESH_CONFLICT": "Phiên vừa được làm mới, vui lòng thử lại.",
+      "AUTH_CSRF_FAILED": "Phiên làm việc không hợp lệ, vui lòng tải lại trang.",
+      "PERMISSION_DENIED": "Bạn không có quyền thực hiện thao tác này.",
+      "ADMIN_ACCESS_REQUIRED": "Bạn không có quyền truy cập khu vực quản trị.",
+      "ACCOUNT_EMAIL_EXISTS": "Email đã được sử dụng.",
+      "ACCOUNT_PASSWORD_WEAK": "Mật khẩu chưa đủ mạnh (tối thiểu 10 ký tự, không quá phổ biến, không toàn số).",
+      "ACCOUNT_LAST_SUPERUSER": "Không thể vô hiệu hóa superuser cuối cùng.",
+      "ACCOUNT_SELF_MODIFICATION": "Bạn không thể tự thay đổi trạng thái hoặc quyền truy cập của chính mình.",
+      "ACCOUNT_PRIVILEGE_ESCALATION": "Chỉ superuser mới được cấp hoặc gỡ quyền superuser.",
+      "ACCOUNT_SUPERUSER_PROTECTED": "Chỉ superuser mới được sửa tài khoản superuser.",
+      "IAM_ROLE_CODE_EXISTS": "Mã vai trò đã tồn tại.",
+      "IAM_ROLE_INACTIVE": "Vai trò đang bị tắt.",
+      "IAM_SELF_MODIFICATION": "Bạn không thể tự thay đổi quyền của chính mình.",
+      "IAM_PRIVILEGE_ESCALATION": "Bạn không thể cấp quyền vượt quá quyền của bạn.",
+      "IAM_SYSTEM_ROLE_PROTECTED": "Chỉ superuser mới được sửa vai trò hệ thống.",
+      "MODULE_NOT_INSTALLED": "Module chưa được cài đặt.",
+      "MODULE_DISABLED": "Module đang tắt.",
+      "MODULE_CORE_LOCKED": "Không thể tắt module lõi.",
+      "MODULE_DEPENDENCY_DISABLED": "Cần bật module phụ thuộc trước.",
+      "MODULE_REQUIRED_BY_OTHERS": "Module đang được module khác sử dụng."
+    },
+    "generic": {
+      "title": "Không tải được dữ liệu",
+      "description": "Đã xảy ra lỗi khi tải dữ liệu.",
+      "retry": "Thử lại"
+    },
+    "forbidden": {
+      "title": "Không có quyền truy cập",
+      "description": "Tài khoản của bạn không được phép vào khu vực quản trị."
+    },
+    "notFound": {
+      "title": "Không tìm thấy trang",
+      "description": "Đường dẫn không tồn tại hoặc đã bị thay đổi.",
+      "backHome": "Về trang chủ"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "login": {
+    "title": "Đăng nhập",
+    "description": "Dành cho tài khoản do quản trị viên cấp.",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "submit": "Đăng nhập",
+    "submitting": "Đang đăng nhập...",
+    "noSignup": "TOANNX không mở đăng ký công khai."
+  },
+  "validation": {
+    "emailRequired": "Vui lòng nhập email.",
+    "emailInvalid": "Email không hợp lệ.",
+    "passwordRequired": "Vui lòng nhập mật khẩu."
+  },
+  "userMenu": {
+    "open": "Mở menu tài khoản",
+    "logout": "Đăng xuất",
+    "logoutAll": "Đăng xuất mọi thiết bị"
+  },
+  "session": {
+    "expired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
+  }
+}

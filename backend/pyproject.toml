@@ -1,0 +1,70 @@
+[project]
+name = "toannx-backend"
+version = "0.1.0"
+description = "TOANNX backend — Django + Django REST Framework"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "argon2-cffi>=25.1.0",
+    "defusedxml>=0.7.1",
+    "django>=6.0,<6.1",
+    "django-cors-headers>=4.9.0",
+    "django-environ>=0.14.0",
+    "django-filter>=26.2",
+    "djangorestframework>=3.18.3",
+    "drf-spectacular>=0.30.0",
+    "psycopg[binary]>=3.3.9",
+    "pyjwt>=2.15.1",
+]
+
+[dependency-groups]
+dev = [
+    "django-stubs>=6.1.2",
+    "djangorestframework-stubs>=3.18.2",
+    "factory-boy>=3.3.3",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "pytest-django>=4.14.0",
+    "ruff>=0.17.5",
+    "types-defusedxml>=0.7.0.20260504",
+    "types-django-filter>=26.2.0.20261107",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py313"
+extend-exclude = ["**/migrations/*", "manage.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "DJ", "SIM", "N", "BLE", "T20", "PLC0415"]
+ignore = ["DJ001"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101", "S105", "S106", "PLC0415"]
+"conftest.py" = ["S101", "S105", "S106"]
+# Tên mã lỗi chứa chữ TOKEN/PASSWORD, không phải mật khẩu.
+"app/core/constants/error_codes.py" = ["S105"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "config"]
+
+[tool.mypy]
+python_version = "3.13"
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+check_untyped_defs = true
+disallow_untyped_defs = true
+warn_unused_ignores = true
+exclude = ["migrations/", "tests/", "conftest.py", "manage.py"]
+
+[[tool.mypy.overrides]]
+module = ["environ.*", "factory.*"]
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+testpaths = ["app"]
+addopts = "-ra --strict-markers"

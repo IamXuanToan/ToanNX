@@ -1,0 +1,39 @@
+# Secrets & môi trường
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+staticfiles/
+media/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+playwright-report/
+test-results/
+
+# Vercel
+.vercel
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+
+# Công cụ AI cài trên máy và dữ liệu làm việc cục bộ
+/.agents/
+/.claude/
+/.codex/
+/skills-lock.json
+
+# graphify
+graphify-out/

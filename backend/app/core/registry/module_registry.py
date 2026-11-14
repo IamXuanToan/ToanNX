@@ -1,0 +1,69 @@
+"""Module registry: danh sách module đã cài đặt.
+
+Phân biệt:
+1. Installed: app trong INSTALLED_APPS kế thừa `CoreModuleConfig`, tự đăng ký `module.MODULE` ở `ready()`.
+2. Enabled: trạng thái runtime lưu ở bảng `system_module` (module system quản lý).
+3. Quyền người dùng: do IAM quyết định.
+"""
+
+from app.core.registry.module_descriptor import ModuleDescriptor
+from app.core.registry.permission_definition import PermissionDefinition
+
+
+class ModuleRegistry:
+    """Registry trong bộ nhớ, dựng lại mỗi lần khởi động."""
+
+    def __init__(self) -> None:
+        """Khởi tạo registry rỗng."""
+        self._modules: dict[str, ModuleDescriptor] = {}
+
+    def register(self, descriptor: ModuleDescriptor, *, app_label: str | None = None) -> None:
+        """Đăng ký module.
+
+        Args:
+            descriptor: Metadata module.
+            app_label: Label của app đăng ký (CoreModuleConfig truyền vào); phải bằng `descriptor.code`.
+
+        Raises:
+            ValueError: Khi metadata sai, trùng mã, hoặc mã module khác label của app.
+        """
+        descriptor.validate()
+        if app_label is not None and descriptor.code != app_label:
+            raise ValueError(
+                f"Mã module {descriptor.code!r} phải trùng label của app {app_label!r} "
+                "(quy ước CoreModuleConfig)."
+            )
+        existing = self._modules.get(descriptor.code)
+        if existing is not None and existing != descriptor:
+            raise ValueError(f"Module {descriptor.code!r} đã được đăng ký.")
+        self._modules[descriptor.code] = descriptor
+
+    def get(self, code: str) -> ModuleDescriptor | None:
+        """Lấy module theo mã.
+
+        Args:
+            code: Mã module.
+
+        Returns:
+            Descriptor hoặc None nếu chưa cài.
+        """
+        return self._modules.get(code)
+
+    def all(self) -> list[ModuleDescriptor]:
+        """Tất cả module theo thứ tự mã.
+
+        Returns:
+            Danh sách descriptor.
+        """
+        return [self._modules[code] for code in sorted(self._modules)]
+
+    def permission_definitions(self) -> list[PermissionDefinition]:
+        """Tất cả quyền do các module khai báo.
+
+        Returns:
+            Danh sách định nghĩa quyền.
+        """
+        return [permission for module in self.all() for permission in module.permissions]
+
+
+module_registry = ModuleRegistry()

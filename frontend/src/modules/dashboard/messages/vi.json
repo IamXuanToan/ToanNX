@@ -1,0 +1,15 @@
+{
+  "welcome": "Xin chào, {name}",
+  "subtitle": "Tổng quan khu vực quản trị TOANNX.",
+  "shortcuts": "Truy cập nhanh",
+  "account": {
+    "title": "Tài khoản của bạn",
+    "superuser": "Superuser",
+    "staff": "Quản trị",
+    "novel": "Nhóm Novel"
+  },
+  "modules": {
+    "title": "Module đang bật",
+    "description": "Các module đã cài và đang hoạt động."
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "feedback": {
+    "saved": "Changes saved."
+  },
+  "validation": {
+    "emailInvalid": "Invalid email address.",
+    "passwordMin": "Password must be at least 10 characters.",
+    "required": "This field is required."
+  },
+  "users": {
+    "title": "Users",
+    "description": "Accounts can only be created by administrators.",
+    "detailDescription": "Account information and status.",
+    "searchPlaceholder": "Search by email, name...",
+    "empty": "No matching users.",
+    "superuser": "Superuser",
+    "create": "Create user",
+    "createDescription": "The new user signs in with this email and password.",
+    "profile": "Account information",
+    "columns": {
+      "user": "User",
+      "status": "Status",
+      "lastLogin": "Last sign-in",
+      "access": "Access"
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "newPassword": "New password",
+      "newPasswordHint": "Leave blank to keep it. Changing it signs the user out everywhere.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "isActive": "Active",
+      "isActiveHint": "Turn off to lock the account and revoke all sessions.",
+      "isStaff": "Admin access",
+      "isStaffHint": "Allows entering the admin area; each feature still needs permissions.",
+      "isNovel": "Novel group",
+      "isNovelHint": "Marks the Novel business group only; grants no permissions."
+    },
+    "staff": "Staff",
+    "novel": "Novel"
+  }
+}

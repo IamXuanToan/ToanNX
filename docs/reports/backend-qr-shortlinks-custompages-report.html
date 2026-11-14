@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>TOANNX — Backend Short Links & Custom Pages</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root { color-scheme: light dark; --bg:#f7f8fa; --paper:#fff; --text:#18202b; --muted:#5b6675; --line:#dfe4eb; --brand:#2440a2; --brand-soft:#e8edff; --good:#12613a; --good-bg:#dcf8e8; --warn:#855414; --warn-bg:#fff2d7; --bad:#a22c33; --bad-bg:#ffe5e7; --mono:#eef1f5; }
+    @media (prefers-color-scheme:dark) { :root { --bg:#11151c; --paper:#1a2029; --text:#eef1f7; --muted:#aab5c2; --line:#333d4a; --brand:#a8baff; --brand-soft:#25325d; --good:#a3ecc0; --good-bg:#153b2b; --warn:#f4ce91; --warn-bg:#473318; --bad:#ffc0c3; --bad-bg:#4a252b; --mono:#303946; } }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--bg); color:var(--text); font:15px/1.6 Inter,"Segoe UI",system-ui,sans-serif; }
+    main { max-width:1100px; margin:auto; padding:34px 18px 80px; }
+    h1 { font-size:clamp(26px,4vw,38px); line-height:1.2; margin:8px 0; letter-spacing:-.03em; }
+    h2 { font-size:20px; margin:42px 0 14px; padding-top:12px; border-top:1px solid var(--line); }
+    h3 { font-size:16px; margin:24px 0 8px; }
+    p { margin:9px 0 16px; }
+    a { color:var(--brand); }
+    .eyebrow { color:var(--brand); font-size:12px; font-weight:750; text-transform:uppercase; letter-spacing:.12em; }
+    .muted { color:var(--muted); }
+    .lead { font-size:17px; max-width:850px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; margin:22px 0; }
+    .card { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:18px; }
+    .stat strong { display:block; font-size:25px; line-height:1.2; margin-top:5px; }
+    .toc { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px 22px; }
+    .toc ol { columns:2; margin:0; padding-left:18px; }
+    .toc li { break-inside:avoid; margin:3px 0; }
+    .table { overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--paper); }
+    table { border-collapse:collapse; width:100%; min-width:650px; font-size:14px; }
+    th,td { border-bottom:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+    th { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+    tr:last-child td { border-bottom:0; }
+    code,pre { font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; }
+    code { background:var(--mono); border-radius:4px; padding:1px 5px; }
+    pre { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:16px; overflow:auto; }
+    .badge { display:inline-block; padding:2px 9px; border-radius:99px; font-size:11px; font-weight:800; letter-spacing:.02em; white-space:nowrap; }
+    .tested { background:var(--good-bg); color:var(--good); }
+    .implemented { background:var(--brand-soft); color:var(--brand); }
+    .partial { background:var(--warn-bg); color:var(--warn); }
+    .blocked { background:var(--bad-bg); color:var(--bad); }
+    .callout { border-left:4px solid var(--brand); background:var(--brand-soft); border-radius:0 10px 10px 0; padding:12px 16px; }
+    ul { padding-left:22px; }
+    li { margin:4px 0; }
+    @media (max-width:640px) { .toc ol { columns:1; } main { padding-top:24px; } }
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">TOANNX · Báo cáo triển khai backend</div>
+  <h1>Short Links & Custom Pages</h1>
+  <p class="muted">14/11/2026 · Django 6 · PostgreSQL · Phạm vi đã chốt trong phiên làm việc</p>
+  <p class="lead">Hai module backend đã được triển khai và kiểm thử. QR là <strong>block của Custom Pages</strong>, không còn là module hay bảng độc lập. Frontend chưa được triển khai trong phase này.</p>
+
+  <div class="grid">
+    <div class="card stat"><span class="muted">Backend suite</span><strong>146 / 146</strong><span class="badge tested">TESTED</span></div>
+    <div class="card stat"><span class="muted">Test mới</span><strong>14 / 14</strong><span class="badge tested">TESTED</span></div>
+    <div class="card stat"><span class="muted">Frontend E2E nền</span><strong>15 / 15</strong><span class="badge tested">TESTED</span></div>
+    <div class="card stat"><span class="muted">OpenAPI</span><strong>0 cảnh báo</strong><span class="badge tested">TESTED</span></div>
+  </div>
+
+  <nav class="toc" aria-label="Mục lục"><ol>
+    <li><a href="#summary">Executive summary</a></li><li><a href="#architecture">Kiến trúc hiện tại</a></li>
+    <li><a href="#modules">Module đã làm</a></li><li><a href="#flows">Business flows</a></li>
+    <li><a href="#database">Database</a></li><li><a href="#api">API contract</a></li>
+    <li><a href="#iam">IAM</a></li><li><a href="#ownership">Ownership</a></li>
+    <li><a href="#validation">Validation</a></li><li><a href="#security">Bảo mật</a></li>
+    <li><a href="#tests">Kiểm thử</a></li><li><a href="#issues">Vấn đề còn lại</a></li>
+    <li><a href="#handoff">Frontend handoff</a></li><li><a href="#recommendations">Khuyến nghị</a></li>
+  </ol></nav>
+
+  <h2 id="summary">1. Executive summary</h2>
+  <div class="callout"><strong>Quyết định phạm vi:</strong> yêu cầu ban đầu liệt kê QR, Short Links và Custom Pages. Sau khi làm rõ, chủ dự án chọn chỉ giữ <code>short_links</code> và <code>custom_pages</code>; QR được tạo trong trang dưới dạng block <code>QR_CODE</code> mã hóa URL của trang hoặc URL HTTP/HTTPS. Không có <code>/qr/{slug}</code>, QR chuyển khoản hoặc QR text độc lập.</div>
+  <div class="table"><table><tr><th>Chức năng</th><th>Trạng thái</th><th>Bằng chứng</th></tr>
+    <tr><td>Short Link CRUD, ownership, redirect 301/302, hết hạn</td><td><span class="badge tested">TESTED</span></td><td>Integration tests + PostgreSQL unique index</td></tr>
+    <tr><td>Custom Page CRUD, block, QR block, theme, SEO, public</td><td><span class="badge tested">TESTED</span></td><td>Integration tests + reorder transaction</td></tr>
+    <tr><td>IAM, module registry, module disabled</td><td><span class="badge tested">TESTED</span></td><td>Test quyền, owner, trạng thái module</td></tr>
+    <tr><td>Frontend cho hai module</td><td><span class="badge partial">NOT IMPLEMENTED</span></td><td>Chỉ có tài liệu handoff; chưa sửa frontend theo yêu cầu</td></tr>
+  </table></div>
+
+  <h2 id="architecture">2. Existing architecture review</h2>
+  <p>Backend đi theo <code>URL → View → Service → Repository → ORM</code>. <code>CoreModel</code> cung cấp UUID, audit và soft delete; <code>CoreRepository</code> gán audit và đổi lỗi toàn vẹn thành 409; IAM dùng bảng vai trò/quyền và mặc định từ chối. Module registry phân biệt installed, enabled và permission. Các module mới dùng lại những lớp này; không thay Authentication hay IAM core.</p>
+  <p>ViewSet tài nguyên dùng lớp chung <code>OwnedModelViewSet</code> kế thừa <code>CoreModelViewSet</code>, giữ <code>IsActiveAuthenticated</code>, <code>ModuleEnabled</code>, <code>HasActionPermission</code>. Service riêng kiểm tra owner trong transaction. Cách này cho phép người dùng thường có IAM permission quản lý dữ liệu của mình mà không cần <code>is_staff</code>.</p>
+  <p><code>short_links</code> và <code>custom_pages</code> không phụ thuộc lẫn nhau trong registry. Cả hai dùng Account, IAM, Authentication foundation; Custom Pages thêm Attachment. Người dùng có thể dán short URL như URL thường vào block trang; tắt Short Links không làm hỏng API của Custom Pages.</p>
+
+  <h2 id="modules">3. Implemented modules</h2>
+  <div class="grid">
+    <div class="card"><h3>Short Links <span class="badge tested">TESTED</span></h3><p>Nhiều link mỗi owner; slug riêng namespace <code>/s/</code>; đích HTTP/HTTPS, 301 hoặc 302 (mặc định), ACTIVE/INACTIVE, expires_at. Response có <code>effective_status</code> và cảnh báo cache 301.</p></div>
+    <div class="card"><h3>Custom Pages <span class="badge tested">TESTED</span></h3><p>Nhiều trang mỗi owner; DRAFT/PUBLISHED/UNPUBLISHED; tối đa 50 block; theme có cấu trúc, SEO, avatar/cover qua Attachment. Block QR tạo <code>qr_payload</code> cho frontend vẽ mã.</p></div>
+  </div>
+  <p>Các block: <code>HEADING</code>, <code>TEXT</code>, <code>IMAGE</code>, <code>BUTTON</code>, <code>LINK_LIST</code>, <code>DIVIDER</code>, <code>SOCIAL_LINKS</code>, <code>QR_CODE</code>. Mỗi loại có schema validation riêng. Không lưu HTML/JS tùy ý.</p>
+
+  <h2 id="flows">4. Business flows</h2>
+  <h3>Short Link</h3><pre>Đăng nhập + quyền create → validate input/slug/URL → rate limit → owner từ phiên → INSERT
+Public resolve → module enabled → slug ACTIVE → chưa hết hạn → validate lại URL → 301/302 + Location</pre>
+  <p>Inactive/đã xóa trả 404, hết hạn trả 410; không fetch URL đích trên server. Link trỏ vào <code>/s/...</code> trên host nội bộ bị chặn để tránh chuỗi hoặc vòng redirect.</p>
+  <h3>Custom Page</h3><pre>Đăng nhập + quyền create → validate slug/theme/ảnh → rate limit → owner từ phiên → INSERT DRAFT
+Sửa block → khóa page → kiểm tra owner → validate content theo type → ghi + audit
+Reorder → khóa page → so đủ block IDs → vị trí tạm → vị trí mới → COMMIT
+Public → module enabled → PUBLISHED → lọc block visible → đổi ảnh thành URL, QR thành payload</pre>
+  <p>QR block loại PAGE luôn dùng URL hiện tại của trang, nên đổi slug cập nhật payload khi đọc public. QR block loại URL dùng URL HTTP/HTTPS được nhập. Page detail quản lý vẫn thấy block ẩn; public API không trả chúng.</p>
+
+  <h2 id="database">5. Database changes</h2>
+  <div class="table"><table><tr><th>Bảng</th><th>Trường nghiệp vụ</th><th>Ràng buộc và index</th></tr>
+    <tr><td><code>short_link</code></td><td>owner, name, slug, destination_url, description, redirect_type, status, expires_at</td><td><code>short_link_slug_ci_unique</code> trên Lower(slug); <code>sl_owner_created_idx</code>; FK owner PROTECT</td></tr>
+    <tr><td><code>custom_page</code></td><td>owner, title, slug, description, status, seo_title, seo_description, theme, avatar, cover</td><td><code>custom_page_slug_ci_unique</code> trên Lower(slug); <code>cp_owner_created_idx</code>; FK owner PROTECT, attachment SET_NULL</td></tr>
+    <tr><td><code>custom_page_block</code></td><td>page, block_type, content, position, is_visible</td><td>FK page CASCADE; <code>cpb_page_position_idx</code>; unique (page, position) với block chưa xóa</td></tr>
+  </table></div>
+  <p>Cả ba bảng có trường CoreModel: <code>id</code>, <code>created_at</code>, <code>updated_at</code>, <code>created_by</code>, <code>updated_by</code>, <code>deleted_at</code>, <code>deleted_by</code>. Xóa mềm giữ slug (không tái sử dụng); public URL cũ sau đổi slug hoặc xóa trả 404. Hai migration đã sinh bằng Django và áp dụng trên database phát triển: <code>short_links/0001_initial.py</code>, <code>custom_pages/0001_initial.py</code>. <code>makemigrations --check --dry-run</code>: no changes detected. Test hai kết nối tạo cùng slug xác nhận chỉ một INSERT thắng.</p>
+
+  <h2 id="api">6. API contracts</h2>
+  <p>API quản lý nằm dưới <code>/api/v1</code>, JSON <code>snake_case</code>, thành công <code>{success,data,meta}</code>, lỗi <code>{success:false,error:{code,message,details,request_id}}</code>. DELETE trả 204 không body; public redirect trả Location thay vì JSON thành công.</p>
+  <div class="table"><table><tr><th>Method</th><th>Endpoint</th><th>Auth / quyền</th><th>Request → response</th><th>Lỗi chính</th></tr>
+    <tr><td>GET / POST</td><td><code>/short_links/links</code></td><td>read / create</td><td>query list / input link → paginated list / detail 201</td><td>400, 401, 403, 409, 429</td></tr>
+    <tr><td>GET / PATCH / DELETE</td><td><code>/short_links/links/{id}</code></td><td>read / update / delete</td><td>UUID + subset input → detail / 204</td><td>400, 401, 403, 404, 409</td></tr>
+    <tr><td>GET</td><td><code>/short_links/resolve/{slug}</code></td><td>Public</td><td>slug → 301/302 + Location</td><td>403 disabled, 404, 410 expired</td></tr>
+    <tr><td>GET / POST</td><td><code>/custom_pages/pages</code></td><td>read / create</td><td>query list / input page → paginated list / detail 201</td><td>400, 401, 403, 409, 429</td></tr>
+    <tr><td>GET / PATCH / DELETE</td><td><code>/custom_pages/pages/{id}</code></td><td>read / update / delete</td><td>UUID + subset input → detail with blocks / 204</td><td>400, 401, 403, 404, 409</td></tr>
+    <tr><td>POST</td><td><code>/custom_pages/pages/{page_id}/blocks</code></td><td>update</td><td>block_type, content, is_visible → block 201</td><td>400, 401, 403, 404, 429</td></tr>
+    <tr><td>PATCH / DELETE</td><td><code>/custom_pages/pages/{page_id}/blocks/{block_id}</code></td><td>update</td><td>subset block → block / 204</td><td>400, 401, 403, 404</td></tr>
+    <tr><td>POST</td><td><code>/custom_pages/pages/{page_id}/blocks/reorder</code></td><td>update</td><td>block_ids đầy đủ → ordered blocks</td><td>400, 401, 403, 404</td></tr>
+    <tr><td>GET</td><td><code>/custom_pages/public/{slug}</code></td><td>Public</td><td>slug → public page data + visible blocks</td><td>403 disabled, 404</td></tr>
+  </table></div>
+  <p>List filter: Short Links <code>status</code>, <code>redirect_type</code>; Pages <code>status</code>. Cả hai có <code>search</code>, <code>ordering</code> theo whitelist, <code>page</code> và <code>page_size ≤ 100</code>. Chi tiết field, JSON mẫu và frontend behavior ở <a href="frontend-module-contract.md">frontend-module-contract.md</a>. OpenAPI đã chạy <code>spectacular --validate --fail-on-warn</code>, 0 cảnh báo.</p>
+
+  <h2 id="iam">7. IAM integration</h2>
+  <p>Quyền theo chuẩn ba phần của IAM hiện tại, không dùng mã hai phần từ bản yêu cầu đầu. Catalog của từng module nằm trong <code>permissions/&lt;module&gt;_permission.py</code>. Mỗi module khai báo <code>read</code>, <code>create</code>, <code>update</code>, <code>delete</code>, <code>manage_all</code>: <code>short_links.link.*</code> và <code>custom_pages.page.*</code>. Vai trò có <code>auto_grant=all/read_only</code> nhận quyền qua <code>sync_iam</code> sau migrate. <code>manage_all</code> chỉ mở phạm vi owner; vẫn cần quyền action. Superuser bypass IAM action, không bypass xác thực hoặc module disabled.</p>
+
+  <h2 id="ownership">8. Ownership rules</h2>
+  <ul><li>Owner luôn lấy từ authenticated actor khi tạo; serializer từ chối <code>owner_id</code> do client gửi.</li>
+    <li>List/detail/update/delete của user thường chỉ vào tài nguyên của mình. Tài nguyên người khác trả 404 để không lộ sự tồn tại.</li>
+    <li><code>is_staff</code> một mình không cấp <code>manage_all</code>; <code>is_novel</code> không ảnh hưởng.</li>
+    <li>Block thuộc page; page owner là owner của mọi block. Ảnh avatar/cover/IMAGE phải là attachment do owner upload.</li>
+    <li>Owner bị khóa không đăng nhập/quản lý được; public resource đang active/published vẫn truy cập được cho đến khi bị tắt.</li></ul>
+
+  <h2 id="validation">9. Validation rules</h2>
+  <p>Slug trim/lowercase, 3–64 ký tự ASCII, chữ/số và dấu gạch ngang ở giữa; reserved set tập trung; unique case-insensitive ở DB theo namespace. URL tuyệt đối chỉ HTTP/HTTPS, tối đa 2048 ký tự, không credentials/control character; không server-side fetch. Nội dung block được kiểm tra theo từng loại, field lạ bị từ chối, text giới hạn byte và không nhận HTML tag. Theme chỉ nhận token cho mode, màu hex và button style; cặp màu chữ/nền được nhập cùng nhau phải đạt contrast 4.5:1. Reorder yêu cầu đúng toàn bộ block id của trang. Tạo mới giới hạn mặc định 30 link/giờ, 20 trang/giờ và 120 block/giờ mỗi user bằng rate limiter PostgreSQL hiện có.</p>
+
+  <h2 id="security">10. Security review</h2>
+  <div class="table"><table><tr><th>Rủi ro</th><th>Biện pháp</th><th>Trạng thái</th></tr>
+    <tr><td>Truy cập/sửa/xóa chéo owner</td><td>IAM action + kiểm tra owner trong service, khóa dòng khi ghi; trả 404</td><td><span class="badge tested">TESTED</span></td></tr>
+    <tr><td>CRUD block không kèm page</td><td>Service từ chối các hàm CRUD kế thừa; chỉ cho phép thao tác qua page_id đã kiểm tra owner</td><td><span class="badge tested">TESTED</span></td></tr>
+    <tr><td>Trùng slug đồng thời</td><td>Unique index Lower(slug) trên PostgreSQL, test hai kết nối</td><td><span class="badge tested">TESTED</span></td></tr>
+    <tr><td>Public data leak</td><td>Response riêng; ẩn draft, block hidden, id nội bộ/audit/email</td><td><span class="badge tested">TESTED</span></td></tr>
+    <tr><td>Redirect không an toàn</td><td>Chỉ HTTP/HTTPS; chặn URL nội bộ <code>/s/</code>; kiểm tra lại lúc resolve</td><td><span class="badge tested">TESTED</span></td></tr>
+    <tr><td>HTML/JS trong trang</td><td>Block content có schema; plain text; renderer FE phải escape text</td><td><span class="badge partial">PARTIAL</span></td></tr>
+    <tr><td>Tạo quá nhiều tài nguyên</td><td>Rate limiter PostgreSQL sẵn có + tối đa 50 block/trang</td><td><span class="badge tested">TESTED</span></td></tr>
+  </table></div>
+
+  <h2 id="tests">11. Test results</h2>
+  <div class="table"><table><tr><th>Test name / gate</th><th>Command</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Chi tiết lỗi</th></tr>
+    <tr><td>Short Link API (6), slug concurrency (1)</td><td><code>pytest -q app/modules/short_links/tests</code></td><td>7</td><td>0</td><td>0</td><td>Không có</td></tr>
+    <tr><td>Page API (4), module integrity (2)</td><td><code>pytest -q app/modules/custom_pages/tests</code></td><td>6</td><td>0</td><td>0</td><td>Không có</td></tr>
+    <tr><td>Toàn backend, gồm 14 test mới</td><td><code>pytest -q</code></td><td>146</td><td>0</td><td>0</td><td>Không có</td></tr>
+    <tr><td>Frontend unit hiện có</td><td><code>pnpm -s test</code></td><td>11</td><td>0</td><td>0</td><td>Không có</td></tr>
+    <tr><td>Frontend E2E hiện có (desktop/mobile)</td><td><code>pnpm -s e2e</code></td><td>15</td><td>0</td><td>0</td><td>Không có</td></tr>
+    <tr><td>Format, lint, type, build</td><td><code>scripts/check-all.ps1</code></td><td>PASS</td><td>0</td><td>0</td><td>Không có; mypy 332 source files</td></tr>
+    <tr><td>OpenAPI</td><td><code>manage.py spectacular --validate --fail-on-warn</code></td><td>PASS</td><td>0</td><td>0</td><td>0 warning, 0 error</td></tr>
+    <tr><td>Migration</td><td><code>manage.py migrate</code></td><td>2</td><td>0</td><td>0</td><td>Hai migration áp dụng trên DB phát triển</td></tr>
+  </table></div>
+  <p class="muted">Các lệnh dùng Python <code>backend/.venv</code> và pnpm 12.18.0 qua Corepack. Gate <code>scripts/check-all.ps1</code> được chạy nguyên quy trình với uv/pnpm đã cài. E2E dùng server backend 8000 + frontend 3000 local. Không tạo kết quả giả.</p>
+
+  <h2 id="issues">12. Known issues</h2>
+  <ul><li>Frontend chưa có route <code>/p/[slug]</code>, rewrite <code>/s/:slug</code>, màn hình quản lý hoặc QR renderer; vì vậy public URL trên <code>toannx.com</code> chưa sẵn sàng cho người dùng cuối.</li>
+    <li>Không có analytics/click tracking, password protection, slug history/redirect cũ hoặc URL safety/reputation scanner; nằm ngoài phase đã chốt.</li>
+    <li>Short URL dán vào trang vẫn hiện khi Short Links module tắt, nhưng khi người dùng nhấp sẽ nhận 403. Custom Pages không tự sửa nội dung của Short Links.</li>
+    <li>Danh sách host nội bộ cần cấu hình <code>SHORT_LINK_INTERNAL_HOSTS</code> khi thêm domain mới để giữ chính sách chống vòng redirect.</li>
+    <li>Rate-limit bucket vẫn cần job dọn bản ghi hết hạn về sau, giống foundation hiện tại.</li></ul>
+
+  <h2 id="handoff">13. Frontend handoff</h2>
+  <p><a href="frontend-module-contract.md">frontend-module-contract.md</a> mô tả màn hình, form, field, validation, endpoint, request/response, status/error, i18n và public flows đủ để triển khai frontend phase sau. Dữ liệu public của trang dùng cho canonical/OG; QR renderer nhận <code>qr_payload</code>. Backend không tạo ảnh QR.</p>
+  <div class="table"><table><tr><th>Phần</th><th>Backend</th><th>Frontend</th><th>Đánh giá</th></tr>
+    <tr><td>Short Links</td><td><span class="badge tested">READY</span></td><td>Chưa có list/form và rewrite /s</td><td><span class="badge partial">NOT READY</span></td></tr>
+    <tr><td>Custom Pages</td><td><span class="badge tested">READY</span></td><td>Chưa có editor, /p route, QR renderer</td><td><span class="badge partial">NOT READY</span></td></tr>
+    <tr><td>QR độc lập</td><td>Không thuộc phạm vi sau khi chốt</td><td>Không cần màn hình riêng</td><td><span class="badge implemented">GỘP VÀO PAGE</span></td></tr>
+  </table></div>
+
+  <h2 id="recommendations">14. Recommendations</h2>
+  <ol><li>Triển khai frontend theo handoff; thêm route public và rewrite trước khi quảng bá URL.</li>
+    <li>Đảm bảo renderer dùng text node/escaped output cho mọi block; không dùng <code>dangerouslySetInnerHTML</code> với nội dung người dùng.</li>
+    <li>Khi triển khai production, chạy migration trên kết nối database direct trước khi promote và xác minh domain trong <code>SHORT_LINK_INTERNAL_HOSTS</code>.</li>
+    <li>Nếu cần QR chuyển khoản hay mã QR độc lập sau này, tạo yêu cầu nghiệp vụ mới; không suy ra từ QR block hiện tại.</li></ol>
+</main>
+</body>
+</html>

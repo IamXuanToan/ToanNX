@@ -1,0 +1,30 @@
+{
+  "feedback": {
+    "saved": "Đã cập nhật module."
+  },
+  "modules": {
+    "title": "Module",
+    "description": "Module đã cài đặt. Tắt module không xóa dữ liệu.",
+    "core": "Lõi",
+    "columns": {
+      "module": "Module",
+      "version": "Phiên bản",
+      "dependencies": "Phụ thuộc",
+      "enabled": "Bật"
+    }
+  },
+  "icon": {
+    "edit": "Đổi icon module {name}",
+    "title": "Icon module {name}",
+    "description": "Chọn icon lucide-react theo tên, hoặc upload file SVG của riêng bạn.",
+    "usingSvg": "Đang dùng icon SVG đã upload.",
+    "usingLucide": "Đang dùng icon lucide: {icon}",
+    "lucideLabel": "Icon lucide-react",
+    "lucideHint": "Tên dạng kebab-case, ví dụ shield-check. Để trống để dùng icon mặc định. Tra cứu tại",
+    "invalidName": "Không có icon lucide với tên này.",
+    "svgLabel": "Icon SVG",
+    "svgHint": "Chỉ nhận file .svg (không script, không liên kết ngoài). SVG được ưu tiên hơn icon lucide.",
+    "upload": "Upload SVG",
+    "removeSvg": "Gỡ SVG"
+  }
+}
