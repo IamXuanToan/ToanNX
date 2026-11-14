@@ -19,6 +19,12 @@ Phạm vi hiện tại: **foundation** (IAM, xác thực, module registry, i18n 
 
 ## Chạy local
 
+### 0. Git
+
+```bash
+git config core.hooksPath .githooks   # bật kiểm tra tên commit/nhánh (docs/rules/git.md)
+```
+
 ### 1. Database
 
 ```bash

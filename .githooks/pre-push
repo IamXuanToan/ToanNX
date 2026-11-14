@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+# Kiểm tra tên nhánh theo docs/rules/git.md trước khi push.
+branch=$(git rev-parse --abbrev-ref HEAD)
+pattern='^(main|develop|(feat|fix|ref|docs|test|perf|build|ci|chore|hotfix)/[a-z0-9]+(-[a-z0-9]+)*|release/[0-9]+\.[0-9]+\.[0-9]+)$'
+if ! printf '%s' "$branch" | grep -Eq "$pattern"; then
+  echo "Tên nhánh '$branch' sai chuẩn (docs/rules/git.md)." >&2
+  echo "  Mẫu: <type>/<ten-ngan>, vd: feat/short-links-ui, fix/page-block-owner, release/1.2.0" >&2
+  exit 1
+fi
