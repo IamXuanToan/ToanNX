@@ -1,0 +1,124 @@
+# Kiểm tra mỗi lần push/PR: cùng các bước với scripts/check-all.sh (E2E chạy riêng ở máy dev).
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: toannx
+          POSTGRES_USER: toannx
+          POSTGRES_PASSWORD: toannx
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U toannx"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PYTHONUTF8: "1"
+      DJANGO_DEBUG: "False"
+      DJANGO_SECRET_KEY: ci-only-secret-key-not-used-anywhere-else-0123456789abcdef
+      DB_NAME: toannx
+      DB_USER: toannx
+      DB_PASSWORD: toannx
+      DB_HOST: localhost
+      DB_PORT: "5432"
+      DB_SSLMODE: disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Format
+        run: uv run ruff format --check .
+      - name: Lint
+        run: uv run ruff check .
+      - name: Type check
+        run: uv run mypy .
+      - name: OpenAPI
+        run: uv run python manage.py spectacular --validate --fail-on-warn > /dev/null
+      - name: Migrations up to date
+        run: uv run python manage.py makemigrations --check --dry-run
+      - name: Tests
+        run: uv run pytest -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm -s lint
+      - name: Format
+        run: pnpm -s format:check
+      - name: Type check
+        run: pnpm -s typecheck
+      - name: Unit tests
+        run: pnpm -s test
+      - name: Build
+        run: pnpm -s build
+
+  api-types:
+    # Kiểu FE sinh từ OpenAPI (`pnpm api:types`) phải khớp BE hiện tại: đổi serializer mà quên sinh lại → đỏ.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONUTF8: "1"
+      DJANGO_SECRET_KEY: ci-only-secret-key-not-used-anywhere-else-0123456789abcdef
+      DB_NAME: toannx
+      DB_USER: toannx
+      DB_PASSWORD: toannx
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+        working-directory: backend
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: frontend
+      - name: Regenerate API types
+        run: pnpm -s api:types
+        working-directory: frontend
+      - name: API types up to date
+        run: git diff --exit-code -- frontend/src/shares/types/api-schema.gen.ts

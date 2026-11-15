@@ -63,7 +63,7 @@ src/modules/<m>/
 | --- | --- |
 | `components/ui` | Primitive shadcn (thêm bằng `pnpm dlx shadcn@latest add <name>`) |
 | `components/common` | Khối giao diện dùng lại, **mỗi component một thư mục** (xem dưới bảng) |
-| `components/errors` | `ErrorState`, `ForbiddenView` |
+| `components/errors` | `ErrorState`, `QueryErrorState` (lỗi tải bản ghi: 404 → không tìm thấy + về danh sách), `ForbiddenView` |
 | `components/layout` | `Logo`, `LanguageSwitcher`, `ThemeSwitcher` (không chứa route của module) |
 | `components/providers` | Provider gốc của app |
 | `lib/api` | `apiClient`, `ApiError`, chuyển case, CSRF, `session-paths` |
@@ -93,11 +93,11 @@ common/<tên>/
 | Ô nhập | `email-input`, `password-input`, `code-input`, `slug-input`, `number-input`, `money-input`, `color-input`, `tags-input`, `search-input` |
 | Chọn | `select-field`, `multi-select`, `checkbox-field`, `radio-group-field`, `switch-field`, **`choice-list`**, **`choice-groups`** |
 | Ngày giờ | `date-picker`, `time-picker`, `date-time-picker`, `month-select` |
-| Khác | `file-upload-field`, `image-upload`, `rich-text-editor` |
+| Khác | `file-upload-field`, `image-upload`, `tiptap-editor`, `tiptap-content`, `form-dialog`, `activity-timeline` |
 
 - Có khối dùng chung thì dùng, không dựng lại trong module: đầu trang dùng `PageHeader`, bảng dùng `DataTable`,
   ô tìm dùng `SearchInput`, ô chọn dùng `SelectField`, bộ lọc dùng `FilterSelect`, rỗng dùng `EmptyState`,
-  lỗi tải dùng `ErrorState`, trang tạo/sửa dùng `FormPage` + `FormLayout` + `FormSection` + `FormActions`,
+  lỗi tải dùng `ErrorState` (lỗi tải một bản ghi dùng `QueryErrorState`), trang tạo/sửa dùng `FormPage` + `FormLayout` + `FormSection` + `FormActions`,
   ảnh đơn (ảnh đại diện, logo) dùng `ImageUpload`, nhóm mở/thu dùng `ui/accordion`.
 - **Chưa có common phù hợp thì tạo common mới** (đúng cấu trúc thư mục ở trên, cập nhật bảng này), không
   dựng tạm trong module rồi để đó.
@@ -353,4 +353,9 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build && pnpm e2e
 ```
 
-- Unit (Vitest): `tests/unit`. E2E (Playwright): `tests/e2e`, chạy trên server thật.
+- Unit (Vitest): `tests/unit`. E2E (Playwright): `tests/e2e`, chạy trên server thật với database riêng
+  `toannx_e2e` (BE 8001, FE 3001 build vào `.next-e2e`), không đụng dữ liệu dev.
+- Kiểu dữ liệu: `pnpm api:types` sinh `shares/types/api-schema.gen.ts` từ OpenAPI (không sửa tay; CI đỏ nếu
+  cũ). `ApiModel<"…Response">` là kiểu FE nhận được (đã camelCase). Kiểu viết tay phải có đúng tập field
+  của response, kiểm trong `tests/unit/api-contract.test.ts` lúc `pnpm typecheck`.
+- Lỗi ở error boundary được gửi về `/api/v1/health/client-errors` (log + Sentry khi bật).

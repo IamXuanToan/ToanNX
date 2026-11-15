@@ -1,17 +1,13 @@
 "use client";
 
-import { ErrorState } from "@/shares/components/errors/error-state";
+import { AppErrorView } from "@/modules/home/views/app-error-view";
 
 /**
- * Error boundary theo ngôn ngữ: hiển thị lỗi thân thiện, không lộ chi tiết kỹ thuật.
+ * Error boundary theo ngôn ngữ.
  *
- * @param props - Hàm thử lại do Next.js cung cấp.
- * @returns Giao diện lỗi.
+ * @param props - Lỗi và hàm thử lại do Next.js cung cấp.
+ * @returns AppErrorView.
  */
-export default function LocaleError({ retry }: { error: Error; retry: () => void }) {
-  return (
-    <main className="mx-auto max-w-md px-4 pt-24">
-      <ErrorState onRetry={retry} />
-    </main>
-  );
+export default function LocaleError({ error, retry }: { error: unknown; retry: () => void }) {
+  return <AppErrorView error={error} retry={retry} />;
 }

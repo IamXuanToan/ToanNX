@@ -63,6 +63,10 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
   thuộc tính trong view/service (xem `AGENTS.md`). Danh sách chỉ phân trang khi gửi `page`/`page_size`.
 - Lịch sử thay đổi: model kế thừa `JournalTracker` tự ghi Journal khi CRUD (cùng transaction); trang Journal lọc
   theo `module.model`, trang chi tiết có thẻ lịch sử. Giữ `JOURNAL_RETENTION_DAYS` ngày, dọn bằng `run_cleanup`.
+- Journal có trang chi tiết từng thay đổi: field nào, giá trị cũ → mới (danh sách tô phần thêm/bỏ, JSON dàn
+  trang), request id để đối chiếu log.
+- File vật lý: tệp đã xóa mềm và file mồ côi bị dọn sau `ATTACHMENT_PURGE_DAYS` ngày (giữ dòng dữ liệu).
+- Báo lỗi: Sentry ở BE khi có `SENTRY_DSN`; lỗi trình duyệt gửi về BE.
 - Soạn thảo dùng Tiptap JSON (`TiptapEditor` / `TiptapContent`); không lưu HTML tùy ý.
 - Mã QR là module riêng (`qr_codes`, trang tạo QR URL/văn bản/Wi-Fi/VietQR, PNG lưu ở Attachment). Chèn QR vào
   editor là chèn ảnh PNG của mã đó. Link rút gọn `/s/{slug}`; trang tự tạo `/{đường dẫn}/{slug}` (đường dẫn

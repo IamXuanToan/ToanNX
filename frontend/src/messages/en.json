@@ -295,6 +295,11 @@
       "title": "Page not found",
       "description": "This link does not exist or has changed.",
       "backHome": "Back to home"
+    },
+    "recordNotFound": {
+      "title": "Record not found",
+      "description": "This record was deleted or the link is wrong.",
+      "back": "Back to list"
     }
   }
 }

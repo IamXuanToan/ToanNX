@@ -44,8 +44,11 @@ pnpm e2e        # Playwright
   `hasPermission/canAccessAdmin`, kiểm tra message i18n.
   `search-input.test.tsx` kiểm tra Enter, IME, xóa và đồng bộ từ khóa; `table-url-state.test.ts` bảo toàn
   bộ lọc khi đổi state bảng; `iam-catalog-services.test.ts` kiểm tra danh mục nhiều trang và lỗi trang sau.
-- E2E (Playwright, `tests/e2e`): chạy trên server thật (backend 8000 + frontend 3000, DB dev). `global-setup.ts`
-  tạo superuser `e2e-admin@toannx.local` bằng `createsuperuser` (đổi qua `E2E_EMAIL`/`E2E_PASSWORD`).
+- E2E (Playwright, `tests/e2e`): chạy trên server thật với **database riêng** `toannx_e2e`: Playwright gọi
+  `manage.py prepare_e2e` (tạo DB nếu chưa có, migrate, superuser `e2e-admin@toannx.local`, đổi qua
+  `E2E_EMAIL`/`E2E_PASSWORD`), rồi chạy backend 8001 và frontend 3001 (bản build trong `.next-e2e`).
+  `content-modules.spec.ts`: các trang nhóm Nội dung, `/s/{slug}` chuyển hướng, Journal hiện field cũ → mới và
+  trang chi tiết.
   - `auth.spec.ts`: đăng nhập, sai mật khẩu, validation theo ngôn ngữ, đăng xuất, **silent refresh** khi mất access token.
   - `protected-route.spec.ts`: redirect kèm `next` và quay lại, cookie gợi ý giả bị backend chặn, API 401.
   - `localization.spec.ts`: nội dung/`lang` theo locale, chuyển ngôn ngữ giữ route + query + phiên.
@@ -63,4 +66,4 @@ superuser, bộ lọc, dữ liệu an toàn và thu hồi hiện tại; `account
 bộ lọc vai trò kết hợp tìm kiếm/trạng thái.
 
 `scripts/check-all.{sh,ps1}` chạy cùng một quy trình: format → lint/type → test backend → lint/format → typecheck/unit → build frontend.
-E2E chạy riêng vì cần server và DB dev.
+E2E chạy riêng vì cần server; CI (`.github/workflows/ci.yml`) chạy backend, frontend và kiểm kiểu OpenAPI.

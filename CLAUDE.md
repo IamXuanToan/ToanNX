@@ -32,7 +32,8 @@ Frontend (run from `frontend/`):
 pnpm dev                                   # http://localhost:3000 → /vi
 pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build
 pnpm test tests/unit/<file>.test.ts        # single Vitest file
-pnpm e2e                                   # Playwright; auto-starts backend 8000 + frontend 3000 against dev DB
+pnpm e2e                                   # Playwright; own DB toannx_e2e (prepare_e2e), backend 8001 + frontend 3001 (.next-e2e)
+pnpm api:types                             # regenerate src/shares/types/api-schema.gen.ts from OpenAPI (CI fails if stale)
 pnpm e2e tests/e2e/auth.spec.ts            # single spec
 ```
 
@@ -58,7 +59,9 @@ rotating refresh token stored as HMAC; every request checks the session is still
   settings (`IsActiveAuthenticated` + `HasIamPermission`, `BucketThrottle` + `RATE_LIMITS`); public or login-only
   views override `permission_classes` per the table in `core_api_view.py` — never add new base view classes.
   Services subclass `CoreCrudService` and declare `owner_field`/`manage_all_permission`/`owner_quota_setting`.
-  Models get change history by inheriting `JournalTracker` before `CoreModel`. Lists paginate only when
+  Models get change history by inheriting `JournalTracker` before `CoreModel`. Soft delete appends
+  `_deleted_<ms>` to unique text fields. Every route is called by `core/tests/test_endpoint_access.py`
+  (anonymous 401, no permission 403); public/login-only views must be listed there. Lists paginate only when
   `page`/`page_size` is sent. Input via `@validate_request` + `serializers/validates/`; output via `serializers/responses/`.
 - Responses use a fixed envelope (`{success, data, meta}` / `{success:false, error:{code,...}}`) with stable
   error codes (core `ErrorCode` + per-module `constants/<m>_error_code.py`); the frontend translates by code.
@@ -91,6 +94,8 @@ rotating refresh token stored as HMAC; every request checks the session is still
   relations (roles, permissions) are picked with checkboxes and synced on Save via `useSync…`; any
   list of selectable items (roles, permissions, flags) renders through `ChoiceList` / `ChoiceGroups`; other modules plug into a form through an `extensions` slot + `useFormExtension`;
   missing shared UI goes into a new `shares/components/common/<name>/` folder; no intro/policy sentences under titles.
+  Record load errors use `QueryErrorState` (404 → "not found" + back link, no retry). FE types must match
+  OpenAPI field sets (`tests/unit/api-contract.test.ts`, `ApiModel<"…Response">`).
   Rich text is Tiptap JSON only: `TiptapEditor` to edit, `TiptapContent` to render; modules add editor inserts
   through the `editorPlugins` slot (`useTiptapInsertItem`). Inline create of a related resource uses `FormDialog`
   around that resource's single form.

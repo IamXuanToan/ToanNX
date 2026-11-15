@@ -24,7 +24,11 @@ Frontend rewrite `/api/v1/*` → `${BACKEND_ORIGIN}/api/v1/*` (Vercel external r
 - `config/wsgi.py` expose WSGI `app`; `vercel.json` build `config/wsgi.py` bằng `@vercel/python` và route mọi path vào đó (cần xác minh khi deploy thật).
 - Dependencies: `pyproject.toml` + `uv.lock`; `requirements.txt` được sinh bằng
   `uv export --no-dev --no-hashes -o requirements.txt` cho runtime đọc requirements (chạy lại khi đổi dependency).
-- Không phụ thuộc filesystem, bộ nhớ, worker hay scheduler. Không có upload file. Swagger chỉ bật khi DEBUG (asset CDN).
+- Không phụ thuộc filesystem, bộ nhớ hay worker. File lưu ở object storage (`FILE_STORAGE_BACKEND`).
+  Swagger chỉ bật khi DEBUG (asset CDN).
+- Dọn dữ liệu: `vercel.json` khai Vercel Cron gọi `GET /api/v1/health/cleanup` lúc 03:00 UTC mỗi ngày; Vercel tự gửi
+  `Authorization: Bearer <CRON_SECRET>`. Cron chạy mọi `cleanup_tasks` của module: phiên/token/bucket hết hạn,
+  journal quá `JOURNAL_RETENTION_DAYS`, file của tệp đã xóa mềm và file mồ côi quá `ATTACHMENT_PURGE_DAYS`.
 
 Biến môi trường (Vercel → Settings → Environment Variables):
 
@@ -40,6 +44,10 @@ Biến môi trường (Vercel → Settings → Environment Variables):
 | `CSRF_TRUSTED_ORIGINS` | `https://toannx.com` |
 | `AUTH_ACCESS_TOKEN_LIFETIME_SECONDS` | `600` |
 | `AUTH_REFRESH_TOKEN_LIFETIME_SECONDS` | `604800` |
+| `CRON_SECRET` | chuỗi ngẫu nhiên; trống thì endpoint dọn dẹp trả 404 |
+| `JOURNAL_RETENTION_DAYS` / `ATTACHMENT_PURGE_DAYS` | `365` / `30` |
+| `SENTRY_DSN` | DSN project Sentry (trống = tắt báo lỗi) |
+| `SENTRY_ENVIRONMENT` / `SENTRY_TRACES_SAMPLE_RATE` | `production` / `0` |
 
 Backend luôn đứng sau proxy (Next rewrite / Vercel) và bật `USE_X_FORWARDED_HOST` + `SECURE_PROXY_SSL_HEADER`
 để dựng URL tuyệt đối (file, icon) theo đúng domain trình duyệt đang dùng. Vì vậy host được Django kiểm tra là
@@ -84,4 +92,6 @@ curl -sI https://toannx.com/vi/quan-tri              # 307 → /vi/dang-nhap?nex
 
 - IP client sau 2 lớp proxy (Vercel frontend → Vercel backend): rate limit theo IP dùng phần tử cuối
   `X-Forwarded-For`; cần xác minh trên Vercel thật. Giới hạn đăng nhập vẫn có khóa theo email.
-- Bảng `auth_session`/`auth_refresh_token`/`auth_rate_limit_bucket` chưa có job dọn dữ liệu cũ (cần cron ở phase sau).
+- Content Security Policy (khai trong `frontend/next.config.ts`) cho phép script inline do Next sinh (không dùng
+  nonce để giữ trang tĩnh), ảnh `https:` và iframe YouTube. Thêm dịch vụ ngoài (analytics, font CDN) phải sửa CSP.
+- Báo lỗi Sentry chỉ ở BE; lỗi trình duyệt đi qua `/api/v1/health/client-errors` (log ERROR → Sentry).

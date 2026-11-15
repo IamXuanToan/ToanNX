@@ -3,9 +3,10 @@
 import type { ReactNode } from "react";
 
 import { FormPage } from "@/shares/components/common/form-page/form-page";
-import { ErrorState } from "@/shares/components/errors/error-state";
+import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
+import { IAM_ROUTES } from "../../constants/routes";
 import { RoleForm } from "../role-form/role-form";
 import { useRoleProfile } from "./hooks/use-role-profile";
 
@@ -28,7 +29,7 @@ export function RoleProfile({
   canAssignPermissions: boolean;
   history?: ReactNode;
 }) {
-  const { role, errorMessage, editable } = useRoleProfile(id);
+  const { role, editable } = useRoleProfile(id);
 
   if (role.isPending) {
     return (
@@ -39,7 +40,13 @@ export function RoleProfile({
     );
   }
   if (role.isError)
-    return <ErrorState message={errorMessage(role.error)} onRetry={() => role.refetch()} />;
+    return (
+      <QueryErrorState
+        error={role.error}
+        onRetry={() => role.refetch()}
+        backHref={IAM_ROUTES.roles}
+      />
+    );
 
   return (
     <FormPage title={role.data.name}>

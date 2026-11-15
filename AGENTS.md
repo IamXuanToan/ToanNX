@@ -36,7 +36,8 @@ Backend:
    công khai/chỉ đăng nhập thì ghi đè `permission_classes` theo bảng trong `core_api_view.py`. Không tạo lớp view nền.
 7. `INSTALLED_APPS`, `config/urls.py`, `migrate` (quyền tự đồng bộ). Test trong `tests/` (factory, quyền, owner,
    bulk, lịch sử) + một dòng trong `core/tests/test_list_query_count.py` cho endpoint danh sách (quên là test đỏ).
-   Khóa `action_rate_limits` phải có trong `settings.RATE_LIMITS` (test quy ước kiểm).
+   Khóa `action_rate_limits` phải có trong `settings.RATE_LIMITS` (test quy ước kiểm). API công khai hoặc chỉ
+   cần đăng nhập phải thêm tên view vào `core/tests/test_endpoint_access.py` (test gọi thật mọi route).
    `spectacular --validate --fail-on-warn` phải sạch.
 
 Frontend:
@@ -51,6 +52,9 @@ Frontend:
 4. Ghép vào `src/i18n/routing.ts`, `src/i18n/messages.ts`, `src/global.d.ts`, `ADMIN_MODULE_NAVIGATION`
    (`navigation.ts` khai `module`, `nameKey`/`descriptionKey`, `labelKey` là khóa đầy đủ trong namespace của module).
    `tests/unit/module-registry.test.ts` đỏ nếu quên chỗ nào.
+   Chạy `pnpm api:types` khi đổi serializer BE; kiểu viết tay thêm một dòng vào `tests/unit/api-contract.test.ts`
+   (hoặc dùng thẳng `ApiModel<"…Response">`). Model có `JournalTracker` thì thêm tiền tố nhãn field vào
+   `journal/constants/journal-field-prefixes.ts`. Lỗi tải bản ghi dùng `QueryErrorState`.
 5. Module cùng cấp không import nhau: page ghép qua slot (`extensions`, `history`, `editorPlugins`).
    Lịch sử thay đổi: page truyền `<RecordHistoryView path=".../{id}/history" fieldPrefix="links.fields" />`.
 

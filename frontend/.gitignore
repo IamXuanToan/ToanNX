@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# build riêng của E2E (NEXT_DIST_DIR)
+/.next-e2e/
+
+# schema tạm khi sinh kiểu OpenAPI (pnpm api:types)
+/.openapi.json

@@ -295,6 +295,11 @@
       "title": "Không tìm thấy trang",
       "description": "Đường dẫn không tồn tại hoặc đã bị thay đổi.",
       "backHome": "Về trang chủ"
+    },
+    "recordNotFound": {
+      "title": "Không tìm thấy bản ghi",
+      "description": "Bản ghi đã bị xóa hoặc đường dẫn không đúng.",
+      "back": "Về danh sách"
     }
   }
 }

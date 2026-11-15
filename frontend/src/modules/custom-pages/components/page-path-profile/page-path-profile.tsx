@@ -3,10 +3,10 @@
 import type { ReactNode } from "react";
 
 import { FormPage } from "@/shares/components/common/form-page/form-page";
-import { ErrorState } from "@/shares/components/errors/error-state";
+import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
-import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 
+import { CUSTOM_PAGES_ROUTES } from "../../constants/routes";
 import { usePagePath } from "../../hooks/use-page-paths";
 import { PagePathForm } from "../page-path-form/page-path-form";
 
@@ -26,10 +26,15 @@ export function PagePathProfile({
   history?: ReactNode;
 }) {
   const query = usePagePath(id);
-  const errorMessage = useApiErrorMessage();
   if (query.isPending) return <Skeleton className="mx-auto h-80 w-full max-w-6xl rounded-xl" />;
   if (query.isError)
-    return <ErrorState message={errorMessage(query.error)} onRetry={() => query.refetch()} />;
+    return (
+      <QueryErrorState
+        error={query.error}
+        onRetry={() => query.refetch()}
+        backHref={CUSTOM_PAGES_ROUTES.paths}
+      />
+    );
   return (
     <FormPage title={`/${query.data.segment}`}>
       <PagePathForm path={query.data} disabled={!canUpdate} />

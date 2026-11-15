@@ -115,7 +115,10 @@ action/method mở ra đều có rule quyền.
   `bulk_*` gọi lại `update`/`delete` nên luật tự áp cho thao tác hàng loạt.
 - Phụ thuộc tạo trong `__init__` và đặt tên theo lớp: `self.repository`, `self.<tên>_repository`, `self.<tên>_service`.
   Cho phép truyền vào để test. Module khác chỉ gọi **service công khai** (ví dụ `AttachmentService.find_alive_images`).
-- Sự kiện không phải đổi field (gán vai trò…) ghi bằng `instance.journal_event("<module>.<event>", data, actor.pk)`.
+- Sự kiện không phải đổi field (gán vai trò…) ghi bằng `instance.journal_event("<module>.<event>", data, actor.pk)`;
+  thay đổi dạng danh sách trước/sau dùng `changes={"roles": (cũ, mới)}` để trang Journal hiện cũ → mới.
+- Đồng bộ một tập quan hệ (vai trò, quyền) làm **theo lô**: đọc hiện trạng một query, kiểm luật một lần cho cả
+  nhóm, thêm bằng `bulk_create`, gỡ bằng một lệnh; số query không tăng theo số mục.
 - Thao tác không cho phép → raise `BusinessRuleError`, không để im lặng. Đóng tường minh action router tự sinh mà
   tài nguyên không hỗ trợ bằng `DENY` trong `action_permissions`.
 
@@ -270,6 +273,9 @@ class UserRoleView(CoreApiView):
 - Mỗi endpoint mới: test thành công, validate sai, chưa đăng nhập, thiếu quyền, quy tắc nghiệp vụ, owner (người
   khác nhận 404); API danh sách thêm test `search`/filter nhiều giá trị/`ordering`/phân trang.
 - Mỗi endpoint danh sách thêm một dòng vào `core/tests/test_list_query_count.py` (số query không tăng theo số bản ghi).
+- `core/tests/test_endpoint_access.py` gọi thật **mọi** route: khách nhận 401, người không có quyền nhận 403
+  `PERMISSION_DENIED`. View công khai / chỉ đăng nhập phải khai tên trong `PUBLIC_VIEWS` / `LOGIN_ONLY_VIEWS`.
+- Test ghi file vào thư mục media tạm (fixture `_isolated_media`), không đụng `backend/media` của dev.
 - Factory trong `tests/factories/` của module; model có `JournalTracker` test thêm lịch sử (`…/history`).
 
 ## 13. Công cụ

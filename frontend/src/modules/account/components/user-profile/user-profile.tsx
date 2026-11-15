@@ -3,9 +3,10 @@
 import type { ReactNode } from "react";
 
 import { FormPage } from "@/shares/components/common/form-page/form-page";
-import { ErrorState } from "@/shares/components/errors/error-state";
+import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
+import { ACCOUNT_ROUTES } from "../../constants/routes";
 import { UserForm } from "../user-form/user-form";
 import { useUserProfile } from "./hooks/use-user-profile";
 
@@ -27,7 +28,7 @@ export function UserProfile({
   extensions?: ReactNode;
   history?: ReactNode;
 }) {
-  const { user, errorMessage } = useUserProfile(id);
+  const { user } = useUserProfile(id);
 
   if (user.isPending) {
     return (
@@ -41,7 +42,13 @@ export function UserProfile({
     );
   }
   if (user.isError)
-    return <ErrorState message={errorMessage(user.error)} onRetry={() => user.refetch()} />;
+    return (
+      <QueryErrorState
+        error={user.error}
+        onRetry={() => user.refetch()}
+        backHref={ACCOUNT_ROUTES.users}
+      />
+    );
 
   return (
     <FormPage title={user.data.fullName || user.data.email}>
