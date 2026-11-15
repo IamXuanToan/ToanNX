@@ -32,7 +32,7 @@ class AdminAuthSessionService(CoreCrudService[AuthSession, AuthSessionRepository
         for session in sessions:
             if session.revoked_at is None:
                 self.repository.revoke(session, "admin_deleted")
-            self.repository.update(session, deleted_at=timezone.now())
+            self.repository.delete(session, actor=actor)
         return len(sessions)
 
     def get_queryset(self) -> QuerySet[AuthSession]:

@@ -77,15 +77,14 @@ export function diffIds(from: readonly string[], to: readonly string[]) {
 }
 
 /**
- * Đồng bộ một tập id về đúng danh sách mong muốn (dùng chung cho tạo và sửa): gán phần mới, gỡ phần
- * bị bỏ, lần lượt từng cái. Lỗi thì toast và ném tiếp để form xử lý (bản ghi chính đã lưu).
+ * Đồng bộ một tập id về đúng danh sách mong muốn (dùng chung cho tạo và sửa) bằng **một request**:
+ * BE gán phần mới, gỡ phần bị bỏ trong một transaction, lỗi một mục thì không đổi gì. Không có chênh lệch
+ * thì không gọi API. Lỗi thì toast và ném tiếp để form xử lý (bản ghi chính đã lưu).
  *
- * @param apply - Gán/gỡ một id.
+ * @param sync - Gửi toàn bộ id mong muốn của một bản ghi.
  * @returns Mutation `{ id, from, to }`.
  */
-function useSyncMutation(
-  apply: (ownerId: string, id: string, assign: boolean) => Promise<unknown>,
-) {
+function useSyncMutation(sync: (ownerId: string, ids: readonly string[]) => Promise<unknown>) {
   const queryClient = useQueryClient();
   const errorMessage = useApiErrorMessage();
   return useMutation({
@@ -99,8 +98,7 @@ function useSyncMutation(
       to: readonly string[];
     }) => {
       const { added, removed } = diffIds(from, to);
-      for (const item of added) await apply(id, item, true);
-      for (const item of removed) await apply(id, item, false);
+      if (added.length || removed.length) await sync(id, to);
     },
     onError: (error: unknown) => toast.error(errorMessage(error)),
     onSettled: () =>
@@ -113,16 +111,12 @@ function useSyncMutation(
 
 /** @returns Mutation đồng bộ vai trò của một người dùng (`id` = id người dùng). */
 export function useSyncUserRoles() {
-  return useSyncMutation((userId, roleId, assign) =>
-    assign ? userRoleService.assign(userId, roleId) : userRoleService.revoke(userId, roleId),
-  );
+  return useSyncMutation((userId, roleIds) => userRoleService.sync(userId, roleIds));
 }
 
 /** @returns Mutation đồng bộ quyền của một vai trò (`id` = id vai trò). */
 export function useSyncRolePermissions() {
-  return useSyncMutation((roleId, permissionId, assign) =>
-    assign
-      ? rolePermissionService.assign(roleId, permissionId)
-      : rolePermissionService.revoke(roleId, permissionId),
+  return useSyncMutation((roleId, permissionIds) =>
+    rolePermissionService.sync(roleId, permissionIds),
   );
 }

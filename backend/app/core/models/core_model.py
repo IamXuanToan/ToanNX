@@ -7,16 +7,32 @@ Quy ước:
 - Xóa mặc định là **xóa mềm** (`CoreRepository.delete`); queryset gốc của repository tự ẩn bản đã xóa.
   Xóa cứng chỉ khi thực sự cần, gọi tường minh `hard_delete` (token hết hạn, bảng nối gán quyền,
   dữ liệu quá hạn giữ).
+- Xóa mềm **giải phóng giá trị unique**: field text unique (`unique=True` hoặc nằm trong `UniqueConstraint`
+  không điều kiện, kể cả dạng `Lower("slug")`) được thêm hậu tố `_deleted_<timestamp ms>`, nên tạo lại cùng
+  email/mã/slug không vướng bản đã xóa. Ràng buộc có điều kiện `deleted_at IS NULL` thì không cần đổi.
 """
 
 import uuid
+from collections.abc import Iterator
 from typing import Any
 
 from django.conf import settings
 from django.db import models
+from django.db.models import F, UniqueConstraint
 from django.utils import timezone
 
 from app.core.models.core_query_set import CoreQuerySet
+
+DELETED_SUFFIX = "_deleted_"
+_UNIQUE_TEXT_FIELDS: dict[type, tuple[str, ...]] = {}
+
+
+def _field_refs(expression: Any) -> Iterator[str]:
+    """Tên field được tham chiếu trong biểu thức (`Lower("slug")` → `slug`)."""
+    if isinstance(expression, F):
+        yield str(getattr(expression, "name", ""))
+    for source in getattr(expression, "get_source_expressions", list)():
+        yield from _field_refs(source)
 
 
 class CoreModel(models.Model):
@@ -85,11 +101,49 @@ class CoreModel(models.Model):
     class Meta:
         abstract = True
 
-    def mark_deleted(self, actor: Any | None) -> None:
-        """Đánh dấu xóa mềm (chưa lưu DB).
+    @classmethod
+    def unique_text_fields(cls) -> tuple[str, ...]:
+        """Field text phải đổi khi xóa mềm để giải phóng giá trị unique (cache theo lớp).
+
+        Gồm field `unique=True` và field nằm trong `UniqueConstraint` không có `condition`.
+
+        Returns:
+            Tên field.
+        """
+        cached = _UNIQUE_TEXT_FIELDS.get(cls)
+        if cached is not None:
+            return cached
+        names = {field.name for field in cls._meta.concrete_fields if field.unique and not field.primary_key}
+        for constraint in cls._meta.constraints:
+            if isinstance(constraint, UniqueConstraint) and constraint.condition is None:
+                names.update(constraint.fields)
+                for expression in constraint.expressions:
+                    names.update(_field_refs(expression))
+        result = tuple(
+            sorted(name for name in names if isinstance(cls._meta.get_field(name), models.CharField))
+        )
+        _UNIQUE_TEXT_FIELDS[cls] = result
+        return result
+
+    def mark_deleted(self, actor: Any | None) -> list[str]:
+        """Đánh dấu xóa mềm (chưa lưu DB) và thêm hậu tố `_deleted_<timestamp>` cho field unique.
 
         Args:
             actor: Người thực hiện.
+
+        Returns:
+            Field unique đã đổi (để đưa vào `update_fields`).
         """
         self.deleted_at = timezone.now()
         self.deleted_by = actor
+        suffix = f"{DELETED_SUFFIX}{int(self.deleted_at.timestamp() * 1000)}"
+        changed: list[str] = []
+        for name in self.unique_text_fields():
+            value = getattr(self, name)
+            if not value or DELETED_SUFFIX in value:
+                continue
+            max_length = getattr(self._meta.get_field(name), "max_length", None)
+            base = value[: max_length - len(suffix)] if max_length else value
+            setattr(self, name, f"{base}{suffix}")
+            changed.append(name)
+        return changed

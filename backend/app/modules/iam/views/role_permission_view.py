@@ -1,6 +1,7 @@
 """API quyền của vai trò.
 
 POST   /iam/roles/{role_id}/permissions                    body: {"permission_id": "..."}
+PUT    /iam/roles/{role_id}/permissions                    body: {"permission_ids": [...]}  (thay toàn bộ)
 DELETE /iam/roles/{role_id}/permissions/{permission_id}
 """
 
@@ -21,6 +22,9 @@ from app.modules.iam.serializers.responses.role_detail_response_serializer impor
 )
 from app.modules.iam.serializers.validates.role_permission_assign_validate_serializer import (
     RolePermissionAssignValidateSerializer,
+)
+from app.modules.iam.serializers.validates.role_permission_sync_validate_serializer import (
+    RolePermissionSyncValidateSerializer,
 )
 from app.modules.iam.services.role_permission_service import RolePermissionService
 from app.modules.iam.services.role_service import RoleService
@@ -55,6 +59,25 @@ class RolePermissionView(CoreApiView):
         """
         self.role_permission_service.assign_permission(
             self.get_actor(request), role_id, validated_data["permission_id"]
+        )
+        return CoreResponse(RoleDetailResponseSerializer(self.role_service.get_by_id(role_id)).data)
+
+    @extend_schema(responses=RoleDetailResponseSerializer)
+    @require_permission(IamPermission.PERMISSION_ASSIGN)
+    @validate_request(RolePermissionSyncValidateSerializer)
+    def put(self, request: Request, role_id: UUID, validated_data: dict[str, Any]) -> CoreResponse:
+        """Thay toàn bộ quyền trong một transaction (lỗi một quyền thì không đổi gì).
+
+        Args:
+            request: Request.
+            role_id: Id vai trò.
+            validated_data: Body đã validate.
+
+        Returns:
+            Vai trò kèm quyền.
+        """
+        self.role_permission_service.sync_permissions(
+            self.get_actor(request), role_id, validated_data["permission_ids"]
         )
         return CoreResponse(RoleDetailResponseSerializer(self.role_service.get_by_id(role_id)).data)
 

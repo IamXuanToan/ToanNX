@@ -18,24 +18,14 @@ export const userRoleService = {
   },
 
   /**
-   * Gán vai trò cho người dùng.
+   * Thay toàn bộ vai trò của người dùng trong một transaction (lỗi một vai trò thì không đổi gì).
    *
    * @param userId - Id người dùng.
-   * @param roleId - Id vai trò.
-   * @returns Vai trò sau khi gán.
+   * @param roleIds - Toàn bộ id vai trò mong muốn.
+   * @returns Vai trò sau khi đồng bộ.
    */
-  async assign(userId: string, roleId: string): Promise<RoleSummary[]> {
-    return (await apiClient.post<RoleSummary[]>(IAM_API_ENDPOINTS.userRoles(userId), { roleId }))
+  async sync(userId: string, roleIds: readonly string[]): Promise<RoleSummary[]> {
+    return (await apiClient.put<RoleSummary[]>(IAM_API_ENDPOINTS.userRoles(userId), { roleIds }))
       .data;
-  },
-
-  /**
-   * Thu hồi vai trò của người dùng.
-   *
-   * @param userId - Id người dùng.
-   * @param roleId - Id vai trò.
-   */
-  async revoke(userId: string, roleId: string): Promise<void> {
-    await apiClient.delete(IAM_API_ENDPOINTS.userRole(userId, roleId));
   },
 };

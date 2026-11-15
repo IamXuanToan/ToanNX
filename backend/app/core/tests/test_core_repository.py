@@ -10,6 +10,8 @@ from app.modules.account.tests.factories.user_factory import UserFactory
 from app.modules.iam.models.role import Role
 from app.modules.iam.repositories.role_repository import RoleRepository
 from app.modules.journal.repositories.journal_entry_repository import JournalEntryRepository
+from app.modules.short_links.models.short_link import ShortLink
+from app.modules.short_links.services.short_link_service import ShortLinkService
 
 pytestmark = pytest.mark.django_db
 
@@ -123,3 +125,34 @@ def test_update_where_sets_audit_and_delete_where_is_soft() -> None:
     assert repo.delete_where(code__startswith="BULK_") == 0  # đã xóa thì không xóa lại
     assert repo.hard_delete_where(code__startswith="BULK_") == 2
     assert not Role.objects.filter(code__startswith="BULK_").exists()
+
+
+def test_soft_delete_releases_unique_values() -> None:
+    """Xóa mềm thêm `_deleted_<timestamp>` cho field unique: tạo lại cùng mã không bị chặn."""
+    repo = RoleRepository()
+    role = repo.create(code="REUSE", name="x")
+    repo.delete(role)
+    role.refresh_from_db()
+    assert role.code.startswith("REUSE_deleted_")
+    again = repo.create(code="REUSE", name="y")
+    assert again.code == "REUSE"
+
+
+def test_soft_delete_suffix_respects_max_length() -> None:
+    owner = UserFactory()
+    service = ShortLinkService()
+    slug = "a" * 64
+    link = service.create(owner, {"name": "Dài", "slug": slug, "destination_url": "https://example.com"})
+    service.delete(owner, link.pk)
+    stored = ShortLink.objects.get(pk=link.pk).slug
+    assert len(stored) <= ShortLink._meta.get_field("slug").max_length
+    assert "_deleted_" in stored
+    assert service.create(owner, {"name": "Lại", "slug": slug, "destination_url": "https://example.com"})
+
+
+def test_delete_where_releases_unique_values() -> None:
+    repo = RoleRepository()
+    repo.create(code="WHERE_A", name="a")
+    assert repo.delete_where(code="WHERE_A") == 1
+    assert Role.objects.get(code__startswith="WHERE_A_deleted_").deleted_at is not None
+    assert repo.create(code="WHERE_A", name="b").code == "WHERE_A"

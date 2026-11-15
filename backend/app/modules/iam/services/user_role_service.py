@@ -115,6 +115,33 @@ class UserRoleService:
             raise NotFoundError()
         target.journal_event("iam.role_revoked", {"role": role.code}, actor.pk)
 
+    @transaction.atomic
+    def sync_roles(self, actor: User, user_id: Any, role_ids: list[Any]) -> list[Role]:
+        """Đưa vai trò của người dùng về đúng danh sách trong **một transaction**.
+
+        Gán phần mới, gỡ phần bị bỏ bằng đúng luật của `assign_role` / `revoke_role`; một vai trò lỗi thì
+        không thay đổi nào được lưu.
+
+        Args:
+            actor: Người thực hiện.
+            user_id: Id người dùng.
+            role_ids: Toàn bộ id vai trò mong muốn.
+
+        Returns:
+            Vai trò của người dùng sau khi đồng bộ.
+        """
+        target = self._get_target(actor, user_id)
+        wanted = {str(pk) for pk in role_ids}
+        current = {
+            str(pk)
+            for pk in self.repository.values_list("role_id", user_id=target.pk, role__deleted_at__isnull=True)
+        }
+        for role_id in sorted(wanted - current):
+            self.assign_role(actor, target.pk, role_id)
+        for role_id in sorted(current - wanted):
+            self.revoke_role(actor, target.pk, role_id)
+        return self.role_repository.list_for_user(target.pk)
+
     def _get_target(self, actor: User, user_id: Any) -> User:
         """Người dùng đích + chặn tự đổi vai trò của chính mình."""
         target = self.user_service.get_manageable_user(actor, user_id)

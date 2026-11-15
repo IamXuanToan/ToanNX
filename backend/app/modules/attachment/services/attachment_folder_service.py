@@ -3,7 +3,6 @@
 from typing import Any
 
 from django.db import transaction
-from django.utils import timezone
 
 from app.core.exceptions.authorization_error import AuthorizationError
 from app.core.exceptions.conflict_error import ConflictError
@@ -93,15 +92,13 @@ class AttachmentFolderService(CoreCrudService[AttachmentFolder, AttachmentFolder
         folder = self._locked(actor, pk)
         folders = [folder, *self.repository.descendants(folder.pk)]
         ids = [item.pk for item in folders]
-        now = timezone.now()
         # Khóa cây ngăn upload/chuyển file hoặc thêm con trong lúc xóa nhánh.
-        values = {"deleted_at": now, "deleted_by": actor} if delete_files else {"folder": None}
-        self.attachment_repository.update_where(
-            {**values, "updated_at": now},
-            actor=actor,
-            folder_id__in=ids,
-            deleted_at__isnull=True,
-        )
+        if delete_files:
+            self.attachment_repository.delete_where(actor=actor, folder_id__in=ids)
+        else:
+            self.attachment_repository.update_where(
+                {"folder": None}, actor=actor, folder_id__in=ids, deleted_at__isnull=True
+            )
         for item in folders:
             self.repository.delete(item, actor=actor)
         return len(folders)

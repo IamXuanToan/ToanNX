@@ -40,6 +40,8 @@ src/modules/<m>/
   delete/bulkUpdate/bulkDelete/history`, cùng tên với action BE), service chỉ viết thêm method riêng.
 - Hook module: danh sách `useListQuery`, chi tiết `useQuery`, ghi `useResourceMutation` (toast theo khóa message,
   invalidate `lists`/`detail` chuẩn, lỗi dịch theo mã). Không tự viết `onSuccess`/`onError` lặp lại.
+- Quan hệ chọn bằng checkbox (vai trò, quyền) lưu bằng **một** request thay toàn bộ (`PUT` + danh sách id), BE xử lý
+  trong một transaction; không gửi từng request cho mỗi mục.
 - Danh sách gửi `page`/`pageSize` khi cần phân trang (bảng). Ô chọn/danh mục gọi `listAll()` không gửi `page` → BE trả hết.
 - **Mỗi module tự khai** trong `constants/` (không khai chung ở `shares/`):
   - `routes.ts`: `<M>_ROUTES` (đường dẫn nội bộ, có hàm cho route động) và `<M>_PATHNAMES`

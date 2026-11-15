@@ -233,6 +233,9 @@ class UserRoleView(CoreApiView):
 - Xoá mặc định là **xoá mềm**: `CoreRepository.delete` / `delete_where`, `CoreCrudService.delete`, action
   `destroy` và `bulk-delete`. Có quyền `<module>.<resource>.delete` riêng. `get_queryset` gốc của repository tự ẩn
   bản đã xoá (lớp con gọi `super().get_queryset()`), nên bản ghi đã xoá biến mất khỏi API, đăng nhập và kiểm quyền.
+- Xoá mềm **giải phóng giá trị unique**: `CoreModel.mark_deleted` thêm hậu tố `_deleted_<timestamp ms>` cho field
+  text unique (`unique=True` hoặc trong `UniqueConstraint` không điều kiện, kể cả `Lower("slug")`), nên tạo lại cùng
+  email/mã/slug được. Ràng buộc chỉ áp cho bản còn sống thì khai `condition=Q(deleted_at__isnull=True)`.
 - Xoá cứng chỉ khi **thực sự cần** và gọi tường minh `hard_delete` / `hard_delete_where`, kèm một dòng chú thích lý
   do. Hiện có: dọn phiên/token/bucket hết hạn, dọn journal quá hạn giữ, gỡ gán vai trò/quyền (bảng nối, lịch sử
   đã ghi ở journal). Gọi `delete` trên model không có `deleted_at` → `TypeError` (không lặng lẽ xoá cứng).

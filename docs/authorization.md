@@ -111,9 +111,9 @@ CRUD theo `CoreModelViewSet`: `GET/POST /<resource>`, `GET/PATCH/DELETE /<resour
 | Tài nguyên | Quyền |
 | --- | --- |
 | `/account/users` (+ bulk, history) | `account.user.{read,create,update,delete}` |
-| `/iam/users/{id}/roles` | đọc `iam.role.read` hoặc `iam.role.assign`; gán/gỡ `iam.role.assign` |
+| `/iam/users/{id}/roles` | đọc `iam.role.read` hoặc `iam.role.assign`; gán/gỡ và `PUT` thay toàn bộ (`role_ids`) `iam.role.assign` |
 | `/iam/roles` (+ bulk, history) | `iam.role.{read,create,update,delete}` |
-| `/iam/roles/{id}/permissions` | `iam.permission.assign` |
+| `/iam/roles/{id}/permissions` (`PUT` thay toàn bộ `permission_ids`) | `iam.permission.assign` |
 | `/iam/permissions` | `iam.permission.read` |
 | `/attachments`, `/attachments/folders` | `attachment.{file,folder}.{read,create,update,delete}`, `attachment.file.manage_all` |
 | `/auth/admin-sessions` (+ `bulk-revoke`, `users`) | `authentication.session.{read,revoke,delete}` |
@@ -129,7 +129,8 @@ Công khai (ghi đè `permission_classes`): `/auth/csrf|login|refresh`, `/health
 
 Quyền tạo bởi module được khai báo trong `module.py` của module đó; không cần sửa IAM core.
 Xoá người dùng và vai trò là xoá mềm, có quyền `delete` riêng; khoá tài khoản (`is_active=false`) vẫn là cách tạm
-ngưng không mất dữ liệu. Gán/gỡ vai trò và quyền được ghi vào Journal.
+ngưng không mất dữ liệu. Gán/gỡ vai trò và quyền được ghi vào Journal. Form FE lưu vai trò/quyền bằng một `PUT`:
+BE gán phần mới, gỡ phần bị bỏ trong **một transaction** theo cùng luật chống leo thang; lỗi một mục thì không đổi gì.
 
 ## Frontend
 

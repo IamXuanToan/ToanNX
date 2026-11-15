@@ -7,6 +7,7 @@ import pytest
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.modules.account.models.user import User
 from app.modules.account.permissions.account_permission import AccountPermission as A
+from app.modules.account.services.user_service import UserService
 from app.modules.account.tests.factories.superuser_factory import SuperuserFactory
 from app.modules.account.tests.factories.user_factory import UserFactory
 from app.modules.authentication.models.auth_session import AuthSession
@@ -113,3 +114,20 @@ class TestUserBulkApi(BaseApiTestCase):
         UserFactory(is_active=False)
         items, _ = self.assert_paginated(login(superuser).get(f"{USERS}?page=1&ordering=is_active"))
         assert items[0]["is_active"] is False
+
+
+def test_deleted_user_email_can_be_reused() -> None:
+    """Xóa mềm giải phóng email và username để tạo lại tài khoản."""
+    actor = SuperuserFactory()
+    data = {
+        "email": "reuse@toannx.local",
+        "username": "reuse_user",
+        "password": "Reuse-Strong-Passw0rd!",
+        "first_name": "A",
+        "last_name": "B",
+    }
+    service = UserService()
+    first = service.create(actor, dict(data))
+    service.delete(actor, first.pk)
+    second = service.create(actor, dict(data))
+    assert second.email == "reuse@toannx.local" and second.pk != first.pk

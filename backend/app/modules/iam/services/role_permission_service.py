@@ -64,6 +64,30 @@ class RolePermissionService:
         return role
 
     @transaction.atomic
+    def sync_permissions(self, actor: User, role_id: Any, permission_ids: list[Any]) -> Role:
+        """Đưa quyền của vai trò về đúng danh sách trong **một transaction**.
+
+        Gán phần mới, gỡ phần bị bỏ bằng đúng luật của `assign_permission` / `revoke_permission`; một quyền
+        lỗi thì không thay đổi nào được lưu.
+
+        Args:
+            actor: Người thực hiện.
+            role_id: Id vai trò.
+            permission_ids: Toàn bộ id quyền mong muốn.
+
+        Returns:
+            Vai trò.
+        """
+        role = self.role_service.get_editable_role(actor, role_id)
+        wanted = {str(pk) for pk in permission_ids}
+        current = {str(pk) for pk in self.repository.values_list("permission_id", role_id=role.pk)}
+        for permission_id in sorted(wanted - current):
+            self.assign_permission(actor, role.pk, permission_id)
+        for permission_id in sorted(current - wanted):
+            self.revoke_permission(actor, role.pk, permission_id)
+        return role
+
+    @transaction.atomic
     def revoke_permission(self, actor: User, role_id: Any, permission_id: Any) -> None:
         """Thu hồi quyền khỏi vai trò.
 

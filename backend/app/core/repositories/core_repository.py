@@ -26,6 +26,7 @@ from django.utils import timezone
 from app.core.context.user_context import get_current_user
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
+from app.core.models.core_model import CoreModel
 from app.core.tracking.journal_tracker import JournalTracker
 
 _LOOKUP_ERRORS = (ObjectDoesNotExist, DjangoValidationError, ValueError)
@@ -252,13 +253,20 @@ class CoreRepository[M: models.Model]:
         """
         self._require_soft_delete()
         resolved = self.resolve_actor(actor)
-        instance.mark_deleted(resolved)  # type: ignore[attr-defined]  # đã kiểm có deleted_at (CoreModel)
+        if isinstance(instance, CoreModel):
+            # Gán deleted_at/deleted_by và thêm hậu tố cho field unique (giải phóng email/mã/slug).
+            fields = ["deleted_at", "deleted_by", *instance.mark_deleted(resolved)]
+        else:
+            # Model riêng chỉ có `deleted_at` (ví dụ phiên đăng nhập).
+            instance.deleted_at = timezone.now()  # type: ignore[attr-defined]  # đã kiểm có deleted_at
+            fields = ["deleted_at"]
         audit_fields = self.apply_audit(instance, resolved, created=False)
-        self.save(instance, update_fields=["deleted_at", "deleted_by", *audit_fields])
+        self.save(instance, update_fields=[*fields, *audit_fields])
         return instance
 
     def delete_where(self, *, actor: Any | None = None, **filters: Any) -> int:
-        """Xóa mềm các bản ghi chưa xóa khớp điều kiện (có ghi journal nếu model có tracker).
+        """Xóa mềm các bản ghi chưa xóa khớp điều kiện, từng bản qua `delete` (khóa dòng, hậu tố unique,
+        journal giống xóa đơn).
 
         Args:
             actor: Người thực hiện.
@@ -272,8 +280,11 @@ class CoreRepository[M: models.Model]:
         """
         self._require_soft_delete()
         resolved = self.resolve_actor(actor)
-        values = {"deleted_at": timezone.now(), "deleted_by": resolved}
-        return self.update_where(values, actor=resolved, deleted_at__isnull=True, **filters)
+        queryset = self.model._default_manager.select_for_update(of=("self",)).order_by("pk")
+        instances = list(queryset.filter(deleted_at__isnull=True, **filters))
+        for instance in instances:
+            self.delete(instance, actor=resolved)
+        return len(instances)
 
     def hard_delete(self, instance: M) -> None:
         """Xóa cứng một bản ghi. Chỉ dùng khi thực sự cần (bảng nối, token, model không có `deleted_at`).

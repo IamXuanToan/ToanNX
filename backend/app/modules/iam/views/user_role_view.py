@@ -2,6 +2,7 @@
 
 GET    /iam/users/{user_id}/roles
 POST   /iam/users/{user_id}/roles             body: {"role_id": "..."}
+PUT    /iam/users/{user_id}/roles             body: {"role_ids": [...]}  (thay toàn bộ, một transaction)
 DELETE /iam/users/{user_id}/roles/{role_id}
 """
 
@@ -22,6 +23,9 @@ from app.modules.iam.serializers.responses.role_summary_response_serializer impo
 )
 from app.modules.iam.serializers.validates.user_role_assign_validate_serializer import (
     UserRoleAssignValidateSerializer,
+)
+from app.modules.iam.serializers.validates.user_role_sync_validate_serializer import (
+    UserRoleSyncValidateSerializer,
 )
 from app.modules.iam.services.user_role_service import UserRoleService
 
@@ -69,6 +73,25 @@ class UserRoleView(CoreApiView):
         """
         self.user_role_service.assign_role(self.get_actor(request), user_id, validated_data["role_id"])
         roles = self.user_role_service.list_roles(user_id)
+        return CoreResponse(RoleSummaryResponseSerializer(roles, many=True).data)
+
+    @extend_schema(responses=RoleSummaryResponseSerializer(many=True))
+    @require_permission(IamPermission.ROLE_ASSIGN)
+    @validate_request(UserRoleSyncValidateSerializer)
+    def put(self, request: Request, user_id: UUID, validated_data: dict[str, Any]) -> CoreResponse:
+        """Thay toàn bộ vai trò trong một transaction (lỗi một vai trò thì không đổi gì).
+
+        Args:
+            request: Request.
+            user_id: Id người dùng.
+            validated_data: Body đã validate.
+
+        Returns:
+            Vai trò của người dùng sau khi đồng bộ.
+        """
+        roles = self.user_role_service.sync_roles(
+            self.get_actor(request), user_id, validated_data["role_ids"]
+        )
         return CoreResponse(RoleSummaryResponseSerializer(roles, many=True).data)
 
 
