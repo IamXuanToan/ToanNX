@@ -2,6 +2,7 @@ import { accountNavigation } from "@/modules/account/navigation";
 import { attachmentNavigation } from "@/modules/attachment/navigation";
 import { authenticationAccountItems } from "@/modules/auth/navigation";
 import { iamNavigation } from "@/modules/iam/navigation";
+import { customPagesNavigation } from "@/modules/custom-pages/navigation";
 import { qrCodesNavigation } from "@/modules/qr-codes/navigation";
 import { shortLinksNavigation } from "@/modules/short-links/navigation";
 import { journalNavigation } from "@/modules/journal/navigation";
@@ -31,6 +32,7 @@ export const ADMIN_MODULE_NAVIGATION: AdminModuleNavigation[] = [
   journalNavigation,
   shortLinksNavigation,
   qrCodesNavigation,
+  customPagesNavigation,
 ];
 
 /**

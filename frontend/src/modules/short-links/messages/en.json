@@ -71,5 +71,14 @@
       "title": "Too many requests",
       "description": "Please try again in a few minutes."
     }
+  },
+  "editor": {
+    "insert": "Short link button",
+    "title": "Insert short link button",
+    "description": "A button to one of your short links; it hides itself when the link is disabled or expired.",
+    "link": "Short link",
+    "label": "Button label",
+    "cancel": "Cancel",
+    "confirm": "Insert"
   }
 }

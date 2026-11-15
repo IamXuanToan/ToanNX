@@ -71,5 +71,14 @@
       "title": "Quá nhiều lượt truy cập",
       "description": "Vui lòng thử lại sau ít phút."
     }
+  },
+  "editor": {
+    "insert": "Nút link rút gọn",
+    "title": "Chèn nút link rút gọn",
+    "description": "Nút trỏ tới link rút gọn của bạn; link tắt hoặc hết hạn thì nút tự ẩn trên trang.",
+    "link": "Link rút gọn",
+    "label": "Nhãn nút",
+    "cancel": "Hủy",
+    "confirm": "Chèn"
   }
 }

@@ -1,0 +1,147 @@
+{
+  "module": {
+    "name": "Pages",
+    "description": "Public toannx.com/<path>/<slug> pages built with the editor."
+  },
+  "nav": {
+    "pages": "Pages",
+    "paths": "Page paths"
+  },
+  "validation": {
+    "required": "Required.",
+    "slug": "Slug must be 3–64 characters: a-z, 0-9 and hyphens.",
+    "segment": "1–32 characters: a-z, 0-9 and hyphens.",
+    "color": "Use a #RRGGBB color."
+  },
+  "pages": {
+    "title": "Pages",
+    "create": "Create page",
+    "empty": "No pages yet.",
+    "searchPlaceholder": "Search by title, slug…",
+    "view": "View page",
+    "createPath": "Create page path",
+    "editPath": "Edit page path",
+    "pathInactive": "Disabled — no new pages here",
+    "conflict": "This page was changed elsewhere. Reload to see the latest version (unsaved changes here will be lost).",
+    "reload": "Reload",
+    "draftFound": "There is unsaved content from last time in this browser.",
+    "draftRestore": "Restore",
+    "draftDiscard": "Discard",
+    "columns": {
+      "title": "Page",
+      "path": "Page path",
+      "status": "Status",
+      "owner": "Owner",
+      "updatedAt": "Updated"
+    },
+    "tabs": {
+      "content": "Content",
+      "design": "Design",
+      "seo": "SEO",
+      "settings": "Settings"
+    },
+    "sections": {
+      "settings": "Page settings",
+      "theme": "Colors and buttons",
+      "images": "Images",
+      "seo": "Search optimization"
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "UNPUBLISHED": "Unpublished"
+    },
+    "templates": {
+      "blank": "Blank",
+      "blankHint": "Start from an empty page.",
+      "link_in_bio": "Link-in-bio",
+      "link_in_bioHint": "Greeting, link buttons, social links.",
+      "about": "About",
+      "aboutHint": "Introduce yourself and how to reach you.",
+      "donate": "Donate",
+      "donateHint": "A donation note; insert your bank transfer QR code."
+    },
+    "themeModes": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "buttonStyles": {
+      "rounded": "Rounded",
+      "square": "Square",
+      "pill": "Pill"
+    },
+    "fields": {
+      "path": "Page path",
+      "pathId": "Page path",
+      "title": "Title",
+      "slug": "Slug",
+      "slugHint": "Leave empty to generate one. URL: toannx.com/<path>/<slug>",
+      "slugChangeHint": "Changing the slug stops the old URL from working.",
+      "description": "Description",
+      "status": "Status",
+      "template": "Start from",
+      "themeMode": "Mode",
+      "theme": "Theme",
+      "buttonStyle": "Button style",
+      "primaryColor": "Primary color",
+      "backgroundColor": "Background",
+      "textColor": "Text color",
+      "avatar": "Avatar",
+      "cover": "Cover image",
+      "seoTitle": "SEO title",
+      "seoTitleHint": "Leave empty to use the page title.",
+      "seoDescription": "SEO description",
+      "publishedAt": "Published at"
+    }
+  },
+  "paths": {
+    "title": "Page paths",
+    "create": "Create page path",
+    "empty": "No page paths yet.",
+    "searchPlaceholder": "Search by segment, name…",
+    "inactive": "Disabled",
+    "columns": {
+      "segment": "Path",
+      "pageCount": "Pages",
+      "position": "Order",
+      "status": "Status"
+    },
+    "actions": {
+      "enable": "Enable path",
+      "disable": "Disable path"
+    },
+    "sections": {
+      "info": "Details",
+      "status": "Status"
+    },
+    "fields": {
+      "segment": "Segment",
+      "segmentHint": "For example qr → toannx.com/qr/<slug>.",
+      "segmentChangeHint": "Changing the segment breaks every old URL of the pages in it.",
+      "name": "Name",
+      "description": "Description",
+      "position": "Order",
+      "isActive": "Enabled",
+      "isActiveHint": "When disabled, no new pages can be added; existing pages keep working."
+    }
+  },
+  "editor": {
+    "button": "Link button",
+    "callout": "Callout",
+    "spacer": "Spacer",
+    "buttonTitle": "Insert link button",
+    "buttonLabel": "Button label",
+    "buttonUrl": "Link",
+    "buttonLabelRequired": "Enter a button label.",
+    "buttonUrlInvalid": "Only http, https, mailto and tel links are allowed.",
+    "cancel": "Cancel",
+    "insert": "Insert"
+  },
+  "public": {
+    "previewDraft": "This page is a draft.",
+    "previewUnpublished": "This page is unpublished.",
+    "previewHint": "Only people with access can see it.",
+    "edit": "Edit page"
+  }
+}

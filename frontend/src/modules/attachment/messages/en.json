@@ -88,5 +88,6 @@
   "oldest": "Oldest first",
   "largest": "Largest first",
   "ordering": "Sort order",
-  "imageOnly": "The uploaded file is not an image. Choose another image."
+  "imageOnly": "The uploaded file is not an image. Choose another image.",
+  "editorInsert": "Image from library"
 }

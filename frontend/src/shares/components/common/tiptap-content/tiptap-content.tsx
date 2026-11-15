@@ -1,4 +1,4 @@
-import type { AnyExtension, JSONContent } from "@tiptap/react";
+import type { AnyExtension, JSONContent } from "@tiptap/core";
 import { renderToReactElement } from "@tiptap/static-renderer/pm/react";
 import { cn } from "cn";
 

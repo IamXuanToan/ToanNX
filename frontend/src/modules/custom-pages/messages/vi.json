@@ -1,0 +1,147 @@
+{
+  "module": {
+    "name": "Trang",
+    "description": "Trang công khai toannx.com/<đường dẫn>/<slug> soạn bằng trình soạn thảo."
+  },
+  "nav": {
+    "pages": "Trang",
+    "paths": "Đường dẫn giữa"
+  },
+  "validation": {
+    "required": "Bắt buộc nhập.",
+    "slug": "Slug 3–64 ký tự, chỉ a-z, 0-9 và dấu gạch ngang.",
+    "segment": "1–32 ký tự a-z, 0-9 và dấu gạch ngang.",
+    "color": "Màu dạng #RRGGBB."
+  },
+  "pages": {
+    "title": "Trang",
+    "create": "Tạo trang",
+    "empty": "Chưa có trang nào.",
+    "searchPlaceholder": "Tìm theo tiêu đề, slug…",
+    "view": "Xem trang",
+    "createPath": "Tạo đường dẫn giữa",
+    "editPath": "Sửa đường dẫn giữa",
+    "pathInactive": "Đang tắt — không tạo trang mới vào đây",
+    "conflict": "Trang đã được sửa ở nơi khác. Tải lại để xem bản mới nhất (thay đổi chưa lưu ở đây sẽ mất).",
+    "reload": "Tải lại",
+    "draftFound": "Có nội dung chưa lưu từ lần trước trên trình duyệt này.",
+    "draftRestore": "Khôi phục",
+    "draftDiscard": "Bỏ qua",
+    "columns": {
+      "title": "Trang",
+      "path": "Đường dẫn giữa",
+      "status": "Trạng thái",
+      "owner": "Chủ sở hữu",
+      "updatedAt": "Cập nhật"
+    },
+    "tabs": {
+      "content": "Nội dung",
+      "design": "Giao diện",
+      "seo": "SEO",
+      "settings": "Cài đặt"
+    },
+    "sections": {
+      "settings": "Cài đặt trang",
+      "theme": "Màu sắc và kiểu nút",
+      "images": "Ảnh",
+      "seo": "Tối ưu tìm kiếm"
+    },
+    "statuses": {
+      "DRAFT": "Bản nháp",
+      "PUBLISHED": "Công khai",
+      "UNPUBLISHED": "Ngừng công khai"
+    },
+    "templates": {
+      "blank": "Trống",
+      "blankHint": "Bắt đầu từ trang trắng.",
+      "link_in_bio": "Link-in-bio",
+      "link_in_bioHint": "Lời chào, nút liên kết, mạng xã hội.",
+      "about": "Giới thiệu",
+      "aboutHint": "Giới thiệu bản thân và liên hệ.",
+      "donate": "Ủng hộ",
+      "donateHint": "Lời ngỏ ủng hộ; chèn mã QR chuyển khoản của bạn."
+    },
+    "themeModes": {
+      "system": "Theo hệ thống",
+      "light": "Sáng",
+      "dark": "Tối"
+    },
+    "buttonStyles": {
+      "rounded": "Bo góc",
+      "square": "Vuông",
+      "pill": "Viên thuốc"
+    },
+    "fields": {
+      "path": "Đường dẫn giữa",
+      "pathId": "Đường dẫn giữa",
+      "title": "Tiêu đề",
+      "slug": "Slug",
+      "slugHint": "Để trống để tự sinh. URL: toannx.com/<đường dẫn giữa>/<slug>",
+      "slugChangeHint": "Đổi slug làm URL cũ ngừng hoạt động.",
+      "description": "Mô tả",
+      "status": "Trạng thái",
+      "template": "Bắt đầu từ",
+      "themeMode": "Chế độ",
+      "theme": "Giao diện",
+      "buttonStyle": "Kiểu nút",
+      "primaryColor": "Màu chính",
+      "backgroundColor": "Màu nền",
+      "textColor": "Màu chữ",
+      "avatar": "Ảnh đại diện",
+      "cover": "Ảnh bìa",
+      "seoTitle": "Tiêu đề SEO",
+      "seoTitleHint": "Để trống thì dùng tiêu đề trang.",
+      "seoDescription": "Mô tả SEO",
+      "publishedAt": "Công khai lúc"
+    }
+  },
+  "paths": {
+    "title": "Đường dẫn giữa",
+    "create": "Tạo đường dẫn giữa",
+    "empty": "Chưa có đường dẫn giữa nào.",
+    "searchPlaceholder": "Tìm theo segment, tên…",
+    "inactive": "Đang tắt",
+    "columns": {
+      "segment": "Đường dẫn",
+      "pageCount": "Số trang",
+      "position": "Thứ tự",
+      "status": "Trạng thái"
+    },
+    "actions": {
+      "enable": "Bật đường dẫn",
+      "disable": "Tắt đường dẫn"
+    },
+    "sections": {
+      "info": "Thông tin",
+      "status": "Trạng thái"
+    },
+    "fields": {
+      "segment": "Segment",
+      "segmentHint": "Ví dụ qr → toannx.com/qr/<slug>.",
+      "segmentChangeHint": "Đổi segment làm mọi URL cũ của các trang trong đây ngừng hoạt động.",
+      "name": "Tên",
+      "description": "Mô tả",
+      "position": "Thứ tự",
+      "isActive": "Bật",
+      "isActiveHint": "Tắt thì không tạo trang mới vào đây; trang đang có vẫn chạy."
+    }
+  },
+  "editor": {
+    "button": "Nút liên kết",
+    "callout": "Khối nhấn mạnh",
+    "spacer": "Khoảng trống",
+    "buttonTitle": "Chèn nút liên kết",
+    "buttonLabel": "Nhãn nút",
+    "buttonUrl": "Liên kết",
+    "buttonLabelRequired": "Nhập nhãn nút.",
+    "buttonUrlInvalid": "Chỉ chấp nhận liên kết http, https, mailto, tel.",
+    "cancel": "Hủy",
+    "insert": "Chèn"
+  },
+  "public": {
+    "previewDraft": "Trang đang là bản nháp.",
+    "previewUnpublished": "Trang đã ngừng công khai.",
+    "previewHint": "Chỉ người có quyền mới xem được.",
+    "edit": "Sửa trang"
+  }
+}

@@ -9,18 +9,29 @@ import type { AppLocale } from "./routing";
  * @returns Message đã gộp theo namespace.
  */
 export async function loadMessages(locale: AppLocale) {
-  const [common, auth, account, iam, manageApp, attachment, qrCodes, shortLinks, journal] =
-    await Promise.all([
-      import(`../messages/${locale}.json`),
-      import(`../modules/auth/messages/${locale}.json`),
-      import(`../modules/account/messages/${locale}.json`),
-      import(`../modules/iam/messages/${locale}.json`),
-      import(`../modules/manage-app/messages/${locale}.json`),
-      import(`../modules/attachment/messages/${locale}.json`),
-      import(`../modules/qr-codes/messages/${locale}.json`),
-      import(`../modules/short-links/messages/${locale}.json`),
-      import(`../modules/journal/messages/${locale}.json`),
-    ]);
+  const [
+    common,
+    auth,
+    account,
+    iam,
+    manageApp,
+    attachment,
+    customPages,
+    qrCodes,
+    shortLinks,
+    journal,
+  ] = await Promise.all([
+    import(`../messages/${locale}.json`),
+    import(`../modules/auth/messages/${locale}.json`),
+    import(`../modules/account/messages/${locale}.json`),
+    import(`../modules/iam/messages/${locale}.json`),
+    import(`../modules/manage-app/messages/${locale}.json`),
+    import(`../modules/attachment/messages/${locale}.json`),
+    import(`../modules/custom-pages/messages/${locale}.json`),
+    import(`../modules/qr-codes/messages/${locale}.json`),
+    import(`../modules/short-links/messages/${locale}.json`),
+    import(`../modules/journal/messages/${locale}.json`),
+  ]);
   return {
     ...common.default,
     auth: auth.default,
@@ -28,6 +39,7 @@ export async function loadMessages(locale: AppLocale) {
     iam: iam.default,
     manageApp: manageApp.default,
     attachment: attachment.default,
+    customPages: customPages.default,
     qrCodes: qrCodes.default,
     shortLinks: shortLinks.default,
     journal: journal.default,

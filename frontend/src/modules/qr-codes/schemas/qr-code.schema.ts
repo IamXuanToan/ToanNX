@@ -40,8 +40,8 @@ export function qrCodeSchema(t: Translate) {
         if (!/^[0-9A-Za-z]{4,19}$/.test(values.accountNumber))
           issue("accountNumber", t("accountNumber"));
         if (!values.accountName) issue("accountName", t("required"));
-        if (!MESSAGE.test(values.message.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d")))
-          issue("message", t("message"));
+        const plain = values.message.normalize("NFD").replace(/\p{M}/gu, "").replace(/đ/gi, "d");
+        if (!MESSAGE.test(plain)) issue("message", t("message"));
       } else if (values.qrType === "URL") {
         if (!/^https?:\/\/\S+$/i.test(values.url)) issue("url", t("url"));
       } else if (!values.text.trim()) {
