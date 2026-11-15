@@ -82,6 +82,13 @@ class User(AbstractBaseUser, CoreModel):
         help_text="Chỉ đánh dấu nhóm nghiệp vụ Novel; không tự cấp quyền nào.",
         db_comment="Đánh dấu nhóm nghiệp vụ Novel",
     )
+    last_seen_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Hoạt động gần nhất",
+        help_text="Lần gần nhất dùng hệ thống (đăng nhập hoặc gọi API), cập nhật tối đa mỗi phút.",
+        db_comment="Thời điểm hoạt động gần nhất",
+    )
     date_joined = models.DateTimeField(
         default=timezone.now,
         verbose_name="Ngày tham gia",

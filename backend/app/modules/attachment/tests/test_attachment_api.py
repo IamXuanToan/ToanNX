@@ -7,8 +7,10 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
+from app.modules.account.permissions.account_permission import AccountPermission
 from app.modules.attachment.models.attachment import Attachment
 from app.modules.attachment.permissions.attachment_permission import AttachmentPermission
+from app.modules.iam.tests.helpers.permission_helper import grant
 
 pytestmark = pytest.mark.django_db
 
@@ -131,3 +133,104 @@ class TestUserAvatar(BaseApiTestCase):
         response = api.patch(f"/api/v1/account/users/{user.pk}", {"avatar_id": pdf_id}, format="json")
         error = self.assert_error(response, 400, "VALIDATION_ERROR")
         assert "avatar_id" in error["details"]
+
+
+class TestAttachmentLibrary(BaseApiTestCase):
+    """Cách ly thư viện, quyền mở rộng, lọc và xóa mềm ảnh đang được dùng."""
+
+    def test_member_library_is_private(self, user: Any, superuser: Any, login: Any) -> None:
+        """Người thường có quyền được upload/xem/xóa của mình, không đoán id người khác."""
+        grant(
+            user,
+            AttachmentPermission.FILE_READ,
+            AttachmentPermission.FILE_CREATE,
+            AttachmentPermission.FILE_DELETE,
+        )
+        foreign = self.assert_success(_upload(login(superuser), "foreign.png", PNG_BYTES, "image/png"), 201)
+        api = login(user)
+        own = self.assert_success(_upload(api, "own.png", PNG_BYTES, "image/png"), 201)
+        assert own["created_by_id"] == str(user.pk)
+        items, meta = self.assert_paginated(api.get(ATTACHMENTS))
+        assert meta["total"] == 1
+        assert [item["id"] for item in items] == [own["id"]]
+        self.assert_error(api.get(f"{ATTACHMENTS}/{foreign['id']}"), 404, "NOT_FOUND")
+        self.assert_error(api.delete(f"{ATTACHMENTS}/{foreign['id']}"), 404, "NOT_FOUND")
+        _, meta = self.assert_paginated(api.get(ATTACHMENTS, {"scope": "OTHERS"}))
+        assert meta["total"] == 0
+        assert api.delete(f"{ATTACHMENTS}/{own['id']}").status_code == 204
+
+    def test_manage_all_still_requires_action(self, user: Any, superuser: Any, login: Any) -> None:
+        """manage_all chỉ mở phạm vi, không cấp quyền xem/upload/xóa."""
+        foreign = self.assert_success(_upload(login(superuser), "foreign.png", PNG_BYTES, "image/png"), 201)
+        grant(user, AttachmentPermission.FILE_MANAGE_ALL)
+        self.assert_forbidden(login(user).get(ATTACHMENTS))
+        grant(user, AttachmentPermission.FILE_READ)
+        api = login(user)
+        assert self.assert_success(api.get(f"{ATTACHMENTS}/{foreign['id']}"))["id"] == foreign["id"]
+        self.assert_forbidden(api.delete(f"{ATTACHMENTS}/{foreign['id']}"))
+        self.assert_forbidden(_upload(api, "no.png", PNG_BYTES, "image/png"))
+
+    def test_bulk_delete_is_atomic(self, user: Any, superuser: Any, login: Any) -> None:
+        """File ngoài phạm vi làm rollback toàn lô; bản ghi không bị xóa vật lý."""
+        grant(
+            user,
+            AttachmentPermission.FILE_READ,
+            AttachmentPermission.FILE_CREATE,
+            AttachmentPermission.FILE_DELETE,
+        )
+        foreign = self.assert_success(_upload(login(superuser), "foreign.png", PNG_BYTES, "image/png"), 201)
+        api = login(user)
+        own = self.assert_success(_upload(api, "own.png", PNG_BYTES, "image/png"), 201)
+        response = api.post(f"{ATTACHMENTS}/bulk-delete", {"ids": [own["id"], foreign["id"]]}, format="json")
+        self.assert_error(response, 404, "NOT_FOUND")
+        assert Attachment.objects.get(pk=own["id"]).deleted_at is None
+        response = api.post(f"{ATTACHMENTS}/bulk-delete", {"ids": [own["id"]]}, format="json")
+        assert self.assert_success(response)["count"] == 1
+        attachment = Attachment.objects.get(pk=own["id"])
+        assert attachment.deleted_at is not None
+        assert attachment.file.storage.exists(attachment.file.name)
+
+    def test_filters_and_default_order(self, superuser: Any, login: Any) -> None:
+        """Lọc nhận nhiều giá trị và mặc định mới nhất trước; giá trị sai bị từ chối."""
+        api = login(superuser)
+        older = self.assert_success(_upload(api, "find-old.png", PNG_BYTES, "image/png"), 201)
+        newer = self.assert_success(_upload(api, "find-new.pdf", PDF_BYTES, "application/pdf"), 201)
+        items, _ = self.assert_paginated(api.get(ATTACHMENTS, {"search": "find-", "kind": "IMAGE,DOCUMENT"}))
+        assert [item["id"] for item in items] == [newer["id"], older["id"]]
+        items, _ = self.assert_paginated(api.get(ATTACHMENTS, {"kind": "IMAGE"}))
+        assert [item["id"] for item in items] == [older["id"]]
+        _, meta = self.assert_paginated(api.get(ATTACHMENTS, {"content_type": "image/png,application/pdf"}))
+        assert meta["total"] == 2
+        self.assert_error(api.get(ATTACHMENTS, {"kind": "INVALID"}), 400, "VALIDATION_ERROR")
+
+    def test_avatar_id_cannot_bypass_owner(self, staff: Any, user: Any, superuser: Any, login: Any) -> None:
+        """Account không thể gán ảnh ngoài phạm vi chỉ bằng cách gửi id đoán được."""
+        foreign = self.assert_success(_upload(login(superuser), "foreign.png", PNG_BYTES, "image/png"), 201)
+        grant(staff, AccountPermission.USER_UPDATE, AttachmentPermission.FILE_READ)
+        api = login(staff)
+        url = f"/api/v1/account/users/{user.pk}"
+        self.assert_error(api.patch(url, {"avatar_id": foreign["id"]}, format="json"), 404, "NOT_FOUND")
+        grant(staff, AttachmentPermission.FILE_MANAGE_ALL)
+        response = login(staff).patch(url, {"avatar_id": foreign["id"]}, format="json")
+        assert self.assert_success(response)["avatar"]["id"] == foreign["id"]
+
+    def test_deleted_avatar_disappears(self, superuser: Any, user: Any, login: Any) -> None:
+        """Ảnh đã xóa không còn trong avatar của Account và /auth/me."""
+        api = login(superuser)
+        image = self.assert_success(_upload(api, "avatar.png", PNG_BYTES, "image/png"), 201)
+        api.patch(f"/api/v1/account/users/{user.pk}", {"avatar_id": image["id"]}, format="json")
+        assert api.delete(f"{ATTACHMENTS}/{image['id']}").status_code == 204
+        assert self.assert_success(api.get(f"/api/v1/account/users/{user.pk}"))["avatar"] is None
+        assert self.assert_success(login(user).get("/api/v1/auth/me"))["user"]["avatar"] is None
+
+    def test_avatar_reference_requires_read_permission(
+        self, staff: Any, user: Any, superuser: Any, login: Any
+    ) -> None:
+        """Quyền mở rộng phạm vi không thể thay quyền đọc khi tham chiếu file qua Account."""
+        image = self.assert_success(_upload(login(superuser), "avatar.png", PNG_BYTES, "image/png"), 201)
+        grant(staff, AccountPermission.USER_UPDATE, AttachmentPermission.FILE_MANAGE_ALL)
+        response = login(staff).patch(
+            f"/api/v1/account/users/{user.pk}", {"avatar_id": image["id"]}, format="json"
+        )
+        error = self.assert_error(response, 403, "PERMISSION_DENIED")
+        assert error["details"]["permissions"] == [AttachmentPermission.FILE_READ.code]

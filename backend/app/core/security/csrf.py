@@ -1,6 +1,6 @@
 """Kiểm tra CSRF cho API dùng cookie.
 
-Dùng cơ chế CSRF của Django (double-submit: cookie `toannx_csrf` + header
+Dùng cơ chế CSRF của Django (double-submit: cookie `csrftoken` + header
 `X-CSRFToken`, kèm kiểm tra Origin/Referer theo CSRF_TRUSTED_ORIGINS).
 Request dùng `Authorization: Bearer` không cần CSRF vì trình duyệt không tự gửi header đó.
 """

@@ -1,11 +1,13 @@
 """Repository phiên đăng nhập (đọc + ghi)."""
 
+from collections.abc import Mapping
 from datetime import datetime
 from typing import Any
 
 from django.db.models import QuerySet
 from django.utils import timezone
 
+from app.core.exceptions.not_found_error import NotFoundError
 from app.core.repositories.core_repository import CoreRepository
 from app.modules.authentication.models.auth_session import AuthSession
 
@@ -15,6 +17,30 @@ class AuthSessionRepository(CoreRepository[AuthSession]):
 
     model = AuthSession
     default_ordering = ("-last_used_at", "pk")
+
+    def get_queryset(self) -> QuerySet[AuthSession]:
+        """Chỉ truy vấn các phiên chưa xóa mềm."""
+        return super().get_queryset().filter(deleted_at__isnull=True)
+
+    def for_admin(self) -> QuerySet[AuthSession]:
+        """Danh sách quản trị kèm người dùng, không gây truy vấn bổ sung khi serialize."""
+        return self.get_queryset().select_related("user")
+
+    def user_choices(self) -> QuerySet[AuthSession, Mapping[str, Any]]:
+        """Danh mục duy nhất người có phiên chưa xóa; không nạp hồ sơ tài khoản hoặc token."""
+        return (
+            self.get_queryset()
+            .values("user_id", "user__email", "user__username", "user__first_name", "user__last_name")
+            .order_by("-user__created_at", "-user_id")
+            .distinct()
+        )
+
+    def lock_for_admin(self, session_id: Any) -> AuthSession:
+        """Khóa phiên và nạp người dùng để kiểm tra quyền thu hồi trong transaction."""
+        try:
+            return self.for_admin().select_for_update(of=("self",)).get(pk=session_id)
+        except AuthSession.DoesNotExist as exc:
+            raise NotFoundError("Không tìm thấy phiên.") from exc
 
     def active(self) -> QuerySet[AuthSession]:
         """Phiên chưa thu hồi và chưa hết hạn.

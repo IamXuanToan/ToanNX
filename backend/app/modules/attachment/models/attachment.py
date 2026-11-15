@@ -31,6 +31,16 @@ class Attachment(CoreModel):
     Người upload là `created_by`. Xóa mềm; file vật lý không bị xóa ngay.
     """
 
+    folder = models.ForeignKey(
+        "attachment.AttachmentFolder",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="files",
+        verbose_name="Thư mục",
+        help_text="Nhóm logic của file; đổi nhóm không đổi đường dẫn hoặc URL.",
+        db_comment="Thư mục logic, NULL là chưa phân loại",
+    )
     file = models.FileField(
         upload_to=attachment_upload_path,
         max_length=255,

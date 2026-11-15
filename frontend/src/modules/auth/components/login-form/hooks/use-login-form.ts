@@ -7,8 +7,8 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 
 import { useRouter } from "@/i18n/navigation";
+import { MANAGE_APP_ROUTES } from "@/modules/manage-app/constants/routes";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
-import { APP_ROUTES } from "@/shares/constants/routes";
 
 import { useLogin } from "../../../hooks/use-login";
 import { createLoginSchema, type LoginFormValues } from "../../../schemas/login.schema";
@@ -29,7 +29,7 @@ export function useLoginForm() {
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { identifier: "", password: "" },
     mode: "onTouched",
   });
 
@@ -45,7 +45,7 @@ export function useLoginForm() {
       // `next` là URL đã có locale do proxy tạo ra.
       window.location.assign(next);
     } else {
-      router.replace(APP_ROUTES.admin);
+      router.replace(MANAGE_APP_ROUTES.admin);
     }
   });
 

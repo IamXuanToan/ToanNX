@@ -1,17 +1,20 @@
 import { env } from "@/shares/config/env";
-import { API_ENDPOINTS, AUTH_ENDPOINTS_WITHOUT_REFRESH } from "@/shares/constants/api-endpoints";
 import type { ApiMeta, ApiResult } from "@/shares/types/api.types";
 import { useAuthStore } from "@/store/auth-store";
 
 import { ApiError, CLIENT_ERROR_CODES } from "./api-error";
+import { PATHS_WITHOUT_REFRESH, SESSION_API_PATHS } from "./session-paths";
 import { keysToCamel, keysToSnake } from "./case-conversion";
 import { CSRF_HEADER_NAME, ensureCsrfToken } from "./csrf";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
 export type RequestOptions = {
-  /** Query string (camelCase, sẽ chuyển snake_case). Giá trị rỗng/undefined bị bỏ qua. */
-  query?: Record<string, string | number | boolean | null | undefined>;
+  /**
+   * Query string (camelCase, sẽ chuyển snake_case). Giá trị rỗng/undefined bị bỏ qua.
+   * Mảng (bộ lọc nhiều giá trị) gửi dạng phân tách dấu phẩy: `status=ACTIVE,EXPIRED`.
+   */
+  query?: Record<string, string | number | boolean | readonly string[] | null | undefined>;
   /** Body JSON (camelCase) hoặc FormData/Blob (gửi nguyên trạng). */
   body?: unknown;
   /** Tín hiệu hủy (React Query truyền vào). */
@@ -33,7 +36,8 @@ let refreshInFlight: Promise<boolean> | null = null;
 
 function buildUrl(path: string, query?: RequestOptions["query"]): string {
   const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query ?? {})) {
+  for (const [key, raw] of Object.entries(query ?? {})) {
+    const value = Array.isArray(raw) ? raw.join(",") : raw;
     if (value !== undefined && value !== null && value !== "") {
       params.set(key.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase(), String(value));
     }
@@ -145,7 +149,7 @@ async function parse<T>(response: Response, opaqueKeys?: readonly string[]): Pro
 export function refreshSession(): Promise<boolean> {
   refreshInFlight ??= (async () => {
     try {
-      const response = await send("POST", API_ENDPOINTS.auth.refresh, {});
+      const response = await send("POST", SESSION_API_PATHS.refresh, {});
       if (response.ok) return true;
       const body = (await response.json().catch(() => null)) as {
         error?: { code?: string };
@@ -183,7 +187,7 @@ async function request<T>(
 
   // 401 do xác thực thất bại xảy ra TRƯỚC khi view xử lý nghiệp vụ, nên thử lại một lần
   // sau refresh là an toàn kể cả với POST/PATCH. Không bao giờ thử lại quá một lần.
-  if (response.status === 401 && !AUTH_ENDPOINTS_WITHOUT_REFRESH.includes(path)) {
+  if (response.status === 401 && !PATHS_WITHOUT_REFRESH.includes(path)) {
     const code = (
       await response
         .clone()
@@ -201,7 +205,7 @@ async function request<T>(
   return parse<T>(response, options.opaqueKeys);
 }
 
-/** Client API tập trung. Repository dùng client này; component không gọi trực tiếp. */
+/** Client API tập trung. Service của module dùng client này; component, hook không gọi trực tiếp. */
 export const apiClient = {
   get: <T>(path: string, options?: RequestOptions) => request<T>("GET", path, options),
   post: <T>(path: string, body?: unknown, options?: RequestOptions) =>

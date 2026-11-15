@@ -1,7 +1,6 @@
 """Đăng ký module Short Links."""
 
 from app.core.registry.module_descriptor import ModuleDescriptor
-from app.core.registry.module_group import ModuleGroup
 from app.modules.short_links.permissions.short_links_permission import ShortLinksPermission
 
 MODULE = ModuleDescriptor(
@@ -9,8 +8,6 @@ MODULE = ModuleDescriptor(
     name="Short Links",
     description="Liên kết ngắn có thể chuyển hướng.",
     version="1.0.0",
-    group=ModuleGroup.CONTENT,
-    icon="link",
     dependencies=("account", "iam", "authentication"),
     permissions=ShortLinksPermission.all(),
 )

@@ -2,9 +2,9 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { authKeys } from "@/shares/constants/query-keys";
 import { useAuthStore } from "@/store/auth-store";
 
+import { authKeys } from "../constants/query-keys";
 import { authService } from "../services/auth.service";
 import type { LoginCredentials } from "../types/auth.types";
 

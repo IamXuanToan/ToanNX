@@ -8,7 +8,7 @@ from drf_spectacular.openapi import AutoSchema
 
 
 class CookieJwtAuthenticationScheme(OpenApiAuthenticationExtension):
-    """Access JWT qua cookie `toannx_access` (kèm CSRF) hoặc header `Authorization: Bearer`.
+    """Access JWT qua cookie `access_token` (kèm CSRF) hoặc header `Authorization: Bearer`.
 
     Hai cách là lựa chọn thay thế (OR), không bắt buộc cả hai.
     Được nạp trong `AuthenticationConfig.ready()` để tự đăng ký.

@@ -14,7 +14,7 @@ class RoleViewSet(AdminModelViewSet):
     filterset_class = RoleFilter                      # lọc theo field (django-filter)
     search_fields = ("code", "name")                  # ?search=
     ordering_fields = ("code", "name", "created_at")  # ?ordering= (whitelist)
-    ordering = ("code",)                              # mặc định
+    ordering = ("-created_at", "-pk")                 # mới nhất trước
     list_serializer_class = RoleListResponseSerializer
     detail_serializer_class = RoleDetailResponseSerializer
     create_serializer_class = RoleCreateValidateSerializer
@@ -33,7 +33,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from app.core.permissions.module_permissions import build_module_permissions
 from app.core.responses.core_response import CoreResponse
 from app.core.serializers.core_validate_serializer import CoreValidateSerializer
 from app.core.services.core_crud_service import CoreCrudService
@@ -58,6 +57,7 @@ class CoreModelViewSet[M: Model](GenericViewSet[M]):
     update_serializer_class: type[CoreValidateSerializer] | None = None
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
     lookup_value_regex = "[0-9a-fA-F-]{36}"
+    ordering: tuple[str, ...] = ("-created_at", "-pk")
 
     get_actor = staticmethod(CoreApiView.get_actor)
 
@@ -69,16 +69,6 @@ class CoreModelViewSet[M: Model](GenericViewSet[M]):
         """
         super().__init__(**kwargs)
         self.service: CoreCrudService[M, Any] = self.service_class()
-
-    def get_permissions(self) -> list[Any]:
-        """Permission của view + permission kiểm tra module (`settings.MODULE_PERMISSION_CLASSES`).
-
-        View con chỉ khai `permission_classes` cho xác thực/quyền; không tự gắn kiểm tra module.
-
-        Returns:
-            Danh sách instance permission.
-        """
-        return [*super().get_permissions(), *build_module_permissions()]
 
     # ==================================================================
     # Hook cho lớp con
@@ -126,9 +116,10 @@ class CoreModelViewSet[M: Model](GenericViewSet[M]):
         """
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
+        context = self.get_serializer_context()
         if page is None:
-            return CoreResponse(self.list_serializer_class(queryset, many=True).data)
-        return self.get_paginated_response(self.list_serializer_class(page, many=True).data)
+            return CoreResponse(self.list_serializer_class(queryset, many=True, context=context).data)
+        return self.get_paginated_response(self.list_serializer_class(page, many=True, context=context).data)
 
     def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> CoreResponse:
         """Chi tiết bản ghi.

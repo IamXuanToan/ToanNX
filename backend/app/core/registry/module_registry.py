@@ -2,8 +2,8 @@
 
 Phân biệt:
 1. Installed: app trong INSTALLED_APPS kế thừa `CoreModuleConfig`, tự đăng ký `module.MODULE` ở `ready()`.
-2. Enabled: trạng thái runtime lưu ở bảng `system_module` (module system quản lý).
-3. Quyền người dùng: do IAM quyết định.
+   Module đã cài luôn hoạt động; không có cờ bật/tắt runtime.
+2. Quyền người dùng: do IAM quyết định (registry cung cấp danh mục quyền để `sync_iam` đồng bộ).
 """
 
 from app.core.registry.module_descriptor import ModuleDescriptor

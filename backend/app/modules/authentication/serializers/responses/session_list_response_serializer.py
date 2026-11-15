@@ -12,7 +12,15 @@ class SessionListResponseSerializer(serializers.ModelSerializer[AuthSession]):
 
     class Meta:
         model = AuthSession
-        fields = ("id", "created_at", "last_used_at", "expires_at", "user_agent", "ip_address", "is_current")
+        fields: tuple[str, ...] = (
+            "id",
+            "created_at",
+            "last_used_at",
+            "expires_at",
+            "user_agent",
+            "ip_address",
+            "is_current",
+        )
 
     def get_is_current(self, obj: AuthSession) -> bool:
         """Phiên đang dùng cho request hiện tại.

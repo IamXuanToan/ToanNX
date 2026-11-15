@@ -1,21 +1,19 @@
 import { z } from "zod";
 
-type Translate = (key: "emailInvalid" | "emailRequired" | "passwordRequired") => string;
+import { passwordField } from "@/shares/lib/field-schemas";
+
+type Translate = (key: "identifierRequired" | "passwordRequired") => string;
 
 /**
- * Tạo schema đăng nhập với thông báo theo ngôn ngữ hiện tại.
+ * Tạo schema đăng nhập (email hoặc tên người dùng + mật khẩu) với thông báo theo ngôn ngữ hiện tại.
  *
  * @param t - Hàm dịch namespace `auth.validation`.
  * @returns Zod schema.
  */
 export function createLoginSchema(t: Translate) {
   return z.object({
-    email: z
-      .string()
-      .trim()
-      .min(1, t("emailRequired"))
-      .pipe(z.email(t("emailInvalid"))),
-    password: z.string().min(1, t("passwordRequired")),
+    identifier: z.string().trim().min(1, t("identifierRequired")).max(254),
+    password: passwordField(1, t("passwordRequired")),
   });
 }
 

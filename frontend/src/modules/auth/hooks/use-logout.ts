@@ -3,8 +3,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useRouter } from "@/i18n/navigation";
-import { APP_ROUTES } from "@/shares/constants/routes";
 
+import { AUTH_ROUTES } from "../constants/routes";
 import { authService } from "../services/auth.service";
 
 /**
@@ -20,7 +20,7 @@ export function useLogout() {
     onSettled: () => {
       // Dù API lỗi (mạng), vẫn xóa dữ liệu phía client và rời khu vực quản trị.
       queryClient.clear();
-      router.replace(APP_ROUTES.login);
+      router.replace(AUTH_ROUTES.login);
     },
   });
 }

@@ -1,8 +1,9 @@
 import { env } from "@/shares/config/env";
-import { API_ENDPOINTS } from "@/shares/constants/api-endpoints";
+
+import { SESSION_API_PATHS } from "./session-paths";
 
 /** Tên cookie CSRF do Django đặt (khớp `CSRF_COOKIE_NAME`). */
-export const CSRF_COOKIE_NAME = "toannx_csrf";
+export const CSRF_COOKIE_NAME = "csrftoken";
 /** Header gửi CSRF token (khớp `CSRF_HEADER_NAME` của Django). */
 export const CSRF_HEADER_NAME = "X-CSRFToken";
 
@@ -28,7 +29,7 @@ let pending: Promise<string | null> | null = null;
 export async function ensureCsrfToken(force = false): Promise<string | null> {
   const existing = readCsrfToken();
   if (existing && !force) return existing;
-  pending ??= fetch(`${env.apiBasePath}${API_ENDPOINTS.auth.csrf}`, { credentials: "same-origin" })
+  pending ??= fetch(`${env.apiBasePath}${SESSION_API_PATHS.csrf}`, { credentials: "same-origin" })
     .then(() => readCsrfToken())
     .finally(() => {
       pending = null;

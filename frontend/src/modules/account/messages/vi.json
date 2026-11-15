@@ -5,23 +5,22 @@
   "validation": {
     "emailInvalid": "Email không hợp lệ.",
     "passwordMin": "Mật khẩu tối thiểu 10 ký tự.",
-    "required": "Trường này là bắt buộc."
+    "required": "Trường này là bắt buộc.",
+    "usernameFormat": "Chỉ dùng chữ, số và các ký tự . _ - @ +"
   },
   "users": {
     "title": "Người dùng",
-    "description": "Tài khoản chỉ do quản trị viên tạo.",
-    "detailDescription": "Thông tin và trạng thái tài khoản.",
-    "searchPlaceholder": "Tìm theo email, tên...",
-    "empty": "Không có người dùng phù hợp.",
+    "searchPlaceholder": "Tìm theo email, tên…",
+    "empty": "Chưa có người dùng.",
     "superuser": "Superuser",
     "create": "Tạo người dùng",
-    "createDescription": "Người dùng mới đăng nhập bằng email và mật khẩu này.",
     "profile": "Thông tin tài khoản",
     "columns": {
       "user": "Người dùng",
       "status": "Trạng thái",
       "lastLogin": "Đăng nhập gần nhất",
-      "access": "Quyền truy cập"
+      "access": "Quyền truy cập",
+      "lastSeen": "Hoạt động gần nhất"
     },
     "fields": {
       "email": "Email",
@@ -35,9 +34,29 @@
       "isStaff": "Truy cập quản trị",
       "isStaffHint": "Cho phép vào khu vực quản trị; từng chức năng vẫn cần quyền.",
       "isNovel": "Nhóm Novel",
-      "isNovelHint": "Chỉ đánh dấu nhóm nghiệp vụ Novel, không tự cấp quyền."
+      "isNovelHint": "Chỉ đánh dấu nhóm nghiệp vụ Novel, không tự cấp quyền.",
+      "username": "Tên người dùng",
+      "passwordHint": "Tối thiểu 10 ký tự, không toàn số.",
+      "avatar": "Ảnh đại diện",
+      "isSuperuser": "Siêu quản trị",
+      "isSuperuserHint": "Toàn quyền, bỏ qua kiểm tra quyền. Chỉ superuser bật được.",
+      "dateJoined": "Ngày tham gia"
     },
     "staff": "Quản trị",
-    "novel": "Novel"
+    "novel": "Novel",
+    "actions": {
+      "lock": "Khoá tài khoản",
+      "unlock": "Mở khoá"
+    },
+    "extensionFailed": "Đã lưu người dùng nhưng chưa cập nhật xong vai trò: {message}",
+    "sections": {
+      "access": "Truy cập",
+      "activity": "Hoạt động"
+    },
+    "presence": {
+      "label": "Trạng thái",
+      "online": "Đang trực tuyến",
+      "offline": "Ngoại tuyến"
+    }
   }
 }

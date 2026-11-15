@@ -1,6 +1,6 @@
 "use client";
 
-import { hasPermission } from "../services/auth.service";
+import { hasPermission } from "../services/current-user.service";
 import { useCurrentUser } from "./use-current-user";
 
 /**

@@ -20,8 +20,8 @@ class PermissionViewSet(AdminModelViewSet[Permission]):
     service_class = PermissionService
     filterset_class = PermissionFilter
     search_fields = ("code", "name", "description")
-    ordering_fields = ("code", "module")
-    ordering = ("code",)
+    ordering_fields = ("code", "module", "created_at")
+    ordering = ("-created_at", "-pk")
     list_serializer_class = PermissionListResponseSerializer
     detail_serializer_class = PermissionListResponseSerializer
     http_method_names = ["get", "head", "options"]

@@ -5,23 +5,22 @@
   "validation": {
     "emailInvalid": "Invalid email address.",
     "passwordMin": "Password must be at least 10 characters.",
-    "required": "This field is required."
+    "required": "This field is required.",
+    "usernameFormat": "Use letters, digits and . _ - @ + only"
   },
   "users": {
     "title": "Users",
-    "description": "Accounts can only be created by administrators.",
-    "detailDescription": "Account information and status.",
-    "searchPlaceholder": "Search by email, name...",
-    "empty": "No matching users.",
+    "searchPlaceholder": "Search by email, name…",
+    "empty": "No users yet.",
     "superuser": "Superuser",
     "create": "Create user",
-    "createDescription": "The new user signs in with this email and password.",
     "profile": "Account information",
     "columns": {
       "user": "User",
       "status": "Status",
       "lastLogin": "Last sign-in",
-      "access": "Access"
+      "access": "Access",
+      "lastSeen": "Last active"
     },
     "fields": {
       "email": "Email",
@@ -35,9 +34,29 @@
       "isStaff": "Admin access",
       "isStaffHint": "Allows entering the admin area; each feature still needs permissions.",
       "isNovel": "Novel group",
-      "isNovelHint": "Marks the Novel business group only; grants no permissions."
+      "isNovelHint": "Marks the Novel business group only; grants no permissions.",
+      "username": "Username",
+      "passwordHint": "At least 10 characters, not all digits.",
+      "avatar": "Avatar",
+      "isSuperuser": "Superuser",
+      "isSuperuserHint": "Full access, skips permission checks. Only superusers can enable it.",
+      "dateJoined": "Joined"
     },
     "staff": "Staff",
-    "novel": "Novel"
+    "novel": "Novel",
+    "actions": {
+      "lock": "Lock account",
+      "unlock": "Unlock"
+    },
+    "extensionFailed": "User saved but roles were not fully updated: {message}",
+    "sections": {
+      "access": "Access",
+      "activity": "Activity"
+    },
+    "presence": {
+      "label": "Presence",
+      "online": "Online",
+      "offline": "Offline"
+    }
   }
 }

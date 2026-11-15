@@ -1,23 +1,11 @@
-import { Suspense } from "react";
-
-import { PublicHeader } from "@/shares/components/layout/public-header";
+import { PublicLayout } from "@/modules/home/components/public-layout/public-layout";
 
 /**
  * Layout khu vực công khai.
  *
  * @param props - Nội dung con.
- * @returns Layout.
+ * @returns Khung công khai.
  */
-export default function PublicLayout({ children }: LayoutProps<"/[locale]">) {
-  return (
-    <div className="flex min-h-svh flex-col">
-      <Suspense>
-        <PublicHeader />
-      </Suspense>
-      <main className="flex-1">{children}</main>
-      <footer className="text-muted-foreground border-t py-6 text-center text-xs">
-        © {new Date().getFullYear()} TOANNX · toannx.com
-      </footer>
-    </div>
-  );
+export default function PublicRouteLayout({ children }: LayoutProps<"/[locale]">) {
+  return <PublicLayout>{children}</PublicLayout>;
 }

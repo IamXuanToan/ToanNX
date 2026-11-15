@@ -22,6 +22,11 @@ class IamPermission(PermissionCatalog):
         name="Cập nhật vai trò",
         description="Sửa tên, mô tả, bật/tắt vai trò. Vai trò hệ thống chỉ superuser được sửa.",
     )
+    ROLE_DELETE = PermissionDefinition(
+        code="iam.role.delete",
+        name="Xóa vai trò",
+        description="Xóa (mềm) vai trò tự tạo; vai trò hệ thống không xóa được.",
+    )
     ROLE_ASSIGN = PermissionDefinition(
         code="iam.role.assign",
         name="Gán vai trò cho người dùng",

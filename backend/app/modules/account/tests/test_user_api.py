@@ -19,7 +19,12 @@ class TestUserApi(BaseApiTestCase):
     """CRUD người dùng."""
 
     def test_create_user(self, superuser: User, login: Any) -> None:
-        payload = {"email": "New@Toannx.test", "password": "V3ry-Str0ng-Pass", "first_name": "An"}
+        payload = {
+            "username": "new_member",
+            "email": "New@Toannx.test",
+            "password": "V3ry-Str0ng-Pass",
+            "first_name": "An",
+        }
         response = login(superuser).post(USERS, payload, format="json")
         data = self.assert_success(response, 201)
         self.assert_no_sensitive_data(response)
@@ -29,15 +34,20 @@ class TestUserApi(BaseApiTestCase):
         assert identify_hasher(created.password)
 
     def test_create_duplicate_email(self, superuser: User, user: User, login: Any) -> None:
-        payload = {"email": user.email.upper(), "password": "V3ry-Str0ng-Pass"}
+        payload = {"username": "new_member", "email": user.email.upper(), "password": "V3ry-Str0ng-Pass"}
         self.assert_error(login(superuser).post(USERS, payload, format="json"), 409, "ACCOUNT_EMAIL_EXISTS")
 
     def test_create_weak_password(self, superuser: User, login: Any) -> None:
-        payload = {"email": "weak@toannx.test", "password": "12345678"}
+        payload = {"username": "new_member", "email": "weak@toannx.test", "password": "12345678"}
         self.assert_error(login(superuser).post(USERS, payload, format="json"), 400, "ACCOUNT_PASSWORD_WEAK")
 
     def test_unknown_field_rejected(self, superuser: User, login: Any) -> None:
-        payload = {"email": "x@toannx.test", "password": "V3ry-Str0ng-Pass", "role": "ADMIN"}
+        payload = {
+            "username": "new_member",
+            "email": "x@toannx.test",
+            "password": "V3ry-Str0ng-Pass",
+            "role": "ADMIN",
+        }
         error = self.assert_error(
             login(superuser).post(USERS, payload, format="json"), 400, "VALIDATION_ERROR"
         )
@@ -82,7 +92,12 @@ class TestSelfProtection(BaseApiTestCase):
 
     def test_staff_cannot_create_superuser(self, staff_with: Any, login: Any) -> None:
         member = staff_with(A.USER_CREATE)
-        payload = {"email": "su@toannx.test", "password": "V3ry-Str0ng-Pass", "is_superuser": True}
+        payload = {
+            "username": "new_member",
+            "email": "su@toannx.test",
+            "password": "V3ry-Str0ng-Pass",
+            "is_superuser": True,
+        }
         self.assert_forbidden(
             login(member).post(USERS, payload, format="json"), "ACCOUNT_PRIVILEGE_ESCALATION"
         )

@@ -20,9 +20,9 @@ class UserUpdateValidateSerializer(CoreValidateSerializer):
     )
     username = serializers.CharField(
         required=False,
-        allow_blank=True,
+        allow_blank=False,
         max_length=150,
-        help_text="Tên người dùng tùy chọn, duy nhất nếu có.",
+        help_text="Tên người dùng bắt buộc và duy nhất.",
     )
     first_name = serializers.CharField(required=False, allow_blank=True, max_length=150, help_text="Tên.")
     last_name = serializers.CharField(

@@ -11,8 +11,6 @@ Kế thừa theo nhu cầu:
 | `MemberApiView` (module IAM) | mặc định | đăng nhập + `@require_permission` |
 | `AdminApiView` (module IAM) | mặc định | đăng nhập + `is_staff` + `@require_permission` |
 
-Mọi lớp đều tự kiểm tra module đang bật (`get_permissions`), module suy ra từ app chứa view.
-
 Service khởi tạo trong `__init__` của view con:
 
 ```python
@@ -22,31 +20,20 @@ def __init__(self, **kwargs: Any) -> None:
 ```
 """
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from django.contrib.auth import get_user_model
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from app.core.exceptions.authentication_error import AuthenticationError
-from app.core.permissions.module_permissions import build_module_permissions
 
 if TYPE_CHECKING:
     from app.modules.account.models.user import User
 
 
 class CoreApiView(APIView):
-    """APIView gốc: cấu hình xác thực/quyền mặc định trong settings + tự kiểm tra module đang bật."""
-
-    def get_permissions(self) -> list[Any]:
-        """Permission của view + permission kiểm tra module (`settings.MODULE_PERMISSION_CLASSES`).
-
-        View con chỉ khai `permission_classes` cho xác thực/quyền; không tự gắn kiểm tra module.
-
-        Returns:
-            Danh sách instance permission.
-        """
-        return [*super().get_permissions(), *build_module_permissions()]
+    """APIView gốc: cấu hình xác thực/quyền mặc định trong settings."""
 
     @staticmethod
     def get_actor(request: Request) -> "User":

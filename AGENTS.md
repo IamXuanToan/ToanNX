@@ -5,7 +5,7 @@
 1. [SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md) — bối cảnh và quyết định đã chốt.
 2. [docs/rules/common.md](docs/rules/common.md) — rule chung (code sạch, bảo mật, API contract, test).
 3. [docs/rules/backend.md](docs/rules/backend.md) — Django: `url → view (decorator) → service → repository`.
-4. [docs/rules/frontend.md](docs/rules/frontend.md) — Next.js: `page → view → component+hook → hook → service → repository`.
+4. [docs/rules/frontend.md](docs/rules/frontend.md) — Next.js: `page → view → component+hook → hook → service` (không repository).
 5. [docs/rules/git.md](docs/rules/git.md) — tên nhánh, commit và quy trình push.
 
 Tài liệu chi tiết: [docs/architecture.md](docs/architecture.md), [docs/authentication.md](docs/authentication.md),
@@ -18,7 +18,7 @@ Backend:
 1. `uv run python manage.py startapp links app/modules/links`; sửa `apps.py`: kế thừa `CoreModuleConfig`,
    `default = True`, `name = "app.modules.links"`, `label = "links"` (label = mã module).
 2. `permissions/links_permission.py` (PermissionCatalog, mỗi quyền có name + description) và `module.py`
-   (`ModuleDescriptor(..., group=ModuleGroup.<NHÓM>, icon="link", permissions=LinksPermission.all(), dependencies=(...))`);
+   (`ModuleDescriptor(..., permissions=LinksPermission.all(), dependencies=(...))`);
    — `CoreModuleConfig` tự đăng ký, không viết `ready()` để đăng ký.
 3. `models/` (mọi field có `help_text`) → `makemigrations` → `repositories/` (kế thừa `CoreRepository`) →
    `services/` (kế thừa `CoreCrudService`) → `filters/` → `serializers/{validates,responses}/` → `views/`:
@@ -26,14 +26,23 @@ Backend:
    với service kế thừa `OwnedCrudService` (đều khai báo `action_permissions`, filter/search/ordering).
    Tài nguyên con dùng `AdminApiView` khi cần `is_staff`; nếu người dùng tự quản lý, dùng
    `MemberApiView` (cùng `@require_permission`, `@extend_schema`, `@validate_request`, service tạo trong
-   `__init__`). Không khai `module_code`/`ModuleEnabled`: core tự chặn API khi module tắt.
+   `__init__`).
 4. Thêm vào `INSTALLED_APPS` và `config/urls.py`; `migrate` (quyền mới tự đồng bộ, vai trò `auto_grant` tự nhận quyền).
 5. Test trong `app/modules/links/tests/`; `spectacular --validate --fail-on-warn` phải sạch.
 
 Frontend:
-1. `src/modules/links/{views,components,hooks,services,repositories,types,messages}` + `navigation.ts`.
+1. `src/modules/links/{views,components,hooks,services,constants,types,messages}` + `navigation.ts`;
+   service tách theo model BE (`services/link.service.ts` ↔ `services/link_service.py`), gọi `apiClient` trực tiếp.
+   `constants/routes.ts` (`LINKS_ROUTES`, `LINKS_PATHNAMES`), `constants/api-endpoints.ts` (`LINKS_API_ENDPOINTS`),
+   `constants/query-keys.ts` (`linksKeys`).
 2. Namespace message trong `src/i18n/messages.ts` và `src/global.d.ts`.
-3. Route trong `LOCALIZED_PATHNAMES`/`APP_ROUTES`, page trong `src/app/[locale]/(admin)/admin/...`.
-4. Thêm navigation vào `ADMIN_NAVIGATION` (`use-admin-shell.ts`).
+   Bảng dùng `DataTable` (mobile tự thành card, phân trang qua `pagination`), ô chọn dùng `SelectField`,
+   tạo/sửa là trang riêng `/admin/links/new`, `/admin/links/[id]` (không popup) — xem rule frontend mục 3.1.
+3. Gộp `LINKS_PATHNAMES` vào `src/i18n/routing.ts`; page trong `src/app/[locale]/(admin)/admin/...` chỉ
+   khai `generateMetadata = createPageMetadata(...)` và render View của module (view chỉ ghép component + kiểm quyền).
+4. `navigation.ts` export `AdminModuleNavigation` (`module` = mã module backend, `group`, `icon` lucide,
+   `items` = menu sidebar); thêm vào `ADMIN_MODULE_NAVIGATION` (`modules/manage-app/constants/admin-navigation.ts`)
+   và khóa dịch `common.adminModules.<code>.{name,description}`. Module tự vào thẻ của nhóm ở màn chọn module
+   khi người dùng có quyền ít nhất một mục; nhóm mới thì thêm vào `ADMIN_GROUPS` và `common.adminGroups.<group>`.
 
 Không cần sửa IAM core.

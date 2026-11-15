@@ -1,6 +1,6 @@
 """Model phiên đăng nhập.
 
-Không kế thừa CoreModel: không cần audit người tạo, xóa cứng theo retention.
+Không kế thừa CoreModel: không cần audit người tạo; xóa mềm bằng deleted_at.
 """
 
 import uuid
@@ -11,6 +11,15 @@ from django.db import models
 
 class AuthSession(models.Model):
     """Một phiên đăng nhập = một họ refresh token (token family)."""
+
+    deleted_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name="Thời điểm xóa",
+        help_text="Phiên đã xóa mềm không xuất hiện trong danh sách và không còn hiệu lực.",
+        db_comment="Thời điểm xóa mềm phiên",
+    )
 
     id = models.UUIDField(
         primary_key=True,

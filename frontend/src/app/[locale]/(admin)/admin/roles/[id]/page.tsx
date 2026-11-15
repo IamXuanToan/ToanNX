@@ -1,4 +1,7 @@
 import { RoleDetailView } from "@/modules/iam/views/role-detail-view";
+import { createPageMetadata } from "@/shares/lib/seo";
+
+export const generateMetadata = createPageMetadata({ title: "common.nav.roles" });
 
 /**
  * Trang chi tiết vai trò.

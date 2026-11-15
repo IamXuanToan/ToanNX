@@ -1,17 +1,14 @@
 {
   "login": {
     "title": "Đăng nhập",
-    "description": "Dành cho tài khoản do quản trị viên cấp.",
-    "email": "Email",
     "password": "Mật khẩu",
     "submit": "Đăng nhập",
     "submitting": "Đang đăng nhập...",
-    "noSignup": "TOANNX không mở đăng ký công khai."
+    "identifier": "Email hoặc tên người dùng"
   },
   "validation": {
-    "emailRequired": "Vui lòng nhập email.",
-    "emailInvalid": "Email không hợp lệ.",
-    "passwordRequired": "Vui lòng nhập mật khẩu."
+    "passwordRequired": "Vui lòng nhập mật khẩu.",
+    "identifierRequired": "Vui lòng nhập email hoặc tên người dùng."
   },
   "userMenu": {
     "open": "Mở menu tài khoản",
@@ -20,5 +17,36 @@
   },
   "session": {
     "expired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
+  },
+  "sessions": {
+    "title": "Phiên",
+    "empty": "Chưa có phiên đăng nhập.",
+    "searchPlaceholder": "Tìm người dùng, thiết bị, IP…",
+    "usersRetry": "Không tải được người dùng · Thử lại",
+    "current": "Phiên hiện tại",
+    "manage": "Quản lý phiên",
+    "revoke": "Thu hồi",
+    "revoked": "Đã thu hồi phiên.",
+    "revokeTitle": "Thu hồi phiên đăng nhập?",
+    "revokeDescription": "Thiết bị này của {email} sẽ phải đăng nhập lại.",
+    "allStatuses": "Mọi trạng thái",
+    "statuses": {
+      "ACTIVE": "Đang hoạt động",
+      "REVOKED": "Đã thu hồi",
+      "EXPIRED": "Đã hết hạn"
+    },
+    "columns": {
+      "user": "Người dùng",
+      "device": "Thiết bị",
+      "ipAddress": "Địa chỉ IP",
+      "lastUsedAt": "Hoạt động gần nhất",
+      "expiresAt": "Hết hạn lúc",
+      "status": "Trạng thái",
+      "id": "Mã phiên"
+    },
+    "bulkRevoke": "Thu hồi đã chọn",
+    "bulkRevokeTitle": "Thu hồi {count} phiên?",
+    "bulkRevokeDescription": "Các thiết bị này sẽ phải đăng nhập lại. Phiên đã hết hạn hoặc đã thu hồi được bỏ qua.",
+    "bulkRevoked": "Đã thu hồi {count} phiên."
   }
 }

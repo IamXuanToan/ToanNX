@@ -8,6 +8,8 @@ from pathlib import Path
 
 import environ
 
+from app.modules.attachment.constants.media_types import ALLOWED_CONTENT_TYPES
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
@@ -20,6 +22,7 @@ DEBUG = env.bool("DJANGO_DEBUG", default=False)
 ALLOWED_HOSTS: list[str] = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
 INSTALLED_APPS = [
+    "django.contrib.postgres",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
@@ -31,7 +34,6 @@ INSTALLED_APPS = [
     "app.modules.account",
     "app.modules.iam",
     "app.modules.authentication",
-    "app.modules.system",
     "app.modules.health",
     "app.modules.short_links",
     "app.modules.custom_pages",
@@ -110,14 +112,7 @@ STORAGES = {
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
 ATTACHMENT_MAX_SIZE_BYTES = env.int("ATTACHMENT_MAX_SIZE_BYTES", default=5 * 1024 * 1024)
-ATTACHMENT_ALLOWED_CONTENT_TYPES = (
-    "image/png",
-    "image/jpeg",
-    "image/webp",
-    "image/gif",
-    "image/svg+xml",  # chỉ nhận SVG đã qua svg_inspector (không script/link ngoài)
-    "application/pdf",
-)
+ATTACHMENT_ALLOWED_CONTENT_TYPES = ALLOWED_CONTENT_TYPES
 DATA_UPLOAD_MAX_MEMORY_SIZE = ATTACHMENT_MAX_SIZE_BYTES + 1024 * 1024
 
 LANGUAGE_CODE = "vi"
@@ -164,28 +159,24 @@ SPECTACULAR_SETTINGS = {
     },
 }
 
-# Permission gắn tự động vào mọi view kế thừa core (CoreApiView, CoreModelViewSet):
-# chặn API của module đang tắt; module của view suy ra từ app chứa view.
-MODULE_PERMISSION_CLASSES = ["app.modules.system.permissions.module_enabled.ModuleEnabled"]
-
 # Xác thực: access JWT ngắn hạn (ký HS256 bằng SECRET_KEY) + refresh token xoay vòng (chỉ lưu hash)
 JWT_ALGORITHM = "HS256"
-JWT_ISSUER = "toannx-api"
-JWT_AUDIENCE = "toannx-web"
+JWT_ISSUER = "api"
+JWT_AUDIENCE = "web"
 AUTH_ACCESS_TOKEN_LIFETIME_SECONDS = env.int("AUTH_ACCESS_TOKEN_LIFETIME_SECONDS", default=600)
 AUTH_REFRESH_TOKEN_LIFETIME_SECONDS = env.int("AUTH_REFRESH_TOKEN_LIFETIME_SECONDS", default=7 * 24 * 3600)
 # Refresh token vừa xoay vòng trong khoảng này được coi là request đồng thời, không phải reuse.
 AUTH_REFRESH_REUSE_GRACE_SECONDS = 10
 
 AUTH_COOKIE_SECURE = not DEBUG
-AUTH_ACCESS_COOKIE_NAME = "toannx_access"
+AUTH_ACCESS_COOKIE_NAME = "access_token"
 AUTH_ACCESS_COOKIE_PATH = "/api"
-AUTH_REFRESH_COOKIE_NAME = "toannx_refresh"
+AUTH_REFRESH_COOKIE_NAME = "refresh_token"
 AUTH_REFRESH_COOKIE_PATH = "/api/v1/auth"
-AUTH_SESSION_HINT_COOKIE_NAME = "toannx_session"
+AUTH_SESSION_HINT_COOKIE_NAME = "session_hint"
 
 # CSRF: double-submit cookie của Django + kiểm tra Origin
-CSRF_COOKIE_NAME = "toannx_csrf"
+CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SECURE = not DEBUG

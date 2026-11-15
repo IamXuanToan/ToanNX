@@ -14,16 +14,29 @@ export type User = {
   isSuperuser: boolean;
   isNovel: boolean;
   lastLogin: string | null;
+  /** Hoạt động gần nhất (đăng nhập hoặc gọi API), BE ghi tối đa mỗi phút. */
+  lastSeenAt: string | null;
   dateJoined: string;
   createdAt: string;
   updatedAt: string;
 };
 
+/** Loại truy cập dùng để lọc (BE `access`). */
+export const USER_ACCESS_VALUES = ["superuser", "staff", "novel"] as const;
+export type UserAccess = (typeof USER_ACCESS_VALUES)[number];
+
 /** Bộ lọc danh sách người dùng. */
 export type UserFilters = {
   /** Từ khóa tìm kiếm (DRF SearchFilter: email, username, họ tên). */
   search?: string;
-  isActive?: boolean;
+  /** Trạng thái hoạt động (chọn nhiều: `["true", "false"]`). */
+  isActive?: ("true" | "false")[];
+  /** Id các vai trò được gán (có ít nhất một). */
+  role?: string[];
+  /** Loại truy cập (khớp một trong các loại). */
+  access?: UserAccess[];
+  /** Sắp xếp theo cú pháp DRF (`email`, `-last_login`). */
+  ordering?: string;
   page: number;
   pageSize: number;
 };
@@ -32,15 +45,19 @@ export type UserFilters = {
 export type CreateUserInput = {
   email: string;
   password: string;
+  username?: string;
   firstName?: string;
   lastName?: string;
+  /** Id attachment ảnh đại diện; `null` để gỡ. */
+  avatarId?: string | null;
   isActive: boolean;
   isStaff: boolean;
+  /** Chỉ superuser được bật. */
+  isSuperuser?: boolean;
   isNovel: boolean;
 };
 
 /** Dữ liệu cập nhật người dùng. */
 export type UpdateUserInput = Partial<Omit<CreateUserInput, "password">> & {
   password?: string;
-  isSuperuser?: boolean;
 };

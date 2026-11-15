@@ -1,15 +1,22 @@
 """Nghiệp vụ phiên đăng nhập: xác thực access token, liệt kê, thu hồi, đăng xuất."""
 
+from datetime import timedelta
 from typing import Any
+
+from django.utils import timezone
 
 from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.authentication_error import AuthenticationError
 from app.core.exceptions.not_found_error import NotFoundError
+from app.modules.account.services.user_service import UserService
 from app.modules.authentication.models.auth_session import AuthSession
 from app.modules.authentication.repositories.auth_session_repository import AuthSessionRepository
 from app.modules.authentication.repositories.refresh_token_repository import RefreshTokenRepository
 from app.modules.authentication.services.access_token_service import AccessTokenService
 from app.modules.authentication.services.refresh_token_service import RefreshTokenService
+
+# Ghi hoạt động (phiên + người dùng) tối đa một lần mỗi khoảng này cho mỗi phiên.
+ACTIVITY_TOUCH_INTERVAL = timedelta(minutes=1)
 
 
 class AuthSessionService:
@@ -20,6 +27,7 @@ class AuthSessionService:
         repository: AuthSessionRepository | None = None,
         refresh_token_repository: RefreshTokenRepository | None = None,
         access_token_service: AccessTokenService | None = None,
+        user_service: UserService | None = None,
     ) -> None:
         """Khởi tạo service.
 
@@ -27,10 +35,12 @@ class AuthSessionService:
             repository: Repository phiên.
             refresh_token_repository: Repository refresh token.
             access_token_service: Service access token.
+            user_service: Service người dùng (ghi hoạt động gần nhất).
         """
         self.repository = repository or AuthSessionRepository()
         self.refresh_token_repository = refresh_token_repository or RefreshTokenRepository()
         self.access_token_service = access_token_service or AccessTokenService()
+        self.user_service = user_service or UserService()
 
     def authenticate_access_token(self, token: str) -> AuthSession:
         """Xác minh access token và phiên còn hiệu lực (logout/khóa có hiệu lực ngay).
@@ -52,7 +62,16 @@ class AuthSessionService:
             )
         if not session.user.is_active or session.user.deleted_at is not None:
             raise AuthenticationError("Tài khoản đã bị khóa.", code=ErrorCode.AUTH_USER_INACTIVE)
+        self._record_activity(session)
         return session
+
+    def _record_activity(self, session: AuthSession) -> None:
+        """Cập nhật lần dùng gần nhất của phiên và người dùng, tối đa mỗi `ACTIVITY_TOUCH_INTERVAL`."""
+        now = timezone.now()
+        if session.last_used_at is not None and now - session.last_used_at < ACTIVITY_TOUCH_INTERVAL:
+            return
+        self.repository.touch(session)
+        self.user_service.record_activity(session.user)
 
     def list_sessions(self, user: Any) -> list[AuthSession]:
         """Phiên còn hiệu lực của người dùng.

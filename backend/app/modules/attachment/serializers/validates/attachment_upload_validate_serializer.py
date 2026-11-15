@@ -10,9 +10,13 @@ from app.core.serializers.core_validate_serializer import CoreValidateSerializer
 class AttachmentUploadValidateSerializer(CoreValidateSerializer):
     """Một file, tối đa `ATTACHMENT_MAX_SIZE_BYTES`. Định dạng được service kiểm tra bằng chữ ký file."""
 
+    folder_id = serializers.UUIDField(
+        required=False, allow_null=True, help_text="Nhóm logic tùy chọn; không đổi nơi lưu file."
+    )
+
     file = serializers.FileField(
         allow_empty_file=False,
-        help_text="File upload (multipart field `file`); định dạng: PNG, JPEG, WEBP, GIF, PDF.",
+        help_text="File upload: PNG, JPEG, WEBP, GIF, SVG an toàn, PDF, MP4, MOV hoặc WEBM.",
     )
 
     def validate_file(self, value: UploadedFile) -> UploadedFile:

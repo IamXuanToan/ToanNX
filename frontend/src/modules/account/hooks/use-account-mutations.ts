@@ -4,9 +4,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { accountKeys, authKeys } from "@/shares/constants/query-keys";
+import { authKeys } from "@/modules/auth/constants/query-keys";
+import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 
-import { accountService } from "../services/account.service";
+import { accountKeys } from "../constants/query-keys";
+import { userService } from "../services/user.service";
 import type { CreateUserInput, UpdateUserInput } from "../types/account.types";
 
 /**
@@ -31,7 +33,7 @@ function useAccountMutationSuccess() {
 export function useCreateUser() {
   const onSuccess = useAccountMutationSuccess();
   return useMutation({
-    mutationFn: (input: CreateUserInput) => accountService.createUser(input),
+    mutationFn: (input: CreateUserInput) => userService.create(input),
     onSuccess,
   });
 }
@@ -40,7 +42,57 @@ export function useCreateUser() {
 export function useUpdateUser(id: string) {
   const onSuccess = useAccountMutationSuccess();
   return useMutation({
-    mutationFn: (input: UpdateUserInput) => accountService.updateUser(id, input),
+    mutationFn: (input: UpdateUserInput) => userService.update(id, input),
     onSuccess,
+  });
+}
+
+/**
+ * Callback dùng chung của xoá / thao tác hàng loạt: toast theo số bản ghi, làm mới danh sách,
+ * lỗi thì toast thông báo đã dịch (cả lô không đổi vì backend chạy trong một transaction).
+ *
+ * @returns Handler onSuccess/onError.
+ */
+function useAccountBulkHandlers() {
+  const queryClient = useQueryClient();
+  const t = useTranslations("common.feedback");
+  const errorMessage = useApiErrorMessage();
+  return {
+    onSuccess: async (count: number | void) => {
+      toast.success(typeof count === "number" ? t("bulkUpdated", { count }) : t("deleted"));
+      await queryClient.invalidateQueries({ queryKey: accountKeys.all });
+    },
+    onError: (error: unknown) => toast.error(errorMessage(error)),
+  };
+}
+
+/** @returns Mutation xoá mềm một người dùng. */
+export function useDeleteUser() {
+  const handlers = useAccountBulkHandlers();
+  return useMutation({ mutationFn: (id: string) => userService.remove(id), ...handlers });
+}
+
+/** @returns Mutation khoá/mở nhiều người dùng. */
+export function useBulkSetUsersActive() {
+  const handlers = useAccountBulkHandlers();
+  return useMutation({
+    mutationFn: ({ ids, isActive }: { ids: string[]; isActive: boolean }) =>
+      userService.bulkSetActive(ids, isActive),
+    ...handlers,
+  });
+}
+
+/** @returns Mutation xoá mềm nhiều người dùng. */
+export function useBulkDeleteUsers() {
+  const queryClient = useQueryClient();
+  const t = useTranslations("common.feedback");
+  const errorMessage = useApiErrorMessage();
+  return useMutation({
+    mutationFn: (ids: string[]) => userService.bulkRemove(ids),
+    onSuccess: async (count) => {
+      toast.success(t("bulkDeleted", { count }));
+      await queryClient.invalidateQueries({ queryKey: accountKeys.all });
+    },
+    onError: (error: unknown) => toast.error(errorMessage(error)),
   });
 }

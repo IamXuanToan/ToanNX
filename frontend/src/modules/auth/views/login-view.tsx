@@ -4,14 +4,8 @@ import { Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/shares/components/layout/language-switcher";
 import { LogoMark } from "@/shares/components/layout/logo";
 import { ThemeSwitcher } from "@/shares/components/layout/theme-switcher";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shares/components/ui/card";
-import { APP_ROUTES } from "@/shares/constants/routes";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shares/components/ui/card";
+import { HOME_ROUTES } from "@/modules/home/constants/routes";
 
 import { LoginForm } from "../components/login-form/login-form";
 
@@ -30,20 +24,18 @@ export function LoginView() {
       </div>
       <div className="flex flex-1 items-center justify-center px-4 pb-16">
         <div className="w-full max-w-sm space-y-6">
-          <Link href={APP_ROUTES.home} className="mx-auto flex w-fit flex-col items-center gap-3">
+          <Link href={HOME_ROUTES.home} className="mx-auto flex w-fit flex-col items-center gap-3">
             <LogoMark className="size-12" title="TOANNX" />
             <span className="text-sm font-semibold tracking-[0.25em]">TOANNX</span>
           </Link>
           <Card>
             <CardHeader>
               <CardTitle className="text-xl">{t("title")}</CardTitle>
-              <CardDescription>{t("description")}</CardDescription>
             </CardHeader>
             <CardContent>
               <LoginForm />
             </CardContent>
           </Card>
-          <p className="text-muted-foreground text-center text-xs">{t("noSignup")}</p>
         </div>
       </div>
     </main>

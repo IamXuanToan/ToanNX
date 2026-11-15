@@ -1,0 +1,10 @@
+{
+  "welcome": "Xin chào, {name}",
+  "empty": {
+    "title": "Chưa có module nào cho bạn",
+    "description": "Tài khoản chưa được cấp quyền với module nào. Liên hệ quản trị viên."
+  },
+  "shell": {
+    "backToModules": "Về màn chọn module"
+  }
+}

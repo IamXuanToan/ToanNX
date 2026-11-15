@@ -1,4 +1,6 @@
-import { authRepository } from "../repositories/auth.repository";
+import { apiClient } from "@/shares/lib/api/api-client";
+
+import { AUTH_API_ENDPOINTS } from "../constants/api-endpoints";
 import type { CurrentUser, LoginCredentials } from "../types/auth.types";
 
 /**
@@ -12,43 +14,26 @@ export function sanitizeNextPath(next: string | null | undefined): string | null
   return next;
 }
 
-/**
- * Người dùng có quyền (superuser luôn có).
- *
- * @param current - Người dùng hiện tại.
- * @param permission - Mã quyền.
- * @returns True nếu có quyền.
- */
-export function hasPermission(current: CurrentUser | undefined, permission: string): boolean {
-  if (!current || !current.user.isActive) return false;
-  return current.user.isSuperuser || current.permissions.includes(permission);
-}
-
-/**
- * Người dùng được vào khu vực quản trị.
- *
- * @param current - Người dùng hiện tại.
- * @returns True nếu là staff hoặc superuser.
- */
-export function canAccessAdmin(current: CurrentUser | undefined): boolean {
-  return Boolean(current?.user.isActive && (current.user.isStaff || current.user.isSuperuser));
-}
-
-/** Nghiệp vụ xác thực phía client. */
+/** Service xác thực (BE `authentication/services/auth_service.py`): đăng nhập, đăng xuất. */
 export const authService = {
   /**
-   * Đăng nhập với email đã chuẩn hóa.
+   * Đăng nhập với email đã chuẩn hóa; backend đặt cookie phiên.
    *
-   * @param credentials - Thông tin đăng nhập.
+   * @param credentials - Email và mật khẩu.
    * @returns Người dùng hiện tại.
    */
-  login(credentials: LoginCredentials): Promise<CurrentUser> {
-    return authRepository.login({
-      email: credentials.email.trim().toLowerCase(),
-      password: credentials.password,
-    });
+  async login(credentials: LoginCredentials): Promise<CurrentUser> {
+    const body = { identifier: credentials.identifier.trim(), password: credentials.password };
+    return (await apiClient.post<CurrentUser>(AUTH_API_ENDPOINTS.login, body)).data;
   },
-  getCurrentUser: authRepository.me,
-  logout: authRepository.logout,
-  logoutAll: authRepository.logoutAll,
+
+  /** Đăng xuất phiên hiện tại. */
+  async logout(): Promise<void> {
+    await apiClient.post(AUTH_API_ENDPOINTS.logout);
+  },
+
+  /** Đăng xuất mọi thiết bị. */
+  async logoutAll(): Promise<void> {
+    await apiClient.post(AUTH_API_ENDPOINTS.logoutAll);
+  },
 };

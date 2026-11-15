@@ -1,8 +1,46 @@
 import { z } from "zod";
 
-type Translate = (key: "emailInvalid" | "passwordMin" | "required") => string;
+import { emailField, passwordField } from "@/shares/lib/field-schemas";
+
+type Translate = (key: "emailInvalid" | "passwordMin" | "required" | "usernameFormat") => string;
 
 const PASSWORD_MIN_LENGTH = 10;
+
+/** Ảnh đã upload (id attachment + URL xem trước). */
+const avatarField = z
+  .object({
+    id: z.string(),
+    url: z.string(),
+    name: z.string(),
+    size: z.number().optional(),
+    contentType: z.string().optional(),
+  })
+  .nullable();
+
+/** Tên người dùng bắt buộc, theo định dạng Django. */
+function usernameField(t: Translate) {
+  return z
+    .string()
+    .trim()
+    .min(1, t("required"))
+    .max(150)
+    .regex(/^[\w.@+-]*$/, t("usernameFormat"));
+}
+
+/** Trường chung của form tạo và sửa người dùng (theo model `account.User`). */
+function userFields(t: Translate) {
+  return {
+    email: emailField(t("emailInvalid")),
+    username: usernameField(t),
+    firstName: z.string().trim().max(150),
+    lastName: z.string().trim().max(150),
+    avatar: avatarField,
+    isActive: z.boolean(),
+    isStaff: z.boolean(),
+    isSuperuser: z.boolean(),
+    isNovel: z.boolean(),
+  };
+}
 
 /**
  * Schema tạo người dùng (thông báo theo ngôn ngữ).
@@ -12,16 +50,8 @@ const PASSWORD_MIN_LENGTH = 10;
  */
 export function createUserSchema(t: Translate) {
   return z.object({
-    email: z
-      .string()
-      .trim()
-      .pipe(z.email(t("emailInvalid"))),
-    password: z.string().min(PASSWORD_MIN_LENGTH, t("passwordMin")),
-    firstName: z.string().trim().max(150),
-    lastName: z.string().trim().max(150),
-    isActive: z.boolean(),
-    isStaff: z.boolean(),
-    isNovel: z.boolean(),
+    ...userFields(t),
+    password: passwordField(PASSWORD_MIN_LENGTH, t("passwordMin")),
   });
 }
 
@@ -33,18 +63,36 @@ export function createUserSchema(t: Translate) {
  */
 export function updateUserSchema(t: Translate) {
   return z.object({
-    email: z
-      .string()
-      .trim()
-      .pipe(z.email(t("emailInvalid"))),
-    password: z.union([z.literal(""), z.string().min(PASSWORD_MIN_LENGTH, t("passwordMin"))]),
-    firstName: z.string().trim().max(150),
-    lastName: z.string().trim().max(150),
-    isActive: z.boolean(),
-    isStaff: z.boolean(),
-    isNovel: z.boolean(),
+    ...userFields(t),
+    password: z.union([z.literal(""), passwordField(PASSWORD_MIN_LENGTH, t("passwordMin"))]),
   });
 }
 
 export type CreateUserFormValues = z.infer<ReturnType<typeof createUserSchema>>;
 export type UpdateUserFormValues = z.infer<ReturnType<typeof updateUserSchema>>;
+
+/** Tên các ô của form người dùng (gắn lỗi theo field từ backend). */
+export const USER_FORM_FIELDS = [
+  "email",
+  "password",
+  "username",
+  "firstName",
+  "lastName",
+  "isActive",
+  "isStaff",
+  "isSuperuser",
+  "isNovel",
+] as const;
+
+/**
+ * Đổi giá trị form sang body API (ảnh → `avatarId`).
+ *
+ * @param values - Giá trị form.
+ * @returns Body tạo/sửa người dùng.
+ */
+export function toUserInput<V extends CreateUserFormValues | UpdateUserFormValues>({
+  avatar,
+  ...values
+}: V) {
+  return { ...values, avatarId: avatar?.id ?? null };
+}

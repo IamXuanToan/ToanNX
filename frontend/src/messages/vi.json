@@ -11,11 +11,16 @@
     "nav": {
       "login": "Đăng nhập",
       "admin": "Quản trị",
-      "dashboard": "Tổng quan",
       "users": "Người dùng",
       "roles": "Vai trò",
-      "modules": "Module",
-      "detail": "Chi tiết"
+      "detail": "Chi tiết",
+      "allModules": "Tất cả module",
+      "switchModule": "Chuyển module",
+      "modulesLabel": "Module",
+      "menu": "Menu",
+      "sessions": "Phiên",
+      "permissions": "Quyền",
+      "attachments": "Thư viện"
     },
     "theme": {
       "toggle": "Đổi giao diện",
@@ -35,22 +40,188 @@
     "pagination": {
       "label": "Phân trang",
       "total": "{total, plural, other {# bản ghi}}",
+      "range": "{from}–{to} trong {total}",
+      "rowsPerPage": "Số dòng mỗi trang",
+      "pageOf": "Trang {page}/{totalPages}",
+      "jumpToPage": "Đến trang",
       "previous": "Trang trước",
-      "next": "Trang sau",
-      "page": "Trang {page}/{totalPages}"
+      "next": "Trang sau"
     },
     "actions": {
       "cancel": "Hủy",
       "create": "Tạo",
-      "save": "Lưu"
+      "save": "Lưu",
+      "back": "Quay lại",
+      "unsaved": "Có thay đổi chưa lưu"
     },
     "status": {
       "active": "Hoạt động",
       "inactive": "Đã khóa"
+    },
+    "adminModules": {
+      "account": {
+        "name": "Tài khoản",
+        "description": "Người dùng và phiên đăng nhập."
+      },
+      "iam": {
+        "name": "Phân quyền",
+        "description": "Vai trò và danh mục quyền."
+      },
+      "attachment": {
+        "name": "Tệp đính kèm",
+        "description": "Thư viện ảnh và tài liệu."
+      }
+    },
+    "adminGroups": {
+      "system": {
+        "name": "Hệ thống",
+        "description": "Tài khoản người dùng và phân quyền."
+      },
+      "content": {
+        "name": "Nội dung",
+        "description": "Trang, liên kết và nội dung xuất bản."
+      }
+    },
+    "select": {
+      "placeholder": "Chọn…",
+      "search": "Tìm…",
+      "empty": "Không có kết quả",
+      "clearAll": "Bỏ chọn tất cả",
+      "remove": "Bỏ {label}"
+    },
+    "table": {
+      "actions": "Thao tác",
+      "noResults": "Không có kết quả cho “{keyword}”",
+      "clearSearch": "Xoá tìm kiếm",
+      "selectAll": "Chọn tất cả dòng trong trang",
+      "selectRow": "Chọn dòng",
+      "view": "Xem",
+      "edit": "Sửa",
+      "delete": "Xoá",
+      "reload": "Tải lại",
+      "columns": "Cột hiển thị",
+      "showAllColumns": "Hiện tất cả cột",
+      "resizeColumn": "Đổi độ rộng cột {column}",
+      "resizeColumnHint": "Kéo để đổi độ rộng. Phím ←/→ để chỉnh; nhấp đúp để khôi phục cột.",
+      "resetColumnWidths": "Khôi phục độ rộng cột",
+      "selected": "Đã chọn {count}",
+      "clearSelection": "Bỏ chọn",
+      "changeStatus": "Đổi trạng thái",
+      "bulkDelete": "Xoá ({count})",
+      "deleteTitle": "Xoá bản ghi này?",
+      "deleteDescription": "“{name}” sẽ bị xoá. Thao tác này không hoàn tác được.",
+      "bulkDeleteTitle": "Xoá {count} bản ghi?",
+      "bulkDeleteDescription": "{count} bản ghi đã chọn sẽ bị xoá. Thao tác này không hoàn tác được.",
+      "confirmDelete": "Xoá",
+      "sortAscending": "Sắp xếp tăng dần",
+      "sortDescending": "Sắp xếp giảm dần",
+      "copy": "Sao chép",
+      "pinOptions": "Ghim cột {column}",
+      "pinLeft": "Ghim trái",
+      "pinRight": "Ghim phải",
+      "unpin": "Bỏ ghim",
+      "clearFilters": "Xóa bộ lọc",
+      "noFilterResults": "Không có kết quả phù hợp với bộ lọc."
+    },
+    "search": {
+      "clear": "Xoá từ khoá"
+    },
+    "emptyState": {
+      "title": "Chưa có dữ liệu"
+    },
+    "feedback": {
+      "bulkUpdated": "Đã cập nhật {count} bản ghi.",
+      "deleted": "Đã xoá.",
+      "bulkDeleted": "Đã xoá {count} bản ghi."
+    },
+    "slugInput": {
+      "placeholder": "vi-du-duong-dan"
+    },
+    "codeInput": {
+      "placeholder": "MA_VI_DU"
+    },
+    "numberInput": {
+      "placeholder": "Nhập số",
+      "placeholderInteger": "Nhập số nguyên"
+    },
+    "moneyInput": {
+      "placeholder": "0"
+    },
+    "tagsInput": {
+      "placeholder": "Gõ rồi nhấn Enter",
+      "remove": "Bỏ {tag}"
+    },
+    "datePicker": {
+      "placeholder": "Chọn ngày",
+      "today": "Hôm nay",
+      "clear": "Xoá"
+    },
+    "timePicker": {
+      "label": "Chọn giờ",
+      "placeholder": "Chọn giờ",
+      "hour": "Giờ",
+      "minute": "Phút",
+      "done": "Xong",
+      "clear": "Xoá giờ"
+    },
+    "dateTimePicker": {
+      "clear": "Xoá ngày giờ"
+    },
+    "monthSelect": {
+      "placeholder": "Chọn tháng",
+      "month": "Tháng {month}"
+    },
+    "loadingState": {
+      "label": "Đang tải"
+    },
+    "editor": {
+      "bold": "Đậm",
+      "italic": "Nghiêng",
+      "underline": "Gạch chân",
+      "heading": "Tiêu đề",
+      "bulletList": "Danh sách",
+      "orderedList": "Danh sách số",
+      "table": "Bảng",
+      "undo": "Hoàn tác",
+      "redo": "Làm lại",
+      "image": "Chèn ảnh",
+      "link": "Liên kết",
+      "applyLink": "Áp dụng liên kết",
+      "removeLink": "Bỏ liên kết",
+      "invalidUrl": "Chỉ chấp nhận URL HTTP/HTTPS.",
+      "imageFailed": "Không thể thêm ảnh. Vui lòng thử lại."
+    },
+    "components": {
+      "remove": "Xóa",
+      "removeFile": "Xóa {name}",
+      "uploading": "Đang tải lên…"
+    },
+    "filter": {
+      "clear": "Xoá lọc",
+      "selectAll": "Chọn tất cả"
+    },
+    "imageUpload": {
+      "upload": "Tải ảnh lên",
+      "change": "Đổi ảnh",
+      "remove": "Gỡ ảnh",
+      "hint": "PNG, JPG, WEBP hoặc GIF.",
+      "choose": "Chọn ảnh"
+    },
+    "choice": {
+      "empty": "Không có mục nào.",
+      "expandAll": "Mở tất cả",
+      "collapseAll": "Thu gọn tất cả",
+      "selectGroup": "Chọn cả nhóm",
+      "unselectGroup": "Bỏ chọn cả nhóm",
+      "selectAll": "Chọn tất cả",
+      "clearAll": "Bỏ chọn"
     }
   },
   "errors": {
     "codes": {
+      "ATTACHMENT_FOLDER_NAME_EXISTS": "Tên thư mục đã tồn tại trong cùng thư mục cha.",
+      "ATTACHMENT_FOLDER_OWNER_MISMATCH": "Tệp và thư mục phải thuộc cùng một người.",
+      "ATTACHMENT_FOLDER_CYCLE": "Không thể chuyển thư mục vào chính nó hoặc thư mục con.",
       "UNKNOWN": "Đã xảy ra lỗi, vui lòng thử lại.",
       "NETWORK_ERROR": "Không kết nối được máy chủ. Kiểm tra mạng và thử lại.",
       "TIMEOUT": "Máy chủ phản hồi quá lâu, vui lòng thử lại.",
@@ -66,7 +237,7 @@
       "INTERNAL_ERROR": "Hệ thống gặp lỗi, vui lòng thử lại sau.",
       "SERVICE_UNAVAILABLE": "Hệ thống tạm thời không sẵn sàng.",
       "AUTH_NOT_AUTHENTICATED": "Bạn cần đăng nhập để tiếp tục.",
-      "AUTH_INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng.",
+      "AUTH_INVALID_CREDENTIALS": "Tài khoản hoặc mật khẩu không đúng.",
       "AUTH_USER_INACTIVE": "Tài khoản đã bị khóa.",
       "AUTH_TOKEN_EXPIRED": "Phiên truy cập đã hết hạn.",
       "AUTH_TOKEN_INVALID": "Phiên truy cập không hợp lệ.",
@@ -89,12 +260,7 @@
       "IAM_ROLE_INACTIVE": "Vai trò đang bị tắt.",
       "IAM_SELF_MODIFICATION": "Bạn không thể tự thay đổi quyền của chính mình.",
       "IAM_PRIVILEGE_ESCALATION": "Bạn không thể cấp quyền vượt quá quyền của bạn.",
-      "IAM_SYSTEM_ROLE_PROTECTED": "Chỉ superuser mới được sửa vai trò hệ thống.",
-      "MODULE_NOT_INSTALLED": "Module chưa được cài đặt.",
-      "MODULE_DISABLED": "Module đang tắt.",
-      "MODULE_CORE_LOCKED": "Không thể tắt module lõi.",
-      "MODULE_DEPENDENCY_DISABLED": "Cần bật module phụ thuộc trước.",
-      "MODULE_REQUIRED_BY_OTHERS": "Module đang được module khác sử dụng."
+      "IAM_SYSTEM_ROLE_PROTECTED": "Chỉ superuser mới được sửa vai trò hệ thống."
     },
     "generic": {
       "title": "Không tải được dữ liệu",

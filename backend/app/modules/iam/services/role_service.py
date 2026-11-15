@@ -7,7 +7,6 @@ from django.db.models import QuerySet
 
 from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.authorization_error import AuthorizationError
-from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
 from app.core.services.core_crud_service import CoreCrudService
@@ -17,7 +16,7 @@ from app.modules.iam.repositories.role_repository import RoleRepository
 
 
 class RoleService(CoreCrudService[Role, RoleRepository]):
-    """Nghiệp vụ vai trò (chưa hỗ trợ xóa: tắt `is_active` thay vì xóa)."""
+    """Nghiệp vụ vai trò: CRUD, xóa mềm (trừ vai trò hệ thống), thao tác hàng loạt."""
 
     repository_class = RoleRepository
 
@@ -72,17 +71,53 @@ class RoleService(CoreCrudService[Role, RoleRepository]):
         role = self.get_editable_role(actor, pk)
         return self.repository.update(role, actor=actor, **data)
 
-    def delete(self, actor: Any, pk: Any) -> None:
-        """Chưa hỗ trợ xóa vai trò; tắt `is_active` thay vì xóa.
+    @transaction.atomic
+    def delete(self, actor: User, pk: Any) -> None:
+        """Xóa mềm vai trò tự tạo (tắt luôn để không còn cấp quyền).
 
         Args:
             actor: Người thực hiện.
             pk: Id vai trò.
 
         Raises:
-            BusinessRuleError: Luôn luôn.
+            AuthorizationError: IAM_SYSTEM_ROLE_PROTECTED khi xóa vai trò hệ thống.
         """
-        raise BusinessRuleError("Không xóa vai trò; hãy tắt vai trò.")
+        role = self.get_editable_role(actor, pk)
+        if role.is_system:
+            raise AuthorizationError(code=ErrorCode.IAM_SYSTEM_ROLE_PROTECTED)
+        self.repository.update(role, actor=actor, is_active=False)
+        self.repository.soft_delete(role, actor=actor)
+
+    @transaction.atomic
+    def bulk_update(self, actor: User, ids: list[Any], data: dict[str, Any]) -> int:
+        """Cập nhật nhiều vai trò; một bản ghi lỗi thì không bản ghi nào đổi.
+
+        Args:
+            actor: Người thực hiện.
+            ids: Id vai trò.
+            data: Trường cần cập nhật.
+
+        Returns:
+            Số vai trò đã cập nhật.
+        """
+        for pk in ids:
+            self.update(actor, pk, data)
+        return len(ids)
+
+    @transaction.atomic
+    def bulk_delete(self, actor: User, ids: list[Any]) -> int:
+        """Xóa mềm nhiều vai trò; một bản ghi lỗi thì không bản ghi nào bị xóa.
+
+        Args:
+            actor: Người thực hiện.
+            ids: Id vai trò.
+
+        Returns:
+            Số vai trò đã xóa.
+        """
+        for pk in ids:
+            self.delete(actor, pk)
+        return len(ids)
 
     def get_editable_role(self, actor: User, role_id: Any) -> Role:
         """Khóa vai trò và chặn sửa vai trò hệ thống nếu không phải superuser.

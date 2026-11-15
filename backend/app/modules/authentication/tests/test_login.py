@@ -21,7 +21,7 @@ class TestLogin(BaseApiTestCase):
 
     def test_success_sets_secure_cookies(self, client: APIClient, user: Any) -> None:
         response = client.post(
-            LOGIN, {"email": user.email.upper(), "password": DEFAULT_PASSWORD}, format="json"
+            LOGIN, {"identifier": user.email.upper(), "password": DEFAULT_PASSWORD}, format="json"
         )
         data = self.assert_success(response)
         assert data["user"]["email"] == user.email
@@ -36,35 +36,47 @@ class TestLogin(BaseApiTestCase):
         assert hint.value == "1"
 
     def test_refresh_token_stored_as_hash_only(self, client: APIClient, user: Any) -> None:
-        response = client.post(LOGIN, {"email": user.email, "password": DEFAULT_PASSWORD}, format="json")
+        response = client.post(LOGIN, {"identifier": user.email, "password": DEFAULT_PASSWORD}, format="json")
         raw = response.cookies[settings.AUTH_REFRESH_COOKIE_NAME].value
         assert not RefreshToken.objects.filter(token_hash=raw).exists()
         assert RefreshToken.objects.filter(token_hash=RefreshTokenService.hash_token(raw)).exists()
 
     def test_invalid_password(self, client: APIClient, user: Any) -> None:
-        response = client.post(LOGIN, {"email": user.email, "password": "wrong-password"}, format="json")
+        response = client.post(LOGIN, {"identifier": user.email, "password": "wrong-password"}, format="json")
         self.assert_unauthorized(response, "AUTH_INVALID_CREDENTIALS")
 
     def test_unknown_email_same_error(self, client: APIClient) -> None:
-        response = client.post(LOGIN, {"email": "nobody@toannx.test", "password": "x"}, format="json")
+        response = client.post(LOGIN, {"identifier": "nobody@toannx.test", "password": "x"}, format="json")
         self.assert_unauthorized(response, "AUTH_INVALID_CREDENTIALS")
 
     def test_inactive_user(self, client: APIClient) -> None:
         inactive = UserFactory(is_active=False)
-        response = client.post(LOGIN, {"email": inactive.email, "password": DEFAULT_PASSWORD}, format="json")
+        response = client.post(
+            LOGIN, {"identifier": inactive.email, "password": DEFAULT_PASSWORD}, format="json"
+        )
         self.assert_unauthorized(response, "AUTH_USER_INACTIVE")
 
     def test_validation_error(self, client: APIClient) -> None:
         error = self.assert_error(
-            client.post(LOGIN, {"email": "not-an-email"}, format="json"), 400, "VALIDATION_ERROR"
+            client.post(LOGIN, {"identifier": ""}, format="json"), 400, "VALIDATION_ERROR"
         )
-        assert "email" in error["details"] and "password" in error["details"]
+        assert "identifier" in error["details"] and "password" in error["details"]
+
+    def test_login_with_username(self, client: APIClient) -> None:
+        user = UserFactory(username="toan.nx")
+        response = client.post(LOGIN, {"identifier": "toan.nx", "password": DEFAULT_PASSWORD}, format="json")
+        data = self.assert_success(response)
+        assert data["user"]["id"] == str(user.pk)
+        wrong = client.post(LOGIN, {"identifier": "TOAN.NX", "password": DEFAULT_PASSWORD}, format="json")
+        self.assert_unauthorized(wrong, "AUTH_INVALID_CREDENTIALS")
+        legacy = client.post(LOGIN, {"email": user.email, "password": DEFAULT_PASSWORD}, format="json")
+        self.assert_error(legacy, 400, "VALIDATION_ERROR")
 
     def test_rate_limited(self, client: APIClient, user: Any, settings: Any) -> None:
         settings.AUTH_LOGIN_RATE_LIMIT = 3
         for _ in range(3):
-            client.post(LOGIN, {"email": user.email, "password": "wrong"}, format="json")
-        response = client.post(LOGIN, {"email": user.email, "password": DEFAULT_PASSWORD}, format="json")
+            client.post(LOGIN, {"identifier": user.email, "password": "wrong"}, format="json")
+        response = client.post(LOGIN, {"identifier": user.email, "password": DEFAULT_PASSWORD}, format="json")
         self.assert_error(response, 429, "RATE_LIMITED")
         assert int(response["Retry-After"]) > 0
 

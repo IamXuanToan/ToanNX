@@ -29,7 +29,7 @@ app/
     logging/request_context_filter.py
     security/csrf.py                    # enforce_csrf()
     permissions/csrf_protected.py
-    registry/                           # permission_definition/catalog, module_group, module_descriptor, module_registry
+    registry/                           # permission_definition/catalog, module_descriptor, module_registry
     validators/core_validator.py
     tests/                              # test của core + base/base_api_test_case.py
   modules/<module>/
@@ -73,13 +73,11 @@ GenericViewSet ─ CoreModelViewSet ─ AdminModelViewSet
 | `core/views/public_api_view.py` | `[]` / `[AllowAny]` | `/auth/csrf`, `/health` |
 | `core/views/csrf_public_api_view.py` | `[]` / `[AllowAny, CsrfProtected]` | `/auth/login`, `/auth/refresh`, `/auth/logout` |
 | `iam/views/authenticated_api_view.py` | mặc định / đăng nhập + active | `/auth/me`, `/auth/sessions`, `/auth/logout-all` |
-| `iam/views/admin_api_view.py` | + `is_staff` + method bắt buộc có `@require_permission` | tài nguyên con, `/system/modules` |
+| `iam/views/admin_api_view.py` | + `is_staff` + method bắt buộc có `@require_permission` | tài nguyên con (vai trò của người dùng, quyền của vai trò) |
 | `iam/views/admin_model_view_set.py` | + `is_staff` + `action_permissions` (mặc định DENY) | CRUD: users, roles, permissions, attachments |
 | `iam/views/member_api_view.py` | đăng nhập + method bắt buộc có `@require_permission` (không cần `is_staff`) | block của Custom Pages |
 | `iam/views/owned_model_view_set.py` | đăng nhập + `action_permissions`, service kiểm tra owner | CRUD: Short Links, Custom Pages |
 
-Mọi lớp kế thừa `CoreApiView`/`CoreModelViewSet` tự gắn `settings.MODULE_PERMISSION_CLASSES`
-(`ModuleEnabled`): module của view suy ra từ app chứa view, không khai `module_code`.
 
 `CoreModelViewSet` ủy quyền list/retrieve/create/partial_update/destroy cho `service_class`, dùng
 validate serializer riêng (`create_serializer_class`, `update_serializer_class`) và response serializer riêng
@@ -94,7 +92,7 @@ quyền `manage_all` cho tài nguyên của người dùng. Service nhận depen
 ### OpenAPI
 
 `CoreAutoSchema` (drf-spectacular) bọc response 2xx vào envelope chuẩn; `CookieJwtAuthenticationScheme` mô tả
-cookie `toannx_access` hoặc Bearer. Schema chỉ phục vụ khi DEBUG (`/api/v1/schema`, `/api/v1/docs`) và được kiểm tra
+cookie `access_token` hoặc Bearer. Schema chỉ phục vụ khi DEBUG (`/api/v1/schema`, `/api/v1/docs`) và được kiểm tra
 `--validate --fail-on-warn` trong test.
 
 ### Audit
@@ -121,21 +119,24 @@ app/[locale]/
   layout.tsx                # html gốc theo locale, providers
   (public)/                 # trang công khai
   (auth)/login/             # /vi/dang-nhap, /en/login
-  (admin)/admin/            # /vi/quan-tri/..., /en/admin/...
-    _components/admin-shell.tsx   # guard + sidebar + header (ghép navigation từ module)
+  (admin)/admin/            # /vi/quan-tri/..., /en/admin/... (layout render AdminShell của manage-app)
+  # page.tsx/layout.tsx chỉ khai metadata, lấy params và render View/Layout của module
 modules/<module>/
-  views/  components/<c>/{<c>.tsx, hooks/}  hooks/  services/  repositories/  schemas/  types/  messages/
+  views/  components/<c>/{<c>.tsx, hooks/}  hooks/  services/<model>.service.ts  schemas/  types/  messages/
+  constants/{routes,api-endpoints,query-keys}.ts   # mỗi module tự khai
+modules/manage-app/         # khung quản trị (AdminShell, sidebar, màn chọn module, admin-navigation)
+modules/home/               # trang công khai, header, trang 404
 shares/
   components/{ui,common,errors,layout,providers}
-  constants/{routes,api-endpoints,query-keys}.ts
-  lib/api/{api-client,api-error,case-conversion,csrf}.ts
+  lib/api/{api-client,api-error,case-conversion,csrf,session-paths}.ts
+  lib/seo.ts                # buildAlternates, createPageMetadata
   hooks/ config/ types/
 store/auth-store.ts         # Zustand: cờ phiên hết hạn (không lưu token)
 i18n/{routing,navigation,request,messages}.ts
 proxy.ts                    # next-intl + kiểm tra lạc quan khu vực admin
 ```
 
-Luồng: `page` → `View` → component (+hook riêng) → hook module (React Query) → service → repository → `apiClient`.
+Luồng: `page` → `View` (ghép + kiểm quyền) → component (+hook riêng) → hook module (React Query) → service (theo model BE) → `apiClient`. FE không có lớp repository.
 
 ### API client
 
@@ -150,17 +151,14 @@ Luồng: `page` → `View` → component (+hook riêng) → hook module (React Q
 | Khái niệm | Nơi định nghĩa |
 | --- | --- |
 | Installed | App trong `INSTALLED_APPS` kế thừa `CoreModuleConfig` → tự đăng ký `module.MODULE` (`code` = `label`) |
-| Enabled | `system_module.enabled` (module lõi luôn bật; module chưa cài không bật được bằng cờ DB) |
 | Quyền | `PermissionDefinition` trong descriptor → `sync_iam` ghi vào `iam_permission` |
-| Icon | `ModuleDescriptor.icon` (lucide mặc định) → ghi đè bằng `system_module.icon` hoặc `icon_attachment` (SVG) |
+| Hiển thị | Nhóm, icon, thứ tự khai tĩnh ở FE (`modules/manage-app/constants/admin-navigation.ts` + `navigation.ts` của module) |
 
 Module hiện có và chiều phụ thuộc:
 
 ```
-attachment ← account (tài khoản, AUTH_USER_MODEL) ← iam (vai trò, quyền) ← authentication, system
+attachment ← account (tài khoản, AUTH_USER_MODEL) ← iam (vai trò, quyền) ← authentication
 health (độc lập)
 ```
 
-Tắt module không xóa dữ liệu/migration, không đổi `INSTALLED_APPS`. API của module tắt bị chặn bằng
-`ModuleEnabled` (403 `MODULE_DISABLED`), được core gắn tự động cho mọi view của module.
-Bật module kiểm tra phụ thuộc; tắt module kiểm tra module khác đang cần.
+Module đã cài luôn hoạt động; không có bảng cấu hình, cờ bật/tắt hay icon ở backend.

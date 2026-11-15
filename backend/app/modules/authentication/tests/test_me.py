@@ -24,7 +24,7 @@ class TestMe(BaseApiTestCase):
         data = self.assert_success(login(user).get(ME))
         assert data["user"]["id"] == str(user.pk)
         assert data["permissions"] == []
-        assert {module["code"] for module in data["modules"]} >= {"iam", "system", "authentication"}
+        assert "modules" not in data
 
     def test_unauthorized_without_token(self, client: APIClient) -> None:
         self.assert_unauthorized(client.get(ME), "AUTH_NOT_AUTHENTICATED")
@@ -63,3 +63,17 @@ class TestMe(BaseApiTestCase):
         user.is_active = False
         user.save(update_fields=["is_active"])
         self.assert_unauthorized(api.get(ME), "AUTH_USER_INACTIVE")
+
+    def test_activity_recorded_at_most_once_per_minute(self, user: Any, login: Any) -> None:
+        api = login(user)
+        user.refresh_from_db()
+        assert user.last_login is not None
+        assert user.last_seen_at == user.last_login
+        first_seen = user.last_seen_at
+        self.assert_success(api.get(ME))
+        user.refresh_from_db()
+        assert user.last_seen_at == first_seen
+        AuthSession.objects.filter(user=user).update(last_used_at=timezone.now() - timedelta(minutes=2))
+        self.assert_success(api.get(ME))
+        user.refresh_from_db()
+        assert user.last_seen_at is not None and user.last_seen_at > first_seen

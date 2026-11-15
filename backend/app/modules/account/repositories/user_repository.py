@@ -32,6 +32,17 @@ class UserRepository(CoreRepository[User]):
         """
         return self.find_one(email=email)
 
+    def find_by_username(self, username: str) -> User | None:
+        """Tìm người dùng (kể cả bị khóa) theo tên người dùng (khớp chính xác).
+
+        Args:
+            username: Tên người dùng.
+
+        Returns:
+            Người dùng hoặc None.
+        """
+        return self.find_one(username=username)
+
     def create_user(self, *, password: str, actor: Any | None = None, **fields: Any) -> User:
         """Tạo người dùng với mật khẩu đã băm.
 
@@ -69,7 +80,18 @@ class UserRepository(CoreRepository[User]):
             when: Thời điểm.
         """
         user.last_login = when
-        self.save(user, update_fields=["last_login"])
+        user.last_seen_at = when
+        self.save(user, update_fields=["last_login", "last_seen_at"])
+
+    def touch_last_seen(self, user: User, when: Any) -> None:
+        """Ghi thời điểm hoạt động gần nhất (không đổi `updated_at`/`updated_by`).
+
+        Args:
+            user: Người dùng.
+            when: Thời điểm.
+        """
+        user.last_seen_at = when
+        self.save(user, update_fields=["last_seen_at"])
 
     def lock_active_superusers(self) -> list[User]:
         """Khóa dòng mọi superuser đang hoạt động (chống race khi hạ quyền đồng thời).
@@ -77,4 +99,4 @@ class UserRepository(CoreRepository[User]):
         Returns:
             Danh sách superuser đang hoạt động.
         """
-        return list(User.objects.select_for_update().filter(is_superuser=True, is_active=True))
+        return list(User.objects.alive().select_for_update().filter(is_superuser=True, is_active=True))

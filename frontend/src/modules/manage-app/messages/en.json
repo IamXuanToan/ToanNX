@@ -1,0 +1,10 @@
+{
+  "welcome": "Hello, {name}",
+  "empty": {
+    "title": "No modules available",
+    "description": "Your account has no permission for any module yet. Contact an administrator."
+  },
+  "shell": {
+    "backToModules": "Back to modules"
+  }
+}

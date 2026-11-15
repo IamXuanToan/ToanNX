@@ -35,7 +35,7 @@ xoay vòng/thu hồi theo phiên), mọi module nghiệp vụ (customers, projec
 | Thành phần | Đánh giá | Quyết định |
 | --- | --- | --- |
 | `ui/*` (button, input, dialog, select, ...) | Bản shadcn new-york chỉnh tay; một số bỏ focus ring (`focus-visible:ring-0`) → kém accessibility | **Không copy**. Sinh lại bằng `shadcn add` (style radix-nova, có focus ring) để cập nhật được bằng CLI |
-| `common/password-input-common.tsx` | Tốt, có aria-label | **Kế thừa** → `shares/components/common/password-input.tsx` (bỏ icon khóa, dùng `cn`) |
+| `common/password-input-common.tsx` | Tốt, có aria-label | **Kế thừa** → `shares/components/common/password-input/password-input.tsx` (bỏ icon khóa, dùng `cn`) |
 | `common/common-empty-state.tsx` | Hardcode `indigo-*` | **Refactor** → `empty-state.tsx` dùng token `muted` |
 | `errors/error-state-card.tsx` | Hardcode `rose-*`/`slate-*` | **Refactor** → `error-state.tsx` dùng token `destructive` |
 | `common/common-pagination.tsx` | Tự đọc/ghi URL search params, ô nhập trang | **Refactor** → `data-pagination.tsx` có kiểm soát (props), đơn giản hơn |

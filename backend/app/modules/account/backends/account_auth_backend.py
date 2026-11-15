@@ -1,4 +1,4 @@
-"""Authentication backend Django: xác thực email + mật khẩu qua UserService."""
+"""Authentication backend Django: xác thực email hoặc tên người dùng + mật khẩu qua UserService."""
 
 from typing import Any
 
@@ -27,21 +27,21 @@ class AccountAuthBackend(BaseBackend):
         password: str | None = None,
         **kwargs: Any,
     ) -> User | None:
-        """Xác thực email/mật khẩu.
+        """Xác thực tài khoản (email hoặc tên người dùng) + mật khẩu.
 
         Args:
             request: HTTP request.
-            username: Email (Django truyền qua `username` hoặc `email`).
+            username: Email hoặc tên người dùng (Django truyền qua `username`, có thể là `email`).
             password: Mật khẩu thô.
             **kwargs: Có thể chứa `email`.
 
         Returns:
             Người dùng hợp lệ (kể cả bị khóa; nơi gọi tự kiểm tra is_active) hoặc None.
         """
-        email = kwargs.get("email") or username or ""
-        if not email or password is None:
+        identifier = kwargs.get("email") or username or ""
+        if not identifier or password is None:
             return None
-        return self.user_service.authenticate_credentials(email, password)
+        return self.user_service.authenticate_credentials(identifier, password)
 
     def get_user(self, user_id: Any) -> User | None:
         """Lấy người dùng theo id.

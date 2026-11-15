@@ -1,13 +1,16 @@
 import { UserDetailView } from "@/modules/account/views/user-detail-view";
-import { UserRolesCard } from "@/modules/iam/components/user-roles-card/user-roles-card";
+import { UserRolePickerView } from "@/modules/iam/views/user-role-picker-view";
+import { createPageMetadata } from "@/shares/lib/seo";
+
+export const generateMetadata = createPageMetadata({ title: "common.nav.users" });
 
 /**
- * Trang chi tiết người dùng: thông tin tài khoản (Account) + vai trò (IAM).
+ * Trang chi tiết người dùng: thông tin tài khoản (Account) + vai trò (IAM) qua slot `extensions`, lưu cùng form.
  *
  * @param props - Tham số route.
- * @returns UserDetailView kèm card vai trò.
+ * @returns UserDetailView kèm chọn vai trò.
  */
 export default async function UserDetailPage({ params }: PageProps<"/[locale]/admin/users/[id]">) {
   const { id } = await params;
-  return <UserDetailView id={id} aside={<UserRolesCard userId={id} />} />;
+  return <UserDetailView id={id} extensions={<UserRolePickerView userId={id} />} />;
 }

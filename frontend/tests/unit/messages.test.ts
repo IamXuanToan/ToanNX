@@ -59,7 +59,7 @@ describe("i18n messages", async () => {
 
   it("namespace của module không đè namespace dùng chung", async () => {
     const common = await import("@/messages/vi.json");
-    const moduleNamespaces = ["auth", "iam", "system", "dashboard"];
+    const moduleNamespaces = ["auth", "account", "iam", "attachment", "manageApp"];
     expect(Object.keys(common.default).filter((key) => moduleNamespaces.includes(key))).toEqual([]);
   });
 });

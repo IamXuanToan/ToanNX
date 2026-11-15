@@ -38,7 +38,9 @@ def login() -> Callable[..., APIClient]:
 
     def _login(user: User, password: str = DEFAULT_PASSWORD, client: APIClient | None = None) -> APIClient:
         api = client or APIClient()
-        response = api.post("/api/v1/auth/login", {"email": user.email, "password": password}, format="json")
+        response = api.post(
+            "/api/v1/auth/login", {"identifier": user.email, "password": password}, format="json"
+        )
         assert response.status_code == 200, response.content
         return api
 

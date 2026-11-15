@@ -20,7 +20,7 @@ from app.modules.authentication.services.auth_service import AuthService
 
 
 class LoginView(CsrfPublicApiView):
-    """Đăng nhập bằng email + mật khẩu (không có đăng ký)."""
+    """Đăng nhập bằng email hoặc tên người dùng + mật khẩu (không có đăng ký)."""
 
     def __init__(self, **kwargs: Any) -> None:
         """Khởi tạo service.
@@ -44,7 +44,7 @@ class LoginView(CsrfPublicApiView):
             Hồ sơ người dùng hiện tại + cookie phiên.
         """
         result = self.auth_service.login(
-            request._request, validated_data["email"], validated_data["password"]
+            request._request, validated_data["identifier"], validated_data["password"]
         )
         rotate_token(request._request)  # Chống fixation cho CSRF token.
 

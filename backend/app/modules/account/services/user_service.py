@@ -60,19 +60,33 @@ class UserService(CoreCrudService[User, UserRepository]):
         """
         return self.repository.find_by_id(user_id)
 
-    def authenticate_credentials(self, email: str, password: str) -> User | None:
-        """Kiểm tra email + mật khẩu (dùng bởi authentication backend).
-
-        Chạy hasher cả khi không có email để thời gian phản hồi tương đương (chống dò tài khoản).
+    def find_by_identifier(self, identifier: str) -> User | None:
+        """Tìm người dùng theo email (ưu tiên, không phân biệt hoa thường) hoặc tên người dùng.
 
         Args:
-            email: Email.
+            identifier: Email hoặc tên người dùng.
+
+        Returns:
+            Người dùng hoặc None.
+        """
+        value = identifier.strip()
+        if not value:
+            return None
+        return self.repository.find_by_email(value.lower()) or self.repository.find_by_username(value)
+
+    def authenticate_credentials(self, identifier: str, password: str) -> User | None:
+        """Kiểm tra tài khoản (email hoặc tên người dùng) + mật khẩu (dùng bởi authentication backend).
+
+        Chạy hasher cả khi không có tài khoản để thời gian phản hồi tương đương (chống dò tài khoản).
+
+        Args:
+            identifier: Email hoặc tên người dùng.
             password: Mật khẩu thô.
 
         Returns:
             Người dùng (kể cả bị khóa; nơi gọi tự kiểm tra is_active) hoặc None.
         """
-        user = self.repository.find_by_email(email.strip().lower())
+        user = self.find_by_identifier(identifier)
         if user is None:
             User().set_password(password)
             return None
@@ -88,6 +102,14 @@ class UserService(CoreCrudService[User, UserRepository]):
             user: Người dùng.
         """
         self.repository.touch_last_login(user, timezone.now())
+
+    def record_activity(self, user: User) -> None:
+        """Ghi thời điểm hoạt động gần nhất (người gọi tự giới hạn tần suất).
+
+        Args:
+            user: Người dùng.
+        """
+        self.repository.touch_last_seen(user, timezone.now())
 
     @transaction.atomic
     def create(self, actor: User, data: dict[str, Any]) -> User:
@@ -115,7 +137,7 @@ class UserService(CoreCrudService[User, UserRepository]):
         if self.repository.exists(email=payload["email"]):
             raise ConflictError("Email đã được sử dụng.", code=ErrorCode.ACCOUNT_EMAIL_EXISTS)
         if payload.get("avatar_id"):
-            self.attachment_service.get_image(payload["avatar_id"])
+            self.attachment_service.get_image(payload["avatar_id"], actor=actor)
 
         PasswordValidator.validate_strength(password, User(**payload))
         return self.repository.create_user(password=password, actor=actor, **payload)
@@ -174,7 +196,7 @@ class UserService(CoreCrudService[User, UserRepository]):
             if self.repository.exists(email=changes["email"]):
                 raise ConflictError("Email đã được sử dụng.", code=ErrorCode.ACCOUNT_EMAIL_EXISTS)
         if changes.get("avatar_id"):
-            self.attachment_service.get_image(changes["avatar_id"])
+            self.attachment_service.get_image(changes["avatar_id"], actor=actor)
 
         # ============================================================
         # BƯỚC 5: Ghi dữ liệu và thông báo thay đổi thông tin xác thực
@@ -188,17 +210,72 @@ class UserService(CoreCrudService[User, UserRepository]):
             self._notify_credentials_changed(target, "deactivated")
         return target
 
-    def delete(self, actor: Any, pk: Any) -> None:
-        """Không hỗ trợ xóa người dùng; dùng `is_active=False` để khóa.
+    @transaction.atomic
+    def delete(self, actor: User, pk: Any) -> None:
+        """Xóa mềm người dùng: khóa tài khoản, đánh dấu xóa và thu hồi mọi phiên.
 
         Args:
             actor: Người thực hiện.
-            pk: Id người dùng.
+            pk: Id người cần xóa.
 
         Raises:
-            BusinessRuleError: Luôn luôn.
+            AuthorizationError: Tự xóa chính mình, hoặc người không phải superuser xóa superuser.
+            BusinessRuleError: Xóa superuser hoạt động cuối cùng.
         """
-        raise BusinessRuleError("Không xóa người dùng; hãy khóa tài khoản.")
+        # ============================================================
+        # BƯỚC 1: Khóa bản ghi, chặn tự xóa và xóa superuser khi không đủ quyền
+        # ============================================================
+        target = self.get_manageable_user(actor, pk)
+        if target.pk == actor.pk:
+            raise AuthorizationError(code=ErrorCode.ACCOUNT_SELF_MODIFICATION)
+
+        # ============================================================
+        # BƯỚC 2: Bảo vệ superuser hoạt động cuối cùng
+        # ============================================================
+        if target.is_superuser and target.is_active:
+            others = [user for user in self.repository.lock_active_superusers() if user.pk != target.pk]
+            if not others:
+                raise BusinessRuleError(
+                    "Không thể xóa superuser cuối cùng.", code=ErrorCode.ACCOUNT_LAST_SUPERUSER
+                )
+
+        # ============================================================
+        # BƯỚC 3: Khóa + xóa mềm, thu hồi phiên sau khi commit
+        # ============================================================
+        self.repository.update(target, actor=actor, is_active=False)
+        self.repository.soft_delete(target, actor=actor)
+        self._notify_credentials_changed(target, "deleted")
+
+    @transaction.atomic
+    def bulk_update(self, actor: User, ids: list[Any], data: dict[str, Any]) -> int:
+        """Cập nhật nhiều người dùng; một bản ghi lỗi thì không bản ghi nào đổi.
+
+        Args:
+            actor: Người thực hiện.
+            ids: Id người dùng.
+            data: Trường cần cập nhật (cùng luật với `update`).
+
+        Returns:
+            Số người dùng đã cập nhật.
+        """
+        for pk in ids:
+            self.update(actor, pk, data)
+        return len(ids)
+
+    @transaction.atomic
+    def bulk_delete(self, actor: User, ids: list[Any]) -> int:
+        """Xóa mềm nhiều người dùng; một bản ghi lỗi thì không bản ghi nào bị xóa.
+
+        Args:
+            actor: Người thực hiện.
+            ids: Id người dùng.
+
+        Returns:
+            Số người dùng đã xóa.
+        """
+        for pk in ids:
+            self.delete(actor, pk)
+        return len(ids)
 
     def get_manageable_user(self, actor: User, user_id: Any) -> User:
         """Khóa người dùng đích và kiểm tra actor được phép thao tác.

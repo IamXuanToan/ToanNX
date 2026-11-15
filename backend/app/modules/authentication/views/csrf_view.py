@@ -25,6 +25,6 @@ class CsrfView(PublicApiView):
             request: Request.
 
         Returns:
-            CSRF token (cũng nằm trong cookie `toannx_csrf`).
+            CSRF token (cũng nằm trong cookie `csrftoken`).
         """
         return CoreResponse(CsrfResponseSerializer({"csrf_token": get_token(request._request)}).data)

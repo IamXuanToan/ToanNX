@@ -1,17 +1,14 @@
 {
   "login": {
     "title": "Sign in",
-    "description": "For accounts issued by an administrator.",
-    "email": "Email",
     "password": "Password",
     "submit": "Sign in",
     "submitting": "Signing in...",
-    "noSignup": "TOANNX does not offer public sign-up."
+    "identifier": "Email or username"
   },
   "validation": {
-    "emailRequired": "Please enter your email.",
-    "emailInvalid": "Invalid email address.",
-    "passwordRequired": "Please enter your password."
+    "passwordRequired": "Please enter your password.",
+    "identifierRequired": "Enter your email or username."
   },
   "userMenu": {
     "open": "Open account menu",
@@ -20,5 +17,36 @@
   },
   "session": {
     "expired": "Your session has expired, please sign in again."
+  },
+  "sessions": {
+    "title": "Sessions",
+    "empty": "No sign-in sessions.",
+    "searchPlaceholder": "Search users, devices, IP…",
+    "usersRetry": "Could not load users · Retry",
+    "current": "Current session",
+    "manage": "Session management",
+    "revoke": "Revoke",
+    "revoked": "Session revoked.",
+    "revokeTitle": "Revoke this session?",
+    "revokeDescription": "This device for {email} will need to sign in again.",
+    "allStatuses": "All statuses",
+    "statuses": {
+      "ACTIVE": "Active",
+      "REVOKED": "Revoked",
+      "EXPIRED": "Expired"
+    },
+    "columns": {
+      "user": "User",
+      "device": "Device",
+      "ipAddress": "IP address",
+      "lastUsedAt": "Last activity",
+      "expiresAt": "Expires at",
+      "status": "Status",
+      "id": "Session ID"
+    },
+    "bulkRevoke": "Revoke selected",
+    "bulkRevokeTitle": "Revoke {count} sessions?",
+    "bulkRevokeDescription": "These devices will need to sign in again. Expired or revoked sessions are skipped.",
+    "bulkRevoked": "Revoked {count} sessions."
   }
 }

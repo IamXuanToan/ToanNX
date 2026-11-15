@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { AdminShell } from "./_components/admin-shell";
+import { AdminShell } from "@/modules/manage-app/components/admin-shell/admin-shell";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 

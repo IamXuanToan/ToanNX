@@ -1,5 +1,8 @@
 """Response POST /attachments và GET /attachments/{id}."""
 
+from rest_framework import serializers
+
+from app.modules.attachment.models.attachment import Attachment
 from app.modules.attachment.serializers.responses.attachment_summary_response_serializer import (
     AttachmentSummaryResponseSerializer,
 )
@@ -8,6 +11,17 @@ from app.modules.attachment.serializers.responses.attachment_summary_response_se
 class AttachmentDetailResponseSerializer(AttachmentSummaryResponseSerializer):
     """Thông tin đầy đủ của file."""
 
+    uploader_name = serializers.SerializerMethodField(help_text="Tên hiển thị của người upload.")
+    created_by_id = serializers.UUIDField(read_only=True, allow_null=True, help_text="Id người upload.")
+    folder_id = serializers.UUIDField(read_only=True, allow_null=True, help_text="Id nhóm logic hoặc null.")
+    folder_name = serializers.CharField(
+        source="folder.name", read_only=True, default="", help_text="Tên nhóm logic."
+    )
+
+    def get_uploader_name(self, obj: Attachment) -> str:
+        """Đọc người upload đã được repository select_related, không truy vấn bổ sung."""
+        return (obj.created_by.full_name or obj.created_by.email) if obj.created_by else ""
+
     class Meta(AttachmentSummaryResponseSerializer.Meta):
         fields = (
             *AttachmentSummaryResponseSerializer.Meta.fields,
@@ -15,4 +29,8 @@ class AttachmentDetailResponseSerializer(AttachmentSummaryResponseSerializer):
             "content_type",
             "size",
             "created_at",
+            "created_by_id",
+            "uploader_name",
+            "folder_id",
+            "folder_name",
         )

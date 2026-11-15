@@ -19,6 +19,15 @@ Phạm vi hiện tại: **foundation** (IAM, xác thực, module registry, i18n 
 
 ## Chạy local
 
+**Nhanh (Windows):** sau khi đã cài lần đầu theo các bước bên dưới, chỉ cần chạy
+
+```bat
+scripts\dev.bat
+```
+
+Script migrate database rồi mở backend (http://localhost:8000) và frontend (http://localhost:3000)
+ở 2 cửa sổ riêng. Nếu cổng 8000/3000 đang bị chương trình khác chiếm, script dừng và báo PID để tắt.
+
 ### 0. Git
 
 ```bash

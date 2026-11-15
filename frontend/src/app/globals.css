@@ -39,6 +39,14 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-canvas: var(--canvas);
+  --color-primary-light: var(--primary-light);
+  --color-item-hover: var(--item-hover);
+  --color-surface-hover: var(--surface-hover);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -48,8 +56,17 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Bộ mặt: Clean (P13) — sidebar trắng, nội dung trên nền xám --canvas, flat, Inter. */
 :root {
   --background: oklch(1 0 0);
+  --canvas: oklch(0.975 0.002 275);
+  --primary-light: oklch(0.955 0.025 275);
+  --item-hover: oklch(0.965 0.003 275);
+  --surface-hover: oklch(0.985 0.002 275);
+  --success: oklch(0.5 0.13 155);
+  --success-bg: oklch(0.96 0.04 155);
+  --warning: oklch(0.55 0.13 70);
+  --warning-bg: oklch(0.96 0.05 85);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -63,7 +80,7 @@
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.505 0.213 27.518);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.62 0.15 275);
@@ -73,7 +90,7 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.46 0.19 275);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -85,6 +102,14 @@
 
 .dark {
   --background: oklch(0.145 0 0);
+  --canvas: oklch(0.145 0 0);
+  --primary-light: oklch(0.7 0.15 275 / 16%);
+  --item-hover: oklch(1 0 0 / 6%);
+  --surface-hover: oklch(1 0 0 / 4%);
+  --success: oklch(0.78 0.14 155);
+  --success-bg: oklch(0.78 0.14 155 / 14%);
+  --warning: oklch(0.82 0.13 85);
+  --warning-bg: oklch(0.82 0.13 85 / 14%);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -131,4 +156,73 @@
   html {
     @apply font-sans;
   }
+}
+
+/* ===== THANH CUỘN TỰ ẨN, ÁP CHO CẢ APP. Luật I18. =====
+   Đứng yên thì trong suốt; rê chuột vào vùng cuộn thì hiện mờ; đang cuộn thì
+   đậm hơn (class .is-scrolling do component ScrollbarAutohide gắn vào ĐÚNG phần
+   tử đang cuộn). Ẩn bằng MÀU TRONG SUỐT chứ không bằng `scrollbar-width: none`:
+   bề rộng 4px vẫn giữ chỗ, nên lúc thanh hiện ra nội dung không bị đẩy ngang.
+   Màu lấy từ --foreground nên nền tối tự đảo, không cần khai lại.
+   Nguồn: dự án thật, chủ dự án chốt.
+
+   ⚠️ Màu thumb đi qua BIẾN --scrollbar-thumb đặt trên chính khung cuộn, không
+   viết `*:hover::-webkit-scrollbar-thumb`. Chrome không vẽ lại thumb khi selector
+   :hover nằm trước pseudo thanh cuộn: rê vào không hiện, phải cuộn mới hiện. Đổi
+   biến trên phần tử thì Chrome vẽ lại ngay. `* { --scrollbar-thumb: transparent }` đặt lại trên TỪNG phần tử, để
+   khung cha đang được rê không truyền biến xuống khung cuộn con bên cạnh.
+   KHÔNG thêm `transition` vào rule `*` này: CSS nằm ngoài @layer thắng mọi
+   utility của Tailwind v4, một dòng `* { transition }` là xoá hết `transition-*`
+   trong app. Thanh cuộn hiện tức thì là đủ. */
+* {
+  --scrollbar-thumb: transparent;
+}
+*:hover {
+  --scrollbar-thumb: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+.is-scrolling {
+  --scrollbar-thumb: color-mix(in srgb, var(--foreground) 28%, transparent);
+}
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--foreground) 40%, transparent);
+}
+
+/* Firefox. ⚠️ PHẢI nằm trong @supports: từ Chrome 121, phần tử có
+   scrollbar-width/scrollbar-color là Chrome BỎ QUA toàn bộ ::-webkit-scrollbar
+   và vẽ thanh "thin" gốc ~8-11px chiếm chỗ. Để trần thì bản 4px ở trên chỉ còn
+   chạy trên Safari. */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  *:hover {
+    scrollbar-color: color-mix(in srgb, var(--foreground) 18%, transparent) transparent;
+  }
+  .is-scrolling {
+    scrollbar-color: color-mix(in srgb, var(--foreground) 28%, transparent) transparent;
+  }
+}
+/* ===================================================== */
+
+/* Ẩn HẲN, không bao giờ hiện: chỉ cho hàng chip / tab cuộn ngang, nơi thanh
+   cuộn dưới đáy hàng trông như lỗi. Máy có chuột thì hàng đó phải có nút mũi
+   tên hai đầu (responsive.md, sau R10). Vùng cuộn dọc (sidebar, danh sách, modal)
+   thì KHÔNG dùng, để thanh tự ẩn ở trên lo. */
+.scrollbar-clean {
+  scrollbar-width: none;
+}
+.scrollbar-clean::-webkit-scrollbar {
+  display: none;
 }

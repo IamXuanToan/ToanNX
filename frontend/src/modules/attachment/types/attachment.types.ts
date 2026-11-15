@@ -1,10 +1,56 @@
-/** File đã upload (`POST /attachments`). `url` là URL tuyệt đối, dùng trực tiếp. */
 export type Attachment = {
   id: string;
   url: string;
   originalName: string;
-  /** MIME type do backend nhận diện từ nội dung file (không tin header client). */
   contentType: string;
   size: number;
   createdAt: string;
+  createdById: string | null;
+  uploaderName: string;
+  folderId: string | null;
+  folderName: string;
 };
+
+/** Bộ lọc thư viện; mảng gửi qua API dưới dạng phân tách dấu phẩy. */
+export type AttachmentFilters = {
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  ordering?: string;
+  kind?: readonly string[];
+  scope?: readonly string[];
+  contentType?: readonly string[];
+  folder?: readonly string[];
+};
+
+/** Các quyền giao diện do view quyết định. */
+export type AttachmentCapabilities = {
+  canRead: boolean;
+  canUpload: boolean;
+  canDelete: boolean;
+  canManageAll: boolean;
+  canMove?: boolean;
+  folders?: FolderCapabilities;
+};
+
+/** Quyền quản lý nhóm logic do view kiểm tra. */
+export type FolderCapabilities = {
+  canRead: boolean;
+  canCreate: boolean;
+  canUpdate: boolean;
+  canDelete: boolean;
+  canDeleteFiles?: boolean;
+};
+
+/** Thư mục logic; không chứa đường dẫn filesystem. */
+export type AttachmentFolder = {
+  id: string;
+  name: string;
+  parentId: string | null;
+  fileCount: number;
+  createdById: string | null;
+  createdAt: string;
+};
+
+/** Dữ liệu upload tùy chọn thư mục, giữ tương thích với upload trực tiếp từ ô ảnh. */
+export type AttachmentUploadInput = { file: File; folderId?: string | null };

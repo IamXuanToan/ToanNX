@@ -14,15 +14,18 @@ from app.modules.attachment.permissions.attachment_permission import AttachmentP
 from app.modules.attachment.serializers.responses.attachment_detail_response_serializer import (
     AttachmentDetailResponseSerializer,
 )
+from app.modules.attachment.serializers.validates.attachment_update_validate_serializer import (
+    AttachmentUpdateValidateSerializer,
+)
 from app.modules.attachment.serializers.validates.attachment_upload_validate_serializer import (
     AttachmentUploadValidateSerializer,
 )
 from app.modules.attachment.services.attachment_service import AttachmentService
 from app.modules.iam.types.permission_rule import permission_rule
-from app.modules.iam.views.admin_model_view_set import AdminModelViewSet
+from app.modules.iam.views.owned_model_view_set import OwnedModelViewSet
 
 
-class AttachmentViewSet(AdminModelViewSet[Attachment]):
+class AttachmentViewSet(OwnedModelViewSet[Attachment]):
     """Upload, xem, xóa mềm file."""
 
     service_class = AttachmentService
@@ -30,14 +33,16 @@ class AttachmentViewSet(AdminModelViewSet[Attachment]):
     filterset_class = AttachmentFilter
     search_fields = ("original_name",)
     ordering_fields = ("created_at", "size", "original_name")
-    ordering = ("-created_at",)
+    ordering = ("-created_at", "-pk")
     list_serializer_class = AttachmentDetailResponseSerializer
     detail_serializer_class = AttachmentDetailResponseSerializer
     create_serializer_class = AttachmentUploadValidateSerializer
-    http_method_names = ["get", "post", "delete", "head", "options"]
+    update_serializer_class = AttachmentUpdateValidateSerializer
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
     action_permissions = {
         "list": permission_rule(AttachmentPermission.FILE_READ),
         "retrieve": permission_rule(AttachmentPermission.FILE_READ),
         "create": permission_rule(AttachmentPermission.FILE_CREATE),
         "destroy": permission_rule(AttachmentPermission.FILE_DELETE),
+        "partial_update": permission_rule(AttachmentPermission.FILE_UPDATE),
     }

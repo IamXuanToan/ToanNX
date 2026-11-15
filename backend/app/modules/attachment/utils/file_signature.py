@@ -16,8 +16,13 @@ _SIGNATURES: tuple[tuple[bytes, int, str], ...] = (
     (b"WEBP", 8, "image/webp"),
     (b"%PDF-", 0, "application/pdf"),
 )
-_HEADER_SIZE = 16
 _TEXT_HEADER_SIZE = 1024
+_FTYP_MIN_SIZE = 16
+_MP4_BRANDS = frozenset(
+    (b"isom", b"iso2", b"iso3", b"iso4", b"iso5", b"iso6", b"mp41", b"mp42", b"avc1", b"M4V ")
+)
+_WEBM_HEADER = b"\x1a\x45\xdf\xa3"
+_WEBM_DOCTYPE = b"\x42\x82\x84webm"
 
 
 def detect_content_type(stream: File) -> str | None:
@@ -39,4 +44,15 @@ def detect_content_type(stream: File) -> str | None:
             return content_type
     if looks_like_svg(header):
         return SVG_CONTENT_TYPE
+    # Chỉ nhận brand video đã biết, không coi mọi ftyp (như AVIF/HEIC) là video.
+    # Brand: https://mp4ra.org/registered-types/brands; DocType: https://www.webmproject.org/docs/container/
+    if header[4:8] == b"ftyp" and len(header) >= _FTYP_MIN_SIZE:
+        box_size = int.from_bytes(header[:4], "big")
+        if _FTYP_MIN_SIZE <= box_size <= len(header):
+            if header[8:12] == b"qt  ":
+                return "video/quicktime"
+            if header[8:12] in _MP4_BRANDS:
+                return "video/mp4"
+    if header.startswith(_WEBM_HEADER) and _WEBM_DOCTYPE in header:
+        return "video/webm"
     return None

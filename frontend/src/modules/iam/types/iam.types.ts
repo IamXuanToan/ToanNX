@@ -1,3 +1,6 @@
+/** Chính sách tự cấp quyền của vai trò (BE `RoleAutoGrant`). */
+export const ROLE_AUTO_GRANT_VALUES = ["none", "all", "read_only"] as const;
+
 /** Vai trò rút gọn gắn với người dùng (`GET /iam/users/{id}/roles`, `/auth/me`). */
 export type RoleSummary = {
   id: string;
@@ -27,12 +30,24 @@ export type Role = {
   description: string;
   isSystem: boolean;
   /** Chính sách tự cấp quyền khi đồng bộ: none | all | read_only. */
-  autoGrant: "none" | "all" | "read_only";
+  autoGrant: (typeof ROLE_AUTO_GRANT_VALUES)[number];
   isActive: boolean;
   permissionCount: number;
   userCount: number;
   createdAt: string;
   updatedAt: string;
+};
+
+/** Bộ lọc danh sách vai trò. */
+export type RoleFilters = {
+  search?: string;
+  /** Chọn nhiều: `["true", "false"]`. */
+  isActive?: ("true" | "false")[];
+  isSystem?: ("true" | "false")[];
+  autoGrant?: Role["autoGrant"][];
+  ordering?: string;
+  page: number;
+  pageSize: number;
 };
 
 /** Chi tiết vai trò kèm quyền. */

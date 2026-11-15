@@ -33,7 +33,7 @@ export function ErrorState({
       <p className="mt-3 text-sm font-semibold">{title ?? t("title")}</p>
       <p className="text-muted-foreground mt-1 text-sm">{message ?? t("description")}</p>
       {onRetry ? (
-        <Button variant="outline" size="sm" className="mt-4" onClick={onRetry}>
+        <Button variant="outline" className="mt-4" onClick={onRetry}>
           <RefreshCw />
           {t("retry")}
         </Button>

@@ -18,6 +18,9 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 
 - **Mỗi class một file**, tên file snake_case (BE) / kebab-case (FE) trùng tên class/component.
 - Hàm làm một việc; tên nói rõ ý định (`get_manageable_user`, `useLoginForm`), không viết tắt khó hiểu.
+- Viết code có xuống dòng ngay từ đầu, không sinh code nén để chờ formatter sửa: mỗi statement một dòng;
+  khối `if`/`try`/`catch`, callback nhiều bước và JSX nhiều prop phải tách dòng, thụt lề rõ ràng.
+  Chạy formatter trước khi bàn giao và kiểm tra format trong gate của repo.
 - Tách khối logic bằng một dòng trống; nghiệp vụ nhiều bước dùng comment bước:
 
   ```text
@@ -28,6 +31,10 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 
   Chỉ dùng cho nghiệp vụ thực sự nhiều bước, không chèn vào hàm ngắn.
 - Không magic number/string: đặt hằng số có tên (constants, settings, enum).
+- **Không gắn tên dự án vào key kỹ thuật** (cả BE và FE): cookie, localStorage/sessionStorage, header,
+  query/cache key, claim JWT, tên event, biến môi trường. Dùng tên mô tả đúng việc: `access_token`,
+  `refresh_token`, `session_hint`, `csrftoken`, không `toannx_access`, `toannx-auth`. Tên dự án chỉ xuất
+  hiện ở nội dung hiển thị (logo, tiêu đề, footer), domain và tên DB.
 - Không nuốt lỗi (`except Exception: pass`, `catch {}` rỗng); lỗi phải có mã ổn định hoặc được log.
 - Không `console.log`/`print` trong code chạy thật; không `any`/`type: ignore`/`noqa` không lý do
   (nếu bắt buộc phải ghi lý do ngay trên dòng đó).
@@ -56,6 +63,8 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 - API danh sách: `?search=` (tìm kiếm), `?ordering=field` / `-field` (sắp xếp), lọc theo field
   (`?is_active=true`), `?page=&page_size=` (≤ 100). Trang vượt quá trả 404; giá trị lọc sai trả 400.
 - Mọi field input/output có mô tả (`help_text`) để OpenAPI là tài liệu contract đầy đủ.
+- Danh sách tài nguyên mặc định mới nhất trước (`-created_at`); client vẫn được chọn thứ tự khác.
+  Danh sách block nội dung giữ thứ tự `position` do người dùng sắp đặt.
 
 ## 7. Kiểm thử và hoàn thành
 

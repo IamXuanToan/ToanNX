@@ -47,6 +47,10 @@ class TestRoleApi(BaseApiTestCase):
         items, _ = self.assert_paginated(api.get(ROLES, {"search": "Người xem"}))
         assert [item["code"] for item in items] == ["VIEWER"]
 
+        items, _ = self.assert_paginated(api.get(ROLES, {"auto_grant": "all,read_only", "is_system": "true"}))
+        assert {item["code"] for item in items} >= {"ADMIN", "VIEWER"}
+        assert all(item["auto_grant"] in {"all", "read_only"} for item in items)
+
     def test_invalid_filter_value_rejected(self, superuser: User, login: Any) -> None:
         error = self.assert_error(
             login(superuser).get(ROLES, {"auto_grant": "maybe"}), 400, "VALIDATION_ERROR"

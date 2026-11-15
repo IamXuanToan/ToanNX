@@ -1,10 +1,9 @@
-"""Dữ liệu `/auth/me`: người dùng, vai trò, quyền hiệu lực và module đang bật."""
+"""Dữ liệu `/auth/me`: người dùng, vai trò và quyền hiệu lực."""
 
 from dataclasses import dataclass
 
 from app.modules.account.models.user import User
 from app.modules.iam.models.role import Role
-from app.modules.system.types.module_state import ModuleState
 
 
 @dataclass(frozen=True)
@@ -14,4 +13,3 @@ class CurrentUserProfile:
     user: User
     roles: list[Role]
     permissions: list[str]
-    modules: list[ModuleState]

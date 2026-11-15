@@ -101,20 +101,25 @@ Quyền khai báo bằng `PermissionDefinition(code, name, description)`; mô t�
 | --- | --- | --- |
 | GET/POST | `/account/users` | `account.user.read` / `account.user.create` |
 | GET/PATCH | `/account/users/{id}` | `account.user.read` / `account.user.update` |
+| DELETE | `/account/users/{id}` (xoá mềm, thu hồi phiên; không xoá chính mình/superuser cuối) | `account.user.delete` |
+| POST | `/account/users/bulk-update` (`ids`, `is_active`) | `account.user.update` |
+| POST | `/account/users/bulk-delete` (`ids`) | `account.user.delete` |
 | GET | `/iam/users/{id}/roles` | `iam.role.read` hoặc `iam.role.assign` |
 | POST | `/iam/users/{id}/roles` | `iam.role.assign` |
 | DELETE | `/iam/users/{id}/roles/{role_id}` | `iam.role.assign` |
 | GET/POST | `/iam/roles` | `iam.role.read` / `iam.role.create` |
 | GET/PATCH | `/iam/roles/{id}` | `iam.role.read` / `iam.role.update` |
+| DELETE | `/iam/roles/{id}` (xoá mềm; vai trò hệ thống bị chặn) | `iam.role.delete` |
+| POST | `/iam/roles/bulk-update` (`ids`, `is_active`) | `iam.role.update` |
+| POST | `/iam/roles/bulk-delete` (`ids`) | `iam.role.delete` |
 | POST | `/iam/roles/{id}/permissions` | `iam.permission.assign` |
 | DELETE | `/iam/roles/{id}/permissions/{permission_id}` | `iam.permission.assign` |
 | GET | `/iam/permissions`, `/iam/permissions/{id}` | `iam.permission.read` |
 | GET/POST | `/attachments` | `attachment.file.read` / `attachment.file.create` |
 | GET/DELETE | `/attachments/{id}` | `attachment.file.read` / `attachment.file.delete` |
-| GET / PATCH | `/system/modules`, `/system/modules/{code}` (bật/tắt, icon) | `system.module.read` / `system.module.manage` |
 
 Quyền tạo bởi module được khai báo trong `module.py` của module đó; không cần sửa IAM core.
-Không tạo quyền `delete` vì chưa có API xóa (người dùng bị khóa thay vì xóa).
+Xoá người dùng và vai trò là xoá mềm, có quyền `delete` riêng (`account.user.delete`, `iam.role.delete`); khoá tài khoản (`is_active=false`) vẫn là cách tạm ngưng không mất dữ liệu.
 
 ## Frontend
 

@@ -8,14 +8,11 @@
   },
   "roles": {
     "title": "Roles",
-    "description": "Roles group permissions to assign to users.",
     "empty": "No roles yet.",
     "system": "System",
     "create": "Create role",
-    "createDescription": "Assign permissions on the detail page after creating.",
     "info": "Role information",
     "permissions": "Permissions",
-    "permissionsHint": "Toggle the role's permissions. You can only grant permissions you have.",
     "systemHint": "System role; only superusers can change it.",
     "columns": {
       "role": "Role",
@@ -28,12 +25,55 @@
       "codeHint": "For example: NOVEL_EDITOR. Cannot be changed later.",
       "name": "Role name",
       "description": "Description",
-      "isActive": "Active"
-    }
+      "isActive": "Active",
+      "isActiveHint": "Turn off so the role no longer grants permissions."
+    },
+    "searchPlaceholder": "Search by code, name…",
+    "actions": {
+      "deactivate": "Deactivate role",
+      "activate": "Activate role"
+    },
+    "copyName": "{name} (copy)",
+    "filters": {
+      "allStatuses": "All statuses",
+      "type": "Role type",
+      "allTypes": "All role types",
+      "custom": "Custom",
+      "policy": "Auto-grant policy",
+      "allPolicies": "All policies"
+    },
+    "policies": {
+      "none": "Manual grants",
+      "all": "Grant all permissions",
+      "read_only": "Grant read permissions"
+    },
+    "sections": {
+      "status": "Status"
+    },
+    "clearPermissions": "Clear all permissions",
+    "inactive": "Inactive",
+    "permissionsSelected": "{count} permissions selected. Saved with Create/Save; you can only grant permissions you hold."
   },
   "userRoles": {
     "title": "Roles",
-    "hint": "A user's permissions are the union of their active roles.",
-    "superuserHint": "Superusers have full access; roles have no effect."
+    "hint": "A user’s permissions are the union of their active roles. Saved with Create/Save.",
+    "superuserHint": "Superusers have full access; roles have no effect.",
+    "selectedCount": "{count}/{total} selected"
+  },
+  "permissions": {
+    "title": "Permissions",
+    "searchPlaceholder": "Search name, code, description…",
+    "allModules": "All modules",
+    "module": "Module",
+    "empty": "No matching permissions.",
+    "clearFilters": "Clear filters",
+    "modules": {
+      "account": "Accounts",
+      "authentication": "Authentication",
+      "iam": "Access control",
+      "attachment": "Attachments",
+      "short_links": "Short links",
+      "custom_pages": "Custom pages"
+    }
   }
 }

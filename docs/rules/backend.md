@@ -67,12 +67,10 @@ MODULE = ModuleDescriptor(code="custom_pages", ..., permissions=CustomPagesPermi
   đăng ký vào registry và **bắt buộc `MODULE.code == label`** (sai → lỗi khi khởi động).
 - Không viết `ready()` chỉ để đăng ký module. Cần thêm việc khi khởi động (signal, post_migrate,
   OpenAPI extension) thì override `ready()` và gọi `super().ready()` trước.
-- **Không** khai `module_code` trên view, **không** tự thêm `ModuleEnabled` vào `permission_classes`:
-  `CoreApiView`/`CoreModelViewSet.get_permissions()` tự gắn `settings.MODULE_PERMISSION_CLASSES`
-  (`ModuleEnabled`), module của view suy ra từ app chứa class view. Chỉ khai `module_code` khi view
-  đặt ở app này nhưng thuộc module khác (hiếm).
+- Module đã cài luôn hoạt động: **không có** bảng cấu hình module, cờ bật/tắt runtime hay icon ở backend.
+  Cách hiển thị module (nhóm, icon, thứ tự) do frontend khai tĩnh (`modules/manage-app`).
 - `app/core/tests/test_module_conventions.py` kiểm tra: mọi app trong `app/modules` dùng `CoreModuleConfig`,
-  đã đăng ký đúng mã, và mọi view của module đều có kiểm tra module đang bật.
+  đã đăng ký đúng mã, và mọi view của module kế thừa `CoreApiView`/`CoreModelViewSet`.
 
 ## 3. Core (`app/core`)
 
@@ -85,18 +83,18 @@ MODULE = ModuleDescriptor(code="custom_pages", ..., permissions=CustomPagesPermi
 | `views/public_api_view.py` | API công khai chỉ đọc: `authentication_classes = []`, `permission_classes = [AllowAny]` |
 | `views/csrf_public_api_view.py` | API công khai đổi trạng thái bằng cookie: `[AllowAny, CsrfProtected]` |
 | `views/core_model_view_set.py` | Gốc ViewSet CRUD ủy quyền cho service, tự gắn kiểm tra module |
-| `permissions/module_permissions.py` | Nạp `settings.MODULE_PERMISSION_CLASSES` (core không import module cụ thể) |
 | `pagination/core_page_number_pagination.py` | Phân trang mặc định (`page`, `page_size` ≤ 100) |
+| `filters/*` | Bộ lọc nhiều giá trị (dấu phẩy) cho FilterSet: `CoreBooleanInFilter`, `CoreChoiceInFilter`, `CoreCharInFilter`, `CoreUUIDInFilter` |
 | `decorators/validate_request.py` | Validate input; view nhận `validated_data`; tự khai báo request trong OpenAPI |
 | `serializers/core_validate_serializer.py` | Gốc của mọi validate serializer (từ chối field lạ) |
 | `schemas/*` | `CoreAutoSchema` (envelope response trong OpenAPI), `response_envelope` |
 | `responses/*` | `CoreResponse`, `CorePaginationResponse`, `CoreErrorResponse` |
 | `exceptions/*` | Raise lỗi nghiệp vụ có `ErrorCode` |
-| `registry/*` | `CoreModuleConfig`, `ModuleDescriptor` (có `group`, `icon`), `ModuleGroup`, `PermissionCatalog`, `PermissionDefinition` |
+| `registry/*` | `CoreModuleConfig`, `ModuleDescriptor`, `ModuleRegistry`, `PermissionCatalog`, `PermissionDefinition` |
 
 `app/core` **không import** `app/modules/*` (trừ `TYPE_CHECKING`). Thứ gì cần IAM/System (ví dụ
 `OwnedCrudService`, `OwnedModelViewSet`) đặt trong module đó; core nối với module qua setting
-(`MODULE_PERMISSION_CLASSES`, `AUTHENTICATION_BACKENDS`...).
+(`AUTHENTICATION_BACKENDS`...).
 
 Lớp gốc khai báo mặc định; lớp con **ghi đè thuộc tính** khi cần (OOP), không lặp lại cấu hình:
 
@@ -118,9 +116,13 @@ GenericViewSet ─ CoreModelViewSet ─┬─ AdminModelViewSet (iam)
 | `AdminModelViewSet` | đăng nhập + `is_staff` + `action_permissions` | CRUD quản trị |
 | `OwnedModelViewSet` | đăng nhập + `action_permissions`; service kiểm tra owner | CRUD tài nguyên của người dùng |
 
-Mọi lớp trên đều tự kiểm tra module đang bật (403 `MODULE_DISABLED`).
-
 ## 4. Service
+
+- Ngoại lệ của module nền Attachment: `AttachmentService`, `AttachmentFolderService` giữ `CoreCrudService` và cung cấp
+  hợp đồng `get_queryset_for` / `get_by_id_for` / `delete` cho `OwnedModelViewSet`. Owner là
+  `created_by`; kiểm tra `manage_all` qua `User.has_perm()` để không tạo phụ thuộc vòng
+  `attachment → iam → account → attachment`. Mọi truy cập từ client và thao tác gán avatar
+  đều phải đi qua phương thức có kiểm tra actor.
 
 - Mỗi model một service, kế thừa `CoreCrudService[Model, Repository]` khi là CRUD.
 - Phụ thuộc tạo trong `__init__` và đặt tên theo lớp: `self.repository` (repository chính),
@@ -142,7 +144,7 @@ Mọi lớp trên đều tự kiểm tra module đang bật (403 `MODULE_DISABLE
 ```python
 class UserViewSet(AdminModelViewSet[User]):
     service_class = UserService
-    filterset_class = UserFilter                                  # ?is_active=true
+    filterset_class = UserFilter                                  # ?is_active=true,false&role=<id>,<id>
     search_fields = ("email", "username", "first_name", "last_name")  # ?search=
     ordering_fields = ("created_at", "email", "last_login")       # ?ordering=-email
     ordering = ("-created_at",)                                   # mặc định
@@ -167,6 +169,19 @@ class UserViewSet(AdminModelViewSet[User]):
 - Chỉ mở method cần dùng qua `http_method_names`; cập nhật dùng `PATCH`.
 - Lọc/tìm/sắp xếp/phân trang dùng chuẩn DRF + django-filter (`DEFAULT_FILTER_BACKENDS`); không tự viết.
   `ordering` ngoài `ordering_fields` bị bỏ qua; trang vượt quá → 404.
+- **Mọi bộ lọc nhận nhiều giá trị** phân tách dấu phẩy (FE lọc chọn nhiều): dùng `app/core/filters/*`
+  (`CoreBooleanInFilter` cho cờ, `CoreChoiceInFilter` cho lựa chọn cố định, `CoreUUIDInFilter` cho id,
+  `CoreCharInFilter` cho chuỗi tự do), không dùng `BooleanFilter`/`ChoiceFilter`/`UUIDFilter` một giá trị.
+  Giá trị ngoài `choices`/sai định dạng → 400 `VALIDATION_ERROR`. Điều kiện suy ra (trạng thái phiên, loại
+  truy cập) dùng `method=` và gộp OR các giá trị đã chọn. Test có ca nhiều giá trị và ca giá trị sai.
+- Đăng nhập `POST /auth/login` nhận `identifier` (email không phân biệt hoa thường, ưu tiên trước; không khớp
+  thì tên người dùng khớp chính xác) + `password`; sai thì một lỗi chung `AUTH_INVALID_CREDENTIALS`, không nói
+  sai phần nào. Tra cứu qua `UserService.find_by_identifier`.
+- Hoạt động gần nhất của người dùng là `User.last_seen_at`, chỉ Authentication ghi (khi đăng nhập và khi
+  xác thực access token, tối đa một lần mỗi phút mỗi phiên qua `UserService.record_activity`); không đổi
+  `updated_at`/`updated_by`. Module khác không tự ghi, chỉ đọc/sắp xếp (`ordering=last_seen_at`).
+- Thao tác hàng loạt là endpoint riêng `POST /<resource>/bulk-<action>` (body `CoreBulkIdsValidateSerializer`,
+  trả `CoreBulkResultResponseSerializer`), khai **trước** router, service chạy trong một transaction.
 - Đăng ký bằng `SimpleRouter(trailing_slash=False)`.
 
 ### 5.2 Tài nguyên con/hành động → `AdminApiView` hoặc `MemberApiView`
@@ -221,7 +236,7 @@ class UserRoleView(AdminApiView):
 ## 7. Phụ thuộc giữa module
 
 - Chiều phụ thuộc khai báo trong `ModuleDescriptor.dependencies` và phải khớp import thực tế:
-  `account` (tài khoản) ← `iam` (vai trò/quyền) ← `authentication`, `system`.
+  `attachment` ← `account` (tài khoản) ← `iam` (vai trò/quyền) ← `authentication`.
 - Module nền không import module phụ thuộc nó. Cần hành vi chéo → dùng cơ chế chuẩn của Django:
   authentication backend (`User.has_perm` hỏi `IamPermissionBackend`), signal (`user_credentials_changed`).
 - Dữ liệu của module khác không nhét vào response của module nền: vai trò lấy ở `GET /iam/users/{id}/roles`,
@@ -231,30 +246,34 @@ class UserRoleView(AdminApiView):
 
 ## 8. URL tuyệt đối và file
 
-- Mọi URL trả cho client (file, ảnh, icon) dựng bằng `app.core.utils.absolute_url.build_absolute_url`:
+- Mọi URL trả cho client (file, ảnh) dựng bằng `app.core.utils.absolute_url.build_absolute_url`:
   domain lấy từ request hiện tại (`X-Forwarded-Host/Proto` sau proxy). FE không nối domain.
 - Không trả `file.url` thô. Object storage trả URL tuyệt đối sẵn → giữ nguyên.
 - Kiểu file xác định từ nội dung (`file_signature`); SVG phải qua `svg_inspector.find_svg_problem`
   (defusedxml, không `<script>`/`foreignObject`/`on*`/href ngoài/CSS `@import`).
-- Field chỉ nhận ảnh dùng `AttachmentService.get_image`; chỉ nhận SVG dùng `get_svg`.
+- Field chỉ nhận ảnh dùng `AttachmentService.get_image`.
 
-## 9. Icon module
-
-- `ModuleDescriptor(icon="shield-check")`: tên lucide-react kebab-case (`CoreValidator.is_icon_name`).
-- Quản trị viên đổi qua `PATCH /system/modules/{code}`: `icon` (tên lucide, rỗng = mặc định) hoặc
-  `icon_id` (attachment SVG, null = gỡ). Response có `icon` (hiệu lực) và `icon_url` (SVG tuyệt đối hoặc null).
-
-## 10. Quyền và vai trò
+## 9. Quyền và vai trò
 
 - Quyền khai báo trong `permissions/<module>_permission.py` (kế thừa `PermissionCatalog`), dạng
   `PermissionDefinition(code="module.resource.action", name=..., description=...)`. Chỉ khai báo quyền của
   chức năng đã có API.
-- `module.py`: `ModuleDescriptor(..., group=ModuleGroup.SYSTEM, permissions=XxxPermission.all())`.
+- `module.py`: `ModuleDescriptor(code=..., name=..., description=..., version=..., permissions=XxxPermission.all(), dependencies=(...))`.
 - Không hardcode mã vai trò trong code. Vai trò hệ thống seed bằng data migration; quyền tự cấp theo
   `Role.auto_grant` (`all` / `read_only` / `none`) mỗi lần `sync_iam`/`migrate`.
 - Superuser bỏ qua kiểm tra quyền tầng ứng dụng (trừ `check`), không bỏ qua đăng nhập.
 
-## 11. Model, serializer, migration
+### Xoá và thao tác hàng loạt
+
+- Xoá là **xoá mềm** (`CoreRepository.soft_delete`), có quyền `<module>.<resource>.delete` riêng; mọi truy vấn
+  dùng `alive()` nên bản ghi đã xoá biến mất khỏi API, đăng nhập và kiểm quyền.
+- Thao tác hàng loạt là `AdminApiView` riêng: `POST /<resource>/bulk-update` (`ids` + trường cần đổi) và
+  `POST /<resource>/bulk-delete` (`ids`), body kế thừa `CoreBulkIdsValidateSerializer` (1–100 id, bỏ trùng),
+  response `CoreBulkResultResponseSerializer` (`count`). URL khai **trước** router để `bulk-*` không bị hiểu là `{id}`.
+- Service `bulk_update`/`bulk_delete` gọi lại `update`/`delete` từng bản ghi trong **một transaction**
+  (`@transaction.atomic`): cùng luật nghiệp vụ với thao tác đơn, lỗi một dòng thì không dòng nào đổi.
+
+## 10. Model, serializer, migration
 
 - **Mọi field có thể khai báo `help_text` đều phải có** (model field, serializer field, filter):
   model field kèm `verbose_name` tiếng Việt và `db_comment`; đặt `db_table`.
@@ -263,7 +282,7 @@ class UserRoleView(AdminApiView):
 - Đổi kiểu cột không tương thích (ví dụ varchar → FK uuid) phải `RemoveField` + `AddField`.
 - Không chạy migration khi cold start/request; chạy thủ công trước khi deploy.
 
-## 12. Lỗi, log, bảo mật
+## 11. Lỗi, log, bảo mật
 
 - Raise `ValidationError`/`AuthorizationError`/`NotFoundError`/`ConflictError`/`BusinessRuleError`... kèm `ErrorCode`.
   Mã lỗi theo module sở hữu nghiệp vụ: tài khoản `ACCOUNT_*` (account), vai trò/quyền `IAM_*` (iam),
@@ -274,14 +293,14 @@ class UserRoleView(AdminApiView):
 - Request đổi trạng thái bằng cookie phải qua CSRF.
 - Password chỉ qua `set_password`/validators của Django.
 
-## 13. Test
+## 12. Test
 
 - pytest + pytest-django trên PostgreSQL (`test_toannx`). Fixture chung ở `backend/conftest.py`.
 - Base assertion: `app/core/tests/base/base_api_test_case.py`. Factory/helper IAM: `app/modules/iam/tests/`.
 - Mỗi endpoint mới: test thành công, validate sai, chưa đăng nhập, thiếu quyền, quy tắc nghiệp vụ;
   API danh sách thêm test `search`/filter/`ordering`/phân trang.
 
-## 14. Công cụ
+## 13. Công cụ
 
 ```bash
 uv run ruff format . && uv run ruff check . && uv run mypy . && uv run pytest -q

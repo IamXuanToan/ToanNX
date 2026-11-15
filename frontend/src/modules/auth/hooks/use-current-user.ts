@@ -2,9 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { authKeys } from "@/shares/constants/query-keys";
-
-import { authService } from "../services/auth.service";
+import { authKeys } from "../constants/query-keys";
+import { currentUserService } from "../services/current-user.service";
 
 const CURRENT_USER_STALE_MS = 60_000;
 
@@ -17,7 +16,7 @@ const CURRENT_USER_STALE_MS = 60_000;
 export function useCurrentUser(options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: authKeys.me(),
-    queryFn: ({ signal }) => authService.getCurrentUser(signal),
+    queryFn: ({ signal }) => currentUserService.get(signal),
     staleTime: CURRENT_USER_STALE_MS,
     retry: false,
     enabled: options.enabled ?? true,

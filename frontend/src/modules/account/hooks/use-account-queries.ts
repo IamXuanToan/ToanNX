@@ -2,9 +2,8 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { accountKeys } from "@/shares/constants/query-keys";
-
-import { accountService } from "../services/account.service";
+import { accountKeys } from "../constants/query-keys";
+import { userService } from "../services/user.service";
 import type { UserFilters } from "../types/account.types";
 
 /**
@@ -16,7 +15,7 @@ import type { UserFilters } from "../types/account.types";
 export function useUsers(filters: UserFilters) {
   return useQuery({
     queryKey: accountKeys.users(filters),
-    queryFn: ({ signal }) => accountService.listUsers(filters, signal),
+    queryFn: ({ signal }) => userService.list(filters, signal),
     placeholderData: keepPreviousData,
   });
 }
@@ -25,11 +24,13 @@ export function useUsers(filters: UserFilters) {
  * Chi tiết người dùng.
  *
  * @param id - Id người dùng.
+ * @param options - `enabled` để chỉ tải khi cần (ví dụ sao chép).
  * @returns Truy vấn React Query.
  */
-export function useUser(id: string) {
+export function useUser(id: string, options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: accountKeys.user(id),
-    queryFn: ({ signal }) => accountService.getUser(id, signal),
+    queryFn: ({ signal }) => userService.get(id, signal),
+    enabled: options.enabled ?? true,
   });
 }

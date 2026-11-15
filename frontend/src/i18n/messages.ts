@@ -9,21 +9,21 @@ import type { AppLocale } from "./routing";
  * @returns Message đã gộp theo namespace.
  */
 export async function loadMessages(locale: AppLocale) {
-  const [common, auth, account, iam, system, dashboard] = await Promise.all([
+  const [common, auth, account, iam, manageApp, attachment] = await Promise.all([
     import(`../messages/${locale}.json`),
     import(`../modules/auth/messages/${locale}.json`),
     import(`../modules/account/messages/${locale}.json`),
     import(`../modules/iam/messages/${locale}.json`),
-    import(`../modules/system/messages/${locale}.json`),
-    import(`../modules/dashboard/messages/${locale}.json`),
+    import(`../modules/manage-app/messages/${locale}.json`),
+    import(`../modules/attachment/messages/${locale}.json`),
   ]);
   return {
     ...common.default,
     auth: auth.default,
     account: account.default,
     iam: iam.default,
-    system: system.default,
-    dashboard: dashboard.default,
+    manageApp: manageApp.default,
+    attachment: attachment.default,
   };
 }
 

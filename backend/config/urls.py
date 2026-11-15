@@ -10,7 +10,6 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("api/v1/account/", include("app.modules.account.urls")),
     path("api/v1/iam/", include("app.modules.iam.urls")),
     path("api/v1/", include("app.modules.attachment.urls")),
-    path("api/v1/system/", include("app.modules.system.urls")),
     path("api/v1/health", include("app.modules.health.urls")),
     path("api/v1/short_links/", include("app.modules.short_links.urls")),
     path("api/v1/custom_pages/", include("app.modules.custom_pages.urls")),

@@ -10,9 +10,6 @@ from app.modules.account.serializers.responses.user_detail_response_serializer i
 from app.modules.iam.serializers.responses.role_summary_response_serializer import (
     RoleSummaryResponseSerializer,
 )
-from app.modules.system.serializers.responses.module_list_response_serializer import (
-    ModuleListResponseSerializer,
-)
 
 
 class CurrentUserResponseSerializer(serializers.Serializer[Any]):
@@ -23,4 +20,3 @@ class CurrentUserResponseSerializer(serializers.Serializer[Any]):
     permissions = serializers.ListField(
         child=serializers.CharField(), help_text="Mã quyền hiệu lực (superuser: FE coi là có mọi quyền)."
     )
-    modules = ModuleListResponseSerializer(many=True, help_text="Module đang bật mà UI có thể hiển thị.")

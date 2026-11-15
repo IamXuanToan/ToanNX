@@ -57,12 +57,12 @@ class AuthService:
         self.user_service = user_service or UserService()
         self.current_user_service = current_user_service or CurrentUserService(user_service=self.user_service)
 
-    def login(self, request: HttpRequest, email: str, password: str) -> AuthResult:
-        """Đăng nhập bằng email + mật khẩu.
+    def login(self, request: HttpRequest, identifier: str, password: str) -> AuthResult:
+        """Đăng nhập bằng email hoặc tên người dùng + mật khẩu.
 
         Args:
             request: HTTP request (để lấy IP/User-Agent).
-            email: Email.
+            identifier: Email hoặc tên người dùng.
             password: Mật khẩu.
 
         Returns:
@@ -73,9 +73,9 @@ class AuthService:
             AuthenticationError: Sai thông tin hoặc tài khoản bị khóa.
         """
         # ============================================================
-        # BƯỚC 1: Rate limit theo email + IP
+        # BƯỚC 1: Rate limit theo tài khoản + IP
         # ============================================================
-        normalized = email.strip().lower()
+        normalized = identifier.strip().lower()
         ip = get_client_ip(request)
         limit_key = f"login:{normalized}:{ip}"
         window = settings.AUTH_LOGIN_RATE_WINDOW_SECONDS
@@ -84,11 +84,11 @@ class AuthService:
         # ============================================================
         # BƯỚC 2: Xác thực (qua Django backend → UserService)
         # ============================================================
-        user = authenticate(request, email=normalized, password=password)
+        user = authenticate(request, username=identifier.strip(), password=password)
         if not isinstance(user, User) or user.deleted_at is not None:
             logger.info("Đăng nhập thất bại")
             raise AuthenticationError(
-                "Email hoặc mật khẩu không đúng.", code=ErrorCode.AUTH_INVALID_CREDENTIALS
+                "Tài khoản hoặc mật khẩu không đúng.", code=ErrorCode.AUTH_INVALID_CREDENTIALS
             )
         if not user.is_active:
             raise AuthenticationError("Tài khoản đã bị khóa.", code=ErrorCode.AUTH_USER_INACTIVE)

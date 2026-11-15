@@ -22,3 +22,8 @@ class AccountPermission(PermissionCatalog):
         name="Cập nhật người dùng",
         description="Sửa thông tin, đặt lại mật khẩu, khóa/mở tài khoản, bật quyền vào quản trị.",
     )
+    USER_DELETE = PermissionDefinition(
+        code="account.user.delete",
+        name="Xóa người dùng",
+        description="Xóa (mềm) tài khoản, thu hồi mọi phiên; không xóa chính mình hay superuser cuối.",
+    )

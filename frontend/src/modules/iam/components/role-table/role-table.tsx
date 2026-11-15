@@ -3,79 +3,166 @@
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-import { EmptyState } from "@/shares/components/common/empty-state";
-import { ErrorState } from "@/shares/components/errors/error-state";
+import { TableStatusSwitch } from "@/shares/components/common/data-table/components/table-status-switch";
+import { DataTable } from "@/shares/components/common/data-table/data-table";
+import type { DataTableColumn } from "@/shares/components/common/data-table/types";
+import { FilterSelect } from "@/shares/components/common/filter-select/filter-select";
 import { Badge } from "@/shares/components/ui/badge";
-import { Skeleton } from "@/shares/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shares/components/ui/table";
-import { APP_ROUTES } from "@/shares/constants/routes";
 
+import { IAM_ROUTES } from "../../constants/routes";
+import type { Role } from "../../types/iam.types";
 import { useRoleTable } from "./hooks/use-role-table";
 
 /**
- * Bảng vai trò.
+ * Bảng vai trò: tìm, sắp xếp, ghim cột, phân trang; cột Trạng thái bật/tắt; Thao tác: Sửa, Sao chép, Xoá;
+ * thao tác hàng loạt.
+ * Thao tác nào hiện tuỳ quyền view truyền xuống.
  *
+ * @param props - Quyền tạo, sửa và xoá của người xem.
  * @returns Bảng vai trò.
  */
-export function RoleTable() {
+export function RoleTable({
+  canCreate,
+  canUpdate,
+  canDelete,
+}: {
+  canCreate: boolean;
+  canUpdate: boolean;
+  canDelete: boolean;
+}) {
   const t = useTranslations("iam.roles");
   const tStatus = useTranslations("common.status");
-  const { query } = useRoleTable();
+  const { query, table, edit, copy, setActive, remove, bulkSetActive, bulkRemove } = useRoleTable();
 
-  if (query.isError) return <ErrorState onRetry={() => query.refetch()} />;
+  const columns: DataTableColumn<Role>[] = [
+    {
+      id: "role",
+      header: t("columns.role"),
+      sortKey: "name",
+      mobile: "title",
+      className: "md:w-full",
+      cell: (role) => (
+        <div className="min-w-0">
+          <Link
+            href={IAM_ROUTES.roleDetail(role.id)}
+            className="hover:text-primary block truncate font-medium underline-offset-4 hover:underline"
+          >
+            {role.name}
+          </Link>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground truncate font-mono text-xs">{role.code}</span>
+            {role.isSystem ? <Badge variant="outline">{t("system")}</Badge> : null}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "permissions",
+      header: t("columns.permissions"),
+      sortKey: "permission_count",
+      align: "end",
+      cell: (role) => <span className="tabular-nums">{role.permissionCount}</span>,
+    },
+    {
+      id: "users",
+      header: t("columns.users"),
+      sortKey: "user_count",
+      align: "end",
+      cell: (role) => <span className="tabular-nums">{role.userCount}</span>,
+    },
+    {
+      id: "status",
+      header: t("columns.status"),
+      sortKey: "is_active",
+      cell: (role) => (
+        <TableStatusSwitch
+          checked={role.isActive}
+          onLabel={tStatus("active")}
+          offLabel={tStatus("inactive")}
+          aria-label={role.isActive ? t("actions.deactivate") : t("actions.activate")}
+          onCheckedChange={
+            canUpdate && !role.isSystem ? (checked) => setActive(role, checked) : undefined
+          }
+        />
+      ),
+    },
+  ];
+
   return (
-    <div className="overflow-x-auto rounded-xl border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t("columns.role")}</TableHead>
-            <TableHead className="text-right">{t("columns.permissions")}</TableHead>
-            <TableHead className="text-right">{t("columns.users")}</TableHead>
-            <TableHead>{t("columns.status")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {query.isPending ? (
-            <TableRow>
-              <TableCell colSpan={4}>
-                <Skeleton className="h-16 w-full" />
-              </TableCell>
-            </TableRow>
-          ) : (
-            query.data.items.map((role) => (
-              <TableRow key={role.id}>
-                <TableCell>
-                  <Link
-                    href={APP_ROUTES.adminRoleDetail(role.id)}
-                    className="font-medium hover:underline"
-                  >
-                    {role.name}
-                  </Link>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground font-mono text-xs">{role.code}</span>
-                    {role.isSystem ? <Badge variant="outline">{t("system")}</Badge> : null}
-                  </div>
-                </TableCell>
-                <TableCell className="text-right tabular-nums">{role.permissionCount}</TableCell>
-                <TableCell className="text-right tabular-nums">{role.userCount}</TableCell>
-                <TableCell>
-                  <Badge variant={role.isActive ? "secondary" : "destructive"}>
-                    {role.isActive ? tStatus("active") : tStatus("inactive")}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      {query.data && query.data.items.length === 0 ? <EmptyState title={t("empty")} /> : null}
-    </div>
+    <DataTable
+      tableId="iam-roles"
+      columns={columns}
+      rows={query.data?.items}
+      getRowId={(role) => role.id}
+      getRowLabel={(role) => role.name}
+      search={{ ...table.search, placeholder: t("searchPlaceholder") }}
+      onClearFilters={table.hasFilters ? table.clearFilters : undefined}
+      filters={
+        <>
+          <FilterSelect
+            label={t("columns.status")}
+            value={table.getFilterValues("isActive")}
+            onValueChange={(values) => table.setFilterValues("isActive", values)}
+            options={[
+              { value: "true", label: tStatus("active") },
+              { value: "false", label: tStatus("inactive") },
+            ]}
+          />
+          <FilterSelect
+            label={t("filters.type")}
+            value={table.getFilterValues("isSystem")}
+            onValueChange={(values) => table.setFilterValues("isSystem", values)}
+            options={[
+              { value: "true", label: t("system") },
+              { value: "false", label: t("filters.custom") },
+            ]}
+          />
+          <FilterSelect
+            label={t("filters.policy")}
+            value={table.getFilterValues("autoGrant")}
+            onValueChange={(values) => table.setFilterValues("autoGrant", values)}
+            options={[
+              { value: "none", label: t("policies.none") },
+              { value: "all", label: t("policies.all") },
+              { value: "read_only", label: t("policies.read_only") },
+            ]}
+          />
+        </>
+      }
+      ordering={table.ordering}
+      onOrderingChange={table.onOrderingChange}
+      isLoading={query.isPending}
+      isFetching={query.isFetching && !query.isPending}
+      error={query.isError ? { onRetry: () => query.refetch() } : null}
+      empty={{ title: t("empty") }}
+      onReload={() => query.refetch()}
+      pagination={
+        query.data
+          ? {
+              value: query.data.pagination,
+              onPageChange: table.onPageChange,
+              onPageSizeChange: table.onPageSizeChange,
+            }
+          : undefined
+      }
+      onEdit={canUpdate ? edit : undefined}
+      onCopy={canCreate ? copy : undefined}
+      onDelete={canDelete ? remove : undefined}
+      canDeleteRow={(role) => !role.isSystem}
+      canSelectRow={(role) => !role.isSystem}
+      bulkStatus={
+        canUpdate
+          ? {
+              options: [
+                { value: "active", label: tStatus("active") },
+                { value: "inactive", label: tStatus("inactive") },
+              ],
+              onChange: (roles, value) => bulkSetActive(roles, value === "active"),
+            }
+          : undefined
+      }
+      onBulkDelete={canDelete ? bulkRemove : undefined}
+      aria-label={t("title")}
+    />
   );
 }

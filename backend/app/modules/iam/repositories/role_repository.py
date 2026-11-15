@@ -13,7 +13,7 @@ class RoleRepository(CoreRepository[Role]):
     """Truy cập dữ liệu vai trò."""
 
     model = Role
-    default_ordering = ("code",)
+    default_ordering = ("-created_at", "-pk")
     ordering_fields = frozenset({"code", "name", "created_at"})
 
     def get_queryset(self) -> QuerySet[Role]:
@@ -56,4 +56,4 @@ class RoleRepository(CoreRepository[Role]):
         Returns:
             Danh sách vai trò.
         """
-        return list(Role.objects.alive().filter(user_roles__user_id=user_id).order_by("name"))
+        return list(Role.objects.alive().filter(user_roles__user_id=user_id).order_by("-created_at", "-pk"))

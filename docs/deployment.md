@@ -78,7 +78,7 @@ curl -s https://toannx.com/api/v1/health/ready      # {"success":true,"data":{"s
 curl -sI https://toannx.com/vi/quan-tri              # 307 → /vi/dang-nhap?next=...
 ```
 
-Đăng nhập, kiểm tra cookie `toannx_access`/`toannx_refresh`/`toannx_session` có `Secure; HttpOnly`, host `toannx.com`.
+Đăng nhập, kiểm tra cookie `access_token`/`refresh_token`/`session_hint` có `Secure; HttpOnly`, host `toannx.com`.
 
 ## Rủi ro đã biết
 

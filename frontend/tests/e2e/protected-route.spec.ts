@@ -8,7 +8,7 @@ test.describe("Bảo vệ route quản trị", () => {
   }) => {
     await page.goto("/vi/quan-tri/nguoi-dung");
     await expect(page).toHaveURL(/\/vi\/dang-nhap\?next=%2Fvi%2Fquan-tri%2Fnguoi-dung/);
-    await page.getByLabel("Email").fill(E2E_ADMIN.email);
+    await page.getByLabel("Email hoặc tên người dùng").fill(E2E_ADMIN.email);
     await page.getByLabel("Mật khẩu", { exact: true }).fill(E2E_ADMIN.password);
     await page.getByRole("button", { name: "Đăng nhập" }).click();
     await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung$/);
@@ -17,7 +17,7 @@ test.describe("Bảo vệ route quản trị", () => {
 
   test("cookie gợi ý phiên giả không vượt qua được backend", async ({ page, context, baseURL }) => {
     await context.addCookies([
-      { name: "toannx_session", value: "1", url: baseURL ?? "http://localhost:3000" },
+      { name: "session_hint", value: "1", url: baseURL ?? "http://localhost:3000" },
     ]);
     await page.goto("/vi/quan-tri");
     // Proxy cho qua (kiểm tra lạc quan) nhưng backend từ chối → về trang đăng nhập.

@@ -1,10 +1,21 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { iamKeys } from "@/shares/constants/query-keys";
+import { iamKeys } from "../constants/query-keys";
+import { permissionService } from "../services/permission.service";
+import { roleService } from "../services/role.service";
+import { userRoleService } from "../services/user-role.service";
+import type { RoleFilters } from "../types/iam.types";
 
-import { iamService } from "../services/iam.service";
+/** @returns Đủ vai trò cho bộ lọc và ô chọn, không cắt ở trang đầu. */
+export function useRoleOptions(options: { enabled?: boolean } = {}) {
+  return useQuery({
+    queryKey: iamKeys.roleOptions(),
+    queryFn: ({ signal }) => roleService.listAll(signal),
+    enabled: options.enabled ?? true,
+  });
+}
 
 /**
  * Vai trò đang gán cho người dùng.
@@ -16,21 +27,23 @@ import { iamService } from "../services/iam.service";
 export function useUserRoles(userId: string, options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: iamKeys.userRoles(userId),
-    queryFn: ({ signal }) => iamService.listUserRoles(userId, signal),
+    queryFn: ({ signal }) => userRoleService.list(userId, signal),
     enabled: options.enabled ?? true,
   });
 }
 
 /**
- * Danh sách vai trò.
+ * Danh sách vai trò (giữ dữ liệu trang trước khi chuyển trang).
  *
+ * @param filters - Từ khóa và phân trang.
  * @param options - `enabled` để chỉ tải khi cần.
  * @returns Truy vấn React Query.
  */
-export function useRoles(options: { enabled?: boolean } = {}) {
+export function useRoles(filters: RoleFilters, options: { enabled?: boolean } = {}) {
   return useQuery({
-    queryKey: iamKeys.roles({ page: 1 }),
-    queryFn: ({ signal }) => iamService.listRoles(1, signal),
+    queryKey: iamKeys.roles(filters),
+    queryFn: ({ signal }) => roleService.list(filters, signal),
+    placeholderData: keepPreviousData,
     enabled: options.enabled ?? true,
   });
 }
@@ -39,12 +52,14 @@ export function useRoles(options: { enabled?: boolean } = {}) {
  * Chi tiết vai trò kèm quyền.
  *
  * @param id - Id vai trò.
+ * @param options - `enabled` để chỉ tải khi cần (ví dụ sao chép).
  * @returns Truy vấn React Query.
  */
-export function useRole(id: string) {
+export function useRole(id: string, options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: iamKeys.role(id),
-    queryFn: ({ signal }) => iamService.getRole(id, signal),
+    queryFn: ({ signal }) => roleService.get(id, signal),
+    enabled: options.enabled ?? true,
   });
 }
 
@@ -57,7 +72,7 @@ export function useRole(id: string) {
 export function usePermissions(options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: iamKeys.permissions(),
-    queryFn: ({ signal }) => iamService.listPermissions(signal),
+    queryFn: ({ signal }) => permissionService.list(signal),
     staleTime: Infinity,
     enabled: options.enabled ?? true,
   });

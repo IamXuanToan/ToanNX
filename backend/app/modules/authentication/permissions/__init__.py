@@ -1,0 +1,1 @@
+"""Quyền của module Authentication."""

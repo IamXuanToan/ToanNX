@@ -7,6 +7,8 @@ from django.urls import path
 from rest_framework.routers import SimpleRouter
 
 from app.modules.iam.views.permission_view_set import PermissionViewSet
+from app.modules.iam.views.role_bulk_delete_view import RoleBulkDeleteView
+from app.modules.iam.views.role_bulk_update_view import RoleBulkUpdateView
 from app.modules.iam.views.role_permission_view import RolePermissionObjectView, RolePermissionView
 from app.modules.iam.views.role_view_set import RoleViewSet
 from app.modules.iam.views.user_role_view import UserRoleObjectView, UserRoleView
@@ -18,6 +20,8 @@ router.register("roles", RoleViewSet, basename="roles")
 router.register("permissions", PermissionViewSet, basename="permissions")
 
 urlpatterns = [
+    path("roles/bulk-update", RoleBulkUpdateView.as_view(), name="roles-bulk-update"),
+    path("roles/bulk-delete", RoleBulkDeleteView.as_view(), name="roles-bulk-delete"),
     path("users/<uuid:user_id>/roles", UserRoleView.as_view(), name="user-roles"),
     path("users/<uuid:user_id>/roles/<uuid:role_id>", UserRoleObjectView.as_view(), name="user-roles-object"),
     path("roles/<uuid:role_id>/permissions", RolePermissionView.as_view(), name="role-permissions"),

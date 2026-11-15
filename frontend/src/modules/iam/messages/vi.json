@@ -8,14 +8,11 @@
   },
   "roles": {
     "title": "Vai trò",
-    "description": "Vai trò gom nhóm quyền để gán cho người dùng.",
     "empty": "Chưa có vai trò.",
     "system": "Hệ thống",
     "create": "Tạo vai trò",
-    "createDescription": "Sau khi tạo, gán quyền ở trang chi tiết.",
     "info": "Thông tin vai trò",
     "permissions": "Quyền",
-    "permissionsHint": "Bật/tắt quyền của vai trò. Bạn chỉ cấp được quyền mà bạn đang có.",
     "systemHint": "Vai trò hệ thống, chỉ superuser được thay đổi.",
     "columns": {
       "role": "Vai trò",
@@ -28,12 +25,55 @@
       "codeHint": "Ví dụ: NOVEL_EDITOR. Không đổi được sau khi tạo.",
       "name": "Tên vai trò",
       "description": "Mô tả",
-      "isActive": "Đang hoạt động"
-    }
+      "isActive": "Đang hoạt động",
+      "isActiveHint": "Tắt để vai trò không còn cấp quyền cho người dùng."
+    },
+    "searchPlaceholder": "Tìm theo mã, tên…",
+    "actions": {
+      "deactivate": "Tắt vai trò",
+      "activate": "Bật vai trò"
+    },
+    "copyName": "{name} (bản sao)",
+    "filters": {
+      "allStatuses": "Mọi trạng thái",
+      "type": "Loại vai trò",
+      "allTypes": "Mọi loại vai trò",
+      "custom": "Tùy chỉnh",
+      "policy": "Chính sách tự cấp quyền",
+      "allPolicies": "Mọi chính sách"
+    },
+    "policies": {
+      "none": "Cấp thủ công",
+      "all": "Tự cấp mọi quyền",
+      "read_only": "Tự cấp quyền đọc"
+    },
+    "sections": {
+      "status": "Trạng thái"
+    },
+    "clearPermissions": "Bỏ chọn tất cả quyền",
+    "inactive": "Đang tắt",
+    "permissionsSelected": "Đã chọn {count} quyền. Quyền được lưu cùng nút Tạo/Lưu; bạn chỉ cấp được quyền mà bạn đang có."
   },
   "userRoles": {
     "title": "Vai trò",
-    "hint": "Quyền của người dùng là tổng hợp quyền từ các vai trò đang bật.",
-    "superuserHint": "Superuser có toàn quyền; vai trò không ảnh hưởng."
+    "hint": "Quyền của người dùng là tổng hợp quyền từ các vai trò đang bật. Lưu cùng nút Tạo/Lưu.",
+    "superuserHint": "Superuser có toàn quyền; vai trò không ảnh hưởng.",
+    "selectedCount": "Đã chọn {count}/{total}"
+  },
+  "permissions": {
+    "title": "Quyền",
+    "searchPlaceholder": "Tìm theo tên, mã, mô tả…",
+    "allModules": "Mọi module",
+    "module": "Module",
+    "empty": "Không có quyền phù hợp.",
+    "clearFilters": "Xóa bộ lọc",
+    "modules": {
+      "account": "Tài khoản",
+      "authentication": "Xác thực",
+      "iam": "Phân quyền",
+      "attachment": "Tệp đính kèm",
+      "short_links": "Liên kết ngắn",
+      "custom_pages": "Trang tùy chỉnh"
+    }
   }
 }

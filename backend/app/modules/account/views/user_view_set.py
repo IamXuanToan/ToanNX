@@ -4,6 +4,7 @@ GET    /account/users?search=&is_active=&is_staff=&ordering=&page=&page_size=
 POST   /account/users
 GET    /account/users/{id}
 PATCH  /account/users/{id}
+DELETE /account/users/{id}   (xóa mềm)
 """
 
 from app.modules.account.filters.user_filter import UserFilter
@@ -27,21 +28,22 @@ from app.modules.iam.views.admin_model_view_set import AdminModelViewSet
 
 
 class UserViewSet(AdminModelViewSet[User]):
-    """CRUD người dùng (không có xóa: khóa tài khoản bằng `is_active=false`)."""
+    """CRUD người dùng (xóa là xóa mềm)."""
 
     service_class = UserService
     filterset_class = UserFilter
     search_fields = ("email", "username", "first_name", "last_name")
-    ordering_fields = ("created_at", "email", "last_login")
+    ordering_fields = ("created_at", "email", "last_login", "last_seen_at", "is_active", "is_superuser")
     ordering = ("-created_at",)
     list_serializer_class = UserListResponseSerializer
     detail_serializer_class = UserDetailResponseSerializer
     create_serializer_class = UserCreateValidateSerializer
     update_serializer_class = UserUpdateValidateSerializer
-    http_method_names = ["get", "post", "patch", "head", "options"]
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
     action_permissions = {
         "list": permission_rule(AccountPermission.USER_READ),
         "retrieve": permission_rule(AccountPermission.USER_READ),
         "create": permission_rule(AccountPermission.USER_CREATE),
         "partial_update": permission_rule(AccountPermission.USER_UPDATE),
+        "destroy": permission_rule(AccountPermission.USER_DELETE),
     }

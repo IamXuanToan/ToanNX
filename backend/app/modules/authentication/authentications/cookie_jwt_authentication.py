@@ -16,7 +16,7 @@ class CookieJwtAuthentication(BaseAuthentication):
     """Xác thực bằng access JWT.
 
     - Nguồn token: header `Authorization: Bearer` (không cần CSRF) hoặc cookie
-      `toannx_access` (bắt buộc CSRF cho phương thức thay đổi trạng thái).
+      `access_token` (bắt buộc CSRF cho phương thức thay đổi trạng thái).
     - Kiểm tra token + phiên ủy quyền cho AuthSessionService.
     """
 

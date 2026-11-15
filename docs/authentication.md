@@ -6,14 +6,24 @@ Không có đăng ký (`/register`, `/signup` trả 404). Đăng nhập bằng e
 
 | Method | Path | Xác thực | CSRF | Mô tả |
 | --- | --- | --- | --- | --- |
-| GET | `/csrf` | — | — | Đặt cookie `toannx_csrf`, trả token |
+| GET | `/csrf` | — | — | Đặt cookie `csrftoken`, trả token |
 | POST | `/login` | — | ✔ | Đăng nhập, đặt cookie phiên, trả `{user, permissions, modules}` |
 | POST | `/refresh` | refresh cookie | ✔ | Xoay vòng refresh token; lỗi → 401 + xóa cookie |
 | POST | `/logout` | refresh cookie | ✔ | Thu hồi phiên hiện tại (hoạt động cả khi access hết hạn) |
 | POST | `/logout-all` | access | ✔ (nếu dùng cookie) | Thu hồi mọi phiên |
-| GET | `/me` | access | — | Người dùng, quyền hiệu lực, module đang bật |
+| GET | `/me` | access | — | Người dùng, vai trò, quyền hiệu lực |
 | GET | `/sessions` | access | — | Phiên còn hiệu lực (`is_current`) |
 | DELETE | `/sessions/{id}` | access | ✔ | Thu hồi một phiên của chính mình |
+| GET | `/admin-sessions` | staff + `authentication.session.read` | — | Phiên của mọi người dùng, phân trang; tìm email/tên/thiết bị/IP; lọc `user` (UUID), `status` (`ACTIVE/REVOKED/EXPIRED`) |
+| DELETE | `/admin-sessions/{id}` | staff + `authentication.session.revoke` | ✔ | Thu hồi phiên, giữ lịch sử; chỉ superuser được tác động phiên superuser |
+
+API quản trị không trả token/hash. Thu hồi có khóa dòng và có hiệu lực ngay với access/refresh token.
+`POST /admin-sessions/bulk-delete` nhận `ids` (1–100), yêu cầu staff và quyền
+`authentication.session.delete`: thu hồi hiệu lực rồi xóa mềm (`deleted_at`), ẩn khỏi mọi danh sách.
+Giữ nguyên bản ghi và token hash để bảo toàn lịch sử; chỉ superuser được xóa phiên của superuser.
+Toàn bộ lô nằm trong một transaction; xóa chính phiên đang dùng sẽ xóa cookie.
+Phiên đã thu hồi/hết hạn không bị xóa; gọi thu hồi lại không đổi lịch sử. Khi thu hồi chính phiên đang dùng,
+backend xóa cookie. Giao diện đánh dấu phiên hiện tại và chỉ cho thu hồi các phiên đang hoạt động khác.
 
 ## Token
 
@@ -22,12 +32,12 @@ Không có đăng ký (`/register`, `/signup` trả 404). Đăng nhập bằng e
 | Dạng | JWT HS256 (`sub`, `sid`, `jti`, `typ=access`, `iss`, `aud`, `exp`) | 48 byte ngẫu nhiên (`secrets.token_urlsafe`) |
 | Lưu server | Không | `auth_refresh_token.token_hash` = HMAC-SHA256(SECRET_KEY, token) |
 | Thời hạn | `AUTH_ACCESS_TOKEN_LIFETIME_SECONDS` (mặc định 600) | Bằng thời hạn phiên `AUTH_REFRESH_TOKEN_LIFETIME_SECONDS` (mặc định 7 ngày, tuyệt đối) |
-| Cookie | `toannx_access`, HttpOnly, SameSite=Lax, Path=`/api` | `toannx_refresh`, HttpOnly, SameSite=Strict, Path=`/api/v1/auth` |
+| Cookie | `access_token`, HttpOnly, SameSite=Lax, Path=`/api` | `refresh_token`, HttpOnly, SameSite=Strict, Path=`/api/v1/auth` |
 
 Access JWT ký HS256 bằng chính `SECRET_KEY` (biến `DJANGO_SECRET_KEY`, secret chung của hệ thống);
 không có secret JWT riêng. Đổi `DJANGO_SECRET_KEY` sẽ vô hiệu mọi access/refresh token đang có.
 
-Cookie thứ ba `toannx_session=1` (HttpOnly, Path=`/`) chỉ để `proxy.ts` kiểm tra lạc quan; không chứa bí mật.
+Cookie thứ ba `session_hint=1` (HttpOnly, Path=`/`) chỉ để `proxy.ts` kiểm tra lạc quan; không chứa bí mật.
 Tất cả cookie host-only (không đặt `Domain`), `Secure` khi `DJANGO_DEBUG=False`.
 
 Access token gắn `sid`. Mỗi request, `CookieJwtAuthentication` kiểm tra phiên còn hiệu lực và tài khoản active
@@ -51,7 +61,7 @@ Thu hồi do reuse/hết hạn được **commit trước** khi raise lỗi.
 ## CSRF
 
 Cookie tự động gửi kèm nên mọi request đổi trạng thái dùng cookie phải qua CSRF của Django:
-double-submit (`toannx_csrf` cookie đọc được bằng JS + header `X-CSRFToken`) và kiểm tra Origin theo
+double-submit (`csrftoken` cookie đọc được bằng JS + header `X-CSRFToken`) và kiểm tra Origin theo
 `CSRF_TRUSTED_ORIGINS`. Không coi SameSite là đủ. Áp dụng cho login (chống login CSRF), refresh, logout và
 mọi API ghi khi xác thực bằng cookie. Request dùng `Authorization: Bearer` không cần CSRF.
 Sau đăng nhập CSRF token được xoay vòng (`rotate_token`).

@@ -1,10 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  canAccessAdmin,
-  hasPermission,
-  sanitizeNextPath,
-} from "@/modules/auth/services/auth.service";
+import { sanitizeNextPath } from "@/modules/auth/services/auth.service";
+import { canAccessAdmin, hasPermission } from "@/modules/auth/services/current-user.service";
 import type { CurrentUser } from "@/modules/auth/types/auth.types";
 
 function current(overrides: Partial<CurrentUser["user"]>, permissions: string[] = []): CurrentUser {
@@ -22,6 +19,7 @@ function current(overrides: Partial<CurrentUser["user"]>, permissions: string[] 
       isSuperuser: false,
       isNovel: false,
       lastLogin: null,
+      lastSeenAt: null,
       dateJoined: "",
       createdAt: "",
       updatedAt: "",
@@ -29,7 +27,6 @@ function current(overrides: Partial<CurrentUser["user"]>, permissions: string[] 
     },
     roles: [],
     permissions,
-    modules: [],
   };
 }
 

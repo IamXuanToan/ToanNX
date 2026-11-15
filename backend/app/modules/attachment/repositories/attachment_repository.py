@@ -17,4 +17,4 @@ class AttachmentRepository(CoreRepository[Attachment]):
         Returns:
             QuerySet.
         """
-        return Attachment.objects.alive()
+        return Attachment.objects.alive().select_related("created_by", "folder")

@@ -27,21 +27,22 @@ from app.modules.iam.views.admin_model_view_set import AdminModelViewSet
 
 
 class RoleViewSet(AdminModelViewSet[Role]):
-    """CRUD vai trò (không có xóa: tắt vai trò bằng `is_active=false`)."""
+    """CRUD vai trò, bao gồm xóa mềm."""
 
     service_class = RoleService
     filterset_class = RoleFilter
     search_fields = ("code", "name", "description")
-    ordering_fields = ("code", "name", "created_at")
-    ordering = ("code",)
+    ordering_fields = ("code", "name", "created_at", "is_active", "permission_count", "user_count")
+    ordering = ("-created_at", "-pk")
     list_serializer_class = RoleListResponseSerializer
     detail_serializer_class = RoleDetailResponseSerializer
     create_serializer_class = RoleCreateValidateSerializer
     update_serializer_class = RoleUpdateValidateSerializer
-    http_method_names = ["get", "post", "patch", "head", "options"]
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
     action_permissions = {
         "list": permission_rule(IamPermission.ROLE_READ),
         "retrieve": permission_rule(IamPermission.ROLE_READ),
         "create": permission_rule(IamPermission.ROLE_CREATE),
         "partial_update": permission_rule(IamPermission.ROLE_UPDATE),
+        "destroy": permission_rule(IamPermission.ROLE_DELETE),
     }

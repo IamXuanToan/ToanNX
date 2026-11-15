@@ -1,33 +1,50 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
+import { Link } from "@/i18n/navigation";
 import { PermissionGate } from "@/modules/auth/components/permission-gate";
-import { PageHeader } from "@/shares/components/common/page-header";
+import { usePermission } from "@/modules/auth/hooks/use-permission";
+import { PageHeader } from "@/shares/components/common/page-header/page-header";
+import { Button } from "@/shares/components/ui/button";
 
-import { CreateUserDialog } from "../components/create-user-dialog/create-user-dialog";
 import { UserTable } from "../components/user-table/user-table";
 import { ACCOUNT_PERMISSIONS } from "../constants/account-permissions";
+import { ACCOUNT_ROUTES } from "../constants/routes";
 
 /**
  * Trang danh sách người dùng.
  *
  * @returns Giao diện danh sách người dùng.
  */
-export function UserListView() {
+export function UserListView({ roleFilter }: { roleFilter?: ReactNode }) {
   const t = useTranslations("account.users");
+  const canCreate = usePermission(ACCOUNT_PERMISSIONS.userCreate);
+  const canUpdate = usePermission(ACCOUNT_PERMISSIONS.userUpdate);
+  const canDelete = usePermission(ACCOUNT_PERMISSIONS.userDelete);
   return (
     <div className="space-y-6">
       <PageHeader
         title={t("title")}
-        description={t("description")}
         actions={
           <PermissionGate permission={ACCOUNT_PERMISSIONS.userCreate}>
-            <CreateUserDialog />
+            <Button asChild>
+              <Link href={ACCOUNT_ROUTES.userCreate}>
+                <Plus />
+                {t("create")}
+              </Link>
+            </Button>
           </PermissionGate>
         }
       />
-      <UserTable />
+      <UserTable
+        canCreate={canCreate}
+        canUpdate={canUpdate}
+        canDelete={canDelete}
+        roleFilter={roleFilter}
+      />
     </div>
   );
 }
