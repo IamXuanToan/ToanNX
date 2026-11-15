@@ -49,6 +49,6 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Bỏ qua API (rewrite sang Django), file nội bộ Next và file tĩnh.
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // Bỏ qua API (rewrite sang Django), file nội bộ Next, file tĩnh và link rút gọn `/s/{slug}` (route handler).
+  matcher: ["/((?!api|_next|_vercel|s/|.*\\..*).*)"],
 };

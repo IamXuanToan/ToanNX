@@ -1,0 +1,49 @@
+"use client";
+
+import { useRouter } from "@/i18n/navigation";
+import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
+
+import { SHORT_LINKS_ROUTES } from "../../../constants/routes";
+import {
+  useBulkDeleteShortLinks,
+  useBulkSetShortLinkStatus,
+  useDeleteShortLink,
+  useShortLinks,
+} from "../../../hooks/use-short-links";
+import {
+  REDIRECT_TYPES,
+  SHORT_LINK_FILTER_STATUSES,
+  type ShortLink,
+  type ShortLinkStatus,
+} from "../../../types/short-links.types";
+
+/**
+ * State bảng link rút gọn: tìm, lọc trạng thái (gồm EXPIRED) và kiểu chuyển hướng, sắp xếp, phân trang URL,
+ * bật/tắt ở cột Trạng thái, xóa, thao tác hàng loạt.
+ *
+ * @returns Truy vấn, state bảng và handler.
+ */
+export function useShortLinkTable() {
+  const router = useRouter();
+  const table = useTableState({ ordering: "-created_at", filterKeys: ["status", "redirectType"] });
+  const query = useShortLinks({
+    ...table.filters,
+    status: pickAllowedValues(table.getFilterValues("status"), SHORT_LINK_FILTER_STATUSES),
+    redirectType: pickAllowedValues(table.getFilterValues("redirectType"), REDIRECT_TYPES),
+  });
+  const remove = useDeleteShortLink();
+  const bulkStatus = useBulkSetShortLinkStatus();
+  const bulkRemove = useBulkDeleteShortLinks();
+  const ids = (links: ShortLink[]) => links.map((link) => link.id);
+  return {
+    table,
+    query,
+    edit: (link: ShortLink) => router.push(SHORT_LINKS_ROUTES.linkDetail(link.id)),
+    setStatus: (link: ShortLink, status: ShortLinkStatus) =>
+      bulkStatus.mutate({ ids: [link.id], status }),
+    remove: (link: ShortLink) => remove.mutateAsync(link.id),
+    bulkSetStatus: (links: ShortLink[], status: ShortLinkStatus) =>
+      bulkStatus.mutateAsync({ ids: ids(links), status }),
+    bulkRemove: (links: ShortLink[]) => bulkRemove.mutateAsync(ids(links)),
+  };
+}

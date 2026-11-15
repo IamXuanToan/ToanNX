@@ -1,0 +1,75 @@
+{
+  "module": {
+    "name": "Link rút gọn",
+    "description": "Liên kết ngắn toannx.com/s/… chuyển hướng tới URL bất kỳ."
+  },
+  "nav": {
+    "links": "Link rút gọn"
+  },
+  "title": "Link rút gọn",
+  "create": "Tạo link rút gọn",
+  "empty": "Chưa có link rút gọn nào.",
+  "searchPlaceholder": "Tìm theo tên, slug, URL đích…",
+  "copied": "Đã sao chép link.",
+  "copy": "Sao chép {url}",
+  "inactive": "Tạm tắt",
+  "expired": "Hết hạn",
+  "columns": {
+    "name": "Link",
+    "destination": "URL đích",
+    "redirectType": "Chuyển hướng",
+    "expiresAt": "Hết hạn",
+    "owner": "Chủ sở hữu",
+    "status": "Trạng thái"
+  },
+  "actions": {
+    "enable": "Bật link",
+    "disable": "Tắt link"
+  },
+  "sections": {
+    "info": "Thông tin link",
+    "redirect": "Chuyển hướng",
+    "status": "Trạng thái"
+  },
+  "fields": {
+    "name": "Tên",
+    "slug": "Slug",
+    "slugHint": "Để trống để tự sinh. URL: toannx.com/s/<slug>",
+    "slugChangeHint": "Đổi slug làm URL cũ ngừng hoạt động.",
+    "destinationUrl": "URL đích",
+    "description": "Mô tả",
+    "redirectType": "Kiểu chuyển hướng",
+    "expiresAt": "Hết hạn lúc",
+    "status": "Trạng thái",
+    "isActiveHint": "Tắt để link trả về trang không khả dụng.",
+    "shortUrl": "Link ngắn"
+  },
+  "redirect": {
+    "302": "302 — tạm thời",
+    "302Hint": "Đổi URL đích có hiệu lực ngay (khuyên dùng).",
+    "301": "301 — vĩnh viễn",
+    "301Hint": "Trình duyệt/CDN có thể nhớ lâu.",
+    "301Warning": "Với 301, đổi URL đích sau này có thể không có hiệu lực ngay với người đã mở link."
+  },
+  "validation": {
+    "required": "Bắt buộc nhập.",
+    "url": "Cần URL http hoặc https đầy đủ.",
+    "slug": "Slug 3–64 ký tự, chỉ a-z, 0-9 và dấu gạch ngang.",
+    "future": "Thời điểm hết hạn phải ở tương lai."
+  },
+  "unavailable": {
+    "home": "Về trang chủ",
+    "not-found": {
+      "title": "Liên kết không tồn tại",
+      "description": "Liên kết đã bị tắt, bị xóa hoặc gõ sai."
+    },
+    "expired": {
+      "title": "Liên kết đã hết hạn",
+      "description": "Người tạo đã đặt thời hạn cho liên kết này."
+    },
+    "busy": {
+      "title": "Quá nhiều lượt truy cập",
+      "description": "Vui lòng thử lại sau ít phút."
+    }
+  }
+}

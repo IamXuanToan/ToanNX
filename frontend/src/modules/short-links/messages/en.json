@@ -1,0 +1,75 @@
+{
+  "module": {
+    "name": "Short links",
+    "description": "Short toannx.com/s/… links that redirect anywhere."
+  },
+  "nav": {
+    "links": "Short links"
+  },
+  "title": "Short links",
+  "create": "Create short link",
+  "empty": "No short links yet.",
+  "searchPlaceholder": "Search by name, slug, destination…",
+  "copied": "Link copied.",
+  "copy": "Copy {url}",
+  "inactive": "Disabled",
+  "expired": "Expired",
+  "columns": {
+    "name": "Link",
+    "destination": "Destination",
+    "redirectType": "Redirect",
+    "expiresAt": "Expires",
+    "owner": "Owner",
+    "status": "Status"
+  },
+  "actions": {
+    "enable": "Enable link",
+    "disable": "Disable link"
+  },
+  "sections": {
+    "info": "Link details",
+    "redirect": "Redirect",
+    "status": "Status"
+  },
+  "fields": {
+    "name": "Name",
+    "slug": "Slug",
+    "slugHint": "Leave empty to generate one. URL: toannx.com/s/<slug>",
+    "slugChangeHint": "Changing the slug stops the old URL from working.",
+    "destinationUrl": "Destination URL",
+    "description": "Description",
+    "redirectType": "Redirect type",
+    "expiresAt": "Expires at",
+    "status": "Status",
+    "isActiveHint": "Disable to show the unavailable page instead.",
+    "shortUrl": "Short link"
+  },
+  "redirect": {
+    "302": "302 — temporary",
+    "302Hint": "Destination changes apply immediately (recommended).",
+    "301": "301 — permanent",
+    "301Hint": "Browsers and CDNs may cache it for long.",
+    "301Warning": "With 301, later destination changes may not apply right away for people who already opened the link."
+  },
+  "validation": {
+    "required": "Required.",
+    "url": "Enter a full http or https URL.",
+    "slug": "Slug must be 3–64 characters: a-z, 0-9 and hyphens.",
+    "future": "The expiry must be in the future."
+  },
+  "unavailable": {
+    "home": "Back to home",
+    "not-found": {
+      "title": "Link not found",
+      "description": "The link was disabled, deleted or mistyped."
+    },
+    "expired": {
+      "title": "Link expired",
+      "description": "The owner set an expiry for this link."
+    },
+    "busy": {
+      "title": "Too many requests",
+      "description": "Please try again in a few minutes."
+    }
+  }
+}
