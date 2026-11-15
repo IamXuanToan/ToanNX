@@ -15,6 +15,14 @@ export function useJournalEntries(filters: JournalFilters) {
   );
 }
 
+/** @param id - Id mục nhật ký. @returns Một mục nhật ký. */
+export function useJournalEntry(id: string) {
+  return useQuery({
+    queryKey: journalKeys.entry(id),
+    queryFn: ({ signal }) => journalEntryService.get(id, signal),
+  });
+}
+
 /** @param enabled - Có quyền xem nhật ký. @returns Danh mục `module.model` (tĩnh trong phiên). */
 export function useJournalResources(enabled = true) {
   return useQuery({

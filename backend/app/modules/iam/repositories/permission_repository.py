@@ -55,6 +55,17 @@ class PermissionRepository(CoreRepository[Permission]):
         """
         return set(self.values_list("code", role_permissions__role_id=role_id))
 
+    def get_codes_for_roles(self, role_ids: Iterable[Any]) -> set[str]:
+        """Mã quyền đang hoạt động của nhiều vai trò (một query).
+
+        Args:
+            role_ids: Id vai trò.
+
+        Returns:
+            Tập mã quyền.
+        """
+        return set(self.values_list("code", role_permissions__role_id__in=list(role_ids)))
+
     def upsert_definition(self, definition: PermissionDefinition) -> bool:
         """Tạo/cập nhật quyền theo khai báo của module.
 

@@ -15,6 +15,7 @@ from app.modules.account.models.user import User
 from app.modules.account.services.user_service import UserService
 from app.modules.iam.constants.iam_error_code import IamErrorCode
 from app.modules.iam.models.role import Role
+from app.modules.iam.models.user_role import UserRole
 from app.modules.iam.repositories.permission_repository import PermissionRepository
 from app.modules.iam.repositories.role_repository import RoleRepository
 from app.modules.iam.repositories.user_role_repository import UserRoleRepository
@@ -117,10 +118,12 @@ class UserRoleService:
 
     @transaction.atomic
     def sync_roles(self, actor: User, user_id: Any, role_ids: list[Any]) -> list[Role]:
-        """Đưa vai trò của người dùng về đúng danh sách trong **một transaction**.
+        """Đưa vai trò của người dùng về đúng danh sách trong **một transaction** (số query cố định).
 
-        Gán phần mới, gỡ phần bị bỏ bằng đúng luật của `assign_role` / `revoke_role`; một vai trò lỗi thì
-        không thay đổi nào được lưu.
+        Cùng luật với `assign_role` / `revoke_role`: không tự đổi vai trò của mình, vai trò phải đang bật,
+        chỉ gán vai trò mình có đủ quyền, vai trò hệ thống chỉ superuser gỡ.
+        Lỗi thì không thay đổi nào được lưu.
+        Journal ghi một sự kiện `iam.roles_changed` với danh sách mã vai trò trước và sau khi lưu.
 
         Args:
             actor: Người thực hiện.
@@ -129,17 +132,46 @@ class UserRoleService:
 
         Returns:
             Vai trò của người dùng sau khi đồng bộ.
+
+        Raises:
+            NotFoundError: Có id vai trò không tồn tại.
+            BusinessRuleError: Vai trò đang tắt.
+            AuthorizationError: Vượt quyền hoặc gỡ vai trò hệ thống.
         """
         target = self._get_target(actor, user_id)
         wanted = {str(pk) for pk in role_ids}
-        current = {
-            str(pk)
-            for pk in self.repository.values_list("role_id", user_id=target.pk, role__deleted_at__isnull=True)
-        }
-        for role_id in sorted(wanted - current):
-            self.assign_role(actor, target.pk, role_id)
-        for role_id in sorted(current - wanted):
-            self.revoke_role(actor, target.pk, role_id)
+        current = self.repository.role_codes(target.pk)
+        added_ids, removed_ids = wanted - current.keys(), current.keys() - wanted
+        added = list(self.role_repository.filter(pk__in=list(added_ids))) if added_ids else []
+        if len(added) != len(added_ids):
+            raise NotFoundError()
+        if any(not role.is_active for role in added):
+            raise BusinessRuleError("Vai trò đang bị tắt.", code=IamErrorCode.IAM_ROLE_INACTIVE)
+        if not actor.is_superuser:
+            if any(current[pk][1] for pk in removed_ids):
+                raise AuthorizationError(code=IamErrorCode.IAM_SYSTEM_ROLE_PROTECTED)
+            needed = (
+                self.permission_repository.get_codes_for_roles(role.pk for role in added) if added else set()
+            )
+            missing = needed - self.checker.get_permissions(actor)
+            if missing:
+                raise AuthorizationError(
+                    "Bạn không thể gán vai trò có quyền vượt quá quyền của bạn.",
+                    code=IamErrorCode.IAM_PRIVILEGE_ESCALATION,
+                    details={"permissions": sorted(missing)},
+                )
+        if added:
+            self.repository.bulk_create((UserRole(user=target, role=role) for role in added), actor=actor)
+        if removed_ids:
+            self.repository.remove_many(target.pk, removed_ids)
+        if added or removed_ids:
+            before = sorted(code for code, _ in current.values())
+            after = {code for pk, (code, _) in current.items() if pk not in removed_ids} | {
+                r.code for r in added
+            }
+            target.journal_event(
+                "iam.roles_changed", actor_id=actor.pk, changes={"roles": (before, sorted(after))}
+            )
         return self.role_repository.list_for_user(target.pk)
 
     def _get_target(self, actor: User, user_id: Any) -> User:

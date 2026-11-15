@@ -32,6 +32,31 @@
     "iam_role_assigned": "đã gán vai trò",
     "iam_role_revoked": "đã gỡ vai trò",
     "iam_permission_assigned": "đã cấp quyền",
-    "iam_permission_revoked": "đã thu hồi quyền"
+    "iam_permission_revoked": "đã thu hồi quyền",
+    "iam_permissions_changed": "đã cập nhật quyền",
+    "iam_roles_changed": "đã cập nhật vai trò"
+  },
+  "viewDetail": "Xem chi tiết",
+  "moreFields": "+{count} trường khác",
+  "fields": {
+    "permissions": "Quyền",
+    "roles": "Vai trò",
+    "permission": "Quyền",
+    "role": "Vai trò"
+  },
+  "detail": {
+    "title": "Chi tiết thay đổi",
+    "summary": "Thông tin",
+    "changes": "Các trường thay đổi",
+    "object": "Bản ghi",
+    "objectId": "Id bản ghi",
+    "requestId": "Request id",
+    "field": "Trường",
+    "before": "Giá trị cũ",
+    "after": "Giá trị mới",
+    "added": "Thêm {count}",
+    "removed": "Bỏ {count}",
+    "noChanges": "Không có trường nào thay đổi.",
+    "recordHistory": "Lịch sử của bản ghi"
   }
 }

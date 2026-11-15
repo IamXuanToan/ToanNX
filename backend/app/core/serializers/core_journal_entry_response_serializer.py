@@ -18,3 +18,4 @@ class CoreJournalEntryResponseSerializer(serializers.Serializer[Any]):
     actor_id = serializers.UUIDField(allow_null=True, help_text="Người thực hiện (null = hệ thống).")
     actor_label = serializers.CharField(help_text="Email người thực hiện lúc thay đổi.")
     changes = serializers.JSONField(help_text="`{field: [cũ, mới]}`; field ẩn là `***`.")
+    request_id = serializers.CharField(help_text="Request id của thao tác (đối chiếu log).")

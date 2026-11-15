@@ -1,12 +1,9 @@
 import { apiClient } from "@/shares/lib/api/api-client";
-import { createCrudService } from "@/shares/lib/api/create-crud-service";
 import type { HistoryEntry, Paginated } from "@/shares/types/api.types";
 import { toPaginated } from "@/shares/lib/api/to-paginated";
 
 import { JOURNAL_API_ENDPOINTS } from "../constants/api-endpoints";
 import type { JournalEntry, JournalFilters, JournalResource } from "../types/journal.types";
-
-const crud = createCrudService<JournalEntry, JournalFilters>(JOURNAL_API_ENDPOINTS.entries);
 
 /** Service nhật ký (BE `journal/services/journal_entry_service.py`, chỉ đọc). */
 export const journalEntryService = {
@@ -20,12 +17,24 @@ export const journalEntryService = {
       }),
     );
   },
-  get: crud.get,
+  /** Một mục nhật ký (`changes` giữ nguyên tên field của BE). */
+  async get(id: string, signal?: AbortSignal): Promise<JournalEntry> {
+    return (
+      await apiClient.get<JournalEntry>(`${JOURNAL_API_ENDPOINTS.entries}/${id}`, {
+        signal,
+        opaqueKeys: ["changes"],
+      })
+    ).data;
+  },
 
   /** @returns Các `module.model` đang ghi lịch sử (không phân trang). */
   async resources(signal?: AbortSignal): Promise<JournalResource[]> {
-    return (await apiClient.get<JournalResource[]>(JOURNAL_API_ENDPOINTS.resources, { signal }))
-      .data;
+    return (
+      await apiClient.get<JournalResource[]>(JOURNAL_API_ENDPOINTS.resources, {
+        signal,
+        opaqueKeys: ["fieldLabels"],
+      })
+    ).data;
   },
 
   /**

@@ -1,12 +1,16 @@
 "use client";
 
+import { Eye } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
+
+import { Link } from "@/i18n/navigation";
 
 import { DataTable } from "@/shares/components/common/data-table/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table/types";
 import { FilterSelect } from "@/shares/components/common/filter-select/filter-select";
 import { Badge } from "@/shares/components/ui/badge";
 
+import { JOURNAL_ROUTES } from "../../constants/routes";
 import { JOURNAL_ACTIONS, type JournalEntry } from "../../types/journal.types";
 import { useJournalTable } from "./hooks/use-journal-table";
 
@@ -20,7 +24,7 @@ export function JournalTable() {
   const t = useTranslations("journal");
   const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
-  const { table, query, resources, resourceName } = useJournalTable();
+  const { table, query, resources, resourceName, summarize, openDetail } = useJournalTable();
 
   const columns: DataTableColumn<JournalEntry>[] = [
     {
@@ -30,7 +34,12 @@ export function JournalTable() {
       className: "md:w-full",
       cell: (entry) => (
         <div className="min-w-0">
-          <p className="truncate font-medium">{entry.objectLabel || entry.objectId}</p>
+          <Link
+            href={JOURNAL_ROUTES.entryDetail(entry.id)}
+            className="block truncate font-medium hover:underline"
+          >
+            {entry.objectLabel || entry.objectId}
+          </Link>
           <p className="text-muted-foreground truncate text-xs">
             {resourceName.get(entry.resource) ?? entry.resource}
           </p>
@@ -51,11 +60,22 @@ export function JournalTable() {
       header: t("columns.changes"),
       hideBelow: "lg",
       cell: (entry) => {
-        const fields = Object.keys(entry.changes);
-        return fields.length ? (
-          <span className="text-muted-foreground text-xs">{fields.join(", ")}</span>
-        ) : (
-          <span className="text-muted-foreground">—</span>
+        const { lines, more } = summarize(entry);
+        if (!lines.length) return <span className="text-muted-foreground">—</span>;
+        return (
+          <ul className="max-w-md space-y-0.5 text-xs">
+            {lines.map((line) => (
+              <li key={line.field} className="truncate">
+                <span className="text-muted-foreground">{line.label}: </span>
+                <span className="text-muted-foreground line-through">{line.before}</span>
+                {" → "}
+                <span>{line.after}</span>
+              </li>
+            ))}
+            {more ? (
+              <li className="text-muted-foreground">{t("moreFields", { count: more })}</li>
+            ) : null}
+          </ul>
         );
       },
     },
@@ -84,6 +104,7 @@ export function JournalTable() {
       rows={query.data?.items}
       getRowId={(entry) => entry.id}
       getRowLabel={(entry) => entry.objectLabel}
+      rowActions={[{ key: "detail", label: t("viewDetail"), icon: Eye, onClick: openDetail }]}
       search={{ ...table.search, placeholder: t("searchPlaceholder") }}
       onClearFilters={table.hasFilters ? table.clearFilters : undefined}
       filters={

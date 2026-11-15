@@ -31,6 +31,7 @@ from app.core.tracking.recorder_registry import get_change_recorder
 
 MASK = "***"
 SNAPSHOT_ATTR = "_journal_snapshot"
+LABEL_ATTR = "_journal_label"
 DELETED_FIELD = "deleted_at"
 SYSTEM_FIELDS = frozenset(
     {"id", "created_at", "updated_at", "created_by", "updated_by", "deleted_at", "deleted_by"}
@@ -136,16 +137,38 @@ class JournalTracker(models.Model):
         self._journal_after_save(True, {}, None)
         self.journal_snapshot()
 
-    def journal_event(self, event: str, data: dict[str, Any] | None = None, actor_id: Any = None) -> None:
+    def journal_event(
+        self,
+        event: str,
+        data: dict[str, Any] | None = None,
+        actor_id: Any = None,
+        *,
+        changes: dict[str, tuple[Any, Any]] | None = None,
+    ) -> None:
         """Ghi sự kiện không phải đổi field (gán vai trò, thu hồi phiên...).
 
         Args:
             event: Mã sự kiện, ví dụ `iam.role_assigned`.
-            data: Dữ liệu kèm theo (lưu vào `changes`).
+            data: Dữ liệu kèm theo (lưu thành `{khóa: [None, giá trị]}`).
             actor_id: Người thực hiện; mặc định người dùng của request.
+            changes: Thay đổi dạng `{khóa: (cũ, mới)}` (ví dụ danh sách quyền trước/sau khi lưu).
         """
-        changes = {key: [None, _normalize(value)] for key, value in (data or {}).items()}
-        self._journal_emit("EVENT", str(self.pk), str(self), changes, actor_id or get_user_id(), event)
+        payload = {key: [None, _normalize(value)] for key, value in (data or {}).items()}
+        payload |= {key: [_normalize(old), _normalize(new)] for key, (old, new) in (changes or {}).items()}
+        self._journal_emit("EVENT", str(self.pk), str(self), payload, actor_id or get_user_id(), event)
+
+    def mark_deleted(self, actor: Any) -> list[str]:
+        """Giữ nhãn hiện tại trước khi `CoreModel.mark_deleted` thêm hậu tố cho field unique.
+
+        Args:
+            actor: Người thực hiện.
+
+        Returns:
+            Field unique đã đổi.
+        """
+        setattr(self, LABEL_ATTR, str(self))
+        released: list[str] = super().mark_deleted(actor)  # type: ignore[misc]  # CoreModel đứng sau trong MRO
+        return released
 
     # ==================================================================
     # Nội bộ
@@ -176,7 +199,10 @@ class JournalTracker(models.Model):
             action, actor_id = "UPDATE", getattr(self, "updated_by_id", None)
         else:
             return
-        self._journal_emit(action, str(self.pk), str(self), changes, actor_id or get_user_id())
+        # Xóa mềm: nhãn lấy trước khi gắn hậu tố `_deleted_` (giữ tên người dùng nhìn thấy).
+        label = getattr(self, LABEL_ATTR, None) or str(self)
+        self.__dict__.pop(LABEL_ATTR, None)
+        self._journal_emit(action, str(self.pk), label, changes, actor_id or get_user_id())
 
     def _journal_emit(
         self,

@@ -32,6 +32,31 @@
     "iam_role_assigned": "assigned a role",
     "iam_role_revoked": "removed a role",
     "iam_permission_assigned": "granted a permission",
-    "iam_permission_revoked": "revoked a permission"
+    "iam_permission_revoked": "revoked a permission",
+    "iam_permissions_changed": "updated permissions",
+    "iam_roles_changed": "updated roles"
+  },
+  "viewDetail": "View details",
+  "moreFields": "+{count} more fields",
+  "fields": {
+    "permissions": "Permissions",
+    "roles": "Roles",
+    "permission": "Permission",
+    "role": "Role"
+  },
+  "detail": {
+    "title": "Change details",
+    "summary": "Overview",
+    "changes": "Changed fields",
+    "object": "Record",
+    "objectId": "Record id",
+    "requestId": "Request id",
+    "field": "Field",
+    "before": "Old value",
+    "after": "New value",
+    "added": "Added {count}",
+    "removed": "Removed {count}",
+    "noChanges": "No field changed.",
+    "recordHistory": "Record history"
   }
 }

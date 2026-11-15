@@ -12,3 +12,7 @@ class JournalResourceResponseSerializer(serializers.Serializer[Any]):
     module = serializers.CharField(help_text="Mã module.")
     model = serializers.CharField(help_text="Tên model (chữ thường).")
     name = serializers.CharField(help_text="Tên hiển thị của model.")
+    field_labels = serializers.DictField(
+        child=serializers.CharField(),
+        help_text="`{field: nhãn}` của các field được theo dõi (nhãn dự phòng khi FE chưa dịch).",
+    )

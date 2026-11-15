@@ -23,7 +23,7 @@ class JournalEntryService(CoreCrudService[JournalEntry, JournalEntryRepository])
         """Tài nguyên đang ghi lịch sử (model kế thừa JournalTracker), làm bộ lọc `module.model`.
 
         Returns:
-            `[{resource, module, model, name}]` sắp theo `resource`.
+            `[{resource, module, model, name, field_labels}]` sắp theo `resource`.
         """
         items = [
             {
@@ -31,6 +31,9 @@ class JournalEntryService(CoreCrudService[JournalEntry, JournalEntryRepository])
                 "module": model._meta.app_label,
                 "model": model._meta.model_name,
                 "name": str(model._meta.verbose_name),
+                "field_labels": {
+                    field.name: str(field.verbose_name) for field in model.journal_tracked_fields()
+                },
             }
             for model in apps.get_models()
             if issubclass(model, JournalTracker)

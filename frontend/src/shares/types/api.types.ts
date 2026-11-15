@@ -51,4 +51,6 @@ export type HistoryEntry = {
   actorLabel: string;
   /** `{field: [cũ, mới]}`; field ẩn là `***`. Khóa giữ nguyên tên field của BE. */
   changes: Record<string, [unknown, unknown]>;
+  /** Request id của thao tác (đối chiếu log). */
+  requestId: string;
 };

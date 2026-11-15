@@ -9,6 +9,8 @@ export type JournalResource = {
   module: string;
   model: string;
   name: string;
+  /** `{field: nhãn}` do BE trả, dùng khi FE chưa có bản dịch nhãn field. Khóa giữ nguyên tên field. */
+  fieldLabels: Record<string, string>;
 };
 
 export const JOURNAL_ACTIONS = ["CREATE", "UPDATE", "DELETE", "EVENT"] as const;
