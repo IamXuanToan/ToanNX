@@ -8,6 +8,7 @@ import hashlib
 from typing import Any
 
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
 
@@ -113,6 +114,63 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
             checksum=digest.hexdigest(),
             folder=folder,
         )
+
+    # ==================================================================
+    # File do hệ thống sinh (ảnh mã QR...): module khác gọi, không qua upload của client
+    # ==================================================================
+    @transaction.atomic
+    def create_generated(self, actor: Any, content: bytes, name: str) -> Attachment:
+        """Lưu file do hệ thống sinh vào Thư viện của actor (vẫn kiểm chữ ký file).
+
+        Args:
+            actor: Chủ file (người tạo tài nguyên sinh ra file).
+            content: Nội dung file.
+            name: Tên hiển thị (ví dụ `ung-ho.png`).
+
+        Returns:
+            Attachment đã lưu.
+        """
+        return self.create(actor, {"file": ContentFile(content, name=name)})
+
+    @transaction.atomic
+    def replace_content(self, actor: Any, attachment_id: Any, content: bytes, name: str) -> Attachment:
+        """Thay nội dung file nhưng **giữ id**: nơi đang tham chiếu id tự thấy nội dung mới.
+
+        File vật lý cũ giữ lại theo chính sách dọn storage (giống xóa mềm).
+
+        Args:
+            actor: Người thực hiện.
+            attachment_id: Id attachment do hệ thống sinh.
+            content: Nội dung mới.
+            name: Tên hiển thị mới.
+
+        Returns:
+            Attachment sau khi thay.
+        """
+        attachment = self.repository.get_for_update(attachment_id)
+        upload = ContentFile(content, name=name)
+        if detect_content_type(upload) != attachment.content_type:
+            raise ValidationError(details={"file": ["Nội dung mới phải cùng định dạng với file cũ."]})
+        return self.repository.update(
+            attachment,
+            actor=actor,
+            file=upload,
+            original_name=name[:255],
+            size=len(content),
+            checksum=hashlib.sha256(content).hexdigest(),
+        )
+
+    @transaction.atomic
+    def delete_generated(self, actor: Any, attachment_id: Any) -> None:
+        """Xóa mềm file do hệ thống sinh khi tài nguyên sở hữu nó bị xóa.
+
+        Args:
+            actor: Người thực hiện.
+            attachment_id: Id attachment.
+        """
+        attachment = self.repository.find_by_id(attachment_id)
+        if attachment is not None:
+            self.repository.soft_delete(attachment, actor=actor)
 
     @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> Attachment:

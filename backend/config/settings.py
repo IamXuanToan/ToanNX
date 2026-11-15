@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "app.modules.short_links",
     "app.modules.custom_pages",
     "app.modules.journal",
+    "app.modules.qr_codes",
 ]
 
 MIDDLEWARE = [
