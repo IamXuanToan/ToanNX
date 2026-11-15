@@ -1,0 +1,75 @@
+{
+  "module": {
+    "name": "Mã QR",
+    "description": "Tạo mã QR chuyển khoản, liên kết, văn bản; ảnh lưu vào Thư viện."
+  },
+  "nav": {
+    "codes": "Mã QR"
+  },
+  "title": "Mã QR",
+  "create": "Tạo mã QR",
+  "empty": "Chưa có mã QR nào.",
+  "searchPlaceholder": "Tìm theo tên…",
+  "previewAlt": "Xem trước mã QR",
+  "previewEmpty": "Nhập đủ nội dung để xem trước.",
+  "columns": {
+    "name": "Mã QR",
+    "qrType": "Loại",
+    "owner": "Chủ sở hữu",
+    "updatedAt": "Cập nhật"
+  },
+  "sections": {
+    "content": "Nội dung",
+    "preview": "Xem trước",
+    "design": "Kiểu dáng"
+  },
+  "types": {
+    "BANK_TRANSFER": "Chuyển khoản",
+    "BANK_TRANSFERHint": "VietQR: quét bằng app ngân hàng để chuyển tiền.",
+    "URL": "Liên kết",
+    "URLHint": "Mở một trang web (có thể dùng link rút gọn).",
+    "TEXT": "Văn bản",
+    "TEXTHint": "Hiện một đoạn chữ khi quét."
+  },
+  "errorCorrection": {
+    "L": "Thấp (7%)",
+    "M": "Trung bình (15%)",
+    "Q": "Khá (25%)",
+    "H": "Cao (30%)"
+  },
+  "fields": {
+    "name": "Tên",
+    "qrType": "Loại mã QR",
+    "content": "Nội dung",
+    "design": "Kiểu dáng",
+    "bank": "Ngân hàng",
+    "accountNumber": "Số tài khoản",
+    "accountName": "Chủ tài khoản",
+    "accountNameHint": "Tự in hoa và bỏ dấu khi lưu.",
+    "amount": "Số tiền",
+    "message": "Nội dung chuyển khoản",
+    "messageHint": "Tối đa 25 ký tự không dấu.",
+    "url": "Liên kết",
+    "urlHint": "http hoặc https.",
+    "text": "Văn bản",
+    "size": "Kích thước (px)",
+    "margin": "Lề",
+    "foreground": "Màu mã",
+    "background": "Màu nền",
+    "errorCorrection": "Mức sửa lỗi"
+  },
+  "picker": {
+    "insert": "Mã QR",
+    "title": "Chèn mã QR",
+    "description": "Chọn một mã QR của bạn; ảnh của nó sẽ được chèn vào nội dung.",
+    "search": "Tìm mã QR…",
+    "empty": "Chưa có mã QR. Tạo ở trang Mã QR rồi quay lại."
+  },
+  "validation": {
+    "required": "Bắt buộc nhập.",
+    "url": "Cần URL http hoặc https đầy đủ.",
+    "accountNumber": "Số tài khoản 4–19 ký tự chữ/số.",
+    "message": "Tối đa 25 ký tự, chỉ chữ, số và khoảng trắng.",
+    "color": "Màu dạng #RRGGBB."
+  }
+}

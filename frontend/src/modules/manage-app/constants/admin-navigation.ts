@@ -2,6 +2,7 @@ import { accountNavigation } from "@/modules/account/navigation";
 import { attachmentNavigation } from "@/modules/attachment/navigation";
 import { authenticationAccountItems } from "@/modules/auth/navigation";
 import { iamNavigation } from "@/modules/iam/navigation";
+import { qrCodesNavigation } from "@/modules/qr-codes/navigation";
 import { shortLinksNavigation } from "@/modules/short-links/navigation";
 import { journalNavigation } from "@/modules/journal/navigation";
 import { LayoutTemplate, type LucideIcon, Settings } from "lucide-react";
@@ -29,6 +30,7 @@ export const ADMIN_MODULE_NAVIGATION: AdminModuleNavigation[] = [
   attachmentNavigation,
   journalNavigation,
   shortLinksNavigation,
+  qrCodesNavigation,
 ];
 
 /**

@@ -9,7 +9,7 @@ import type { AppLocale } from "./routing";
  * @returns Message đã gộp theo namespace.
  */
 export async function loadMessages(locale: AppLocale) {
-  const [common, auth, account, iam, manageApp, attachment, shortLinks, journal] =
+  const [common, auth, account, iam, manageApp, attachment, qrCodes, shortLinks, journal] =
     await Promise.all([
       import(`../messages/${locale}.json`),
       import(`../modules/auth/messages/${locale}.json`),
@@ -17,6 +17,7 @@ export async function loadMessages(locale: AppLocale) {
       import(`../modules/iam/messages/${locale}.json`),
       import(`../modules/manage-app/messages/${locale}.json`),
       import(`../modules/attachment/messages/${locale}.json`),
+      import(`../modules/qr-codes/messages/${locale}.json`),
       import(`../modules/short-links/messages/${locale}.json`),
       import(`../modules/journal/messages/${locale}.json`),
     ]);
@@ -27,6 +28,7 @@ export async function loadMessages(locale: AppLocale) {
     iam: iam.default,
     manageApp: manageApp.default,
     attachment: attachment.default,
+    qrCodes: qrCodes.default,
     shortLinks: shortLinks.default,
     journal: journal.default,
   };

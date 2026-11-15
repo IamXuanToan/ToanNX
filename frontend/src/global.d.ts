@@ -4,6 +4,7 @@ import type auth from "./modules/auth/messages/vi.json";
 import type iam from "./modules/iam/messages/vi.json";
 import type manageApp from "./modules/manage-app/messages/vi.json";
 import type attachment from "./modules/attachment/messages/vi.json";
+import type qrCodes from "./modules/qr-codes/messages/vi.json";
 import type shortLinks from "./modules/short-links/messages/vi.json";
 import type journal from "./modules/journal/messages/vi.json";
 import type { routing } from "./i18n/routing";
@@ -15,6 +16,7 @@ type Messages = typeof common & {
   iam: typeof iam;
   manageApp: typeof manageApp;
   attachment: typeof attachment;
+  qrCodes: typeof qrCodes;
   shortLinks: typeof shortLinks;
   journal: typeof journal;
 };
