@@ -1,181 +1,238 @@
-"""Integration tests cho trang, block và dữ liệu công khai."""
+"""Custom Pages: đường dẫn giữa, nội dung Tiptap, phiên bản, xem nháp theo quyền, bản công khai."""
 
 from typing import Any
 
 import pytest
 
-from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.modules.account.tests.factories.user_factory import UserFactory
-from app.modules.custom_pages.models.page import Page
-from app.modules.custom_pages.models.page_block import PageBlock
+from app.modules.custom_pages.models.page_path import PagePath
 from app.modules.custom_pages.permissions.custom_pages_permission import CustomPagesPermission as P
-from app.modules.custom_pages.services.page_block_service import PageBlockService
 from app.modules.iam.tests.helpers.permission_helper import grant
+from app.modules.qr_codes.services.qr_code_service import QrCodeService
+from app.modules.short_links.models.short_link import ShortLink
+from app.modules.short_links.services.short_link_service import ShortLinkService
 
 pytestmark = pytest.mark.django_db
-BASE = "/api/v1/custom_pages/pages"
+PAGES = "/api/v1/custom_pages/pages"
+PATHS = "/api/v1/custom_pages/paths"
+PUBLIC = "/api/v1/custom_pages/public"
+ALL = (P.READ, P.CREATE, P.UPDATE, P.DELETE)
 
 
-class TestPageApi(BaseApiTestCase):
-    """Trang và block có IAM, ownership, trạng thái công khai."""
+def _doc(*nodes: dict[str, Any]) -> dict[str, Any]:
+    return {"type": "doc", "content": list(nodes)}
 
-    @staticmethod
-    def page_payload(slug: str = "my-page", **changes: Any) -> dict[str, Any]:
-        """Payload trang hợp lệ."""
-        return {"title": "My page", "slug": slug, **changes}
 
-    @staticmethod
-    def block_payload(block_type: str = "TEXT", **content: Any) -> dict[str, Any]:
-        """Payload block hợp lệ."""
-        return {"block_type": block_type, "content": content or {"text": "Hello world"}}
+def _p(text: str) -> dict[str, Any]:
+    return {"type": "paragraph", "content": [{"type": "text", "text": text}]}
 
-    def test_create_blocks_publish_and_qr(self, user: Any, login: Any) -> None:
-        grant(user, P.CREATE, P.READ, P.UPDATE)
+
+def _path(segment: str) -> PagePath:
+    return PagePath.objects.get(segment=segment)
+
+
+def _qr_image(owner: Any) -> str:
+    qr = QrCodeService().create(
+        owner,
+        {
+            "name": "Ủng hộ",
+            "qr_type": "TEXT",
+            "content": {"text": "hi"},
+            "design": {
+                "size": 128,
+                "foreground": "#000000",
+                "background": "#FFFFFF",
+                "margin": 2,
+                "error_correction": "M",
+            },
+        },
+    )
+    return str(qr.image_id)
+
+
+class TestPagePaths(BaseApiTestCase):
+    """Danh mục chung, chỉ theo quyền."""
+
+    def test_seed_crud_and_rules(self, user: Any, login: Any) -> None:
         api = login(user)
-        created = self.assert_success(api.post(BASE, self.page_payload(), format="json"), 201)
-        page_id = created["id"]
-        assert created["owner_id"] == str(user.pk)
-        assert created["status"] == "DRAFT"
-        self.assert_error(api.get("/api/v1/custom_pages/public/my-page"), 404, "NOT_FOUND")
-        blocks_url = f"{BASE}/{page_id}/blocks"
-        text = self.assert_success(
-            api.post(blocks_url, self.block_payload(text="Visible text"), format="json"), 201
+        self.assert_forbidden(api.get(PATHS))
+        grant(user, P.PATH_READ, P.PATH_CREATE, P.PATH_UPDATE, P.PATH_DELETE, *ALL)
+        segments = [item["segment"] for item in self.assert_success(api.get(PATHS))]
+        assert segments[:2] == ["p", "qr"]
+        created = self.assert_success(
+            api.post(PATHS, {"segment": "Events", "name": "Sự kiện"}, format="json"), 201
         )
-        qr = self.assert_success(
-            api.post(
-                blocks_url, self.block_payload("QR_CODE", target_type="PAGE", label="Scan"), format="json"
-            ),
-            201,
-        )
-        hidden = self.assert_success(
-            api.post(blocks_url, {**self.block_payload(text="Private"), "is_visible": False}, format="json"),
-            201,
-        )
-        assert [text["position"], qr["position"], hidden["position"]] == [0, 1, 2]
-        detail = self.assert_success(api.get(f"{BASE}/{page_id}"), 200)
-        assert len(detail["blocks"]) == 3
-        self.assert_success(api.patch(f"{BASE}/{page_id}", {"status": "PUBLISHED"}, format="json"), 200)
-        public = self.assert_success(api.get("/api/v1/custom_pages/public/my-page"), 200)
-        assert public["canonical_url"] == "http://testserver/p/my-page"
-        assert len(public["blocks"]) == 2
-        assert public["blocks"][1]["content"]["qr_payload"] == public["canonical_url"]
-        assert "owner_id" not in public
-        assert "Private" not in str(public)
-
-    def test_update_delete_reorder_and_isolation(self, user: Any, login: Any) -> None:
-        grant(user, P.CREATE, P.READ, P.UPDATE, P.DELETE)
-        api = login(user)
-        page = self.assert_success(api.post(BASE, self.page_payload(), format="json"), 201)
-        page_id = page["id"]
-        blocks_url = f"{BASE}/{page_id}/blocks"
-        first = self.assert_success(api.post(blocks_url, self.block_payload(text="One"), format="json"), 201)
-        second = self.assert_success(api.post(blocks_url, self.block_payload(text="Two"), format="json"), 201)
+        assert created["segment"] == "events" and created["page_count"] == 0
+        self.assert_error(api.post(PATHS, {"segment": "events", "name": "x"}, format="json"), 409)
+        self.assert_error(api.post(PATHS, {"segment": "admin", "name": "x"}, format="json"), 400)
+        self.assert_error(api.post(PATHS, {"segment": "s", "name": "x"}, format="json"), 400)
         self.assert_success(
-            api.patch(f"{blocks_url}/{first['id']}", {"content": {"text": "Updated"}}, format="json"), 200
+            api.post(PAGES, {"path_id": created["id"], "title": "A", "slug": "a-page"}, format="json"), 201
         )
-        ordered = self.assert_success(
-            api.post(f"{blocks_url}/reorder", {"block_ids": [second["id"], first["id"]]}, format="json"), 200
-        )
-        assert [item["id"] for item in ordered] == [second["id"], first["id"]]
-        self.assert_error(
-            api.post(f"{blocks_url}/reorder", {"block_ids": [first["id"]]}, format="json"),
-            400,
-            "VALIDATION_ERROR",
-        )
-        assert api.delete(f"{blocks_url}/{second['id']}").status_code == 204
-        assert PageBlock.objects.get(pk=second["id"]).deleted_at is not None
-        assert PageBlock.objects.get(pk=first["id"]).position == 0
-        other = UserFactory()
-        grant(other, P.READ, P.UPDATE, P.DELETE)
-        other_api = login(other)
-        self.assert_error(other_api.get(f"{BASE}/{page_id}"), 404, "NOT_FOUND")
-        self.assert_error(
-            other_api.patch(f"{BASE}/{page_id}", {"title": "Hijack"}, format="json"), 404, "NOT_FOUND"
-        )
-        self.assert_error(other_api.post(blocks_url, self.block_payload(), format="json"), 404, "NOT_FOUND")
-        self.assert_error(other_api.delete(f"{blocks_url}/{first['id']}"), 404, "NOT_FOUND")
-        assert api.delete(f"{BASE}/{page_id}").status_code == 204
-        assert Page.objects.get(pk=page_id).deleted_at is not None
-        self.assert_error(api.get("/api/v1/custom_pages/public/my-page"), 404, "NOT_FOUND")
+        self.assert_error(api.delete(f"{PATHS}/{created['id']}"), 409, "CUSTOM_PAGES_PATH_IN_USE")
+        empty = self.assert_success(api.post(PATHS, {"segment": "tmp", "name": "Tạm"}, format="json"), 201)
+        assert api.delete(f"{PATHS}/{empty['id']}").status_code == 204
 
-    def test_validation_and_permission(self, user: Any, login: Any, client: Any) -> None:
-        self.assert_unauthorized(client.post(BASE, self.page_payload(), format="json"))
-        self.assert_forbidden(login(user).post(BASE, self.page_payload(), format="json"))
-        grant(user, P.CREATE, P.UPDATE)
+    def test_inactive_path_blocks_new_pages(self, user: Any, login: Any) -> None:
+        grant(user, *ALL)
+        PagePath.objects.filter(segment="qr").update(is_active=False)
+        self.assert_error(
+            login(user).post(PAGES, {"path_id": str(_path("qr").pk), "title": "x"}, format="json"),
+            422,
+            "CUSTOM_PAGES_PATH_INACTIVE",
+        )
+
+
+class TestPages(BaseApiTestCase):
+    """CRUD, nội dung, phiên bản, bulk, nhân bản, lịch sử."""
+
+    def test_create_slug_scope_and_template(self, user: Any, login: Any) -> None:
+        grant(user, *ALL)
         api = login(user)
-        self.assert_success(api.post(BASE, self.page_payload(), format="json"), 201)
-        self.assert_error(api.post(BASE, self.page_payload(slug="MY-PAGE"), format="json"), 409, "CONFLICT")
-        self.assert_error(
-            api.post(BASE, self.page_payload(slug="abc/def"), format="json"), 400, "VALIDATION_ERROR"
-        )
-        self.assert_error(
+        page = self.assert_success(
             api.post(
-                BASE,
-                self.page_payload(theme={"background_color": "#ffffff", "text_color": "#eeeeee"}),
+                PAGES,
+                {"path_id": str(_path("qr").pk), "title": "Ủng hộ", "slug": "donate", "template": "donate"},
                 format="json",
             ),
-            400,
-            "VALIDATION_ERROR",
+            201,
         )
-        page_id = Page.objects.get(slug="my-page").pk
-        blocks_url = f"{BASE}/{page_id}/blocks"
+        assert page["public_url"] == "http://testserver/qr/donate"
+        assert page["content"]["content"][0]["type"] == "heading" and page["content_version"] == 1
         self.assert_error(
-            api.post(blocks_url, self.block_payload(text="<script>x</script>"), format="json"),
-            400,
-            "VALIDATION_ERROR",
+            api.post(PAGES, {"path_id": str(_path("qr").pk), "title": "x", "slug": "DONATE"}, format="json"),
+            409,
         )
-        self.assert_error(
-            api.post(
-                blocks_url,
-                self.block_payload(
-                    "QR_CODE", target_type="URL", target_url="javascript:alert(1)", label="Bad"
-                ),
-                format="json",
-            ),
-            400,
-            "VALIDATION_ERROR",
-        )
-        self.assert_error(
-            api.post(
-                blocks_url,
-                self.block_payload("IMAGE", attachment_id=str(page_id), alt="Foreign"),
-                format="json",
-            ),
-            404,
-            "NOT_FOUND",
+        self.assert_success(
+            api.post(PAGES, {"path_id": str(_path("p").pk), "title": "x", "slug": "donate"}, format="json"),
+            201,
         )
 
-    def test_create_rate_limit(self, user: Any, login: Any, settings: Any) -> None:
-        """Giới hạn tạo trang theo user, không giới hạn toàn site."""
-        settings.RATE_LIMITS = {**settings.RATE_LIMITS, "custom_pages.create": (1, 3600, "user")}
-        grant(user, P.CREATE)
+    def test_content_validation_and_version(self, user: Any, login: Any) -> None:
+        grant(user, *ALL)
         api = login(user)
-        self.assert_success(api.post(BASE, self.page_payload(slug="first-page"), format="json"), 201)
+        page = self.assert_success(
+            api.post(PAGES, {"path_id": str(_path("p").pk), "title": "T"}, format="json"), 201
+        )
+        url = f"{PAGES}/{page['id']}"
+        bad_node = _doc({"type": "script", "content": []})
+        self.assert_error(api.patch(url, {"content": bad_node, "content_version": 1}, format="json"), 400)
+        js_link = _doc(
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "x",
+                        "marks": [{"type": "link", "attrs": {"href": "javascript:alert(1)"}}],
+                    }
+                ],
+            }
+        )
+        self.assert_error(api.patch(url, {"content": js_link, "content_version": 1}, format="json"), 400)
+        self.assert_error(api.patch(url, {"content": _doc(_p("x"))}, format="json"), 400)
+
+        saved = self.assert_success(
+            api.patch(url, {"content": _doc(_p("Một")), "content_version": 1}, format="json")
+        )
+        assert saved["content_version"] == 2
         self.assert_error(
-            api.post(BASE, self.page_payload(slug="second-page"), format="json"), 429, "RATE_LIMITED"
+            api.patch(url, {"content": _doc(_p("Cũ")), "content_version": 1}, format="json"),
+            409,
+            "CUSTOM_PAGES_VERSION_CONFLICT",
         )
 
-    def test_block_generic_crud_cannot_bypass_page_scope(self, user: Any) -> None:
-        """Hàm CRUD kế thừa không được tạo/sửa/xóa block của chủ trang khác."""
-        page = Page.objects.create(owner=user, title="Owner page", slug="owner-page")
-        block = PageBlock.objects.create(
-            page=page, block_type=PageBlock.Type.TEXT, content={"text": "Original"}, position=0
+        foreign_image = _doc(
+            {"type": "image", "attrs": {"attachmentId": _qr_image(UserFactory()), "alt": "x"}}
         )
-        other = UserFactory()
-        service = PageBlockService()
+        self.assert_error(
+            api.patch(url, {"content": foreign_image, "content_version": 2}, format="json"), 400
+        )
+        own_image = _doc({"type": "image", "attrs": {"attachmentId": _qr_image(user), "alt": "QR"}})
+        saved = self.assert_success(
+            api.patch(url, {"content": own_image, "content_version": 2}, format="json")
+        )
+        assert saved["content"]["content"][0]["attrs"]["src"].startswith("http://testserver/media/")
 
-        with pytest.raises(BusinessRuleError):
-            service.create(
-                other,
-                {"page": page, "block_type": PageBlock.Type.TEXT, "content": {"text": "Injected"}},
-            )
-        with pytest.raises(BusinessRuleError):
-            service.update(other, block.pk, {"content": {"text": "Changed"}})
-        with pytest.raises(BusinessRuleError):
-            service.delete(other, block.pk)
+    def test_bulk_duplicate_history(self, user: Any, login: Any) -> None:
+        grant(user, *ALL)
+        api = login(user)
+        page = self.assert_success(
+            api.post(PAGES, {"path_id": str(_path("p").pk), "title": "Gốc"}, format="json"), 201
+        )
+        assert self.assert_success(
+            api.post(f"{PAGES}/bulk-update", {"ids": [page["id"]], "status": "PUBLISHED"}, format="json")
+        ) == {"count": 1}
+        detail = self.assert_success(api.get(f"{PAGES}/{page['id']}"))
+        assert detail["status"] == "PUBLISHED" and detail["published_at"]
+        copy = self.assert_success(api.post(f"{PAGES}/{page['id']}/duplicate"), 201)
+        assert copy["status"] == "DRAFT" and copy["title"] == "Gốc (bản sao)" and copy["slug"] != page["slug"]
+        items = self.assert_success(api.get(PAGES, {"status": "DRAFT"}))
+        assert [item["id"] for item in items] == [copy["id"]]
+        history = self.assert_success(api.get(f"{PAGES}/{page['id']}/history"))
+        assert [entry["action"] for entry in history] == ["UPDATE", "CREATE"]
 
-        block.refresh_from_db()
-        assert block.content == {"text": "Original"}
-        assert block.deleted_at is None
-        assert PageBlock.objects.filter(page=page).count() == 1
+
+class TestPublicPage(BaseApiTestCase):
+    """Bản công khai và bản nháp theo quyền."""
+
+    def test_published_and_preview(self, user: Any, login: Any, client: Any) -> None:
+        grant(user, *ALL)
+        owner_api = login(user)
+        page = self.assert_success(
+            owner_api.post(
+                PAGES, {"path_id": str(_path("qr").pk), "title": "Nháp", "slug": "nhap"}, format="json"
+            ),
+            201,
+        )
+        self.assert_error(client.get(f"{PUBLIC}/qr/nhap"), 404, "NOT_FOUND")
+        preview = owner_api.get(f"{PUBLIC}/qr/nhap")
+        data = self.assert_success(preview)
+        assert data["preview"] is True and preview["Cache-Control"] == "private, no-store"
+        assert preview["X-Robots-Tag"] == "noindex"
+
+        stranger = UserFactory()
+        grant(stranger, P.READ)
+        self.assert_error(login(stranger).get(f"{PUBLIC}/qr/nhap"), 404, "NOT_FOUND")
+
+        broken = login(UserFactory())
+        broken.cookies["access_token"] = "broken-token"
+        self.assert_error(broken.get(f"{PUBLIC}/qr/nhap"), 404, "NOT_FOUND")
+
+        owner_api.patch(f"{PAGES}/{page['id']}", {"status": "PUBLISHED"}, format="json")
+        response = client.get(f"{PUBLIC}/QR/NHAP")
+        public = self.assert_success(response)
+        assert public["preview"] is False and response["Cache-Control"] == "public, max-age=60"
+        assert "owner" not in public and "id" not in public
+        assert public["canonical_url"] == "http://testserver/qr/nhap"
+
+    def test_inactive_short_link_button_is_dropped(self, user: Any, login: Any, client: Any) -> None:
+        grant(user, *ALL)
+        api = login(user)
+        link = ShortLinkService().create(
+            user, {"name": "GH", "slug": "gh-link", "destination_url": "https://github.com"}
+        )
+        content = _doc(
+            _p("Xin chào"), {"type": "button", "attrs": {"label": "GitHub", "shortLinkId": str(link.pk)}}
+        )
+        page = self.assert_success(
+            api.post(
+                PAGES,
+                {
+                    "path_id": str(_path("p").pk),
+                    "title": "Bio",
+                    "slug": "bio",
+                    "status": "PUBLISHED",
+                    "content": content,
+                },
+                format="json",
+            ),
+            201,
+        )
+        assert page["content"]["content"][1]["attrs"]["href"] == "http://testserver/s/gh-link"
+        public = self.assert_success(client.get(f"{PUBLIC}/p/bio"))
+        assert [node["type"] for node in public["content"]["content"]] == ["paragraph", "button"]
+        ShortLink.objects.filter(pk=link.pk).update(status=ShortLink.Status.INACTIVE)
+        public = self.assert_success(client.get(f"{PUBLIC}/p/bio"))
+        assert [node["type"] for node in public["content"]["content"]] == ["paragraph"]

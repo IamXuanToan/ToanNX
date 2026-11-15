@@ -1,4 +1,4 @@
-"""Trang tùy chỉnh có owner và slug công khai."""
+"""Trang tùy chỉnh: `toannx.com/<path.segment>/<slug>`, nội dung là JSON Tiptap."""
 
 from django.conf import settings
 from django.db import models
@@ -9,7 +9,9 @@ from app.core.tracking.journal_tracker import JournalTracker
 
 
 class Page(JournalTracker, CoreModel):
-    """Trang cá nhân; nội dung được lưu thành các PageBlock có cấu trúc."""
+    """Trang của owner; nội dung soạn bằng Tiptap, lưu JSON (không lưu HTML)."""
+
+    journal_excluded_fields = ("content",)
 
     class Status(models.TextChoices):
         """Trạng thái xuất bản."""
@@ -26,13 +28,21 @@ class Page(JournalTracker, CoreModel):
         help_text="Người dùng sở hữu trang.",
         db_comment="Chủ sở hữu trang",
     )
+    path = models.ForeignKey(
+        "custom_pages.PagePath",
+        on_delete=models.PROTECT,
+        related_name="pages",
+        verbose_name="Đường dẫn giữa",
+        help_text="Đoạn URL giữa (`qr`, `p`...).",
+        db_comment="Đường dẫn giữa của trang",
+    )
     title = models.CharField(
         max_length=150, verbose_name="Tiêu đề", help_text="Tiêu đề trang.", db_comment="Tiêu đề trang"
     )
     slug = models.CharField(
         max_length=64,
         verbose_name="Slug",
-        help_text="Đường dẫn công khai sau /p/.",
+        help_text="Đoạn cuối của URL công khai, unique trong cùng đường dẫn giữa.",
         db_comment="Slug URL trang",
     )
     description = models.TextField(
@@ -45,6 +55,26 @@ class Page(JournalTracker, CoreModel):
         verbose_name="Trạng thái",
         help_text="Chỉ PUBLISHED mới công khai.",
         db_comment="Trạng thái trang",
+    )
+    content = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="Nội dung",
+        help_text="Tài liệu Tiptap đã validate (chỉ node/mark trong danh sách cho phép).",
+        db_comment="Nội dung Tiptap JSON",
+    )
+    content_version = models.PositiveIntegerField(
+        default=1,
+        verbose_name="Phiên bản nội dung",
+        help_text="Tăng mỗi lần lưu nội dung; PATCH phải gửi đúng để không ghi đè lẫn nhau.",
+        db_comment="Phiên bản nội dung",
+    )
+    published_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Công khai lúc",
+        help_text="Lần gần nhất chuyển sang PUBLISHED.",
+        db_comment="Thời điểm công khai",
     )
     seo_title = models.CharField(
         max_length=160,
@@ -92,5 +122,22 @@ class Page(JournalTracker, CoreModel):
         db_table = "custom_page"
         verbose_name = "Trang tùy chỉnh"
         verbose_name_plural = "Trang tùy chỉnh"
-        constraints = [models.UniqueConstraint(Lower("slug"), name="custom_page_slug_ci_unique")]
-        indexes = [models.Index(fields=["owner", "created_at"], name="cp_owner_created_idx")]
+        constraints = [
+            # Không điều kiện: slug đã xóa không dùng lại trong cùng đường dẫn giữa.
+            models.UniqueConstraint("path", Lower("slug"), name="custom_page_path_slug_ci_unique"),
+            models.CheckConstraint(
+                condition=models.Q(status__in=["DRAFT", "PUBLISHED", "UNPUBLISHED"]),
+                name="custom_page_status_valid",
+            ),
+        ]
+        indexes = [
+            models.Index(
+                fields=["owner", "-created_at"],
+                condition=models.Q(deleted_at__isnull=True),
+                name="cp_owner_created_alive_idx",
+            )
+        ]
+
+    def __str__(self) -> str:
+        """Tiêu đề trang."""
+        return self.title

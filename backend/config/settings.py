@@ -222,8 +222,29 @@ AUTH_EXPIRED_RETENTION_DAYS = env.int("AUTH_EXPIRED_RETENTION_DAYS", default=30)
 # Header bí mật của Vercel Cron khi gọi POST /health/cleanup (rỗng = tắt endpoint).
 CRON_SECRET = env.str("CRON_SECRET", default="")
 
-# Tạm thời đến khi bỏ block của Custom Pages.
-CUSTOM_PAGE_BLOCK_CREATE_RATE_LIMIT = env.int("CUSTOM_PAGE_BLOCK_CREATE_RATE_LIMIT", default=120)
+# Custom Pages: giới hạn nội dung Tiptap và đoạn đường dẫn giữa dành riêng (một chỗ duy nhất).
+CUSTOM_PAGE_CONTENT_MAX_BYTES = env.int("CUSTOM_PAGE_CONTENT_MAX_BYTES", default=256 * 1024)
+CUSTOM_PAGE_MAX_IMAGES = env.int("CUSTOM_PAGE_MAX_IMAGES", default=30)
+CUSTOM_PAGE_MAX_VIDEOS = env.int("CUSTOM_PAGE_MAX_VIDEOS", default=10)
+PUBLIC_RESERVED_SEGMENTS = frozenset(
+    {
+        "vi",
+        "en",
+        "api",
+        "s",
+        "_next",
+        "admin",
+        "quan-tri",
+        "login",
+        "dang-nhap",
+        "robots",
+        "sitemap",
+        "icon",
+        "media",
+        "static",
+        "favicon",
+    }
+)
 
 # Quota tổng mỗi owner (CoreCrudService.owner_quota_setting).
 SHORT_LINK_MAX_PER_OWNER = env.int("SHORT_LINK_MAX_PER_OWNER", default=500)

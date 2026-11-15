@@ -12,6 +12,9 @@ from django.test.utils import CaptureQueriesContext
 
 from app.modules.account.tests.factories.user_factory import UserFactory
 from app.modules.iam.tests.factories.role_factory import RoleFactory
+from app.modules.custom_pages.models.page_path import PagePath
+from app.modules.custom_pages.services.page_service import PageService
+from app.modules.qr_codes.services.qr_code_service import QrCodeService
 from app.modules.short_links.services.short_link_service import ShortLinkService
 
 pytestmark = pytest.mark.django_db
@@ -24,11 +27,35 @@ def _short_links(owner: Any, count: int) -> None:
         service.create(owner, {"name": slug, "slug": slug, "destination_url": "https://example.com"})
 
 
+def _pages(owner: Any, count: int) -> None:
+    service, path = PageService(), PagePath.objects.get(segment="p")
+    for _ in range(count):
+        service.create(owner, {"path_id": path.pk, "title": "Trang"})
+
+
+def _qr_codes(owner: Any, count: int) -> None:
+    service = QrCodeService()
+    design = {
+        "size": 128,
+        "foreground": "#000000",
+        "background": "#FFFFFF",
+        "margin": 1,
+        "error_correction": "L",
+    }
+    for index in range(count):
+        service.create(
+            owner, {"name": f"QR {index}", "qr_type": "TEXT", "content": {"text": "x"}, "design": design}
+        )
+
+
 CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/account/users", lambda owner, n: UserFactory.create_batch(n)),
     ("/api/v1/iam/roles", lambda owner, n: RoleFactory.create_batch(n)),
     ("/api/v1/short_links/links", _short_links),
     ("/api/v1/journal/entries", lambda owner, n: RoleFactory.create_batch(n)),
+    ("/api/v1/custom_pages/pages", _pages),
+    ("/api/v1/custom_pages/paths", lambda owner, n: None),
+    ("/api/v1/qr_codes/codes", _qr_codes),
 ]
 
 

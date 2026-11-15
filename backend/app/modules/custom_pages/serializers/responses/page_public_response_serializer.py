@@ -1,11 +1,17 @@
 """Response trang công khai."""
 
+from typing import Any
+
 from rest_framework import serializers
 
 
-class PagePublicResponseSerializer(serializers.Serializer):
-    """Dữ liệu an toàn để frontend render trang công khai."""
+class PagePublicResponseSerializer(serializers.Serializer[Any]):
+    """Dữ liệu an toàn để FE render (không có id, owner, attachment id thô)."""
 
+    segment = serializers.CharField(help_text="Đường dẫn giữa.")
+    slug = serializers.CharField(help_text="Slug.")
+    status = serializers.CharField(help_text="Trạng thái hiện tại.")
+    preview = serializers.BooleanField(help_text="True = bản chưa công khai, chỉ người có quyền thấy.")
     title = serializers.CharField(help_text="Tiêu đề trang.")
     description = serializers.CharField(help_text="Mô tả trang.")
     canonical_url = serializers.URLField(help_text="URL chính tắc tuyệt đối.")
@@ -13,5 +19,7 @@ class PagePublicResponseSerializer(serializers.Serializer):
     seo_description = serializers.CharField(help_text="Mô tả SEO hiệu lực.")
     avatar_url = serializers.URLField(allow_null=True, help_text="Ảnh đại diện hoặc null.")
     cover_url = serializers.URLField(allow_null=True, help_text="Ảnh bìa hoặc null.")
-    theme = serializers.JSONField(help_text="Theme được validate.")
-    blocks = serializers.JSONField(help_text="Block công khai đã lọc, theo position.")
+    theme = serializers.JSONField(help_text="Theme đã validate.")
+    content = serializers.JSONField(
+        help_text="Tiptap JSON; ảnh/nút link rút gọn không còn dùng được đã bị bỏ."
+    )

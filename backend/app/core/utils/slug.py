@@ -1,7 +1,8 @@
-"""Chuẩn hóa slug cho từng namespace URL công khai."""
+"""Chuẩn hóa slug cho các URL công khai (slug link rút gọn, slug trang, đoạn đường dẫn giữa)."""
 
 import re
 import secrets
+from collections.abc import Iterable
 
 from app.core.exceptions.validation_error import ValidationError
 
@@ -13,15 +14,36 @@ MIN_SLUG_LENGTH = 3
 MAX_SLUG_LENGTH = 64
 
 
-def normalize_slug(value: str) -> str:
-    """Chuẩn hóa chữ thường và từ chối slug không hợp lệ hoặc đã dành riêng."""
+def normalize_slug(
+    value: str,
+    *,
+    field: str = "slug",
+    min_length: int = MIN_SLUG_LENGTH,
+    max_length: int = MAX_SLUG_LENGTH,
+    reserved: Iterable[str] = RESERVED_SLUGS,
+) -> str:
+    """Chữ thường, chỉ `a-z`, `0-9`, `-` giữa các nhóm; từ chối giá trị dành riêng.
+
+    Args:
+        value: Giá trị thô.
+        field: Tên field gắn vào lỗi.
+        min_length: Độ dài tối thiểu.
+        max_length: Độ dài tối đa.
+        reserved: Giá trị dành riêng.
+
+    Returns:
+        Slug đã chuẩn hóa.
+
+    Raises:
+        ValidationError: Sai định dạng hoặc dành riêng.
+    """
     slug = value.strip().lower()
-    if not MIN_SLUG_LENGTH <= len(slug) <= MAX_SLUG_LENGTH or not SLUG_PATTERN.fullmatch(slug):
+    if not min_length <= len(slug) <= max_length or not SLUG_PATTERN.fullmatch(slug):
         raise ValidationError(
-            details={"slug": ["Slug phải dài 3–64 ký tự, chỉ gồm a-z, 0-9 và dấu gạch ngang."]}
+            details={field: [f"Dài {min_length}–{max_length} ký tự, chỉ gồm a-z, 0-9 và dấu gạch ngang."]}
         )
-    if slug in RESERVED_SLUGS:
-        raise ValidationError(details={"slug": ["Slug này đã được dành riêng."]})
+    if slug in set(reserved):
+        raise ValidationError(details={field: ["Giá trị này đã được dành riêng."]})
     return slug
 
 

@@ -6,8 +6,8 @@ from app.modules.custom_pages.permissions.custom_pages_permission import CustomP
 MODULE = ModuleDescriptor(
     code="custom_pages",
     name="Custom Pages",
-    description="Trang cá nhân từ block có cấu trúc.",
+    description="Trang công khai `/<đường dẫn giữa>/<slug>`, nội dung soạn bằng Tiptap (JSON).",
     version="1.0.0",
-    dependencies=("account", "iam", "authentication", "attachment"),
+    dependencies=("account", "iam", "attachment", "short_links"),
     permissions=CustomPagesPermission.all(),
 )

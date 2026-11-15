@@ -261,7 +261,10 @@
       "IAM_PRIVILEGE_ESCALATION": "You cannot grant more privileges than you have.",
       "IAM_SYSTEM_ROLE_PROTECTED": "Only a superuser can edit system roles.",
       "QUOTA_EXCEEDED": "You have reached the maximum allowed.",
-      "SHORT_LINK_EXPIRED": "This link has expired."
+      "SHORT_LINK_EXPIRED": "This link has expired.",
+      "CUSTOM_PAGES_PATH_IN_USE": "This path still has pages and cannot be deleted.",
+      "CUSTOM_PAGES_PATH_INACTIVE": "This path is disabled; new pages cannot be added to it.",
+      "CUSTOM_PAGES_VERSION_CONFLICT": "This page was changed elsewhere. Reload to see the latest version."
     },
     "generic": {
       "title": "Could not load data",

@@ -115,6 +115,17 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
             folder=folder,
         )
 
+    def find_alive_images(self, ids: Any) -> dict[str, Attachment]:
+        """Ảnh còn tồn tại theo id (một query), dùng khi dựng nội dung công khai.
+
+        Args:
+            ids: Id attachment.
+
+        Returns:
+            `{id dạng chuỗi: attachment}`; id không tồn tại/không phải ảnh thì không có trong kết quả.
+        """
+        return {str(item.pk): item for item in self.repository.filter(pk__in=list(ids)) if item.is_image}
+
     # ==================================================================
     # File do hệ thống sinh (ảnh mã QR...): module khác gọi, không qua upload của client
     # ==================================================================

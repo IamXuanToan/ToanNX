@@ -261,7 +261,10 @@
       "IAM_PRIVILEGE_ESCALATION": "Bạn không thể cấp quyền vượt quá quyền của bạn.",
       "IAM_SYSTEM_ROLE_PROTECTED": "Chỉ superuser mới được sửa vai trò hệ thống.",
       "QUOTA_EXCEEDED": "Bạn đã đạt số lượng tối đa cho phép.",
-      "SHORT_LINK_EXPIRED": "Liên kết đã hết hạn."
+      "SHORT_LINK_EXPIRED": "Liên kết đã hết hạn.",
+      "CUSTOM_PAGES_PATH_IN_USE": "Đường dẫn giữa còn trang, không xóa được.",
+      "CUSTOM_PAGES_PATH_INACTIVE": "Đường dẫn giữa đang tắt, không tạo trang mới vào đây được.",
+      "CUSTOM_PAGES_VERSION_CONFLICT": "Trang đã được sửa ở nơi khác. Tải lại để xem bản mới nhất."
     },
     "generic": {
       "title": "Không tải được dữ liệu",

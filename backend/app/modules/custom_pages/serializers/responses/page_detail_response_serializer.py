@@ -1,10 +1,11 @@
-"""Response chi tiết trang quản lý."""
+"""Response chi tiết trang cho editor."""
+
+from typing import Any
 
 from rest_framework import serializers
 
-from app.core.utils.url import build_absolute_url
-from app.modules.custom_pages.serializers.responses.page_block_response_serializer import (
-    PageBlockResponseSerializer,
+from app.modules.attachment.serializers.responses.attachment_summary_response_serializer import (
+    AttachmentSummaryResponseSerializer,
 )
 from app.modules.custom_pages.serializers.responses.page_list_response_serializer import (
     PageListResponseSerializer,
@@ -12,34 +13,26 @@ from app.modules.custom_pages.serializers.responses.page_list_response_serialize
 
 
 class PageDetailResponseSerializer(PageListResponseSerializer):
-    """Chi tiết trang cùng tất cả block chưa xóa, kể cả block ẩn."""
+    """Mọi trường soạn được; `content` đã dựng URL ảnh/link rút gọn (service gắn `editor_content`)."""
 
-    blocks = PageBlockResponseSerializer(many=True, read_only=True, help_text="Các block theo thứ tự.")
-    avatar_url = serializers.SerializerMethodField(help_text="URL ảnh đại diện tuyệt đối hoặc null.")
-    cover_url = serializers.SerializerMethodField(help_text="URL ảnh bìa tuyệt đối hoặc null.")
+    avatar = AttachmentSummaryResponseSerializer(allow_null=True, help_text="Ảnh đại diện.")
+    cover = AttachmentSummaryResponseSerializer(allow_null=True, help_text="Ảnh bìa.")
+    content = serializers.SerializerMethodField(help_text="Tài liệu Tiptap JSON cho editor.")
 
     class Meta(PageListResponseSerializer.Meta):
         fields = (
             *PageListResponseSerializer.Meta.fields,
+            "description",
             "seo_title",
             "seo_description",
             "theme",
-            "avatar_url",
-            "cover_url",
-            "blocks",
+            "avatar",
+            "cover",
+            "content",
+            "content_version",
         )
         read_only_fields = fields
 
-    def get_avatar_url(self, obj: object) -> str | None:
-        """Ảnh đại diện còn tồn tại."""
-        attachment = obj.avatar  # type: ignore[attr-defined]
-        return (
-            build_absolute_url(attachment.file.url) if attachment and attachment.deleted_at is None else None
-        )
-
-    def get_cover_url(self, obj: object) -> str | None:
-        """Ảnh bìa còn tồn tại."""
-        attachment = obj.cover  # type: ignore[attr-defined]
-        return (
-            build_absolute_url(attachment.file.url) if attachment and attachment.deleted_at is None else None
-        )
+    def get_content(self, obj: Any) -> dict[str, Any]:
+        """Nội dung đã dựng sẵn ở service (serializer không truy vấn DB)."""
+        return dict(getattr(obj, "editor_content", None) or obj.content or {})

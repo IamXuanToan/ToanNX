@@ -72,6 +72,31 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
             raise ShortLinkExpiredError()
         return self._validate_destination(link.destination_url), link.redirect_type
 
+    def find_by_ids(self, ids: Any) -> dict[str, ShortLink]:
+        """Link còn tồn tại theo id (một query), dùng cho nút link rút gọn trong module khác.
+
+        Args:
+            ids: Id link.
+
+        Returns:
+            `{id dạng chuỗi: link}`.
+        """
+        return {str(item.pk): item for item in self.repository.filter(pk__in=list(ids))}
+
+    @staticmethod
+    def is_resolvable(link: ShortLink) -> bool:
+        """Link đang hoạt động và chưa hết hạn.
+
+        Args:
+            link: Link.
+
+        Returns:
+            True nếu `/s/{slug}` sẽ chuyển hướng được.
+        """
+        return link.status == ShortLink.Status.ACTIVE and (
+            link.expires_at is None or link.expires_at > timezone.now()
+        )
+
     @staticmethod
     def _validate_expiration(value: Any) -> None:
         """Ngày hết hạn phải ở tương lai khi được nhập."""
