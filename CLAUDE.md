@@ -20,6 +20,7 @@ uv sync
 uv run python manage.py runserver 8000
 uv run python manage.py migrate            # also syncs permissions/system roles (post_migrate)
 uv run python manage.py sync_iam           # re-sync permissions/roles manually
+uv run python manage.py seed_local         # local only (DEBUG): sync_iam + superuser toannx / nxtoan2k4@gmail.com
 uv run pytest -q                           # all tests (creates test_toannx DB)
 uv run pytest app/modules/iam/tests/test_role_api.py::test_name   # single test
 uv run ruff format --check . && uv run ruff check . && uv run mypy .

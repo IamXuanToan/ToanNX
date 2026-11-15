@@ -51,6 +51,7 @@ cp .env.example .env        # điền DJANGO_SECRET_KEY, DB_USER/DB_PASSWORD (DB
 uv sync
 uv run python manage.py migrate          # tạo bảng + đồng bộ quyền/vai trò hệ thống
 uv run python manage.py createsuperuser  # nhập email + mật khẩu
+uv run python manage.py seed_local       # hoặc: local, đồng bộ quyền + superuser mặc định của chủ dự án
 uv run python manage.py runserver 8000
 ```
 

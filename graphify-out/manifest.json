@@ -2076,15 +2076,15 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1794634522.2308455,
-    "seen": 1794636084.2468636,
-    "ast_hash": "4000fd3568c000036a59aa72f12b432f",
+    "mtime": 1794737910.8346274,
+    "seen": 1794738060.76068,
+    "ast_hash": "1b3a2760396038c3ca291cc12b3654f0",
     "semantic_hash": ""
   },
   "SYSTEM_CONTEXT.md": {
-    "mtime": 1794732205.4156134,
-    "seen": 1794732692.7057672,
-    "ast_hash": "b16ae147acb87b3243d7473b574a788e",
+    "mtime": 1794737910.8346274,
+    "seen": 1794738060.7606819,
+    "ast_hash": "cd2c00272e84b12dd7d06c09fceb59ae",
     "semantic_hash": ""
   },
   "backend/README.md": {
@@ -2970,9 +2970,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1794734128.1814425,
-    "seen": 1794734415.947466,
-    "ast_hash": "cdbfcee0a00ba844b9bcc46a9a472cdb",
+    "mtime": 1794737910.8336213,
+    "seen": 1794738060.7606757,
+    "ast_hash": "0911acf5c8153459215691e93e4d9642",
     "semantic_hash": ""
   },
   "docs/rules/git.md": {
@@ -7245,6 +7245,36 @@
     "mtime": 1794736430.0835447,
     "seen": 1794736874.9066799,
     "ast_hash": "dfb2643b199cfee2bf717dbf1301d02d",
+    "semantic_hash": ""
+  },
+  "backend/app/modules/account/management/__init__.py": {
+    "mtime": 1794737864.653094,
+    "seen": 1794738060.7582371,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "backend/app/modules/account/management/commands/__init__.py": {
+    "mtime": 1794737864.6534317,
+    "seen": 1794738060.7582412,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "backend/app/modules/account/management/commands/seed_local.py": {
+    "mtime": 1794737863.3866744,
+    "seen": 1794738060.758244,
+    "ast_hash": "c604a1752b85670d1c8016e48f946543",
+    "semantic_hash": ""
+  },
+  "backend/app/modules/account/services/account_seed_service.py": {
+    "mtime": 1794737862.5857227,
+    "seen": 1794738060.7582977,
+    "ast_hash": "d509f70ae422f37ac05e76075b9cfc29",
+    "semantic_hash": ""
+  },
+  "backend/app/modules/account/tests/test_seed_local.py": {
+    "mtime": 1794737890.75309,
+    "seen": 1794738060.7583184,
+    "ast_hash": "44b51fa8f5bbb9c4f436fbabd1130bf4",
     "semantic_hash": ""
   },
   "frontend/pnpm-lock.yaml": {

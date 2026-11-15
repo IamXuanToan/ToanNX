@@ -79,5 +79,6 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 | --- | --- |
 | `uv run python manage.py migrate` | Migration + đồng bộ quyền (post_migrate) |
 | `uv run python manage.py sync_iam` | Đồng bộ lại quyền/vai trò hệ thống |
+| `uv run python manage.py seed_local` | Chỉ local (`DEBUG=True`): đồng bộ quyền + superuser `toannx` / `nxtoan2k4@gmail.com`, chạy lại được |
 | `uv run python manage.py createsuperuser` | Tạo superuser (cũng là cách khôi phục quyền quản trị) |
 | `./scripts/check-all.sh` | Toàn bộ kiểm tra |
