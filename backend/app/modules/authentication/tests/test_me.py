@@ -6,6 +6,8 @@ from typing import Any
 import jwt
 import pytest
 from django.conf import settings
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 from rest_framework.test import APIClient
 
@@ -77,3 +79,13 @@ class TestMe(BaseApiTestCase):
         self.assert_success(api.get(ME))
         user.refresh_from_db()
         assert user.last_seen_at is not None and user.last_seen_at > first_seen
+
+
+def test_me_reuses_authenticated_user(user: Any, login: Any) -> None:
+    """`/auth/me` dùng người dùng đã nạp lúc xác thực (kèm avatar), không đọc lại bảng người dùng."""
+    api = login(user)
+    with CaptureQueriesContext(connection) as context:
+        assert api.get("/api/v1/auth/me").status_code == 200
+    reloads = [q["sql"] for q in context.captured_queries if 'FROM "account_user"' in q["sql"]]
+    assert reloads == []
+    assert len(context.captured_queries) <= 4

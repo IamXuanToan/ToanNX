@@ -14,7 +14,6 @@ class PermissionRepository(CoreRepository[Permission]):
     """Truy cập dữ liệu quyền."""
 
     model = Permission
-    default_ordering = ("-created_at", "-pk")
 
     def get_queryset(self) -> QuerySet[Permission]:
         """Chỉ quyền đang hoạt động.

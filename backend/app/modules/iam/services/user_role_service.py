@@ -63,6 +63,17 @@ class UserRoleService:
         self.user_service.get_by_id(user_id)
         return self.role_repository.list_for_user(user_id)
 
+    def roles_for(self, user: User) -> list[Role]:
+        """Vai trò của người dùng đã nạp sẵn (không kiểm lại người dùng có tồn tại).
+
+        Args:
+            user: Người dùng.
+
+        Returns:
+            Danh sách vai trò.
+        """
+        return self.role_repository.list_for_user(user.pk)
+
     @transaction.atomic
     def assign_role(self, actor: User, user_id: Any, role_id: Any) -> User:
         """Gán vai trò cho người dùng (idempotent).

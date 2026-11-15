@@ -39,5 +39,5 @@ class MeView(CoreApiView):
         Returns:
             Hồ sơ.
         """
-        profile = self.current_user_service.get_profile(self.get_actor(request).pk)
+        profile = self.current_user_service.get_profile(self.get_actor(request))
         return CoreResponse(CurrentUserResponseSerializer(profile).data)

@@ -85,7 +85,7 @@ MODULE = ModuleDescriptor(code="custom_pages", ..., permissions=CustomPagesPermi
 | `permissions/` | `IsActiveAuthenticated`, `CsrfProtected` (quyền IAM: `iam/permissions/has_iam_permission.py`) |
 | `decorators/` | `validate_request` (input → `validated_data`), `rate_limit` (khóa `RATE_LIMITS` cho APIView) |
 | `pagination/core_page_number_pagination.py` | Phân trang **chỉ khi request có `page`/`page_size`** (≤ 100); không có thì trả hết |
-| `filters/*` | `CoreSearchFilter` (≤ 100 ký tự, ≤ 5 từ) và bộ lọc nhiều giá trị `Core{Boolean,Choice,Char,UUID}InFilter` (≤ 50 giá trị) |
+| `filters/*` | `CoreSearchFilter` (tìm **không dấu**: "nguyen" khớp "Nguyễn", qua `unaccent`; ≤ 100 ký tự, ≤ 5 từ) và bộ lọc nhiều giá trị `Core{Boolean,Choice,Char,UUID}InFilter` (≤ 50 giá trị) |
 | `serializers/*` | `CoreValidateSerializer` (từ chối field lạ), bulk ids/result, `CoreJournalEntryResponseSerializer` |
 | `schemas/*`, `responses/*`, `exceptions/*`, `registry/*`, `utils/{url,slug}.py` | Envelope OpenAPI/response, lỗi có mã, module registry, URL tuyệt đối/slug |
 

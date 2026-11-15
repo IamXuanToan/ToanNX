@@ -630,9 +630,9 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "backend/app/modules/authentication/repositories/auth_session_repository.py": {
-    "mtime": 1794733864.3325446,
-    "seen": 1794734415.94614,
-    "ast_hash": "936e7eefb6ceebb4b05cae2f77b6ae61",
+    "mtime": 1794741021.8229012,
+    "seen": 1794741252.4701371,
+    "ast_hash": "e6d60017dde4d331b547648c9d0c7afb",
     "semantic_hash": ""
   },
   "backend/app/modules/authentication/repositories/rate_limit_bucket_repository.py": {
@@ -726,9 +726,9 @@
     "semantic_hash": "c8fdac2682f3e82d21b236c058e8ca72"
   },
   "backend/app/modules/authentication/services/auth_service.py": {
-    "mtime": 1794676618.632797,
-    "seen": 1794678356.9819698,
-    "ast_hash": "87688361e0467746a8fb4b80be475867",
+    "mtime": 1794741012.0230336,
+    "seen": 1794741252.470183,
+    "ast_hash": "af99b5082747807b33631ea04a5ce833",
     "semantic_hash": ""
   },
   "backend/app/modules/authentication/services/auth_session_service.py": {
@@ -738,9 +738,9 @@
     "semantic_hash": ""
   },
   "backend/app/modules/authentication/services/current_user_service.py": {
-    "mtime": 1794653999.5951543,
-    "seen": 1794672916.3926728,
-    "ast_hash": "e9b746d3ffab0edbd5b9c93d53eccb96",
+    "mtime": 1794741012.0210328,
+    "seen": 1794741252.4701881,
+    "ast_hash": "a5e7b7b9300dc69eccb3f8d007946859",
     "semantic_hash": ""
   },
   "backend/app/modules/authentication/services/rate_limit_service.py": {
@@ -780,9 +780,9 @@
     "semantic_hash": "8fd6404398df903969c2f8cb2e56a959"
   },
   "backend/app/modules/authentication/tests/test_me.py": {
-    "mtime": 1794673610.0865178,
-    "seen": 1794674925.3779116,
-    "ast_hash": "232dcd09318068a62fb7c07894cb0639",
+    "mtime": 1794741048.526042,
+    "seen": 1794741252.470211,
+    "ast_hash": "6e77655dee333ed9f52408d04c4e324b",
     "semantic_hash": ""
   },
   "backend/app/modules/authentication/tests/test_refresh.py": {
@@ -876,9 +876,9 @@
     "semantic_hash": ""
   },
   "backend/app/modules/authentication/views/me_view.py": {
-    "mtime": 1794715953.7026973,
-    "seen": 1794732692.704432,
-    "ast_hash": "f1499915fd46e5b78bfa1852804e904d",
+    "mtime": 1794741012.022038,
+    "seen": 1794741252.4702585,
+    "ast_hash": "133bf742c18ae6109aabb3d1d2c6289c",
     "semantic_hash": ""
   },
   "backend/app/modules/authentication/views/refresh_view.py": {
@@ -1128,9 +1128,9 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "backend/app/modules/iam/repositories/permission_repository.py": {
-    "mtime": 1794738482.3781612,
-    "seen": 1794740281.9583006,
-    "ast_hash": "ef938d0fc810bae15af09551057bfee4",
+    "mtime": 1794741012.0230336,
+    "seen": 1794741252.4705145,
+    "ast_hash": "7b4a48baef6aeb41649171ccbe5b4ca1",
     "semantic_hash": ""
   },
   "backend/app/modules/iam/repositories/role_permission_repository.py": {
@@ -1140,9 +1140,9 @@
     "semantic_hash": ""
   },
   "backend/app/modules/iam/repositories/role_repository.py": {
-    "mtime": 1794734138.1850224,
-    "seen": 1794734415.9463544,
-    "ast_hash": "8e7b9bf709a59fbdf0a85bea2c10ee22",
+    "mtime": 1794741012.0240371,
+    "seen": 1794741252.470519,
+    "ast_hash": "659a245e802e0b655812bc420c7023af",
     "semantic_hash": ""
   },
   "backend/app/modules/iam/repositories/user_role_repository.py": {
@@ -1254,9 +1254,9 @@
     "semantic_hash": ""
   },
   "backend/app/modules/iam/services/user_role_service.py": {
-    "mtime": 1794738494.7364504,
-    "seen": 1794740281.9583576,
-    "ast_hash": "7e716d0ad1a3ea97a2df9a5a907aa429",
+    "mtime": 1794741012.0210328,
+    "seen": 1794741252.470571,
+    "ast_hash": "c5dfc0306e8c8eb1733671e75208a28e",
     "semantic_hash": ""
   },
   "backend/app/modules/iam/tests/__init__.py": {
@@ -2136,9 +2136,9 @@
     "semantic_hash": "a8eb236c5aca74f107418df3e2e77aab"
   },
   "docs/rules/backend.md": {
-    "mtime": 1794740094.8052876,
-    "seen": 1794740281.960394,
-    "ast_hash": "2d5e1f844e4961f398c3c57b43bb3a02",
+    "mtime": 1794741062.5150743,
+    "seen": 1794741252.4724784,
+    "ast_hash": "1337d64dcb78552e1e317bac4330720d",
     "semantic_hash": ""
   },
   "docs/rules/common.md": {
@@ -5328,9 +5328,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/filters/core_search_filter.py": {
-    "mtime": 1794715633.1013901,
-    "seen": 1794732692.7040899,
-    "ast_hash": "fe60515c5f564172ce3cb9643f1c4645",
+    "mtime": 1794740927.535138,
+    "seen": 1794741252.4695652,
+    "ast_hash": "58c63c1c75a3a103f59b4276b5f351b4",
     "semantic_hash": ""
   },
   "backend/app/core/permissions/is_active_authenticated.py": {
@@ -7455,6 +7455,24 @@
     "mtime": 1794739976.0794835,
     "seen": 1794740281.959831,
     "ast_hash": "69a06b4d3be4a6e7f2cac588b663bc27",
+    "semantic_hash": ""
+  },
+  "backend/app/core/tests/test_core_search_filter.py": {
+    "mtime": 1794740960.3651783,
+    "seen": 1794741252.4697485,
+    "ast_hash": "61edcc3f4298c6ba5dcaddd53bf43b86",
+    "semantic_hash": ""
+  },
+  "backend/app/core/utils/text.py": {
+    "mtime": 1794740917.040517,
+    "seen": 1794741252.4697976,
+    "ast_hash": "c7112ff30d891683895a3ccdb074767d",
+    "semantic_hash": ""
+  },
+  "backend/app/modules/account/migrations/0004_unaccent_extension.py": {
+    "mtime": 1794740916.218119,
+    "seen": 1794741252.4698708,
+    "ast_hash": "0f59aadb8dc545f32a7518a666c8063e",
     "semantic_hash": ""
   },
   "frontend/pnpm-lock.yaml": {

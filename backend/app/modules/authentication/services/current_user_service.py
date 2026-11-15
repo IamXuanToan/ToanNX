@@ -2,6 +2,7 @@
 
 from typing import Any
 
+from app.modules.account.models.user import User
 from app.modules.account.services.user_service import UserService
 from app.modules.authentication.types.current_user_profile import CurrentUserProfile
 from app.modules.iam.services.permission_checker import PermissionChecker, permission_checker
@@ -28,8 +29,23 @@ class CurrentUserService:
         self.user_role_service = user_role_service or UserRoleService(user_service=self.user_service)
         self.checker = checker or permission_checker
 
-    def get_profile(self, user_id: Any) -> CurrentUserProfile:
-        """Hồ sơ người dùng hiện tại.
+    def get_profile(self, user: User) -> CurrentUserProfile:
+        """Hồ sơ của người dùng đã nạp sẵn (người dùng của request): không đọc lại bảng người dùng.
+
+        Args:
+            user: Người dùng.
+
+        Returns:
+            Hồ sơ.
+        """
+        return CurrentUserProfile(
+            user=user,
+            roles=self.user_role_service.roles_for(user),
+            permissions=sorted(self.checker.get_permissions(user)),
+        )
+
+    def get_profile_by_id(self, user_id: Any) -> CurrentUserProfile:
+        """Hồ sơ theo id (đăng nhập, refresh: chưa có người dùng của request).
 
         Args:
             user_id: Id người dùng.
@@ -37,9 +53,4 @@ class CurrentUserService:
         Returns:
             Hồ sơ.
         """
-        user = self.user_service.get_by_id(user_id)
-        return CurrentUserProfile(
-            user=user,
-            roles=self.user_role_service.list_roles(user.pk),
-            permissions=sorted(self.checker.get_permissions(user)),
-        )
+        return self.get_profile(self.user_service.get_by_id(user_id))

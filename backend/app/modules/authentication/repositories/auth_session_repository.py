@@ -47,7 +47,7 @@ class AuthSessionRepository(CoreRepository[AuthSession]):
         return self.get_queryset().filter(revoked_at__isnull=True, expires_at__gt=timezone.now())
 
     def find_active(self, session_id: Any, user_id: Any) -> AuthSession | None:
-        """Phiên còn hiệu lực của người dùng, kèm user (một truy vấn).
+        """Phiên còn hiệu lực của người dùng, kèm user và ảnh đại diện (một truy vấn; `/auth/me` dùng lại).
 
         Args:
             session_id: Id phiên (claim `sid`).
@@ -56,7 +56,7 @@ class AuthSessionRepository(CoreRepository[AuthSession]):
         Returns:
             Phiên hoặc None.
         """
-        return self.active().select_related("user").filter(pk=session_id, user_id=user_id).first()
+        return self.active().select_related("user__avatar").filter(pk=session_id, user_id=user_id).first()
 
     def list_active(self, user: Any) -> list[AuthSession]:
         """Phiên còn hiệu lực của người dùng, mới dùng gần nhất trước.

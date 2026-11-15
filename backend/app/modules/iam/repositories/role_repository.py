@@ -13,7 +13,6 @@ class RoleRepository(CoreRepository[Role]):
     """Truy cập dữ liệu vai trò."""
 
     model = Role
-    default_ordering = ("-created_at", "-pk")
     ordering_fields = frozenset({"code", "name", "created_at"})
 
     def get_queryset(self) -> QuerySet[Role]:

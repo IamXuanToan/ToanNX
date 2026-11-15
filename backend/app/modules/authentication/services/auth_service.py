@@ -132,5 +132,5 @@ class AuthService:
             access_token=access,
             access_expires_at=access_expires,
             refresh_token=refresh_raw,
-            profile=self.current_user_service.get_profile(session.user_id),
+            profile=self.current_user_service.get_profile_by_id(session.user_id),
         )
