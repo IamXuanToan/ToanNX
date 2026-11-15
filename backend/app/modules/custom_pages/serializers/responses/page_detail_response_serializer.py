@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from app.core.utils.absolute_url import build_absolute_url
+from app.core.utils.url import build_absolute_url
 from app.modules.custom_pages.serializers.responses.page_block_response_serializer import (
     PageBlockResponseSerializer,
 )

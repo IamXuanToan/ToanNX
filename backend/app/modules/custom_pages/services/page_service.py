@@ -8,8 +8,8 @@ from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
 from app.core.services.core_crud_service import CoreCrudService
-from app.core.utils.absolute_url import build_absolute_url
 from app.core.utils.slug import generate_slug, normalize_slug
+from app.core.utils.url import build_absolute_url
 from app.modules.attachment.models.attachment import Attachment
 from app.modules.attachment.services.attachment_service import AttachmentService
 from app.modules.custom_pages.models.page import Page

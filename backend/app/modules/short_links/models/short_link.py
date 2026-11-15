@@ -80,5 +80,24 @@ class ShortLink(JournalTracker, CoreModel):
         db_table = "short_link"
         verbose_name = "Liên kết rút gọn"
         verbose_name_plural = "Liên kết rút gọn"
-        constraints = [models.UniqueConstraint(Lower("slug"), name="short_link_slug_ci_unique")]
-        indexes = [models.Index(fields=["owner", "created_at"], name="sl_owner_created_idx")]
+        constraints = [
+            # Không điều kiện: slug đã xóa không dùng lại (tránh người khác chiếm URL đã in ra).
+            models.UniqueConstraint(Lower("slug"), name="short_link_slug_ci_unique"),
+            models.CheckConstraint(
+                condition=models.Q(status__in=["ACTIVE", "INACTIVE"]), name="short_link_status_valid"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(redirect_type__in=[301, 302]), name="short_link_redirect_valid"
+            ),
+        ]
+        indexes = [
+            models.Index(
+                fields=["owner", "-created_at"],
+                condition=models.Q(deleted_at__isnull=True),
+                name="sl_owner_created_alive_idx",
+            )
+        ]
+
+    def __str__(self) -> str:
+        """Tên link (dùng làm nhãn trong lịch sử thay đổi)."""
+        return f"{self.name} (/s/{self.slug})"

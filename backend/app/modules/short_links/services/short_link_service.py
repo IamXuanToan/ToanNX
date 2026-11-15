@@ -61,7 +61,11 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
 
     def resolve(self, slug: str) -> tuple[str, int]:
         """Trả URL đích và mã 301/302 của link đang hoạt động; link hết hạn trả 410."""
-        link = self.repository.find_one(slug=normalize_slug(slug))
+        try:
+            normalized = normalize_slug(slug)
+        except ValidationError as exc:
+            raise NotFoundError() from exc
+        link = self.repository.find_one(slug=normalized)
         if link is None or link.status != ShortLink.Status.ACTIVE:
             raise NotFoundError()
         if link.expires_at is not None and link.expires_at <= timezone.now():

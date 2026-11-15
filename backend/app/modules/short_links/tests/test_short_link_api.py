@@ -105,3 +105,39 @@ class TestShortLinkApi(BaseApiTestCase):
         api = login(user)
         self.assert_success(api.post(BASE, self.payload(slug="one-link"), format="json"), 201)
         self.assert_error(api.post(BASE, self.payload(slug="two-link"), format="json"), 429, "RATE_LIMITED")
+
+    def test_bulk_filters_and_history(self, user: Any, login: Any) -> None:
+        """Bulk tất cả-hoặc-không, lọc nhiều giá trị (EXPIRED suy từ expires_at), lịch sử thay đổi."""
+        grant(user, P.CREATE, P.READ, P.UPDATE, P.DELETE)
+        api = login(user)
+        first = self.assert_success(api.post(BASE, self.payload(slug="bulk-one"), format="json"), 201)
+        second = self.assert_success(api.post(BASE, self.payload(slug="bulk-two"), format="json"), 201)
+        ShortLink.objects.filter(pk=second["id"]).update(expires_at=timezone.now() - timedelta(minutes=1))
+
+        assert self.assert_success(
+            api.post(f"{BASE}/bulk-update", {"ids": [first["id"]], "status": "INACTIVE"}, format="json")
+        ) == {"count": 1}
+        items = self.assert_success(api.get(BASE, {"status": "INACTIVE"}))
+        assert [item["id"] for item in items] == [first["id"]]
+        items = self.assert_success(api.get(BASE, {"status": "EXPIRED,INACTIVE"}))
+        assert {item["id"] for item in items} == {first["id"], second["id"]}
+        assert items[0]["owner"]["email"] == user.email
+        self.assert_error(api.get(BASE, {"status": "NOPE"}), 400, "VALIDATION_ERROR")
+
+        history = self.assert_success(api.get(f"{BASE}/{first['id']}/history"))
+        assert [entry["action"] for entry in history] == ["UPDATE", "CREATE"]
+        assert history[0]["changes"] == {"status": ["ACTIVE", "INACTIVE"]}
+
+        assert self.assert_success(
+            api.post(f"{BASE}/bulk-delete", {"ids": [first["id"], second["id"]]}, format="json")
+        ) == {"count": 2}
+        assert self.assert_success(api.get(BASE)) == []
+
+    def test_resolve_headers_and_bad_slug(self, user: Any, login: Any, client: Any) -> None:
+        grant(user, P.CREATE)
+        login(user).post(BASE, self.payload(slug="head-link"), format="json")
+        response = client.get("/api/v1/short_links/resolve/head-link")
+        assert response.status_code == 302
+        assert response["Cache-Control"] == "no-store"
+        assert response["X-Robots-Tag"] == "noindex"
+        self.assert_error(client.get("/api/v1/short_links/resolve/A_B"), 404, "NOT_FOUND")

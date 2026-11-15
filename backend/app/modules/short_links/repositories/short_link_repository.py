@@ -12,5 +12,5 @@ class ShortLinkRepository(CoreRepository[ShortLink]):
     model = ShortLink
 
     def get_queryset(self) -> QuerySet[ShortLink]:
-        """Chỉ liên kết còn tồn tại."""
-        return ShortLink.objects.alive()
+        """Chỉ liên kết còn tồn tại, kèm owner cho danh sách (không N+1)."""
+        return ShortLink.objects.alive().select_related("owner")

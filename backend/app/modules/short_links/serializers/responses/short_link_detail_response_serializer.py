@@ -3,7 +3,7 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from app.core.utils.absolute_url import build_absolute_url
+from app.core.utils.url import build_absolute_url
 from app.modules.short_links.models.short_link import ShortLink
 
 
