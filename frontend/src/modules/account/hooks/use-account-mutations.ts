@@ -31,7 +31,7 @@ export function useUpdateUser(id: string) {
 /** @returns Mutation xoá mềm một người dùng. */
 export function useDeleteUser() {
   return useResourceMutation({
-    mutationFn: (id: string) => userService.remove(id),
+    mutationFn: (id: string) => userService.delete(id),
     invalidate: INVALIDATE,
     success: "deleted",
   });
@@ -50,7 +50,7 @@ export function useBulkSetUsersActive() {
 /** @returns Mutation xoá mềm nhiều người dùng. */
 export function useBulkDeleteUsers() {
   return useResourceMutation({
-    mutationFn: (ids: string[]) => userService.bulkRemove(ids),
+    mutationFn: (ids: string[]) => userService.bulkDelete(ids),
     invalidate: INVALIDATE,
     success: "bulkDeleted",
   });

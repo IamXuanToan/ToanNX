@@ -39,7 +39,7 @@ export function UserTable({
   const tStatus = useTranslations("common.status");
   const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
-  const { query, table, isSelf, edit, copy, setActive, remove, bulkSetActive, bulkRemove } =
+  const { query, table, isSelf, edit, copy, setActive, remove, bulkSetActive, bulkDelete } =
     useUserTable();
 
   const columns: DataTableColumn<User>[] = [
@@ -201,7 +201,7 @@ export function UserTable({
             }
           : undefined
       }
-      onBulkDelete={canDelete ? bulkRemove : undefined}
+      onBulkDelete={canDelete ? bulkDelete : undefined}
       aria-label={t("title")}
     />
   );

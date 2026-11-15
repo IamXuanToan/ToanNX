@@ -1,33 +1,33 @@
 # Graph Report - toannx  (2026-11-15)
 
 ## Corpus Check
-- 1181 files · ~793,192 words
+- 1181 files · ~794,253 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 12 file(s) not represented in the graph (top: (none) 8, .example 1, .lock 1)
 
 ## Summary
-- 6448 nodes · 15734 edges · 521 communities (231 shown, 290 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 975 edges (avg confidence: 0.93)
+- 6496 nodes · 15746 edges · 531 communities (220 shown, 311 thin omitted)
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 913 edges (avg confidence: 0.93)
 - Token cost: 173,764 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `50c0824a`
+- Built from commit: `06114f2e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- .has_permission
+- PermissionChecker
 - .agents/skills/ui-ux/scripts/probe.mjs
-- attachment_folder_delete_view.py
-- iam.types.ts
+- UserService
+- use-iam-mutations.ts
 - user.schema.ts
-- PagePublicView
+- .get
 - package.json
 - ShortLink
 - useResourceMutation
-- use-login-form.ts
-- DataTable
-- routing.ts
+- useRouter
+- IamSyncService
+- login-view.tsx
 - page_service.py
 - Sidebar & Sheet UI
 - use-admin-shell.ts
@@ -36,96 +36,93 @@
 - .claude/skills/ui-ux/scripts/probe.mjs
 - react
 - helpers.ts
-- JournalEntry
+- JournalTracker
 - User
-- use-account-mutations.ts
+- RoleService
 - PageService
 - useRouter
-- AccountPermission
-- RateLimitBucketRepository
-- RoleFactory
+- RateLimitService
+- UserRepository
 - user_role_view.py
 - FE API Client
-- attachment/types/attachment.types.ts
+- use-attachments.ts
 - readiness_view.py
 - conftest.py
 - use-data-table.ts
-- ValidationError
+- page_service.py
 - OpenAPI Schema Tests
-- CoreChoiceInFilter
+- django_db_models
 - AuthorizationError
 - core_page_number_pagination.py
-- user.py
+- UserManager
 - typing
 - shadcn Config
-- PermissionRule
+- TestModuleConventions
 - CoreRepository
-- readiness_view.py
+- response_body.py
 - Test Me
 - svg_inspector.py
+- user_context.py
 - usePermission
 - .assert_success
 - Tsconfig
 - Attachment
-- Role
+- Permission
 - measureInPage
-- PermissionService
-- AdminAuthSessionViewSet
+- TestUserBulkApi
 - useApiErrorMessage
 - CoreCrudService
 - CoreResponse
+- CurrentUserService
 - dependencies
 - Requirements
 - Readme
 - measureInPage
-- UserFactory
+- TestJournalTracker
 - use-qr-code-form.ts
 - code-slug-input.ts
-- alert-dialog.tsx
+- routing.ts
 - CleanupView
-- BaseApiTestCase
+- TestCleanup
 - Architecture
 - use-short-link-form.ts
 - Request Context Middleware
 - test_module_conventions.py
 - SessionListResponseSerializer
-- CsrfView
+- TestShortLinkApi
 - Manage
 - Backend rules (Django + DRF)
 - Architecture 2
 - scripts
-- proxy.ts
+- [slug]/page.tsx
 - I18N
-- app-providers.tsx
-- BucketThrottle
+- [locale]/layout.tsx
+- route.ts
 - Button
 - Từng phong cách
 - Authorization
 - .agents/skills/ui-ux/scripts/lint-skill.mjs
 - main
-- grant
-- use-iam-mutations.ts
+- UserFactory
 - CoreValidator
-- PageViewSet
 - select-field.tsx
 - Foundation Report
 - Từng phong cách
 - main
 - TestResponses
-- PagePath
+- PagePathService
 - AttachmentFolderService
 - Reference audit — PMS & Medoly
 - Bố cục form và xác thực
 - Bố cục form và xác thực
 - .claude/skills/ui-ux/scripts/check-update.mjs
 - test_error_codes.py
-- AdminAuthSessionService
 - AuthResult
 - Pnpm Workspace
 - .Prettierrc
 - Thanh tab: bốn variant, chọn theo chỗ đứng
 - Bố cục khối nổi
-- pages/[id]/page.tsx
+- attachment-tiptap-image-plugin.tsx
 - 0002_seed_system_roles.py
 - Refactor codebase đã có — luật L
 - _sync_after_migrate
@@ -138,22 +135,21 @@
 - global.d.ts
 - Checkbox, radio, công tắc, select
 - Authorization 2
-- choice-groups.tsx
-- JournalTracker
+- proxy.ts
+- qr_image_renderer.py
 - extensions.ts
-- admin-shell.tsx
-- QrCode
+- vitest
+- QrCodeService
 - test_qr_code_api.py
-- UserListResponseSerializer
-- attachment_filter.py
+- collectLayoutAnchors
+- CoreModelViewSet
 - use-session-table.ts
 - AccountAuthBackend
 - next-intl
 - Pyproject
 - System Context
-- RoleRepository
+- test_core_repository.py
 - Bẫy Tailwind v4 — luật W
-- CoreModelViewSet
 - useListQuery
 - Checkbox, radio, công tắc, select
 - Bẫy Tailwind v4 — luật W
@@ -182,7 +178,7 @@
 - App mobile — luật J
 - Nhiều màn hình — luật D
 - UI/UX cho hệ thống dashboard
-- findOpenedLayerProblems
+- probeOpenerLayers
 - probeOpenerLayers
 - Đường dẫn (breadcrumb)
 - Bảng giá
@@ -201,7 +197,6 @@
 - Thiết kế từ đầu như một designer — luật U
 - Khung app có sidebar
 - .agents/skills/ui-ux/scripts/measure-skill.mjs
-- journal_entry_view_set.py
 - Đang tải (loading)
 - Logo sản phẩm ⚑
 - Thiết kế từ đầu như một designer — luật U
@@ -209,6 +204,7 @@
 - collectLayoutAnchors
 - Tiêu đề cột sắp xếp
 - Hình khối và bố cục — luật F
+- CookieJwtAuthenticationScheme
 - Tiêu đề cột sắp xếp
 - Hình khối và bố cục — luật F
 - Token và thương hiệu
@@ -222,7 +218,7 @@
 - Accordion
 - Khu tải tệp lên (file upload)
 - Input
-- JournalEntryService
+- _sync_after_migrate
 - Quy tắc Git
 - Avatar
 - Button
@@ -236,7 +232,7 @@
 - Tên sửa tại chỗ
 - Bố cục màn hình trong app — mục lục
 - Trang cài đặt
-- IamPermissionBackend
+- probeStateShapes
 - TestIamAccess
 - Empty state
 - Tên sửa tại chỗ
@@ -280,8 +276,8 @@
 - Nguyên tắc chung — luật N
 - Wireframe — luật U3
 - .agents/skills/ui-ux/scripts/audit.sh
-- test_concurrent_slug_creation_has_one_winner
-- AuthenticationPermission
+- handler404
+- request_context_filter.py
 - uuid
 - Trang khoá API
 - Trang thanh toán
@@ -347,47 +343,47 @@
 - .claude/skills/ui-ux/references/mock-photos.md
 - admin-breadcrumb.tsx
 - CoreRepository[M]
+- .descendants
 - test_list_query_count.py
-- case-conversion.ts
-- theme_validator.py
-- .get
+- TestCsrf
+- PermissionRule
+- .enforce
 - 4. Base backend đích
-- attachment-library.spec.ts
-- vitest
-- UserFilter
+- journal/navigation.ts
+- number-format.ts
+- use-tiptap-editor.ts
+- _list_routes
 - test_create_requires_username
-- AttachmentFolderFilter
-- AdminAuthSessionFilter
-- 10. Custom Pages
-- public-header.tsx
+- PagePath
+- date-fns-locale.ts
 - page_templates.py
 - vietqr_banks.py
-- ShortLinkRepository
-- PagePathFilter
+- core_repository.py
+- 8. Module Mã QR (`qr_codes` BE · `qr-codes` FE)
 
 ## God Nodes (most connected - your core abstractions)
-1. `User` - 175 edges
+1. `User` - 153 edges
 2. `react` - 146 edges
 3. `next-intl` - 133 edges
 4. `Button()` - 123 edges
 5. `lucide-react` - 83 edges
-6. `UserFactory` - 75 edges
+6. `UserFactory` - 76 edges
 7. `AuthSession` - 74 edges
 8. `grant()` - 72 edges
 9. `CoreResponse` - 70 edges
-10. `Role` - 68 edges
+10. `CoreRepository` - 68 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `8.2 Nghiệp vụ` --references--> `AttachmentService`  [INFERRED]
   docs/plans/system-standardization-plan.md → backend/app/modules/attachment/services/attachment_service.py
 - `4.2 Quyền` --references--> `PermissionChecker`  [INFERRED]
   docs/plans/system-standardization-plan.md → backend/app/modules/iam/services/permission_checker.py
-- `Backend layering — `url → view → service → repository → ORM`` --references--> `ErrorCode`  [INFERRED]
-  CLAUDE.md → backend/app/core/constants/error_codes.py
-- `1. Hiện trạng (đo ngày 15/11/2026)` --references--> `ErrorCode`  [INFERRED]
-  docs/plans/system-standardization-plan.md → backend/app/core/constants/error_codes.py
-- `4.3 Service: `CoreCrudService` lo owner, quota, bulk, sự kiện` --references--> `NotFoundError`  [INFERRED]
-  docs/plans/system-standardization-plan.md → backend/app/core/exceptions/not_found_error.py
+- `Câu 2 — Dự án đang dùng gì? (TỰ TÌM, ĐỪNG HỎI)` --references--> `Avatar()`  [INFERRED]
+  .agents/skills/ui-ux/SKILL.md → frontend/src/shares/components/ui/avatar.tsx
+- `Câu 2 — Dự án đang dùng gì? (TỰ TÌM, ĐỪNG HỎI)` --references--> `Avatar()`  [INFERRED]
+  .claude/skills/ui-ux/SKILL.md → frontend/src/shares/components/ui/avatar.tsx
+- `Backend layering — `url → view → service → repository → ORM`` --references--> `CoreModel`  [INFERRED]
+  CLAUDE.md → backend/app/core/models/core_model.py
 
 ## Import Cycles
 - None detected.
@@ -400,183 +396,171 @@
 - **Default-deny permission enforcement chain** — docs_rules_backend_require_permission, docs_rules_backend_module_descriptor, docs_rules_backend_auto_grant, docs_rules_frontend_permission_gate, docs_rules_common_backend_enforces_auth [INFERRED 0.85]
 - **Permission declaration and enforcement pipeline** — docs_architecture_moduledescriptor, docs_architecture_permissiondefinition, system_context_sync_iam, docs_authorization_auto_grant, docs_authorization_permissionchecker, docs_authorization_require_permission, docs_authorization_permissionrule [INFERRED 0.85]
 
-## Communities (521 total, 290 thin omitted)
+## Communities (531 total, 311 thin omitted)
+
+### Community 0 - "PermissionChecker"
+Cohesion: 0.08
+Nodes (4): IamPermissionBackend, _code(), PermissionChecker, TestPermissionChecker
 
 ### Community 1 - ".agents/skills/ui-ux/scripts/probe.mjs"
-Cohesion: 0.07
-Nodes (52): applyStressData(), colorDistance(), defaultSweep, defaultWidths, describePaint(), dynamicProblemKeys, expandCollapsedBlocks(), findBrokenImages() (+44 more)
+Cohesion: 0.09
+Nodes (40): applyStressData(), colorDistance(), defaultSweep, defaultWidths, dynamicProblemKeys, expandCollapsedBlocks(), findBrokenImages(), findCheckedHoverChanges() (+32 more)
 
-### Community 2 - "attachment_folder_delete_view.py"
-Cohesion: 0.07
-Nodes (7): validate_request(), decorator(), CoreBulkResultResponseSerializer, AttachmentPermission, AttachmentFolderDeleteValidateSerializer, AttachmentFolderDeleteView, AttachmentViewSet
-
-### Community 3 - "iam.types.ts"
-Cohesion: 0.17
-Nodes (16): IAM_API_ENDPOINTS, usePermissionChoiceGroups(), groupPermissionsByModule(), permissionService, rolePermissionService, crud, roleService, Permission (+8 more)
+### Community 3 - "use-iam-mutations.ts"
+Cohesion: 0.09
+Nodes (42): useUser(), sameIds(), useRoleForm(), BOOLEAN_VALUES, useRoleTable(), useUserRoleFilter(), useUserRolePicker(), IAM_API_ENDPOINTS (+34 more)
 
 ### Community 4 - "user.schema.ts"
-Cohesion: 0.12
-Nodes (26): zod@^4.6.7, EMPTY, fromUser(), useUserForm(), useCreateUser(), useUpdateUser(), useUser(), avatarField (+18 more)
-
-### Community 5 - "PagePublicView"
-Cohesion: 0.05
-Nodes (6): rate_limit(), PagePublicResponseSerializer, PagePublicView, JournalResourceResponseSerializer, JournalResourceView, ShortLinkResolveView
+Cohesion: 0.09
+Nodes (37): EMPTY, fromUser(), useUserForm(), useUserTable(), accountKeys, users, INVALIDATE, useBulkDeleteUsers() (+29 more)
 
 ### Community 6 - "package.json"
-Cohesion: 0.09
-Nodes (30): eslintConfig, devDependencies, eslint@^9, eslint-config-next@16.4.6, jsdom@^31.0.1, @playwright/test@^1.65.0, prettier@^3.10.1, prettier-plugin-tailwindcss@^0.8.1 (+22 more)
+Cohesion: 0.08
+Nodes (34): eslintConfig, devDependencies, eslint@^9, eslint-config-next@16.4.6, jsdom@^31.0.1, @playwright/test@^1.65.0, prettier@^3.10.1, prettier-plugin-tailwindcss@^0.8.1 (+26 more)
 
 ### Community 7 - "ShortLink"
-Cohesion: 0.05
-Nodes (18): build_absolute_url(), resolve(), ShortLinkFilter, Meta, ShortLink, Meta, RedirectType, Status (+10 more)
+Cohesion: 0.04
+Nodes (25): _link(), test_bulk_is_all_or_nothing(), test_manage_all_sees_every_owner(), test_owner_is_actor_and_scope_is_private(), test_quota_per_owner(), test_soft_deleted_record_cannot_be_written(), ShortLinkFilter, Meta (+17 more)
 
 ### Community 8 - "useResourceMutation"
-Cohesion: 0.07
-Nodes (58): readDraft(), usePageForm(), writeDraft(), usePagePathForm(), usePagePathTable(), usePageTable(), pageKeys, pagePathKeys (+50 more)
+Cohesion: 0.06
+Nodes (62): zod@^4.6.7, readDraft(), usePageForm(), writeDraft(), usePagePathForm(), usePagePathTable(), usePageTable(), CUSTOM_PAGES_API_ENDPOINTS (+54 more)
 
-### Community 9 - "use-login-form.ts"
-Cohesion: 0.18
-Nodes (14): useLoginForm(), useLogin(), createLoginSchema(), LoginFormValues, authService, sanitizeNextPath(), canAccessAdmin(), hasPermission() (+6 more)
+### Community 9 - "useRouter"
+Cohesion: 0.09
+Nodes (29): @tanstack/react-query@^5.107.1, useRouter, useLoginForm(), useUserMenu(), AUTH_API_ENDPOINTS, useCurrentUser(), useLogin(), useLogout() (+21 more)
 
-### Community 10 - "DataTable"
-Cohesion: 0.20
-Nodes (22): UserTable(), SessionTable(), PagePathTable(), PageTable(), STATUS_TONE, RoleTable(), JournalTable(), QrCodeTable() (+14 more)
-
-### Community 11 - "routing.ts"
+### Community 10 - "IamSyncService"
 Cohesion: 0.08
-Nodes (27): 2.2 Frontend, 2. Thừa — bỏ gì, generateMetadata, LoginPage(), generateMetadata, HomePage(), AppMessages, loadMessages() (+19 more)
+Nodes (3): Command, RolePermissionRepository, IamSyncService
+
+### Community 11 - "login-view.tsx"
+Cohesion: 0.12
+Nodes (17): generateMetadata, LoginPage(), NotFound(), generateMetadata, LinkUnavailablePage(), LoginView(), HOME_ROUTES, NotFoundView() (+9 more)
 
 ### Community 12 - "page_service.py"
 Cohesion: 0.03
-Nodes (21): ErrorCode, AppException, AuthenticationError, BusinessRuleError, ConflictError, app_exception_handler(), _field_errors(), handler404() (+13 more)
+Nodes (20): ErrorCode, AppException, AuthenticationError, ConflictError, RateLimitError, AuthSession, Meta, RefreshToken (+12 more)
 
 ### Community 13 - "Sidebar & Sheet UI"
-Cohesion: 0.10
-Nodes (27): ModuleSidebar(), SidebarModuleGroup(), ModuleSwitcher(), FieldSeparator(), Separator(), Sheet(), SheetContent(), SheetDescription() (+19 more)
+Cohesion: 0.06
+Nodes (51): AdminLayout(), metadata, usePathname, camel(), useRecordHistoryItems(), AdminShell(), HeaderActions(), LauncherLayout() (+43 more)
 
 ### Community 14 - "use-admin-shell.ts"
-Cohesion: 0.10
-Nodes (25): usePathname, ATTACHMENT_PATHNAMES, ATTACHMENT_ROUTES, attachmentNavigation, AUTH_PERMISSIONS, AUTH_PATHNAMES, AUTH_ROUTES, authenticationAccountItems (+17 more)
+Cohesion: 0.12
+Nodes (19): ACCOUNT_PATHNAMES, ACCOUNT_ROUTES, accountNavigation, ATTACHMENT_PATHNAMES, ATTACHMENT_ROUTES, attachmentNavigation, AUTH_PERMISSIONS, AUTH_PATHNAMES (+11 more)
 
 ### Community 15 - "PermissionDefinition"
-Cohesion: 0.10
-Nodes (5): ModuleDescriptor, ModuleRegistry, PermissionDefinition, test_rejects_invalid_code(), test_rejects_permission_of_other_module()
+Cohesion: 0.14
+Nodes (4): ModuleDescriptor, ModuleRegistry, test_rejects_invalid_code(), test_rejects_permission_of_other_module()
 
 ### Community 16 - "rest_framework"
-Cohesion: 0.03
-Nodes (28): CoreBulkIdsValidateSerializer, CoreValidateSerializer, UserBulkUpdateValidateSerializer, UserCreateValidateSerializer, UserUpdateValidateSerializer, UserViewSet, AttachmentBulkUpdateValidateSerializer, AttachmentFolderUpdateValidateSerializer (+20 more)
+Cohesion: 0.02
+Nodes (57): CoreBulkIdsValidateSerializer, CoreValidateSerializer, UserDetailResponseSerializer, Meta, UserListResponseSerializer, Meta, UserBulkUpdateValidateSerializer, UserCreateValidateSerializer (+49 more)
 
 ### Community 17 - ".claude/skills/ui-ux/scripts/probe.mjs"
 Cohesion: 0.08
 Nodes (47): applyStressData(), colorDistance(), defaultSweep, defaultWidths, describePaint(), dynamicProblemKeys, expandCollapsedBlocks(), findBrokenImages() (+39 more)
 
 ### Community 18 - "react"
-Cohesion: 0.10
-Nodes (51): UserActivitySection(), FLAGS, UserForm(), AttachmentImageUploadView(), LoginForm(), PagePathSelect(), PageForm(), PagePathForm() (+43 more)
+Cohesion: 0.11
+Nodes (50): UserActivitySection(), FLAGS, UserForm(), AttachmentImageUploadView(), LoginForm(), PagePathSelect(), PageForm(), PagePathForm() (+42 more)
 
 ### Community 19 - "helpers.ts"
-Cohesion: 0.22
-Nodes (4): E2E_ADMIN, loginViaUi(), openModule(), @playwright/test
+Cohesion: 0.15
+Nodes (7): cleanupFiles(), post(), SVG_IMAGE, E2E_ADMIN, loginViaUi(), openModule(), @playwright/test
 
-### Community 20 - "JournalEntry"
-Cohesion: 0.07
-Nodes (10): ChangeRecorder, ChangeSet, get_change_recorder(), JournalEntry, Action, Meta, JournalRecorder, JournalEntryRepository (+2 more)
+### Community 20 - "JournalTracker"
+Cohesion: 0.03
+Nodes (18): CoreJournalEntryResponseSerializer, test_delete_requires_soft_delete_field(), ChangeRecorder, ChangeSet, JournalTracker, Meta, _normalize(), get_change_recorder() (+10 more)
 
 ### Community 21 - "User"
-Cohesion: 0.04
-Nodes (8): User, Meta, TestAccountAuthBackend, TestSelfProtection, TestUserApi, TestUserBulkApi, TestUserDelete, TestPermissionChecker
-
-### Community 22 - "use-account-mutations.ts"
-Cohesion: 0.10
-Nodes (25): generateMetadata, UserDetailPage(), useUserTable(), ACCOUNT_PERMISSIONS, ACCOUNT_API_ENDPOINTS, accountKeys, users, ACCOUNT_PATHNAMES (+17 more)
+Cohesion: 0.05
+Nodes (11): User, Meta, TestAccountAuthBackend, TestSelfProtection, TestUserApi, RoleFactory, Meta, TestRoleApi (+3 more)
 
 ### Community 23 - "PageService"
-Cohesion: 0.08
-Nodes (5): Page, Meta, Status, PageService, _transform()
+Cohesion: 0.04
+Nodes (10): build_absolute_url(), Attachment, Meta, Page, Meta, Status, PageRepository, PageService (+2 more)
 
 ### Community 24 - "useRouter"
-Cohesion: 0.13
-Nodes (22): useRouter, BOOLEAN_VALUES, useRoleTable(), IAM_ROUTES, useBulkDeleteRoles(), useBulkSetRolesActive(), useDeleteRole(), useRoles() (+14 more)
+Cohesion: 0.17
+Nodes (19): usePermissionCatalog(), usePermissions(), useJournalTable(), useJournalEntries(), useJournalResources(), JOURNAL_ACTIONS, useQrCodeTable(), useBulkDeleteQrCodes() (+11 more)
 
-### Community 25 - "AccountPermission"
-Cohesion: 0.09
-Nodes (5): PermissionCatalog, AccountPermission, CustomPagesPermission, JournalPermission, ShortLinksPermission
-
-### Community 27 - "RoleFactory"
-Cohesion: 0.11
-Nodes (6): RoleFactory, Meta, TestRoleApi, TestRoleBulkApi, TestRoleDelete, TestUserRoleApi
+### Community 26 - "RateLimitService"
+Cohesion: 0.04
+Nodes (10): app_exception_handler(), _field_errors(), RateLimitBucket, Meta, RateLimitBucketRepository, RateLimitService, purge_expired_auth(), BucketThrottle (+2 more)
 
 ### Community 28 - "user_role_view.py"
 Cohesion: 0.04
-Nodes (9): require_permission(), decorator(), RoleSummaryResponseSerializer, Meta, UserRoleAssignValidateSerializer, RolePermissionObjectView, RolePermissionView, UserRoleObjectView (+1 more)
+Nodes (15): validate_request(), decorator(), CoreBulkResultResponseSerializer, AttachmentFolderDeleteValidateSerializer, AttachmentFolderDeleteView, require_permission(), decorator(), RoleSummaryResponseSerializer (+7 more)
 
 ### Community 30 - "FE API Client"
 Cohesion: 0.12
-Nodes (20): AUTH_API_ENDPOINTS, env, buildUrl(), HttpMethod, isRawBody(), parse(), REFRESHABLE_CODES, refreshSession() (+12 more)
+Nodes (25): buildUrl(), HttpMethod, isRawBody(), parse(), REFRESHABLE_CODES, refreshSession(), request(), RequestOptions (+17 more)
 
-### Community 31 - "attachment/types/attachment.types.ts"
-Cohesion: 0.08
-Nodes (36): useAttachmentFolderManager(), AttachmentImageUpload(), useAttachmentImageUpload(), useAttachmentLibrary(), useAttachmentMoveDialog(), useAttachmentPicker(), AttachmentPreview(), useAttachmentPreview() (+28 more)
+### Community 31 - "use-attachments.ts"
+Cohesion: 0.09
+Nodes (22): Kiểm trước khi giao, Lưới giờ trong ngày (cột theo người, ghế, phòng), Trang lịch (lịch tháng), Kiểm trước khi giao, Lưới giờ trong ngày (cột theo người, ghế, phòng), Trang lịch (lịch tháng), 2.2 Frontend, 2. Thừa — bỏ gì (+14 more)
 
 ### Community 33 - "conftest.py"
 Cohesion: 0.13
 Nodes (11): StaffFactory, client(), csrf_client(), _fast_hasher(), login(), refresh_cookie(), staff(), staff_with() (+3 more)
 
 ### Community 34 - "use-data-table.ts"
-Cohesion: 0.09
-Nodes (25): Kiểm trước khi giao, Lưới giờ trong ngày (cột theo người, ghế, phòng), Trang lịch (lịch tháng), Kiểm trước khi giao, Lưới giờ trong ngày (cột theo người, ghế, phòng), Trang lịch (lịch tháng), @tanstack/react-table@8.20.6, ColumnPin (+17 more)
+Cohesion: 0.16
+Nodes (14): ColumnPin, Drag, isColumnWidths(), NO_WIDTHS, Widths, EMPTY_ROWS, isPinned(), isStringArray() (+6 more)
 
-### Community 35 - "ValidationError"
-Cohesion: 0.09
-Nodes (12): ValidationError, _link(), test_bulk_is_all_or_nothing(), test_manage_all_sees_every_owner(), test_owner_is_actor_and_scope_is_private(), test_quota_per_owner(), test_soft_deleted_record_cannot_be_written(), _short_links() (+4 more)
+### Community 35 - "page_service.py"
+Cohesion: 0.05
+Nodes (11): ValidationError, generate_slug(), normalize_slug(), validate_public_url(), CustomPagesErrorCode, PagePathRepository, normalize_segment(), _contrast() (+3 more)
 
 ### Community 36 - "OpenAPI Schema Tests"
 Cohesion: 0.10
 Nodes (4): _json_schema(), schema(), TestOpenApiSchema, test_production_hasher_is_argon2()
 
-### Community 37 - "CoreChoiceInFilter"
-Cohesion: 0.09
-Nodes (10): CoreBooleanInFilter, CoreChoiceInFilter, CoreInFilterMixin, CoreUUIDInFilter, PageFilter, Meta, RoleFilter, Meta (+2 more)
+### Community 37 - "django_db_models"
+Cohesion: 0.04
+Nodes (18): CoreBooleanInFilter, CoreCharInFilter, CoreChoiceInFilter, CoreInFilterMixin, CoreUUIDInFilter, UserFilter, Meta, AttachmentFilter (+10 more)
 
 ### Community 38 - "AuthorizationError"
-Cohesion: 0.03
-Nodes (14): AuthorizationError, test_shared_resource_has_no_owner_filter(), UserService, CurrentUserService, CurrentUserProfile, IamErrorCode, PermissionRepository, UserRoleRepository (+6 more)
+Cohesion: 0.04
+Nodes (10): AuthorizationError, BusinessRuleError, NotFoundError, AdminAuthSessionService, IamErrorCode, PermissionRepository, UserRoleRepository, PermissionService (+2 more)
 
 ### Community 39 - "core_page_number_pagination.py"
 Cohesion: 0.05
-Nodes (6): CorePageNumberPagination, CorePaginationResponse, CoreAutoSchema, build_meta_schema(), build_success_schema(), CookieJwtAuthenticationScheme
+Nodes (5): CorePageNumberPagination, CorePaginationResponse, CoreAutoSchema, build_meta_schema(), build_success_schema()
 
 ### Community 41 - "typing"
-Cohesion: 0.03
-Nodes (12): AuthSession, Meta, AuthSessionStatus, RateLimitBucket, Meta, RefreshToken, Meta, test_concurrent_refresh_only_one_rotation() (+4 more)
+Cohesion: 0.04
+Nodes (18): PermissionCatalog, PermissionDefinition, BaseApiTestCase, AccountPermission, AttachmentPermission, AuthenticationPermission, test_bulk_delete_protects_superuser_atomically(), test_soft_delete_invalidates_tokens_and_hides_history() (+10 more)
 
 ### Community 42 - "shadcn Config"
 Cohesion: 0.09
 Nodes (21): aliases, components, hooks, lib, ui, utils, iconLibrary, menuAccent (+13 more)
 
-### Community 43 - "PermissionRule"
-Cohesion: 0.08
-Nodes (7): _iter_view_classes(), _iter_views(), _module_views(), _uses_iam(), HasIamPermission, _never(), PermissionRule
+### Community 43 - "TestModuleConventions"
+Cohesion: 0.10
+Nodes (7): _iter_view_classes(), _iter_views(), _module_app_configs(), _module_views(), _subclasses(), TestModuleConventions, _uses_iam()
 
 ### Community 44 - "CoreRepository"
-Cohesion: 0.03
-Nodes (15): get_current_request(), get_current_user(), get_request_id(), get_user_id(), request_context(), set_current_user(), RequestContextFilter, CoreRepository (+7 more)
-
-### Community 45 - "readiness_view.py"
-Cohesion: 0.06
-Nodes (7): CoreErrorResponse, build_error_body(), build_meta(), HealthResponseSerializer, ReadinessResponseSerializer, HealthView, ReadinessView
+Cohesion: 0.07
+Nodes (4): CoreRepository, Backend layering — `url → view → service → repository → ORM`, 1. Hiện trạng (đo ngày 15/11/2026), 3.1 Backend
 
 ### Community 46 - "Test Me"
-Cohesion: 0.09
-Nodes (5): walk(), TestLogin, TestMe, TestRefresh, TestSession
+Cohesion: 0.08
+Nodes (6): walk(), TestLogin, TestLogout, TestMe, TestRefresh, TestSession
 
 ### Community 47 - "svg_inspector.py"
-Cohesion: 0.11
+Cohesion: 0.13
 Nodes (4): test_media_signatures(), detect_content_type(), find_svg_problem(), looks_like_svg()
 
+### Community 48 - "user_context.py"
+Cohesion: 0.15
+Nodes (8): get_current_request(), get_current_user(), get_request_id(), get_user_id(), request_context(), set_current_user(), test_request_id_resets(), test_user_resets_after_scope()
+
 ### Community 49 - "usePermission"
-Cohesion: 0.06
-Nodes (63): AttachmentsPage(), generateMetadata, generateMetadata, JournalPage(), generateMetadata, PagePathCreatePage(), generateMetadata, PagePathsPage() (+55 more)
+Cohesion: 0.05
+Nodes (89): AttachmentsPage(), generateMetadata, generateMetadata, JournalPage(), generateMetadata, PagePathCreatePage(), generateMetadata, PagePathsPage() (+81 more)
 
 ### Community 50 - ".assert_success"
 Cohesion: 0.08
@@ -586,33 +570,29 @@ Nodes (7): TestRequestLimits, _media_root(), TestAttachmentApi, TestAttachmentLi
 Cohesion: 0.11
 Nodes (18): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+10 more)
 
-### Community 52 - "Attachment"
-Cohesion: 0.08
-Nodes (3): Attachment, Meta, AttachmentService
-
-### Community 53 - "Role"
-Cohesion: 0.03
-Nodes (30): CoreModel, Meta, CoreQuerySet, Migration, Migration, Migration, PermissionFilter, Meta (+22 more)
+### Community 53 - "Permission"
+Cohesion: 0.05
+Nodes (21): CoreModel, Meta, PermissionFilter, Meta, RoleFilter, Meta, Permission, Meta (+13 more)
 
 ### Community 54 - "measureInPage"
 Cohesion: 0.16
 Nodes (20): measureInPage(), blendColors(), checkContrast(), countTextLines(), describe(), getFirstTextRect(), getItemInkRect(), getSvgInkRect() (+12 more)
 
-### Community 56 - "AdminAuthSessionViewSet"
-Cohesion: 0.06
-Nodes (3): AdminSessionUserResponseSerializer, LogoutAllResponseSerializer, AdminAuthSessionViewSet
+### Community 55 - "TestUserBulkApi"
+Cohesion: 0.17
+Nodes (3): SuperuserFactory, TestUserBulkApi, TestUserDelete
 
 ### Community 57 - "useApiErrorMessage"
 Cohesion: 0.11
-Nodes (31): generateMetadata, RoleCreatePage(), useUserProfile(), UserProfile(), PagePathProfile(), PageProfile(), usePagePath(), usePage() (+23 more)
+Nodes (33): generateMetadata, RoleCreatePage(), LocaleError(), useUserProfile(), UserProfile(), PagePathProfile(), PageProfile(), usePagePath() (+25 more)
 
 ### Community 59 - "CoreResponse"
-Cohesion: 0.05
-Nodes (17): CsrfProtected, IsActiveAuthenticated, CoreResponse, _module_app_configs(), TestModuleConventions, CoreApiView, CurrentUserResponseSerializer, AuthCookieService (+9 more)
+Cohesion: 0.02
+Nodes (34): rate_limit(), CsrfProtected, IsActiveAuthenticated, CoreErrorResponse, CoreResponse, CoreApiView, AdminSessionUserResponseSerializer, CsrfResponseSerializer (+26 more)
 
 ### Community 61 - "dependencies"
 Cohesion: 0.06
-Nodes (32): dependencies, class-variance-authority@^0.7.1, cn@^0.5.2, date-fns@^4.4.0, @hookform/resolvers@^7.0.6, lucide-react@^1.72.0, next-intl@^4.15.1, radix-ui@^1.8.1 (+24 more)
+Nodes (32): dependencies, class-variance-authority@^0.7.1, cn@^0.5.2, date-fns@^4.4.0, @hookform/resolvers@^7.0.6, lucide-react@^1.72.0, next@16.4.6, next-intl@^4.15.1 (+24 more)
 
 ### Community 62 - "Requirements"
 Cohesion: 0.12
@@ -626,41 +606,29 @@ Nodes (16): AGENTS.md development rules, TOANNX backend README, Architecture doc
 Cohesion: 0.16
 Nodes (20): measureInPage(), blendColors(), checkContrast(), countTextLines(), describe(), getFirstTextRect(), getItemInkRect(), getSvgInkRect() (+12 more)
 
-### Community 65 - "UserFactory"
-Cohesion: 0.12
-Nodes (6): SuperuserFactory, UserFactory, Meta, _entries(), TestJournalApi, TestJournalTracker
-
 ### Community 66 - "use-qr-code-form.ts"
-Cohesion: 0.10
-Nodes (34): BACKEND_FIELDS, useQrCodeForm(), useQrCodeTable(), QR_CODES_API_ENDPOINTS, QR_CODES_ROUTES, INVALIDATE, useBulkDeleteQrCodes(), useCreateQrCode() (+26 more)
+Cohesion: 0.11
+Nodes (30): BACKEND_FIELDS, useQrCodeForm(), QR_CODES_API_ENDPOINTS, INVALIDATE, useCreateQrCode(), useQrBanks(), useQrPreview(), useUpdateQrCode() (+22 more)
 
 ### Community 67 - "code-slug-input.ts"
 Cohesion: 0.19
 Nodes (11): useSlugInput(), mergeTags(), splitTags(), TagsInput(), CODE_INPUT_MAX_LENGTH, CODE_VALUE_REGEX, isValidSlugValue(), SanitizeCodeOptions (+3 more)
 
-### Community 68 - "alert-dialog.tsx"
-Cohesion: 0.29
-Nodes (11): ConfirmDialog(), AlertDialog(), AlertDialogAction(), AlertDialogCancel(), AlertDialogContent(), AlertDialogDescription(), AlertDialogFooter(), AlertDialogHeader() (+3 more)
-
-### Community 69 - "CleanupView"
-Cohesion: 0.09
-Nodes (4): Command, CleanupResponseSerializer, CleanupService, CleanupView
-
-### Community 70 - "BaseApiTestCase"
-Cohesion: 0.12
-Nodes (10): BaseApiTestCase, TestLogout, _doc(), _p(), _path(), _qr_image(), TestPagePaths, TestPages (+2 more)
+### Community 68 - "routing.ts"
+Cohesion: 0.18
+Nodes (14): generateMetadata, HomePage(), PUBLIC_PATHS, sitemap(), getPathname, LOCALE_COOKIE, AppLocale, DEFAULT_LOCALE (+6 more)
 
 ### Community 71 - "Architecture"
 Cohesion: 0.19
 Nodes (12): ADMIN_NAVIGATION (use-admin-shell.ts), PermissionCatalog, Module registry (Installed / Enabled / Permissions), ModuleDescriptor, ModuleEnabled permission (MODULE_DISABLED), PermissionDefinition, @validate_request decorator, Role.auto_grant (all / read_only / none) (+4 more)
 
 ### Community 72 - "use-short-link-form.ts"
-Cohesion: 0.10
-Nodes (31): EMPTY, fromLink(), toInput(), useShortLinkForm(), useShortLinkTable(), SHORT_LINKS_ROUTES, INVALIDATE, useBulkDeleteShortLinks() (+23 more)
+Cohesion: 0.09
+Nodes (34): EMPTY, fromLink(), toInput(), useShortLinkForm(), useShortLinkTable(), INVALIDATE, useBulkDeleteShortLinks(), useBulkSetShortLinkStatus() (+26 more)
 
 ### Community 74 - "test_module_conventions.py"
-Cohesion: 0.07
-Nodes (10): CoreModuleConfig, AccountConfig, AttachmentConfig, AuthenticationConfig, CustomPagesConfig, HealthConfig, IamConfig, JournalConfig (+2 more)
+Cohesion: 0.09
+Nodes (8): CoreModuleConfig, AccountConfig, AttachmentConfig, CustomPagesConfig, HealthConfig, JournalConfig, QrCodesConfig, ShortLinksConfig
 
 ### Community 75 - "SessionListResponseSerializer"
 Cohesion: 0.20
@@ -678,21 +646,25 @@ Nodes (8): AdminApiView, Frontend apiClient, Zustand auth-store (session expired
 Cohesion: 0.20
 Nodes (10): scripts, build, dev, e2e, format, format:check, lint, start (+2 more)
 
-### Community 81 - "proxy.ts"
-Cohesion: 0.09
-Nodes (31): nextConfig, withNextIntl, next@16.4.6, generateMetadata(), loadPage, Params, PublicCustomPage(), GET() (+23 more)
+### Community 81 - "[slug]/page.tsx"
+Cohesion: 0.15
+Nodes (15): sonner@^2.0.8, generateMetadata(), loadPage, Params, PublicCustomPage(), PreviewNotice(), BUTTON_RADIUS, PublicPage() (+7 more)
 
 ### Community 82 - "I18N"
 Cohesion: 0.29
 Nodes (7): ErrorCode (StrEnum), Standard response envelope (success/data/meta/error), i18n doc (next-intl), LanguageSwitcher, LOCALIZED_PATHNAMES / APP_ROUTES, SEO buildAlternates / robots / sitemap, useApiErrorMessage (translate error.code)
 
-### Community 83 - "app-providers.tsx"
-Cohesion: 0.22
-Nodes (8): next-themes@^0.4.6, inter, LocaleLayout(), AppProviders(), Toaster(), TooltipProvider(), createQueryClient(), next-themes
+### Community 83 - "[locale]/layout.tsx"
+Cohesion: 0.18
+Nodes (6): nextConfig, withNextIntl, inter, LocaleLayout(), env, next
+
+### Community 84 - "route.ts"
+Cohesion: 0.19
+Nodes (10): GET(), REDIRECT_STATUSES, SHORT_LINKS_API_ENDPOINTS, SHORT_LINKS_PATHNAMES, SHORT_LINKS_ROUTES, shortLinksNavigation, BACKEND_ORIGIN, backendFetch() (+2 more)
 
 ### Community 85 - "Button"
-Cohesion: 0.13
-Nodes (26): Câu 2 — Dự án đang dùng gì? (TỰ TÌM, ĐỪNG HỎI), Câu 2 — Dự án đang dùng gì? (TỰ TÌM, ĐỪNG HỎI), AccountEmail(), UserMenu(), TableBulkBar(), ariaSort(), TableHeaderCell(), TableToolbar() (+18 more)
+Cohesion: 0.08
+Nodes (49): PublicRouteLayout(), AccountEmail(), UserMenu(), PublicHeader(), PublicLayout(), ConfirmDialog(), DataPagination(), getPageRange() (+41 more)
 
 ### Community 86 - "Từng phong cách"
 Cohesion: 0.11
@@ -703,28 +675,20 @@ Cohesion: 0.22
 Nodes (9): AdminModelViewSet, action_permissions (default DENY), HasDeclaredPermission / HasActionPermission, IamAuthBackend, PermissionChecker, PermissionGate / usePermission (FE display-only), PermissionRule, RBAC model User-UserRole-Role-RolePermission-Permission (+1 more)
 
 ### Community 88 - ".agents/skills/ui-ux/scripts/lint-skill.mjs"
-Cohesion: 0.10
-Nodes (13): alwaysOpenFiles, args, explicitFiles, filesWaitingSplit, findings, isAll, lintBlock(), lintFile() (+5 more)
+Cohesion: 0.14
+Nodes (11): alwaysOpenFiles, args, explicitFiles, filesWaitingSplit, findings, isAll, lintBlock(), lintFile() (+3 more)
 
 ### Community 89 - "main"
 Cohesion: 0.12
 Nodes (17): formatDynamicCoverage(), formatMobileReport(), formatMustReportList(), formatNextRoundHint(), formatReport(), formatSweepReport(), formatWidthRanges(), launchBrowser() (+9 more)
 
-### Community 90 - "grant"
-Cohesion: 0.11
-Nodes (4): TestUserRoleFilter, TestAdminSessionApi, grant(), TestShortLinkApi
-
-### Community 91 - "use-iam-mutations.ts"
-Cohesion: 0.16
-Nodes (20): sameIds(), useRoleForm(), useUserRoleFilter(), useUserRolePicker(), iamKeys, diffIds(), INVALIDATE, useCreateRole() (+12 more)
-
-### Community 93 - "PageViewSet"
+### Community 90 - "UserFactory"
 Cohesion: 0.09
-Nodes (8): PageDetailResponseSerializer, Meta, PageListResponseSerializer, Meta, PageOwnerResponseSerializer, PagePathSummaryResponseSerializer, Meta, PageViewSet
+Nodes (13): test_shared_resource_has_no_owner_filter(), UserFactory, Meta, TestUserRoleFilter, TestAdminSessionApi, _doc(), _p(), _path() (+5 more)
 
 ### Community 94 - "select-field.tsx"
 Cohesion: 0.07
-Nodes (52): usePermissionCatalog(), usePermissions(), DatePicker(), DatePickerProps, DateTimePicker(), FILTER_SEARCHABLE_THRESHOLD, useFilterSelect(), FORM_CONTROL_OPTION_CLASS (+44 more)
+Nodes (43): DatePicker(), DatePickerProps, DateTimePicker(), FILTER_SEARCHABLE_THRESHOLD, useFilterSelect(), FORM_CONTROL_OPTION_CLASS, FORM_CONTROL_POPOVER_CLASS, FORM_CONTROL_TRIGGER_CLASS (+35 more)
 
 ### Community 95 - "Foundation Report"
 Cohesion: 0.09
@@ -737,14 +701,6 @@ Nodes (17): Hai tầng, Không có trong bảng, Nhận diện, P10. Tối là c
 ### Community 97 - "main"
 Cohesion: 0.12
 Nodes (17): formatDynamicCoverage(), formatMobileReport(), formatMustReportList(), formatNextRoundHint(), formatReport(), formatSweepReport(), formatWidthRanges(), launchBrowser() (+9 more)
-
-### Community 99 - "PagePath"
-Cohesion: 0.08
-Nodes (6): CustomPagesErrorCode, PagePath, Meta, PagePathRepository, normalize_segment(), PagePathService
-
-### Community 100 - "AttachmentFolderService"
-Cohesion: 0.11
-Nodes (6): AttachmentFolder, Meta, AttachmentFolderResponseSerializer, Meta, AttachmentFolderService, AttachmentFolderViewSet
 
 ### Community 101 - "Reference audit — PMS & Medoly"
 Cohesion: 0.29
@@ -759,16 +715,16 @@ Cohesion: 0.12
 Nodes (16): Ba câu hỏi trước khi viết một dòng chữ đỏ, Bố cục form và xác thực, Form nhiều trường, Ghi nhớ đăng nhập — khi họ yêu cầu, Gợi ý và câu lỗi là hai thứ khác nhau, Kiểm trước khi giao, Luồng quên mật khẩu, Mặc định cho màn xác thực — dựng luôn, báo một dòng (+8 more)
 
 ### Community 104 - ".claude/skills/ui-ux/scripts/check-update.mjs"
-Cohesion: 0.23
+Cohesion: 0.29
 Nodes (10): buildUpdateCommand(), cacheDir, cachePath, fetchLatestVersion(), isNewerVersion(), main(), parseVersion(), readCache() (+2 more)
 
 ### Community 105 - "test_error_codes.py"
-Cohesion: 0.08
-Nodes (7): _all_codes(), test_error_codes_are_unique(), test_frontend_translates_every_error_code(), AccountErrorCode, PasswordValidator, AttachmentErrorCode, ShortLinksErrorCode
+Cohesion: 0.10
+Nodes (6): _all_codes(), test_error_codes_are_unique(), test_frontend_translates_every_error_code(), AccountErrorCode, PasswordValidator, AttachmentErrorCode
 
 ### Community 107 - "AuthResult"
-Cohesion: 0.07
-Nodes (6): _CsrfCheck, _empty_response(), enforce_csrf(), CookieJwtAuthentication, AuthResult, get_client_ip()
+Cohesion: 0.13
+Nodes (4): _CsrfCheck, _empty_response(), enforce_csrf(), CookieJwtAuthentication
 
 ### Community 108 - "Pnpm Workspace"
 Cohesion: 0.33
@@ -786,9 +742,9 @@ Nodes (15): Badge số đếm, `boxed`: tab trạng thái trên bảng, Chip có
 Cohesion: 0.12
 Nodes (15): Bố cục khối nổi, Chuyển động, Command palette, Dropdown, Hộp xác nhận, Kiểm trước khi giao, Menu con (dropdown đa cấp), Menu tài khoản (+7 more)
 
-### Community 112 - "pages/[id]/page.tsx"
-Cohesion: 0.13
-Nodes (20): generateMetadata, PagePathDetailPage(), CustomPageDetailPage(), generateMetadata, generateMetadata, QrCodeDetailPage(), generateMetadata, RoleDetailPage() (+12 more)
+### Community 112 - "attachment-tiptap-image-plugin.tsx"
+Cohesion: 0.07
+Nodes (35): generateMetadata, PagePathDetailPage(), CustomPageDetailPage(), generateMetadata, generateMetadata, QrCodeDetailPage(), generateMetadata, RoleDetailPage() (+27 more)
 
 ### Community 114 - "Refactor codebase đã có — luật L"
 Cohesion: 0.12
@@ -819,68 +775,56 @@ Cohesion: 0.25
 Nodes (4): _is_owner(), _request(), TestPermissionRule, _View
 
 ### Community 122 - "global.d.ts"
-Cohesion: 0.15
-Nodes (4): AppConfig, Messages, next-intl, routing
+Cohesion: 0.10
+Nodes (8): AppConfig, Messages, next-intl, AppMessages, loadMessages(), routing, flatten(), Tree
 
 ### Community 125 - "Checkbox, radio, công tắc, select"
 Cohesion: 0.13
 Nodes (14): Card chọn, Checkbox, Checkbox, radio, công tắc, select, Công tắc, Cỡ, Khoảng ngày, Kiểu, chọn theo chỗ đứng, Ngày và giờ chung một ô (+6 more)
 
-### Community 205 - "choice-groups.tsx"
-Cohesion: 0.25
-Nodes (12): ChoiceGroup, ChoiceGroups(), useChoiceGroups(), CHOICE_SEARCHABLE_THRESHOLD, useChoiceList(), ChoiceControl, ChoiceItem, ChoiceLayout (+4 more)
+### Community 205 - "proxy.ts"
+Cohesion: 0.29
+Nodes (9): resolveRequestLocale(), CUSTOM_PAGES_PATHNAMES, PUBLIC_PAGE_ROUTE_PREFIX, RESERVED_SEGMENTS, config, intlProxy, localizedPath(), matchPublicPage() (+1 more)
 
-### Community 206 - "JournalTracker"
-Cohesion: 0.13
-Nodes (3): JournalTracker, Meta, _normalize()
+### Community 206 - "qr_image_renderer.py"
+Cohesion: 0.31
+Nodes (3): _make(), render_png(), render_svg_data_url()
 
 ### Community 207 - "extensions.ts"
-Cohesion: 0.09
-Nodes (24): @tiptap/core@3.34.0, @tiptap/extension-highlight@3.34.0, @tiptap/extension-image@3.34.0, @tiptap/extension-list@3.34.0, @tiptap/extension-table@3.34.0, @tiptap/extension-text-align@3.34.0, @tiptap/extension-text-style@3.34.0, @tiptap/extension-youtube@3.34.0 (+16 more)
+Cohesion: 0.10
+Nodes (20): @tiptap/core@3.34.0, @tiptap/extension-highlight@3.34.0, @tiptap/extension-image@3.34.0, @tiptap/extension-list@3.34.0, @tiptap/extension-table@3.34.0, @tiptap/extension-text-align@3.34.0, @tiptap/extension-text-style@3.34.0, @tiptap/extension-youtube@3.34.0 (+12 more)
 
-### Community 208 - "admin-shell.tsx"
-Cohesion: 0.12
-Nodes (25): AdminLayout(), metadata, useUserMenu(), useCurrentUser(), useLogout(), useHasRole(), AdminModulesContext, AdminModulesProvider() (+17 more)
-
-### Community 209 - "QrCode"
-Cohesion: 0.03
-Nodes (26): AttachmentDetailResponseSerializer, Meta, AttachmentSummaryResponseSerializer, Meta, QrCode, Meta, Type, QrCodeRepository (+18 more)
+### Community 208 - "vitest"
+Cohesion: 0.20
+Nodes (3): MODULES, SRC, vitest
 
 ### Community 210 - "test_qr_code_api.py"
-Cohesion: 0.12
-Nodes (6): QrCodesPermission, test_crc_and_payload_vector(), build_vietqr_payload(), crc16_ccitt(), strip_accents(), _tlv()
+Cohesion: 0.17
+Nodes (5): test_crc_and_payload_vector(), build_vietqr_payload(), crc16_ccitt(), strip_accents(), _tlv()
 
-### Community 211 - "UserListResponseSerializer"
-Cohesion: 0.20
-Nodes (4): UserDetailResponseSerializer, Meta, UserListResponseSerializer, Meta
-
-### Community 212 - "attachment_filter.py"
-Cohesion: 0.20
-Nodes (3): CoreCharInFilter, AttachmentFilter, Meta
+### Community 211 - "collectLayoutAnchors"
+Cohesion: 0.25
+Nodes (8): collectLayoutAnchors(), findBackground(), normalizeColor(), compareWithWireframe(), measureHiddenScrollHeight(), openForAnchors(), sweepWidths(), takeFullScreenshot()
 
 ### Community 213 - "use-session-table.ts"
-Cohesion: 0.17
-Nodes (17): useSessionTable(), authKeys, useAdminSessionUsers(), INVALIDATE, useAdminSessions(), useBulkRevokeAdminSessions(), useDeleteAdminSessions(), useRevokeAdminSession() (+9 more)
+Cohesion: 0.23
+Nodes (14): useSessionTable(), authKeys, useAdminSessionUsers(), INVALIDATE, useAdminSessions(), useBulkRevokeAdminSessions(), useDeleteAdminSessions(), useRevokeAdminSession() (+6 more)
 
 ### Community 215 - "next-intl"
-Cohesion: 0.10
-Nodes (52): LocaleError(), NotFound(), generateMetadata, LinkUnavailablePage(), AttachmentDetails(), useAttachmentDetails(), AttachmentFolderFilter(), AttachmentFolderManager() (+44 more)
+Cohesion: 0.09
+Nodes (51): AttachmentDetails(), useAttachmentDetails(), AttachmentFolderFilter(), AttachmentFolderManager(), useAttachmentFolderManager(), AttachmentGrid(), AttachmentLibrary(), AttachmentMediaFilters() (+43 more)
 
-### Community 230 - "RoleRepository"
-Cohesion: 0.14
-Nodes (8): test_audit_from_context(), test_bulk_create_sets_audit(), test_create_and_update_audit(), test_integrity_error_becomes_conflict(), test_read_helpers(), test_soft_delete_hidden_from_repository(), test_update_where_sets_audit_and_delete_where(), RoleRepository
+### Community 230 - "test_core_repository.py"
+Cohesion: 0.23
+Nodes (10): _PlainRoleRepository, test_audit_from_context(), test_base_queryset_hides_soft_deleted(), test_bulk_create_sets_audit(), test_create_and_update_audit(), test_delete_is_soft_by_default(), test_integrity_error_becomes_conflict(), test_read_helpers() (+2 more)
 
 ### Community 254 - "Bẫy Tailwind v4 — luật W"
 Cohesion: 0.13
 Nodes (14): Bẫy Tailwind v4 — luật W, Cách phát hiện, Danh sách namespace phải né khi đặt tên biến trong CSS cũ, W10. `scale-*`, `translate-*`, `rotate-*` không chạy theo `transition-[transform]` ⚑, W11. `not-sr-only` trả `white-space` về `normal`, nuốt `whitespace-nowrap` cùng thẻ, W1. Tailwind v4 phát TOÀN BỘ theme mặc định vào `:root`, W2. `@theme` không tự trỏ vào chính nó được, W3. Biến CSS cũ trùng namespace Tailwind = utility hỏng câm (+6 more)
 
-### Community 255 - "CoreModelViewSet"
-Cohesion: 0.09
-Nodes (5): CoreModelViewSet, 13.1 Đã chốt, 13.2 Mặc định — sửa dòng nào trước bước 0 nếu muốn đổi, 13. Quyết định, 4.1 View: 2 lớp + 1 bảng override
-
 ### Community 256 - "useListQuery"
 Cohesion: 0.06
-Nodes (40): Architecture, Commands, Frontend layering — `page → View → component(+own hook) → module hook (React Query) → service → apiClient`, Git, graphify, 11.1 Backend — chỉ khai báo, 11.2 Frontend — chỉ khai báo, 11. Công thức thêm module mới (sau chuẩn hóa) (+32 more)
+Nodes (39): Architecture, Commands, Frontend layering — `page → View → component(+own hook) → module hook (React Query) → service → apiClient`, Git, graphify, 11.1 Backend — chỉ khai báo, 11.2 Frontend — chỉ khai báo, 11. Công thức thêm module mới (sau chuẩn hóa) (+31 more)
 
 ### Community 257 - "Checkbox, radio, công tắc, select"
 Cohesion: 0.13
@@ -955,12 +899,12 @@ Cohesion: 0.26
 Nodes (10): buildUpdateCommand(), cacheDir, cachePath, fetchLatestVersion(), isNewerVersion(), main(), parseVersion(), readCache() (+2 more)
 
 ### Community 276 - "UI/UX cho hệ thống dashboard"
-Cohesion: 0.18
-Nodes (10): 0. Bốn câu hỏi, đúng thứ tự này, 1. Phạm vi — luật S, 2. Mở doc nào khi nào, 3. Sáu thứ không được quên, 4. Sửa skill, Câu 1 — Đề đi lối nào? Mặc định là như một designer, Câu 3 — Muốn UI trông như thế nào?, Câu 4 — Bố cục: dựng bố cục mặc định, báo một dòng (+2 more)
+Cohesion: 0.17
+Nodes (11): 0. Bốn câu hỏi, đúng thứ tự này, 1. Phạm vi — luật S, 2. Mở doc nào khi nào, 3. Sáu thứ không được quên, 4. Sửa skill, Câu 1 — Đề đi lối nào? Mặc định là như một designer, Câu 2 — Dự án đang dùng gì? (TỰ TÌM, ĐỪNG HỎI), Câu 3 — Muốn UI trông như thế nào? (+3 more)
 
 ### Community 277 - "Chuẩn hóa hệ thống TOANNX — BE + FE"
-Cohesion: 0.12
-Nodes (15): 0. Nguyên tắc, 12. Thứ tự làm, điểm dừng, 3.2 Frontend, 3. Thiếu và lỗi tiềm ẩn, 6. Bảng giới hạn chuẩn (một chỗ để tra), 7.1 Database `journal_entry` (chỉ thêm, không sửa, không xóa mềm), 7.3 Đọc, 7.4 FE (+7 more)
+Cohesion: 0.10
+Nodes (19): 0. Nguyên tắc, 10.1 Khái niệm, 10.2 Database, 10.3 Nội dung Tiptap, 10.4 API, 10.5 FE, 10. Custom Pages, 12. Thứ tự làm, điểm dừng (+11 more)
 
 ### Community 278 - "Cổng 2 — dựng xong, trước khi báo"
 Cohesion: 0.17
@@ -983,8 +927,12 @@ Cohesion: 0.17
 Nodes (11): D10. `DESIGN.md`: quyết định giao diện nằm một chỗ trong dự án ⚑, D1. Định nghĩa hợp đồng nguyên tố TRƯỚC, một lần, cho cả bộ, D2. Một bảng ánh xạ trạng thái duy nhất, D3. CRUD dùng một bộ khuôn, D4. Nhiều màn thì báo bố cục MỘT LẦN cho cả bộ, D5. Màu nhấn phải thật sự xuất hiện, D6. Đặt tên khu vực rồi dùng đúng tên đó suốt, D7. Khung chung thì sửa sau cùng, hoặc không sửa (+3 more)
 
 ### Community 283 - "UI/UX cho hệ thống dashboard"
+Cohesion: 0.17
+Nodes (11): 0. Bốn câu hỏi, đúng thứ tự này, 1. Phạm vi — luật S, 2. Mở doc nào khi nào, 3. Sáu thứ không được quên, 4. Sửa skill, Câu 1 — Đề đi lối nào? Mặc định là như một designer, Câu 2 — Dự án đang dùng gì? (TỰ TÌM, ĐỪNG HỎI), Câu 3 — Muốn UI trông như thế nào? (+3 more)
+
+### Community 284 - "probeOpenerLayers"
 Cohesion: 0.18
-Nodes (10): 0. Bốn câu hỏi, đúng thứ tự này, 1. Phạm vi — luật S, 2. Mở doc nào khi nào, 3. Sáu thứ không được quên, 4. Sửa skill, Câu 1 — Đề đi lối nào? Mặc định là như một designer, Câu 3 — Muốn UI trông như thế nào?, Câu 4 — Bố cục: dựng bố cục mặc định, báo một dòng (+2 more)
+Nodes (6): findNativeControls(), findOpenedLayerProblems(), markOpenerButtons(), markVisibleLayers(), probeOpenerLayers(), reloadForProbe()
 
 ### Community 285 - "probeOpenerLayers"
 Cohesion: 0.18
@@ -1007,12 +955,12 @@ Cohesion: 0.20
 Nodes (9): Chữ — luật T, Copy, Cắt chữ, Font, Ngôn ngữ, Số, Thang cỡ, Tiếng trả lời và copy không phải tiếng Việt (+1 more)
 
 ### Community 290 - "diffLayoutAnchors"
-Cohesion: 0.12
-Nodes (16): collectLayoutAnchors(), findBackground(), normalizeColor(), compareWithWireframe(), diffLayoutAnchors(), checkHorizontalGap(), checkVerticalGap(), formatWireframeReport() (+8 more)
+Cohesion: 0.24
+Nodes (8): diffLayoutAnchors(), checkHorizontalGap(), checkVerticalGap(), formatWireframeReport(), isSameColumn(), isSameLine(), listWireframeMustReportItems(), quoteAnchor()
 
 ### Community 291 - "field.tsx"
-Cohesion: 0.11
-Nodes (33): AttachmentUploadField(), useAttachmentUploadField(), CheckboxField(), ResizeControl, TableColumnResizer(), FileUploadField(), useFileUploadField(), FileUploadOptions (+25 more)
+Cohesion: 0.08
+Nodes (47): AttachmentImageUpload(), useAttachmentImageUpload(), AttachmentUploadField(), useAttachmentUploadField(), useUploadAttachment(), CheckboxField(), ChoiceGroup, ChoiceGroups() (+39 more)
 
 ### Community 292 - "Đường dẫn (breadcrumb)"
 Cohesion: 0.20
@@ -1057,10 +1005,6 @@ Nodes (8): Chân sidebar, Ghép điều hướng với vùng chứa, Khung app c
 ### Community 302 - ".agents/skills/ui-ux/scripts/measure-skill.mjs"
 Cohesion: 0.25
 Nodes (7): allFiles, alwaysOpenFiles, appDashboardFiles, countPartBytes(), listFiles(), sumBytes(), typicalTasks
-
-### Community 303 - "journal_entry_view_set.py"
-Cohesion: 0.16
-Nodes (4): CoreJournalEntryResponseSerializer, JournalEntryFilter, Meta, JournalEntryViewSet
 
 ### Community 304 - "Đang tải (loading)"
 Cohesion: 0.22
@@ -1190,6 +1134,10 @@ Nodes (4): Bố cục màn hình trong app — mục lục, Bố cục nội dun
 Cohesion: 0.40
 Nodes (4): Khu cài đặt có nhiều trang, Kiểm trước khi giao, Trang cài đặt, Trang tuỳ chọn thông báo
 
+### Community 342 - "probeStateShapes"
+Cohesion: 0.29
+Nodes (7): describePaint(), findNewPaints(), isDifferentCover(), isDifferentShape(), pickLargestPaint(), probeStateShapes(), readStatePaints()
+
 ### Community 344 - "Empty state"
 Cohesion: 0.40
 Nodes (4): Cột rỗng khác danh sách rỗng, Empty state, Lỗi tải, Rỗng do lọc: câu nói đúng điều đang lọc, và có lối ra
@@ -1243,8 +1191,8 @@ Cohesion: 0.50
 Nodes (3): Bảng hạ bậc ở mobile, đừng bê nguyên nhịp desktop xuống, Responsive, Thứ tự kiểm ở 375px
 
 ### Community 357 - "module-launcher.tsx"
-Cohesion: 0.53
-Nodes (4): AdminHomePage(), generateMetadata, ModuleLauncher(), ModuleLauncherView()
+Cohesion: 0.60
+Nodes (3): AdminHomePage(), generateMetadata, ModuleLauncherView()
 
 ### Community 358 - "Thanh thông báo (banner)"
 Cohesion: 0.50
@@ -1282,13 +1230,9 @@ Nodes (3): App điện thoại — App đặt món, đồ uống, bán hàng, J1
 Cohesion: 0.50
 Nodes (3): Bảng hạ bậc ở mobile, đừng bê nguyên nhịp desktop xuống, Responsive, Thứ tự kiểm ở 375px
 
-### Community 387 - "AuthenticationPermission"
-Cohesion: 0.22
-Nodes (3): AuthenticationPermission, test_bulk_delete_protects_superuser_atomically(), test_soft_delete_invalidates_tokens_and_hides_history()
-
 ### Community 388 - "uuid"
-Cohesion: 0.08
-Nodes (15): Migration, Migration, Migration, Migration, attachment_upload_path(), Migration, Migration, _block_to_nodes() (+7 more)
+Cohesion: 0.06
+Nodes (19): Migration, Migration, Migration, Migration, Migration, Migration, attachment_upload_path(), Migration (+11 more)
 
 ### Community 454 - "admin-breadcrumb.tsx"
 Cohesion: 0.40
@@ -1299,57 +1243,65 @@ Cohesion: 0.22
 Nodes (6): django-filter 26.2, CoreCrudService[M, R], CoreModel, CoreModelViewSet, CoreRepository[M], UserContext (contextvars)
 
 ### Community 457 - "test_list_query_count.py"
-Cohesion: 0.33
-Nodes (4): _count(), _pages(), _qr_codes(), test_list_query_count_is_stable()
-
-### Community 458 - "case-conversion.ts"
-Cohesion: 0.47
-Nodes (7): convertKeys(), ConvertOptions, isPlainObject(), keysToCamel(), keysToSnake(), toCamelKey(), toSnakeKey()
+Cohesion: 0.23
+Nodes (8): _attachments(), _count(), _folders(), _pages(), _permissions(), _sessions(), _short_links(), test_list_query_count_is_stable()
 
 ### Community 461 - "4. Base backend đích"
 Cohesion: 0.29
 Nodes (7): 4.10 Kết nối và truy vấn, 4.11 Dọn dữ liệu định kỳ, 4.2 Quyền, 4.4 Repository, 4.6 Mã lỗi, 4.8 Test base, 4. Base backend đích
 
-### Community 462 - "attachment-library.spec.ts"
-Cohesion: 0.33
-Nodes (3): cleanupFiles(), post(), SVG_IMAGE
+### Community 462 - "journal/navigation.ts"
+Cohesion: 0.38
+Nodes (4): JOURNAL_PERMISSIONS, JOURNAL_PATHNAMES, JOURNAL_ROUTES, journalNavigation
 
-### Community 464 - "vitest"
+### Community 463 - "number-format.ts"
+Cohesion: 0.29
+Nodes (4): APP_NUMBER_LOCALE, FormatDisplayMoneyOptions, FormatDisplayNumberOptions, NumberSeparators
+
+### Community 464 - "use-tiptap-editor.ts"
+Cohesion: 0.16
+Nodes (18): TiptapContent(), createBaseExtensions(), EMPTY_DOCUMENT, TIPTAP_PROSE_CLASS, useTiptapEditor(), TiptapPluginContext, TiptapPluginRegistry, useTiptapPluginItems() (+10 more)
+
+### Community 467 - "PagePath"
 Cohesion: 0.07
-Nodes (32): @testing-library/react@^16.3.3, @testing-library/user-event@^14.6.10, AttachmentTiptapImagePlugin(), LibraryImageInsert(), BUTTON_RADIUS, PublicPage(), PAGE_EXTENSIONS, PageButton (+24 more)
+Nodes (12): AttachmentFolderFilter, Meta, AttachmentFolder, Meta, AttachmentFolderResponseSerializer, Meta, PagePathFilter, Meta (+4 more)
 
-### Community 469 - "10. Custom Pages"
-Cohesion: 0.33
-Nodes (6): 10.1 Khái niệm, 10.2 Database, 10.3 Nội dung Tiptap, 10.4 API, 10.5 FE, 10. Custom Pages
+### Community 469 - "date-fns-locale.ts"
+Cohesion: 0.47
+Nodes (5): DATE_DISPLAY_FORMAT_BY_LOCALE, DATE_FNS_LOCALE_MAP, getDateDisplayFormat(), getDateFnsLocale(), isAppLocale()
 
-### Community 470 - "public-header.tsx"
-Cohesion: 0.60
-Nodes (3): PublicRouteLayout(), PublicHeader(), PublicLayout()
+### Community 477 - "core_repository.py"
+Cohesion: 0.07
+Nodes (3): AttachmentRepository, QrCodeRepository, ShortLinkRepository
+
+### Community 486 - "8. Module Mã QR (`qr_codes` BE · `qr-codes` FE)"
+Cohesion: 0.40
+Nodes (5): 8.1 Database `qr_code`, 8.2 Nghiệp vụ, 8.3 API, 8.4 FE, 8. Module Mã QR (`qr_codes` BE · `qr-codes` FE)
 
 ## Ambiguous Edges - Review These
 - `django-cors-headers 4.9.0` → `Single-origin topology (Next.js rewrite to Django)`  [AMBIGUOUS]
   backend/requirements.txt · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **33 isolated node(s):** `toannx-backend`, `PYTHONUTF8`, `Tiptap editor integration plan for Novel/CMS`, `User flags is_superuser/is_staff/is_novel/is_active`, `attachment module (User.avatar FK)` (+28 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2966 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **290 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **33 isolated node(s):** `PYTHONUTF8`, `toannx-backend`, `Tiptap editor integration plan for Novel/CMS`, `User flags is_superuser/is_staff/is_novel/is_active`, `attachment module (User.avatar FK)` (+28 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2987 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **311 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `1. Hiện trạng (đo ngày 15/11/2026)` connect `AuthorizationError` to `page_service.py`, `CoreRepository`, `rest_framework`, `Chuẩn hóa hệ thống TOANNX — BE + FE`, `useRouter`?**
-  _High betweenness centrality (0.229) - this node is a cross-community bridge._
-- **Are the 36 inferred relationships involving `User` (e.g. with `TestRequestLimits` and `AccountAuthBackend`) actually correct?**
-  _`User` has 36 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `toannx-backend`, `PYTHONUTF8`, `Tiptap editor integration plan for Novel/CMS` to the rest of the system?**
+- **Why does `1. Hiện trạng (đo ngày 15/11/2026)` connect `CoreRepository` to `PermissionChecker`, `page_service.py`, `rest_framework`, `Chuẩn hóa hệ thống TOANNX — BE + FE`, `useRouter`?**
+  _High betweenness centrality (0.260) - this node is a cross-community bridge._
+- **Are the 33 inferred relationships involving `User` (e.g. with `TestRequestLimits` and `AccountAuthBackend`) actually correct?**
+  _`User` has 33 INFERRED edges - model-reasoned connections that need verification._
+- **What connects `PYTHONUTF8`, `toannx-backend`, `Tiptap editor integration plan for Novel/CMS` to the rest of the system?**
   _33 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `PermissionChecker` be split into smaller, more focused modules?**
+  _Cohesion score 0.07549361207897794 - nodes in this community are weakly interconnected._
+- **Why does `useTableState()` connect `useRouter` to `useListQuery`, `use-iam-mutations.ts`, `user.schema.ts`, `useResourceMutation`, `use-short-link-form.ts`, `CoreRepository`, `use-session-table.ts`, `use-attachments.ts`?**
+  _High betweenness centrality (0.243) - this node is a cross-community bridge._
 - **Should `.agents/skills/ui-ux/scripts/probe.mjs` be split into smaller, more focused modules?**
-  _Cohesion score 0.07003367003367003 - nodes in this community are weakly interconnected._
-- **Why does `useTableState()` connect `useRouter` to `useListQuery`, `use-qr-code-form.ts`, `AuthorizationError`, `useResourceMutation`, `use-short-link-form.ts`, `use-session-table.ts`, `use-account-mutations.ts`, `use-iam-mutations.ts`, `select-field.tsx`, `attachment/types/attachment.types.ts`?**
-  _High betweenness centrality (0.210) - this node is a cross-community bridge._
-- **Should `attachment_folder_delete_view.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.07394957983193277 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08943089430894309 - nodes in this community are weakly interconnected._
 
 ### Low-confidence Hints
 _AMBIGUOUS edges — the extractor was unsure. Verify before acting on these._

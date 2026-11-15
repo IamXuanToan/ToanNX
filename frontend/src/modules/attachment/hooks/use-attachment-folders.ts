@@ -35,7 +35,7 @@ export function useAttachmentFolderMutations() {
   });
   // Xóa file trong nhánh làm ảnh ở module khác không còn hiển thị → làm mới toàn bộ cache (`[]`).
   const remove = useResourceMutation({
-    mutationFn: attachmentFolderService.remove,
+    mutationFn: attachmentFolderService.delete,
     invalidate: [[]],
     success: () => t("folderDeleted"),
   });

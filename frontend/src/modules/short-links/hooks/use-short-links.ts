@@ -57,7 +57,7 @@ export function useUpdateShortLink(id: string) {
 /** @returns Mutation xóa một link. */
 export function useDeleteShortLink() {
   return useResourceMutation({
-    mutationFn: (id: string) => shortLinkService.remove(id),
+    mutationFn: (id: string) => shortLinkService.delete(id),
     invalidate: INVALIDATE,
     success: "deleted",
   });
@@ -76,7 +76,7 @@ export function useBulkSetShortLinkStatus() {
 /** @returns Mutation xóa nhiều link. */
 export function useBulkDeleteShortLinks() {
   return useResourceMutation({
-    mutationFn: (ids: string[]) => shortLinkService.bulkRemove(ids),
+    mutationFn: (ids: string[]) => shortLinkService.bulkDelete(ids),
     invalidate: INVALIDATE,
     success: "bulkDeleted",
   });

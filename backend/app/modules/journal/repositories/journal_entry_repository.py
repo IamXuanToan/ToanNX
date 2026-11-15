@@ -50,4 +50,4 @@ class JournalEntryRepository(CoreRepository[JournalEntry]):
         Returns:
             Số mục đã xóa.
         """
-        return self.delete_where(created_at__lt=moment)
+        return self.hard_delete_where(created_at__lt=moment)

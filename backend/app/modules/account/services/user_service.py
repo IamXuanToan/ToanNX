@@ -243,7 +243,7 @@ class UserService(CoreCrudService[User, UserRepository]):
         # BƯỚC 3: Khóa + xóa mềm, thu hồi phiên sau khi commit
         # ============================================================
         self.repository.update(target, actor=actor, is_active=False)
-        self.repository.soft_delete(target, actor=actor)
+        self.repository.delete(target, actor=actor)
         self._notify_credentials_changed(target, "deleted")
 
     def get_manageable_user(self, actor: User, user_id: Any) -> User:

@@ -103,7 +103,7 @@ class AttachmentFolderService(CoreCrudService[AttachmentFolder, AttachmentFolder
             deleted_at__isnull=True,
         )
         for item in folders:
-            self.repository.soft_delete(item, actor=actor)
+            self.repository.delete(item, actor=actor)
         return len(folders)
 
     def delete(self, actor: Any, pk: Any) -> None:

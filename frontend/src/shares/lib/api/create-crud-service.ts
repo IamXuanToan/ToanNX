@@ -11,8 +11,8 @@ type Query = NonNullable<RequestOptions["query"]>;
  * | Method | Path |
  * | --- | --- |
  * | `list`, `create` | `base` |
- * | `get`, `update`, `remove` | `base/{id}` |
- * | `bulkUpdate`, `bulkRemove` | `base/bulk-update`, `base/bulk-delete` |
+ * | `get`, `update`, `delete` | `base/{id}` |
+ * | `bulkUpdate`, `bulkDelete` | `base/bulk-update`, `base/bulk-delete` |
  * | `history` | `base/{id}/history` |
  *
  * Module chỉ trải ra và thêm method riêng (vẫn một file một model BE):
@@ -58,7 +58,7 @@ export function createCrudService<
     async update(id: string, input: U): Promise<D> {
       return (await apiClient.patch<D>(item(id), input, { opaqueKeys })).data;
     },
-    async remove(id: string): Promise<void> {
+    async delete(id: string): Promise<void> {
       await apiClient.delete(item(id));
     },
     /** Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). @returns Số bản ghi. */
@@ -67,7 +67,7 @@ export function createCrudService<
         .data.count;
     },
     /** Xóa nhiều bản ghi trong một transaction. @returns Số bản ghi. */
-    async bulkRemove(ids: string[]): Promise<number> {
+    async bulkDelete(ids: string[]): Promise<number> {
       return (await apiClient.post<{ count: number }>(`${base}/bulk-delete`, { ids })).data.count;
     },
     /** Lịch sử thay đổi (`changes` giữ nguyên tên field của BE). */

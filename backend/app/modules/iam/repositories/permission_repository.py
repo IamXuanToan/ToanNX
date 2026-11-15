@@ -22,7 +22,7 @@ class PermissionRepository(CoreRepository[Permission]):
         Returns:
             QuerySet.
         """
-        return Permission.objects.filter(is_active=True)
+        return super().get_queryset().filter(is_active=True)
 
     def get_codes_for_user(self, user_id: Any) -> frozenset[str]:
         """Mã quyền hiệu lực từ các vai trò đang hoạt động của người dùng (một truy vấn).

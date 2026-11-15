@@ -11,10 +11,10 @@ const crud = createCrudService<Attachment, AttachmentFilters>(ATTACHMENT_API_END
 export const attachmentService = {
   list: crud.list,
   get: crud.get,
-  remove: crud.remove,
+  delete: crud.delete,
   history: crud.history,
   /** Xóa mềm nhiều file trong cùng transaction. @returns Số file đã xóa. */
-  bulkDelete: crud.bulkRemove,
+  bulkDelete: crud.bulkDelete,
   /** @param file - File từ thiết bị. @param folderId - Nhóm logic đích nếu có. @returns File đã kiểm tra và lưu. */
   async upload(file: File, folderId?: string | null): Promise<Attachment> {
     const body = new FormData();

@@ -67,7 +67,7 @@ export function useUpdateQrCode(id: string) {
 /** @returns Mutation xóa một mã QR. */
 export function useDeleteQrCode() {
   return useResourceMutation({
-    mutationFn: (id: string) => qrCodeService.remove(id),
+    mutationFn: (id: string) => qrCodeService.delete(id),
     invalidate: INVALIDATE,
     success: "deleted",
   });
@@ -76,7 +76,7 @@ export function useDeleteQrCode() {
 /** @returns Mutation xóa nhiều mã QR. */
 export function useBulkDeleteQrCodes() {
   return useResourceMutation({
-    mutationFn: (ids: string[]) => qrCodeService.bulkRemove(ids),
+    mutationFn: (ids: string[]) => qrCodeService.bulkDelete(ids),
     invalidate: INVALIDATE,
     success: "bulkDeleted",
   });

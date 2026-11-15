@@ -35,7 +35,7 @@ export function useUserTable() {
   const { data: current } = useCurrentUser();
   const remove = useDeleteUser();
   const bulkSetActive = useBulkSetUsersActive();
-  const bulkRemove = useBulkDeleteUsers();
+  const bulkDelete = useBulkDeleteUsers();
   const isSelf = (user: User) => user.id === current?.user.id;
 
   return {
@@ -50,6 +50,6 @@ export function useUserTable() {
     remove: (user: User) => remove.mutateAsync(user.id),
     bulkSetActive: (users: User[], isActive: boolean) =>
       bulkSetActive.mutateAsync({ ids: users.map((user) => user.id), isActive }),
-    bulkRemove: (users: User[]) => bulkRemove.mutateAsync(users.map((user) => user.id)),
+    bulkDelete: (users: User[]) => bulkDelete.mutateAsync(users.map((user) => user.id)),
   };
 }

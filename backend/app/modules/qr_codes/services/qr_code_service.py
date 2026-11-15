@@ -87,7 +87,7 @@ class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
             pk: Id mã QR.
         """
         qr_code = self.get_for_write(actor, pk)
-        self.repository.soft_delete(qr_code, actor=actor)
+        self.repository.delete(qr_code, actor=actor)
         self.attachment_service.delete_generated(actor, qr_code.image_id)
 
     @staticmethod

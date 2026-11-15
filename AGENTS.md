@@ -23,8 +23,9 @@ Backend:
 3. Model kế thừa `CoreModel`; muốn có lịch sử thay đổi thì thêm `JournalTracker` **trước** `CoreModel`
    (`class Link(JournalTracker, CoreModel)`, tùy chọn `journal_fields`/`journal_masked_fields`). Index owner có
    điều kiện `deleted_at IS NULL`. `makemigrations`.
-4. Repository kế thừa `CoreRepository`, chỉ ghi đè `get_queryset` (`select_related`/`prefetch_related` đủ cho
-   serializer, không N+1).
+4. Repository kế thừa `CoreRepository`, chỉ ghi đè `get_queryset` bằng `super().get_queryset()` +
+   `select_related`/`prefetch_related` đủ cho serializer (base đã ẩn bản xóa mềm; không N+1). Xóa mặc định là xóa
+   mềm; chỉ gọi `hard_delete` khi thực sự cần.
 5. Service kế thừa `CoreCrudService`: khai `owner_field`, `manage_all_permission`, `owner_quota_setting` nếu là tài
    nguyên có owner; chỉ ghi đè `create`/`update`/`delete` khi có luật nghiệp vụ. Owner, 404 cho bản của người khác,
    bản đã xóa mềm, bulk trong transaction đều có sẵn.
@@ -34,7 +35,8 @@ Backend:
    `settings.RATE_LIMITS`). API khác dùng `CoreApiView` + `@require_permission` (+ `@rate_limit`, `@validate_request`);
    công khai/chỉ đăng nhập thì ghi đè `permission_classes` theo bảng trong `core_api_view.py`. Không tạo lớp view nền.
 7. `INSTALLED_APPS`, `config/urls.py`, `migrate` (quyền tự đồng bộ). Test trong `tests/` (factory, quyền, owner,
-   bulk, lịch sử) + một dòng trong `core/tests/test_list_query_count.py` cho endpoint danh sách.
+   bulk, lịch sử) + một dòng trong `core/tests/test_list_query_count.py` cho endpoint danh sách (quên là test đỏ).
+   Khóa `action_rate_limits` phải có trong `settings.RATE_LIMITS` (test quy ước kiểm).
    `spectacular --validate --fail-on-warn` phải sạch.
 
 Frontend:

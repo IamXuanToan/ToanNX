@@ -4,14 +4,17 @@ from typing import Any
 
 import pytest
 from django.apps import apps
+from django.conf import settings
 from django.urls import URLPattern, URLResolver, get_resolver
 from rest_framework.permissions import AllowAny
 
+from app.core.decorators.rate_limit import RATE_LIMIT_ATTR
 from app.core.permissions.csrf_protected import CsrfProtected
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.registry.core_module_config import CoreModuleConfig
 from app.core.registry.module_descriptor import ModuleDescriptor
 from app.core.registry.module_registry import ModuleRegistry, module_registry
+from app.core.services.core_crud_service import CoreCrudService
 from app.core.views.core_api_view import CoreApiView
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.iam.decorators.require_permission import PERMISSION_RULE_ATTR
@@ -48,6 +51,14 @@ def _module_views() -> list[tuple[type, dict[str, str]]]:
         for view_class, actions in _iter_views(get_resolver().url_patterns)
         if view_class.__module__.startswith(MODULE_APP_PREFIX)
     ]
+
+
+def _subclasses(base: type) -> list[type]:
+    """Mọi lớp con (đệ quy) của `base`."""
+    found: list[type] = []
+    for sub in base.__subclasses__():
+        found += [sub, *_subclasses(sub)]
+    return found
 
 
 def _uses_iam(view_class: type) -> bool:
@@ -118,3 +129,42 @@ class TestModuleConventions:
             if list(view_class.permission_classes) not in allowed  # type: ignore[attr-defined]
         ]
         assert not wrong, f"permission_classes ngoài bảng chuẩn: {wrong}"
+
+    def test_rate_limit_keys_exist(self) -> None:
+        """Khóa `action_rate_limits` / `@rate_limit` phải có trong `settings.RATE_LIMITS` (sai là 500)."""
+        missing: list[str] = []
+        for view_class, _ in _module_views():
+            declared = getattr(view_class, "action_rate_limits", {})
+            missing += [
+                f"{view_class.__qualname__}.{action}: {key}"
+                for action, key in declared.items()
+                if key not in settings.RATE_LIMITS
+            ]
+            for method in ("get", "post", "patch", "put", "delete"):
+                key = getattr(getattr(view_class, method, None), RATE_LIMIT_ATTR, None)
+                if key is not None and key not in settings.RATE_LIMITS:
+                    missing.append(f"{view_class.__qualname__}.{method}: {key}")
+        assert not missing, f"Khóa rate limit chưa khai trong RATE_LIMITS: {sorted(set(missing))}"
+
+    def test_rate_limit_actions_exist(self) -> None:
+        """Tên action trong `action_rate_limits` phải là action thật của ViewSet (gõ sai = không giới hạn)."""
+        actions_by_view: dict[type, set[str]] = {}
+        for view_class, actions in _module_views():
+            actions_by_view.setdefault(view_class, set()).update(actions.values())
+        unknown = [
+            f"{view_class.__qualname__}.{name}"
+            for view_class, actions in actions_by_view.items()
+            for name in getattr(view_class, "action_rate_limits", {})
+            if actions and name not in actions
+        ]
+        assert not unknown, f"action_rate_limits khai action không tồn tại: {unknown}"
+
+    def test_crud_service_declarations_are_valid(self) -> None:
+        """Setting quota tồn tại; tài nguyên có owner khai quyền xem tất cả."""
+        wrong: list[str] = []
+        for service in _subclasses(CoreCrudService):
+            if service.owner_quota_setting and not hasattr(settings, service.owner_quota_setting):
+                wrong.append(f"{service.__qualname__}: thiếu setting {service.owner_quota_setting}")
+            if service.owner_field and not service.manage_all_permission:
+                wrong.append(f"{service.__qualname__}: có owner_field nhưng thiếu manage_all_permission")
+        assert not wrong, wrong

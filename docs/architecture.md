@@ -106,7 +106,7 @@ cookie `access_token` hoặc Bearer. Schema chỉ phục vụ khi DEBUG (`/api/v
 
 ### Audit
 
-`CoreRepository.create/update/soft_delete/bulk_create` gán `created_by`/`updated_by`/`deleted_by`:
+`CoreRepository.create/update/delete/bulk_create` gán `created_by`/`updated_by`/`deleted_by`:
 ưu tiên `actor` truyền tường minh, sau đó lấy từ `UserContext`. `Model.save()` **không** tự gán audit.
 Ghi hàng loạt dùng `CoreRepository.update_where` (tự set `updated_by`/`updated_at`, ghi journal cho model có tracker); không gọi `QuerySet.update()` trực tiếp.
 

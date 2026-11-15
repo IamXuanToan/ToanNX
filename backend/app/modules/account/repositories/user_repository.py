@@ -19,7 +19,7 @@ class UserRepository(CoreRepository[User]):
         Returns:
             QuerySet.
         """
-        return User.objects.alive().select_related("avatar")
+        return super().get_queryset().select_related("avatar")
 
     def find_by_email(self, email: str) -> User | None:
         """Tìm người dùng (kể cả bị khóa) theo email đã chuẩn hóa.

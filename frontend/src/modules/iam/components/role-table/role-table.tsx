@@ -32,7 +32,7 @@ export function RoleTable({
 }) {
   const t = useTranslations("iam.roles");
   const tStatus = useTranslations("common.status");
-  const { query, table, edit, copy, setActive, remove, bulkSetActive, bulkRemove } = useRoleTable();
+  const { query, table, edit, copy, setActive, remove, bulkSetActive, bulkDelete } = useRoleTable();
 
   const columns: DataTableColumn<Role>[] = [
     {
@@ -161,7 +161,7 @@ export function RoleTable({
             }
           : undefined
       }
-      onBulkDelete={canDelete ? bulkRemove : undefined}
+      onBulkDelete={canDelete ? bulkDelete : undefined}
       aria-label={t("title")}
     />
   );

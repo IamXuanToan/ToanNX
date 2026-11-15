@@ -34,7 +34,7 @@ export function useRoleTable() {
   });
   const remove = useDeleteRole();
   const bulkSetActive = useBulkSetRolesActive();
-  const bulkRemove = useBulkDeleteRoles();
+  const bulkDelete = useBulkDeleteRoles();
 
   return {
     query,
@@ -47,6 +47,6 @@ export function useRoleTable() {
     remove: (role: Role) => remove.mutateAsync(role.id),
     bulkSetActive: (roles: Role[], isActive: boolean) =>
       bulkSetActive.mutateAsync({ ids: roles.map((role) => role.id), isActive }),
-    bulkRemove: (roles: Role[]) => bulkRemove.mutateAsync(roles.map((role) => role.id)),
+    bulkDelete: (roles: Role[]) => bulkDelete.mutateAsync(roles.map((role) => role.id)),
   };
 }

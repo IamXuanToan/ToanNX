@@ -24,7 +24,8 @@ class RolePermissionRepository(CoreRepository[RolePermission]):
         Returns:
             Số bản ghi đã xóa.
         """
-        return self.delete_where(role_id=role_id, permission_id=permission_id)
+        # Xóa cứng có chủ đích: bảng nối, lịch sử gán/gỡ đã ghi ở journal (sự kiện của Role).
+        return self.hard_delete_where(role_id=role_id, permission_id=permission_id)
 
     def add_missing(self, role: Role, permissions: Iterable[Permission]) -> int:
         """Gán các quyền vai trò chưa có.

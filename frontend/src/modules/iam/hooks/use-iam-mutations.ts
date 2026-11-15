@@ -37,7 +37,7 @@ export function useUpdateRole(id: string) {
 /** @returns Mutation xoá mềm một vai trò. */
 export function useDeleteRole() {
   return useResourceMutation({
-    mutationFn: (id: string) => roleService.remove(id),
+    mutationFn: (id: string) => roleService.delete(id),
     invalidate: INVALIDATE,
     success: "deleted",
   });
@@ -56,7 +56,7 @@ export function useBulkSetRolesActive() {
 /** @returns Mutation xoá mềm nhiều vai trò. */
 export function useBulkDeleteRoles() {
   return useResourceMutation({
-    mutationFn: (ids: string[]) => roleService.bulkRemove(ids),
+    mutationFn: (ids: string[]) => roleService.bulkDelete(ids),
     invalidate: INVALIDATE,
     success: "bulkDeleted",
   });

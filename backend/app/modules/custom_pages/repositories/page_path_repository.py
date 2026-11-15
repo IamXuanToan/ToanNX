@@ -15,8 +15,10 @@ class PagePathRepository(CoreRepository[PagePath]):
 
     def get_queryset(self) -> QuerySet[PagePath]:
         """Chưa xóa mềm, annotate `page_count`."""
-        return PagePath.objects.alive().annotate(
-            page_count=Count("pages", filter=Q(pages__deleted_at__isnull=True))
+        return (
+            super()
+            .get_queryset()
+            .annotate(page_count=Count("pages", filter=Q(pages__deleted_at__isnull=True)))
         )
 
     def has_pages(self, path_id: Any) -> bool:

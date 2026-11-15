@@ -2,11 +2,14 @@
 
 Luồng: url → view → service → repository → ORM.
 
-- Đọc: queryset gốc (lớp con ghi đè để lọc soft delete, select_related, annotate), lấy theo id có
-  `NotFoundError` chuẩn, các hàm tiện ích tìm/đếm. Lọc, tìm kiếm, sắp xếp, phân trang từ client
-  do filter backend + pagination chuẩn của DRF xử lý trên queryset này.
+- Đọc: queryset gốc **tự ẩn bản ghi đã xóa mềm** (lớp con gọi `super().get_queryset()` rồi thêm
+  select_related/annotate), lấy theo id có `NotFoundError` chuẩn, các hàm tiện ích tìm/đếm.
+  Lọc, tìm kiếm, sắp xếp, phân trang từ client do filter backend + pagination chuẩn của DRF
+  xử lý trên queryset này.
 - Ghi: gán audit (`created_by`, `updated_by`, `deleted_by`) nhất quán; đổi `IntegrityError` thành
   `ConflictError` trong savepoint (không làm hỏng transaction bao ngoài).
+- Xóa: `delete` / `delete_where` là **xóa mềm** (mặc định). Xóa cứng chỉ khi thực sự cần (bảng nối, token,
+  dữ liệu hết hạn giữ) và phải gọi tường minh `hard_delete` / `hard_delete_where`.
 
 Repository KHÔNG chứa business logic.
 """
@@ -42,10 +45,19 @@ class CoreRepository[M: models.Model]:
     # Đọc
     # ==================================================================
     def get_queryset(self) -> QuerySet[M]:
-        """Queryset gốc; lớp con ghi đè để lọc soft delete, select_related, annotate.
+        """Queryset gốc, đã bỏ bản ghi xóa mềm; lớp con gọi `super()` rồi thêm select_related/annotate.
 
         Returns:
             QuerySet gốc.
+        """
+        queryset = self.model._default_manager.all()
+        return queryset.filter(deleted_at__isnull=True) if self.has_soft_delete() else queryset
+
+    def get_queryset_with_deleted(self) -> QuerySet[M]:
+        """Queryset gồm cả bản ghi đã xóa mềm (khôi phục, kiểm trùng toàn bảng, dọn dẹp).
+
+        Returns:
+            QuerySet.
         """
         return self.model._default_manager.all()
 
@@ -225,8 +237,8 @@ class CoreRepository[M: models.Model]:
         self.save(instance, update_fields=[*changed, *audit_fields])
         return instance
 
-    def soft_delete(self, instance: M, *, actor: Any | None = None) -> M:
-        """Xóa mềm (model phải kế thừa CoreModel).
+    def delete(self, instance: M, *, actor: Any | None = None) -> M:
+        """Xóa mềm (mặc định của hệ thống): gán `deleted_at`, `deleted_by`.
 
         Args:
             instance: Bản ghi.
@@ -234,23 +246,45 @@ class CoreRepository[M: models.Model]:
 
         Returns:
             Bản ghi đã đánh dấu xóa.
+
+        Raises:
+            TypeError: Model không có `deleted_at` (khi đó phải gọi `hard_delete` tường minh).
         """
+        self._require_soft_delete()
         resolved = self.resolve_actor(actor)
-        instance.mark_deleted(resolved)  # type: ignore[attr-defined]  # chỉ gọi với CoreModel
+        instance.mark_deleted(resolved)  # type: ignore[attr-defined]  # đã kiểm có deleted_at (CoreModel)
         audit_fields = self.apply_audit(instance, resolved, created=False)
         self.save(instance, update_fields=["deleted_at", "deleted_by", *audit_fields])
         return instance
 
+    def delete_where(self, *, actor: Any | None = None, **filters: Any) -> int:
+        """Xóa mềm các bản ghi chưa xóa khớp điều kiện (có ghi journal nếu model có tracker).
+
+        Args:
+            actor: Người thực hiện.
+            **filters: Điều kiện.
+
+        Returns:
+            Số bản ghi đã xóa mềm.
+
+        Raises:
+            TypeError: Model không có `deleted_at`.
+        """
+        self._require_soft_delete()
+        resolved = self.resolve_actor(actor)
+        values = {"deleted_at": timezone.now(), "deleted_by": resolved}
+        return self.update_where(values, actor=resolved, deleted_at__isnull=True, **filters)
+
     def hard_delete(self, instance: M) -> None:
-        """Xóa cứng.
+        """Xóa cứng một bản ghi. Chỉ dùng khi thực sự cần (bảng nối, token, model không có `deleted_at`).
 
         Args:
             instance: Bản ghi.
         """
         instance.delete()
 
-    def delete_where(self, **filters: Any) -> int:
-        """Xóa cứng các bản ghi khớp điều kiện.
+    def hard_delete_where(self, **filters: Any) -> int:
+        """Xóa cứng các bản ghi khớp điều kiện (kể cả đã xóa mềm). Chỉ dùng khi thực sự cần.
 
         Args:
             **filters: Điều kiện.
@@ -359,6 +393,17 @@ class CoreRepository[M: models.Model]:
             True nếu có `deleted_at`.
         """
         return self.has_field("deleted_at")
+
+    def _require_soft_delete(self) -> None:
+        """Chặn xóa mềm trên model không có `deleted_at` (tránh lặng lẽ xóa cứng).
+
+        Raises:
+            TypeError: Model không hỗ trợ xóa mềm.
+        """
+        if not self.has_soft_delete():
+            raise TypeError(
+                f"{self.model.__name__} không có deleted_at: gọi hard_delete nếu thực sự cần xóa cứng."
+            )
 
     def _tracks(self, values: dict[str, Any]) -> bool:
         """Lần cập nhật hàng loạt có chạm field mà JournalTracker theo dõi không."""

@@ -4,8 +4,9 @@ Quy ước:
 - Audit (`created_by`/`updated_by`/`deleted_by`) do `CoreRepository` gán, KHÔNG gán
   ngầm trong `save()`. Đường ghi khác (`QuerySet.update`, `bulk_update`, migration
   dữ liệu) phải tự truyền giá trị audit.
-- Soft delete là tùy chọn: model nào dùng phải tự định nghĩa hành vi (lọc `alive()`).
-  Bảng phiên/token/gán quyền xóa cứng.
+- Xóa mặc định là **xóa mềm** (`CoreRepository.delete`); queryset gốc của repository tự ẩn bản đã xóa.
+  Xóa cứng chỉ khi thực sự cần, gọi tường minh `hard_delete` (token hết hạn, bảng nối gán quyền,
+  dữ liệu quá hạn giữ).
 """
 
 import uuid

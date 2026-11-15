@@ -28,7 +28,7 @@ export const attachmentFolderService = {
       .data;
   },
   /** @param options - Nhánh cần xóa mềm và lựa chọn giữ hay xóa mềm file bên trong. */
-  async remove({ id, deleteFiles }: { id: string; deleteFiles: boolean }): Promise<void> {
+  async delete({ id, deleteFiles }: { id: string; deleteFiles: boolean }): Promise<void> {
     await apiClient.post(ATTACHMENT_API_ENDPOINTS.folderDelete(id), { deleteFiles });
   },
 };

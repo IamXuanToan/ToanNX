@@ -15,7 +15,7 @@ export type MutationSuccessMessage = "saved" | "deleted" | "bulkUpdated" | "bulk
  *
  * ```ts
  * useResourceMutation({
- *   mutationFn: (ids: string[]) => shortLinkService.bulkRemove(ids),
+ *   mutationFn: (ids: string[]) => shortLinkService.bulkDelete(ids),
  *   invalidate: [shortLinkKeys.all],
  *   success: "bulkDeleted",
  * });

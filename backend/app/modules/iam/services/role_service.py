@@ -86,7 +86,7 @@ class RoleService(CoreCrudService[Role, RoleRepository]):
         if role.is_system:
             raise AuthorizationError(code=IamErrorCode.IAM_SYSTEM_ROLE_PROTECTED)
         self.repository.update(role, actor=actor, is_active=False)
-        self.repository.soft_delete(role, actor=actor)
+        self.repository.delete(role, actor=actor)
 
     def get_editable_role(self, actor: User, role_id: Any) -> Role:
         """Khóa vai trò và chặn sửa vai trò hệ thống nếu không phải superuser.

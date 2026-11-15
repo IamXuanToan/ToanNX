@@ -18,7 +18,8 @@ class AttachmentFolderRepository(CoreRepository[AttachmentFolder]):
     def get_queryset(self) -> QuerySet[AttachmentFolder]:
         """Nạp số file chưa xóa và người tạo trước khi serialize."""
         return (
-            AttachmentFolder.objects.alive()
+            super()
+            .get_queryset()
             .select_related("created_by")
             .annotate(file_count=Count("files", filter=Q(files__deleted_at__isnull=True)))
         )

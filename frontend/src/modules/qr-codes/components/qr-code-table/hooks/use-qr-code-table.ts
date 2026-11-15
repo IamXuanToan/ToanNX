@@ -20,12 +20,12 @@ export function useQrCodeTable() {
     qrType: pickAllowedValues(table.getFilterValues("qrType"), QR_TYPES),
   });
   const remove = useDeleteQrCode();
-  const bulkRemove = useBulkDeleteQrCodes();
+  const bulkDelete = useBulkDeleteQrCodes();
   return {
     table,
     query,
     edit: (code: QrCode) => router.push(QR_CODES_ROUTES.codeDetail(code.id)),
     remove: (code: QrCode) => remove.mutateAsync(code.id),
-    bulkRemove: (codes: QrCode[]) => bulkRemove.mutateAsync(codes.map((code) => code.id)),
+    bulkDelete: (codes: QrCode[]) => bulkDelete.mutateAsync(codes.map((code) => code.id)),
   };
 }

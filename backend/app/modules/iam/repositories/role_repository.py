@@ -22,9 +22,13 @@ class RoleRepository(CoreRepository[Role]):
         Returns:
             QuerySet.
         """
-        return Role.objects.alive().annotate(
-            permission_count=Count("role_permissions", distinct=True),
-            user_count=Count("user_roles", distinct=True),
+        return (
+            super()
+            .get_queryset()
+            .annotate(
+                permission_count=Count("role_permissions", distinct=True),
+                user_count=Count("user_roles", distinct=True),
+            )
         )
 
     def get_detail(self, pk: Any) -> Role:

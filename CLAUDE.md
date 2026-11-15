@@ -50,6 +50,8 @@ rotating refresh token stored as HMAC; every request checks the session is still
 - Views never touch repositories/ORM; services hold business rules and get dependencies via constructor;
   repositories (subclass `CoreRepository`) are the only DB layer and set audit fields (`created_by`/`updated_by`/
   `deleted_by`) — `Model.save()`, `QuerySet.update()` and `bulk_update()` do not.
+  Delete is soft by default (`delete`/`delete_where`; base `get_queryset` hides soft-deleted rows); hard delete
+  only when truly needed, via explicit `hard_delete`/`hard_delete_where`.
 - Only two view bases: `CoreApiView` (non-CRUD, `@require_permission` per method) and `CoreModelViewSet`
   (CRUD + opt-in `bulk-update`/`bulk-delete`/`history` actions, `action_permissions` default DENY). Defaults come from
   settings (`IsActiveAuthenticated` + `HasIamPermission`, `BucketThrottle` + `RATE_LIMITS`); public or login-only

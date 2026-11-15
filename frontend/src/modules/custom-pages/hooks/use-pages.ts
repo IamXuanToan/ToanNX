@@ -45,7 +45,7 @@ export function useUpdatePage(id: string) {
 /** @returns Mutation xóa một trang. */
 export function useDeletePage() {
   return useResourceMutation({
-    mutationFn: (id: string) => pageService.remove(id),
+    mutationFn: (id: string) => pageService.delete(id),
     invalidate: INVALIDATE,
     success: "deleted",
   });
@@ -64,7 +64,7 @@ export function useBulkSetPageStatus() {
 /** @returns Mutation xóa nhiều trang. */
 export function useBulkDeletePages() {
   return useResourceMutation({
-    mutationFn: (ids: string[]) => pageService.bulkRemove(ids),
+    mutationFn: (ids: string[]) => pageService.bulkDelete(ids),
     invalidate: INVALIDATE,
     success: "bulkDeleted",
   });

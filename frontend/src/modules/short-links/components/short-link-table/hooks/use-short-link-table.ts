@@ -33,7 +33,7 @@ export function useShortLinkTable() {
   });
   const remove = useDeleteShortLink();
   const bulkStatus = useBulkSetShortLinkStatus();
-  const bulkRemove = useBulkDeleteShortLinks();
+  const bulkDelete = useBulkDeleteShortLinks();
   const ids = (links: ShortLink[]) => links.map((link) => link.id);
   return {
     table,
@@ -44,6 +44,6 @@ export function useShortLinkTable() {
     remove: (link: ShortLink) => remove.mutateAsync(link.id),
     bulkSetStatus: (links: ShortLink[], status: ShortLinkStatus) =>
       bulkStatus.mutateAsync({ ids: ids(links), status }),
-    bulkRemove: (links: ShortLink[]) => bulkRemove.mutateAsync(ids(links)),
+    bulkDelete: (links: ShortLink[]) => bulkDelete.mutateAsync(ids(links)),
   };
 }

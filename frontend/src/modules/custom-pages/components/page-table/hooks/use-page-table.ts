@@ -33,7 +33,7 @@ export function usePageTable() {
   const remove = useDeletePage();
   const duplicate = useDuplicatePage();
   const bulkStatus = useBulkSetPageStatus();
-  const bulkRemove = useBulkDeletePages();
+  const bulkDelete = useBulkDeletePages();
   const ids = (pages: Page[]) => pages.map((page) => page.id);
   return {
     table,
@@ -47,6 +47,6 @@ export function usePageTable() {
     remove: (page: Page) => remove.mutateAsync(page.id),
     bulkSetStatus: (pages: Page[], status: PageStatus) =>
       bulkStatus.mutateAsync({ ids: ids(pages), status }),
-    bulkRemove: (pages: Page[]) => bulkRemove.mutateAsync(ids(pages)),
+    bulkDelete: (pages: Page[]) => bulkDelete.mutateAsync(ids(pages)),
   };
 }

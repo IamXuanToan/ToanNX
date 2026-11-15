@@ -13,4 +13,4 @@ class QrCodeRepository(CoreRepository[QrCode]):
 
     def get_queryset(self) -> QuerySet[QrCode]:
         """Chỉ mã QR còn tồn tại."""
-        return QrCode.objects.alive().select_related("image", "owner")
+        return super().get_queryset().select_related("image", "owner")

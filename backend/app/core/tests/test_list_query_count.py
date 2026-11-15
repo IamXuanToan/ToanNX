@@ -1,18 +1,29 @@
 """Chặn N+1: số query của danh sách không tăng theo số bản ghi.
 
-Module mới thêm endpoint danh sách thì thêm một dòng vào `CASES`.
+Module mới thêm endpoint danh sách thì thêm một dòng vào `CASES`; quên thì
+`test_every_list_endpoint_is_covered` đỏ.
 """
 
+import io
 from collections.abc import Callable
+from datetime import timedelta
 from typing import Any
 
 import pytest
+import segno
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
+from django.urls import URLPattern, URLResolver, get_resolver
+from django.utils import timezone
 
+from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.account.tests.factories.user_factory import UserFactory
+from app.modules.attachment.services.attachment_folder_service import AttachmentFolderService
+from app.modules.attachment.services.attachment_service import AttachmentService
+from app.modules.authentication.models.auth_session import AuthSession
 from app.modules.custom_pages.models.page_path import PagePath
 from app.modules.custom_pages.services.page_service import PageService
+from app.modules.iam.models.permission import Permission
 from app.modules.iam.tests.factories.role_factory import RoleFactory
 from app.modules.qr_codes.services.qr_code_service import QrCodeService
 from app.modules.short_links.services.short_link_service import ShortLinkService
@@ -48,6 +59,44 @@ def _qr_codes(owner: Any, count: int) -> None:
         )
 
 
+def _sessions(owner: Any, count: int) -> None:
+    expires = timezone.now() + timedelta(days=1)
+    AuthSession.objects.bulk_create(
+        [AuthSession(user=UserFactory(), expires_at=expires) for _ in range(count)]
+    )
+
+
+def _permissions(owner: Any, count: int) -> None:
+    start = Permission.objects.count()
+    Permission.objects.bulk_create(
+        [
+            Permission(
+                code=f"qc.item.a{start + index}",
+                module="qc",
+                resource="item",
+                action=f"a{start + index}",
+                name="QC",
+                description="QC",
+            )
+            for index in range(count)
+        ]
+    )
+
+
+def _folders(owner: Any, count: int) -> None:
+    service, start = AttachmentFolderService(), Permission.objects.count() + timezone.now().microsecond
+    for index in range(count):
+        service.create(owner, {"name": f"QC {start}-{index}"})
+
+
+def _attachments(owner: Any, count: int) -> None:
+    buffer = io.BytesIO()
+    segno.make("qc").save(buffer, kind="png")
+    service = AttachmentService()
+    for index in range(count):
+        service.create_generated(owner, buffer.getvalue(), f"qc-{index}.png")
+
+
 CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/account/users", lambda owner, n: UserFactory.create_batch(n)),
     ("/api/v1/iam/roles", lambda owner, n: RoleFactory.create_batch(n)),
@@ -56,7 +105,32 @@ CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/custom_pages/pages", _pages),
     ("/api/v1/custom_pages/paths", lambda owner, n: None),
     ("/api/v1/qr_codes/codes", _qr_codes),
+    ("/api/v1/auth/admin-sessions", _sessions),
+    ("/api/v1/iam/permissions", _permissions),
+    ("/api/v1/attachments/folders", _folders),
+    ("/api/v1/attachments", _attachments),
 ]
+
+
+def _list_routes(patterns: list[URLPattern | URLResolver], prefix: str = "/") -> set[str]:
+    """URL của mọi action `list` thuộc `CoreModelViewSet`."""
+    routes: set[str] = set()
+    for pattern in patterns:
+        part = str(pattern.pattern).lstrip("^").rstrip("$")
+        if isinstance(pattern, URLResolver):
+            routes |= _list_routes(pattern.url_patterns, prefix + part)
+            continue
+        view_class = getattr(pattern.callback, "cls", None)
+        actions = getattr(pattern.callback, "actions", None) or {}
+        if view_class and issubclass(view_class, CoreModelViewSet) and actions.get("get") == "list":
+            routes.add(prefix + part)
+    return routes
+
+
+def test_every_list_endpoint_is_covered() -> None:
+    """Mọi endpoint danh sách đều có dòng trong `CASES`."""
+    missing = _list_routes(get_resolver().url_patterns) - {url for url, _ in CASES}
+    assert not missing, f"Thêm vào CASES: {sorted(missing)}"
 
 
 def _count(api: Any, url: str) -> int:

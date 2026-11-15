@@ -181,7 +181,7 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         """
         attachment = self.repository.find_by_id(attachment_id)
         if attachment is not None:
-            self.repository.soft_delete(attachment, actor=actor)
+            self.repository.delete(attachment, actor=actor)
 
     @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> Attachment:

@@ -14,9 +14,9 @@ const crud = createCrudService<AdminSession, AdminSessionFilters>(AUTH_API_ENDPO
 export const adminAuthSessionService = {
   list: crud.list,
   /** Xóa mềm nhiều phiên (action core `bulk-delete`). */
-  bulkDelete: crud.bulkRemove,
+  bulkDelete: crud.bulkDelete,
   /** @param id - Phiên cần thu hồi (DELETE thu hồi, giữ lịch sử). */
-  revoke: crud.remove,
+  revoke: crud.delete,
 
   /** @param signal - Tín hiệu hủy. @returns Toàn bộ chủ phiên (không truyền `page` → BE trả hết). */
   async listUsers(signal?: AbortSignal): Promise<AdminSessionUser[]> {

@@ -57,7 +57,7 @@ export function useUpdatePagePath(id: string) {
 /** @returns Mutation xóa đường dẫn giữa (còn trang → 409, toast lỗi đã dịch). */
 export function useDeletePagePath() {
   return useResourceMutation({
-    mutationFn: (id: string) => pagePathService.remove(id),
+    mutationFn: (id: string) => pagePathService.delete(id),
     invalidate: INVALIDATE,
     success: "deleted",
   });

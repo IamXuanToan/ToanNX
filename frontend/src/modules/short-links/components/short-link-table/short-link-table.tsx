@@ -195,7 +195,7 @@ export function ShortLinkTable({
             }
           : undefined
       }
-      onBulkDelete={canDelete ? state.bulkRemove : undefined}
+      onBulkDelete={canDelete ? state.bulkDelete : undefined}
       aria-label={t("title")}
     />
   );

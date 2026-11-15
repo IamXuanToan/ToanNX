@@ -78,7 +78,7 @@ MODULE = ModuleDescriptor(code="custom_pages", ..., permissions=CustomPagesPermi
 | --- | --- |
 | `models/core_model.py` | Mọi entity nghiệp vụ (UUID, timestamps, audit, soft delete tùy chọn) |
 | `tracking/journal_tracker.py` | Mixin `JournalTracker`: model kế thừa (đặt **trước** `CoreModel`) thì CRUD tự ghi lịch sử thay đổi |
-| `repositories/core_repository.py` | Gốc mọi repository: đọc (`get_queryset`, `get_by_id`, `find_one`, `exists`, `count`…), khóa dòng (`get_for_update`, bỏ bản đã xóa mềm), ghi có audit (`create`, `update`, `soft_delete`, `update_where`, `bulk_create`) |
+| `repositories/core_repository.py` | Gốc mọi repository: đọc (`get_queryset` tự ẩn bản đã xóa mềm, `get_queryset_with_deleted`, `get_by_id`, `find_one`, `exists`, `count`…), khóa dòng (`get_for_update`), ghi có audit (`create`, `update`, `update_where`, `bulk_create`), xóa mềm mặc định (`delete`, `delete_where`), xóa cứng tường minh (`hard_delete`, `hard_delete_where`) |
 | `services/core_crud_service.py` | Gốc mọi service CRUD: owner (`owner_field`, `manage_all_permission`), quota (`owner_quota_setting`), `*_for(actor)`, `bulk_update`/`bulk_delete`, `log_event` |
 | `views/core_api_view.py` | Gốc mọi API không phải CRUD: `get_actor(request)`; bảng override công khai/chỉ đăng nhập |
 | `views/core_model_view_set.py` | Gốc mọi CRUD: list/retrieve/create/partial_update/destroy + action `bulk-update`, `bulk-delete`, `history` bật bằng thuộc tính |
@@ -230,8 +230,12 @@ class UserRoleView(CoreApiView):
 
 ### Xoá và thao tác hàng loạt
 
-- Xoá là **xoá mềm** (`CoreRepository.soft_delete`), có quyền `<module>.<resource>.delete` riêng; mọi truy vấn
-  dùng `alive()` nên bản ghi đã xoá biến mất khỏi API, đăng nhập và kiểm quyền.
+- Xoá mặc định là **xoá mềm**: `CoreRepository.delete` / `delete_where`, `CoreCrudService.delete`, action
+  `destroy` và `bulk-delete`. Có quyền `<module>.<resource>.delete` riêng. `get_queryset` gốc của repository tự ẩn
+  bản đã xoá (lớp con gọi `super().get_queryset()`), nên bản ghi đã xoá biến mất khỏi API, đăng nhập và kiểm quyền.
+- Xoá cứng chỉ khi **thực sự cần** và gọi tường minh `hard_delete` / `hard_delete_where`, kèm một dòng chú thích lý
+  do. Hiện có: dọn phiên/token/bucket hết hạn, dọn journal quá hạn giữ, gỡ gán vai trò/quyền (bảng nối, lịch sử
+  đã ghi ở journal). Gọi `delete` trên model không có `deleted_at` → `TypeError` (không lặng lẽ xoá cứng).
 - Thao tác hàng loạt là action có sẵn của `CoreModelViewSet` (mục 5.1); `CoreCrudService.bulk_*` gọi lại
   `update`/`delete` từng bản ghi trong **một transaction**: cùng luật nghiệp vụ, lỗi một dòng thì không dòng nào đổi.
 

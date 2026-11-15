@@ -11,7 +11,7 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
 ```
 
 - `*_for(actor)` lọc theo owner; bản ghi của người khác trả 404 (không lộ tồn tại).
-- `update`/`delete` khóa dòng (bản ghi đã xóa mềm = không tồn tại) rồi kiểm owner.
+- `update`/`delete` khóa dòng (bản ghi đã xóa mềm = không tồn tại) rồi kiểm owner; `delete` là xóa mềm.
 - `bulk_update`/`bulk_delete` chạy một transaction, khóa theo thứ tự id, gọi lại `update`/`delete`
   nên luật riêng của lớp con tự áp cho thao tác hàng loạt.
 - Kiểm quyền `manage_all` bằng `actor.has_perm()` (Django hỏi `IamPermissionBackend`)
@@ -171,17 +171,15 @@ class CoreCrudService[M: models.Model, R: CoreRepository[Any]]:
 
     @transaction.atomic
     def delete(self, actor: Any, pk: Any) -> None:
-        """Khóa dòng, kiểm owner rồi xóa (mềm nếu model hỗ trợ).
+        """Khóa dòng, kiểm owner rồi **xóa mềm**. Tài nguyên thực sự cần xóa cứng thì lớp con ghi đè
+        và gọi `self.repository.hard_delete(...)` tường minh.
 
         Args:
             actor: Người thực hiện.
             pk: Khóa chính.
         """
         instance = self.get_for_write(actor, pk)
-        if self.repository.has_soft_delete():
-            self.repository.soft_delete(instance, actor=actor)
-        else:
-            self.repository.hard_delete(instance)
+        self.repository.delete(instance, actor=actor)
 
     @transaction.atomic
     def bulk_update(self, actor: Any, ids: list[Any], data: dict[str, Any]) -> int:

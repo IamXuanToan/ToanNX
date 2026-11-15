@@ -5,9 +5,11 @@ import pytest
 from app.core.context.user_context import request_context, set_current_user
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
+from app.core.repositories.core_repository import CoreRepository
 from app.modules.account.tests.factories.user_factory import UserFactory
 from app.modules.iam.models.role import Role
 from app.modules.iam.repositories.role_repository import RoleRepository
+from app.modules.journal.repositories.journal_entry_repository import JournalEntryRepository
 
 pytestmark = pytest.mark.django_db
 
@@ -40,12 +42,49 @@ def test_integrity_error_becomes_conflict() -> None:
     assert Role.objects.filter(code="DUP").count() == 1
 
 
-def test_soft_delete_hidden_from_repository() -> None:
+def test_delete_is_soft_by_default() -> None:
+    actor = UserFactory()
     repo = RoleRepository()
     role = repo.create(code="GONE", name="x")
-    repo.soft_delete(role)
+    repo.delete(role, actor=actor)
+    role.refresh_from_db()
+    assert role.deleted_at is not None and role.deleted_by_id == actor.pk
     with pytest.raises(NotFoundError):
         RoleRepository().get_by_id(role.pk)
+    assert repo.get_queryset_with_deleted().filter(pk=role.pk).exists()
+
+
+class _PlainRoleRepository(CoreRepository[Role]):
+    """Repository không ghi đè get_queryset: base phải tự ẩn bản đã xóa mềm."""
+
+    model = Role
+
+
+def test_base_queryset_hides_soft_deleted() -> None:
+    repo = _PlainRoleRepository()
+    role = repo.create(code="PLAIN", name="x")
+    repo.delete(role)
+    assert not repo.exists(code="PLAIN")
+    assert repo.count(code="PLAIN") == 0
+    with pytest.raises(NotFoundError):
+        repo.get_for_update(role.pk)
+
+
+def test_delete_requires_soft_delete_field() -> None:
+    entry = JournalEntryRepository().insert(
+        actor_id=None,
+        actor_label="",
+        request_id="",
+        resource="iam.role",
+        object_id="x",
+        object_label="x",
+        action="EVENT",
+        event="test.event",
+        changes={},
+    )
+    with pytest.raises(TypeError, match="hard_delete"):
+        JournalEntryRepository().delete(entry)
+    JournalEntryRepository().hard_delete(entry)
 
 
 def test_bulk_create_sets_audit() -> None:
@@ -71,11 +110,16 @@ def test_read_helpers() -> None:
         repo.get_by_id("00000000-0000-0000-0000-000000000000")
 
 
-def test_update_where_sets_audit_and_delete_where() -> None:
+def test_update_where_sets_audit_and_delete_where_is_soft() -> None:
     actor = UserFactory()
     repo = RoleRepository()
     repo.create(code="BULK_A", name="a")
     repo.create(code="BULK_B", name="b")
     assert repo.update_where({"name": "Đã đổi"}, actor=actor, code__startswith="BULK_") == 2
     assert all(role.updated_by_id == actor.pk for role in Role.objects.filter(code__startswith="BULK_"))
-    assert repo.delete_where(code__startswith="BULK_") == 2
+    assert repo.delete_where(actor=actor, code__startswith="BULK_") == 2
+    rows = Role.objects.filter(code__startswith="BULK_")
+    assert rows.count() == 2 and all(role.deleted_by_id == actor.pk for role in rows)
+    assert repo.delete_where(code__startswith="BULK_") == 0  # đã xóa thì không xóa lại
+    assert repo.hard_delete_where(code__startswith="BULK_") == 2
+    assert not Role.objects.filter(code__startswith="BULK_").exists()

@@ -21,4 +21,5 @@ class UserRoleRepository(CoreRepository[UserRole]):
         Returns:
             Số bản ghi đã xóa.
         """
-        return self.delete_where(user_id=user_id, role_id=role_id)
+        # Xóa cứng có chủ đích: bảng nối, lịch sử gán/gỡ đã ghi ở journal (sự kiện của User).
+        return self.hard_delete_where(user_id=user_id, role_id=role_id)

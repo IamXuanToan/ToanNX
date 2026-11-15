@@ -71,7 +71,7 @@ class PagePathService(CoreCrudService[PagePath, PagePathRepository]):
                 "Đường dẫn giữa còn trang, không xóa được.",
                 code=CustomPagesErrorCode.CUSTOM_PAGES_PATH_IN_USE,
             )
-        self.repository.soft_delete(path, actor=actor)
+        self.repository.delete(path, actor=actor)
 
     @staticmethod
     def _save(operation: Any) -> PagePath:

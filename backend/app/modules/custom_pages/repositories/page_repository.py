@@ -14,7 +14,7 @@ class PageRepository(CoreRepository[Page]):
 
     def get_queryset(self) -> QuerySet[Page]:
         """Trang còn tồn tại."""
-        return Page.objects.alive().select_related("path", "owner", "avatar", "cover")
+        return super().get_queryset().select_related("path", "owner", "avatar", "cover")
 
     def find_by_url(self, segment: str, slug: str) -> Page | None:
         """Trang theo URL công khai `/<segment>/<slug>` (không phân biệt hoa thường).

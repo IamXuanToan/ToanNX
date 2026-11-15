@@ -18,10 +18,6 @@ class AuthSessionRepository(CoreRepository[AuthSession]):
     model = AuthSession
     default_ordering = ("-last_used_at", "pk")
 
-    def get_queryset(self) -> QuerySet[AuthSession]:
-        """Chỉ truy vấn các phiên chưa xóa mềm."""
-        return super().get_queryset().filter(deleted_at__isnull=True)
-
     def for_admin(self) -> QuerySet[AuthSession]:
         """Danh sách quản trị kèm người dùng, không gây truy vấn bổ sung khi serialize."""
         return self.get_queryset().select_related("user")
@@ -146,5 +142,5 @@ class AuthSessionRepository(CoreRepository[AuthSession]):
         Returns:
             Số phiên đã xóa.
         """
-        expired = self.delete_where(expires_at__lt=moment)
-        return expired + self.delete_where(revoked_at__lt=moment)
+        expired = self.hard_delete_where(expires_at__lt=moment)
+        return expired + self.hard_delete_where(revoked_at__lt=moment)

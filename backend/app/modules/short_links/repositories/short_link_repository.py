@@ -13,4 +13,4 @@ class ShortLinkRepository(CoreRepository[ShortLink]):
 
     def get_queryset(self) -> QuerySet[ShortLink]:
         """Chỉ liên kết còn tồn tại, kèm owner cho danh sách (không N+1)."""
-        return ShortLink.objects.alive().select_related("owner")
+        return super().get_queryset().select_related("owner")
