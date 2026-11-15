@@ -1,19 +1,32 @@
-"""Tiện ích chuỗi dùng chung."""
+"""Tiện ích chuỗi dùng chung, dựa trên thư viện `anyascii` (không tự viết bảng bỏ dấu).
 
-import unicodedata
+Tìm kiếm không dấu **không** dùng file này: `CoreSearchFilter` để PostgreSQL `unaccent` xử lý cả cột lẫn
+từ khóa, hai phía cùng một bộ quy đổi nên không lệch nhau.
+"""
 
-# `đ`/`Đ` không tách được bằng Unicode NFD nên đổi tay (giống `unaccent` của PostgreSQL).
-_SPECIAL = str.maketrans({"đ": "d", "Đ": "D"})
+from anyascii import anyascii
+from django.utils.text import slugify
 
 
-def strip_accents(value: str) -> str:
-    """Bỏ dấu tiếng Việt (và dấu Latin nói chung), giữ nguyên chữ hoa/thường.
+def to_ascii(value: str) -> str:
+    """Chuyển sang ASCII, bỏ dấu tiếng Việt (gồm `đ`, dấu chồng như `ặ`, `ự`) và mọi ngôn ngữ khác.
 
     Args:
         value: Chuỗi gốc.
 
     Returns:
-        Chuỗi không dấu, ví dụ `Nguyễn Đức` → `Nguyen Duc`.
+        Chuỗi ASCII, ví dụ `Nguyễn Đức` → `Nguyen Duc`.
     """
-    decomposed = unicodedata.normalize("NFD", value.translate(_SPECIAL))
-    return "".join(char for char in decomposed if unicodedata.category(char) != "Mn")
+    return anyascii(value)
+
+
+def ascii_slug(value: str) -> str:
+    """Slug ASCII từ chuỗi bất kỳ (`slugify` của Django bỏ mất `Đ` nên phải chuyển ASCII trước).
+
+    Args:
+        value: Chuỗi gốc.
+
+    Returns:
+        Slug chữ thường, ví dụ `Ủng hộ Đức` → `ung-ho-duc`.
+    """
+    return slugify(to_ascii(value))

@@ -5,11 +5,12 @@ from typing import Any
 import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
+from app.core.utils.text import to_ascii
 from app.modules.account.tests.factories.user_factory import UserFactory
 from app.modules.attachment.models.attachment import Attachment
 from app.modules.iam.tests.helpers.permission_helper import grant
 from app.modules.qr_codes.permissions.qr_codes_permission import QrCodesPermission as P
-from app.modules.qr_codes.utils.vietqr_payload import build_vietqr_payload, crc16_ccitt, strip_accents
+from app.modules.qr_codes.utils.vietqr_payload import build_vietqr_payload, crc16_ccitt
 
 pytestmark = pytest.mark.django_db
 BASE = "/api/v1/qr_codes/codes"
@@ -31,7 +32,7 @@ def test_crc_and_payload_vector() -> None:
     assert "5303704" in payload and "540550000" in payload and "5802VN" in payload
     assert payload[-8:-4] == "6304" and payload[-4:] == crc16_ccitt(payload[:-4])
     assert build_vietqr_payload("970436", "0123456789", None, "")[10:12] == "11"
-    assert strip_accents("Đồng Tháp") == "Dong Thap"
+    assert to_ascii("Đồng Tháp") == "Dong Thap"
 
 
 class TestQrCodeApi(BaseApiTestCase):

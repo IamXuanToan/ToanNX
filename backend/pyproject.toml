@@ -5,6 +5,7 @@ description = "TOANNX backend — Django + Django REST Framework"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "anyascii>=0.3.3",
     "argon2-cffi>=25.1.0",
     "defusedxml>=0.7.1",
     "django>=6.0,<6.1",

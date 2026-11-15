@@ -87,6 +87,7 @@ MODULE = ModuleDescriptor(code="custom_pages", ..., permissions=CustomPagesPermi
 | `pagination/core_page_number_pagination.py` | Phân trang **chỉ khi request có `page`/`page_size`** (≤ 100); không có thì trả hết |
 | `filters/*` | `CoreSearchFilter` (tìm **không dấu**: "nguyen" khớp "Nguyễn", qua `unaccent`; ≤ 100 ký tự, ≤ 5 từ) và bộ lọc nhiều giá trị `Core{Boolean,Choice,Char,UUID}InFilter` (≤ 50 giá trị) |
 | `serializers/*` | `CoreValidateSerializer` (từ chối field lạ), bulk ids/result, `CoreJournalEntryResponseSerializer` |
+| `utils/text.py` | Bỏ dấu ở Python: `to_ascii`, `ascii_slug` (thư viện `anyascii`). **Không tự viết bảng bỏ dấu**; tìm kiếm dùng `unaccent` của PostgreSQL |
 | `schemas/*`, `responses/*`, `exceptions/*`, `registry/*`, `utils/{url,slug}.py` | Envelope OpenAPI/response, lỗi có mã, module registry, URL tuyệt đối/slug |
 
 `app/core` **không import** `app/modules/*` (trừ `TYPE_CHECKING`). Core nối với module qua setting:

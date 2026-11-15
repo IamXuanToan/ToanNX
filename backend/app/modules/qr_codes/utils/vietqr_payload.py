@@ -14,8 +14,6 @@
 ```
 """
 
-import unicodedata
-
 NAPAS_GUID = "A000000727"
 SERVICE_TO_ACCOUNT = "QRIBFTTA"
 
@@ -41,20 +39,6 @@ def crc16_ccitt(data: str) -> str:
             crc = ((crc << 1) ^ 0x1021) if crc & 0x8000 else (crc << 1)
             crc &= 0xFFFF
     return f"{crc:04X}"
-
-
-def strip_accents(value: str) -> str:
-    """Bỏ dấu tiếng Việt (đ → d), giữ chữ, số, khoảng trắng.
-
-    Args:
-        value: Chuỗi gốc.
-
-    Returns:
-        Chuỗi không dấu.
-    """
-    value = value.replace("đ", "d").replace("Đ", "D")
-    normalized = unicodedata.normalize("NFD", value)
-    return "".join(char for char in normalized if unicodedata.category(char) != "Mn")
 
 
 def build_vietqr_payload(bank_bin: str, account_number: str, amount: int | None, message: str) -> str:

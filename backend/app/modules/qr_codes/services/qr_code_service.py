@@ -3,9 +3,9 @@
 from typing import Any
 
 from django.db import transaction
-from django.utils.text import slugify
 
 from app.core.services.core_crud_service import CoreCrudService
+from app.core.utils.text import ascii_slug
 from app.modules.attachment.services.attachment_service import AttachmentService
 from app.modules.qr_codes.models.qr_code import QrCode
 from app.modules.qr_codes.permissions.qr_codes_permission import QrCodesPermission
@@ -108,4 +108,4 @@ class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
     @staticmethod
     def _file_name(name: str) -> str:
         """Tên file ảnh theo tên mã QR."""
-        return f"{slugify(name)[:60] or DEFAULT_FILE_NAME}.png"
+        return f"{ascii_slug(name)[:60] or DEFAULT_FILE_NAME}.png"

@@ -6,8 +6,8 @@ from typing import Any
 from rest_framework import serializers
 
 from app.core.serializers.core_validate_serializer import CoreValidateSerializer
+from app.core.utils.text import to_ascii
 from app.modules.qr_codes.constants.vietqr_banks import VIETQR_BANK_BINS
-from app.modules.qr_codes.utils.vietqr_payload import strip_accents
 
 MESSAGE_MAX_LENGTH = 25
 _MESSAGE_PATTERN = re.compile(r"^[A-Za-z0-9 ]*$")
@@ -39,11 +39,11 @@ class QrBankTransferDataValidateSerializer(CoreValidateSerializer):
 
     def validate_account_name(self, value: str) -> str:
         """In hoa, bỏ dấu, gộp khoảng trắng."""
-        return " ".join(strip_accents(value).upper().split())
+        return " ".join(to_ascii(value).upper().split())
 
     def validate_message(self, value: str) -> str:
         """Bỏ dấu; chỉ chữ, số, khoảng trắng; tối đa 25 ký tự (an toàn với mọi app ngân hàng)."""
-        text = " ".join(strip_accents(value).split())
+        text = " ".join(to_ascii(value).split())
         if len(text) > MESSAGE_MAX_LENGTH or not _MESSAGE_PATTERN.fullmatch(text):
             raise serializers.ValidationError(
                 f"Tối đa {MESSAGE_MAX_LENGTH} ký tự, chỉ gồm chữ không dấu, số và khoảng trắng."
