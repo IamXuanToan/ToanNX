@@ -1,7 +1,7 @@
 {
   "module": {
     "name": "Trang",
-    "description": "Trang công khai toannx.com/<đường dẫn>/<slug> soạn bằng trình soạn thảo."
+    "description": "Trang công khai toannx.com/[đường dẫn]/[slug] soạn bằng trình soạn thảo."
   },
   "nav": {
     "pages": "Trang",
@@ -76,7 +76,7 @@
       "pathId": "Đường dẫn giữa",
       "title": "Tiêu đề",
       "slug": "Slug",
-      "slugHint": "Để trống để tự sinh. URL: toannx.com/<đường dẫn giữa>/<slug>",
+      "slugHint": "Để trống để tự sinh. URL: toannx.com/[đường dẫn giữa]/[slug]",
       "slugChangeHint": "Đổi slug làm URL cũ ngừng hoạt động.",
       "description": "Mô tả",
       "status": "Trạng thái",
@@ -117,7 +117,7 @@
     },
     "fields": {
       "segment": "Segment",
-      "segmentHint": "Ví dụ qr → toannx.com/qr/<slug>.",
+      "segmentHint": "Ví dụ qr → toannx.com/qr/[slug].",
       "segmentChangeHint": "Đổi segment làm mọi URL cũ của các trang trong đây ngừng hoạt động.",
       "name": "Tên",
       "description": "Mô tả",

@@ -6,10 +6,15 @@ test.describe("Trang quản trị", () => {
   test("nhóm Hệ thống ở giữa màn, sidebar chia theo module, quay về màn chọn", async ({ page }) => {
     await loginViaUi(page);
     const launcher = page.getByTestId("module-launcher");
-    await expect(launcher.getByRole("link")).toHaveCount(1);
+    await expect(launcher.getByRole("link")).toHaveCount(2);
     const systemCard = launcher.getByRole("link", { name: /Hệ thống/ });
     await expect(systemCard).toContainText("Tài khoản");
     await expect(systemCard).toContainText("Phân quyền");
+    await expect(systemCard).toContainText("Nhật ký");
+    const contentCard = launcher.getByRole("link", { name: /Nội dung/ });
+    await expect(contentCard).toContainText("Link rút gọn");
+    await expect(contentCard).toContainText("Mã QR");
+    await expect(contentCard).toContainText("Trang");
 
     await openModule(page, "Hệ thống");
     await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung$/);

@@ -1,7 +1,7 @@
 {
   "module": {
     "name": "Pages",
-    "description": "Public toannx.com/<path>/<slug> pages built with the editor."
+    "description": "Public toannx.com/[path]/[slug] pages built with the editor."
   },
   "nav": {
     "pages": "Pages",
@@ -76,7 +76,7 @@
       "pathId": "Page path",
       "title": "Title",
       "slug": "Slug",
-      "slugHint": "Leave empty to generate one. URL: toannx.com/<path>/<slug>",
+      "slugHint": "Leave empty to generate one. URL: toannx.com/[path]/[slug]",
       "slugChangeHint": "Changing the slug stops the old URL from working.",
       "description": "Description",
       "status": "Status",
@@ -117,7 +117,7 @@
     },
     "fields": {
       "segment": "Segment",
-      "segmentHint": "For example qr → toannx.com/qr/<slug>.",
+      "segmentHint": "For example qr → toannx.com/qr/[slug].",
       "segmentChangeHint": "Changing the segment breaks every old URL of the pages in it.",
       "name": "Name",
       "description": "Description",

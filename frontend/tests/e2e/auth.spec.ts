@@ -6,7 +6,8 @@ test.describe("Xác thực", () => {
   test("đăng nhập thành công vào màn chọn module", async ({ page }) => {
     await loginViaUi(page);
     await expect(page.getByTestId("admin-content")).toContainText("Xin chào");
-    await expect(page.getByTestId("module-launcher").getByRole("link")).toHaveCount(1);
+    // Hai nhóm: Hệ thống và Nội dung.
+    await expect(page.getByTestId("module-launcher").getByRole("link")).toHaveCount(2);
   });
 
   test("sai mật khẩu hiển thị lỗi, không rời trang", async ({ page }) => {

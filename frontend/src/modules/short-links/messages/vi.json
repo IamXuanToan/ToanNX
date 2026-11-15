@@ -34,7 +34,7 @@
   "fields": {
     "name": "Tên",
     "slug": "Slug",
-    "slugHint": "Để trống để tự sinh. URL: toannx.com/s/<slug>",
+    "slugHint": "Để trống để tự sinh. URL: toannx.com/s/[slug]",
     "slugChangeHint": "Đổi slug làm URL cũ ngừng hoạt động.",
     "destinationUrl": "URL đích",
     "description": "Mô tả",

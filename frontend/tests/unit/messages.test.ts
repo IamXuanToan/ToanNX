@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { createTranslator, IntlErrorCode } from "next-intl";
+
 import { loadMessages } from "@/i18n/messages";
 
 type Tree = { [key: string]: string | Tree };
@@ -54,6 +56,22 @@ describe("i18n messages", async () => {
       for (const value of [text, en.get(key) ?? ""]) {
         expect(value.split("{").length, key).toBe(value.split("}").length);
       }
+    }
+  });
+
+  it("mọi chuỗi là ICU hợp lệ (ví dụ `<slug>` bị hiểu là thẻ chưa đóng)", async () => {
+    for (const locale of ["vi", "en"] as const) {
+      const invalid: string[] = [];
+      const t = createTranslator({
+        locale,
+        messages: await loadMessages(locale),
+        onError: (error) => {
+          if (error.code === IntlErrorCode.INVALID_MESSAGE) invalid.push(error.message);
+        },
+        getMessageFallback: ({ key }) => key,
+      });
+      for (const key of (locale === "vi" ? vi : en).keys()) t(key as never);
+      expect(invalid, locale).toEqual([]);
     }
   });
 
