@@ -5,11 +5,11 @@ from typing import Any
 from django.db import transaction
 from django.utils import timezone
 
-from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.authorization_error import AuthorizationError
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
+from app.modules.attachment.constants.attachment_error_code import AttachmentErrorCode
 from app.modules.attachment.models.attachment_folder import AttachmentFolder
 from app.modules.attachment.permissions.attachment_permission import AttachmentPermission
 from app.modules.attachment.repositories.attachment_folder_repository import AttachmentFolderRepository
@@ -40,7 +40,7 @@ class AttachmentFolderService(CoreCrudService[AttachmentFolder, AttachmentFolder
             raise AuthorizationError(details={"permissions": [AttachmentPermission.FOLDER_READ.code]})
         folder = self.get_by_id_for(actor, pk)
         if folder.created_by_id != owner_id:
-            raise ValidationError(code=ErrorCode.ATTACHMENT_FOLDER_OWNER_MISMATCH)
+            raise ValidationError(code=AttachmentErrorCode.ATTACHMENT_FOLDER_OWNER_MISMATCH)
         return self._locked(actor, pk)
 
     def _parent(self, actor: Any, pk: Any, owner_id: Any) -> AttachmentFolder | None:
@@ -48,7 +48,7 @@ class AttachmentFolderService(CoreCrudService[AttachmentFolder, AttachmentFolder
 
     def _validate_name(self, owner_id: Any, name: str, parent_id: Any, exclude_id: Any = None) -> None:
         if self.repository.name_exists(owner_id, name, parent_id, exclude_id):
-            raise ConflictError(code=ErrorCode.ATTACHMENT_FOLDER_NAME_EXISTS)
+            raise ConflictError(code=AttachmentErrorCode.ATTACHMENT_FOLDER_NAME_EXISTS)
 
     @transaction.atomic
     def create(self, actor: Any, data: dict[str, Any]) -> AttachmentFolder:
@@ -69,7 +69,7 @@ class AttachmentFolderService(CoreCrudService[AttachmentFolder, AttachmentFolder
         folder = self._locked(actor, pk)
         parent = self._parent(actor, data.get("parent_id", folder.parent_id), folder.created_by_id)
         if parent and (parent.pk == folder.pk or folder.pk in parent.ancestor_ids):
-            raise ValidationError(code=ErrorCode.ATTACHMENT_FOLDER_CYCLE)
+            raise ValidationError(code=AttachmentErrorCode.ATTACHMENT_FOLDER_CYCLE)
         name = data.get("name", folder.name)
         self._validate_name(folder.created_by_id, name, parent.pk if parent else None, folder.pk)
         ancestors = [*parent.ancestor_ids, parent.pk] if parent else []

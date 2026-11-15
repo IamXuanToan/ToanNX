@@ -29,13 +29,13 @@ from app.modules.authentication.serializers.responses.admin_session_user_respons
 )
 from app.modules.authentication.services.admin_auth_session_service import AdminAuthSessionService
 from app.modules.authentication.services.auth_cookie_service import AuthCookieService
-from app.modules.iam.types.permission_rule import permission_rule
+from app.modules.iam.types.permission_rule import DENY, permission_rule
 
 
 class AdminAuthSessionViewSet(CoreModelViewSet[AuthSession]):
     """Danh sách có phân trang; DELETE chỉ thu hồi, không xóa bản ghi phiên.
 
-    `POST /admin-sessions` (create) không khai quyền nên luôn 403.
+    `POST /admin-sessions` (create) đóng bằng `DENY`: phiên chỉ tạo qua đăng nhập.
     """
 
     service_class = AdminAuthSessionService
@@ -50,6 +50,8 @@ class AdminAuthSessionViewSet(CoreModelViewSet[AuthSession]):
     http_method_names = ["get", "post", "delete", "head", "options"]
     action_permissions = {
         "list": permission_rule(AuthenticationPermission.SESSION_READ),
+        "retrieve": permission_rule(AuthenticationPermission.SESSION_READ),
+        "create": DENY,  # phiên chỉ tạo qua đăng nhập; POST chỉ mở cho bulk
         "users": permission_rule(AuthenticationPermission.SESSION_READ),
         "destroy": permission_rule(AuthenticationPermission.SESSION_REVOKE),
         "bulk_revoke": permission_rule(AuthenticationPermission.SESSION_REVOKE),

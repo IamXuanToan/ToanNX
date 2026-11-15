@@ -5,8 +5,8 @@ from typing import Any
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 
-from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.validation_error import ValidationError
+from app.modules.account.constants.account_error_code import AccountErrorCode
 
 
 class PasswordValidator:
@@ -28,6 +28,6 @@ class PasswordValidator:
         except DjangoValidationError as exc:
             raise ValidationError(
                 "Mật khẩu chưa đủ mạnh.",
-                code=ErrorCode.ACCOUNT_PASSWORD_WEAK,
+                code=AccountErrorCode.ACCOUNT_PASSWORD_WEAK,
                 details={"password": list(exc.messages)},
             ) from exc

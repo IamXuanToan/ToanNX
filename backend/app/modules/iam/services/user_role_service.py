@@ -8,12 +8,12 @@ from typing import Any
 
 from django.db import transaction
 
-from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.authorization_error import AuthorizationError
 from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.exceptions.not_found_error import NotFoundError
 from app.modules.account.models.user import User
 from app.modules.account.services.user_service import UserService
+from app.modules.iam.constants.iam_error_code import IamErrorCode
 from app.modules.iam.models.role import Role
 from app.modules.iam.repositories.permission_repository import PermissionRepository
 from app.modules.iam.repositories.role_repository import RoleRepository
@@ -77,7 +77,7 @@ class UserRoleService:
         target = self._get_target(actor, user_id)
         role = self.role_repository.get_by_id(role_id)
         if not role.is_active:
-            raise BusinessRuleError("Vai trò đang bị tắt.", code=ErrorCode.IAM_ROLE_INACTIVE)
+            raise BusinessRuleError("Vai trò đang bị tắt.", code=IamErrorCode.IAM_ROLE_INACTIVE)
 
         if not actor.is_superuser:
             missing = self.permission_repository.get_codes_for_role(role.pk) - self.checker.get_permissions(
@@ -86,12 +86,13 @@ class UserRoleService:
             if missing:
                 raise AuthorizationError(
                     "Bạn không thể gán vai trò có quyền vượt quá quyền của bạn.",
-                    code=ErrorCode.IAM_PRIVILEGE_ESCALATION,
+                    code=IamErrorCode.IAM_PRIVILEGE_ESCALATION,
                     details={"permissions": sorted(missing)},
                 )
 
         if not self.repository.exists(user=target, role=role):
             self.repository.create(actor=actor, user=target, role=role)
+            target.journal_event("iam.role_assigned", {"role": role.code}, actor.pk)
         return target
 
     @transaction.atomic
@@ -109,13 +110,14 @@ class UserRoleService:
         target = self._get_target(actor, user_id)
         role = self.role_repository.get_by_id(role_id)
         if role.is_system and not actor.is_superuser:
-            raise AuthorizationError(code=ErrorCode.IAM_SYSTEM_ROLE_PROTECTED)
+            raise AuthorizationError(code=IamErrorCode.IAM_SYSTEM_ROLE_PROTECTED)
         if self.repository.remove(target.pk, role.pk) == 0:
             raise NotFoundError()
+        target.journal_event("iam.role_revoked", {"role": role.code}, actor.pk)
 
     def _get_target(self, actor: User, user_id: Any) -> User:
         """Người dùng đích + chặn tự đổi vai trò của chính mình."""
         target = self.user_service.get_manageable_user(actor, user_id)
         if actor.pk == target.pk and not actor.is_superuser:
-            raise AuthorizationError(code=ErrorCode.IAM_SELF_MODIFICATION)
+            raise AuthorizationError(code=IamErrorCode.IAM_SELF_MODIFICATION)
         return target

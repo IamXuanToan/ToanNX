@@ -12,12 +12,12 @@ from typing import Any
 from django.db import transaction
 from django.utils import timezone
 
-from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.authorization_error import AuthorizationError
 from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
 from app.core.services.core_crud_service import CoreCrudService
+from app.modules.account.constants.account_error_code import AccountErrorCode
 from app.modules.account.models.user import User
 from app.modules.account.repositories.user_repository import UserRepository
 from app.modules.account.signals import user_credentials_changed
@@ -131,11 +131,11 @@ class UserService(CoreCrudService[User, UserRepository]):
         payload["email"] = payload["email"].strip().lower()
 
         if payload.get("is_superuser") and not actor.is_superuser:
-            raise AuthorizationError(code=ErrorCode.ACCOUNT_PRIVILEGE_ESCALATION)
+            raise AuthorizationError(code=AccountErrorCode.ACCOUNT_PRIVILEGE_ESCALATION)
         if payload.get("is_superuser"):
             payload["is_staff"] = True
         if self.repository.exists(email=payload["email"]):
-            raise ConflictError("Email đã được sử dụng.", code=ErrorCode.ACCOUNT_EMAIL_EXISTS)
+            raise ConflictError("Email đã được sử dụng.", code=AccountErrorCode.ACCOUNT_EMAIL_EXISTS)
         if payload.get("avatar_id"):
             self.attachment_service.get_image(payload["avatar_id"], actor=actor)
 
@@ -167,9 +167,9 @@ class UserService(CoreCrudService[User, UserRepository]):
         # ============================================================
         flag_changes = [flag for flag in _PRIVILEGED_FLAGS if flag in changes]
         if flag_changes and actor.pk == target.pk and not actor.is_superuser:
-            raise AuthorizationError(code=ErrorCode.ACCOUNT_SELF_MODIFICATION)
+            raise AuthorizationError(code=AccountErrorCode.ACCOUNT_SELF_MODIFICATION)
         if "is_superuser" in changes and not actor.is_superuser:
-            raise AuthorizationError(code=ErrorCode.ACCOUNT_PRIVILEGE_ESCALATION)
+            raise AuthorizationError(code=AccountErrorCode.ACCOUNT_PRIVILEGE_ESCALATION)
         if changes.get("is_superuser") is True:
             changes["is_staff"] = True
 
@@ -185,7 +185,7 @@ class UserService(CoreCrudService[User, UserRepository]):
             others = [user for user in self.repository.lock_active_superusers() if user.pk != target.pk]
             if not others:
                 raise BusinessRuleError(
-                    "Không thể vô hiệu hóa superuser cuối cùng.", code=ErrorCode.ACCOUNT_LAST_SUPERUSER
+                    "Không thể vô hiệu hóa superuser cuối cùng.", code=AccountErrorCode.ACCOUNT_LAST_SUPERUSER
                 )
 
         # ============================================================
@@ -194,7 +194,7 @@ class UserService(CoreCrudService[User, UserRepository]):
         if "email" in changes:
             changes["email"] = changes["email"].strip().lower()
             if self.repository.exists(email=changes["email"]):
-                raise ConflictError("Email đã được sử dụng.", code=ErrorCode.ACCOUNT_EMAIL_EXISTS)
+                raise ConflictError("Email đã được sử dụng.", code=AccountErrorCode.ACCOUNT_EMAIL_EXISTS)
         if changes.get("avatar_id"):
             self.attachment_service.get_image(changes["avatar_id"], actor=actor)
 
@@ -227,7 +227,7 @@ class UserService(CoreCrudService[User, UserRepository]):
         # ============================================================
         target = self.get_manageable_user(actor, pk)
         if target.pk == actor.pk:
-            raise AuthorizationError(code=ErrorCode.ACCOUNT_SELF_MODIFICATION)
+            raise AuthorizationError(code=AccountErrorCode.ACCOUNT_SELF_MODIFICATION)
 
         # ============================================================
         # BƯỚC 2: Bảo vệ superuser hoạt động cuối cùng
@@ -236,7 +236,7 @@ class UserService(CoreCrudService[User, UserRepository]):
             others = [user for user in self.repository.lock_active_superusers() if user.pk != target.pk]
             if not others:
                 raise BusinessRuleError(
-                    "Không thể xóa superuser cuối cùng.", code=ErrorCode.ACCOUNT_LAST_SUPERUSER
+                    "Không thể xóa superuser cuối cùng.", code=AccountErrorCode.ACCOUNT_LAST_SUPERUSER
                 )
 
         # ============================================================
@@ -264,7 +264,7 @@ class UserService(CoreCrudService[User, UserRepository]):
         if target.deleted_at is not None:
             raise NotFoundError()
         if target.is_superuser and not actor.is_superuser:
-            raise AuthorizationError(code=ErrorCode.ACCOUNT_SUPERUSER_PROTECTED)
+            raise AuthorizationError(code=AccountErrorCode.ACCOUNT_SUPERUSER_PROTECTED)
         return target
 
     @staticmethod

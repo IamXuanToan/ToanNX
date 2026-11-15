@@ -103,3 +103,19 @@ class TestJournalApi(BaseApiTestCase):
             item["resource"] for item in resources
         }
         self.assert_error(api.get(ENTRIES, {"action": "NOPE"}), 400, "VALIDATION_ERROR")
+
+    def test_role_assignment_is_an_event(self, superuser: User, login: Any) -> None:
+        target = UserFactory()
+        api = login(superuser)
+        role = self.assert_success(
+            api.post(ROLES, {"code": "EVENTED", "name": "Sự kiện"}, format="json"), 201
+        )
+        assert api.post(
+            f"/api/v1/iam/users/{target.pk}/roles", {"role_id": role["id"]}, format="json"
+        ).status_code in (
+            200,
+            201,
+        )
+        event = _entries("account.user", target.pk)[-1]
+        assert (event.action, event.event) == ("EVENT", "iam.role_assigned")
+        assert event.changes == {"role": [None, "EVENTED"]}

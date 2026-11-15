@@ -249,7 +249,6 @@
       "AUTH_REFRESH_CONFLICT": "Your session was just refreshed, please try again.",
       "AUTH_CSRF_FAILED": "Your page session is invalid, please reload the page.",
       "PERMISSION_DENIED": "You don't have permission to do this.",
-      "ADMIN_ACCESS_REQUIRED": "You don't have access to the admin area.",
       "ACCOUNT_EMAIL_EXISTS": "This email is already in use.",
       "ACCOUNT_PASSWORD_WEAK": "Password is too weak (at least 10 characters, not common, not all digits).",
       "ACCOUNT_LAST_SUPERUSER": "The last superuser cannot be disabled.",
@@ -260,7 +259,9 @@
       "IAM_ROLE_INACTIVE": "This role is disabled.",
       "IAM_SELF_MODIFICATION": "You cannot change your own privileges.",
       "IAM_PRIVILEGE_ESCALATION": "You cannot grant more privileges than you have.",
-      "IAM_SYSTEM_ROLE_PROTECTED": "Only a superuser can edit system roles."
+      "IAM_SYSTEM_ROLE_PROTECTED": "Only a superuser can edit system roles.",
+      "QUOTA_EXCEEDED": "You have reached the maximum allowed.",
+      "SHORT_LINK_EXPIRED": "This link has expired."
     },
     "generic": {
       "title": "Could not load data",

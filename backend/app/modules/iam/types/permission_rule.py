@@ -29,12 +29,14 @@ class PermissionRule:
         require_all: True = cần đủ mọi quyền; False = cần ít nhất một.
         check: Điều kiện bắt buộc thêm (AND).
         allow_if: Điều kiện cho phép thay thế (OR với bước 2-3).
+        denies_all: Rule đóng tường minh (`DENY`); core bỏ qua kiểm tra serializer của action này.
     """
 
     permissions: tuple[PermissionDefinition, ...] = field(default_factory=tuple)
     require_all: bool = False
     check: PermissionCheck | None = None
     allow_if: PermissionCheck | None = None
+    denies_all: bool = False
 
     def __post_init__(self) -> None:
         """Không cho tạo rule rỗng (dễ vô tình mở quyền).
@@ -110,3 +112,12 @@ def permission_rule(
         PermissionRule.
     """
     return PermissionRule(permissions=permissions, require_all=require_all, check=check, allow_if=allow_if)
+
+
+def _never(request: Request, view: Any) -> bool:
+    """Luôn từ chối."""
+    return False
+
+
+DENY = PermissionRule(check=_never, denies_all=True)
+"""Đóng tường minh một action router tự sinh mà tài nguyên không hỗ trợ (ví dụ `create` của phiên)."""

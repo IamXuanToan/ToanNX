@@ -249,7 +249,6 @@
       "AUTH_REFRESH_CONFLICT": "Phiên vừa được làm mới, vui lòng thử lại.",
       "AUTH_CSRF_FAILED": "Phiên làm việc không hợp lệ, vui lòng tải lại trang.",
       "PERMISSION_DENIED": "Bạn không có quyền thực hiện thao tác này.",
-      "ADMIN_ACCESS_REQUIRED": "Bạn không có quyền truy cập khu vực quản trị.",
       "ACCOUNT_EMAIL_EXISTS": "Email đã được sử dụng.",
       "ACCOUNT_PASSWORD_WEAK": "Mật khẩu chưa đủ mạnh (tối thiểu 10 ký tự, không quá phổ biến, không toàn số).",
       "ACCOUNT_LAST_SUPERUSER": "Không thể vô hiệu hóa superuser cuối cùng.",
@@ -260,7 +259,9 @@
       "IAM_ROLE_INACTIVE": "Vai trò đang bị tắt.",
       "IAM_SELF_MODIFICATION": "Bạn không thể tự thay đổi quyền của chính mình.",
       "IAM_PRIVILEGE_ESCALATION": "Bạn không thể cấp quyền vượt quá quyền của bạn.",
-      "IAM_SYSTEM_ROLE_PROTECTED": "Chỉ superuser mới được sửa vai trò hệ thống."
+      "IAM_SYSTEM_ROLE_PROTECTED": "Chỉ superuser mới được sửa vai trò hệ thống.",
+      "QUOTA_EXCEEDED": "Bạn đã đạt số lượng tối đa cho phép.",
+      "SHORT_LINK_EXPIRED": "Liên kết đã hết hạn."
     },
     "generic": {
       "title": "Không tải được dữ liệu",

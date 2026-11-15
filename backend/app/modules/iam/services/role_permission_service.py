@@ -4,10 +4,10 @@ from typing import Any
 
 from django.db import transaction
 
-from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.authorization_error import AuthorizationError
 from app.core.exceptions.not_found_error import NotFoundError
 from app.modules.account.models.user import User
+from app.modules.iam.constants.iam_error_code import IamErrorCode
 from app.modules.iam.models.role import Role
 from app.modules.iam.repositories.permission_repository import PermissionRepository
 from app.modules.iam.repositories.role_permission_repository import RolePermissionRepository
@@ -55,11 +55,12 @@ class RolePermissionService:
         if not self.checker.has_permission(actor, permission.code):
             raise AuthorizationError(
                 "Bạn không thể cấp quyền mà bạn không có.",
-                code=ErrorCode.IAM_PRIVILEGE_ESCALATION,
+                code=IamErrorCode.IAM_PRIVILEGE_ESCALATION,
                 details={"permissions": [permission.code]},
             )
         if not self.repository.exists(role=role, permission=permission):
             self.repository.create(actor=actor, role=role, permission=permission)
+            role.journal_event("iam.permission_assigned", {"permission": permission.code}, actor.pk)
         return role
 
     @transaction.atomic
@@ -77,3 +78,4 @@ class RolePermissionService:
         role = self.role_service.get_editable_role(actor, role_id)
         if self.repository.remove(role.pk, permission_id) == 0:
             raise NotFoundError()
+        role.journal_event("iam.permission_revoked", {"permission_id": str(permission_id)}, actor.pk)

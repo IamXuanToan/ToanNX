@@ -98,7 +98,11 @@ class CoreModelViewSet[M: Model](GenericViewSet[M]):
         super().__init_subclass__(**kwargs)
         if not hasattr(cls, "service_class"):
             return
-        rules = cls.action_permissions
+        rules = {
+            action: rule
+            for action, rule in cls.action_permissions.items()
+            if not getattr(rule, "denies_all", False)
+        }
         if "create" in rules and cls.create_serializer_class is None:
             raise TypeError(f"{cls.__name__}: khai quyền `create` nhưng thiếu create_serializer_class.")
         if "partial_update" in rules and cls.update_serializer_class is None:

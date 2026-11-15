@@ -16,21 +16,21 @@ class AppException(Exception):  # noqa: N818 - tên theo quy chuẩn dự án.
     """
 
     status_code: int = 400
-    default_code: ErrorCode = ErrorCode.BUSINESS_RULE_VIOLATION
+    default_code: str = ErrorCode.BUSINESS_RULE_VIOLATION
     default_message: str = "Yêu cầu không hợp lệ."
 
     def __init__(
         self,
         message: str | None = None,
         *,
-        code: ErrorCode | None = None,
+        code: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         """Khởi tạo ngoại lệ.
 
         Args:
             message: Thông báo cho người dùng; mặc định theo lớp.
-            code: Mã lỗi; mặc định theo lớp.
+            code: Mã lỗi (ErrorCode của core hoặc enum mã lỗi của module); mặc định theo lớp.
             details: Dữ liệu bổ sung (không chứa secrets).
         """
         self.code = code or self.default_code
