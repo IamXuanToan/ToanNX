@@ -111,5 +111,5 @@ class TestUserBulkApi(BaseApiTestCase):
 
     def test_sort_by_status(self, superuser: User, login: Any) -> None:
         UserFactory(is_active=False)
-        items, _ = self.assert_paginated(login(superuser).get(f"{USERS}?ordering=is_active"))
+        items, _ = self.assert_paginated(login(superuser).get(f"{USERS}?page=1&ordering=is_active"))
         assert items[0]["is_active"] is False

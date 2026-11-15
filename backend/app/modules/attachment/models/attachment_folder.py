@@ -5,10 +5,13 @@ from django.db import models
 from django.db.models.functions import Lower
 
 from app.core.models.core_model import CoreModel
+from app.core.tracking.journal_tracker import JournalTracker
 
 
-class AttachmentFolder(CoreModel):
+class AttachmentFolder(JournalTracker, CoreModel):
     """Cây thư mục logic, chủ sở hữu là created_by."""
+
+    journal_excluded_fields = ("ancestor_ids",)
 
     parent = models.ForeignKey(
         "self",

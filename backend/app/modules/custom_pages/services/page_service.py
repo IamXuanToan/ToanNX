@@ -2,40 +2,39 @@
 
 from typing import Any
 
-from django.conf import settings
 from django.db import transaction
 
+from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
+from app.core.services.core_crud_service import CoreCrudService
 from app.core.utils.absolute_url import build_absolute_url
 from app.core.utils.slug import generate_slug, normalize_slug
 from app.modules.attachment.models.attachment import Attachment
 from app.modules.attachment.services.attachment_service import AttachmentService
-from app.modules.authentication.services.rate_limit_service import RateLimitService
 from app.modules.custom_pages.models.page import Page
 from app.modules.custom_pages.models.page_block import PageBlock
 from app.modules.custom_pages.permissions.custom_pages_permission import CustomPagesPermission
 from app.modules.custom_pages.repositories.page_repository import PageRepository
 from app.modules.custom_pages.validators.page_content import validate_theme
-from app.modules.iam.services.owned_crud_service import OwnedCrudService
 
 
-class PageService(OwnedCrudService[Page, PageRepository]):
+class PageService(CoreCrudService[Page, PageRepository]):
     """Tạo, sửa, xóa và xuất bản trang cá nhân."""
 
     repository_class = PageRepository
+    owner_field = "owner"
+    owner_quota_setting = "CUSTOM_PAGE_MAX_PER_OWNER"
     manage_all_permission = CustomPagesPermission.MANAGE_ALL.code
 
     def __init__(
         self,
         repository: PageRepository | None = None,
         attachment_service: AttachmentService | None = None,
-        rate_limit_service: RateLimitService | None = None,
     ) -> None:
         """Khởi tạo repository và service ảnh."""
         super().__init__(repository)
         self.attachment_service = attachment_service or AttachmentService()
-        self.rate_limit_service = rate_limit_service or RateLimitService()
 
     @transaction.atomic
     def create(self, actor: Any, data: dict[str, Any]) -> Page:
@@ -43,12 +42,11 @@ class PageService(OwnedCrudService[Page, PageRepository]):
         fields = dict(data)
         fields["slug"] = normalize_slug(fields["slug"]) if fields.get("slug") else generate_slug()
         self._prepare_fields(actor, fields)
-        self.rate_limit_service.hit(
-            f"custom-page-create:{actor.pk}", settings.CUSTOM_PAGE_CREATE_RATE_LIMIT, 3600
-        )
         try:
             page = super().create(actor, fields)
         except ConflictError as exc:
+            if exc.code != ErrorCode.CONFLICT:
+                raise
             raise ConflictError("Slug đã được sử dụng.", details={"slug": ["Slug đã tồn tại."]}) from exc
         return self.repository.get_by_id(page.pk)
 
@@ -63,6 +61,8 @@ class PageService(OwnedCrudService[Page, PageRepository]):
         try:
             page = super().update(actor, pk, fields)
         except ConflictError as exc:
+            if exc.code != ErrorCode.CONFLICT:
+                raise
             raise ConflictError("Slug đã được sử dụng.", details={"slug": ["Slug đã tồn tại."]}) from exc
         return self.repository.get_by_id(page.pk)
 

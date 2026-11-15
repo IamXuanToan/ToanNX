@@ -24,6 +24,8 @@ class CoreAutoSchema(AutoSchema):
         "create": "create_serializer_class",
         "partial_update": "update_serializer_class",
         "update": "update_serializer_class",
+        "bulk_update": "bulk_update_serializer_class",
+        "bulk_delete": "bulk_delete_serializer_class",
     }
 
     def get_request_serializer(self) -> Any:

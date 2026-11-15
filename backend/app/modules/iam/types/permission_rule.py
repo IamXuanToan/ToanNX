@@ -1,4 +1,4 @@
-"""Quy tắc quyền dùng chung cho decorator `@require_permission` và `AdminModelViewSet`."""
+"""Quy tắc quyền dùng chung cho decorator `@require_permission` và `action_permissions` của ViewSet."""
 
 from collections.abc import Callable
 from dataclasses import dataclass, field

@@ -4,8 +4,12 @@ GET    /iam/roles?search=&is_active=&is_system=&ordering=&page=&page_size=
 POST   /iam/roles
 GET    /iam/roles/{id}
 PATCH  /iam/roles/{id}
+DELETE /iam/roles/{id}       (xóa mềm)
+POST   /iam/roles/bulk-update · /iam/roles/bulk-delete
+GET    /iam/roles/{id}/history
 """
 
+from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.iam.filters.role_filter import RoleFilter
 from app.modules.iam.models.role import Role
 from app.modules.iam.permissions.iam_permission import IamPermission
@@ -15,6 +19,9 @@ from app.modules.iam.serializers.responses.role_detail_response_serializer impor
 from app.modules.iam.serializers.responses.role_list_response_serializer import (
     RoleListResponseSerializer,
 )
+from app.modules.iam.serializers.validates.role_bulk_update_validate_serializer import (
+    RoleBulkUpdateValidateSerializer,
+)
 from app.modules.iam.serializers.validates.role_create_validate_serializer import (
     RoleCreateValidateSerializer,
 )
@@ -23,10 +30,9 @@ from app.modules.iam.serializers.validates.role_update_validate_serializer impor
 )
 from app.modules.iam.services.role_service import RoleService
 from app.modules.iam.types.permission_rule import permission_rule
-from app.modules.iam.views.admin_model_view_set import AdminModelViewSet
 
 
-class RoleViewSet(AdminModelViewSet[Role]):
+class RoleViewSet(CoreModelViewSet[Role]):
     """CRUD vai trò, bao gồm xóa mềm."""
 
     service_class = RoleService
@@ -38,6 +44,9 @@ class RoleViewSet(AdminModelViewSet[Role]):
     detail_serializer_class = RoleDetailResponseSerializer
     create_serializer_class = RoleCreateValidateSerializer
     update_serializer_class = RoleUpdateValidateSerializer
+    bulk_update_serializer_class = RoleBulkUpdateValidateSerializer
+    bulk_delete_enabled = True
+    history_enabled = True
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
     action_permissions = {
         "list": permission_rule(IamPermission.ROLE_READ),
@@ -45,4 +54,7 @@ class RoleViewSet(AdminModelViewSet[Role]):
         "create": permission_rule(IamPermission.ROLE_CREATE),
         "partial_update": permission_rule(IamPermission.ROLE_UPDATE),
         "destroy": permission_rule(IamPermission.ROLE_DELETE),
+        "bulk_update": permission_rule(IamPermission.ROLE_UPDATE),
+        "bulk_delete": permission_rule(IamPermission.ROLE_DELETE),
+        "history": permission_rule(IamPermission.ROLE_READ),
     }

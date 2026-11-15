@@ -10,4 +10,5 @@ MODULE = ModuleDescriptor(
     version="1.0.0",
     dependencies=("account", "iam"),
     permissions=AuthenticationPermission.all(),
+    cleanup_tasks=("app.modules.authentication.tasks.purge_expired_auth.purge_expired_auth",),
 )

@@ -3,13 +3,11 @@
 from typing import Any
 
 from django.db import transaction
-from django.db.models import QuerySet
 from django.utils import timezone
 
 from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.authorization_error import AuthorizationError
 from app.core.exceptions.conflict_error import ConflictError
-from app.core.exceptions.not_found_error import NotFoundError
 from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
 from app.modules.attachment.models.attachment_folder import AttachmentFolder
@@ -22,36 +20,19 @@ class AttachmentFolderService(CoreCrudService[AttachmentFolder, AttachmentFolder
     """Thư mục riêng theo created_by; quyền mở rộng dùng chung với kho file."""
 
     repository_class = AttachmentFolderRepository
+    owner_field = "created_by"
+    manage_all_permission = AttachmentPermission.FILE_MANAGE_ALL.code
 
     def __init__(self) -> None:
         """Khởi tạo các repository trong cùng module, không phụ thuộc IAM/Account."""
         super().__init__()
         self.attachment_repository = AttachmentRepository()
 
-    def _can_access(self, actor: Any, folder: AttachmentFolder) -> bool:
-        """Cho phép người tạo hoặc người có manage_all."""
-        return actor.pk == folder.created_by_id or actor.has_perm(AttachmentPermission.FILE_MANAGE_ALL.code)
-
-    def get_queryset_for(self, actor: Any) -> QuerySet[AttachmentFolder]:
-        """Lọc thư mục theo phạm vi của actor."""
-        if actor.has_perm(AttachmentPermission.FILE_MANAGE_ALL.code):
-            return self.repository.get_queryset()
-        return self.repository.filter(created_by_id=actor.pk)
-
-    def get_by_id_for(self, actor: Any, pk: Any) -> AttachmentFolder:
-        """Ẩn thư mục ngoài phạm vi bằng 404."""
-        folder = self.repository.get_by_id(pk)
-        if not self._can_access(actor, folder):
-            raise NotFoundError()
-        return folder
-
     def _locked(self, actor: Any, pk: Any) -> AttachmentFolder:
+        """Khóa cây của owner trước rồi khóa thư mục (thứ tự cố định, không deadlock)."""
         folder = self.get_by_id_for(actor, pk)
         self.repository.lock_tree(folder.created_by_id)
-        folder = self.repository.get_for_update(pk)
-        if folder.deleted_at is not None or not self._can_access(actor, folder):
-            raise NotFoundError()
-        return folder
+        return self.get_for_write(actor, pk)
 
     def get_for_file(self, actor: Any, pk: Any, owner_id: Any) -> AttachmentFolder:
         """Khóa nhóm trước file; chỉ gom file vào thư mục cùng người sở hữu."""

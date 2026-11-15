@@ -17,6 +17,7 @@ class ModuleDescriptor:
         version: Phiên bản.
         permissions: Quyền module khai báo.
         dependencies: Mã module phụ thuộc.
+        cleanup_tasks: Đường dẫn hàm dọn dữ liệu `() -> int` (chạy bởi `manage.py run_cleanup`).
     """
 
     code: str
@@ -25,6 +26,7 @@ class ModuleDescriptor:
     version: str
     permissions: tuple[PermissionDefinition, ...] = field(default_factory=tuple)
     dependencies: tuple[str, ...] = field(default_factory=tuple)
+    cleanup_tasks: tuple[str, ...] = field(default_factory=tuple)
 
     def validate(self) -> None:
         """Kiểm tra quy ước mã module và mã quyền.

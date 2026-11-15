@@ -246,37 +246,6 @@ class UserService(CoreCrudService[User, UserRepository]):
         self.repository.soft_delete(target, actor=actor)
         self._notify_credentials_changed(target, "deleted")
 
-    @transaction.atomic
-    def bulk_update(self, actor: User, ids: list[Any], data: dict[str, Any]) -> int:
-        """Cập nhật nhiều người dùng; một bản ghi lỗi thì không bản ghi nào đổi.
-
-        Args:
-            actor: Người thực hiện.
-            ids: Id người dùng.
-            data: Trường cần cập nhật (cùng luật với `update`).
-
-        Returns:
-            Số người dùng đã cập nhật.
-        """
-        for pk in ids:
-            self.update(actor, pk, data)
-        return len(ids)
-
-    @transaction.atomic
-    def bulk_delete(self, actor: User, ids: list[Any]) -> int:
-        """Xóa mềm nhiều người dùng; một bản ghi lỗi thì không bản ghi nào bị xóa.
-
-        Args:
-            actor: Người thực hiện.
-            ids: Id người dùng.
-
-        Returns:
-            Số người dùng đã xóa.
-        """
-        for pk in ids:
-            self.delete(actor, pk)
-        return len(ids)
-
     def get_manageable_user(self, actor: User, user_id: Any) -> User:
         """Khóa người dùng đích và kiểm tra actor được phép thao tác.
 

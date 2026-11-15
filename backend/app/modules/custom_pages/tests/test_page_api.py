@@ -148,7 +148,7 @@ class TestPageApi(BaseApiTestCase):
 
     def test_create_rate_limit(self, user: Any, login: Any, settings: Any) -> None:
         """Giới hạn tạo trang theo user, không giới hạn toàn site."""
-        settings.CUSTOM_PAGE_CREATE_RATE_LIMIT = 1
+        settings.RATE_LIMITS = {**settings.RATE_LIMITS, "custom_pages.create": (1, 3600, "user")}
         grant(user, P.CREATE)
         api = login(user)
         self.assert_success(api.post(BASE, self.page_payload(slug="first-page"), format="json"), 201)

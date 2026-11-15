@@ -46,3 +46,14 @@ class RateLimitBucketRepository(CoreRepository[RateLimitBucket]):
             window_start: Đầu cửa sổ.
         """
         self.delete_where(key_hash=key_hash, window_start=window_start)
+
+    def delete_expired(self, moment: datetime) -> int:
+        """Xóa bucket đã hết hạn.
+
+        Args:
+            moment: Mốc thời gian (thường là bây giờ).
+
+        Returns:
+            Số bucket đã xóa.
+        """
+        return self.delete_where(expires_at__lt=moment)

@@ -4,8 +4,10 @@ from typing import Any
 
 import django_filters
 
+from app.core.filters.core_in_filter_mixin import CoreInFilterMixin
 
-class CoreChoiceInFilter(django_filters.BaseInFilter, django_filters.ChoiceFilter):
+
+class CoreChoiceInFilter(CoreInFilterMixin, django_filters.BaseInFilter, django_filters.ChoiceFilter):
     """Nhận danh sách lựa chọn phân tách bằng dấu phẩy, kiểm từng giá trị theo `choices`, lọc `field__in`."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

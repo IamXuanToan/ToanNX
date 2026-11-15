@@ -5,9 +5,10 @@ from django.db import models
 from django.db.models.functions import Lower
 
 from app.core.models.core_model import CoreModel
+from app.core.tracking.journal_tracker import JournalTracker
 
 
-class ShortLink(CoreModel):
+class ShortLink(JournalTracker, CoreModel):
     """URL chuyển hướng do người dùng quản lý."""
 
     class Status(models.TextChoices):

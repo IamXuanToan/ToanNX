@@ -1,5 +1,6 @@
 """CRUD trang tùy chỉnh."""
 
+from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.custom_pages.filters.page_filter import PageFilter
 from app.modules.custom_pages.models.page import Page
 from app.modules.custom_pages.permissions.custom_pages_permission import CustomPagesPermission
@@ -17,10 +18,9 @@ from app.modules.custom_pages.serializers.validates.page_update_validate_seriali
 )
 from app.modules.custom_pages.services.page_service import PageService
 from app.modules.iam.types.permission_rule import permission_rule
-from app.modules.iam.views.owned_model_view_set import OwnedModelViewSet
 
 
-class PageViewSet(OwnedModelViewSet[Page]):
+class PageViewSet(CoreModelViewSet[Page]):
     """CRUD trang của owner hoặc người có manage_all."""
 
     service_class = PageService
@@ -32,6 +32,7 @@ class PageViewSet(OwnedModelViewSet[Page]):
     detail_serializer_class = PageDetailResponseSerializer
     create_serializer_class = PageCreateValidateSerializer
     update_serializer_class = PageUpdateValidateSerializer
+    action_rate_limits = {"create": "custom_pages.create"}
     action_permissions = {
         "list": permission_rule(CustomPagesPermission.READ),
         "retrieve": permission_rule(CustomPagesPermission.READ),

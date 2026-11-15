@@ -4,13 +4,15 @@ from typing import Any
 
 from django.conf import settings
 from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from app.core.exceptions.authentication_error import AuthenticationError
+from app.core.permissions.csrf_protected import CsrfProtected
 from app.core.responses.core_error_response import CoreErrorResponse
 from app.core.responses.core_response import CoreResponse
-from app.core.views.csrf_public_api_view import CsrfPublicApiView
+from app.core.views.core_api_view import CoreApiView
 from app.modules.authentication.serializers.responses.current_user_response_serializer import (
     CurrentUserResponseSerializer,
 )
@@ -18,8 +20,11 @@ from app.modules.authentication.services.auth_cookie_service import AuthCookieSe
 from app.modules.authentication.services.auth_service import AuthService
 
 
-class RefreshView(CsrfPublicApiView):
+class RefreshView(CoreApiView):
     """Làm mới phiên bằng refresh token trong cookie."""
+
+    authentication_classes: list[Any] = []
+    permission_classes: list[type[BasePermission]] = [AllowAny, CsrfProtected]
 
     def __init__(self, **kwargs: Any) -> None:
         """Khởi tạo service.

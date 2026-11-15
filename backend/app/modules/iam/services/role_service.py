@@ -88,37 +88,6 @@ class RoleService(CoreCrudService[Role, RoleRepository]):
         self.repository.update(role, actor=actor, is_active=False)
         self.repository.soft_delete(role, actor=actor)
 
-    @transaction.atomic
-    def bulk_update(self, actor: User, ids: list[Any], data: dict[str, Any]) -> int:
-        """Cập nhật nhiều vai trò; một bản ghi lỗi thì không bản ghi nào đổi.
-
-        Args:
-            actor: Người thực hiện.
-            ids: Id vai trò.
-            data: Trường cần cập nhật.
-
-        Returns:
-            Số vai trò đã cập nhật.
-        """
-        for pk in ids:
-            self.update(actor, pk, data)
-        return len(ids)
-
-    @transaction.atomic
-    def bulk_delete(self, actor: User, ids: list[Any]) -> int:
-        """Xóa mềm nhiều vai trò; một bản ghi lỗi thì không bản ghi nào bị xóa.
-
-        Args:
-            actor: Người thực hiện.
-            ids: Id vai trò.
-
-        Returns:
-            Số vai trò đã xóa.
-        """
-        for pk in ids:
-            self.delete(actor, pk)
-        return len(ids)
-
     def get_editable_role(self, actor: User, role_id: Any) -> Role:
         """Khóa vai trò và chặn sửa vai trò hệ thống nếu không phải superuser.
 

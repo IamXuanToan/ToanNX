@@ -8,6 +8,7 @@ from django.db import models
 from django.utils import timezone
 
 from app.core.models.core_model import CoreModel
+from app.core.tracking.journal_tracker import JournalTracker
 
 
 def attachment_upload_path(instance: Any, filename: str) -> str:
@@ -25,11 +26,13 @@ def attachment_upload_path(instance: Any, filename: str) -> str:
     return f"attachments/{now:%Y/%m}/{uuid.uuid4().hex}{suffix}"
 
 
-class Attachment(CoreModel):
+class Attachment(JournalTracker, CoreModel):
     """File lưu trên storage mặc định (local khi dev; object storage khi production).
 
     Người upload là `created_by`. Xóa mềm; file vật lý không bị xóa ngay.
     """
+
+    journal_fields = ("original_name", "folder")
 
     folder = models.ForeignKey(
         "attachment.AttachmentFolder",

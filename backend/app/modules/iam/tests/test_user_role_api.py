@@ -44,7 +44,7 @@ class TestUserRoleApi(BaseApiTestCase):
         staff_api = login(staff)
         self.assert_forbidden(staff_api.get(ACCOUNT_USERS))
         login(superuser).post(f"{USERS}/{staff.pk}/roles", {"role_id": str(role.pk)}, format="json")
-        self.assert_paginated(staff_api.get(ACCOUNT_USERS))
+        self.assert_paginated(staff_api.get(ACCOUNT_USERS, {"page": 1}))
 
     def test_cannot_assign_role_beyond_own_permissions(self, staff_with: Any, user: User, login: Any) -> None:
         member = staff_with(P.ROLE_ASSIGN)

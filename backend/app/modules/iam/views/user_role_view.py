@@ -14,6 +14,7 @@ from rest_framework.response import Response
 
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
+from app.core.views.core_api_view import CoreApiView
 from app.modules.iam.decorators.require_permission import require_permission
 from app.modules.iam.permissions.iam_permission import IamPermission
 from app.modules.iam.serializers.responses.role_summary_response_serializer import (
@@ -23,10 +24,9 @@ from app.modules.iam.serializers.validates.user_role_assign_validate_serializer 
     UserRoleAssignValidateSerializer,
 )
 from app.modules.iam.services.user_role_service import UserRoleService
-from app.modules.iam.views.admin_api_view import AdminApiView
 
 
-class UserRoleView(AdminApiView):
+class UserRoleView(CoreApiView):
     """Xem và gán vai trò của người dùng."""
 
     def __init__(self, **kwargs: Any) -> None:
@@ -72,7 +72,7 @@ class UserRoleView(AdminApiView):
         return CoreResponse(RoleSummaryResponseSerializer(roles, many=True).data)
 
 
-class UserRoleObjectView(AdminApiView):
+class UserRoleObjectView(CoreApiView):
     """Thu hồi vai trò của người dùng."""
 
     def __init__(self, **kwargs: Any) -> None:

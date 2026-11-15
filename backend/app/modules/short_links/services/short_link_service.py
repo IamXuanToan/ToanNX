@@ -7,33 +7,26 @@ from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 
+from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
 from app.core.exceptions.validation_error import ValidationError
+from app.core.services.core_crud_service import CoreCrudService
 from app.core.utils.slug import generate_slug, normalize_slug
 from app.core.utils.url import validate_public_url
-from app.modules.authentication.services.rate_limit_service import RateLimitService
-from app.modules.iam.services.owned_crud_service import OwnedCrudService
 from app.modules.short_links.exceptions.short_link_expired_error import ShortLinkExpiredError
 from app.modules.short_links.models.short_link import ShortLink
 from app.modules.short_links.permissions.short_links_permission import ShortLinksPermission
 from app.modules.short_links.repositories.short_link_repository import ShortLinkRepository
 
 
-class ShortLinkService(OwnedCrudService[ShortLink, ShortLinkRepository]):
+class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
     """Tạo, sửa, xóa và giải quyết liên kết công khai."""
 
     repository_class = ShortLinkRepository
+    owner_field = "owner"
+    owner_quota_setting = "SHORT_LINK_MAX_PER_OWNER"
     manage_all_permission = ShortLinksPermission.MANAGE_ALL.code
-
-    def __init__(
-        self,
-        repository: ShortLinkRepository | None = None,
-        rate_limit_service: RateLimitService | None = None,
-    ) -> None:
-        """Khởi tạo repository và rate limiter PostgreSQL sẵn có."""
-        super().__init__(repository)
-        self.rate_limit_service = rate_limit_service or RateLimitService()
 
     @transaction.atomic
     def create(self, actor: Any, data: dict[str, Any]) -> ShortLink:
@@ -42,12 +35,11 @@ class ShortLinkService(OwnedCrudService[ShortLink, ShortLinkRepository]):
         fields["slug"] = normalize_slug(fields["slug"]) if fields.get("slug") else generate_slug()
         fields["destination_url"] = self._validate_destination(fields["destination_url"])
         self._validate_expiration(fields.get("expires_at"))
-        self.rate_limit_service.hit(
-            f"short-link-create:{actor.pk}", settings.SHORT_LINK_CREATE_RATE_LIMIT, 3600
-        )
         try:
             return super().create(actor, fields)
         except ConflictError as exc:
+            if exc.code != ErrorCode.CONFLICT:
+                raise
             raise ConflictError("Slug đã được sử dụng.", details={"slug": ["Slug đã tồn tại."]}) from exc
 
     @transaction.atomic
@@ -63,6 +55,8 @@ class ShortLinkService(OwnedCrudService[ShortLink, ShortLinkRepository]):
         try:
             return super().update(actor, pk, fields)
         except ConflictError as exc:
+            if exc.code != ErrorCode.CONFLICT:
+                raise
             raise ConflictError("Slug đã được sử dụng.", details={"slug": ["Slug đã tồn tại."]}) from exc
 
     def resolve(self, slug: str) -> tuple[str, int]:

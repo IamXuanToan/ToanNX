@@ -3,21 +3,25 @@
 from typing import Any
 
 from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from app.core.constants.error_codes import ErrorCode
 from app.core.responses.core_error_response import CoreErrorResponse
 from app.core.responses.core_response import CoreResponse
-from app.core.views.public_api_view import PublicApiView
+from app.core.views.core_api_view import CoreApiView
 from app.modules.health.serializers.responses.readiness_response_serializer import (
     ReadinessResponseSerializer,
 )
 from app.modules.health.services.health_service import HealthService
 
 
-class ReadinessView(PublicApiView):
+class ReadinessView(CoreApiView):
     """Database sẵn sàng."""
+
+    authentication_classes: list[Any] = []
+    permission_classes: list[type[BasePermission]] = [AllowAny]
 
     def __init__(self, **kwargs: Any) -> None:
         """Khởi tạo service.

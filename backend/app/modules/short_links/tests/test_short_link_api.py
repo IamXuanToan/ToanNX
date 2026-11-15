@@ -32,7 +32,7 @@ class TestShortLinkApi(BaseApiTestCase):
         assert created["owner_id"] == str(user.pk)
         assert created["short_url"] == "http://testserver/s/my-link"
         assert created["redirect_type"] == 302
-        listed, pagination = self.assert_paginated(api.get(BASE))
+        listed, pagination = self.assert_paginated(api.get(BASE, {"page": 1}))
         assert listed[0]["id"] == created["id"]
         assert pagination["total"] == 1
         redirect = api.get("/api/v1/short_links/resolve/my-link")
@@ -78,10 +78,10 @@ class TestShortLinkApi(BaseApiTestCase):
             other_api.patch(f"{BASE}/{item['id']}", {"name": "Hijack"}, format="json"), 404, "NOT_FOUND"
         )
         self.assert_error(other_api.delete(f"{BASE}/{item['id']}"), 404, "NOT_FOUND")
-        assert self.assert_paginated(other_api.get(BASE))[1]["total"] == 0
+        assert self.assert_paginated(other_api.get(BASE, {"page": 1}))[1]["total"] == 0
         grant(other, P.MANAGE_ALL)
         other_api = login(other)
-        assert self.assert_paginated(other_api.get(BASE))[1]["total"] == 1
+        assert self.assert_paginated(other_api.get(BASE, {"page": 1}))[1]["total"] == 1
         self.assert_success(other_api.patch(f"{BASE}/{item['id']}", {"name": "Managed"}, format="json"), 200)
 
     def test_301_inactive_expired_and_delete(self, user: Any, login: Any) -> None:
@@ -100,7 +100,7 @@ class TestShortLinkApi(BaseApiTestCase):
 
     def test_create_rate_limit(self, user: Any, login: Any, settings: Any) -> None:
         """Dùng rate limiter PostgreSQL sẵn có cho việc tạo link."""
-        settings.SHORT_LINK_CREATE_RATE_LIMIT = 1
+        settings.RATE_LIMITS = {**settings.RATE_LIMITS, "short_links.create": (1, 3600, "user")}
         grant(user, P.CREATE)
         api = login(user)
         self.assert_success(api.post(BASE, self.payload(slug="one-link"), format="json"), 201)

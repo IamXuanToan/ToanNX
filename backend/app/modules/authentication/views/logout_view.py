@@ -4,16 +4,21 @@ from typing import Any
 
 from django.conf import settings
 from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 
+from app.core.permissions.csrf_protected import CsrfProtected
 from app.core.responses.core_response import CoreResponse
-from app.core.views.csrf_public_api_view import CsrfPublicApiView
+from app.core.views.core_api_view import CoreApiView
 from app.modules.authentication.services.auth_cookie_service import AuthCookieService
 from app.modules.authentication.services.auth_session_service import AuthSessionService
 
 
-class LogoutView(CsrfPublicApiView):
+class LogoutView(CoreApiView):
     """Đăng xuất phiên hiện tại (hoạt động cả khi access token đã hết hạn)."""
+
+    authentication_classes: list[Any] = []
+    permission_classes: list[type[BasePermission]] = [AllowAny, CsrfProtected]
 
     def __init__(self, **kwargs: Any) -> None:
         """Khởi tạo service.

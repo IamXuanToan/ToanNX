@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "app.modules.health",
     "app.modules.short_links",
     "app.modules.custom_pages",
+    "app.modules.journal",
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,7 @@ TEMPLATES = [
 ]
 
 # Database. Test do pytest-django tạo DB riêng `test_toannx`, không đụng DB thật.
+_STATEMENT_TIMEOUT_MS = env.int("DB_STATEMENT_TIMEOUT_MS", default=5000)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -73,8 +75,12 @@ DATABASES = {
         # Serverless + pooler (Neon/Vercel): 0 = mở/đóng kết nối mỗi request.
         "CONN_MAX_AGE": env.int("DB_CONN_MAX_AGE", default=0),
         "CONN_HEALTH_CHECKS": True,
-        # Neon bắt buộc `require`; local để `prefer`.
-        "OPTIONS": {"sslmode": env.str("DB_SSLMODE", default="prefer")},
+        # Neon bắt buộc `require`; local để `prefer`. statement_timeout (ms) chặn truy vấn treo giữ kết nối;
+        # pooler PgBouncer không nhận tham số này → đặt 0, dùng `ALTER ROLE … SET statement_timeout`.
+        "OPTIONS": {
+            "sslmode": env.str("DB_SSLMODE", default="prefer"),
+            **({"options": f"-c statement_timeout={_STATEMENT_TIMEOUT_MS}"} if _STATEMENT_TIMEOUT_MS else {}),
+        },
         "TEST": {"NAME": "test_toannx"},
     }
 }
@@ -113,7 +119,9 @@ STORAGES = {
 }
 ATTACHMENT_MAX_SIZE_BYTES = env.int("ATTACHMENT_MAX_SIZE_BYTES", default=5 * 1024 * 1024)
 ATTACHMENT_ALLOWED_CONTENT_TYPES = ALLOWED_CONTENT_TYPES
-DATA_UPLOAD_MAX_MEMORY_SIZE = ATTACHMENT_MAX_SIZE_BYTES + 1024 * 1024
+# Giới hạn body không tính file upload (file theo ATTACHMENT_MAX_SIZE_BYTES).
+DATA_UPLOAD_MAX_MEMORY_SIZE = env.int("DATA_UPLOAD_MAX_MEMORY_SIZE", default=1024 * 1024)
+FILE_UPLOAD_MAX_MEMORY_SIZE = ATTACHMENT_MAX_SIZE_BYTES
 
 LANGUAGE_CODE = "vi"
 TIME_ZONE = "Asia/Ho_Chi_Minh"
@@ -128,9 +136,13 @@ REST_FRAMEWORK = {
         "app.modules.authentication.authentications.cookie_jwt_authentication.CookieJwtAuthentication",
     ],
     # Mặc định DENY: endpoint public phải khai báo AllowAny tường minh.
+    # Mặc định: đăng nhập + quyền IAM đã khai (không khai → 403). View công khai ghi đè trong chính view đó.
     "DEFAULT_PERMISSION_CLASSES": [
-        "app.modules.iam.permissions.is_active_authenticated.IsActiveAuthenticated"
+        "app.core.permissions.is_active_authenticated.IsActiveAuthenticated",
+        "app.modules.iam.permissions.has_iam_permission.HasIamPermission",
     ],
+    # Rate limit khai báo (`action_rate_limits` / `@rate_limit`), đếm bằng bucket PostgreSQL.
+    "DEFAULT_THROTTLE_CLASSES": ["app.modules.authentication.throttles.bucket_throttle.BucketThrottle"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "EXCEPTION_HANDLER": "app.core.exceptions.exception_handler.app_exception_handler",
@@ -138,7 +150,7 @@ REST_FRAMEWORK = {
     # ?<field>=...  ?search=...  ?ordering=-created_at  ?page=1&page_size=20
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
-        "rest_framework.filters.SearchFilter",
+        "app.core.filters.core_search_filter.CoreSearchFilter",
         "rest_framework.filters.OrderingFilter",
     ],
     "DEFAULT_PAGINATION_CLASS": "app.core.pagination.core_page_number_pagination.CorePageNumberPagination",
@@ -190,9 +202,32 @@ RATE_LIMIT_ENABLED = env.bool("RATE_LIMIT_ENABLED", default=True)
 SHORT_LINK_INTERNAL_HOSTS = env.list(
     "SHORT_LINK_INTERNAL_HOSTS", default=["toannx.com", "www.toannx.com", "localhost"]
 )
-SHORT_LINK_CREATE_RATE_LIMIT = env.int("SHORT_LINK_CREATE_RATE_LIMIT", default=30)
-CUSTOM_PAGE_CREATE_RATE_LIMIT = env.int("CUSTOM_PAGE_CREATE_RATE_LIMIT", default=20)
+# Bảng rate limit duy nhất: khóa → (số lần, cửa sổ giây, "user" | "ip").
+# ViewSet khai `action_rate_limits = {"create": "<khóa>"}`, APIView khai `@rate_limit("<khóa>")`.
+RATE_LIMITS: dict[str, tuple[int, int, str]] = {
+    "default.write": (env.int("RL_DEFAULT_WRITE", default=300), 60, "user"),
+    "public.read": (env.int("RL_PUBLIC_READ", default=120), 60, "ip"),
+    "short_links.create": (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
+    "custom_pages.create": (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
+    "custom_pages.path.create": (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
+    "qr_codes.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
+    "qr_codes.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
+}
+# Lịch sử thay đổi: model kế thừa JournalTracker tự ghi qua recorder này (rỗng = tắt).
+CORE_CHANGE_RECORDER = "app.modules.journal.recorders.journal_recorder.JournalRecorder"
+JOURNAL_RETENTION_DAYS = env.int("JOURNAL_RETENTION_DAYS", default=365)
+# Phiên/refresh token hết hạn quá số ngày này thì bị dọn.
+AUTH_EXPIRED_RETENTION_DAYS = env.int("AUTH_EXPIRED_RETENTION_DAYS", default=30)
+# Header bí mật của Vercel Cron khi gọi POST /health/cleanup (rỗng = tắt endpoint).
+CRON_SECRET = env.str("CRON_SECRET", default="")
+
+# Tạm thời đến khi bỏ block của Custom Pages.
 CUSTOM_PAGE_BLOCK_CREATE_RATE_LIMIT = env.int("CUSTOM_PAGE_BLOCK_CREATE_RATE_LIMIT", default=120)
+
+# Quota tổng mỗi owner (CoreCrudService.owner_quota_setting).
+SHORT_LINK_MAX_PER_OWNER = env.int("SHORT_LINK_MAX_PER_OWNER", default=500)
+CUSTOM_PAGE_MAX_PER_OWNER = env.int("CUSTOM_PAGE_MAX_PER_OWNER", default=50)
+QR_CODE_MAX_PER_OWNER = env.int("QR_CODE_MAX_PER_OWNER", default=200)
 AUTH_LOGIN_RATE_LIMIT = env.int("AUTH_LOGIN_RATE_LIMIT", default=10)
 AUTH_LOGIN_RATE_WINDOW_SECONDS = 15 * 60
 

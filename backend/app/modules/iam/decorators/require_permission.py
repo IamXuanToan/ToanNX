@@ -9,7 +9,7 @@
 ```
 
 - Đặt `@require_permission` NGOÀI `@validate_request` để kiểm tra quyền trước khi validate.
-- `AdminApiView` từ chối method không gắn decorator này (mặc định DENY).
+- `HasIamPermission` (mặc định trong settings) từ chối method không gắn decorator này (mặc định DENY).
 - ViewSet dùng `action_permissions = {"list": permission_rule(...), ...}` với cùng ngữ nghĩa.
 """
 

@@ -136,3 +136,15 @@ class AuthSessionRepository(CoreRepository[AuthSession]):
         return self.update_where(
             {"revoked_at": timezone.now(), "revoked_reason": reason}, revoked_at__isnull=True, **filters
         )
+
+    def delete_expired_before(self, moment: Any) -> int:
+        """Xóa cứng phiên đã hết hạn hoặc bị thu hồi trước mốc (refresh token xóa theo CASCADE).
+
+        Args:
+            moment: Mốc thời gian.
+
+        Returns:
+            Số phiên đã xóa.
+        """
+        expired = self.delete_where(expires_at__lt=moment)
+        return expired + self.delete_where(revoked_at__lt=moment)

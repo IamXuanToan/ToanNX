@@ -63,12 +63,12 @@ def test_read_helpers() -> None:
     assert repo.find_one(code="READ_A") == first
     assert repo.find_one(code="NOPE") is None
     assert repo.find_by_id("not-a-uuid") is None
-    assert {role.pk for role in repo.get_by_ids([first.pk, second.pk])} == {first.pk, second.pk}
+    assert repo.get_by_id(second.pk) == second
     assert repo.count(code__startswith="READ_") == 2
     assert repo.exists(code="READ_B")
     assert repo.values_list("code", code__startswith="READ_") and repo.filter(code="READ_A").count() == 1
     with pytest.raises(NotFoundError):
-        repo.get_one(code="NOPE")
+        repo.get_by_id("00000000-0000-0000-0000-000000000000")
 
 
 def test_update_where_sets_audit_and_delete_where() -> None:

@@ -71,10 +71,14 @@ class TestUserApi(BaseApiTestCase):
         UserFactory(email="findme-a@toannx.test", is_staff=True)
         UserFactory(email="findme-b@toannx.test", is_active=False)
 
-        items, _ = self.assert_paginated(api.get(USERS, {"search": "findme", "ordering": "-email"}))
+        items, _ = self.assert_paginated(
+            api.get(USERS, {"page": 1, "search": "findme", "ordering": "-email"})
+        )
         assert [item["email"] for item in items] == ["findme-b@toannx.test", "findme-a@toannx.test"]
 
-        items, _ = self.assert_paginated(api.get(USERS, {"search": "findme", "is_active": "false"}))
+        items, _ = self.assert_paginated(
+            api.get(USERS, {"page": 1, "search": "findme", "is_active": "false"})
+        )
         assert [item["email"] for item in items] == ["findme-b@toannx.test"]
 
         items, pagination = self.assert_paginated(api.get(USERS, {"page_size": 1}))
@@ -84,7 +88,7 @@ class TestUserApi(BaseApiTestCase):
         self.assert_error(login(superuser).get(USERS, {"page": 999}), 404, "NOT_FOUND")
 
     def test_ordering_outside_whitelist_ignored(self, superuser: User, login: Any) -> None:
-        self.assert_paginated(login(superuser).get(USERS, {"ordering": "password"}))
+        self.assert_paginated(login(superuser).get(USERS, {"page": 1, "ordering": "password"}))
 
 
 class TestSelfProtection(BaseApiTestCase):

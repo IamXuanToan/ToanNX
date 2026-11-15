@@ -3,10 +3,11 @@
 from django.db import models
 
 from app.core.models.core_model import CoreModel
+from app.core.tracking.journal_tracker import JournalTracker
 from app.modules.iam.models.role_auto_grant import RoleAutoGrant
 
 
-class Role(CoreModel):
+class Role(JournalTracker, CoreModel):
     """Vai trò gom nhóm quyền. Một người dùng có thể có nhiều vai trò."""
 
     code = models.CharField(

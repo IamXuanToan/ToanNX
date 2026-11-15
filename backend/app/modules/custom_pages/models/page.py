@@ -5,9 +5,10 @@ from django.db import models
 from django.db.models.functions import Lower
 
 from app.core.models.core_model import CoreModel
+from app.core.tracking.journal_tracker import JournalTracker
 
 
-class Page(CoreModel):
+class Page(JournalTracker, CoreModel):
     """Trang cá nhân; nội dung được lưu thành các PageBlock có cấu trúc."""
 
     class Status(models.TextChoices):

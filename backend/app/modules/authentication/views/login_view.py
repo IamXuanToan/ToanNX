@@ -4,11 +4,13 @@ from typing import Any
 
 from django.middleware.csrf import rotate_token
 from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 
 from app.core.decorators.validate_request import validate_request
+from app.core.permissions.csrf_protected import CsrfProtected
 from app.core.responses.core_response import CoreResponse
-from app.core.views.csrf_public_api_view import CsrfPublicApiView
+from app.core.views.core_api_view import CoreApiView
 from app.modules.authentication.serializers.responses.current_user_response_serializer import (
     CurrentUserResponseSerializer,
 )
@@ -19,8 +21,11 @@ from app.modules.authentication.services.auth_cookie_service import AuthCookieSe
 from app.modules.authentication.services.auth_service import AuthService
 
 
-class LoginView(CsrfPublicApiView):
+class LoginView(CoreApiView):
     """Đăng nhập bằng email hoặc tên người dùng + mật khẩu (không có đăng ký)."""
+
+    authentication_classes: list[Any] = []
+    permission_classes: list[type[BasePermission]] = [AllowAny, CsrfProtected]
 
     def __init__(self, **kwargs: Any) -> None:
         """Khởi tạo service.

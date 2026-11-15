@@ -38,16 +38,18 @@ class TestRoleApi(BaseApiTestCase):
 
     def test_list_roles(self, superuser: User, login: Any) -> None:
         api = login(superuser)
-        items, _ = self.assert_paginated(api.get(ROLES))
+        items, _ = self.assert_paginated(api.get(ROLES, {"page": 1}))
         assert {item["code"] for item in items} >= {"ADMIN", "VIEWER"}
 
-        items, _ = self.assert_paginated(api.get(ROLES, {"auto_grant": "all"}))
+        items, _ = self.assert_paginated(api.get(ROLES, {"page": 1, "auto_grant": "all"}))
         assert [item["code"] for item in items] == ["ADMIN"]
 
-        items, _ = self.assert_paginated(api.get(ROLES, {"search": "Người xem"}))
+        items, _ = self.assert_paginated(api.get(ROLES, {"page": 1, "search": "Người xem"}))
         assert [item["code"] for item in items] == ["VIEWER"]
 
-        items, _ = self.assert_paginated(api.get(ROLES, {"auto_grant": "all,read_only", "is_system": "true"}))
+        items, _ = self.assert_paginated(
+            api.get(ROLES, {"page": 1, "auto_grant": "all,read_only", "is_system": "true"})
+        )
         assert {item["code"] for item in items} >= {"ADMIN", "VIEWER"}
         assert all(item["auto_grant"] in {"all", "read_only"} for item in items)
 

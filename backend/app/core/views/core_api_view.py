@@ -1,15 +1,18 @@
-"""View gốc của mọi API dạng APIView.
+"""View gốc của mọi API không phải CRUD (CRUD dùng `CoreModelViewSet`).
 
-Kế thừa theo nhu cầu:
+Xác thực và quyền **mặc định lấy từ settings**: JWT cookie/Bearer + đăng nhập + quyền IAM khai bằng
+`@require_permission` trên method (không khai → 403). Không có lớp con theo kiểu quyền; view nào khác
+thì ghi đè ngay trong view đó theo đúng một trong năm trường hợp:
 
-| Lớp | Xác thực | Quyền |
-| --- | --- | --- |
-| `CoreApiView` | mặc định (settings: JWT cookie/Bearer) | mặc định (settings: đăng nhập + active) |
-| `PublicApiView` | không | AllowAny |
-| `CsrfPublicApiView` | không | AllowAny + CSRF (đổi trạng thái bằng cookie) |
-| `AuthenticatedApiView` (module IAM) | mặc định | đăng nhập |
-| `MemberApiView` (module IAM) | mặc định | đăng nhập + `@require_permission` |
-| `AdminApiView` (module IAM) | mặc định | đăng nhập + `is_staff` + `@require_permission` |
+| Trường hợp | Ghi đè trong view |
+| --- | --- |
+| Đăng nhập + quyền IAM (mặc định) | không; gắn `@require_permission(...)` trên method |
+| Chỉ cần đăng nhập | `permission_classes = [IsActiveAuthenticated]` |
+| Công khai, chỉ đọc | `authentication_classes = []`, `permission_classes = [AllowAny]` |
+| Công khai, đổi trạng thái bằng cookie | như trên, `permission_classes = [AllowAny, CsrfProtected]` |
+| Công khai, cần biết ai đang xem | `[AllowAny]`, ghi đè `perform_authentication` (token hỏng = khách) |
+
+Rate limit: `@rate_limit("<khóa RATE_LIMITS>")` trên method (mặc định method ghi dùng `default.write`).
 
 Service khởi tạo trong `__init__` của view con:
 
@@ -33,7 +36,7 @@ if TYPE_CHECKING:
 
 
 class CoreApiView(APIView):
-    """APIView gốc: cấu hình xác thực/quyền mặc định trong settings."""
+    """APIView gốc: xác thực/quyền/rate limit mặc định trong settings."""
 
     @staticmethod
     def get_actor(request: Request) -> "User":

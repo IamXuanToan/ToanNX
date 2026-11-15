@@ -3,6 +3,7 @@
 GET /iam/permissions?module=iam&search=&ordering=&page=&page_size=
 """
 
+from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.iam.filters.permission_filter import PermissionFilter
 from app.modules.iam.models.permission import Permission
 from app.modules.iam.permissions.iam_permission import IamPermission
@@ -11,10 +12,9 @@ from app.modules.iam.serializers.responses.permission_list_response_serializer i
 )
 from app.modules.iam.services.permission_service import PermissionService
 from app.modules.iam.types.permission_rule import permission_rule
-from app.modules.iam.views.admin_model_view_set import AdminModelViewSet
 
 
-class PermissionViewSet(AdminModelViewSet[Permission]):
+class PermissionViewSet(CoreModelViewSet[Permission]):
     """Danh mục quyền do các module khai báo."""
 
     service_class = PermissionService

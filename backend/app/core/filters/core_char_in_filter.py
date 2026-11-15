@@ -4,8 +4,10 @@ from typing import Any
 
 import django_filters
 
+from app.core.filters.core_in_filter_mixin import CoreInFilterMixin
 
-class CoreCharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
+
+class CoreCharInFilter(CoreInFilterMixin, django_filters.BaseInFilter, django_filters.CharFilter):
     """Nhận danh sách chuỗi phân tách bằng dấu phẩy, lọc `field__in`."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

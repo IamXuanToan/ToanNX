@@ -1,6 +1,7 @@
 """Exception handler tập trung cho DRF và handler 404/500 cho Django."""
 
 import logging
+import math
 from typing import Any
 
 from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
@@ -25,6 +26,7 @@ _DRF_ERRORS: dict[type[drf.APIException], tuple[ErrorCode, str]] = {
     drf.MethodNotAllowed: (ErrorCode.METHOD_NOT_ALLOWED, "Phương thức không được hỗ trợ."),
     drf.UnsupportedMediaType: (ErrorCode.UNSUPPORTED_MEDIA_TYPE, "Kiểu nội dung không được hỗ trợ."),
     drf.ParseError: (ErrorCode.PARSE_ERROR, "Dữ liệu gửi lên không đọc được."),
+    drf.Throttled: (ErrorCode.RATE_LIMITED, "Bạn thao tác quá nhanh, vui lòng thử lại sau."),
 }
 
 
@@ -72,7 +74,9 @@ def app_exception_handler(exc: Exception, context: dict[str, Any]) -> Response:
 
     if isinstance(exc, drf.APIException):
         code, message = _DRF_ERRORS.get(type(exc), (ErrorCode.VALIDATION_ERROR, "Yêu cầu không hợp lệ."))
-        return CoreErrorResponse(code, message, exc.status_code)
+        wait = getattr(exc, "wait", None)
+        headers = {"Retry-After": str(math.ceil(wait))} if wait else None
+        return CoreErrorResponse(code, message, exc.status_code, headers=headers)
 
     logger.exception("Lỗi không xử lý trong %s", type(context.get("view")).__name__, exc_info=exc)
     return CoreErrorResponse(ErrorCode.INTERNAL_ERROR, "Đã xảy ra lỗi hệ thống.", 500)

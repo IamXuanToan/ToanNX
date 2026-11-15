@@ -8,20 +8,24 @@ from typing import Any
 from uuid import UUID
 
 from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
+from app.core.views.core_api_view import CoreApiView
 from app.modules.authentication.serializers.responses.session_list_response_serializer import (
     SessionListResponseSerializer,
 )
 from app.modules.authentication.services.auth_cookie_service import AuthCookieService
 from app.modules.authentication.services.auth_session_service import AuthSessionService
-from app.modules.iam.views.authenticated_api_view import AuthenticatedApiView
 
 
-class SessionView(AuthenticatedApiView):
+class SessionView(CoreApiView):
     """Danh sách phiên còn hiệu lực."""
+
+    permission_classes: list[type[BasePermission]] = [IsActiveAuthenticated]
 
     def __init__(self, **kwargs: Any) -> None:
         """Khởi tạo service.
@@ -47,8 +51,10 @@ class SessionView(AuthenticatedApiView):
         return CoreResponse(SessionListResponseSerializer(sessions, many=True, context=context).data)
 
 
-class SessionObjectView(AuthenticatedApiView):
+class SessionObjectView(CoreApiView):
     """Thu hồi một phiên của chính mình."""
+
+    permission_classes: list[type[BasePermission]] = [IsActiveAuthenticated]
 
     def __init__(self, **kwargs: Any) -> None:
         """Khởi tạo service.

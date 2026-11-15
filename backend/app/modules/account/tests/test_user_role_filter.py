@@ -26,7 +26,10 @@ class TestUserRoleFilter(BaseApiTestCase):
         UserRole.objects.create(user=other, role=role)
         api = login(staff)
         items, meta = self.assert_paginated(
-            api.get("/api/v1/account/users", {"role": role.pk, "search": user.email, "is_active": "true"})
+            api.get(
+                "/api/v1/account/users",
+                {"page": 1, "role": role.pk, "search": user.email, "is_active": "true"},
+            )
         )
         assert meta["total"] == 1
         assert items[0]["id"] == str(user.pk)
@@ -43,16 +46,18 @@ class TestUserRoleFilter(BaseApiTestCase):
         UserRole.objects.create(user=b, role=first)
         api = login(staff)
         items, meta = self.assert_paginated(
-            api.get("/api/v1/account/users", {"role": f"{first.pk},{second.pk}", "search": "multi-"})
+            api.get(
+                "/api/v1/account/users", {"page": 1, "role": f"{first.pk},{second.pk}", "search": "multi-"}
+            )
         )
         assert meta["total"] == 2
         assert {item["id"] for item in items} == {str(a.pk), str(b.pk)}
         _, meta = self.assert_paginated(
-            api.get("/api/v1/account/users", {"is_active": "true,false", "search": "multi-"})
+            api.get("/api/v1/account/users", {"page": 1, "is_active": "true,false", "search": "multi-"})
         )
         assert meta["total"] == 3
         _, meta = self.assert_paginated(
-            api.get("/api/v1/account/users", {"is_active": "false", "search": "multi-"})
+            api.get("/api/v1/account/users", {"page": 1, "is_active": "false", "search": "multi-"})
         )
         assert meta["total"] == 1
 
@@ -63,7 +68,7 @@ class TestUserRoleFilter(BaseApiTestCase):
         UserFactory(email="acc-plain@example.com")
         api = login(staff)
         items, _ = self.assert_paginated(
-            api.get("/api/v1/account/users", {"access": "staff,novel", "search": "acc-"})
+            api.get("/api/v1/account/users", {"page": 1, "access": "staff,novel", "search": "acc-"})
         )
         assert {item["email"] for item in items} == {"acc-staff@example.com", "acc-novel@example.com"}
         self.assert_error(api.get("/api/v1/account/users", {"access": "root"}), 400, "VALIDATION_ERROR")

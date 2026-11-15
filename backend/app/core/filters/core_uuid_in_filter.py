@@ -4,8 +4,10 @@ from typing import Any
 
 import django_filters
 
+from app.core.filters.core_in_filter_mixin import CoreInFilterMixin
 
-class CoreUUIDInFilter(django_filters.BaseInFilter, django_filters.UUIDFilter):
+
+class CoreUUIDInFilter(CoreInFilterMixin, django_filters.BaseInFilter, django_filters.UUIDFilter):
     """Nhận danh sách UUID phân tách bằng dấu phẩy, lọc `field__in`."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

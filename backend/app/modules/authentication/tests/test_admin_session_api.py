@@ -25,12 +25,11 @@ class TestAdminSessionApi(BaseApiTestCase):
         self.assert_unauthorized(client.get(f"{BASE}/users"))
         self.assert_forbidden(login(staff).get(f"{BASE}/users"))
         grant(user, P.SESSION_READ)
-        self.assert_forbidden(login(user).get(f"{BASE}/users"))
-        login(user)
+        self.assert_success(login(user).get(f"{BASE}/users"))  # chỉ theo quyền IAM, không cần staff
         grant(staff, P.SESSION_READ)
         api = login(staff)
         self.assert_forbidden(api.get("/api/v1/account/users"))
-        items, meta = self.assert_paginated(api.get(f"{BASE}/users"))
+        items, meta = self.assert_paginated(api.get(f"{BASE}/users", {"page": 1}))
         assert meta["total"] == 2
         assert {item["id"] for item in items} == {str(user.pk), str(staff.pk)}
         assert str(superuser.pk) not in {item["id"] for item in items}
@@ -40,7 +39,7 @@ class TestAdminSessionApi(BaseApiTestCase):
         assert page["total_pages"] == 2
         assert first[0]["id"] != second[0]["id"]
         AuthSession.objects.filter(user=user).update(deleted_at=timezone.now())
-        items, meta = self.assert_paginated(api.get(f"{BASE}/users"))
+        items, meta = self.assert_paginated(api.get(f"{BASE}/users", {"page": 1}))
         assert meta["total"] == 1 and items[0]["id"] == str(staff.pk)
 
     def test_user_filter_multiple_with_status(
@@ -54,26 +53,29 @@ class TestAdminSessionApi(BaseApiTestCase):
         grant(staff, P.SESSION_READ)
         api = login(staff)
         users = f"{user.pk},{superuser.pk}"
-        items, meta = self.assert_paginated(api.get(BASE, {"user": users}))
+        items, meta = self.assert_paginated(api.get(BASE, {"page": 1, "user": users}))
         assert meta["total"] == 3
         assert {item["user_id"] for item in items} == {str(user.pk), str(superuser.pk)}
         items, meta = self.assert_paginated(
-            api.get(BASE, {"user": users, "status": "EXPIRED", "search": user.email})
+            api.get(BASE, {"page": 1, "user": users, "status": "EXPIRED", "search": user.email})
         )
         assert meta["total"] == 2
         assert all(item["user_id"] == str(user.pk) for item in items)
 
     def test_requires_admin_and_permission(self, client: Any, user: Any, staff: Any, login: Any) -> None:
         self.assert_unauthorized(client.get(BASE))
-        grant(user, P.SESSION_READ)
-        self.assert_forbidden(login(user).get(BASE))
         self.assert_forbidden(login(staff).get(BASE))
+        # API chỉ theo quyền IAM: người không phải staff mà có quyền vẫn gọi được.
+        grant(user, P.SESSION_READ)
+        self.assert_success(login(user).get(BASE))
 
     def test_list_search_filter_and_safe_response(self, staff: Any, user: Any, login: Any) -> None:
         grant(staff, P.SESSION_READ)
         login(user)
         admin = login(staff)
-        items, meta = self.assert_paginated(admin.get(BASE, {"search": user.email, "status": "ACTIVE"}))
+        items, meta = self.assert_paginated(
+            admin.get(BASE, {"page": 1, "search": user.email, "status": "ACTIVE"})
+        )
         assert meta["total"] == 1
         assert items[0]["user_email"] == user.email
         assert items[0]["user_id"] == str(user.pk)
@@ -96,7 +98,9 @@ class TestAdminSessionApi(BaseApiTestCase):
         assert session.revoked_reason == "admin_revoked"
         assert session.revoked_at is not None
         self.assert_unauthorized(target.get("/api/v1/auth/me"), "AUTH_SESSION_INVALID")
-        items, meta = self.assert_paginated(admin.get(BASE, {"status": "REVOKED", "user": user.pk}))
+        items, meta = self.assert_paginated(
+            admin.get(BASE, {"page": 1, "status": "REVOKED", "user": user.pk})
+        )
         assert meta["total"] == 1
         assert items[0]["id"] == str(session.pk)
 
@@ -112,10 +116,10 @@ class TestAdminSessionApi(BaseApiTestCase):
         login(user)
         AuthSession.objects.filter(user=user).update(expires_at=timezone.now() - timedelta(seconds=1))
         admin = login(superuser)
-        expired, meta = self.assert_paginated(admin.get(BASE, {"status": "EXPIRED"}))
+        expired, meta = self.assert_paginated(admin.get(BASE, {"page": 1, "status": "EXPIRED"}))
         assert meta["total"] == 1
         assert expired[0]["user_id"] == str(user.pk)
-        current, _ = self.assert_paginated(admin.get(BASE, {"user": superuser.pk}))
+        current, _ = self.assert_paginated(admin.get(BASE, {"page": 1, "user": superuser.pk}))
         assert current[0]["is_current"] is True
         assert admin.delete(f"{BASE}/{current[0]['id']}").status_code == 204
         self.assert_unauthorized(admin.get("/api/v1/auth/me"))
@@ -124,9 +128,9 @@ class TestAdminSessionApi(BaseApiTestCase):
         login(user)
         AuthSession.objects.filter(user=user).update(expires_at=timezone.now() - timedelta(seconds=1))
         admin = login(superuser)
-        _, meta = self.assert_paginated(admin.get(BASE, {"status": "ACTIVE,EXPIRED"}))
+        _, meta = self.assert_paginated(admin.get(BASE, {"page": 1, "status": "ACTIVE,EXPIRED"}))
         assert meta["total"] == 2
-        _, meta = self.assert_paginated(admin.get(BASE, {"status": "REVOKED"}))
+        _, meta = self.assert_paginated(admin.get(BASE, {"page": 1, "status": "REVOKED"}))
         assert meta["total"] == 0
         self.assert_error(admin.get(BASE, {"status": "ACTIVE,NOPE"}), 400, "VALIDATION_ERROR")
 

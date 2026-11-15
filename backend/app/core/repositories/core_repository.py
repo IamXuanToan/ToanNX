@@ -18,12 +18,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import IntegrityError, models, transaction
 from django.db.models import Q, QuerySet
+from django.utils import timezone
 
 from app.core.context.user_context import get_current_user
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
+from app.core.tracking.journal_tracker import JournalTracker
 
 _LOOKUP_ERRORS = (ObjectDoesNotExist, DjangoValidationError, ValueError)
+_FIELD_NAMES: dict[type, frozenset[str]] = {}
 
 
 class CoreRepository[M: models.Model]:
@@ -112,23 +115,6 @@ class CoreRepository[M: models.Model]:
         except _LOOKUP_ERRORS:
             return None
 
-    def get_one(self, **filters: Any) -> M:
-        """Lấy bản ghi đầu tiên khớp điều kiện, không có thì lỗi.
-
-        Args:
-            **filters: Điều kiện.
-
-        Returns:
-            Bản ghi.
-
-        Raises:
-            NotFoundError: Không có bản ghi nào.
-        """
-        instance = self.find_one(**filters)
-        if instance is None:
-            raise NotFoundError()
-        return instance
-
     def find_one(self, **filters: Any) -> M | None:
         """Bản ghi đầu tiên khớp điều kiện.
 
@@ -139,17 +125,6 @@ class CoreRepository[M: models.Model]:
             Bản ghi hoặc None.
         """
         return self.get_queryset().filter(**filters).first()
-
-    def get_by_ids(self, pks: Iterable[Any]) -> QuerySet[M]:
-        """Nhiều bản ghi theo danh sách id.
-
-        Args:
-            pks: Danh sách khóa chính.
-
-        Returns:
-            QuerySet.
-        """
-        return self.get_queryset().filter(pk__in=list(pks))
 
     def exists(self, **filters: Any) -> bool:
         """Có bản ghi khớp điều kiện hay không.
@@ -185,20 +160,26 @@ class CoreRepository[M: models.Model]:
         """
         return list(self.get_queryset().filter(**filters).values_list(field, flat=True))
 
-    def get_for_update(self, pk: Any) -> M:
-        """Lấy và khóa dòng (SELECT ... FOR UPDATE). Phải gọi trong transaction.
+    def get_for_update(self, pk: Any, *, include_deleted: bool = False) -> M:
+        """Lấy và khóa dòng (SELECT ... FOR UPDATE OF <bảng>). Phải gọi trong transaction.
+
+        Bản ghi đã xóa mềm coi như không tồn tại, trừ khi `include_deleted=True`.
 
         Args:
             pk: Khóa chính.
+            include_deleted: Lấy cả bản ghi đã xóa mềm.
 
         Returns:
             Bản ghi đã khóa.
 
         Raises:
-            NotFoundError: Không tồn tại.
+            NotFoundError: Không tồn tại hoặc đã xóa mềm.
         """
+        queryset = self.model._default_manager.select_for_update(of=("self",))
+        if not include_deleted and self.has_soft_delete():
+            queryset = queryset.filter(deleted_at__isnull=True)
         try:
-            return self.model._default_manager.select_for_update().get(pk=pk)
+            return queryset.get(pk=pk)
         except _LOOKUP_ERRORS as exc:
             raise NotFoundError() from exc
 
@@ -294,6 +275,16 @@ class CoreRepository[M: models.Model]:
         payload = dict(values)
         if self.has_audit():
             payload.setdefault("updated_by", self.resolve_actor(actor))
+        if self.has_field("updated_at"):
+            payload.setdefault("updated_at", timezone.now())
+        if self._tracks(payload):
+            # Model có JournalTracker: lưu từng bản ghi để lịch sử nhận đủ giá trị cũ/mới.
+            instances = list(self.model._default_manager.select_for_update(of=("self",)).filter(**filters))
+            for instance in instances:
+                for name, value in payload.items():
+                    setattr(instance, name, value)
+                self.save(instance, update_fields=list(payload))
+            return len(instances)
         return self.model._default_manager.filter(**filters).update(**payload)
 
     def bulk_create(self, instances: Iterable[M], *, actor: Any | None = None) -> list[M]:
@@ -311,7 +302,11 @@ class CoreRepository[M: models.Model]:
             self.apply_audit(item, actor, created=True)
         try:
             with transaction.atomic():
-                return cast(list[M], self.model._default_manager.bulk_create(items))
+                created = cast(list[M], self.model._default_manager.bulk_create(items))
+                for item in created:
+                    if isinstance(item, JournalTracker):
+                        item.journal_record_created()  # bulk_create không gọi save()
+                return created
         except IntegrityError as exc:
             raise ConflictError() from exc
 
@@ -334,14 +329,44 @@ class CoreRepository[M: models.Model]:
     # ==================================================================
     # Audit
     # ==================================================================
+    def has_field(self, name: str) -> bool:
+        """Model có field `name` hay không (cache theo lớp model).
+
+        Args:
+            name: Tên field.
+
+        Returns:
+            True nếu có.
+        """
+        names = _FIELD_NAMES.get(self.model)
+        if names is None:
+            names = frozenset(field.name for field in self.model._meta.get_fields())
+            _FIELD_NAMES[self.model] = names
+        return name in names
+
     def has_audit(self) -> bool:
         """Model có field audit của CoreModel hay không.
 
         Returns:
             True nếu có `created_by` và `updated_by`.
         """
-        names = {field.name for field in self.model._meta.get_fields()}
-        return {"created_by", "updated_by"} <= names
+        return self.has_field("created_by") and self.has_field("updated_by")
+
+    def has_soft_delete(self) -> bool:
+        """Model hỗ trợ xóa mềm hay không.
+
+        Returns:
+            True nếu có `deleted_at`.
+        """
+        return self.has_field("deleted_at")
+
+    def _tracks(self, values: dict[str, Any]) -> bool:
+        """Lần cập nhật hàng loạt có chạm field mà JournalTracker theo dõi không."""
+        if not (isinstance(self.model, type) and issubclass(self.model, JournalTracker)):
+            return False
+        tracked = {field.name for field in self.model.journal_tracked_fields()}
+        tracked |= {field.attname for field in self.model.journal_tracked_fields()}
+        return bool(tracked & set(values)) or "deleted_at" in values
 
     @staticmethod
     def resolve_actor(actor: Any | None) -> Any | None:

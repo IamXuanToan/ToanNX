@@ -75,6 +75,6 @@ class TestRoleBulkApi(BaseApiTestCase):
         }
 
     def test_sort_by_permission_count(self, superuser: User, login: Any) -> None:
-        items, _ = self.assert_paginated(login(superuser).get(f"{ROLES}?ordering=-permission_count"))
+        items, _ = self.assert_paginated(login(superuser).get(f"{ROLES}?page=1&ordering=-permission_count"))
         counts = [item["permission_count"] for item in items]
         assert counts == sorted(counts, reverse=True)

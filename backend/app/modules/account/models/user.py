@@ -13,11 +13,15 @@ from django.db import models
 from django.utils import timezone
 
 from app.core.models.core_model import CoreModel
+from app.core.tracking.journal_tracker import JournalTracker
 from app.modules.account.models.user_manager import UserManager
 
 
-class User(AbstractBaseUser, CoreModel):
+class User(JournalTracker, AbstractBaseUser, CoreModel):
     """Tài khoản người dùng. Không có đăng ký công khai."""
+
+    journal_excluded_fields = ("last_login", "last_seen_at", "date_joined")
+    journal_masked_fields = ("password",)
 
     email = models.EmailField(
         unique=True,

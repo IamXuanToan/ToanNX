@@ -1,5 +1,6 @@
 """CRUD thư mục logic của người dùng."""
 
+from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.attachment.filters.attachment_folder_filter import AttachmentFolderFilter
 from app.modules.attachment.models.attachment_folder import AttachmentFolder
 from app.modules.attachment.permissions.attachment_permission import AttachmentPermission as P
@@ -14,10 +15,9 @@ from app.modules.attachment.serializers.validates.attachment_folder_validate_ser
 )
 from app.modules.attachment.services.attachment_folder_service import AttachmentFolderService
 from app.modules.iam.types.permission_rule import permission_rule
-from app.modules.iam.views.owned_model_view_set import OwnedModelViewSet
 
 
-class AttachmentFolderViewSet(OwnedModelViewSet[AttachmentFolder]):
+class AttachmentFolderViewSet(CoreModelViewSet[AttachmentFolder]):
     """Nhóm riêng theo owner; không cần staff để dùng API khi đã có quyền IAM."""
 
     service_class = AttachmentFolderService

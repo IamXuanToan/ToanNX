@@ -150,12 +150,12 @@ class TestAttachmentLibrary(BaseApiTestCase):
         api = login(user)
         own = self.assert_success(_upload(api, "own.png", PNG_BYTES, "image/png"), 201)
         assert own["created_by_id"] == str(user.pk)
-        items, meta = self.assert_paginated(api.get(ATTACHMENTS))
+        items, meta = self.assert_paginated(api.get(ATTACHMENTS, {"page": 1}))
         assert meta["total"] == 1
         assert [item["id"] for item in items] == [own["id"]]
         self.assert_error(api.get(f"{ATTACHMENTS}/{foreign['id']}"), 404, "NOT_FOUND")
         self.assert_error(api.delete(f"{ATTACHMENTS}/{foreign['id']}"), 404, "NOT_FOUND")
-        _, meta = self.assert_paginated(api.get(ATTACHMENTS, {"scope": "OTHERS"}))
+        _, meta = self.assert_paginated(api.get(ATTACHMENTS, {"page": 1, "scope": "OTHERS"}))
         assert meta["total"] == 0
         assert api.delete(f"{ATTACHMENTS}/{own['id']}").status_code == 204
 
@@ -195,11 +195,15 @@ class TestAttachmentLibrary(BaseApiTestCase):
         api = login(superuser)
         older = self.assert_success(_upload(api, "find-old.png", PNG_BYTES, "image/png"), 201)
         newer = self.assert_success(_upload(api, "find-new.pdf", PDF_BYTES, "application/pdf"), 201)
-        items, _ = self.assert_paginated(api.get(ATTACHMENTS, {"search": "find-", "kind": "IMAGE,DOCUMENT"}))
+        items, _ = self.assert_paginated(
+            api.get(ATTACHMENTS, {"page": 1, "search": "find-", "kind": "IMAGE,DOCUMENT"})
+        )
         assert [item["id"] for item in items] == [newer["id"], older["id"]]
-        items, _ = self.assert_paginated(api.get(ATTACHMENTS, {"kind": "IMAGE"}))
+        items, _ = self.assert_paginated(api.get(ATTACHMENTS, {"page": 1, "kind": "IMAGE"}))
         assert [item["id"] for item in items] == [older["id"]]
-        _, meta = self.assert_paginated(api.get(ATTACHMENTS, {"content_type": "image/png,application/pdf"}))
+        _, meta = self.assert_paginated(
+            api.get(ATTACHMENTS, {"page": 1, "content_type": "image/png,application/pdf"})
+        )
         assert meta["total"] == 2
         self.assert_error(api.get(ATTACHMENTS, {"kind": "INVALID"}), 400, "VALIDATION_ERROR")
 

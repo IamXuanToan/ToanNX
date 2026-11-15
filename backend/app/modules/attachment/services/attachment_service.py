@@ -10,10 +10,8 @@ from typing import Any
 from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
-from django.db.models import QuerySet
 
 from app.core.exceptions.authorization_error import AuthorizationError
-from app.core.exceptions.not_found_error import NotFoundError
 from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
 from app.modules.attachment.models.attachment import Attachment
@@ -30,6 +28,9 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
     """Nghiệp vụ Attachment (xóa = xóa mềm, file vật lý giữ lại để dọn theo lịch)."""
 
     repository_class = AttachmentRepository
+    # Owner là người upload; quyền manage_all mở phạm vi sang file của mọi người.
+    owner_field = "created_by"
+    manage_all_permission = AttachmentPermission.FILE_MANAGE_ALL.code
 
     def __init__(
         self,
@@ -39,42 +40,6 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         """Khởi tạo phụ thuộc của kho file và thư mục logic."""
         super().__init__(repository)
         self.folder_service = folder_service or AttachmentFolderService()
-
-    # Attachment là module nền của Account/IAM: dùng backend quyền chuẩn của User,
-    # giữ CoreCrudService và cung cấp hợp đồng owned, tránh phụ thuộc vòng vào IAM.
-    def get_queryset_for(self, actor: Any) -> QuerySet[Attachment]:
-        """Chỉ lấy file tự upload, trừ người có quyền quản lý mọi file."""
-        if actor.has_perm(AttachmentPermission.FILE_MANAGE_ALL.code):
-            return self.repository.get_queryset()
-        return self.repository.filter(created_by_id=actor.pk)
-
-    def _can_access(self, actor: Any, attachment: Attachment) -> bool:
-        """Kiểm tra người upload hoặc quyền mở rộng phạm vi."""
-        return bool(
-            actor.pk == attachment.created_by_id or actor.has_perm(AttachmentPermission.FILE_MANAGE_ALL.code)
-        )
-
-    def get_by_id_for(self, actor: Any, pk: Any) -> Attachment:
-        """Trả 404 khi file thuộc người khác, không tiết lộ file tồn tại."""
-        attachment = self.repository.get_by_id(pk)
-        if not self._can_access(actor, attachment):
-            raise NotFoundError()
-        return attachment
-
-    @transaction.atomic
-    def delete(self, actor: Any, pk: Any) -> None:
-        """Khóa file, kiểm tra chủ sở hữu rồi xóa mềm; giữ file vật lý."""
-        attachment = self.repository.get_for_update(pk)
-        if attachment.deleted_at is not None or not self._can_access(actor, attachment):
-            raise NotFoundError()
-        self.repository.soft_delete(attachment, actor=actor)
-
-    @transaction.atomic
-    def bulk_delete(self, actor: Any, ids: list[Any]) -> int:
-        """Xóa mềm cả lô trong một transaction; lỗi một file thì không file nào đổi."""
-        for pk in ids:
-            self.delete(actor, pk)
-        return len(ids)
 
     def get_image(self, attachment_id: Any, *, actor: Any | None = None) -> Attachment:
         """Lấy file và bảo đảm là ảnh (dùng cho ảnh đại diện).
@@ -159,14 +124,5 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         folder = (
             self.folder_service.get_for_file(actor, folder_id, current.created_by_id) if folder_id else None
         )
-        attachment = self.repository.get_for_update(pk)
-        if attachment.deleted_at is not None or not self._can_access(actor, attachment):
-            raise NotFoundError()
+        attachment = self.get_for_write(actor, pk)
         return self.repository.update(attachment, actor=actor, folder=folder)
-
-    @transaction.atomic
-    def bulk_update(self, actor: Any, ids: list[Any], data: dict[str, Any]) -> int:
-        """Chuyển cả lô hoặc rollback toàn bộ khi có file/thư mục ngoài phạm vi."""
-        for pk in sorted(ids, key=str):
-            self.update(actor, pk, data)
-        return len(ids)

@@ -1,7 +1,7 @@
 """CRUD liên kết rút gọn."""
 
+from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.iam.types.permission_rule import permission_rule
-from app.modules.iam.views.owned_model_view_set import OwnedModelViewSet
 from app.modules.short_links.filters.short_link_filter import ShortLinkFilter
 from app.modules.short_links.models.short_link import ShortLink
 from app.modules.short_links.permissions.short_links_permission import ShortLinksPermission
@@ -17,7 +17,7 @@ from app.modules.short_links.serializers.validates.short_link_update_validate_se
 from app.modules.short_links.services.short_link_service import ShortLinkService
 
 
-class ShortLinkViewSet(OwnedModelViewSet[ShortLink]):
+class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
     """CRUD của chủ sở hữu hoặc người có manage_all."""
 
     service_class = ShortLinkService
@@ -29,6 +29,7 @@ class ShortLinkViewSet(OwnedModelViewSet[ShortLink]):
     detail_serializer_class = ShortLinkDetailResponseSerializer
     create_serializer_class = ShortLinkCreateValidateSerializer
     update_serializer_class = ShortLinkUpdateValidateSerializer
+    action_rate_limits = {"create": "short_links.create"}
     action_permissions = {
         "list": permission_rule(ShortLinksPermission.READ),
         "retrieve": permission_rule(ShortLinksPermission.READ),

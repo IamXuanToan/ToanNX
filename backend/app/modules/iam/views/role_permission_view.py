@@ -13,6 +13,7 @@ from rest_framework.response import Response
 
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
+from app.core.views.core_api_view import CoreApiView
 from app.modules.iam.decorators.require_permission import require_permission
 from app.modules.iam.permissions.iam_permission import IamPermission
 from app.modules.iam.serializers.responses.role_detail_response_serializer import (
@@ -23,10 +24,9 @@ from app.modules.iam.serializers.validates.role_permission_assign_validate_seria
 )
 from app.modules.iam.services.role_permission_service import RolePermissionService
 from app.modules.iam.services.role_service import RoleService
-from app.modules.iam.views.admin_api_view import AdminApiView
 
 
-class RolePermissionView(AdminApiView):
+class RolePermissionView(CoreApiView):
     """Gán quyền cho vai trò."""
 
     def __init__(self, **kwargs: Any) -> None:
@@ -59,7 +59,7 @@ class RolePermissionView(AdminApiView):
         return CoreResponse(RoleDetailResponseSerializer(self.role_service.get_by_id(role_id)).data)
 
 
-class RolePermissionObjectView(AdminApiView):
+class RolePermissionObjectView(CoreApiView):
     """Thu hồi quyền khỏi vai trò."""
 
     def __init__(self, **kwargs: Any) -> None:

@@ -4,14 +4,18 @@ from typing import Any
 
 from django.http import HttpResponseRedirect
 from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 
-from app.core.views.public_api_view import PublicApiView
+from app.core.views.core_api_view import CoreApiView
 from app.modules.short_links.services.short_link_service import ShortLinkService
 
 
-class ShortLinkResolveView(PublicApiView):
+class ShortLinkResolveView(CoreApiView):
     """Chuyển hướng công khai theo slug nếu link còn hoạt động."""
+
+    authentication_classes: list[Any] = []
+    permission_classes: list[type[BasePermission]] = [AllowAny]
 
     def __init__(self, **kwargs: Any) -> None:
         """Khởi tạo service theo vòng đời request."""

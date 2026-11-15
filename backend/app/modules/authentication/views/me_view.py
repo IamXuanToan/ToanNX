@@ -3,18 +3,22 @@
 from typing import Any
 
 from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
 
+from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
+from app.core.views.core_api_view import CoreApiView
 from app.modules.authentication.serializers.responses.current_user_response_serializer import (
     CurrentUserResponseSerializer,
 )
 from app.modules.authentication.services.current_user_service import CurrentUserService
-from app.modules.iam.views.authenticated_api_view import AuthenticatedApiView
 
 
-class MeView(AuthenticatedApiView):
+class MeView(CoreApiView):
     """Người dùng hiện tại, quyền hiệu lực và module đang bật."""
+
+    permission_classes: list[type[BasePermission]] = [IsActiveAuthenticated]
 
     def __init__(self, **kwargs: Any) -> None:
         """Khởi tạo service.

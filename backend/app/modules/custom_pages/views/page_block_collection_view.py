@@ -8,6 +8,7 @@ from rest_framework.request import Request
 
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
+from app.core.views.core_api_view import CoreApiView
 from app.modules.custom_pages.permissions.custom_pages_permission import CustomPagesPermission
 from app.modules.custom_pages.serializers.responses.page_block_response_serializer import (
     PageBlockResponseSerializer,
@@ -17,10 +18,9 @@ from app.modules.custom_pages.serializers.validates.page_block_create_validate_s
 )
 from app.modules.custom_pages.services.page_block_service import PageBlockService
 from app.modules.iam.decorators.require_permission import require_permission
-from app.modules.iam.views.member_api_view import MemberApiView
 
 
-class PageBlockCollectionView(MemberApiView):
+class PageBlockCollectionView(CoreApiView):
     """Thêm block vào cuối trang."""
 
     def __init__(self, **kwargs: Any) -> None:
