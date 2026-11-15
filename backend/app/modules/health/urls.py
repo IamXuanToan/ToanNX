@@ -3,6 +3,7 @@
 from django.urls import path
 
 from app.modules.health.views.cleanup_view import CleanupView
+from app.modules.health.views.client_error_view import ClientErrorView
 from app.modules.health.views.health_view import HealthView
 from app.modules.health.views.readiness_view import ReadinessView
 
@@ -12,4 +13,5 @@ urlpatterns = [
     path("", HealthView.as_view(), name="health"),
     path("/ready", ReadinessView.as_view(), name="readiness"),
     path("/cleanup", CleanupView.as_view(), name="cleanup"),
+    path("/client-errors", ClientErrorView.as_view(), name="client-errors"),
 ]

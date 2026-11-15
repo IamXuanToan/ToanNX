@@ -20,6 +20,12 @@ def _fast_hasher(settings: Any) -> None:
     settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 
+@pytest.fixture(autouse=True)
+def _isolated_media(settings: Any, tmp_path: Any) -> None:
+    """Mỗi test ghi file vào thư mục tạm, không đụng `backend/media` của dev."""
+    settings.MEDIA_ROOT = str(tmp_path / "media")
+
+
 @pytest.fixture
 def client() -> APIClient:
     """API client không kiểm tra CSRF (test CSRF dùng `csrf_client`)."""

@@ -1,5 +1,21 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "builds": [{ "src": "config/wsgi.py", "use": "@vercel/python" }],
-  "routes": [{ "src": "/(.*)", "dest": "config/wsgi.py" }]
+  "builds": [
+    {
+      "src": "config/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "config/wsgi.py"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/v1/health/cleanup",
+      "schedule": "0 3 * * *"
+    }
+  ]
 }

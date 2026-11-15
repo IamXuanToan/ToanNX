@@ -8,6 +8,7 @@ from pathlib import Path
 
 import environ
 
+from app.core.logging.sentry import init_sentry
 from app.modules.attachment.constants.media_types import ALLOWED_CONTENT_TYPES
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -119,6 +120,8 @@ STORAGES = {
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
 ATTACHMENT_MAX_SIZE_BYTES = env.int("ATTACHMENT_MAX_SIZE_BYTES", default=5 * 1024 * 1024)
+# File của tệp đã xóa mềm và file mồ côi (ảnh QR cũ...) bị dọn khỏi storage sau số ngày này.
+ATTACHMENT_PURGE_DAYS = env.int("ATTACHMENT_PURGE_DAYS", default=30)
 ATTACHMENT_ALLOWED_CONTENT_TYPES = ALLOWED_CONTENT_TYPES
 # Giới hạn body không tính file upload (file theo ATTACHMENT_MAX_SIZE_BYTES).
 DATA_UPLOAD_MAX_MEMORY_SIZE = env.int("DATA_UPLOAD_MAX_MEMORY_SIZE", default=1024 * 1024)
@@ -213,6 +216,7 @@ RATE_LIMITS: dict[str, tuple[int, int, str]] = {
     "custom_pages.path.create": (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
     "qr_codes.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
     "qr_codes.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
+    "health.client_error": (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
 }
 # Lịch sử thay đổi: model kế thừa JournalTracker tự ghi qua recorder này (rỗng = tắt).
 CORE_CHANGE_RECORDER = "app.modules.journal.recorders.journal_recorder.JournalRecorder"
@@ -262,6 +266,15 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
+
+# Báo lỗi lên Sentry: để trống SENTRY_DSN là tắt (local, test).
+SENTRY_DSN = env.str("SENTRY_DSN", default="")
+init_sentry(
+    dsn=SENTRY_DSN,
+    environment=env.str("SENTRY_ENVIRONMENT", default="production"),
+    release=env.str("VERCEL_GIT_COMMIT_SHA", default=""),
+    traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
+)
 
 LOGGING = {
     "version": 1,

@@ -29,7 +29,8 @@ def attachment_upload_path(instance: Any, filename: str) -> str:
 class Attachment(JournalTracker, CoreModel):
     """File lưu trên storage mặc định (local khi dev; object storage khi production).
 
-    Người upload là `created_by`. Xóa mềm; file vật lý không bị xóa ngay.
+    Người upload là `created_by`. Xóa mềm; file vật lý được `purge_deleted_files` dọn sau
+    `ATTACHMENT_PURGE_DAYS` ngày (giữ dòng dữ liệu, đánh dấu `purged_at`).
     """
 
     journal_fields = ("original_name", "folder")
@@ -74,6 +75,13 @@ class Attachment(JournalTracker, CoreModel):
         verbose_name="SHA-256",
         db_comment="SHA-256 nội dung file",
         help_text="SHA-256 của nội dung file, dùng phát hiện trùng lặp/toàn vẹn.",
+    )
+    purged_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Thời điểm dọn file",
+        db_comment="Thời điểm file vật lý bị xóa khỏi storage",
+        help_text="Khác NULL: file vật lý đã bị dọn (bản ghi đã xóa mềm quá hạn giữ).",
     )
 
     class Meta:

@@ -9,4 +9,5 @@ MODULE = ModuleDescriptor(
     description="Lưu trữ file dùng chung (ảnh đại diện, tài liệu...).",
     version="1.0.0",
     permissions=AttachmentPermission.all(),
+    cleanup_tasks=("app.modules.attachment.tasks.purge_deleted_files.purge_deleted_files",),
 )
