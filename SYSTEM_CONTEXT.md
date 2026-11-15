@@ -26,7 +26,7 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 | CSRF | CSRF của Django (cookie `csrftoken` + header `X-CSRFToken` + kiểm tra Origin) cho mọi request đổi trạng thái dùng cookie. |
 | Rate limit | PostgreSQL (`auth_rate_limit_bucket`, upsert nguyên tử). Không dùng bộ nhớ (Vercel không giữ state). |
 | Superuser | Bỏ qua kiểm tra quyền ở tầng ứng dụng, không bỏ qua đăng nhập. Không thể vô hiệu/hạ quyền superuser hoạt động cuối cùng. |
-| `is_staff` | Chỉ cho vào khu vực quản trị; từng API vẫn kiểm tra quyền. |
+| `is_staff` | Chỉ quyết định FE hiển thị khung quản trị; API **không** kiểm cờ này, chỉ kiểm quyền IAM. |
 | `is_novel` | Chỉ là cờ đánh dấu nhóm nghiệp vụ Novel; **không** cấp quyền nào. |
 | Module | Có trong `INSTALLED_APPS` + đăng ký descriptor là hoạt động (không bật/tắt runtime, không bảng cấu hình); quyền = IAM; nhóm/icon hiển thị khai tĩnh ở FE (`manage-app`). |
 | Đăng ký | Không có. User do superuser/admin có quyền tạo, hoặc `createsuperuser`. |
@@ -53,10 +53,20 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 - URL file trả về là **URL tuyệt đối** theo domain của request (`X-Forwarded-Host/Proto` sau proxy);
   frontend dùng trực tiếp, không nối domain.
 - Quyền hiện có: `account.user.{read,create,update,delete}`, `iam.role.{read,create,update,delete,assign}`,
-  `authentication.session.{read,revoke}` (quản trị phiên của mọi người dùng),
-  `iam.permission.{read,assign}`, `attachment.file.{read,create,delete}`,
-  `short_links.link.{read,create,update,delete,manage_all}` và `custom_pages.page.{read,create,update,delete,manage_all}`.
+  `iam.permission.{read,assign}`, `authentication.session.{read,revoke,delete}` (quản trị phiên mọi người dùng),
+  `attachment.file.{read,create,update,delete,manage_all}`, `attachment.folder.{read,create,update,delete}`,
+  `journal.entry.read`, `short_links.link.{read,create,update,delete,manage_all}`,
+  `qr_codes.code.{read,create,update,delete,manage_all}`, `custom_pages.path.{read,create,update,delete}` và
+  `custom_pages.page.{read,create,update,delete,manage_all}`.
   Catalog quyền của từng module đặt tại `app/modules/<module>/permissions/<module>_permission.py`.
+- Base chuẩn: BE chỉ có `CoreApiView`, `CoreModelViewSet`, `CoreCrudService`, `CoreRepository`; khác thì ghi đè
+  thuộc tính trong view/service (xem `AGENTS.md`). Danh sách chỉ phân trang khi gửi `page`/`page_size`.
+- Lịch sử thay đổi: model kế thừa `JournalTracker` tự ghi Journal khi CRUD (cùng transaction); trang Journal lọc
+  theo `module.model`, trang chi tiết có thẻ lịch sử. Giữ `JOURNAL_RETENTION_DAYS` ngày, dọn bằng `run_cleanup`.
+- Soạn thảo dùng Tiptap JSON (`TiptapEditor` / `TiptapContent`); không lưu HTML tùy ý.
+- Mã QR là module riêng (`qr_codes`, trang tạo QR URL/văn bản/Wi-Fi/VietQR, PNG lưu ở Attachment). Chèn QR vào
+  editor là chèn ảnh PNG của mã đó. Link rút gọn `/s/{slug}`; trang tự tạo `/{đường dẫn}/{slug}` (đường dẫn
+  quản lý ở `custom_pages.path`, `p` và `qr` có sẵn), bản nháp xem trước bằng `?preview=1` khi có quyền.
 - Nhóm Hệ thống ở FE chia **Tài khoản: Người dùng, Phiên** và **Phân quyền: Vai trò, Quyền**.
   Quyền là danh mục chỉ đọc nhóm theo module. Tìm kiếm chỉ áp dụng khi Enter; bộ lọc, sắp xếp và
   phân trang đồng bộ URL. Người dùng lọc vai trò/trạng thái; Vai trò lọc trạng thái/loại/chính sách tự cấp.

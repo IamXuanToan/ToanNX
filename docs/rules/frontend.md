@@ -36,11 +36,17 @@ src/modules/<m>/
   `iam/services/role.service.ts` ↔ `iam/services/role_service.py`, `user-role.service.ts` ↔
   `user_role_service.py`. Không gộp cả module vào một `<m>.service.ts`. Method theo hành động
   (`list`, `get`, `create`, `update`, `assign`, `revoke`), không lặp tên model (`roleService.list`, không `listRoles`).
+  CRUD chuẩn lấy từ `createCrudService<List, Detail, Create, Update>(endpoint)` (`list/listAll/get/create/update/
+  remove/bulkUpdate/bulkDelete/history`), service chỉ viết thêm method riêng.
+- Hook module: danh sách `useListQuery`, chi tiết `useQuery`, ghi `useResourceMutation` (toast theo khóa message,
+  invalidate `lists`/`detail` chuẩn, lỗi dịch theo mã). Không tự viết `onSuccess`/`onError` lặp lại.
+- Danh sách gửi `page`/`pageSize` khi cần phân trang (bảng). Ô chọn/danh mục gọi `listAll()` không gửi `page` → BE trả hết.
 - **Mỗi module tự khai** trong `constants/` (không khai chung ở `shares/`):
   - `routes.ts`: `<M>_ROUTES` (đường dẫn nội bộ, có hàm cho route động) và `<M>_PATHNAMES`
     (URL theo ngôn ngữ). `src/i18n/routing.ts` chỉ gộp các `<M>_PATHNAMES`.
   - `api-endpoints.ts`: `<M>_API_ENDPOINTS`, path tương đối với `env.apiBasePath`.
-  - `query-keys.ts`: `<m>Keys` (`all` + hàm theo tài nguyên).
+  - `query-keys.ts`: `<m>Keys` dựng bằng `createResourceKeys` (`all`, `lists`, `list(params)`, `detail(id)`,
+    `history(id)`), thêm key riêng nếu cần.
   - Module khác cần route/key thì import từ `@/modules/<khác>/constants/...` (ví dụ invalidate `authKeys.me()`).
 - Ngoại lệ duy nhất ở `shares/`: `shares/lib/api/session-paths.ts` (CSRF, login, refresh, logout) vì chính
   `apiClient` cần để lấy CSRF và silent refresh; module `auth` dùng lại trong `AUTH_API_ENDPOINTS`.
@@ -99,11 +105,13 @@ common/<tên>/
   Editor, chart, crop ảnh và khối nghiệp vụ chỉ thêm khi màn hiện tại có yêu cầu cụ thể.
 - `ImageUpload` nhận callback `onChoose` và nhãn qua props để mở bộ chọn ảnh ngoài component;
   adapter/view của Attachment cung cấp thư viện và quyền. Common không import module hay gọi API.
-- Ngoại lệ đã chốt: giữ common `RichTextEditor` dùng Tiptap tại
-  `shares/components/common/rich-text-editor/`. Component nhận `value`, `onChange`, `onBlur`,
-  `disabled`, nhãn/ARIA và callback chọn ảnh qua props; xử lý nằm trong hook riêng, toolbar dùng
-  shadcn. Callback ảnh của module nối Attachment, common không gọi API. Chỉ dùng cho trường có
-  hợp đồng rich text; không thay nội dung block có cấu trúc của Custom Pages bằng HTML tùy ý.
+- Soạn thảo nội dung dùng **một** editor: `TiptapEditor` (`shares/components/common/tiptap-editor/`, giá trị là
+  Tiptap JSON); hiển thị dùng `TiptapContent` (static renderer, chạy được ở server). Không còn `RichTextEditor`,
+  không lưu HTML tùy ý. Extension dùng chung khai trong `tiptap-editor/extensions.ts`; module thêm node riêng
+  (ví dụ nút, banner của Custom Pages) qua prop `extensions`.
+- Module khác cắm vào editor qua plugin: component gọi `useTiptapInsertItem({key, label, icon, run})` và được page
+  truyền vào slot `editorPlugins` (ảnh từ Attachment, mã QR là chèn ảnh PNG của QR, nút trỏ link rút gọn).
+  Common không import module hay gọi API.
 
 ### Input và lỗi form
 
@@ -305,7 +313,12 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 - `PermissionGate`/`usePermission` chỉ để ẩn/hiện; backend luôn enforce.
 - URL file/ảnh/icon từ API là URL tuyệt đối: dùng trực tiếp (`<img src={url}>`), không nối domain/basePath.
 - Module FE theo đúng module BE (`account`, `iam`...), trừ `manage-app` và `home` chỉ có ở FE. Module nền không import module phụ thuộc nó;
-  page ghép giao diện nhiều module qua prop slot (ví dụ `UserDetailView aside={<UserRolesCard />}`).
+  page ghép giao diện nhiều module qua prop slot (ví dụ `UserDetailView aside={<UserRolesCard />}`,
+  `history={<RecordHistoryView … />}`, `editorPlugins={<QrCodeTiptapPlugin />}`).
+- Tạo/sửa nhanh tài nguyên liên quan ngay trong form khác dùng `FormDialog` bọc đúng form của tài nguyên đó
+  (ví dụ tạo đường dẫn trang trong form trang); không viết form thứ hai.
+- `tests/unit/module-registry.test.ts` kiểm mỗi module đã ghép đủ routing, messages, `global.d.ts`, navigation và
+  không import ngang module ngoài slot cho phép.
 - Key kỹ thuật (cookie, storage, query key...) không mang tên dự án ([common.md](common.md) mục 3).
 - Không barrel `index.ts`; thứ tự import: React/Next → thư viện → `@/shares` → module khác → tương đối.
 - Exported function/hook/component có JSDoc tiếng Việt.

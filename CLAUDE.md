@@ -50,23 +50,26 @@ rotating refresh token stored as HMAC; every request checks the session is still
 - Views never touch repositories/ORM; services hold business rules and get dependencies via constructor;
   repositories (subclass `CoreRepository`) are the only DB layer and set audit fields (`created_by`/`updated_by`/
   `deleted_by`) — `Model.save()`, `QuerySet.update()` and `bulk_update()` do not.
-- View base classes pick auth level: `PublicApiView`, `CsrfPublicApiView`, `AuthenticatedApiView`,
-  `AdminApiView` / `AdminModelViewSet` (is_staff + permission), `MemberApiView` / `OwnedModelViewSet`
-  (logged-in, owner-checked resources). Permissions are declared per method via `@require_permission` or
-  `action_permissions` on ViewSets (default DENY). Input via `@validate_request` + `serializers/validates/`;
-  output via `serializers/responses/`.
+- Only two view bases: `CoreApiView` (non-CRUD, `@require_permission` per method) and `CoreModelViewSet`
+  (CRUD + opt-in `bulk-update`/`bulk-delete`/`history` actions, `action_permissions` default DENY). Defaults come from
+  settings (`IsActiveAuthenticated` + `HasIamPermission`, `BucketThrottle` + `RATE_LIMITS`); public or login-only
+  views override `permission_classes` per the table in `core_api_view.py` — never add new base view classes.
+  Services subclass `CoreCrudService` and declare `owner_field`/`manage_all_permission`/`owner_quota_setting`.
+  Models get change history by inheriting `JournalTracker` before `CoreModel`. Lists paginate only when
+  `page`/`page_size` is sent. Input via `@validate_request` + `serializers/validates/`; output via `serializers/responses/`.
 - Responses use a fixed envelope (`{success, data, meta}` / `{success:false, error:{code,...}}`) with stable
-  `ErrorCode`s; the frontend translates by code.
+  error codes (core `ErrorCode` + per-module `constants/<m>_error_code.py`); the frontend translates by code.
 - **Module registry**: each app in `app/modules/` subclasses `CoreModuleConfig` (label = module code) and exposes a
   `ModuleDescriptor` in `module.py` (permissions, dependencies); registration is automatic. Installed modules are
   always on: there is no module table, runtime enable/disable or icon on the backend. How modules are shown
   (groups, icons, order) is declared statically in the FE `manage-app` module.
 - Permissions source of truth is the IAM tables (`iam_role`, `iam_permission`, ...), not Django groups/`PermissionsMixin`.
-  Superuser bypasses permission checks; `is_staff` only grants entry to the admin area.
+  Superuser bypasses permission checks; `is_staff` only gates the FE admin shell and is never checked by the API.
 
 ### Frontend layering — `page → View → component(+own hook) → module hook (React Query) → service → apiClient`
 - No repository layer on the FE. Services are split **one file per backend model** (`iam/services/role.service.ts`
-  ↔ `iam/services/role_service.py`); never one merged `<module>.service.ts`.
+  ↔ `iam/services/role_service.py`); never one merged `<module>.service.ts`. CRUD comes from `createCrudService`,
+  keys from `createResourceKeys`, writes via `useResourceMutation`, lists via `useListQuery`.
 - `app/**/page.tsx` and `layout.tsx` only declare metadata (`createPageMetadata` from `shares/lib/seo.ts`), await
   params and render a module View/Layout — no hooks, state or UI markup. Views only compose components and check
   permissions (`usePermission`/`PermissionGate`); data fetching, loading and error states live in components + hooks.
@@ -85,6 +88,9 @@ rotating refresh token stored as HMAC; every request checks the session is still
   relations (roles, permissions) are picked with checkboxes and synced on Save via `useSync…`; any
   list of selectable items (roles, permissions, flags) renders through `ChoiceList` / `ChoiceGroups`; other modules plug into a form through an `extensions` slot + `useFormExtension`;
   missing shared UI goes into a new `shares/components/common/<name>/` folder; no intro/policy sentences under titles.
+  Rich text is Tiptap JSON only: `TiptapEditor` to edit, `TiptapContent` to render; modules add editor inserts
+  through the `editorPlugins` slot (`useTiptapInsertItem`). Inline create of a related resource uses `FormDialog`
+  around that resource's single form.
 - `src/shares/` holds only module-agnostic code and must not import modules. Admin shell (`AdminShell`, sidebar,
   launcher, `admin-navigation.ts`) lives in `modules/manage-app`; public pages, header and 404 in `modules/home`.
 - `apiClient` (`src/shares/lib/api/`) converts camelCase ⇄ snake_case, attaches CSRF/request id, does single-flight
@@ -94,7 +100,8 @@ rotating refresh token stored as HMAC; every request checks the session is still
   New message namespaces must be registered in `src/i18n/messages.ts` and `src/global.d.ts`.
 - Admin navigation: each module's `navigation.ts` exports an `AdminModuleNavigation` registered in
   `ADMIN_MODULE_NAVIGATION` (`modules/manage-app/constants/admin-navigation.ts`), keyed by backend module code;
-  each module declares its own `group` and lucide `icon`.
+  each module declares its own `group` and lucide `icon`. `tests/unit/module-registry.test.ts` fails if a module is
+  not registered everywhere.
 
 ## Git
 

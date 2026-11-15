@@ -72,122 +72,94 @@ MODULE = ModuleDescriptor(code="custom_pages", ..., permissions=CustomPagesPermi
 - `app/core/tests/test_module_conventions.py` kiểm tra: mọi app trong `app/modules` dùng `CoreModuleConfig`,
   đã đăng ký đúng mã, và mọi view của module kế thừa `CoreApiView`/`CoreModelViewSet`.
 
-## 3. Core (`app/core`)
+## 3. Core (`app/core`) — base duy nhất, module chỉ khai báo
 
 | Thành phần | Dùng khi |
 | --- | --- |
 | `models/core_model.py` | Mọi entity nghiệp vụ (UUID, timestamps, audit, soft delete tùy chọn) |
-| `repositories/core_repository.py` | Gốc mọi repository: `get_queryset`, `get_all`, `filter`, `exclude`, `get_by_id`, `find_by_id`, `get_one`, `find_one`, `get_by_ids`, `exists`, `count`, `values_list`, `get_for_update`, `create`, `update`, `save`, `soft_delete`, `hard_delete`, `update_where`, `delete_where`, `bulk_create` |
-| `services/core_crud_service.py` | Gốc service CRUD một model: `get_queryset`, `get_by_id`, `create`, `update`, `delete`; override để thêm nghiệp vụ |
-| `views/core_api_view.py` | Gốc mọi APIView: `get_actor(request)`, tự gắn kiểm tra module (`get_permissions`) |
-| `views/public_api_view.py` | API công khai chỉ đọc: `authentication_classes = []`, `permission_classes = [AllowAny]` |
-| `views/csrf_public_api_view.py` | API công khai đổi trạng thái bằng cookie: `[AllowAny, CsrfProtected]` |
-| `views/core_model_view_set.py` | Gốc ViewSet CRUD ủy quyền cho service, tự gắn kiểm tra module |
-| `pagination/core_page_number_pagination.py` | Phân trang mặc định (`page`, `page_size` ≤ 100) |
-| `filters/*` | Bộ lọc nhiều giá trị (dấu phẩy) cho FilterSet: `CoreBooleanInFilter`, `CoreChoiceInFilter`, `CoreCharInFilter`, `CoreUUIDInFilter` |
-| `decorators/validate_request.py` | Validate input; view nhận `validated_data`; tự khai báo request trong OpenAPI |
-| `serializers/core_validate_serializer.py` | Gốc của mọi validate serializer (từ chối field lạ) |
-| `schemas/*` | `CoreAutoSchema` (envelope response trong OpenAPI), `response_envelope` |
-| `responses/*` | `CoreResponse`, `CorePaginationResponse`, `CoreErrorResponse` |
-| `exceptions/*` | Raise lỗi nghiệp vụ có `ErrorCode` |
-| `registry/*` | `CoreModuleConfig`, `ModuleDescriptor`, `ModuleRegistry`, `PermissionCatalog`, `PermissionDefinition` |
+| `tracking/journal_tracker.py` | Mixin `JournalTracker`: model kế thừa (đặt **trước** `CoreModel`) thì CRUD tự ghi lịch sử thay đổi |
+| `repositories/core_repository.py` | Gốc mọi repository: đọc (`get_queryset`, `get_by_id`, `find_one`, `exists`, `count`…), khóa dòng (`get_for_update`, bỏ bản đã xóa mềm), ghi có audit (`create`, `update`, `soft_delete`, `update_where`, `bulk_create`) |
+| `services/core_crud_service.py` | Gốc mọi service CRUD: owner (`owner_field`, `manage_all_permission`), quota (`owner_quota_setting`), `*_for(actor)`, `bulk_update`/`bulk_delete`, `log_event` |
+| `views/core_api_view.py` | Gốc mọi API không phải CRUD: `get_actor(request)`; bảng override công khai/chỉ đăng nhập |
+| `views/core_model_view_set.py` | Gốc mọi CRUD: list/retrieve/create/partial_update/destroy + action `bulk-update`, `bulk-delete`, `history` bật bằng thuộc tính |
+| `permissions/` | `IsActiveAuthenticated`, `CsrfProtected` (quyền IAM: `iam/permissions/has_iam_permission.py`) |
+| `decorators/` | `validate_request` (input → `validated_data`), `rate_limit` (khóa `RATE_LIMITS` cho APIView) |
+| `pagination/core_page_number_pagination.py` | Phân trang **chỉ khi request có `page`/`page_size`** (≤ 100); không có thì trả hết |
+| `filters/*` | `CoreSearchFilter` (≤ 100 ký tự, ≤ 5 từ) và bộ lọc nhiều giá trị `Core{Boolean,Choice,Char,UUID}InFilter` (≤ 50 giá trị) |
+| `serializers/*` | `CoreValidateSerializer` (từ chối field lạ), bulk ids/result, `CoreJournalEntryResponseSerializer` |
+| `schemas/*`, `responses/*`, `exceptions/*`, `registry/*`, `utils/{url,slug}.py` | Envelope OpenAPI/response, lỗi có mã, module registry, URL tuyệt đối/slug |
 
-`app/core` **không import** `app/modules/*` (trừ `TYPE_CHECKING`). Thứ gì cần IAM/System (ví dụ
-`OwnedCrudService`, `OwnedModelViewSet`) đặt trong module đó; core nối với module qua setting
-(`AUTHENTICATION_BACKENDS`...).
+`app/core` **không import** `app/modules/*` (trừ `TYPE_CHECKING`). Core nối với module qua setting:
+`DEFAULT_PERMISSION_CLASSES` (IAM), `DEFAULT_THROTTLE_CLASSES` (bucket PostgreSQL), `CORE_CHANGE_RECORDER`
+(journal), `AUTHENTICATION_BACKENDS` (`User.has_perm` hỏi IAM).
 
-Lớp gốc khai báo mặc định; lớp con **ghi đè thuộc tính** khi cần (OOP), không lặp lại cấu hình:
+Chỉ **hai** lớp view nền; không tạo lớp con theo kiểu quyền. View nào khác thì ghi đè ngay trong view đó:
 
-```
-APIView ─ CoreApiView ─┬─ PublicApiView ─ CsrfPublicApiView
-                       └─ AuthenticatedApiView (iam) ─┬─ MemberApiView (iam)
-                                                      └─ AdminApiView (iam)
-GenericViewSet ─ CoreModelViewSet ─┬─ AdminModelViewSet (iam)
-                                   └─ OwnedModelViewSet (iam)
-```
+| Trường hợp | Ghi đè trong view |
+| --- | --- |
+| Đăng nhập + quyền IAM (mặc định) | không; APIView gắn `@require_permission`, ViewSet khai `action_permissions` |
+| Chỉ cần đăng nhập | `permission_classes = [IsActiveAuthenticated]` |
+| Công khai, chỉ đọc | `authentication_classes = []`, `permission_classes = [AllowAny]` |
+| Công khai, đổi trạng thái bằng cookie | như trên + `CsrfProtected` |
+| Công khai, cần biết ai đang xem | `permission_classes = [AllowAny]`, ghi đè `perform_authentication` (token hỏng = khách) |
 
-| Lớp | Xác thực / quyền | Dùng cho |
-| --- | --- | --- |
-| `PublicApiView` | không / `AllowAny` | API công khai chỉ đọc |
-| `CsrfPublicApiView` | không / `AllowAny` + CSRF | login, refresh, logout |
-| `AuthenticatedApiView` | đăng nhập | dữ liệu của chính mình (`/auth/me`, sessions) |
-| `MemberApiView` | đăng nhập + `@require_permission` | người dùng thường thao tác tài nguyên con có quyền IAM |
-| `AdminApiView` | đăng nhập + `is_staff` + `@require_permission` | API quản trị không theo CRUD |
-| `AdminModelViewSet` | đăng nhập + `is_staff` + `action_permissions` | CRUD quản trị |
-| `OwnedModelViewSet` | đăng nhập + `action_permissions`; service kiểm tra owner | CRUD tài nguyên của người dùng |
+`test_module_conventions.py` kiểm: mọi view kế thừa hai lớp nền, `permission_classes` chỉ thuộc bảng trên, mọi
+action/method mở ra đều có rule quyền.
 
 ## 4. Service
 
-- Ngoại lệ của module nền Attachment: `AttachmentService`, `AttachmentFolderService` giữ `CoreCrudService` và cung cấp
-  hợp đồng `get_queryset_for` / `get_by_id_for` / `delete` cho `OwnedModelViewSet`. Owner là
-  `created_by`; kiểm tra `manage_all` qua `User.has_perm()` để không tạo phụ thuộc vòng
-  `attachment → iam → account → attachment`. Mọi truy cập từ client và thao tác gán avatar
-  đều phải đi qua phương thức có kiểm tra actor.
-
-- Mỗi model một service, kế thừa `CoreCrudService[Model, Repository]` khi là CRUD.
-- Phụ thuộc tạo trong `__init__` và đặt tên theo lớp: `self.repository` (repository chính),
-  `self.<tên>_repository`, `self.<tên>_service`. Cho phép truyền vào để dùng chung/test:
-
-  ```python
-  class UserRoleService:
-      def __init__(self, user_service: UserService | None = None) -> None:
-          self.repository = UserRoleRepository()
-          self.user_service = user_service or UserService()
-  ```
-
-- Thao tác không cho phép (ví dụ xóa user) → override và raise `BusinessRuleError`, không để im lặng.
+- Mỗi model một service, kế thừa `CoreCrudService[Model, Repository]`. Tài nguyên có owner chỉ khai
+  `owner_field = "owner"` (hoặc `"created_by"`), `manage_all_permission`, `owner_quota_setting`; không tự viết lọc owner.
+  Bản ghi của người khác hoặc đã xóa mềm → `NotFoundError` (không lộ tồn tại).
+- Ghi đè `create`/`update`/`delete` khi có luật nghiệp vụ; dùng `get_for_write(actor, pk)` để khóa dòng + kiểm owner.
+  `bulk_*` gọi lại `update`/`delete` nên luật tự áp cho thao tác hàng loạt.
+- Phụ thuộc tạo trong `__init__` và đặt tên theo lớp: `self.repository`, `self.<tên>_repository`, `self.<tên>_service`.
+  Cho phép truyền vào để test. Module khác chỉ gọi **service công khai** (ví dụ `AttachmentService.find_alive_images`).
+- Sự kiện không phải đổi field (gán vai trò…) ghi bằng `instance.journal_event("<module>.<event>", data, actor.pk)`.
+- Thao tác không cho phép → raise `BusinessRuleError`, không để im lặng. Đóng tường minh action router tự sinh mà
+  tài nguyên không hỗ trợ bằng `DENY` trong `action_permissions`.
 
 ## 5. View
 
-### 5.1 CRUD trên model → `AdminModelViewSet` hoặc `OwnedModelViewSet`
+### 5.1 CRUD → `CoreModelViewSet`
 
 ```python
-class UserViewSet(AdminModelViewSet[User]):
-    service_class = UserService
-    filterset_class = UserFilter                                  # ?is_active=true,false&role=<id>,<id>
-    search_fields = ("email", "username", "first_name", "last_name")  # ?search=
-    ordering_fields = ("created_at", "email", "last_login")       # ?ordering=-email
-    ordering = ("-created_at",)                                   # mặc định
-    list_serializer_class = UserListResponseSerializer
-    detail_serializer_class = UserDetailResponseSerializer
-    create_serializer_class = UserCreateValidateSerializer
-    update_serializer_class = UserUpdateValidateSerializer
-    http_method_names = ["get", "post", "patch", "head", "options"]
+class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
+    service_class = ShortLinkService
+    filterset_class = ShortLinkFilter                     # ?status=ACTIVE,EXPIRED&owner=<uuid>,<uuid>
+    search_fields = ("name", "slug")                      # ?search=
+    ordering_fields = ("name", "created_at")              # ?ordering=-created_at
+    list_serializer_class = ShortLinkListResponseSerializer
+    detail_serializer_class = ShortLinkDetailResponseSerializer
+    create_serializer_class = ShortLinkCreateValidateSerializer
+    update_serializer_class = ShortLinkUpdateValidateSerializer
+    bulk_update_serializer_class = ShortLinkBulkUpdateValidateSerializer   # POST …/bulk-update
+    bulk_delete_enabled = True                                             # POST …/bulk-delete
+    history_enabled = True                                                 # GET …/{id}/history
+    action_rate_limits = {"create": "short_links.create"}                  # settings.RATE_LIMITS
     action_permissions = {
-        "list": permission_rule(IamPermission.USER_READ),
-        "retrieve": permission_rule(IamPermission.USER_READ),
-        "create": permission_rule(IamPermission.USER_CREATE),
-        "partial_update": permission_rule(IamPermission.USER_UPDATE),
+        "list": permission_rule(P.READ), "retrieve": permission_rule(P.READ),
+        "create": permission_rule(P.CREATE), "partial_update": permission_rule(P.UPDATE),
+        "destroy": permission_rule(P.DELETE), "bulk_update": permission_rule(P.UPDATE),
+        "bulk_delete": permission_rule(P.DELETE), "history": permission_rule(P.READ),
     }
 ```
 
-- API quản trị dùng `AdminModelViewSet` và yêu cầu `is_staff`. Tài nguyên người dùng tự quản lý dùng
-  `iam/views/owned_model_view_set.py` với service kế thừa `iam/services/owned_crud_service.py`
-  (`OwnedCrudService`): kiểm tra IAM action, owner trong service (người khác nhận 404). Quyền
-  `manage_all` chỉ mở phạm vi owner, vẫn cần quyền action.
-- Action không có trong `action_permissions` bị từ chối (mặc định DENY).
-- Chỉ mở method cần dùng qua `http_method_names`; cập nhật dùng `PATCH`.
-- Lọc/tìm/sắp xếp/phân trang dùng chuẩn DRF + django-filter (`DEFAULT_FILTER_BACKENDS`); không tự viết.
-  `ordering` ngoài `ordering_fields` bị bỏ qua; trang vượt quá → 404.
-- **Mọi bộ lọc nhận nhiều giá trị** phân tách dấu phẩy (FE lọc chọn nhiều): dùng `app/core/filters/*`
-  (`CoreBooleanInFilter` cho cờ, `CoreChoiceInFilter` cho lựa chọn cố định, `CoreUUIDInFilter` cho id,
-  `CoreCharInFilter` cho chuỗi tự do), không dùng `BooleanFilter`/`ChoiceFilter`/`UUIDFilter` một giá trị.
-  Giá trị ngoài `choices`/sai định dạng → 400 `VALIDATION_ERROR`. Điều kiện suy ra (trạng thái phiên, loại
-  truy cập) dùng `method=` và gộp OR các giá trị đã chọn. Test có ca nhiều giá trị và ca giá trị sai.
-- Đăng nhập `POST /auth/login` nhận `identifier` (email không phân biệt hoa thường, ưu tiên trước; không khớp
-  thì tên người dùng khớp chính xác) + `password`; sai thì một lỗi chung `AUTH_INVALID_CREDENTIALS`, không nói
-  sai phần nào. Tra cứu qua `UserService.find_by_identifier`.
-- Hoạt động gần nhất của người dùng là `User.last_seen_at`, chỉ Authentication ghi (khi đăng nhập và khi
-  xác thực access token, tối đa một lần mỗi phút mỗi phiên qua `UserService.record_activity`); không đổi
-  `updated_at`/`updated_by`. Module khác không tự ghi, chỉ đọc/sắp xếp (`ordering=last_seen_at`).
-- Thao tác hàng loạt là endpoint riêng `POST /<resource>/bulk-<action>` (body `CoreBulkIdsValidateSerializer`,
-  trả `CoreBulkResultResponseSerializer`), khai **trước** router, service chạy trong một transaction.
-- Đăng ký bằng `SimpleRouter(trailing_slash=False)`.
+- Action không có trong `action_permissions` bị từ chối (mặc định DENY). Khai quyền `create`/`partial_update` mà
+  thiếu serializer, hoặc bật `history_enabled` mà model không có `JournalTracker` → lỗi ngay khi import.
+- Bulk là action của ViewSet (path `…/bulk-update`, `…/bulk-delete`, không khai URL riêng), body kế thừa
+  `CoreBulkIdsValidateSerializer` (1–100 id), trả `{count}`, một transaction.
+- Chỉ mở method cần dùng qua `http_method_names`; cập nhật dùng `PATCH`. Đăng ký bằng `SimpleRouter(trailing_slash=False)`.
+- **Mọi bộ lọc nhận nhiều giá trị** phân tách dấu phẩy (`app/core/filters/*`); điều kiện suy ra (EXPIRED, ACTIVE…)
+  dùng `method=` và gộp OR. Giá trị ngoài `choices`, quá 50 giá trị → 400.
+- Danh sách không có `page`/`page_size` trả **toàn bộ** (danh mục, ô chọn); bảng ở FE luôn gửi `page`.
+- Đăng nhập `POST /auth/login` nhận `identifier` + `password`; sai thì một lỗi chung `AUTH_INVALID_CREDENTIALS`.
+- `User.last_seen_at` chỉ Authentication ghi (tối đa mỗi phút mỗi phiên), không đổi `updated_at`/`updated_by`.
 
-### 5.2 Tài nguyên con/hành động → `AdminApiView` hoặc `MemberApiView`
+### 5.2 Tài nguyên con/hành động → `CoreApiView`
 
 ```python
-class UserRoleView(AdminApiView):
+class UserRoleView(CoreApiView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.user_role_service = UserRoleService()
@@ -195,20 +167,12 @@ class UserRoleView(AdminApiView):
     @extend_schema(responses=RoleSummaryResponseSerializer(many=True))  # OpenAPI: chỉ khai response (phần data)
     @require_permission(IamPermission.ROLE_ASSIGN)          # kiểm tra quyền trước
     @validate_request(UserRoleAssignValidateSerializer)     # rồi mới validate
-    def post(self, request: Request, user_id: UUID, validated_data: dict[str, Any]) -> CoreResponse:
-        self.user_role_service.assign_role(self.get_actor(request), user_id, validated_data["role_id"])
-        roles = self.user_role_service.list_roles(user_id)
-        return CoreResponse(RoleSummaryResponseSerializer(roles, many=True).data)
+    def post(self, request: Request, user_id: UUID, validated_data: dict[str, Any]) -> CoreResponse: ...
 ```
 
+- Method **bắt buộc** có `@require_permission` (thiếu là 403), trừ view ghi đè `permission_classes` theo bảng mục 3.
+- Rate limit riêng: `@rate_limit("<khóa>")`; method ghi không khai dùng `default.write`.
 - Service tạo trong `__init__` của view, gọi qua `self.<tên>_service`; không `XxxService().method()` trong method.
-  Áp dụng cho mọi lớp có vòng đời riêng: view, authentication backend (`AccountAuthBackend.__init__`), command.
-- `AdminApiView`: method **bắt buộc** có `@require_permission` (thiếu là bị từ chối).
-- `MemberApiView`: người dùng thường (không cần `is_staff`), method **bắt buộc** có `@require_permission`;
-  service kiểm tra owner của tài nguyên cha. Không tự ghép `AuthenticatedApiView` + `HasDeclaredPermission`.
-- `AuthenticatedApiView`: chỉ cần đăng nhập (dữ liệu của chính mình). API công khai dùng
-  `PublicApiView` / `CsrfPublicApiView`.
-- Không khai `permission_classes` chỉ để thêm kiểm tra module; xem mục 2.1.
 - Lấy người thực hiện bằng `self.get_actor(request)`. DELETE trả `Response(status=204)` không body.
 
 ### 5.3 `@require_permission` / `permission_rule`
@@ -222,8 +186,9 @@ class UserRoleView(AdminApiView):
 ```
 
 - `check`/`allow_if`: `Callable[[Request, view], bool]`, không truy vấn DB nặng.
-- Lỗi trả 403 `PERMISSION_DENIED` với `details.permissions` là danh sách mã quyền yêu cầu.
-- ViewSet dùng `permission_rule(...)` cùng tham số trong `action_permissions`.
+- Lỗi trả 403 `PERMISSION_DENIED` với `details.permissions`. ViewSet dùng `permission_rule(...)`; `DENY` để đóng
+  tường minh một action.
+- API chỉ theo quyền IAM; **`is_staff` không được kiểm ở API** (chỉ quyết định vào khung quản trị FE).
 
 ## 6. OpenAPI
 
@@ -246,7 +211,7 @@ class UserRoleView(AdminApiView):
 
 ## 8. URL tuyệt đối và file
 
-- Mọi URL trả cho client (file, ảnh) dựng bằng `app.core.utils.absolute_url.build_absolute_url`:
+- Mọi URL trả cho client (file, ảnh) dựng bằng `app.core.utils.url.build_absolute_url`:
   domain lấy từ request hiện tại (`X-Forwarded-Host/Proto` sau proxy). FE không nối domain.
 - Không trả `file.url` thô. Object storage trả URL tuyệt đối sẵn → giữ nguyên.
 - Kiểu file xác định từ nội dung (`file_signature`); SVG phải qua `svg_inspector.find_svg_problem`
@@ -267,11 +232,8 @@ class UserRoleView(AdminApiView):
 
 - Xoá là **xoá mềm** (`CoreRepository.soft_delete`), có quyền `<module>.<resource>.delete` riêng; mọi truy vấn
   dùng `alive()` nên bản ghi đã xoá biến mất khỏi API, đăng nhập và kiểm quyền.
-- Thao tác hàng loạt là `AdminApiView` riêng: `POST /<resource>/bulk-update` (`ids` + trường cần đổi) và
-  `POST /<resource>/bulk-delete` (`ids`), body kế thừa `CoreBulkIdsValidateSerializer` (1–100 id, bỏ trùng),
-  response `CoreBulkResultResponseSerializer` (`count`). URL khai **trước** router để `bulk-*` không bị hiểu là `{id}`.
-- Service `bulk_update`/`bulk_delete` gọi lại `update`/`delete` từng bản ghi trong **một transaction**
-  (`@transaction.atomic`): cùng luật nghiệp vụ với thao tác đơn, lỗi một dòng thì không dòng nào đổi.
+- Thao tác hàng loạt là action có sẵn của `CoreModelViewSet` (mục 5.1); `CoreCrudService.bulk_*` gọi lại
+  `update`/`delete` từng bản ghi trong **một transaction**: cùng luật nghiệp vụ, lỗi một dòng thì không dòng nào đổi.
 
 ## 10. Model, serializer, migration
 
@@ -284,9 +246,10 @@ class UserRoleView(AdminApiView):
 
 ## 11. Lỗi, log, bảo mật
 
-- Raise `ValidationError`/`AuthorizationError`/`NotFoundError`/`ConflictError`/`BusinessRuleError`... kèm `ErrorCode`.
-  Mã lỗi theo module sở hữu nghiệp vụ: tài khoản `ACCOUNT_*` (account), vai trò/quyền `IAM_*` (iam),
-  cấu hình module `MODULE_*` (system), phiên đăng nhập `AUTH_*` (authentication).
+- Raise `ValidationError`/`AuthorizationError`/`NotFoundError`/`ConflictError`/`BusinessRuleError`... kèm mã lỗi.
+  Core chỉ giữ mã chung (`ErrorCode`); mã riêng nằm ở `app/modules/<m>/constants/<m>_error_code.py` (StrEnum,
+  tiền tố theo module: `ACCOUNT_*`, `IAM_*`, `CUSTOM_PAGES_*`…). `core/tests/test_error_codes.py` kiểm mã không trùng
+  và FE có bản dịch vi/en cho mọi mã.
 - Quy tắc kiểm tra riêng của module đặt trong module (`account/validators/password_validator.py`,
   `iam/constants/role_code.py`); `CoreValidator` chỉ giữ định dạng dùng chung của core.
 - Lỗi không lường trước để exception handler log + trả `INTERNAL_ERROR`.
@@ -297,8 +260,10 @@ class UserRoleView(AdminApiView):
 
 - pytest + pytest-django trên PostgreSQL (`test_toannx`). Fixture chung ở `backend/conftest.py`.
 - Base assertion: `app/core/tests/base/base_api_test_case.py`. Factory/helper IAM: `app/modules/iam/tests/`.
-- Mỗi endpoint mới: test thành công, validate sai, chưa đăng nhập, thiếu quyền, quy tắc nghiệp vụ;
-  API danh sách thêm test `search`/filter/`ordering`/phân trang.
+- Mỗi endpoint mới: test thành công, validate sai, chưa đăng nhập, thiếu quyền, quy tắc nghiệp vụ, owner (người
+  khác nhận 404); API danh sách thêm test `search`/filter nhiều giá trị/`ordering`/phân trang.
+- Mỗi endpoint danh sách thêm một dòng vào `core/tests/test_list_query_count.py` (số query không tăng theo số bản ghi).
+- Factory trong `tests/factories/` của module; model có `JournalTracker` test thêm lịch sử (`…/history`).
 
 ## 13. Công cụ
 

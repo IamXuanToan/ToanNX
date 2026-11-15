@@ -35,14 +35,15 @@ app/
   modules/<module>/
     apps.py  module.py  urls.py
     permissions/<module>_permission.py  # danh mục quyền của module
-    constants/                          # hằng số khác, chỉ tạo khi có
+    constants/<module>_error_code.py    # mã lỗi riêng (StrEnum); hằng số khác chỉ tạo khi có
+    tasks/                              # việc dọn dẹp khai trong ModuleDescriptor.cleanup_tasks
     models/<model>.py                   # mỗi model 1 file; models/__init__.py import để Django nạp
     repositories/<model>_repository.py  # đọc + ghi (lớp DB duy nhất)
     services/<model>_service.py         # nghiệp vụ, mỗi model 1 service
     filters/<model>_filter.py           # django-filter FilterSet cho ViewSet
     serializers/validates/<resource>_<action>_validate_serializer.py   # input theo endpoint
     serializers/responses/<resource>_<kind>_response_serializer.py     # output theo endpoint
-    views/<resource>_view_set.py        # CRUD: AdminModelViewSet (router)
+    views/<resource>_view_set.py        # CRUD: CoreModelViewSet (router)
     views/<resource>_view.py            # tài nguyên con/hành động: XxxView + XxxObjectView (APIView)
     backends/  authentications/  schemas/  types/  utils/  exceptions/   # chỉ tạo khi có
     tests/                              # test của module (factories/, helpers/ nếu cần)
@@ -63,31 +64,39 @@ Chi tiết rule: [rules/backend.md](rules/backend.md).
 ### View
 
 ```
-APIView ─ CoreApiView ─┬─ PublicApiView ─ CsrfPublicApiView
-                       └─ AuthenticatedApiView ─ AdminApiView
-GenericViewSet ─ CoreModelViewSet ─ AdminModelViewSet
+APIView ─ CoreApiView                     # API không phải CRUD
+GenericViewSet ─ CoreModelViewSet         # CRUD + action bulk-update / bulk-delete / history
 ```
 
-| Base | Authentication / permission | Dùng cho |
-| --- | --- | --- |
-| `core/views/public_api_view.py` | `[]` / `[AllowAny]` | `/auth/csrf`, `/health` |
-| `core/views/csrf_public_api_view.py` | `[]` / `[AllowAny, CsrfProtected]` | `/auth/login`, `/auth/refresh`, `/auth/logout` |
-| `iam/views/authenticated_api_view.py` | mặc định / đăng nhập + active | `/auth/me`, `/auth/sessions`, `/auth/logout-all` |
-| `iam/views/admin_api_view.py` | + `is_staff` + method bắt buộc có `@require_permission` | tài nguyên con (vai trò của người dùng, quyền của vai trò) |
-| `iam/views/admin_model_view_set.py` | + `is_staff` + `action_permissions` (mặc định DENY) | CRUD: users, roles, permissions, attachments |
-| `iam/views/member_api_view.py` | đăng nhập + method bắt buộc có `@require_permission` (không cần `is_staff`) | block của Custom Pages |
-| `iam/views/owned_model_view_set.py` | đăng nhập + `action_permissions`, service kiểm tra owner | CRUD: Short Links, Custom Pages |
+Chỉ hai lớp nền. Hành vi chung là **thuộc tính khai báo** (mặc định ở `settings.REST_FRAMEWORK`):
+đăng nhập + quyền IAM (`IsActiveAuthenticated`, `HasIamPermission`), throttle bucket (`BucketThrottle` +
+`settings.RATE_LIMITS`), lọc/tìm/sắp xếp/phân trang. View khác thì ghi đè trong chính view đó:
 
+| Trường hợp | Ví dụ |
+| --- | --- |
+| Mặc định (đăng nhập + quyền IAM) | users, roles, attachments, short links, QR, trang, journal |
+| `permission_classes = [IsActiveAuthenticated]` | `/auth/me`, `/auth/sessions`, `/auth/logout-all` |
+| `authentication_classes = []`, `[AllowAny]` | `/auth/csrf`, `/health`, `/short-links/resolve/{slug}` |
+| như trên + `CsrfProtected` | `/auth/login`, `/auth/refresh`, `/auth/logout` |
+| `[AllowAny]` + ghi đè `perform_authentication` | `/custom-pages/public/...` (xem trước bản nháp khi có quyền) |
 
 `CoreModelViewSet` ủy quyền list/retrieve/create/partial_update/destroy cho `service_class`, dùng
-validate serializer riêng (`create_serializer_class`, `update_serializer_class`) và response serializer riêng
-(`list_serializer_class`, `detail_serializer_class`). Lọc/tìm/sắp xếp/phân trang dùng chuẩn DRF:
-`filterset_class` (django-filter), `search_fields` (`?search=`), `ordering_fields` + `ordering` (`?ordering=`),
-`CorePageNumberPagination` (`?page=&page_size=`).
+validate serializer riêng (`create_serializer_class`, `update_serializer_class`, `bulk_update_serializer_class`)
+và response serializer riêng (`list_serializer_class`, `detail_serializer_class`). Lọc/tìm/sắp xếp dùng chuẩn DRF:
+`filterset_class` (bộ lọc nhiều giá trị `Core*InFilter`), `search_fields` (`?search=`), `ordering_fields`
+(`?ordering=`). `CorePageNumberPagination` chỉ phân trang khi có `?page=`/`?page_size=`; không có thì trả hết.
 
-`CoreCrudService[M, R]` là gốc của service CRUD; `OwnedCrudService` bổ sung kiểm tra owner và
-quyền `manage_all` cho tài nguyên của người dùng. Service nhận dependency qua constructor
-(`repository`, `<tên>_repository`, `<tên>_service`) để test dễ thay thế.
+`CoreCrudService[M, R]` là gốc của mọi service CRUD: owner (`owner_field`, `manage_all_permission`), quota
+(`owner_quota_setting`), `get_for_write` (khóa dòng + kiểm owner), bulk trong một transaction. Service nhận
+dependency qua constructor (`repository`, `<tên>_repository`, `<tên>_service`) để test dễ thay thế.
+
+### Lịch sử thay đổi (Journal)
+
+Model kế thừa `JournalTracker` (`core/tracking/`) giữ ảnh chụp field khi nạp từ DB; `save()`/`delete()` (kể cả
+qua `CoreRepository.update_where`) tạo `ChangeSet` (field cũ → mới, che field nhạy cảm) và gửi cho recorder ở
+`settings.CORE_CHANGE_RECORDER` (module `journal`) **trong cùng transaction**. Sự kiện không phải đổi field (gán vai
+trò, cấp quyền) dùng `journal_event(...)`. `GET /<resource>/{id}/history` (bật `history_enabled`) và trang Journal
+lọc theo `module.model`; bản ghi cũ hơn `JOURNAL_RETENTION_DAYS` được dọn bằng `run_cleanup`.
 
 ### OpenAPI
 
@@ -99,7 +108,7 @@ cookie `access_token` hoặc Bearer. Schema chỉ phục vụ khi DEBUG (`/api/v
 
 `CoreRepository.create/update/soft_delete/bulk_create` gán `created_by`/`updated_by`/`deleted_by`:
 ưu tiên `actor` truyền tường minh, sau đó lấy từ `UserContext`. `Model.save()` **không** tự gán audit.
-`QuerySet.update()` và `bulk_update()` phải tự set `updated_by` (đã kiểm thử create/update/bulk_create/context).
+Ghi hàng loạt dùng `CoreRepository.update_where` (tự set `updated_by`/`updated_at`, ghi journal cho model có tracker); không gọi `QuerySet.update()` trực tiếp.
 
 ### Response & lỗi
 

@@ -31,18 +31,24 @@ API: `has_permission(user, code)`, `has_any_permission`, `has_all_permissions`, 
 
 ## Bảo vệ API
 
+Mặc định toàn hệ thống (`DEFAULT_PERMISSION_CLASSES`) là `IsActiveAuthenticated` + `HasIamPermission`: phải đăng
+nhập, tài khoản đang hoạt động và có quyền IAM khai cho method/action. View chỉ kế thừa `CoreApiView` hoặc
+`CoreModelViewSet`; endpoint công khai/chỉ đăng nhập ghi đè `permission_classes` (bảng trong
+[rule backend](rules/backend.md) mục 3).
+
 ```python
 # APIView: mỗi method khai báo quyền
-class UserRoleView(AdminApiView):
+class UserRoleView(CoreApiView):
     @require_permission(IamPermission.ROLE_ASSIGN)
     @validate_request(UserRoleAssignValidateSerializer)
     def post(self, request, user_id, validated_data): ...
 
-# ViewSet: quyền theo action
-class UserViewSet(AdminModelViewSet[User]):
+# ViewSet: quyền theo action (gồm action có sẵn bulk_update, bulk_delete, history)
+class UserViewSet(CoreModelViewSet[User]):
     action_permissions = {
         "list": permission_rule(IamPermission.USER_READ),
         "create": permission_rule(IamPermission.USER_CREATE),
+        "update": DENY,                      # đóng tường minh action router sinh mà không hỗ trợ
     }
 ```
 
@@ -55,22 +61,24 @@ class UserViewSet(AdminModelViewSet[User]):
 | `check=fn(request, view) -> bool` | Điều kiện bổ sung (AND), áp dụng cả với superuser |
 | `allow_if=fn(request, view) -> bool` | Điều kiện thay thế (OR), ví dụ chính chủ |
 
-Method không gắn `@require_permission` (APIView) hoặc action không có trong `action_permissions` (ViewSet) bị từ chối
-(`HasDeclaredPermission`, `HasActionPermission`). Mặc định toàn hệ thống (`DEFAULT_PERMISSION_CLASSES`)
-là `IsActiveAuthenticated`; endpoint công khai kế thừa `PublicApiView`/`CsrfPublicApiView`.
+Method không gắn `@require_permission` hoặc action không có trong `action_permissions` bị từ chối (mặc định DENY).
+`is_staff` **không** được kiểm ở API: người có quyền IAM gọi được API dù không phải staff.
+
+Tài nguyên có owner (link rút gọn, mã QR, trang, file): service khai `owner_field` + `manage_all_permission`.
+Người không có quyền `*.manage_all` chỉ thấy/sửa bản của mình; bản của người khác trả 404.
 
 | Mã lỗi | Khi nào |
 | --- | --- |
 | 401 `AUTH_NOT_AUTHENTICATED` | Chưa đăng nhập |
-| 403 `ADMIN_ACCESS_REQUIRED` | Không phải staff/superuser |
 | 403 `PERMISSION_DENIED` | Thiếu quyền (`details.permissions`: danh sách mã quyền yêu cầu) |
+| 404 `NOT_FOUND` | Bản ghi không tồn tại, đã xóa mềm hoặc thuộc người khác |
 
 ## Cờ người dùng
 
 | Cờ | Ý nghĩa |
 | --- | --- |
 | `is_superuser` | Toàn quyền tầng ứng dụng. Chỉ superuser được bật/tắt cờ này và sửa tài khoản superuser. |
-| `is_staff` | Được vào khu vực quản trị; từng chức năng vẫn cần quyền. |
+| `is_staff` | Chỉ quyết định hiển thị khung quản trị ở FE; API không kiểm cờ này, từng chức năng cần quyền IAM. |
 | `is_novel` | Đánh dấu nhóm nghiệp vụ Novel; không cấp quyền nào (quyền Novel sẽ do IAM khi có module Novel). |
 | `is_active` | Khóa/mở tài khoản; khóa sẽ thu hồi mọi phiên. |
 
@@ -97,29 +105,31 @@ Quyền khai báo bằng `PermissionDefinition(code, name, description)`; mô t�
 
 ## API quản trị (`/api/v1`)
 
-| Method | Path | Quyền |
-| --- | --- | --- |
-| GET/POST | `/account/users` | `account.user.read` / `account.user.create` |
-| GET/PATCH | `/account/users/{id}` | `account.user.read` / `account.user.update` |
-| DELETE | `/account/users/{id}` (xoá mềm, thu hồi phiên; không xoá chính mình/superuser cuối) | `account.user.delete` |
-| POST | `/account/users/bulk-update` (`ids`, `is_active`) | `account.user.update` |
-| POST | `/account/users/bulk-delete` (`ids`) | `account.user.delete` |
-| GET | `/iam/users/{id}/roles` | `iam.role.read` hoặc `iam.role.assign` |
-| POST | `/iam/users/{id}/roles` | `iam.role.assign` |
-| DELETE | `/iam/users/{id}/roles/{role_id}` | `iam.role.assign` |
-| GET/POST | `/iam/roles` | `iam.role.read` / `iam.role.create` |
-| GET/PATCH | `/iam/roles/{id}` | `iam.role.read` / `iam.role.update` |
-| DELETE | `/iam/roles/{id}` (xoá mềm; vai trò hệ thống bị chặn) | `iam.role.delete` |
-| POST | `/iam/roles/bulk-update` (`ids`, `is_active`) | `iam.role.update` |
-| POST | `/iam/roles/bulk-delete` (`ids`) | `iam.role.delete` |
-| POST | `/iam/roles/{id}/permissions` | `iam.permission.assign` |
-| DELETE | `/iam/roles/{id}/permissions/{permission_id}` | `iam.permission.assign` |
-| GET | `/iam/permissions`, `/iam/permissions/{id}` | `iam.permission.read` |
-| GET/POST | `/attachments` | `attachment.file.read` / `attachment.file.create` |
-| GET/DELETE | `/attachments/{id}` | `attachment.file.read` / `attachment.file.delete` |
+CRUD theo `CoreModelViewSet`: `GET/POST /<resource>`, `GET/PATCH/DELETE /<resource>/{id}`, và khi bật:
+`POST /<resource>/bulk-update`, `POST /<resource>/bulk-delete`, `GET /<resource>/{id}/history`.
+
+| Tài nguyên | Quyền |
+| --- | --- |
+| `/account/users` (+ bulk, history) | `account.user.{read,create,update,delete}` |
+| `/iam/users/{id}/roles` | đọc `iam.role.read` hoặc `iam.role.assign`; gán/gỡ `iam.role.assign` |
+| `/iam/roles` (+ bulk, history) | `iam.role.{read,create,update,delete}` |
+| `/iam/roles/{id}/permissions` | `iam.permission.assign` |
+| `/iam/permissions` | `iam.permission.read` |
+| `/attachments`, `/attachments/folders` | `attachment.{file,folder}.{read,create,update,delete}`, `attachment.file.manage_all` |
+| `/auth/admin-sessions` (+ `bulk-revoke`, `users`) | `authentication.session.{read,revoke,delete}` |
+| `/journal/entries`, `/journal/resources` | `journal.entry.read` |
+| `/short-links/links` (+ bulk, history) | `short_links.link.{read,create,update,delete,manage_all}` |
+| `/qr-codes/codes` (+ bulk, history), `/qr-codes/preview`, `/qr-codes/banks` | `qr_codes.code.{read,create,update,delete,manage_all}` |
+| `/custom-pages/paths` | `custom_pages.path.{read,create,update,delete}` |
+| `/custom-pages/pages` (+ `duplicate`, bulk, history) | `custom_pages.page.{read,create,update,delete,manage_all}` |
+
+Công khai (ghi đè `permission_classes`): `/auth/csrf|login|refresh`, `/health`, `/short-links/resolve/{slug}`,
+`/custom-pages/public/{segment}/{slug}` (người có quyền đọc trang xem được bản nháp qua `?preview=1`),
+`/health/cleanup` (khóa bằng `CRON_SECRET`).
 
 Quyền tạo bởi module được khai báo trong `module.py` của module đó; không cần sửa IAM core.
-Xoá người dùng và vai trò là xoá mềm, có quyền `delete` riêng (`account.user.delete`, `iam.role.delete`); khoá tài khoản (`is_active=false`) vẫn là cách tạm ngưng không mất dữ liệu.
+Xoá người dùng và vai trò là xoá mềm, có quyền `delete` riêng; khoá tài khoản (`is_active=false`) vẫn là cách tạm
+ngưng không mất dữ liệu. Gán/gỡ vai trò và quyền được ghi vào Journal.
 
 ## Frontend
 

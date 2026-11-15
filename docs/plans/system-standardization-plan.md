@@ -1,7 +1,9 @@
 # Chuẩn hóa hệ thống TOANNX — BE + FE
 
 Ngày 15/11/2026 · bản 7. Thay cho `qr-shortlinks-custompages-plan.md` (bản 6) và file Q&A (đã gộp vào mục 13).
-Trạng thái: **CHỜ DUYỆT**, chưa sửa code.
+Trạng thái: **ĐÃ THỰC HIỆN** (15/11/2026) trên `develop`. Chưa làm: sinh type FE từ OpenAPI, CI workflow, CSP,
+`SelectField` tìm kiếm bất đồng bộ + bộ lọc chủ sở hữu ở FE, node Tiptap `socialLinks`/`columns`, database E2E riêng,
+cấu hình cron gọi `/health/cleanup` khi deploy.
 
 Mục tiêu: dựng **base chuẩn** cho cả BE và FE ngay từ bây giờ. Sau khi xong, module mới (kể cả journal, QR, short
 links, custom pages) chỉ **khai báo** theo base, không tự viết lại owner, bulk, quyền, rate limit, lịch sử thay đổi,
