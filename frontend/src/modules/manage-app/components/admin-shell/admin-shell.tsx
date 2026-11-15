@@ -17,6 +17,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/shares/componen
 import { Skeleton } from "@/shares/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
 import type { AdminGroup } from "@/shares/types/navigation.types";
+import { useMessage } from "@/shares/hooks/use-message";
 
 import { MANAGE_APP_ROUTES } from "../../constants/routes";
 import { AdminBreadcrumb, type BreadcrumbEntry } from "../admin-breadcrumb/admin-breadcrumb";
@@ -52,6 +53,7 @@ function HeaderActions({ withAccount = false }: { withAccount?: boolean }) {
  */
 function useGroupBreadcrumb(group?: AdminGroup): BreadcrumbEntry[] {
   const t = useTranslations("common.nav");
+  const message = useMessage();
   const pathname = usePathname();
   if (!group) return [{ label: t("admin"), href: MANAGE_APP_ROUTES.admin }];
   const crumbs: BreadcrumbEntry[] = [{ label: group.name, href: group.href }];
@@ -59,7 +61,7 @@ function useGroupBreadcrumb(group?: AdminGroup): BreadcrumbEntry[] {
     .flatMap((module) => module.items)
     .find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`));
   if (section && pathname !== section.href) {
-    crumbs.push({ label: t(section.labelKey), href: section.href });
+    crumbs.push({ label: message(section.labelKey), href: section.href });
   }
   return crumbs;
 }

@@ -11,9 +11,9 @@ from django.db import connection
 from django.test.utils import CaptureQueriesContext
 
 from app.modules.account.tests.factories.user_factory import UserFactory
-from app.modules.iam.tests.factories.role_factory import RoleFactory
 from app.modules.custom_pages.models.page_path import PagePath
 from app.modules.custom_pages.services.page_service import PageService
+from app.modules.iam.tests.factories.role_factory import RoleFactory
 from app.modules.qr_codes.services.qr_code_service import QrCodeService
 from app.modules.short_links.services.short_link_service import ShortLinkService
 

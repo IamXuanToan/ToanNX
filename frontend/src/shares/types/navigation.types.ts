@@ -1,17 +1,24 @@
 import type { LucideIcon } from "lucide-react";
 
-/** Đường dẫn trang quản trị thuộc một module (khai trong `modules/<m>/constants/routes.ts`). */
-export type AdminHref =
-  "/admin/users" | "/admin/sessions" | "/admin/roles" | "/admin/permissions" | "/admin/attachments";
+import type { AppPathname } from "@/i18n/routing";
+
+/**
+ * Khóa dịch đầy đủ từ gốc message (`<namespace>.<key>`), ví dụ `account.nav.users`.
+ * Module tự khai trong namespace của mình; `shares` không liệt kê khóa của module nào.
+ */
+export type MessageKey = `${string}.${string}`;
+
+/** Đường dẫn trang quản trị (một pathname nội bộ của `routing.pathnames`). */
+export type AdminHref = Exclude<Extract<AppPathname, `/admin/${string}`>, `${string}[${string}`>;
 
 /** Mục menu trong sidebar của một module. */
 export type AdminNavItem = {
-  /** Khóa dịch trong namespace `common.nav`. */
-  labelKey: "users" | "sessions" | "roles" | "permissions" | "attachments";
+  /** Khóa dịch đầy đủ của nhãn. */
+  labelKey: MessageKey;
   /** Đường dẫn nội bộ (`<M>_ROUTES` của module). */
   href: AdminHref;
   icon: LucideIcon;
-  /** Quyền cần có để thấy mục (bỏ trống = mọi staff). */
+  /** Quyền cần có để thấy mục (bỏ trống = mọi người vào được khung quản trị). */
   permission?: string;
 };
 
@@ -21,10 +28,13 @@ export type AdminGroupCode = "system" | "content";
 /** Khai báo điều hướng của một module FE (mỗi module một file `navigation.ts`). */
 export type AdminModuleNavigation = {
   /** Mã module, trùng mã module backend (`ModuleDescriptor.code`). */
-  module: "account" | "iam" | "attachment";
+  module: string;
+  /** Khóa dịch tên và mô tả module (thẻ ở màn chọn, tiêu đề sidebar). */
+  nameKey: MessageKey;
+  descriptionKey: MessageKey;
   /** Nhóm hiển thị ở màn chọn module. */
   group: AdminGroupCode;
-  /** Icon của module (thẻ ở màn chọn module). */
+  /** Icon của module. */
   icon: LucideIcon;
   /** Menu sidebar khi đang ở trong module, theo thứ tự hiển thị. */
   items: AdminNavItem[];
@@ -32,7 +42,7 @@ export type AdminModuleNavigation = {
 
 /** Module người dùng hiện tại vào được: có ít nhất một mục được phép. */
 export type AdminModule = {
-  code: AdminModuleNavigation["module"];
+  code: string;
   /** Tên đã dịch. */
   name: string;
   /** Mô tả ngắn đã dịch. */

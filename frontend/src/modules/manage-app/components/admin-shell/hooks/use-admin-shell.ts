@@ -10,6 +10,7 @@ import { useCurrentUser } from "@/modules/auth/hooks/use-current-user";
 import { AUTH_ROUTES } from "@/modules/auth/constants/routes";
 import { canAccessAdmin, hasPermission } from "@/modules/auth/services/current-user.service";
 import { useMediaQuery } from "@/shares/hooks/use-media-query";
+import { useMessage } from "@/shares/hooks/use-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 import type { AdminGroup, AdminModule } from "@/shares/types/navigation.types";
 import { useAuthStore } from "@/store/auth-store";
@@ -31,7 +32,7 @@ const TABLET_QUERY = "(min-width: 768px) and (max-width: 1279px)";
  */
 export function useAdminShell() {
   const t = useTranslations("auth.session");
-  const tModules = useTranslations("common.adminModules");
+  const message = useMessage();
   const tGroups = useTranslations("common.adminGroups");
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -72,8 +73,8 @@ export function useAdminShell() {
       if (items.length === 0) continue;
       const entry: AdminModule = {
         code: navigation.module,
-        name: tModules(`${navigation.module}.name`),
-        description: tModules(`${navigation.module}.description`),
+        name: message(navigation.nameKey),
+        description: message(navigation.descriptionKey),
         icon: navigation.icon,
         items,
         href: items[0].href,
@@ -97,7 +98,7 @@ export function useAdminShell() {
         },
       ];
     });
-  }, [current.data, tModules, tGroups]);
+  }, [current.data, message, tGroups]);
 
   const activeModuleCode = findModuleCodeByPath(pathname);
   const activeGroup = groups.find((group) =>

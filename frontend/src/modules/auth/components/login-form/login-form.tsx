@@ -10,6 +10,8 @@ import { Button } from "@/shares/components/ui/button";
 import { FieldGroup } from "@/shares/components/ui/field";
 import { Input } from "@/shares/components/ui/input";
 
+import type { AppPathname } from "@/i18n/routing";
+
 import { useLoginForm } from "./hooks/use-login-form";
 
 /**
@@ -17,9 +19,9 @@ import { useLoginForm } from "./hooks/use-login-form";
  *
  * @returns Form đăng nhập.
  */
-export function LoginForm() {
+export function LoginForm({ redirectTo }: { redirectTo: AppPathname }) {
   const t = useTranslations("auth.login");
-  const { form, onSubmit, isSubmitting, rootError } = useLoginForm();
+  const { form, onSubmit, isSubmitting, rootError } = useLoginForm(redirectTo);
 
   return (
     <Form onSubmit={onSubmit} noValidate className="space-y-5" data-testid="login-form">

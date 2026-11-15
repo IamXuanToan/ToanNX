@@ -21,6 +21,8 @@ export type RequestOptions = {
   signal?: AbortSignal;
   /** Khóa giữ nguyên nội dung khi chuyển đổi case. */
   opaqueKeys?: readonly string[];
+  /** Thời gian chờ riêng (ms); mặc định `env.apiTimeoutMs`. */
+  timeoutMs?: number;
 };
 
 const SAFE_METHODS: readonly HttpMethod[] = ["GET"];
@@ -73,7 +75,10 @@ async function send(method: HttpMethod, path: string, options: RequestOptions): 
 
   // Hết thời gian chờ → hủy request; vẫn tôn trọng tín hiệu hủy từ bên ngoài.
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort("timeout"), env.apiTimeoutMs);
+  const timeout = setTimeout(
+    () => controller.abort("timeout"),
+    options.timeoutMs ?? env.apiTimeoutMs,
+  );
   options.signal?.addEventListener("abort", () => controller.abort(options.signal?.reason), {
     once: true,
   });

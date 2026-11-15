@@ -132,7 +132,8 @@
     "feedback": {
       "bulkUpdated": "Đã cập nhật {count} bản ghi.",
       "deleted": "Đã xoá.",
-      "bulkDeleted": "Đã xoá {count} bản ghi."
+      "bulkDeleted": "Đã xoá {count} bản ghi.",
+      "saved": "Đã lưu."
     },
     "slugInput": {
       "placeholder": "vi-du-duong-dan"
@@ -178,17 +179,32 @@
       "bold": "Đậm",
       "italic": "Nghiêng",
       "underline": "Gạch chân",
-      "heading": "Tiêu đề",
+      "strike": "Gạch ngang",
+      "code": "Mã",
+      "highlight": "Tô sáng",
+      "align": "Căn lề",
+      "blockType": "Kiểu đoạn",
+      "paragraph": "Đoạn văn",
+      "heading1": "Tiêu đề 1",
+      "heading2": "Tiêu đề 2",
+      "heading3": "Tiêu đề 3",
       "bulletList": "Danh sách",
       "orderedList": "Danh sách số",
+      "taskList": "Việc cần làm",
+      "quote": "Trích dẫn",
       "table": "Bảng",
+      "divider": "Đường kẻ",
       "undo": "Hoàn tác",
       "redo": "Làm lại",
-      "image": "Chèn ảnh",
+      "image": "Chèn ảnh từ Thư viện",
+      "imageUrl": "Chèn ảnh từ URL",
+      "youtube": "Chèn video YouTube",
       "link": "Liên kết",
-      "applyLink": "Áp dụng liên kết",
-      "removeLink": "Bỏ liên kết",
-      "invalidUrl": "Chỉ chấp nhận URL HTTP/HTTPS.",
+      "insert": "Chèn",
+      "apply": "Áp dụng",
+      "invalidUrl": "Chỉ chấp nhận liên kết http, https, mailto, tel.",
+      "invalidImageUrl": "Ảnh ngoài phải là URL https.",
+      "invalidYoutube": "Chỉ hỗ trợ video YouTube (https).",
       "imageFailed": "Không thể thêm ảnh. Vui lòng thử lại."
     },
     "components": {

@@ -6,4 +6,6 @@ export const env = {
   apiBasePath: "/api/v1",
   /** Thời gian chờ tối đa của một request API (ms). */
   apiTimeoutMs: 15_000,
+  /** Thời gian chờ của upload file (file tới 5 MB trên mạng chậm). */
+  uploadTimeoutMs: 60_000,
 } as const;

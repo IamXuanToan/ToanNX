@@ -57,7 +57,7 @@ _NODES: dict[str, tuple[frozenset[str], bool]] = {
     "tableRow": (frozenset(), True),
     "tableHeader": (frozenset({"colspan", "rowspan", "colwidth"}), True),
     "tableCell": (frozenset({"colspan", "rowspan", "colwidth"}), True),
-    "image": (frozenset({"src", "alt", "title", "attachmentId", "width"}), False),
+    "image": (frozenset({"src", "alt", "title", "attachmentId", "width", "height"}), False),
     "youtube": (frozenset({"src", "width", "height", "start"}), False),
     "button": (frozenset({"label", "href", "shortLinkId", "variant"}), False),
     "columns": (frozenset({"count"}), True),

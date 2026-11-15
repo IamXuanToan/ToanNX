@@ -18,7 +18,8 @@ export const ADMIN_GROUPS: { code: AdminGroupCode; icon: LucideIcon }[] = [
 
 /**
  * Điều hướng quản trị theo module, theo thứ tự hiển thị trong sidebar của nhóm.
- * Module FE mới: thêm `navigation.ts` của nó vào đây (và khóa dịch `common.adminModules.<code>`).
+ * Module FE mới: thêm `navigation.ts` của nó vào đây (nhãn/tên khai trong namespace của module).
+ * `tests/unit/module-registry.test.ts` báo lỗi nếu module có `navigation.ts` mà quên đăng ký.
  */
 export const ADMIN_MODULE_NAVIGATION: AdminModuleNavigation[] = [
   { ...accountNavigation, items: [...accountNavigation.items, ...authenticationAccountItems] },
@@ -32,9 +33,7 @@ export const ADMIN_MODULE_NAVIGATION: AdminModuleNavigation[] = [
  * @param pathname - Pathname nội bộ (không có tiền tố ngôn ngữ).
  * @returns Mã module, hoặc undefined nếu không thuộc module nào.
  */
-export function findModuleCodeByPath(
-  pathname: string,
-): AdminModuleNavigation["module"] | undefined {
+export function findModuleCodeByPath(pathname: string): string | undefined {
   return ADMIN_MODULE_NAVIGATION.find((navigation) =>
     navigation.items.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`)),
   )?.module;

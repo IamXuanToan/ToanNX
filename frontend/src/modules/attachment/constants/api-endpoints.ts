@@ -1,10 +1,10 @@
-/** Endpoint Attachment sẵn có của backend. */
+/**
+ * Endpoint Attachment của backend (tương đối với `env.apiBasePath`).
+ * Tài nguyên CRUD chỉ khai path gốc; `{id}`, `bulk-*`, `history` dựng theo router BE.
+ */
 export const ATTACHMENT_API_ENDPOINTS = {
-  bulkDelete: "/attachments/bulk-delete",
-  bulkUpdate: "/attachments/bulk-update",
+  files: "/attachments",
   folders: "/attachments/folders",
   folder: (id: string) => `/attachments/folders/${id}`,
   folderDelete: (id: string) => `/attachments/folders/${id}/delete`,
-  files: "/attachments",
-  file: (id: string) => "/attachments/" + id,
 } as const;

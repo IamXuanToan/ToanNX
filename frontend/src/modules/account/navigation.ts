@@ -8,11 +8,13 @@ import { ACCOUNT_ROUTES } from "./constants/routes";
 /** Menu sidebar của module Account. */
 export const accountNavigation: AdminModuleNavigation = {
   module: "account",
+  nameKey: "common.adminModules.account.name",
+  descriptionKey: "common.adminModules.account.description",
   group: "system",
   icon: UserRound,
   items: [
     {
-      labelKey: "users",
+      labelKey: "common.nav.users",
       href: ACCOUNT_ROUTES.users,
       icon: Users,
       permission: ACCOUNT_PERMISSIONS.userRead,

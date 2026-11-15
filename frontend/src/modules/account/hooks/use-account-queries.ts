@@ -1,6 +1,8 @@
 "use client";
 
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+
+import { useListQuery } from "@/shares/hooks/use-list-query";
 
 import { accountKeys } from "../constants/query-keys";
 import { userService } from "../services/user.service";
@@ -13,11 +15,7 @@ import type { UserFilters } from "../types/account.types";
  * @returns Truy vấn React Query.
  */
 export function useUsers(filters: UserFilters) {
-  return useQuery({
-    queryKey: accountKeys.users(filters),
-    queryFn: ({ signal }) => userService.list(filters, signal),
-    placeholderData: keepPreviousData,
-  });
+  return useListQuery(accountKeys.users(filters), (signal) => userService.list(filters, signal));
 }
 
 /**

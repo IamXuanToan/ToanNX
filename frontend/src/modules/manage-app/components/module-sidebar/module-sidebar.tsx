@@ -2,7 +2,6 @@
 
 import { cn } from "cn";
 import { ChevronDown } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useId, useState, type ReactNode } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
@@ -18,6 +17,7 @@ import {
   useSidebar,
 } from "@/shares/components/ui/sidebar";
 import type { AdminGroup, AdminModule } from "@/shares/types/navigation.types";
+import { useMessage } from "@/shares/hooks/use-message";
 
 import { ModuleSwitcher } from "../module-switcher/module-switcher";
 
@@ -41,7 +41,7 @@ function SidebarModuleGroup({
   isActive: (href: string) => boolean;
   onNavigate: () => void;
 }) {
-  const t = useTranslations("common.nav");
+  const message = useMessage();
   const [open, setOpen] = useState(true);
   const contentId = useId();
   const containsActive = module.items.some((item) => isActive(item.href));
@@ -86,12 +86,12 @@ function SidebarModuleGroup({
               <SidebarMenuButton
                 asChild
                 isActive={isActive(item.href)}
-                tooltip={t(item.labelKey)}
+                tooltip={message(item.labelKey)}
                 className={NAV_LINK_CLASS}
               >
                 <Link href={item.href} onClick={onNavigate}>
                   <item.icon aria-hidden />
-                  <span>{t(item.labelKey)}</span>
+                  <span>{message(item.labelKey)}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

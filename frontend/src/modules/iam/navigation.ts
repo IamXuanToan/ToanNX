@@ -8,17 +8,19 @@ import { IAM_ROUTES } from "./constants/routes";
 /** Menu sidebar của module IAM. */
 export const iamNavigation: AdminModuleNavigation = {
   module: "iam",
+  nameKey: "common.adminModules.iam.name",
+  descriptionKey: "common.adminModules.iam.description",
   group: "system",
   icon: KeyRound,
   items: [
     {
-      labelKey: "roles",
+      labelKey: "common.nav.roles",
       href: IAM_ROUTES.roles,
       icon: ShieldCheck,
       permission: IAM_PERMISSIONS.roleRead,
     },
     {
-      labelKey: "permissions",
+      labelKey: "common.nav.permissions",
       href: IAM_ROUTES.permissions,
       icon: KeyRound,
       permission: IAM_PERMISSIONS.permissionRead,

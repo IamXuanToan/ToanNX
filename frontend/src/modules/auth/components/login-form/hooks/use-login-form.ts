@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 
 import { useRouter } from "@/i18n/navigation";
-import { MANAGE_APP_ROUTES } from "@/modules/manage-app/constants/routes";
+import type { AppPathname } from "@/i18n/routing";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 
 import { useLogin } from "../../../hooks/use-login";
@@ -17,9 +17,10 @@ import { sanitizeNextPath } from "../../../services/auth.service";
 /**
  * State và xử lý submit của form đăng nhập.
  *
+ * @param redirectTo - Trang mở sau khi đăng nhập khi URL không có `next` (page truyền vào, auth không biết module khác).
  * @returns Form RHF, hàm submit, trạng thái gửi và lỗi chung.
  */
-export function useLoginForm() {
+export function useLoginForm(redirectTo: AppPathname) {
   const t = useTranslations("auth.validation");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -45,7 +46,7 @@ export function useLoginForm() {
       // `next` là URL đã có locale do proxy tạo ra.
       window.location.assign(next);
     } else {
-      router.replace(MANAGE_APP_ROUTES.admin);
+      router.replace(redirectTo as never);
     }
   });
 

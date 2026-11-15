@@ -21,8 +21,6 @@ function current(overrides: Partial<CurrentUser["user"]>, permissions: string[] 
       lastLogin: null,
       lastSeenAt: null,
       dateJoined: "",
-      createdAt: "",
-      updatedAt: "",
       ...overrides,
     },
     roles: [],

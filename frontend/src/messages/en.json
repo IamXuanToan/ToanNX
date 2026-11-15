@@ -132,7 +132,8 @@
     "feedback": {
       "bulkUpdated": "Updated {count} records.",
       "deleted": "Deleted.",
-      "bulkDeleted": "Deleted {count} records."
+      "bulkDeleted": "Deleted {count} records.",
+      "saved": "Saved."
     },
     "slugInput": {
       "placeholder": "example-path"
@@ -178,18 +179,33 @@
       "bold": "Bold",
       "italic": "Italic",
       "underline": "Underline",
-      "heading": "Heading",
+      "strike": "Strikethrough",
+      "code": "Code",
+      "highlight": "Highlight",
+      "align": "Align",
+      "blockType": "Block type",
+      "paragraph": "Paragraph",
+      "heading1": "Heading 1",
+      "heading2": "Heading 2",
+      "heading3": "Heading 3",
       "bulletList": "Bullet list",
       "orderedList": "Numbered list",
+      "taskList": "Task list",
+      "quote": "Quote",
       "table": "Table",
+      "divider": "Divider",
       "undo": "Undo",
       "redo": "Redo",
-      "image": "Insert image",
+      "image": "Insert image from library",
+      "imageUrl": "Insert image from URL",
+      "youtube": "Insert YouTube video",
       "link": "Link",
-      "applyLink": "Apply link",
-      "removeLink": "Remove link",
-      "invalidUrl": "Enter an HTTP/HTTPS URL.",
-      "imageFailed": "Could not insert the image. Try again."
+      "insert": "Insert",
+      "apply": "Apply",
+      "invalidUrl": "Only http, https, mailto and tel links are allowed.",
+      "invalidImageUrl": "External images must use https.",
+      "invalidYoutube": "Only YouTube videos (https) are supported.",
+      "imageFailed": "Could not add the image. Please try again."
     },
     "components": {
       "remove": "Remove",

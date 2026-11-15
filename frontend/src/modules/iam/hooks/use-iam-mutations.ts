@@ -1,11 +1,11 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { authKeys } from "@/modules/auth/constants/query-keys";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
+import { useResourceMutation } from "@/shares/hooks/use-resource-mutation";
 
 import { iamKeys } from "../constants/query-keys";
 import { rolePermissionService } from "../services/role-permission.service";
@@ -13,85 +13,52 @@ import { roleService } from "../services/role.service";
 import { userRoleService } from "../services/user-role.service";
 import type { RoleInput } from "../types/iam.types";
 
-/**
- * Callback dùng chung: toast thành công, làm mới cache IAM và quyền của người dùng hiện tại.
- * Đổi vai trò/quyền có thể ảnh hưởng chính người đang đăng nhập nên luôn invalidate `authKeys.me()`.
- */
-function useIamMutationHandlers() {
-  const queryClient = useQueryClient();
-  const t = useTranslations("iam.feedback");
-  const errorMessage = useApiErrorMessage();
-  return {
-    onSuccess: async () => {
-      toast.success(t("saved"));
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: iamKeys.all }),
-        queryClient.invalidateQueries({ queryKey: authKeys.me() }),
-      ]);
-    },
-    onError: (error: unknown) => toast.error(errorMessage(error)),
-  };
-}
+/** Đổi vai trò/quyền có thể ảnh hưởng chính người đang đăng nhập nên luôn làm mới `authKeys.me()`. */
+const INVALIDATE = [iamKeys.all, authKeys.me()];
 
 /** @returns Mutation tạo vai trò (lỗi do form tự hiển thị). */
 export function useCreateRole() {
-  const { onSuccess } = useIamMutationHandlers();
-  return useMutation({ mutationFn: (input: RoleInput) => roleService.create(input), onSuccess });
-}
-
-/** @param id - Id vai trò. @returns Mutation cập nhật vai trò. */
-export function useUpdateRole(id: string) {
-  const { onSuccess } = useIamMutationHandlers();
-  return useMutation({
-    mutationFn: (input: Omit<RoleInput, "code">) => roleService.update(id, input),
-    onSuccess,
+  return useResourceMutation({
+    mutationFn: (input: RoleInput) => roleService.create(input),
+    invalidate: INVALIDATE,
+    toastError: false,
   });
 }
 
-/**
- * Callback sau khi xoá vai trò: toast, làm mới IAM và quyền của người dùng hiện tại.
- *
- * @returns Handler onSuccess/onError.
- */
-function useIamDeleteHandlers() {
-  const queryClient = useQueryClient();
-  const t = useTranslations("common.feedback");
-  const errorMessage = useApiErrorMessage();
-  return {
-    onSuccess: async (count: number | void) => {
-      toast.success(typeof count === "number" ? t("bulkDeleted", { count }) : t("deleted"));
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: iamKeys.all }),
-        queryClient.invalidateQueries({ queryKey: authKeys.me() }),
-      ]);
-    },
-    onError: (error: unknown) => toast.error(errorMessage(error)),
-  };
+/** @param id - Id vai trò. @returns Mutation cập nhật vai trò (lỗi do form tự hiển thị). */
+export function useUpdateRole(id: string) {
+  return useResourceMutation({
+    mutationFn: (input: Omit<RoleInput, "code">) => roleService.update(id, input),
+    invalidate: INVALIDATE,
+    toastError: false,
+  });
 }
 
 /** @returns Mutation xoá mềm một vai trò. */
 export function useDeleteRole() {
-  return useMutation({
+  return useResourceMutation({
     mutationFn: (id: string) => roleService.remove(id),
-    ...useIamDeleteHandlers(),
+    invalidate: INVALIDATE,
+    success: "deleted",
   });
 }
 
 /** @returns Mutation bật/tắt nhiều vai trò. */
 export function useBulkSetRolesActive() {
-  const handlers = useIamMutationHandlers();
-  return useMutation({
+  return useResourceMutation({
     mutationFn: ({ ids, isActive }: { ids: string[]; isActive: boolean }) =>
       roleService.bulkSetActive(ids, isActive),
-    ...handlers,
+    invalidate: INVALIDATE,
+    success: "bulkUpdated",
   });
 }
 
 /** @returns Mutation xoá mềm nhiều vai trò. */
 export function useBulkDeleteRoles() {
-  return useMutation({
+  return useResourceMutation({
     mutationFn: (ids: string[]) => roleService.bulkRemove(ids),
-    ...useIamDeleteHandlers(),
+    invalidate: INVALIDATE,
+    success: "bulkDeleted",
   });
 }
 

@@ -24,3 +24,31 @@ export type Paginated<T> = {
   items: T[];
   pagination: Pagination;
 };
+
+/**
+ * Tham số danh sách chuẩn của mọi ViewSet (BE `CoreModelViewSet`).
+ * Có `page`/`pageSize` thì BE phân trang; không có thì BE trả **toàn bộ** (danh mục, ô chọn).
+ */
+export type ListParams = {
+  search?: string;
+  ordering?: string;
+  page?: number;
+  pageSize?: number;
+};
+
+/** Một mục lịch sử thay đổi (BE `CoreJournalEntryResponseSerializer`). */
+export type HistoryEntry = {
+  id: string;
+  createdAt: string;
+  action: "CREATE" | "UPDATE" | "DELETE" | "EVENT";
+  /** Mã sự kiện khi `action = EVENT` (ví dụ `iam.role_assigned`). */
+  event: string;
+  /** `<module>.<model>`. */
+  resource: string;
+  objectId: string;
+  objectLabel: string;
+  actorId: string | null;
+  actorLabel: string;
+  /** `{field: [cũ, mới]}`; field ẩn là `***`. Khóa giữ nguyên tên field của BE. */
+  changes: Record<string, [unknown, unknown]>;
+};

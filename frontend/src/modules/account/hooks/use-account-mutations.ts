@@ -1,98 +1,57 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-
 import { authKeys } from "@/modules/auth/constants/query-keys";
-import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
+import { useResourceMutation } from "@/shares/hooks/use-resource-mutation";
 
 import { accountKeys } from "../constants/query-keys";
 import { userService } from "../services/user.service";
 import type { CreateUserInput, UpdateUserInput } from "../types/account.types";
 
-/**
- * Callback dùng chung: toast thành công, làm mới cache Account và hồ sơ người dùng hiện tại
- * (sửa chính mình làm đổi tên/ảnh trên header).
- *
- * @returns Hàm onSuccess cho mutation.
- */
-function useAccountMutationSuccess() {
-  const queryClient = useQueryClient();
-  const t = useTranslations("account.feedback");
-  return async () => {
-    toast.success(t("saved"));
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: accountKeys.all }),
-      queryClient.invalidateQueries({ queryKey: authKeys.me() }),
-    ]);
-  };
-}
+/** Sửa người dùng có thể đổi tên/ảnh của chính mình trên header nên làm mới cả `authKeys.me()`. */
+const INVALIDATE = [accountKeys.all, authKeys.me()];
 
 /** @returns Mutation tạo người dùng (lỗi do form tự hiển thị). */
 export function useCreateUser() {
-  const onSuccess = useAccountMutationSuccess();
-  return useMutation({
+  return useResourceMutation({
     mutationFn: (input: CreateUserInput) => userService.create(input),
-    onSuccess,
+    invalidate: INVALIDATE,
+    toastError: false,
   });
 }
 
 /** @param id - Id người dùng. @returns Mutation cập nhật người dùng (lỗi do form tự hiển thị). */
 export function useUpdateUser(id: string) {
-  const onSuccess = useAccountMutationSuccess();
-  return useMutation({
+  return useResourceMutation({
     mutationFn: (input: UpdateUserInput) => userService.update(id, input),
-    onSuccess,
+    invalidate: INVALIDATE,
+    toastError: false,
   });
-}
-
-/**
- * Callback dùng chung của xoá / thao tác hàng loạt: toast theo số bản ghi, làm mới danh sách,
- * lỗi thì toast thông báo đã dịch (cả lô không đổi vì backend chạy trong một transaction).
- *
- * @returns Handler onSuccess/onError.
- */
-function useAccountBulkHandlers() {
-  const queryClient = useQueryClient();
-  const t = useTranslations("common.feedback");
-  const errorMessage = useApiErrorMessage();
-  return {
-    onSuccess: async (count: number | void) => {
-      toast.success(typeof count === "number" ? t("bulkUpdated", { count }) : t("deleted"));
-      await queryClient.invalidateQueries({ queryKey: accountKeys.all });
-    },
-    onError: (error: unknown) => toast.error(errorMessage(error)),
-  };
 }
 
 /** @returns Mutation xoá mềm một người dùng. */
 export function useDeleteUser() {
-  const handlers = useAccountBulkHandlers();
-  return useMutation({ mutationFn: (id: string) => userService.remove(id), ...handlers });
+  return useResourceMutation({
+    mutationFn: (id: string) => userService.remove(id),
+    invalidate: INVALIDATE,
+    success: "deleted",
+  });
 }
 
-/** @returns Mutation khoá/mở nhiều người dùng. */
+/** @returns Mutation khoá/mở nhiều người dùng (cả lô hoặc không gì cả). */
 export function useBulkSetUsersActive() {
-  const handlers = useAccountBulkHandlers();
-  return useMutation({
+  return useResourceMutation({
     mutationFn: ({ ids, isActive }: { ids: string[]; isActive: boolean }) =>
       userService.bulkSetActive(ids, isActive),
-    ...handlers,
+    invalidate: INVALIDATE,
+    success: "bulkUpdated",
   });
 }
 
 /** @returns Mutation xoá mềm nhiều người dùng. */
 export function useBulkDeleteUsers() {
-  const queryClient = useQueryClient();
-  const t = useTranslations("common.feedback");
-  const errorMessage = useApiErrorMessage();
-  return useMutation({
+  return useResourceMutation({
     mutationFn: (ids: string[]) => userService.bulkRemove(ids),
-    onSuccess: async (count) => {
-      toast.success(t("bulkDeleted", { count }));
-      await queryClient.invalidateQueries({ queryKey: accountKeys.all });
-    },
-    onError: (error: unknown) => toast.error(errorMessage(error)),
+    invalidate: INVALIDATE,
+    success: "bulkDeleted",
   });
 }

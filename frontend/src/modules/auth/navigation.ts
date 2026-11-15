@@ -8,7 +8,7 @@ import { AUTH_ROUTES } from "./constants/routes";
 /** Mục quản trị phiên ghép vào nhóm Tài khoản tại composition root. */
 export const authenticationAccountItems: AdminNavItem[] = [
   {
-    labelKey: "sessions",
+    labelKey: "common.nav.sessions",
     href: AUTH_ROUTES.sessions,
     icon: Monitor,
     permission: AUTH_PERMISSIONS.sessionRead,
