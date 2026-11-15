@@ -13,17 +13,19 @@ import { useUserProfile } from "./hooks/use-user-profile";
  * Chi tiết người dùng: đúng `UserForm` của trang tạo (cùng bố cục, cùng trường) cộng card Hoạt động;
  * phần của module khác (vai trò từ IAM) cắm qua `extensions` và lưu cùng nút Lưu.
  *
- * @param props - Id người dùng, quyền sửa và slot mở rộng.
+ * @param props - Id người dùng, quyền sửa, slot mở rộng và slot lịch sử thay đổi.
  * @returns Trang chi tiết người dùng.
  */
 export function UserProfile({
   id,
   canEdit,
   extensions,
+  history,
 }: {
   id: string;
   canEdit: boolean;
   extensions?: ReactNode;
+  history?: ReactNode;
 }) {
   const { user, errorMessage } = useUserProfile(id);
 
@@ -44,6 +46,7 @@ export function UserProfile({
   return (
     <FormPage title={user.data.fullName || user.data.email}>
       <UserForm user={user.data} canEdit={canEdit} extensions={extensions} />
+      {history ? <div className="mt-6">{history}</div> : null}
     </FormPage>
   );
 }

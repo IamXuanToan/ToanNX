@@ -2,6 +2,7 @@ import { accountNavigation } from "@/modules/account/navigation";
 import { attachmentNavigation } from "@/modules/attachment/navigation";
 import { authenticationAccountItems } from "@/modules/auth/navigation";
 import { iamNavigation } from "@/modules/iam/navigation";
+import { journalNavigation } from "@/modules/journal/navigation";
 import { LayoutTemplate, type LucideIcon, Settings } from "lucide-react";
 
 import type { AdminGroupCode, AdminModuleNavigation } from "@/shares/types/navigation.types";
@@ -25,6 +26,7 @@ export const ADMIN_MODULE_NAVIGATION: AdminModuleNavigation[] = [
   { ...accountNavigation, items: [...accountNavigation.items, ...authenticationAccountItems] },
   iamNavigation,
   attachmentNavigation,
+  journalNavigation,
 ];
 
 /**

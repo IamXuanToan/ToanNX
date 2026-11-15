@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import { FormPage } from "@/shares/components/common/form-page/form-page";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
@@ -10,7 +12,7 @@ import { useRoleProfile } from "./hooks/use-role-profile";
 /**
  * Chi tiết vai trò: đúng `RoleForm` của trang tạo (thông tin, trạng thái, quyền), lưu bằng một nút.
  *
- * @param props - Id vai trò và các quyền của người xem.
+ * @param props - Id vai trò, quyền của người xem, slot lịch sử thay đổi (page ghép từ journal).
  * @returns Chi tiết vai trò.
  */
 export function RoleProfile({
@@ -18,11 +20,13 @@ export function RoleProfile({
   canUpdate,
   canReadPermissions,
   canAssignPermissions,
+  history,
 }: {
   id: string;
   canUpdate: boolean;
   canReadPermissions: boolean;
   canAssignPermissions: boolean;
+  history?: ReactNode;
 }) {
   const { role, errorMessage, editable } = useRoleProfile(id);
 
@@ -45,6 +49,7 @@ export function RoleProfile({
         canReadPermissions={canReadPermissions}
         canAssignPermissions={canAssignPermissions && editable}
       />
+      {history ? <div className="mt-6">{history}</div> : null}
     </FormPage>
   );
 }

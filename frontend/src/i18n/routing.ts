@@ -6,6 +6,7 @@ import { AUTH_PATHNAMES } from "@/modules/auth/constants/routes";
 import { MANAGE_APP_PATHNAMES } from "@/modules/manage-app/constants/routes";
 import { HOME_PATHNAMES } from "@/modules/home/constants/routes";
 import { IAM_PATHNAMES } from "@/modules/iam/constants/routes";
+import { JOURNAL_PATHNAMES } from "@/modules/journal/constants/routes";
 
 export const LOCALES = ["vi", "en"] as const;
 export type AppLocale = (typeof LOCALES)[number];
@@ -24,6 +25,7 @@ export const routing = defineRouting({
     ...ACCOUNT_PATHNAMES,
     ...IAM_PATHNAMES,
     ...ATTACHMENT_PATHNAMES,
+    ...JOURNAL_PATHNAMES,
   },
 });
 

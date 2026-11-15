@@ -1,0 +1,37 @@
+{
+  "module": {
+    "name": "Journal",
+    "description": "Change history of data across the system."
+  },
+  "nav": {
+    "entries": "Journal"
+  },
+  "title": "Change journal",
+  "history": "Change history",
+  "empty": "No changes yet.",
+  "searchPlaceholder": "Search by record or actor…",
+  "system": "System",
+  "masked": "(hidden)",
+  "yes": "Yes",
+  "no": "No",
+  "columns": {
+    "object": "Record",
+    "resource": "Resource",
+    "action": "Action",
+    "changes": "Changed fields",
+    "actor": "Actor",
+    "createdAt": "Time"
+  },
+  "actions": {
+    "CREATE": "created",
+    "UPDATE": "updated",
+    "DELETE": "deleted",
+    "EVENT": "event"
+  },
+  "events": {
+    "iam_role_assigned": "assigned a role",
+    "iam_role_revoked": "removed a role",
+    "iam_permission_assigned": "granted a permission",
+    "iam_permission_revoked": "revoked a permission"
+  }
+}

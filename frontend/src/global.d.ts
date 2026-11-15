@@ -4,6 +4,7 @@ import type auth from "./modules/auth/messages/vi.json";
 import type iam from "./modules/iam/messages/vi.json";
 import type manageApp from "./modules/manage-app/messages/vi.json";
 import type attachment from "./modules/attachment/messages/vi.json";
+import type journal from "./modules/journal/messages/vi.json";
 import type { routing } from "./i18n/routing";
 
 /** Kiểu message gộp (tiếng Việt là nguồn chuẩn; test đảm bảo tiếng Anh có đủ khóa). */
@@ -13,6 +14,7 @@ type Messages = typeof common & {
   iam: typeof iam;
   manageApp: typeof manageApp;
   attachment: typeof attachment;
+  journal: typeof journal;
 };
 
 declare module "next-intl" {

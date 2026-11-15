@@ -1,0 +1,37 @@
+{
+  "module": {
+    "name": "Nhật ký",
+    "description": "Lịch sử thay đổi dữ liệu của toàn hệ thống."
+  },
+  "nav": {
+    "entries": "Nhật ký"
+  },
+  "title": "Nhật ký thay đổi",
+  "history": "Lịch sử thay đổi",
+  "empty": "Chưa có thay đổi nào.",
+  "searchPlaceholder": "Tìm theo bản ghi, người thực hiện…",
+  "system": "Hệ thống",
+  "masked": "(ẩn)",
+  "yes": "Có",
+  "no": "Không",
+  "columns": {
+    "object": "Bản ghi",
+    "resource": "Tài nguyên",
+    "action": "Hành động",
+    "changes": "Trường thay đổi",
+    "actor": "Người thực hiện",
+    "createdAt": "Thời điểm"
+  },
+  "actions": {
+    "CREATE": "đã tạo",
+    "UPDATE": "đã cập nhật",
+    "DELETE": "đã xóa",
+    "EVENT": "sự kiện"
+  },
+  "events": {
+    "iam_role_assigned": "đã gán vai trò",
+    "iam_role_revoked": "đã gỡ vai trò",
+    "iam_permission_assigned": "đã cấp quyền",
+    "iam_permission_revoked": "đã thu hồi quyền"
+  }
+}
