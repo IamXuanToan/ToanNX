@@ -98,7 +98,9 @@ test.describe("Quản trị Hệ thống", () => {
       await staffPage.reload();
       await expect(userFilter).toContainText("2");
       await userFilter.click();
-      await expect(staffPage.getByTestId("filter-select-all")).toBeVisible();
+      await expect(
+        staffPage.getByRole("button", { name: "Chọn tất cả", exact: true }),
+      ).toBeVisible();
       await staffPage.getByRole("button", { name: "Xoá lọc", exact: true }).click();
       await staffPage.keyboard.press("Escape");
       await expect(staffPage).not.toHaveURL(/user=/);

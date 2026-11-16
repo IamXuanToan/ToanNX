@@ -4,6 +4,7 @@ import { cn } from "cn";
 import { ChevronDown, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { Button } from "@/shares/components/ui/button";
 import { Checkbox } from "@/shares/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shares/components/ui/popover";
 
@@ -18,7 +19,7 @@ import { useFilterSelect } from "./hooks/use-filter-select";
  * Bộ lọc chọn nhiều chuẩn của bảng (mọi bộ lọc trên toolbar dùng component này).
  * Ô cao 40px như mọi control: chưa chọn thì hiện tên bộ lọc; chọn một thì hiện "Tên: giá trị";
  * chọn nhiều thì hiện "Tên" + số đã chọn. Popover có danh sách checkbox, ô tìm (bỏ dấu) khi
- * nhiều lựa chọn, dòng "Chọn tất cả" (có trạng thái chọn một phần) và "Xoá lọc". Điều khiển
+ * nhiều lựa chọn, hai nút "Chọn tất cả" và "Xoá lọc" cùng hàng ở cuối menu. Điều khiển
  * (controlled), giá trị là mảng.
  *
  * @param props - Tên bộ lọc, lựa chọn, giá trị và callback.
@@ -109,20 +110,6 @@ export function FilterSelect({
           aria-label={label}
           className="max-h-64 overflow-y-auto"
         >
-          {state.filtered.length > 1 && !state.keyword ? (
-            <li role="option" aria-selected={state.allSelected}>
-              <label
-                className={cn(FORM_CONTROL_OPTION_CLASS, "hover:bg-accent font-medium")}
-                data-testid="filter-select-all"
-              >
-                <Checkbox
-                  checked={state.allSelected ? true : state.value.length ? "indeterminate" : false}
-                  onCheckedChange={() => state.toggleAll()}
-                />
-                <span className="flex-1">{t("selectAll")}</span>
-              </label>
-            </li>
-          ) : null}
           {state.filtered.length === 0 ? (
             <li className="text-muted-foreground px-3 py-6 text-center text-sm">
               {tSelect("empty")}
@@ -158,16 +145,31 @@ export function FilterSelect({
             })
           )}
         </ul>
-        {state.value.length ? (
+        {(state.hasMultipleSelectable && !state.keyword) || state.value.length ? (
           <>
             <div className="bg-border -mx-1 h-px" />
-            <button
-              type="button"
-              onClick={state.clear}
-              className={cn(FORM_CONTROL_OPTION_CLASS, "hover:bg-accent justify-center")}
-            >
-              {t("clear")}
-            </button>
+            <div className="flex gap-1">
+              {state.hasMultipleSelectable && !state.keyword ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="min-w-0 flex-1"
+                  disabled={state.allSelected}
+                  onClick={state.selectAll}
+                >
+                  {t("selectAll")}
+                </Button>
+              ) : null}
+              <Button
+                type="button"
+                variant="ghost"
+                className="min-w-0 flex-1"
+                disabled={!state.value.length}
+                onClick={state.clear}
+              >
+                {t("clear")}
+              </Button>
+            </div>
           </>
         ) : null}
       </PopoverContent>

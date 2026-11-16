@@ -39,6 +39,7 @@ export function useFilterSelect({
     () => (isSearchable ? filterOptionsByKeyword(options, keyword) : options),
     [isSearchable, options, keyword],
   );
+  const selectable = options.filter((option) => !option.disabled);
   const commit = (next: string[]) => {
     const ordered = options.map((option) => option.value).filter((v) => next.includes(v));
     setDraft(ordered);
@@ -62,12 +63,9 @@ export function useFilterSelect({
     toggle: (item: string) =>
       commit(current.includes(item) ? current.filter((v) => v !== item) : [...current, item]),
     clear: () => commit([]),
-    allSelected: options.length > 0 && options.every((option) => current.includes(option.value)),
-    toggleAll: () =>
-      commit(
-        options.every((option) => current.includes(option.value))
-          ? []
-          : options.filter((option) => !option.disabled).map((option) => option.value),
-      ),
+    hasMultipleSelectable: selectable.length > 1,
+    allSelected:
+      selectable.length > 0 && selectable.every((option) => current.includes(option.value)),
+    selectAll: () => commit([...current, ...selectable.map((option) => option.value)]),
   };
 }
