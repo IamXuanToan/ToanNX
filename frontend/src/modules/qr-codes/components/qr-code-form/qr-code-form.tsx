@@ -34,6 +34,7 @@ export type QrLogoUpload = ComponentType<{
   value: UploadedFile | null;
   onChange: (value: UploadedFile | null) => void;
   disabled?: boolean;
+  directUpload?: boolean;
   shape?: "square";
   hint?: string;
   "aria-label"?: string;
@@ -74,6 +75,43 @@ export function QrCodeForm({
       <FormLayout
         aside={
           <>
+            <FormSection title={t("sections.logo")}>
+              <Controller
+                control={form.control}
+                name="logo"
+                render={({ field, fieldState }) => (
+                  <div className="space-y-2">
+                    <LogoUpload
+                      value={field.value}
+                      onChange={(file) => {
+                        if (file?.contentType && !LOGO_CONTENT_TYPES.includes(file.contentType)) {
+                          form.setError("logo", { message: t("validation.logoFormat") });
+                          return;
+                        }
+                        form.clearErrors("logo");
+                        field.onChange(file);
+                        if (file) {
+                          form.setValue("errorCorrection", "H", { shouldDirty: true });
+                          form.setValue("margin", Math.max(4, form.getValues("margin")), {
+                            shouldDirty: true,
+                          });
+                        }
+                      }}
+                      disabled={locked}
+                      directUpload
+                      shape="square"
+                      hint={t("fields.logoHint")}
+                      aria-label={t("fields.logo")}
+                    />
+                    {fieldState.error ? (
+                      <p role="alert" className="text-destructive text-sm">
+                        {fieldState.error.message}
+                      </p>
+                    ) : null}
+                  </div>
+                )}
+              />
+            </FormSection>
             <FormSection title={t("sections.preview")}>
               <div className="bg-muted/40 flex aspect-square items-center justify-center rounded-xl border p-4">
                 {svg ? (
@@ -181,41 +219,6 @@ export function QrCodeForm({
                   />
                 )}
               </FormField>
-              <Controller
-                control={form.control}
-                name="logo"
-                render={({ field, fieldState }) => (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">{t("fields.logo")}</p>
-                    <LogoUpload
-                      value={field.value}
-                      onChange={(file) => {
-                        if (file?.contentType && !LOGO_CONTENT_TYPES.includes(file.contentType)) {
-                          form.setError("logo", { message: t("validation.logoFormat") });
-                          return;
-                        }
-                        form.clearErrors("logo");
-                        field.onChange(file);
-                        if (file) {
-                          form.setValue("errorCorrection", "H", { shouldDirty: true });
-                          form.setValue("margin", Math.max(4, form.getValues("margin")), {
-                            shouldDirty: true,
-                          });
-                        }
-                      }}
-                      disabled={locked}
-                      shape="square"
-                      hint={t("fields.logoHint")}
-                      aria-label={t("fields.logo")}
-                    />
-                    {fieldState.error ? (
-                      <p role="alert" className="text-destructive text-sm">
-                        {fieldState.error.message}
-                      </p>
-                    ) : null}
-                  </div>
-                )}
-              />
             </FormSection>
           </>
         }
