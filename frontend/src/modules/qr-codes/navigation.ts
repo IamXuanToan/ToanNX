@@ -5,7 +5,7 @@ import type { AdminModuleNavigation } from "@/shares/types/navigation.types";
 import { QR_CODES_PERMISSIONS } from "./constants/qr-codes-permissions";
 import { QR_CODES_ROUTES } from "./constants/routes";
 
-/** Mã QR nằm trong nhóm Nội dung. */
+/** Mã QR nằm trong nhóm Tiện ích. */
 export const qrCodesNavigation: AdminModuleNavigation = {
   module: "qr_codes",
   nameKey: "qrCodes.module.name",

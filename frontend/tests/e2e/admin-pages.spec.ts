@@ -11,10 +11,11 @@ test.describe("Trang quản trị", () => {
     await expect(systemCard).toContainText("Tài khoản");
     await expect(systemCard).toContainText("Phân quyền");
     await expect(systemCard).toContainText("Nhật ký");
-    const contentCard = launcher.getByRole("link", { name: /Nội dung/ });
-    await expect(contentCard).toContainText("Link rút gọn");
-    await expect(contentCard).toContainText("Mã QR");
-    await expect(contentCard).toContainText("Trang");
+    const utilitiesCard = launcher.getByRole("link", { name: /Tiện ích/ });
+    await expect(utilitiesCard).toContainText("Liên kết rút gọn, mã QR và trang.");
+    await expect(utilitiesCard).toContainText("Link rút gọn");
+    await expect(utilitiesCard).toContainText("Mã QR");
+    await expect(utilitiesCard).toContainText("Trang");
 
     await openModule(page, "Hệ thống");
     await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung$/);

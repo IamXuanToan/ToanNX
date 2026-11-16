@@ -546,7 +546,7 @@ Quyền mới: `qr_codes.code.{read,create,update,delete,manage_all}`.
 
 ### 8.4 FE
 
-- Route: `/vi/quan-tri/ma-qr` (+ `/tao-moi`, `/[id]`) · `/en/admin/qr-codes`. Nhóm launcher **Nội dung**.
+- Route: `/vi/quan-tri/ma-qr` (+ `/tao-moi`, `/[id]`) · `/en/admin/qr-codes`. Nhóm launcher **Tiện ích**.
 - Bảng: ảnh nhỏ, Tên, Loại, Cập nhật, ⋯ (Sửa, Sao chép, Tải PNG, Xóa).
 - Form một trang cho tạo/sửa: cột chính là loại + dữ liệu theo loại; cột phụ là **xem trước trực tiếp** (gọi
   `/preview` sau 300 ms ngừng gõ, hiển thị SVG từ BE nên FE không cần thư viện vẽ QR), kiểu dáng, nút Tải PNG/SVG.

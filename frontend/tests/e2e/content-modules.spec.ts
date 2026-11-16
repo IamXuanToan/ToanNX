@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { loginViaUi } from "./helpers";
 
-test.describe("Nhóm Nội dung", () => {
+test.describe("Nhóm Tiện ích", () => {
   test("các trang danh sách mở được, không lỗi", async ({ page }) => {
     await loginViaUi(page);
     const pages: Array<[string, string]> = [

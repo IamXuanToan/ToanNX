@@ -12,10 +12,18 @@ test("bộ lọc trạng thái có hai thao tác cùng hàng và chọn tất c�
   await expect(selectAll).toBeVisible();
   await expect(clear).toBeVisible();
   await expect(clear).toBeDisabled();
-  const selectAllBox = await selectAll.boundingBox();
-  const clearBox = await clear.boundingBox();
-  expect(selectAllBox?.y).toBe(clearBox?.y);
-  expect(selectAllBox?.height).toBe(clearBox?.height);
+  await expect
+    .poll(async () => {
+      const [selectAllBox, clearBox] = await Promise.all([
+        selectAll.boundingBox(),
+        clear.boundingBox(),
+      ]);
+      return {
+        sameRow: selectAllBox?.y === clearBox?.y,
+        sameHeight: selectAllBox?.height === clearBox?.height,
+      };
+    })
+    .toEqual({ sameRow: true, sameHeight: true });
   await expect(
     page
       .getByRole("listbox", { name: "Trạng thái" })

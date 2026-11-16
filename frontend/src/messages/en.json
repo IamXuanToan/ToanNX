@@ -78,8 +78,8 @@
         "description": "User accounts and access control."
       },
       "content": {
-        "name": "Content",
-        "description": "Pages, links and published content."
+        "name": "Utilities",
+        "description": "Short links, QR codes and pages."
       }
     },
     "select": {

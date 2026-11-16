@@ -6,7 +6,7 @@ test.describe("Xác thực", () => {
   test("đăng nhập thành công vào màn chọn module", async ({ page }) => {
     await loginViaUi(page);
     await expect(page.getByTestId("admin-content")).toContainText("Xin chào");
-    // Hai nhóm: Hệ thống và Nội dung.
+    // Hai nhóm: Hệ thống và Tiện ích.
     await expect(page.getByTestId("module-launcher").getByRole("link")).toHaveCount(2);
   });
 

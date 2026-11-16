@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import type { AdminGroup } from "@/shares/types/navigation.types";
 
 /**
- * Thẻ đại diện cho một nhóm module quản trị (Hệ thống, Nội dung) theo ngôn ngữ Clean.
+ * Thẻ đại diện cho một nhóm module quản trị (Hệ thống, Tiện ích) theo ngôn ngữ Clean.
  * Thiết kế tinh tế với tiêu đề, mô tả và danh sách phân hệ trực thuộc được hiển thị dạng chip thanh mảnh có icon.
  *
  * @param props - Thông tin nhóm module quản trị.

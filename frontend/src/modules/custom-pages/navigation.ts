@@ -5,7 +5,7 @@ import type { AdminModuleNavigation } from "@/shares/types/navigation.types";
 import { CUSTOM_PAGES_PERMISSIONS } from "./constants/custom-pages-permissions";
 import { CUSTOM_PAGES_ROUTES } from "./constants/routes";
 
-/** Trang và Đường dẫn giữa nằm trong nhóm Nội dung. */
+/** Trang và Đường dẫn giữa nằm trong nhóm Tiện ích. */
 export const customPagesNavigation: AdminModuleNavigation = {
   module: "custom_pages",
   nameKey: "customPages.module.name",

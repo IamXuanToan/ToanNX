@@ -47,7 +47,7 @@ pnpm e2e        # Playwright
 - E2E (Playwright, `tests/e2e`): chạy trên server thật với **database riêng** `toannx_e2e`: Playwright gọi
   `manage.py prepare_e2e` (tạo DB nếu chưa có, migrate, superuser `e2e-admin@toannx.local`, đổi qua
   `E2E_EMAIL`/`E2E_PASSWORD`), rồi chạy backend 8001 và frontend 3001 (bản build trong `.next-e2e`).
-  `content-modules.spec.ts`: các trang nhóm Nội dung, `/s/{slug}` mở trang trung gian và kiểm mật khẩu,
+  `content-modules.spec.ts`: các trang nhóm Tiện ích, `/s/{slug}` mở trang trung gian và kiểm mật khẩu,
   Journal hiện field cũ → mới và
   trang chi tiết.
   - `auth.spec.ts`: đăng nhập, sai mật khẩu, validation theo ngôn ngữ, đăng xuất, **silent refresh** khi mất access token.

@@ -78,8 +78,8 @@
         "description": "Tài khoản người dùng và phân quyền."
       },
       "content": {
-        "name": "Nội dung",
-        "description": "Trang, liên kết và nội dung xuất bản."
+        "name": "Tiện ích",
+        "description": "Liên kết rút gọn, mã QR và trang."
       }
     },
     "select": {
