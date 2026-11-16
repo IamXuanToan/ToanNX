@@ -19,18 +19,24 @@ export function AttachmentImageUpload({
   canRead,
   canUpload,
   folders,
+  directUpload = false,
   ...props
 }: Omit<
   ComponentProps<typeof ImageUpload>,
   "onUpload" | "formatError" | "onChoose" | "chooseLabel" | "canUpload"
-> & { canRead: boolean; canUpload: boolean; folders?: FolderCapabilities }) {
+> & {
+  canRead: boolean;
+  canUpload: boolean;
+  folders?: FolderCapabilities;
+  directUpload?: boolean;
+}) {
   const t = useTranslations("attachment");
   const upload = useAttachmentImageUpload(props.onChange);
   return (
     <>
       <ImageUpload
         {...props}
-        canUpload={canUpload}
+        canUpload={directUpload && canUpload}
         onChoose={canRead ? upload.openLibrary : undefined}
         chooseLabel={t("chooseImage")}
         onUpload={upload.upload}

@@ -16,7 +16,7 @@ import type { ShortLink } from "../../types/short-links.types";
 import { useShortLinkTable } from "./hooks/use-short-link-table";
 
 /**
- * Bảng link rút gọn: tên + URL ngắn (sao chép), URL đích, kiểu chuyển hướng, hạn, trạng thái (công tắc),
+ * Bảng link rút gọn: tên + URL ngắn (sao chép), URL đích, cách mở, hạn, trạng thái (công tắc),
  * cột Chủ sở hữu khi xem được của mọi người; thao tác Sửa, Xóa, hàng loạt bật/tắt và xóa.
  *
  * @param props - Quyền sửa/xóa và có hiện cột chủ sở hữu.
@@ -79,10 +79,18 @@ export function ShortLinkTable({
       ),
     },
     {
-      id: "redirectType",
-      header: t("columns.redirectType"),
-      sortKey: "redirect_type",
-      cell: (link) => <Badge variant="outline">{link.redirectType}</Badge>,
+      id: "access",
+      header: t("columns.access"),
+      cell: (link) => (
+        <div className="flex flex-wrap gap-1">
+          <Badge variant="outline">
+            {link.autoRedirectSeconds === null
+              ? t("landing.manual")
+              : t("landing.autoSeconds", { seconds: link.autoRedirectSeconds })}
+          </Badge>
+          {link.hasPassword ? <Badge variant="outline">{t("fields.password")}</Badge> : null}
+        </div>
+      ),
     },
     {
       id: "expiresAt",
@@ -152,15 +160,6 @@ export function ShortLinkTable({
               { value: "ACTIVE", label: tStatus("active") },
               { value: "INACTIVE", label: t("inactive") },
               { value: "EXPIRED", label: t("expired") },
-            ]}
-          />
-          <FilterSelect
-            label={t("columns.redirectType")}
-            value={table.getFilterValues("redirectType")}
-            onValueChange={(values) => table.setFilterValues("redirectType", values)}
-            options={[
-              { value: "302", label: "302" },
-              { value: "301", label: "301" },
             ]}
           />
         </>

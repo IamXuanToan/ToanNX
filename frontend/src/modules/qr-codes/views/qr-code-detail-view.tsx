@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import type { QrLogoUpload } from "../components/qr-code-form/qr-code-form";
 
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 
@@ -13,7 +14,15 @@ import { QR_CODES_PERMISSIONS } from "../constants/qr-codes-permissions";
  * @param props - Id và slot lịch sử thay đổi.
  * @returns Giao diện chi tiết.
  */
-export function QrCodeDetailView({ id, history }: { id: string; history?: ReactNode }) {
+export function QrCodeDetailView({
+  id,
+  history,
+  LogoUpload,
+}: {
+  id: string;
+  history?: ReactNode;
+  LogoUpload: QrLogoUpload;
+}) {
   const canUpdate = usePermission(QR_CODES_PERMISSIONS.update);
-  return <QrCodeProfile id={id} canUpdate={canUpdate} history={history} />;
+  return <QrCodeProfile id={id} canUpdate={canUpdate} history={history} LogoUpload={LogoUpload} />;
 }

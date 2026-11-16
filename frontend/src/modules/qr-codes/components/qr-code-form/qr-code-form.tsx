@@ -2,9 +2,11 @@
 
 import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ComponentType } from "react";
 import { Controller } from "react-hook-form";
 
 import { Link } from "@/i18n/navigation";
+import type { UploadedFile } from "@/shares/components/common/file-upload-field/types";
 import { ColorInput } from "@/shares/components/common/color-input/color-input";
 import { Form } from "@/shares/components/common/form/form";
 import { FormField } from "@/shares/components/common/form-field/form-field";
@@ -25,6 +27,18 @@ import { QR_CODES_ROUTES } from "../../constants/routes";
 import { ERROR_CORRECTION_LEVELS, QR_TYPES, type QrCodeDetail } from "../../types/qr-codes.types";
 import { useQrCodeForm } from "./hooks/use-qr-code-form";
 
+const LOGO_CONTENT_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+
+/** Slot chọn ảnh do page ghép từ module Attachment. */
+export type QrLogoUpload = ComponentType<{
+  value: UploadedFile | null;
+  onChange: (value: UploadedFile | null) => void;
+  disabled?: boolean;
+  shape?: "square";
+  hint?: string;
+  "aria-label"?: string;
+}>;
+
 /**
  * Form mã QR **một form cho tạo, sửa, xem**: cột chính là loại + nội dung theo loại; cột phụ là xem trước trực
  * tiếp, kiểu dáng và nút tải PNG/SVG. Sửa nội dung/kiểu dáng thì ảnh trong Thư viện được vẽ lại (giữ id) nên
@@ -36,9 +50,11 @@ import { useQrCodeForm } from "./hooks/use-qr-code-form";
 export function QrCodeForm({
   code,
   disabled = false,
+  LogoUpload,
 }: {
   code?: QrCodeDetail;
   disabled?: boolean;
+  LogoUpload: QrLogoUpload;
 }) {
   const t = useTranslations("qrCodes");
   const tCommon = useTranslations("common.actions");
@@ -116,7 +132,7 @@ export function QrCodeForm({
                       {...field}
                       value={field.value}
                       onChange={(value) => field.onChange(value === "" ? 0 : value)}
-                      min={0}
+                      min={form.watch("logo") ? 4 : 0}
                       max={8}
                       integer
                       disabled={locked}
@@ -150,13 +166,14 @@ export function QrCodeForm({
                 control={form.control}
                 name="errorCorrection"
                 label={t("fields.errorCorrection")}
+                description={form.watch("logo") ? t("fields.logoCorrectionHint") : undefined}
               >
                 {(field) => (
                   <SelectField
                     id={field.id}
                     value={field.value}
                     onValueChange={field.onChange}
-                    disabled={locked}
+                    disabled={locked || Boolean(form.watch("logo"))}
                     options={ERROR_CORRECTION_LEVELS.map((level) => ({
                       value: level,
                       label: t(`errorCorrection.${level}`),
@@ -164,6 +181,41 @@ export function QrCodeForm({
                   />
                 )}
               </FormField>
+              <Controller
+                control={form.control}
+                name="logo"
+                render={({ field, fieldState }) => (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">{t("fields.logo")}</p>
+                    <LogoUpload
+                      value={field.value}
+                      onChange={(file) => {
+                        if (file?.contentType && !LOGO_CONTENT_TYPES.includes(file.contentType)) {
+                          form.setError("logo", { message: t("validation.logoFormat") });
+                          return;
+                        }
+                        form.clearErrors("logo");
+                        field.onChange(file);
+                        if (file) {
+                          form.setValue("errorCorrection", "H", { shouldDirty: true });
+                          form.setValue("margin", Math.max(4, form.getValues("margin")), {
+                            shouldDirty: true,
+                          });
+                        }
+                      }}
+                      disabled={locked}
+                      shape="square"
+                      hint={t("fields.logoHint")}
+                      aria-label={t("fields.logo")}
+                    />
+                    {fieldState.error ? (
+                      <p role="alert" className="text-destructive text-sm">
+                        {fieldState.error.message}
+                      </p>
+                    ) : null}
+                  </div>
+                )}
+              />
             </FormSection>
           </>
         }

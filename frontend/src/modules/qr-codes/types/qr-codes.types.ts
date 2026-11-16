@@ -43,6 +43,7 @@ export type QrCodeDetail = Omit<QrCode, "owner"> & {
   ownerId: string;
   content: QrContent;
   design: QrDesign;
+  logo: AttachmentSummary | null;
   payload: string;
 };
 
@@ -53,6 +54,12 @@ export type QrBank = { bin: string; code: string; shortName: string; name: strin
 export type QrCodeFilters = ListParams & { qrType?: QrType[]; owner?: string[] };
 
 /** Dữ liệu tạo/sửa và xem trước. */
-export type QrCodeInput = { name: string; qrType: QrType; content: QrContent; design: QrDesign };
+export type QrCodeInput = {
+  name: string;
+  qrType: QrType;
+  content: QrContent;
+  design: QrDesign;
+  logoId: string | null;
+};
 export type QrPreviewInput = Omit<QrCodeInput, "name">;
 export type QrPreview = { payload: string; svg: string };

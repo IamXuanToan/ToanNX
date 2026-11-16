@@ -3,48 +3,71 @@
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { useSyncExternalStore } from "react";
 
 import { Button } from "@/shares/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/shares/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
 
-const THEMES = [
-  { value: "light", icon: Sun },
-  { value: "dark", icon: Moon },
-  { value: "system", icon: Monitor },
-] as const;
+const THEME_CYCLE: Record<string, "light" | "dark" | "system"> = {
+  light: "dark",
+  dark: "system",
+  system: "light",
+};
+
+const emptySubscribe = () => () => {};
 
 /**
- * Chọn giao diện sáng/tối/theo hệ thống.
+ * Nút chuyển nhanh giao diện theo vòng lặp 3 chế độ: Sáng -> Tối -> Theo hệ thống.
+ * Không dùng dropdown, bấm trực tiếp để đổi giao diện tức thì.
  *
- * @returns Nút chọn theme.
+ * @returns Nút bấm đổi theme.
  */
 export function ThemeSwitcher() {
   const t = useTranslations("common.theme");
   const { theme, setTheme } = useTheme();
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+
+  const handleCycle = () => {
+    const nextTheme = THEME_CYCLE[theme ?? "system"] ?? "light";
+    setTheme(nextTheme);
+  };
+
+  const currentTheme = mounted ? (theme ?? "system") : "light";
+  const label =
+    mounted && theme ? `${t("toggle")}: ${t(theme as "light" | "dark" | "system")}` : t("toggle");
+
+  const renderIcon = () => {
+    if (!mounted) {
+      return <Sun className="size-4" />;
+    }
+    if (currentTheme === "dark") {
+      return <Moon className="size-4" />;
+    }
+    if (currentTheme === "system") {
+      return <Monitor className="size-4" />;
+    }
+    return <Sun className="size-4" />;
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={t("toggle")} data-testid="theme-switcher">
-          <Sun className="scale-100 rotate-0 transition-transform dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute scale-0 rotate-90 transition-transform dark:scale-100 dark:rotate-0" />
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleCycle}
+          aria-label={label}
+          data-testid="theme-switcher"
+        >
+          {renderIcon()}
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
-          {THEMES.map(({ value, icon: Icon }) => (
-            <DropdownMenuRadioItem key={value} value={value}>
-              <Icon />
-              {t(value)}
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">{label}</TooltipContent>
+    </Tooltip>
   );
 }

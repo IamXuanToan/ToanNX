@@ -6,6 +6,7 @@ import { Controller, useWatch } from "react-hook-form";
 
 import { Link } from "@/i18n/navigation";
 import { AttachmentImageUploadView } from "@/modules/attachment/views/attachment-image-upload-view";
+import { getUserInitials } from "@/shares/components/common/user-avatar/user-avatar";
 import { ChoiceList } from "@/shares/components/common/choice-list/choice-list";
 import { EmailInput } from "@/shares/components/common/email-input/email-input";
 import { Form } from "@/shares/components/common/form/form";
@@ -56,15 +57,11 @@ export function UserForm({
   const { errors } = form.formState;
   const disabled = !canEdit || isSubmitting;
   const flags = useWatch({ control: form.control, name: FLAGS });
-  const [firstName, lastName, email] = useWatch({
+  const [firstName, lastName, email, username] = useWatch({
     control: form.control,
-    name: ["firstName", "lastName", "email"],
+    name: ["firstName", "lastName", "email", "username"],
   });
-  const initials =
-    [lastName, firstName]
-      .map((part) => part.trim().charAt(0))
-      .join("")
-      .toUpperCase() || email.trim().charAt(0).toUpperCase();
+  const initials = getUserInitials({ firstName, lastName, email, username });
 
   if (state.isLoadingSource) {
     return (

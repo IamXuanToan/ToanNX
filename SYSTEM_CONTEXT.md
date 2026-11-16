@@ -68,9 +68,14 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 - File vật lý: tệp đã xóa mềm và file mồ côi bị dọn sau `ATTACHMENT_PURGE_DAYS` ngày (giữ dòng dữ liệu).
 - Báo lỗi: Sentry ở BE khi có `SENTRY_DSN`; lỗi trình duyệt gửi về BE.
 - Soạn thảo dùng Tiptap JSON (`TiptapEditor` / `TiptapContent`); không lưu HTML tùy ý.
-- Mã QR là module riêng (`qr_codes`, trang tạo QR URL/văn bản/Wi-Fi/VietQR, PNG lưu ở Attachment). Chèn QR vào
+- Mã QR là module riêng (`qr_codes`, trang tạo QR URL/văn bản/Wi-Fi/VietQR, PNG lưu ở Attachment). Payload chuyển
+  khoản dùng `napas-qr-python` (gồm CRC); ảnh PNG/SVG dùng `segno`. Logo tùy chọn lấy từ ảnh raster trong
+  Thư viện, ghép bằng Pillow với mức sửa lỗi H. Chèn QR vào
   editor là chèn ảnh PNG của mã đó. Link rút gọn `/s/{slug}`; trang tự tạo `/{đường dẫn}/{slug}` (đường dẫn
   quản lý ở `custom_pages.path`, `p` và `qr` có sẵn), bản nháp xem trước bằng `?preview=1` khi có quyền.
+- Link rút gọn `/s/{slug}` mở trang trung gian HTTP 200: chờ người xem bấm hoặc tự mở đích sau 1–60 giây.
+  Có thể đặt mật khẩu và thời điểm hết hạn; link hết hạn hiện trang thông báo. Slug tự sinh là UUID.
+  Mật khẩu được băm, không trả mã băm hay URL đích của link khóa ở API công khai.
 - Nhóm Hệ thống ở FE chia **Tài khoản: Người dùng, Phiên** và **Phân quyền: Vai trò, Quyền**.
   Quyền là danh mục chỉ đọc nhóm theo module. Tìm kiếm chỉ áp dụng khi Enter; bộ lọc, sắp xếp và
   phân trang đồng bộ URL. Người dùng lọc vai trò/trạng thái; Vai trò lọc trạng thái/loại/chính sách tự cấp.

@@ -9,19 +9,15 @@ from app.core.tracking.journal_tracker import JournalTracker
 
 
 class ShortLink(JournalTracker, CoreModel):
-    """URL chuyển hướng do người dùng quản lý."""
+    """URL ngắn mở trang trung gian trước khi đến đích."""
+
+    journal_masked_fields = ("password_hash",)
 
     class Status(models.TextChoices):
         """Trạng thái cấu hình; EXPIRED được tính từ expires_at."""
 
         ACTIVE = "ACTIVE", "Hoạt động"
         INACTIVE = "INACTIVE", "Tạm tắt"
-
-    class RedirectType(models.IntegerChoices):
-        """HTTP redirect code."""
-
-        PERMANENT = 301, "301"
-        TEMPORARY = 302, "302"
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -53,12 +49,19 @@ class ShortLink(JournalTracker, CoreModel):
         help_text="Mô tả tùy chọn.",
         db_comment="Mô tả liên kết",
     )
-    redirect_type = models.PositiveSmallIntegerField(
-        choices=RedirectType.choices,
-        default=RedirectType.TEMPORARY,
-        verbose_name="Kiểu chuyển hướng",
-        help_text="301 được cache lâu; mặc định 302.",
-        db_comment="HTTP status chuyển hướng",
+    auto_redirect_seconds = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Tự chuyển sau",
+        help_text="Số giây chờ trước khi trình duyệt mở URL đích; null là chờ người xem bấm.",
+        db_comment="Số giây tự chuyển tại trang trung gian",
+    )
+    password_hash = models.CharField(
+        max_length=128,
+        blank=True,
+        verbose_name="Mã băm mật khẩu",
+        help_text="Mã băm mật khẩu bảo vệ liên kết; rỗng là không cần mật khẩu.",
+        db_comment="Mã băm mật khẩu liên kết",
     )
     status = models.CharField(
         max_length=8,
@@ -87,7 +90,9 @@ class ShortLink(JournalTracker, CoreModel):
                 condition=models.Q(status__in=["ACTIVE", "INACTIVE"]), name="short_link_status_valid"
             ),
             models.CheckConstraint(
-                condition=models.Q(redirect_type__in=[301, 302]), name="short_link_redirect_valid"
+                condition=models.Q(auto_redirect_seconds__isnull=True)
+                | models.Q(auto_redirect_seconds__gte=1, auto_redirect_seconds__lte=60),
+                name="short_link_auto_seconds_valid",
             ),
         ]
         indexes = [

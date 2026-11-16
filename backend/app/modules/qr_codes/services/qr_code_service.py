@@ -4,8 +4,10 @@ from typing import Any
 
 from django.db import transaction
 
+from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
 from app.core.utils.text import ascii_slug
+from app.modules.attachment.models.attachment import Attachment
 from app.modules.attachment.services.attachment_service import AttachmentService
 from app.modules.qr_codes.models.qr_code import QrCode
 from app.modules.qr_codes.permissions.qr_codes_permission import QrCodesPermission
@@ -14,6 +16,7 @@ from app.modules.qr_codes.utils.qr_content import build_payload, validate_qr_con
 from app.modules.qr_codes.utils.qr_image_renderer import render_png, render_svg_data_url
 
 DEFAULT_FILE_NAME = "qr-code"
+LOGO_CONTENT_TYPES = frozenset({"image/png", "image/jpeg", "image/webp", "image/gif"})
 
 
 class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
@@ -43,11 +46,18 @@ class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
             Mã QR mới.
         """
         self.ensure_quota(actor)
-        payload = build_payload(data["qr_type"], data["content"])
+        fields = dict(data)
+        logo = self._get_logo(actor, fields.pop("logo_id", None))
+        fields["design"] = self._design_for_logo(fields["design"], logo)
+        payload = build_payload(fields["qr_type"], fields["content"])
         image = self.attachment_service.create_generated(
-            actor, render_png(payload, data["design"]), self._file_name(data["name"])
+            actor,
+            render_png(payload, fields["design"], self._logo_bytes(logo)),
+            self._file_name(fields["name"]),
         )
-        return self.repository.create(actor=actor, owner=actor, payload=payload, image=image, **data)
+        return self.repository.create(
+            actor=actor, owner=actor, payload=payload, image=image, logo=logo, **fields
+        )
 
     @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> QrCode:
@@ -63,17 +73,27 @@ class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
         """
         qr_code = self.get_for_write(actor, pk)
         fields = dict(data)
-        if {"qr_type", "content", "design"} & set(fields):
+        logo_changed = "logo_id" in fields
+        requested_logo_id = fields.pop("logo_id") if logo_changed else None
+        logo = (
+            qr_code.logo
+            if not logo_changed or (requested_logo_id and str(requested_logo_id) == str(qr_code.logo_id))
+            else self._get_logo(actor, requested_logo_id)
+        )
+        if logo_changed:
+            fields["logo"] = logo
+        if {"qr_type", "content", "design"} & set(fields) or logo_changed:
             qr_type = fields.get("qr_type", qr_code.qr_type)
             fields["content"], fields["design"] = validate_qr_content(
                 qr_type, fields.get("content", qr_code.content), fields.get("design", qr_code.design)
             )
+            fields["design"] = self._design_for_logo(fields["design"], logo)
             fields["payload"] = build_payload(qr_type, fields["content"])
-            if (fields["payload"], fields["design"]) != (qr_code.payload, qr_code.design):
+            if (fields["payload"], fields["design"], logo) != (qr_code.payload, qr_code.design, qr_code.logo):
                 self.attachment_service.replace_content(
                     actor,
                     qr_code.image_id,
-                    render_png(fields["payload"], fields["design"]),
+                    render_png(fields["payload"], fields["design"], self._logo_bytes(logo)),
                     self._file_name(fields.get("name", qr_code.name)),
                 )
         return self.repository.update(qr_code, actor=actor, **fields)
@@ -90,20 +110,49 @@ class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
         self.repository.delete(qr_code, actor=actor)
         self.attachment_service.delete_generated(actor, qr_code.image_id)
 
-    @staticmethod
-    def preview(qr_type: str, data: dict[str, Any], style: dict[str, Any]) -> dict[str, str]:
+    def preview(
+        self, actor: Any, qr_type: str, data: dict[str, Any], style: dict[str, Any], logo_id: Any = None
+    ) -> dict[str, str]:
         """Payload và ảnh SVG xem trước, không ghi DB.
 
         Args:
+            actor: Người yêu cầu xem trước.
             qr_type: Loại.
             data: Dữ liệu đã validate.
             style: Kiểu dáng đã validate.
+            logo_id: Id ảnh logo tùy chọn.
 
         Returns:
             `{payload, svg}` (svg là data URL).
         """
+        logo = self._get_logo(actor, logo_id)
         payload = build_payload(qr_type, data)
-        return {"payload": payload, "svg": render_svg_data_url(payload, style)}
+        return {
+            "payload": payload,
+            "svg": render_svg_data_url(payload, self._design_for_logo(style, logo), self._logo_bytes(logo)),
+        }
+
+    def _get_logo(self, actor: Any, logo_id: Any) -> Attachment | None:
+        """Chỉ cho dùng ảnh raster trong Thư viện mà actor được phép đọc."""
+        if logo_id is None:
+            return None
+        logo = self.attachment_service.get_image(logo_id, actor=actor)
+        if logo.content_type not in LOGO_CONTENT_TYPES:
+            raise ValidationError(details={"logo_id": ["Logo phải là ảnh PNG, JPEG, WebP hoặc GIF."]})
+        return logo
+
+    @staticmethod
+    def _logo_bytes(logo: Attachment | None) -> bytes | None:
+        """Đọc logo từ storage khi dựng hoặc xem trước mã QR."""
+        if logo is None:
+            return None
+        with logo.file.open("rb") as source:
+            return source.read()
+
+    @staticmethod
+    def _design_for_logo(design: dict[str, Any], logo: Attachment | None) -> dict[str, Any]:
+        """Logo cần mức sửa lỗi H và quiet zone bốn mô đun của QR chuẩn."""
+        return {**design, "error_correction": "H", "margin": max(4, design["margin"])} if logo else design
 
     @staticmethod
     def _file_name(name: str) -> str:

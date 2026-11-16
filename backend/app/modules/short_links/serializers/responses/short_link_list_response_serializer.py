@@ -11,10 +11,11 @@ from app.modules.short_links.serializers.responses.short_link_owner_response_ser
 
 
 class ShortLinkListResponseSerializer(serializers.ModelSerializer[ShortLink]):
-    """Dòng bảng: tên, URL ngắn, đích, kiểu, trạng thái hiệu lực, hạn, owner."""
+    """Dòng bảng: tên, URL ngắn, đích, bảo vệ, hạn, owner."""
 
     short_url = serializers.SerializerMethodField(help_text="URL ngắn tuyệt đối.")
     effective_status = serializers.SerializerMethodField(help_text="EXPIRED khi quá expires_at.")
+    has_password = serializers.SerializerMethodField(help_text="Link có mật khẩu không.")
     owner = ShortLinkOwnerResponseSerializer(help_text="Chủ sở hữu.")
 
     class Meta:
@@ -25,7 +26,8 @@ class ShortLinkListResponseSerializer(serializers.ModelSerializer[ShortLink]):
             "slug",
             "short_url",
             "destination_url",
-            "redirect_type",
+            "auto_redirect_seconds",
+            "has_password",
             "status",
             "effective_status",
             "expires_at",
@@ -42,3 +44,7 @@ class ShortLinkListResponseSerializer(serializers.ModelSerializer[ShortLink]):
     def get_effective_status(self, obj: ShortLink) -> str:
         """Tính hết hạn mà không ghi vào DB."""
         return "EXPIRED" if obj.expires_at is not None and obj.expires_at <= timezone.now() else obj.status
+
+    def get_has_password(self, obj: ShortLink) -> bool:
+        """Không bao giờ trả mã băm mật khẩu."""
+        return bool(obj.password_hash)

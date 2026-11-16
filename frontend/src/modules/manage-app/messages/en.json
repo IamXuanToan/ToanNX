@@ -1,5 +1,11 @@
 {
   "welcome": "Hello, {name}",
+  "statusReady": "System operational",
+  "superuserBadge": "Superuser",
+  "staffBadge": "Staff",
+  "moduleUnit": "modules",
+  "systemOnline": "All systems operational",
+  "lastLogin": "Last login: {time}",
   "empty": {
     "title": "No modules available",
     "description": "Your account has no permission for any module yet. Contact an administrator."

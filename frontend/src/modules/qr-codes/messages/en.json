@@ -56,7 +56,10 @@
     "margin": "Margin",
     "foreground": "Code color",
     "background": "Background",
-    "errorCorrection": "Error correction"
+    "errorCorrection": "Error correction",
+    "logo": "Center logo",
+    "logoHint": "PNG, JPEG, WebP or GIF. The logo is kept small for easier scanning.",
+    "logoCorrectionHint": "A logo automatically uses correction H and a margin of at least 4 modules."
   },
   "picker": {
     "insert": "QR code",
@@ -70,6 +73,7 @@
     "url": "Enter a full http or https URL.",
     "accountNumber": "Account number must be 4–19 letters or digits.",
     "message": "Up to 25 characters: letters, digits and spaces.",
-    "color": "Use a #RRGGBB color."
+    "color": "Use a #RRGGBB color.",
+    "logoFormat": "Logo must be a PNG, JPEG, WebP or GIF image."
   }
 }

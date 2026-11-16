@@ -266,8 +266,7 @@ RATE_LIMITS = {
 
 ```python
 class ShortLink(JournalTracker, CoreModel):         # tracker là mixin, thêm vào lớp model
-    journal_fields = ("name", "slug", "destination_url", "redirect_type", "status", "expires_at")
-    journal_masked_fields = ()                       # ghi "đã đổi" nhưng không lưu giá trị (ví dụ password)
+    journal_masked_fields = ("password_hash",)       # ghi "đã đổi" nhưng không lưu mã băm
 ```
 
 - `JournalTracker` (`core/tracking/journal_tracker.py`) là mixin trừu tượng: model kế thừa thì CRUD qua repository **tự
@@ -513,19 +512,22 @@ chỉ chèn ảnh đó.
 | `payload` | chuỗi mã hóa (VietQR EMVCo + CRC16 với chuyển khoản), BE dựng khi lưu |
 | `style` | `{size 128–1024, foreground, background, margin 0–8, error_correction L/M/Q/H}` |
 | `image` | FK Attachment (PNG do BE sinh), `PROTECT` |
+| `logo` | FK Attachment tùy chọn; ảnh raster dùng để ghép giữa mã QR |
 
 Index `(owner, -created_at) WHERE deleted_at IS NULL`. `journal_fields = ("name", "qr_type", "data", "style")`.
 
 ### 8.2 Nghiệp vụ
 
-- Dựng payload ở `qr_codes/utils/vietqr_payload_builder.py`; vẽ ảnh bằng thư viện `segno` (Python thuần, không phụ thuộc
-  hệ thống).
+- Dựng payload chuyển khoản và CRC bằng thư viện `napas-qr-python` qua
+  `qr_codes/utils/vietqr_payload.py`; vẽ ảnh PNG/SVG bằng `segno`. Không tự ghép TLV hoặc tính CRC.
+- Logo tùy chọn lấy từ Attachment ảnh raster mà người dùng được phép đọc; dùng Pillow ghép vào tâm mã ở kích thước
+  giới hạn, đặt mức sửa lỗi H và lề ít nhất 4 ô. Ảnh PNG lưu và SVG xem trước/tải xuống đều có logo.
 - `AttachmentService` thêm hai method công khai: `create_generated(actor, owner, content, name)` và
   `replace_content(attachment, content)`. Sửa mã QR → **thay nội dung ngay trong attachment cũ** (giữ id), nên trang nào
   đã chèn ảnh này tự hiện mã mới (13 · D3).
 - Xóa mã QR → xóa mềm cả attachment; trang công khai bỏ ảnh không còn (như ảnh bị xóa ở Thư viện).
 - Quy tắc chuyển khoản (Q7): nội dung ≤ 25 ký tự không dấu; tên chủ tài khoản bắt buộc, tự in hoa + bỏ dấu; danh mục ngân
-  hàng khai tĩnh; chưa làm ví điện tử, logo giữa mã.
+  hàng khai tĩnh; chưa làm ví điện tử.
 - Loại URL: FE cho chọn nhanh link rút gọn của chính mình (ô chọn tìm phía server); BE chỉ lưu URL, **không** phụ thuộc
   module short_links.
 
@@ -564,16 +566,15 @@ Quyền mới: `qr_codes.code.{read,create,update,delete,manage_all}`.
 
 ## 9. Short Links
 
-Model, resolve 301/302, hết hạn 410, unique `Lower(slug)` không điều kiện (slug đã xóa không dùng lại), chặn đích `/s/…`
-nội bộ, rate limit đã có. Việc còn lại:
+Module đã chuyển sang base CRUD với owner, `manage_all`, bulk, history và rate limit. Slug duy nhất theo
+`Lower(slug)` (bản đã xóa không dùng lại); URL đích nội bộ `/s/…` bị chặn. `status=EXPIRED` được suy từ
+`expires_at`; link hết hạn trả 410.
 
-1. Chuyển sang base: `owner_field`, `manage_all_permission`, `owner_quota_setting`; bulk-update (`status`) + bulk-delete;
-   `history_enabled`; `action_rate_limits`; bỏ gọi `RateLimitService` tay.
-2. `ShortLinkFilter`: `status=ACTIVE,INACTIVE,EXPIRED` (EXPIRED suy từ `expires_at`), `redirect_type`, `owner`.
-3. `ShortLinkListResponseSerializer` nhẹ có `owner {id, email, display_name}` (cột Chủ sở hữu khi có `manage_all`).
-4. Resolve: slug sai định dạng → 404 (hiện là 400); `X-Robots-Tag: noindex`; rate limit `public.read`.
-5. `short_links/0002`: `CheckConstraint` cho `status`, `redirect_type`; index owner có điều kiện xóa mềm.
-6. FE module `short-links`: bảng, form, `toannx.com/s/{slug}` là route handler chỉ redirect (404/410 → trang thông báo).
+`/s/{slug}` là trang trung gian. Người xem bấm mở URL đích hoặc chờ tự mở sau 1–60 giây nếu chủ link cấu hình.
+Link có thể không hết hạn hoặc có thời điểm hết hạn; link hết hạn hiện thông báo ngay tại URL ngắn. Mật khẩu
+link được băm, đổi/bỏ bởi chủ sở hữu hoặc người có quyền `UPDATE` và `MANAGE_ALL`, không lộ URL đích qua API công
+khai trước khi mở khóa. Slug bỏ trống được tạo bằng UUID; form có nút tạo UUID và xem trước trang trung gian.
+Migration `short_links/0003` thay `redirect_type` bằng `auto_redirect_seconds` và `password_hash`.
 
 ---
 
@@ -731,6 +732,6 @@ Như bản 6, sửa theo QR mới:
 | Q11 | Bỏ bảng block, chuyển dữ liệu cũ sang Tiptap | Giữ song song |
 | Q12 | Giới hạn ở mục 6 | — |
 | Q14 | Chữ của site trên trang công khai theo cookie/trình duyệt, mặc định `vi` | Luôn `vi` |
-| Q15 | Thư viện mới: BE `segno`; FE `@tiptap/static-renderer`, `@tiptap/extension-{youtube,text-align,highlight,color,list,drag-handle-react}`, `openapi-typescript`, `eslint-plugin-boundaries` (không cần `qrcode` ở FE nữa) | — |
+| Q15 | Thư viện mới: BE `segno`, `napas-qr-python` (VietQR); FE `@tiptap/static-renderer`, `@tiptap/extension-{youtube,text-align,highlight,color,list,drag-handle-react}`, `openapi-typescript`, `eslint-plugin-boundaries` (không cần `qrcode` ở FE nữa) | — |
 | Q16 | Mẫu khi tạo trang + nút Nhân bản | Chỉ một trong hai |
 | Q18 | Làm base trước, dừng review, rồi mới làm module nội dung | Làm một lượt |

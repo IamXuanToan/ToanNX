@@ -24,8 +24,12 @@ const EMPTY: ShortLinkFormValues = {
   slug: "",
   destinationUrl: "",
   description: "",
-  redirectType: "302",
+  redirectMode: "manual",
+  autoRedirectSeconds: "5",
+  password: "",
+  removePassword: false,
   isActive: true,
+  hasExpiry: false,
   expiresAt: "",
 };
 
@@ -35,23 +39,31 @@ function fromLink(link: ShortLinkDetail): ShortLinkFormValues {
     slug: link.slug,
     destinationUrl: link.destinationUrl,
     description: link.description,
-    redirectType: String(link.redirectType) as "301" | "302",
+    redirectMode: link.autoRedirectSeconds === null ? "manual" : "timed",
+    autoRedirectSeconds: String(link.autoRedirectSeconds ?? 5),
+    password: "",
+    removePassword: false,
     isActive: link.status === "ACTIVE",
+    hasExpiry: Boolean(link.expiresAt),
     expiresAt: link.expiresAt ? formatDateTimeLocal(new Date(link.expiresAt)) : "",
   };
 }
 
-function toInput(values: ShortLinkFormValues): ShortLinkInput {
+function toInput(values: ShortLinkFormValues, editing: boolean): ShortLinkInput {
   const expires = parseDateTimeLocal(values.expiresAt);
-  return {
+  const input: ShortLinkInput = {
     name: values.name,
     slug: values.slug || undefined,
     destinationUrl: values.destinationUrl,
     description: values.description,
-    redirectType: Number(values.redirectType) as 301 | 302,
+    autoRedirectSeconds:
+      values.redirectMode === "timed" ? Number(values.autoRedirectSeconds) : null,
     status: values.isActive ? "ACTIVE" : "INACTIVE",
-    expiresAt: expires ? expires.toISOString() : null,
+    expiresAt: values.hasExpiry && expires ? expires.toISOString() : null,
   };
+  if (values.removePassword) input.password = "";
+  else if (values.password || !editing) input.password = values.password;
+  return input;
 }
 
 /**
@@ -73,7 +85,10 @@ export function useShortLinkForm({
   const create = useCreateShortLink();
   const update = useUpdateShortLink(link?.id ?? "");
   const errorMessage = useApiErrorMessage();
-  const schema = useMemo(() => shortLinkSchema(t), [t]);
+  const existingExpiry = link?.expiresAt
+    ? formatDateTimeLocal(new Date(link.expiresAt))
+    : undefined;
+  const schema = useMemo(() => shortLinkSchema(t, existingExpiry), [t, existingExpiry]);
   const form = useForm<ShortLinkFormValues>({
     resolver: zodResolver(schema),
     defaultValues: EMPTY,
@@ -83,9 +98,15 @@ export function useShortLinkForm({
   const onSubmit = form.handleSubmit(async (values) => {
     let saved: ShortLinkDetail;
     try {
-      saved = link
-        ? await update.mutateAsync(toInput(values))
-        : await create.mutateAsync(toInput(values));
+      const input = toInput(values, Boolean(link));
+      if (
+        link &&
+        values.hasExpiry === Boolean(link.expiresAt) &&
+        values.expiresAt === existingExpiry
+      ) {
+        delete input.expiresAt;
+      }
+      saved = link ? await update.mutateAsync(input) : await create.mutateAsync(input);
     } catch (error) {
       const fields = isApiError(error) ? error.fieldErrors() : {};
       const matched = SHORT_LINK_FORM_FIELDS.filter((name) => fields[name]);

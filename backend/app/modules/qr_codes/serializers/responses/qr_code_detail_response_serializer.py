@@ -12,6 +12,7 @@ class QrCodeDetailResponseSerializer(serializers.ModelSerializer[QrCode]):
     """Đủ dữ liệu cho form sửa và nút tải ảnh."""
 
     image = AttachmentSummaryResponseSerializer(help_text="Ảnh PNG trong Thư viện (id giữ nguyên khi sửa).")
+    logo = AttachmentSummaryResponseSerializer(allow_null=True, help_text="Ảnh logo đã chọn, nếu có.")
 
     class Meta:
         model = QrCode
@@ -24,6 +25,7 @@ class QrCodeDetailResponseSerializer(serializers.ModelSerializer[QrCode]):
             "design",
             "payload",
             "image",
+            "logo",
             "created_at",
             "updated_at",
         )

@@ -5,8 +5,11 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { AttachmentPicker } from "@/modules/attachment/components/attachment-picker/attachment-picker";
+import { ATTACHMENT_PERMISSIONS } from "@/modules/attachment/constants/attachment-permissions";
 import { UserMenu } from "@/modules/auth/components/user-menu/user-menu";
 import { useLogout } from "@/modules/auth/hooks/use-logout";
+import { usePermission } from "@/modules/auth/hooks/use-permission";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { LanguageSwitcher } from "@/shares/components/layout/language-switcher";
@@ -28,6 +31,15 @@ import { useAdminShell } from "./hooks/use-admin-shell";
 const HEADER_CLASS =
   "bg-card sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 border-b px-4 sm:px-6";
 
+function AdminAttachmentPickerSlot(props: {
+  onSelect: (file: { id: string; url: string }) => void;
+  onClose: () => void;
+}) {
+  const canRead = usePermission(ATTACHMENT_PERMISSIONS.read);
+  const canUpload = usePermission(ATTACHMENT_PERMISSIONS.create);
+  return <AttachmentPicker canRead={canRead} canUpload={canUpload} {...props} />;
+}
+
 /**
  * Nhóm nút bên phải header: ngôn ngữ, giao diện; tài khoản chỉ có ở đây khi không có sidebar.
  *
@@ -39,7 +51,11 @@ function HeaderActions({ withAccount = false }: { withAccount?: boolean }) {
     <div className="flex items-center gap-2">
       <LanguageSwitcher />
       <ThemeSwitcher />
-      {withAccount ? <UserMenu /> : null}
+      {withAccount ? (
+        <UserMenu
+          renderAttachmentPicker={(pickerProps) => <AdminAttachmentPickerSlot {...pickerProps} />}
+        />
+      ) : null}
     </div>
   );
 }
@@ -69,7 +85,16 @@ function useGroupBreadcrumb(group?: AdminGroup): BreadcrumbEntry[] {
 /** Khung màn chọn module: thanh trên (logo + nút), nội dung căn giữa, không sidebar. */
 function LauncherLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="bg-canvas flex min-h-svh flex-col">
+    <div className="bg-canvas relative flex min-h-svh flex-col">
+      {/* Vùng ánh sáng dịu phía trên và lưới chấm trang trí tinh tế */}
+      <div
+        className="from-primary/[0.04] dark:from-primary/[0.08] pointer-events-none absolute inset-x-0 top-0 h-96 bg-gradient-to-b via-transparent to-transparent"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-border)_1px,transparent_1px)] [background-size:24px_24px] opacity-40 dark:opacity-25"
+        aria-hidden
+      />
       <header className={HEADER_CLASS}>
         <Link href={MANAGE_APP_ROUTES.admin} className="flex h-10 items-center" aria-label="TOANNX">
           <Logo />
@@ -78,7 +103,7 @@ function LauncherLayout({ children }: { children: ReactNode }) {
         <HeaderActions withAccount />
       </header>
       <main
-        className="flex flex-1 items-start justify-center px-4 py-10 sm:px-6 sm:py-16 lg:items-center"
+        className="relative z-10 flex flex-1 items-start justify-center px-4 py-8 sm:px-6 sm:py-12 lg:items-center"
         data-testid="admin-content"
       >
         {children}
@@ -108,7 +133,12 @@ function WorkspaceLayout({
       <ModuleSidebar
         activeGroup={activeGroup}
         groups={groups}
-        footer={<UserMenu variant="sidebar" />}
+        footer={
+          <UserMenu
+            variant="sidebar"
+            renderAttachmentPicker={(pickerProps) => <AdminAttachmentPickerSlot {...pickerProps} />}
+          />
+        }
       />
       <SidebarInset>
         <header className={HEADER_CLASS}>
@@ -145,19 +175,20 @@ function LauncherSkeleton() {
   return (
     <div className="bg-canvas flex min-h-svh flex-col" aria-busy="true">
       <div className="bg-card flex h-16 items-center border-b px-4 sm:px-6">
-        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-8 w-32 rounded-lg" />
       </div>
-      <div className="flex flex-1 items-center justify-center px-4">
-        <div className="w-full max-w-4xl space-y-8">
+      <div className="flex flex-1 items-start justify-center px-4 py-8 sm:px-6 sm:py-12 lg:items-center">
+        <div className="w-full max-w-4xl space-y-7">
           <div className="flex flex-col items-center gap-2">
-            <Skeleton className="h-7 w-56" />
-            <Skeleton className="h-4 w-72" />
+            <Skeleton className="h-6 w-44 rounded-full" />
+            <Skeleton className="h-8 w-60 rounded-xl" />
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((key) => (
-              <Skeleton key={key} className="h-40 rounded-xl" />
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[1, 2].map((key) => (
+              <Skeleton key={key} className="h-32 rounded-2xl" />
             ))}
           </div>
+          <Skeleton className="h-6 w-full rounded-lg" />
         </div>
       </div>
     </div>

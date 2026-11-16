@@ -1,4 +1,4 @@
-"""Bộ lọc liên kết rút gọn: `?status=ACTIVE,EXPIRED&redirect_type=301,302&owner=<uuid>,<uuid>`."""
+"""Bộ lọc liên kết rút gọn: `?status=ACTIVE,EXPIRED&owner=<uuid>,<uuid>`."""
 
 from typing import Any
 
@@ -15,19 +15,18 @@ STATUS_CHOICES = (*ShortLink.Status.choices, (EXPIRED, "Hết hạn"))
 
 
 class ShortLinkFilter(django_filters.FilterSet):
-    """Trạng thái hiệu lực (EXPIRED suy từ `expires_at`), kiểu chuyển hướng, chủ sở hữu."""
+    """Trạng thái hiệu lực (EXPIRED suy từ `expires_at`) và chủ sở hữu."""
 
     status = CoreChoiceInFilter(
         choices=STATUS_CHOICES, method="filter_status", help_text="Nhiều giá trị: ACTIVE, INACTIVE, EXPIRED."
     )
-    redirect_type = CoreChoiceInFilter(choices=ShortLink.RedirectType.choices, help_text="301, 302.")
     owner = CoreUUIDInFilter(
         field_name="owner_id", help_text="Id chủ sở hữu (chỉ có tác dụng với manage_all)."
     )
 
     class Meta:
         model = ShortLink
-        fields = ("status", "redirect_type", "owner")
+        fields = ("status", "owner")
 
     @staticmethod
     def filter_status(queryset: QuerySet[ShortLink], name: str, value: Any) -> QuerySet[ShortLink]:

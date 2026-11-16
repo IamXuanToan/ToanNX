@@ -10,7 +10,7 @@ from app.core.tracking.journal_tracker import JournalTracker
 class QrCode(JournalTracker, CoreModel):
     """Một mã QR: loại, dữ liệu theo loại, kiểu dáng, payload đã mã hóa và ảnh."""
 
-    journal_fields = ("name", "qr_type", "content", "design")
+    journal_fields = ("name", "qr_type", "content", "design", "logo")
 
     class Type(models.TextChoices):
         """Loại nội dung mã QR."""
@@ -62,6 +62,16 @@ class QrCode(JournalTracker, CoreModel):
         verbose_name="Ảnh",
         help_text="Ảnh PNG trong Thư viện; sửa mã QR thay nội dung ảnh, giữ id.",
         db_comment="Ảnh PNG của mã QR",
+    )
+    logo = models.ForeignKey(
+        "attachment.Attachment",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="qr_codes_as_logo",
+        verbose_name="Logo",
+        help_text="Ảnh logo ở giữa mã QR; chỉ nhận PNG, JPEG, WebP hoặc GIF.",
+        db_comment="Logo tùy chọn của mã QR",
     )
 
     class Meta:

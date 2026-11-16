@@ -2,7 +2,6 @@ import type { ListParams } from "@/shares/types/api.types";
 
 export const SHORT_LINK_STATUSES = ["ACTIVE", "INACTIVE"] as const;
 export const SHORT_LINK_FILTER_STATUSES = ["ACTIVE", "INACTIVE", "EXPIRED"] as const;
-export const REDIRECT_TYPES = ["302", "301"] as const;
 
 export type ShortLinkStatus = (typeof SHORT_LINK_STATUSES)[number];
 
@@ -16,7 +15,8 @@ export type ShortLink = {
   slug: string;
   shortUrl: string;
   destinationUrl: string;
-  redirectType: 301 | 302;
+  autoRedirectSeconds: number | null;
+  hasPassword: boolean;
   status: ShortLinkStatus;
   effectiveStatus: ShortLinkStatus | "EXPIRED";
   expiresAt: string | null;
@@ -29,13 +29,11 @@ export type ShortLink = {
 export type ShortLinkDetail = Omit<ShortLink, "owner"> & {
   ownerId: string;
   description: string;
-  redirectWarning: string | null;
 };
 
 /** Bộ lọc danh sách (nhiều giá trị). */
 export type ShortLinkFilters = ListParams & {
   status?: (typeof SHORT_LINK_FILTER_STATUSES)[number][];
-  redirectType?: (typeof REDIRECT_TYPES)[number][];
   owner?: string[];
 };
 
@@ -45,7 +43,17 @@ export type ShortLinkInput = {
   slug?: string;
   destinationUrl: string;
   description?: string;
-  redirectType: 301 | 302;
+  autoRedirectSeconds: number | null;
+  password?: string;
   status: ShortLinkStatus;
-  expiresAt: string | null;
+  expiresAt?: string | null;
+};
+
+/** Thông tin trang trung gian công khai; link khóa không lộ URL đích. */
+export type PublicShortLink = {
+  name: string;
+  description: string;
+  destinationUrl: string | null;
+  hasPassword: boolean;
+  autoRedirectSeconds: number | null;
 };

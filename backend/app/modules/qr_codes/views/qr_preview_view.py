@@ -43,6 +43,10 @@ class QrPreviewView(CoreApiView):
             Payload và SVG data URL.
         """
         preview = self.qr_code_service.preview(
-            validated_data["qr_type"], validated_data["content"], validated_data["design"]
+            self.get_actor(request),
+            validated_data["qr_type"],
+            validated_data["content"],
+            validated_data["design"],
+            validated_data.get("logo_id"),
         )
         return CoreResponse(QrPreviewResponseSerializer(preview).data)

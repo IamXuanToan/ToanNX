@@ -5,6 +5,13 @@
       "input_tokens": 173764,
       "output_tokens": 0,
       "files": 477
+    },
+    {
+      "date": "2026-11-15T11:32:44.530534+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 1037,
+      "note": "host-agent semantic extraction; token usage unavailable"
     }
   ],
   "total_input_tokens": 173764,

@@ -15,6 +15,7 @@ import { formatDisplayMoney } from "@/shares/lib/number-format";
 import { Form } from "@/shares/components/common/form/form";
 import { FormField } from "@/shares/components/common/form-field/form-field";
 import { EmailInput } from "@/shares/components/common/email-input/email-input";
+import { PasswordInput } from "@/shares/components/common/password-input/password-input";
 import { FileUploadField } from "@/shares/components/common/file-upload-field/file-upload-field";
 import { emailField, moneyField, slugField } from "@/shares/lib/field-schemas";
 import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
@@ -167,5 +168,20 @@ describe("common input contracts", () => {
     localStorage.setItem("bad", "{");
     const bad = renderHook(() => useStoredPreference("bad", [], valid));
     expect(bad.result.current[0]).toEqual([]);
+  });
+  it("PasswordInput chuẩn: ẩn/hiện mật khẩu khi bấm nút và cập nhật aria-pressed", async () => {
+    const user = userEvent.setup();
+    render(<PasswordInput aria-label="Mật khẩu" />, { wrapper: provider });
+    const input = screen.getByLabelText("Mật khẩu") as HTMLInputElement;
+    expect(input.type).toBe("password");
+    const toggle = screen.getByRole("button", { name: "Hiện mật khẩu" });
+    expect(toggle.getAttribute("aria-pressed")).toBe("false");
+    await user.click(toggle);
+    expect(input.type).toBe("text");
+    expect(toggle.getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Ẩn mật khẩu" })).toBeDefined();
+    await user.click(toggle);
+    expect(input.type).toBe("password");
+    expect(toggle.getAttribute("aria-pressed")).toBe("false");
   });
 });

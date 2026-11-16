@@ -41,3 +41,19 @@ export type LoginCredentials = {
   identifier: string;
   password: string;
 };
+
+/** Dữ liệu cập nhật hồ sơ cá nhân qua PATCH `/auth/me`. */
+export type UpdateProfilePayload = {
+  /** Email đăng nhập mới (tùy chọn). */
+  email?: string;
+  /** Tên. */
+  firstName?: string;
+  /** Họ (và tên đệm). */
+  lastName?: string;
+  /** Tên người dùng. */
+  username?: string;
+  /** Id attachment ảnh đại diện; null để gỡ ảnh. */
+  avatarId?: string | null;
+  /** Mật khẩu mới (tùy chọn). */
+  password?: string;
+};

@@ -212,6 +212,7 @@ RATE_LIMITS: dict[str, tuple[int, int, str]] = {
     "default.write": (env.int("RL_DEFAULT_WRITE", default=300), 60, "user"),
     "public.read": (env.int("RL_PUBLIC_READ", default=120), 60, "ip"),
     "short_links.create": (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
+    "short_links.unlock": (env.int("RL_SHORT_LINK_UNLOCK", default=10), 60, "ip"),
     "custom_pages.create": (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
     "custom_pages.path.create": (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
     "qr_codes.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),

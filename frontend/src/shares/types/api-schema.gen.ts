@@ -444,7 +444,17 @@ export interface paths {
     delete?: never;
     options?: never;
     head?: never;
-    patch?: never;
+    /**
+     * @description Cập nhật thông tin hồ sơ cá nhân của người dùng hiện tại.
+     *
+     *     Args:
+     *         request: Request.
+     *         validated_data: Dữ liệu đã validate.
+     *
+     *     Returns:
+     *         Hồ sơ sau cập nhật.
+     */
+    patch: operations["auth_me_partial_update"];
     trace?: never;
   };
   "/api/v1/auth/refresh": {
@@ -1354,18 +1364,29 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * @description Trả `Location` đã lưu và mã 301/302.
+     * @description Trả thông tin công khai cho trang trung gian, không chuyển HTTP.
      *
      *     Args:
-     *         request: Request.
-     *         slug: Slug của link.
+     *         request: Request công khai.
+     *         slug: Slug trong URL ngắn.
      *
      *     Returns:
-     *         Redirect; 302 không cache, 301 cache 1 giờ; luôn `noindex`.
+     *         Thông tin trang trung gian với HTTP 200.
      */
     get: operations["short_links_resolve_retrieve"];
     put?: never;
-    post?: never;
+    /**
+     * @description Kiểm mật khẩu với giới hạn số lần thử rồi trả URL đích.
+     *
+     *     Args:
+     *         request: Request công khai.
+     *         slug: Slug trong URL ngắn.
+     *         validated_data: Mật khẩu đã validate.
+     *
+     *     Returns:
+     *         URL đích khi người xem nhập đúng mật khẩu.
+     */
+    post: operations["short_links_resolve_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2386,6 +2407,27 @@ export interface components {
        */
       folder_id?: string | null;
     };
+    /** @description Dữ liệu cập nhật hồ sơ cá nhân của người dùng hiện tại. */
+    PatchedMeUpdateValidateRequest: {
+      /**
+       * Format: email
+       * @description Email đăng nhập (lưu chữ thường, duy nhất).
+       */
+      email?: string;
+      /** @description Tên. */
+      first_name?: string;
+      /** @description Họ (và tên đệm). */
+      last_name?: string;
+      /** @description Tên người dùng. */
+      username?: string;
+      /**
+       * Format: uuid
+       * @description Id attachment ảnh đại diện; null để gỡ ảnh.
+       */
+      avatar_id?: string | null;
+      /** @description Mật khẩu mới. */
+      password?: string;
+    };
     /** @description Mọi trường tùy chọn; đổi segment làm URL cũ 404. */
     PatchedPagePathUpdateValidateRequest: {
       /** @description Đoạn URL giữa. */
@@ -2457,6 +2499,11 @@ export interface components {
       content?: unknown;
       /** @description Kiểu dáng. */
       design?: unknown;
+      /**
+       * Format: uuid
+       * @description Id ảnh logo; null để bỏ logo.
+       */
+      logo_id?: string | null;
     };
     /** @description Dữ liệu cập nhật vai trò (mã vai trò không đổi được). */
     PatchedRoleUpdateValidateRequest: {
@@ -2480,13 +2527,10 @@ export interface components {
       destination_url?: string;
       /** @description Mô tả. */
       description?: string;
-      /**
-       * @description 301 hoặc 302.
-       *
-       *     * `301` - 301
-       *     * `302` - 302
-       */
-      redirect_type?: components["schemas"]["RedirectTypeEnum"];
+      /** @description Tự mở đích sau 1–60 giây; null là chờ bấm nút. */
+      auto_redirect_seconds?: number | null;
+      /** @description Mật khẩu mới; rỗng để bỏ khóa, bỏ qua field để giữ nguyên. */
+      password?: string;
       /**
        * @description ACTIVE hoặc INACTIVE.
        *
@@ -2592,6 +2636,11 @@ export interface components {
       content: unknown;
       /** @description Kiểu dáng; trống = mặc định. */
       design?: unknown;
+      /**
+       * Format: uuid
+       * @description Id ảnh logo trong Thư viện.
+       */
+      logo_id?: string | null;
     };
     /** @description Đủ dữ liệu cho form sửa và nút tải ảnh. */
     QrCodeDetailResponse: {
@@ -2635,6 +2684,8 @@ export interface components {
       readonly payload: string;
       /** @description Ảnh PNG trong Thư viện (id giữ nguyên khi sửa). */
       image: components["schemas"]["AttachmentSummaryResponse"];
+      /** @description Ảnh logo đã chọn, nếu có. */
+      logo: components["schemas"]["AttachmentSummaryResponse"] | null;
       /**
        * Thời điểm tạo
        * Format: date-time
@@ -2723,6 +2774,11 @@ export interface components {
       content: unknown;
       /** @description Kiểu dáng. */
       design?: unknown;
+      /**
+       * Format: uuid
+       * @description Id ảnh logo trong Thư viện.
+       */
+      logo_id?: string | null;
     };
     /**
      * @description * `BANK_TRANSFER` - Chuyển khoản
@@ -2736,12 +2792,6 @@ export interface components {
       /** @description `ready` khi database kết nối được. */
       status: string;
     };
-    /**
-     * @description * `301` - 301
-     *     * `302` - 302
-     * @enum {integer}
-     */
-    RedirectTypeEnum: 301 | 302;
     /** @description Bật/tắt nhiều vai trò cùng lúc. */
     RoleBulkUpdateValidateRequest: {
       /** @description Id các bản ghi cần thao tác (tối đa 100). */
@@ -2994,13 +3044,10 @@ export interface components {
       destination_url: string;
       /** @description Mô tả. */
       description?: string;
-      /**
-       * @description 301 được cache lâu; mặc định 302.
-       *
-       *     * `301` - 301
-       *     * `302` - 302
-       */
-      redirect_type?: components["schemas"]["RedirectTypeEnum"];
+      /** @description Tự mở đích sau 1–60 giây; null là chờ bấm nút. */
+      auto_redirect_seconds?: number | null;
+      /** @description Mật khẩu tùy chọn; rỗng là không khóa link. */
+      password?: string;
       /**
        * @description ACTIVE hoặc INACTIVE.
        *
@@ -3014,7 +3061,15 @@ export interface components {
        */
       expires_at?: string | null;
     };
-    /** @description Dữ liệu quản lý link, gồm trạng thái hiệu lực và cảnh báo cache 301. */
+    /** @description Dữ liệu tối thiểu trả về sau khi mở khóa. */
+    ShortLinkDestinationResponse: {
+      /**
+       * Format: uri
+       * @description URL HTTP/HTTPS đích đã được kiểm tra.
+       */
+      destination_url: string;
+    };
+    /** @description Dữ liệu quản lý link và trạng thái bảo vệ. */
     ShortLinkDetailResponse: {
       /**
        * Mã định danh
@@ -3047,13 +3102,12 @@ export interface components {
        */
       readonly description: string;
       /**
-       * Kiểu chuyển hướng
-       * @description 301 được cache lâu; mặc định 302.
-       *
-       *     * `301` - 301
-       *     * `302` - 302
+       * Tự chuyển sau
+       * @description Số giây chờ trước khi trình duyệt mở URL đích; null là chờ người xem bấm.
        */
-      readonly redirect_type: components["schemas"]["RedirectTypeEnum"];
+      readonly auto_redirect_seconds: number | null;
+      /** @description Link có mật khẩu không. */
+      readonly has_password: boolean;
       /**
        * Trạng thái
        * @description ACTIVE cho phép chuyển hướng.
@@ -3072,8 +3126,6 @@ export interface components {
       readonly expires_at: string | null;
       /** @description URL ngắn tuyệt đối. */
       readonly short_url: string;
-      /** @description Cảnh báo nếu dùng 301. */
-      readonly redirect_warning: string | null;
       /**
        * Thời điểm tạo
        * Format: date-time
@@ -3087,7 +3139,7 @@ export interface components {
        */
       readonly updated_at: string;
     };
-    /** @description Dòng bảng: tên, URL ngắn, đích, kiểu, trạng thái hiệu lực, hạn, owner. */
+    /** @description Dòng bảng: tên, URL ngắn, đích, bảo vệ, hạn, owner. */
     ShortLinkListResponse: {
       /**
        * Mã định danh
@@ -3111,13 +3163,12 @@ export interface components {
        */
       readonly destination_url: string;
       /**
-       * Kiểu chuyển hướng
-       * @description 301 được cache lâu; mặc định 302.
-       *
-       *     * `301` - 301
-       *     * `302` - 302
+       * Tự chuyển sau
+       * @description Số giây chờ trước khi trình duyệt mở URL đích; null là chờ người xem bấm.
        */
-      readonly redirect_type: components["schemas"]["RedirectTypeEnum"];
+      readonly auto_redirect_seconds: number | null;
+      /** @description Link có mật khẩu không. */
+      readonly has_password: boolean;
       /**
        * Trạng thái
        * @description ACTIVE cho phép chuyển hướng.
@@ -3164,12 +3215,39 @@ export interface components {
       /** @description Họ tên đầy đủ. */
       full_name: string;
     };
+    /** @description Không tiết lộ URL đích của link đang khóa. */
+    ShortLinkPublicResponse: {
+      /**
+       * Tên
+       * @description Tên hiển thị trong quản lý.
+       */
+      readonly name: string;
+      /**
+       * Mô tả
+       * @description Mô tả tùy chọn.
+       */
+      readonly description: string;
+      /** @description URL đích khi link không khóa; null nếu khóa. */
+      readonly destination_url: string | null;
+      /** @description Link có yêu cầu mật khẩu không. */
+      readonly has_password: boolean;
+      /**
+       * Tự chuyển sau
+       * @description Số giây chờ trước khi trình duyệt mở URL đích; null là chờ người xem bấm.
+       */
+      readonly auto_redirect_seconds: number | null;
+    };
     /**
      * @description * `ACTIVE` - Hoạt động
      *     * `INACTIVE` - Tạm tắt
      * @enum {string}
      */
     ShortLinkStatusEnum: "ACTIVE" | "INACTIVE";
+    /** @description Mật khẩu được gửi riêng, không nằm trong URL. */
+    ShortLinkUnlockValidateRequest: {
+      /** @description Mật khẩu do người tạo đặt; rỗng với link không khóa. */
+      password: string;
+    };
     /**
      * @description * `blank` - blank
      *     * `link_in_bio` - link_in_bio
@@ -4579,6 +4657,42 @@ export interface operations {
       cookie?: never;
     };
     requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CurrentUserResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  auth_me_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedMeUpdateValidateRequest"];
+      };
+    };
     responses: {
       200: {
         headers: {
@@ -6397,13 +6511,6 @@ export interface operations {
         page?: number;
         /** @description Number of results to return per page. */
         page_size?: number;
-        /**
-         * @description 301, 302.
-         *
-         *     * `301` - 301
-         *     * `302` - 302
-         */
-        redirect_type?: (301 | 302)[];
         /** @description A search term. */
         search?: string;
         /**
@@ -6570,13 +6677,6 @@ export interface operations {
         page?: number;
         /** @description Number of results to return per page. */
         page_size?: number;
-        /**
-         * @description 301, 302.
-         *
-         *     * `301` - 301
-         *     * `302` - 302
-         */
-        redirect_type?: (301 | 302)[];
         /** @description A search term. */
         search?: string;
         /**
@@ -6689,19 +6789,64 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description No response body */
-      301: {
+      200: {
         headers: {
           [name: string]: unknown;
         };
-        content?: never;
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ShortLinkPublicResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
       };
-      /** @description No response body */
-      302: {
+    };
+  };
+  short_links_resolve_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShortLinkUnlockValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
         headers: {
           [name: string]: unknown;
         };
-        content?: never;
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ShortLinkDestinationResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
       };
     };
   };

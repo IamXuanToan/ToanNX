@@ -31,6 +31,15 @@ export function qrCodeSchema(t: Translate) {
       background: z.string().regex(HEX, t("color")),
       margin: z.number().int().min(0).max(8),
       errorCorrection: z.enum(["L", "M", "Q", "H"]),
+      logo: z
+        .object({
+          id: z.uuid(),
+          url: z.string(),
+          name: z.string(),
+          size: z.number().optional(),
+          contentType: z.string().optional(),
+        })
+        .nullable(),
     })
     .superRefine((values, context) => {
       const issue = (path: string, message: string) =>
@@ -67,6 +76,7 @@ export const QR_FORM_DEFAULTS: QrCodeFormValues = {
   background: "#FFFFFF",
   margin: 2,
   errorCorrection: "M",
+  logo: null,
 };
 
 /** @param values - Giá trị form. @returns Nội dung theo loại gửi BE. */
@@ -96,6 +106,7 @@ export function toQrInput(values: QrCodeFormValues): QrCodeInput {
       margin: values.margin,
       errorCorrection: values.errorCorrection,
     },
+    logoId: values.logo?.id ?? null,
   };
 }
 
@@ -113,6 +124,7 @@ export function fromQrCode(code: QrCodeDetail): QrCodeFormValues {
     message: String(content.message ?? ""),
     url: String(content.url ?? ""),
     text: String(content.text ?? ""),
+    logo: code.logo ? { ...code.logo, name: "Logo" } : null,
     ...code.design,
   };
 }

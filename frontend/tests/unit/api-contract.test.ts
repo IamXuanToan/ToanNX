@@ -12,7 +12,11 @@ import type { Page, PageDetail, PagePath } from "@/modules/custom-pages/types/cu
 import type { Permission, Role, RoleDetail, RoleSummary } from "@/modules/iam/types/iam.types";
 import type { JournalResource } from "@/modules/journal/types/journal.types";
 import type { QrCode, QrCodeDetail } from "@/modules/qr-codes/types/qr-codes.types";
-import type { ShortLink, ShortLinkDetail } from "@/modules/short-links/types/short-links.types";
+import type {
+  PublicShortLink,
+  ShortLink,
+  ShortLinkDetail,
+} from "@/modules/short-links/types/short-links.types";
 import type { ApiModel } from "@/shares/types/api-schema";
 import type { HistoryEntry } from "@/shares/types/api.types";
 
@@ -21,6 +25,9 @@ describe("hợp đồng kiểu FE ↔ OpenAPI", () => {
     expectTypeOf<keyof ShortLink>().toEqualTypeOf<keyof ApiModel<"ShortLinkListResponse">>();
     expectTypeOf<keyof ShortLinkDetail>().toEqualTypeOf<
       keyof ApiModel<"ShortLinkDetailResponse">
+    >();
+    expectTypeOf<keyof PublicShortLink>().toEqualTypeOf<
+      keyof ApiModel<"ShortLinkPublicResponse">
     >();
     expectTypeOf<keyof QrCode>().toEqualTypeOf<keyof ApiModel<"QrCodeListResponse">>();
     expectTypeOf<keyof QrCodeDetail>().toEqualTypeOf<keyof ApiModel<"QrCodeDetailResponse">>();

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useTransition } from "react";
 
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { LOCALE_COOKIE } from "@/i18n/request-locale";
 import { type AppLocale, LOCALES } from "@/i18n/routing";
 import { Button } from "@/shares/components/ui/button";
 import {
@@ -32,6 +33,13 @@ export function LanguageSwitcher() {
   const [isPending, startTransition] = useTransition();
 
   const changeLocale = (next: string) => {
+    const firstSegment = window.location.pathname.split("/")[1];
+    if (!LOCALES.some((item) => item === firstSegment)) {
+      document.cookie = `${LOCALE_COOKIE}=${encodeURIComponent(next)}; Path=/; SameSite=Lax`;
+      window.location.reload();
+      return;
+    }
+
     const query = Object.fromEntries(searchParams.entries());
     startTransition(() => {
       router.replace(

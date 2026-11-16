@@ -13,3 +13,6 @@ class QrCodeUpdateValidateSerializer(CoreValidateSerializer):
     qr_type = serializers.ChoiceField(required=False, choices=QrCode.Type.choices, help_text="Loại.")
     content = serializers.JSONField(required=False, help_text="Dữ liệu theo loại.")
     design = serializers.JSONField(required=False, help_text="Kiểu dáng.")
+    logo_id = serializers.UUIDField(
+        required=False, allow_null=True, help_text="Id ảnh logo; null để bỏ logo."
+    )

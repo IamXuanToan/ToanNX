@@ -76,7 +76,7 @@ Chỉ hai lớp nền. Hành vi chung là **thuộc tính khai báo** (mặc đ�
 | --- | --- |
 | Mặc định (đăng nhập + quyền IAM) | users, roles, attachments, short links, QR, trang, journal |
 | `permission_classes = [IsActiveAuthenticated]` | `/auth/me`, `/auth/sessions`, `/auth/logout-all` |
-| `authentication_classes = []`, `[AllowAny]` | `/auth/csrf`, `/health`, `/short-links/resolve/{slug}` |
+| `authentication_classes = []`, `[AllowAny]` | `/auth/csrf`, `/health`, `/short_links/resolve/{slug}` (xem trang và mở khóa) |
 | như trên + `CsrfProtected` | `/auth/login`, `/auth/refresh`, `/auth/logout` |
 | `[AllowAny]` + ghi đè `perform_authentication` | `/custom-pages/public/...` (xem trước bản nháp khi có quyền) |
 

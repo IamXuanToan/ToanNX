@@ -37,6 +37,7 @@ const BACKEND_FIELDS: Record<string, keyof QrCodeFormValues> = {
   message: "message",
   url: "url",
   text: "text",
+  logoId: "logo",
 };
 
 /**
@@ -68,8 +69,8 @@ export function useQrCodeForm({ code }: { code?: QrCodeDetail }) {
     const timer = setTimeout(() => {
       const parsed = schema.safeParse({ ...watched, name: watched.name || "preview" });
       if (!parsed.success) return;
-      const { qrType, content, design } = toQrInput(parsed.data);
-      setPreviewInput({ qrType, content, design });
+      const { qrType, content, design, logoId } = toQrInput(parsed.data);
+      setPreviewInput({ qrType, content, design, logoId });
     }, PREVIEW_DELAY_MS);
     return () => clearTimeout(timer);
   }, [watched, schema]);
@@ -86,6 +87,7 @@ export function useQrCodeForm({ code }: { code?: QrCodeDetail }) {
       const nested = {
         ...(details.content as Record<string, string[]> | undefined),
         name: details.name,
+        logoId: details.logoId ?? details.logo_id,
       };
       let matched = false;
       for (const [field, messages] of Object.entries(nested)) {

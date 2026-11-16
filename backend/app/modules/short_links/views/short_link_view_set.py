@@ -1,6 +1,6 @@
 """CRUD liên kết rút gọn.
 
-GET    /short_links/links?search=&status=ACTIVE,EXPIRED&redirect_type=&owner=&ordering=&page=&page_size=
+GET    /short_links/links?search=&status=ACTIVE,EXPIRED&owner=&ordering=&page=&page_size=
 POST   /short_links/links
 GET    /short_links/links/{id}
 PATCH  /short_links/links/{id}
@@ -39,7 +39,7 @@ class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
     service_class = ShortLinkService
     filterset_class = ShortLinkFilter
     search_fields = ("name", "slug", "destination_url")
-    ordering_fields = ("name", "slug", "created_at", "updated_at", "expires_at", "status", "redirect_type")
+    ordering_fields = ("name", "slug", "created_at", "updated_at", "expires_at", "status")
     ordering = ("-created_at", "-pk")
     list_serializer_class = ShortLinkListResponseSerializer
     detail_serializer_class = ShortLinkDetailResponseSerializer

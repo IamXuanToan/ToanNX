@@ -1,7 +1,8 @@
 import { RecordHistoryView } from "@/modules/journal/views/record-history-view";
 import { QR_CODES_API_ENDPOINTS } from "@/modules/qr-codes/constants/api-endpoints";
-import { QrCodeDetailView } from "@/modules/qr-codes/views/qr-code-detail-view";
 import { createPageMetadata } from "@/shares/lib/seo";
+
+import { QrCodeEditor } from "../qr-code-editor";
 
 export const generateMetadata = createPageMetadata({ title: "qrCodes.nav.codes" });
 
@@ -16,7 +17,7 @@ export default async function QrCodeDetailPage({
 }: PageProps<"/[locale]/admin/qr-codes/[id]">) {
   const { id } = await params;
   return (
-    <QrCodeDetailView
+    <QrCodeEditor
       id={id}
       history={
         <RecordHistoryView

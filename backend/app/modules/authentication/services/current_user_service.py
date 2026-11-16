@@ -54,3 +54,16 @@ class CurrentUserService:
             Hồ sơ.
         """
         return self.get_profile(self.user_service.get_by_id(user_id))
+
+    def update_profile(self, user: User, data: dict[str, Any]) -> CurrentUserProfile:
+        """Cập nhật thông tin hồ sơ của chính người dùng hiện tại.
+
+        Args:
+            user: Người dùng hiện tại.
+            data: Dữ liệu cần cập nhật đã qua validate.
+
+        Returns:
+            Hồ sơ người dùng mới nhất sau khi cập nhật.
+        """
+        updated = self.user_service.update(actor=user, pk=user.pk, data=data)
+        return self.get_profile(updated)

@@ -1,5 +1,11 @@
 {
   "welcome": "Xin chào, {name}",
+  "statusReady": "Hệ thống sẵn sàng",
+  "superuserBadge": "Toàn quyền",
+  "staffBadge": "Quản trị viên",
+  "moduleUnit": "phân hệ",
+  "systemOnline": "Tất cả dịch vụ hoạt động bình thường",
+  "lastLogin": "Đăng nhập gần nhất: {time}",
   "empty": {
     "title": "Chưa có module nào cho bạn",
     "description": "Tài khoản chưa được cấp quyền với module nào. Liên hệ quản trị viên."

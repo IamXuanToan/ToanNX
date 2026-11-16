@@ -56,7 +56,10 @@
     "margin": "Lề",
     "foreground": "Màu mã",
     "background": "Màu nền",
-    "errorCorrection": "Mức sửa lỗi"
+    "errorCorrection": "Mức sửa lỗi",
+    "logo": "Logo ở giữa mã",
+    "logoHint": "PNG, JPEG, WebP hoặc GIF. Logo được thu nhỏ để mã vẫn dễ quét.",
+    "logoCorrectionHint": "Có logo: tự dùng mức sửa lỗi H và lề tối thiểu 4 ô."
   },
   "picker": {
     "insert": "Mã QR",
@@ -70,6 +73,7 @@
     "url": "Cần URL http hoặc https đầy đủ.",
     "accountNumber": "Số tài khoản 4–19 ký tự chữ/số.",
     "message": "Tối đa 25 ký tự, chỉ chữ, số và khoảng trắng.",
-    "color": "Màu dạng #RRGGBB."
+    "color": "Màu dạng #RRGGBB.",
+    "logoFormat": "Logo phải là ảnh PNG, JPEG, WebP hoặc GIF."
   }
 }

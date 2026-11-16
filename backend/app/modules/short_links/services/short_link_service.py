@@ -2,8 +2,10 @@
 
 from typing import Any
 from urllib.parse import urlsplit
+from uuid import uuid4
 
 from django.conf import settings
+from django.contrib.auth.hashers import check_password, make_password
 from django.db import transaction
 from django.utils import timezone
 
@@ -12,9 +14,10 @@ from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
 from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
-from app.core.utils.slug import generate_slug, normalize_slug
+from app.core.utils.slug import normalize_slug
 from app.core.utils.url import validate_public_url
 from app.modules.short_links.exceptions.short_link_expired_error import ShortLinkExpiredError
+from app.modules.short_links.exceptions.short_link_password_error import ShortLinkPasswordError
 from app.modules.short_links.models.short_link import ShortLink
 from app.modules.short_links.permissions.short_links_permission import ShortLinksPermission
 from app.modules.short_links.repositories.short_link_repository import ShortLinkRepository
@@ -32,9 +35,11 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
     def create(self, actor: Any, data: dict[str, Any]) -> ShortLink:
         """Chuẩn hóa slug và URL, chặn liên kết nội bộ có thể tạo vòng lặp."""
         fields = dict(data)
-        fields["slug"] = normalize_slug(fields["slug"]) if fields.get("slug") else generate_slug()
+        fields["slug"] = normalize_slug(fields["slug"]) if fields.get("slug") else str(uuid4())
         fields["destination_url"] = self._validate_destination(fields["destination_url"])
         self._validate_expiration(fields.get("expires_at"))
+        password = fields.pop("password", "")
+        fields["password_hash"] = make_password(password) if password else ""
         try:
             return super().create(actor, fields)
         except ConflictError as exc:
@@ -52,6 +57,9 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
             fields["destination_url"] = self._validate_destination(fields["destination_url"])
         if "expires_at" in fields:
             self._validate_expiration(fields["expires_at"])
+        if "password" in fields:
+            password = fields.pop("password")
+            fields["password_hash"] = make_password(password) if password else ""
         try:
             return super().update(actor, pk, fields)
         except ConflictError as exc:
@@ -59,8 +67,15 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
                 raise
             raise ConflictError("Slug đã được sử dụng.", details={"slug": ["Slug đã tồn tại."]}) from exc
 
-    def resolve(self, slug: str) -> tuple[str, int]:
-        """Trả URL đích và mã 301/302 của link đang hoạt động; link hết hạn trả 410."""
+    def get_public_link(self, slug: str) -> ShortLink:
+        """Lấy link công khai còn hiệu lực; bản tắt/xóa trả 404, hết hạn trả 410.
+
+        Args:
+            slug: Slug người xem truy cập.
+
+        Returns:
+            Link còn hiệu lực.
+        """
         try:
             normalized = normalize_slug(slug)
         except ValidationError as exc:
@@ -70,7 +85,23 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
             raise NotFoundError()
         if link.expires_at is not None and link.expires_at <= timezone.now():
             raise ShortLinkExpiredError()
-        return self._validate_destination(link.destination_url), link.redirect_type
+        self._validate_destination(link.destination_url)
+        return link
+
+    def unlock(self, slug: str, password: str) -> str:
+        """Kiểm mật khẩu và chỉ sau đó mới tiết lộ URL đích.
+
+        Args:
+            slug: Slug người xem truy cập.
+            password: Mật khẩu do người xem nhập.
+
+        Returns:
+            URL đích hợp lệ.
+        """
+        link = self.get_public_link(slug)
+        if link.password_hash and not check_password(password, link.password_hash):
+            raise ShortLinkPasswordError()
+        return self._validate_destination(link.destination_url)
 
     def find_by_ids(self, ids: Any) -> dict[str, ShortLink]:
         """Link còn tồn tại theo id (một query), dùng cho nút link rút gọn trong module khác.
@@ -91,7 +122,7 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
             link: Link.
 
         Returns:
-            True nếu `/s/{slug}` sẽ chuyển hướng được.
+            True nếu `/s/{slug}` sẽ mở trang trung gian.
         """
         return link.status == ShortLink.Status.ACTIVE and (
             link.expires_at is None or link.expires_at > timezone.now()
@@ -105,7 +136,7 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
 
     @staticmethod
     def _validate_destination(value: str) -> str:
-        """Chỉ HTTP/HTTPS; cấm trỏ vào `/s/` nội bộ để tránh chuỗi/vòng redirect."""
+        """Chỉ HTTP/HTTPS; cấm trỏ vào `/s/` nội bộ để tránh chuỗi/vòng mở link."""
         url = validate_public_url(value)
         parts = urlsplit(url)
         if (

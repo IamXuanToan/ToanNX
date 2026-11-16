@@ -80,6 +80,61 @@ class TestMe(BaseApiTestCase):
         user.refresh_from_db()
         assert user.last_seen_at is not None and user.last_seen_at > first_seen
 
+    def test_patch_me(self, user: Any, login: Any) -> None:
+        api = login(user)
+        res = self.assert_success(
+            api.patch(
+                ME,
+                {
+                    "first_name": "Toàn",
+                    "last_name": "Nguyễn",
+                    "username": "toannx_new",
+                    "password": "StrongPassword!123",
+                },
+                format="json",
+            )
+        )
+        assert res["user"]["first_name"] == "Toàn"
+        assert res["user"]["last_name"] == "Nguyễn"
+        assert res["user"]["username"] == "toannx_new"
+        user.refresh_from_db()
+        assert user.first_name == "Toàn"
+        assert user.last_name == "Nguyễn"
+        assert user.username == "toannx_new"
+        assert user.check_password("StrongPassword!123")
+
+    def test_patch_me_email(self, user: Any, login: Any) -> None:
+        api = login(user)
+        res = self.assert_success(api.patch(ME, {"email": "updated-toan@toannx.local"}, format="json"))
+        assert res["user"]["email"] == "updated-toan@toannx.local"
+        user.refresh_from_db()
+        assert user.email == "updated-toan@toannx.local"
+
+    def test_patch_me_avatar(self, user: Any, login: Any, settings: Any, tmp_path: Any) -> None:
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        from app.modules.attachment.permissions.attachment_permission import AttachmentPermission
+        from app.modules.iam.tests.helpers.permission_helper import grant
+
+        settings.MEDIA_ROOT = tmp_path
+        grant(user, AttachmentPermission.FILE_READ, AttachmentPermission.FILE_CREATE)
+        api = login(user)
+        png = SimpleUploadedFile("avatar.png", b"\x89PNG\r\n\x1a\n" + b"\x00" * 64, content_type="image/png")
+        uploaded = self.assert_success(
+            api.post("/api/v1/attachments", {"file": png}, format="multipart"), 201
+        )
+
+        res = self.assert_success(api.patch(ME, {"avatar_id": uploaded["id"]}, format="json"))
+        assert res["user"]["avatar"]["id"] == uploaded["id"]
+        user.refresh_from_db()
+        assert str(user.avatar_id) == uploaded["id"]
+
+        # Gỡ avatar
+        del_res = self.assert_success(api.patch(ME, {"avatar_id": None}, format="json"))
+        assert del_res["user"]["avatar"] is None
+        user.refresh_from_db()
+        assert user.avatar is None
+
 
 def test_me_reuses_authenticated_user(user: Any, login: Any) -> None:
     """`/auth/me` dùng người dùng đã nạp lúc xác thực (kèm avatar), không đọc lại bảng người dùng."""

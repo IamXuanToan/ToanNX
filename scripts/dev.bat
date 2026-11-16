@@ -21,7 +21,17 @@ rem Cong dang bi chuong trinh khac chiem thi dung lai: frontend se proxy nham sa
 call :ensure_port_free %BACKEND_PORT% backend || goto :fail
 call :ensure_port_free %FRONTEND_PORT% frontend || goto :fail
 
-echo [dev] 1/3 Migrate database...
+echo [dev] 1/4 Migrations database...
+pushd "%BACKEND%"
+call uv run python manage.py makemigrations
+if errorlevel 1 (
+  popd
+  echo [dev] Migrations that bai. Kiem tra PostgreSQL dang chay va thong tin DB_* trong backend\.env.
+  goto :fail
+)
+popd
+
+echo [dev] 2/4 Migrate database...
 pushd "%BACKEND%"
 call uv run python manage.py migrate
 if errorlevel 1 (
@@ -38,10 +48,10 @@ if not exist "%FRONTEND%\node_modules" (
   popd
 )
 
-echo [dev] 2/3 Backend (chay nen trong terminal nay): http://localhost:%BACKEND_PORT%
+echo [dev] 3/4 Backend (chay nen trong terminal nay): http://localhost:%BACKEND_PORT%
 start "" /b /D "%BACKEND%" uv run python manage.py runserver %BACKEND_PORT%
 
-echo [dev] 3/3 Frontend: http://localhost:%FRONTEND_PORT%/vi/dang-nhap
+echo [dev] 4/4 Frontend: http://localhost:%FRONTEND_PORT%/vi/dang-nhap
 echo [dev] Nhan Ctrl+C de dung ca backend va frontend.
 echo.
 pushd "%FRONTEND%"

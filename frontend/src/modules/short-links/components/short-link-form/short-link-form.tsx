@@ -12,6 +12,8 @@ import { FormActions } from "@/shares/components/common/form-layout/components/f
 import { FormSection } from "@/shares/components/common/form-layout/components/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-layout/components/form-submit-button";
 import { FormLayout } from "@/shares/components/common/form-layout/form-layout";
+import { NumberInput } from "@/shares/components/common/number-input/number-input";
+import { PasswordInput } from "@/shares/components/common/password-input/password-input";
 import { RadioGroupField } from "@/shares/components/common/radio-group-field/radio-group-field";
 import { SlugInput } from "@/shares/components/common/slug-input/slug-input";
 import { Button } from "@/shares/components/ui/button";
@@ -23,8 +25,8 @@ import type { ShortLinkDetail } from "../../types/short-links.types";
 import { useShortLinkForm } from "./hooks/use-short-link-form";
 
 /**
- * Form link rút gọn **một form cho tạo, sửa, xem và dialog tạo/sửa nhanh**: cột chính Thông tin (tên, URL đích,
- * slug, mô tả), cột phụ Chuyển hướng (302/301 kèm cảnh báo, hết hạn) và Trạng thái.
+ * Form link rút gọn **một form cho tạo, sửa, xem và dialog tạo/sửa nhanh**: cột chính thông tin và trạng thái,
+ * cột phụ cách mở, mật khẩu và hết hạn.
  *
  * @param props - Link (khi sửa), khoá sửa, callback sau lưu và hủy (dialog).
  * @returns Form.
@@ -45,7 +47,9 @@ export function ShortLinkForm({
   const tStatus = useTranslations("common.status");
   const { form, onSubmit, isSubmitting } = useShortLinkForm({ link, onSaved });
   const locked = disabled || isSubmitting;
-  const redirectType = useWatch({ control: form.control, name: "redirectType" });
+  const redirectMode = useWatch({ control: form.control, name: "redirectMode" });
+  const hasExpiry = useWatch({ control: form.control, name: "hasExpiry" });
+  const removePassword = useWatch({ control: form.control, name: "removePassword" });
   const rootError = form.formState.errors.root?.message;
 
   return (
@@ -61,66 +65,114 @@ export function ShortLinkForm({
             <FormSection title={t("sections.redirect")}>
               <Controller
                 control={form.control}
-                name="redirectType"
+                name="redirectMode"
                 render={({ field }) => (
                   <RadioGroupField
-                    legend={t("fields.redirectType")}
+                    legend={t("fields.redirectMode")}
                     value={field.value}
                     onChange={field.onChange}
                     disabled={locked}
                     options={[
                       {
-                        value: "302",
-                        label: t("redirect.302"),
-                        description: t("redirect.302Hint"),
+                        value: "manual",
+                        label: t("redirect.manual"),
+                        description: t("redirect.manualHint"),
                       },
                       {
-                        value: "301",
-                        label: t("redirect.301"),
-                        description: t("redirect.301Hint"),
+                        value: "timed",
+                        label: t("redirect.timed"),
+                        description: t("redirect.timedHint"),
                       },
                     ]}
                   />
                 )}
               />
-              {redirectType === "301" ? (
-                <p role="note" className="text-warning text-sm">
-                  {t("redirect.301Warning")}
-                </p>
+              {redirectMode === "timed" ? (
+                <FormField
+                  control={form.control}
+                  name="autoRedirectSeconds"
+                  label={t("fields.autoRedirectSeconds")}
+                  required
+                >
+                  {(field) => (
+                    <NumberInput
+                      {...field}
+                      integer
+                      min={1}
+                      max={60}
+                      onChange={(value) => field.onChange(String(value))}
+                      disabled={locked}
+                    />
+                  )}
+                </FormField>
               ) : null}
-              <FormField control={form.control} name="expiresAt" label={t("fields.expiresAt")}>
-                {(field) => (
-                  <DateTimePicker
-                    value={field.value}
-                    onChange={field.onChange}
-                    fromDate={new Date()}
-                    disabled={locked}
-                    invalid={field["aria-invalid"]}
-                  />
-                )}
-              </FormField>
             </FormSection>
-            <FormSection title={t("sections.status")}>
+            <FormSection title={t("sections.access")}>
               <Controller
                 control={form.control}
-                name="isActive"
+                name="hasExpiry"
                 render={({ field }) => (
                   <ChoiceList
                     control="switch"
-                    items={[
-                      {
-                        value: "isActive",
-                        label: tStatus("active"),
-                        description: t("fields.isActiveHint"),
-                      },
-                    ]}
-                    value={field.value ? ["isActive"] : []}
+                    items={[{ value: "hasExpiry", label: t("fields.hasExpiry") }]}
+                    value={field.value ? ["hasExpiry"] : []}
                     onToggle={(_, checked) => field.onChange(checked)}
                     disabled={locked}
-                    aria-label={t("sections.status")}
+                    aria-label={t("fields.hasExpiry")}
                   />
                 )}
               />
+              {hasExpiry ? (
+                <FormField
+                  control={form.control}
+                  name="expiresAt"
+                  label={t("fields.expiresAt")}
+                  required
+                >
+                  {(field) => (
+                    <DateTimePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      fromDate={new Date()}
+                      disabled={locked}
+                      invalid={field["aria-invalid"]}
+                    />
+                  )}
+                </FormField>
+              ) : null}
+              <FormField
+                control={form.control}
+                name="password"
+                label={t("fields.password")}
+                description={
+                  link?.hasPassword ? t("fields.passwordKeepHint") : t("fields.passwordHint")
+                }
+              >
+                {(field) => (
+                  <PasswordInput
+                    {...field}
+                    autoComplete="new-password"
+                    maxLength={128}
+                    disabled={locked || removePassword}
+                  />
+                )}
+              </FormField>
+              {link?.hasPassword ? (
+                <Controller
+                  control={form.control}
+                  name="removePassword"
+                  render={({ field }) => (
+                    <ChoiceList
+                      control="switch"
+                      items={[{ value: "removePassword", label: t("fields.removePassword") }]}
+                      value={field.value ? ["removePassword"] : []}
+                      onToggle={(_, checked) => field.onChange(checked)}
+                      disabled={locked}
+                      aria-label={t("fields.removePassword")}
+                    />
+                  )}
+                />
+              ) : null}
             </FormSection>
           </>
         }
@@ -136,7 +188,25 @@ export function ShortLinkForm({
               label={t("fields.slug")}
               description={link ? t("fields.slugChangeHint") : t("fields.slugHint")}
             >
-              {(field) => <SlugInput {...field} placeholder="github" disabled={locked} />}
+              {(field) => (
+                <div className="flex min-w-0 gap-2">
+                  <SlugInput {...field} className="min-w-0 flex-1" disabled={locked} />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="shrink-0"
+                    disabled={locked}
+                    onClick={() =>
+                      form.setValue("slug", crypto.randomUUID(), {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                  >
+                    {t("actions.generateSlug")}
+                  </Button>
+                </div>
+              )}
             </FormField>
           </div>
           <FormField
@@ -172,6 +242,29 @@ export function ShortLinkForm({
               </a>
             </p>
           ) : null}
+          <div className="border-t pt-5">
+            <p className="mb-3 text-sm font-medium">{t("sections.status")}</p>
+            <Controller
+              control={form.control}
+              name="isActive"
+              render={({ field }) => (
+                <ChoiceList
+                  control="switch"
+                  items={[
+                    {
+                      value: "isActive",
+                      label: tStatus("active"),
+                      description: t("fields.isActiveHint"),
+                    },
+                  ]}
+                  value={field.value ? ["isActive"] : []}
+                  onToggle={(_, checked) => field.onChange(checked)}
+                  disabled={locked}
+                  aria-label={t("sections.status")}
+                />
+              )}
+            />
+          </div>
         </FormSection>
       </FormLayout>
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>

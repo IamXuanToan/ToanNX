@@ -11,25 +11,23 @@ import {
   useShortLinks,
 } from "../../../hooks/use-short-links";
 import {
-  REDIRECT_TYPES,
   SHORT_LINK_FILTER_STATUSES,
   type ShortLink,
   type ShortLinkStatus,
 } from "../../../types/short-links.types";
 
 /**
- * State bảng link rút gọn: tìm, lọc trạng thái (gồm EXPIRED) và kiểu chuyển hướng, sắp xếp, phân trang URL,
+ * State bảng link rút gọn: tìm, lọc trạng thái (gồm EXPIRED), sắp xếp, phân trang URL,
  * bật/tắt ở cột Trạng thái, xóa, thao tác hàng loạt.
  *
  * @returns Truy vấn, state bảng và handler.
  */
 export function useShortLinkTable() {
   const router = useRouter();
-  const table = useTableState({ ordering: "-created_at", filterKeys: ["status", "redirectType"] });
+  const table = useTableState({ ordering: "-created_at", filterKeys: ["status"] });
   const query = useShortLinks({
     ...table.filters,
     status: pickAllowedValues(table.getFilterValues("status"), SHORT_LINK_FILTER_STATUSES),
-    redirectType: pickAllowedValues(table.getFilterValues("redirectType"), REDIRECT_TYPES),
   });
   const remove = useDeleteShortLink();
   const bulkStatus = useBulkSetShortLinkStatus();
