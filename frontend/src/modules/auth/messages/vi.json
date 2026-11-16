@@ -55,7 +55,7 @@
     "description": "Quản lý thông tin tài khoản, quyền truy cập và bảo mật của bạn.",
     "tabs": {
       "info": "Thông tin cá nhân",
-      "security": "Bảo mật & Mật khẩu"
+      "security": "Bảo mật"
     },
     "avatar": "Ảnh đại diện",
     "avatarLibrary": "Thư viện ảnh",

@@ -192,7 +192,7 @@ export function PageForm({
         </div>
       ) : null}
       {page ? (
-        <Tabs defaultValue="content" className="gap-6">
+        <Tabs defaultValue="content">
           <TabsList>
             <TabsTrigger value="content">{t("tabs.content")}</TabsTrigger>
             <TabsTrigger value="design">{t("tabs.design")}</TabsTrigger>

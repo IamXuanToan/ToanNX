@@ -55,7 +55,7 @@
     "description": "Manage your personal account information, roles, and security.",
     "tabs": {
       "info": "Personal Info",
-      "security": "Security & Password"
+      "security": "Security"
     },
     "avatar": "Avatar",
     "avatarLibrary": "Choose from library",

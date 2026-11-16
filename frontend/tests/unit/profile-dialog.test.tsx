@@ -20,7 +20,7 @@ vi.mock("next-intl", () => ({
       title: "Hồ sơ cá nhân",
       description: "Quản lý thông tin tài khoản, quyền truy cập và bảo mật của bạn.",
       "tabs.info": "Thông tin cá nhân",
-      "tabs.security": "Bảo mật & Mật khẩu",
+      "tabs.security": "Bảo mật",
       avatar: "Ảnh đại diện",
       avatarChange: "Đổi ảnh",
       avatarUpload: "Tải ảnh",

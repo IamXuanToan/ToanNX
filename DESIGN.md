@@ -23,6 +23,7 @@ Quyết định giao diện đã chốt cho `/admin`. Màn mới theo file này,
 - Tài khoản: hàng avatar ở chân sidebar trong workspace; avatar trên header chỉ ở màn chọn module (không có sidebar).
 - Nhóm module trong sidebar thu gọn được; thu sidebar về dải icon 64px.
 - Control: mọi nút, ô nhập, ô chọn cao 40px (`h-10`), bo `rounded-xl`.
+- Tabs: dùng nguyên kiểu mặc định của shadcn/ui Radix; không ghi đè kiểu của `TabsList` và `TabsTrigger`.
 - Bảng: `DataTable` trong card trắng `rounded-xl border`, phân trang ở chân card; dưới `md` mỗi dòng là một card.
 - Bộ lọc: `FilterSelect` chọn nhiều, ô 40px "Tên: giá trị" hoặc tên + số đã chọn; viền/nền nhấn nhạt khi đang lọc.
 - Rỗng: `EmptyState` cao tối thiểu 320px, icon trong hai vòng nền nhạt, tiêu đề đậm, một nút lối ra.

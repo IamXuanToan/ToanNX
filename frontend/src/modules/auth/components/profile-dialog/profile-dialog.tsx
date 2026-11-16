@@ -251,19 +251,19 @@ export function ProfileDialog({
               onValueChange={(val) => setActiveTab(val as "info" | "security")}
               className="w-full"
             >
-              <TabsList className="mb-4 grid w-full grid-cols-2">
-                <TabsTrigger value="info" className="gap-2">
+              <TabsList>
+                <TabsTrigger value="info">
                   <User className="size-4" aria-hidden />
                   <span>{t("tabs.info")}</span>
                 </TabsTrigger>
-                <TabsTrigger value="security" className="gap-2">
+                <TabsTrigger value="security">
                   <KeyRound className="size-4" aria-hidden />
                   <span>{t("tabs.security")}</span>
                 </TabsTrigger>
               </TabsList>
 
               {/* TAB 1: THÔNG TIN CÁ NHÂN */}
-              <TabsContent value="info" className="m-0 space-y-4 focus-visible:outline-none">
+              <TabsContent value="info">
                 <Form onSubmit={onSaveInfo} className="space-y-4">
                   {infoErrors.root?.message ? (
                     <div
@@ -361,7 +361,7 @@ export function ProfileDialog({
               </TabsContent>
 
               {/* TAB 2: ĐỔI MẬT KHẨU (THIẾT KẾ RIÊNG BIỆT) */}
-              <TabsContent value="security" className="m-0 space-y-4 focus-visible:outline-none">
+              <TabsContent value="security">
                 <Form onSubmit={onSavePassword} className="space-y-4">
                   {passwordErrors.root?.message ? (
                     <div

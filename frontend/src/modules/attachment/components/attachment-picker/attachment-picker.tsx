@@ -57,17 +57,17 @@ export function AttachmentPicker({
         <Tabs
           value={state.tab}
           onValueChange={(value) => !state.busy && state.setTab(value)}
-          className="min-h-0 flex-1 gap-0 overflow-y-auto"
+          className="min-h-0 flex-1 overflow-y-auto"
         >
           <div className="border-b px-4 py-2 sm:px-6">
-            <TabsList variant="line" className="h-12">
+            <TabsList>
               {canRead ? (
-                <TabsTrigger value="library" disabled={state.busy} className="h-10 rounded-xl">
+                <TabsTrigger value="library" disabled={state.busy}>
                   {t("libraryTab")}
                 </TabsTrigger>
               ) : null}
               {canUpload ? (
-                <TabsTrigger value="upload" disabled={state.busy} className="h-10 rounded-xl">
+                <TabsTrigger value="upload" disabled={state.busy}>
                   {t("uploadTab")}
                 </TabsTrigger>
               ) : null}
