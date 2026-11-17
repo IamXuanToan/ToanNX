@@ -330,28 +330,33 @@ test("thư viện B: upload, chọn hết/bỏ chọn, dùng ảnh cũ làm avat
   }
 });
 
-test("upload trong bộ chọn avatar chỉ cho xác nhận ảnh, không nhận tài liệu", async ({ page }) => {
+test("bộ chọn avatar chỉ dùng ảnh đã tải lên Thư viện, không nhận tài liệu", async ({ page }) => {
   await loginViaUi(page);
   const prefix = `e2e-picker-${Date.now()}`;
   try {
+    await page.goto("/vi/quan-tri/thu-vien");
+    await page.getByRole("button", { name: "Tải tệp lên", exact: true }).first().click();
+    const uploadDialog = page.getByRole("dialog", { name: "Tải tệp lên", exact: true });
+    await uploadDialog.getByLabel("Chọn tệp", { exact: true }).setInputFiles([
+      {
+        name: `${prefix}.pdf`,
+        mimeType: "application/pdf",
+        buffer: Buffer.from("%PDF-1.7\n%%EOF"),
+      },
+      { name: `${prefix}.svg`, mimeType: "image/svg+xml", buffer: SVG_IMAGE },
+    ]);
+    await expect(uploadDialog.getByText("Đã tải lên", { exact: true })).toHaveCount(2);
+    await uploadDialog.getByRole("button", { name: "Xong", exact: true }).click();
     await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
     const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện", exact: true });
-    await picker.getByRole("tab", { name: "Tải lên", exact: true }).click();
-    await picker.getByLabel("Chọn tệp", { exact: true }).setInputFiles({
-      name: `${prefix}.pdf`,
-      mimeType: "application/pdf",
-      buffer: Buffer.from("%PDF-1.7\n%%EOF"),
-    });
-    await expect(picker.getByRole("alert")).toContainText("không phải ảnh");
+    await expect(picker.locator('input[type="file"]')).toHaveCount(0);
+    await expect(picker.getByRole("tab", { name: "Tải lên", exact: true })).toHaveCount(0);
+    await picker.getByRole("searchbox").fill(prefix);
+    await picker.getByRole("searchbox").press("Enter");
+    await expect(picker.getByRole("button", { name: `Xem ${prefix}.pdf` })).toHaveCount(0);
     await expect(picker.getByRole("button", { name: "Dùng ảnh này", exact: true })).toBeDisabled();
-    await picker
-      .getByLabel("Chọn tệp", { exact: true })
-      .setInputFiles({ name: `${prefix}.svg`, mimeType: "image/svg+xml", buffer: SVG_IMAGE });
-    await expect(picker.getByRole("tab", { name: "Thư viện", exact: true })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
+    await picker.getByRole("button", { name: `Xem ${prefix}.svg`, exact: true }).click();
     await picker.getByRole("button", { name: "Dùng ảnh này", exact: true }).click();
     await expect(picker).toHaveCount(0);
     await expect(page.locator("form img")).toHaveCount(1);

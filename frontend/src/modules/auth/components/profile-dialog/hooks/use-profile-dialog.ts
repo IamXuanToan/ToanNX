@@ -24,7 +24,7 @@ import type { AuthRole, AuthUser } from "../../../types/auth.types";
  * Hook điều khiển toàn bộ logic cho dialog hồ sơ cá nhân:
  * - Form thông tin chung (Họ tên, username, email)
  * - Form đổi mật khẩu riêng biệt
- * - Quản lý tải lên / gỡ bỏ ảnh đại diện
+ * - Chọn ảnh đại diện từ Thư viện hoặc gỡ ảnh
  * - Hiển thị vai trò và hoạt động đăng nhập
  *
  * @param params - Thông tin người dùng, roles và trạng thái mở dialog.

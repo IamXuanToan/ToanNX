@@ -69,7 +69,7 @@ test("màn mã QR chỉ chọn logo từ Thư viện", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Tải tệp lên", exact: true })).toHaveCount(0);
   await page.goto("/vi/quan-tri/ma-qr/tao-moi");
 
-  await expect(page.getByRole("heading", { name: "Logo tùy chỉnh" })).toBeVisible();
+  await expect(page.getByText("Logo tùy chỉnh", { exact: true })).toBeVisible();
   await expect(page.locator('input[type="file"]')).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Tải ảnh lên" })).toHaveCount(0);
   await page.getByRole("button", { name: "Chọn ảnh từ thư viện" }).click();
