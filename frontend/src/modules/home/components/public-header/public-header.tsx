@@ -36,7 +36,7 @@ export function PublicHeader() {
         </Link>
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          <ThemeSwitcher />
+          {!isHome ? <ThemeSwitcher /> : null}
           {!isHome ? (
             <Button asChild variant="outline" className="ml-1">
               <Link href={AUTH_ROUTES.login}>{t("login")}</Link>

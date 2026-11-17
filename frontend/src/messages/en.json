@@ -6,23 +6,79 @@
     },
     "home": {
       "title": "TOANNX",
-      "description": "Personal workspace & digital technology platform of Xuan Toan.",
-      "badge": "Personal Space · ToanNX",
-      "greeting": "Hello everyone, I'm",
+      "description": "Peaceful & chill personal space of Xuan Toan.",
+      "badge": "Chill Space",
+      "greeting": "Hello, I am",
       "name": "Xuan Toan",
-      "role": "Software Engineer & System Architect",
-      "tagline": "A personal hub for digital utilities, modern tools, and robust system architecture.",
-      "ctaAdmin": "Go to Workspace",
-      "ctaTheme": "Lighting Mood",
-      "lightThemes": {
-        "0": "Aurora",
-        "1": "Sunset",
-        "2": "Emerald",
-        "3": "Cyber Neon"
+      "tagline": "A peaceful little corner to relax, watch the weather and listen to soothing ambient sounds.",
+      "ctaAdmin": "Workspace",
+      "timeTitle": "Current Time",
+      "timezoneLabel": "GMT+7 · Ho Chi Minh",
+      "clock": {
+        "live": "Live Clock",
+        "lunar": "Lunar Cal",
+        "dayOfYear": "Day",
+        "weekOfYear": "Week",
+        "dayProgress": "Day Progress",
+        "yearProgress": "Year Progress",
+        "timezone": "Timezone",
+        "format": "Format:",
+        "format12": "12-Hour (AM/PM)",
+        "format24": "24-Hour (Std)"
+      },
+      "locations": {
+        "danang": "Da Nang",
+        "quangtri": "Quang Tri"
+      },
+      "weather": {
+        "temp": "Temperature",
+        "feelsLike": "Feels like",
+        "humidity": "Humidity",
+        "wind": "Wind",
+        "gusts": "Gusts",
+        "clouds": "Clouds",
+        "pressure": "Pressure",
+        "reload": "Refresh weather",
+        "condition": {
+          "clear": "Clear & Sunny",
+          "cloudy": "Partly Cloudy",
+          "fog": "Misty & Foggy",
+          "rain": "Gentle Rain",
+          "storm": "Thunderstorm"
+        },
+        "effects": {
+          "auto": "Auto",
+          "rain": "Rain",
+          "storm": "Storm",
+          "sunny": "Sunny",
+          "fog": "Mist",
+          "night": "Night"
+        },
+        "rainIntensity": {
+          "light": "Light Drizzle",
+          "medium": "Moderate Rain",
+          "heavy": "Heavy Downpour"
+        },
+        "windStrength": {
+          "breeze": "Breeze",
+          "gust": "Gusty"
+        }
+      },
+      "audio": {
+        "title": "Chill Soundscape",
+        "nowPlaying": "Now Playing",
+        "paused": "Paused",
+        "trackLofi": "Lofi Chill Melody",
+        "trackRain": "Cozy Rain",
+        "trackStorm": "Storm & Thunder",
+        "trackOcean": "Ocean Waves",
+        "trackMute": "Mute",
+        "volume": "Volume",
+        "testThunder": "Test thunder"
       },
       "footer": {
-        "copyright": "© 2026 Xuan Toan · All rights reserved",
-        "tech": "Organic 3D Liquid Sculpture · Three.js WebGL"
+        "copyright": "© 2026 Xuan Toan · toannx.com",
+        "tech": "Chill Personal Space · Da Nang & Quang Tri"
       }
     },
     "nav": {

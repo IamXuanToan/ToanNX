@@ -1,101 +1,139 @@
 "use client";
 
-import { ArrowRight, Palette } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
-import { Link } from "@/i18n/navigation";
-import { MANAGE_APP_ROUTES } from "@/modules/manage-app/constants/routes";
-import { Button } from "@/shares/components/ui/button";
-
-import { LIGHT_THEMES, MagicUniverse, type MagicUniverseHandle } from "../magic-universe/magic-universe";
+import { ChillAudio } from "../chill-audio/chill-audio";
+import { ClockWidget } from "../clock-widget/clock-widget";
+import { WeatherCanvas } from "../weather-canvas/weather-canvas";
+import { WeatherWidget, type WeatherInfo } from "../weather-widget/weather-widget";
 
 /**
- * Giao diện trang chủ cá nhân theo phong cách Minimalist Art & Organic Liquid 3D:
- * - Nền đen obsidian sang trọng với khối điêu khắc 3D chất lỏng biến dạng thời gian thực.
- * - Ánh sáng Studio phản chiếu specular caustics mượt mà trên bề mặt bóng bẩy.
- * - Typography phong cách Editorial hiện đại, thoáng đạt, không rối rắm.
- * - Tương tác chuyển đổi 4 mood ánh sáng nghệ thuật.
+ * Giao diện trang chủ cá nhân của Xuân Toàn (Chill & Peaceful Space):
+ * - Tự động đồng bộ Theme: Ban ngày là Light theme, Ban đêm & Bão là Dark theme (chỉ áp dụng trên trang Home).
+ * - Bối cảnh chân trang (footer diorama): Cây xanh, hồ cá Koi, chàng trai câu cá, nhà cổ tích, chuồng chó và chuồng mèo mướp.
+ * - Toàn bộ hoạt cảnh thu gọn tinh tế ở đáy trang để không che lấp các card thông tin trung tâm.
+ * - Bầu trời thoáng đãng, đồng điệu với thời tiết: Nắng ấm, Đêm sao, Mưa rơi, Dông bão, Sương mù.
+ * - Các thẻ thông tin kính mờ trong suốt (translucent frosted glass) nhìn xuyên thấu cảnh vật thiên nhiên phía sau.
+ * - Thời tiết trực tiếp từ Open-Meteo cho Đà Nẵng (mặc định) và Quảng Trị, lưu cấu hình vào localStorage.
+ * - Đồng hồ múi giờ GMT+7 (Hồ Chí Minh).
+ * - Trình phát thanh âm thư giãn Web Audio API: Tự động phát khi vào trang, gợi ý theo thời tiết (Lofi, Mưa rơi, Dông bão, Sóng biển).
  */
 export function HomeHero() {
   const t = useTranslations("common.home");
-  const [magicHandle, setMagicHandle] = useState<MagicUniverseHandle | null>(null);
-  const [themeIndex, setThemeIndex] = useState(0);
 
-  const handleCycleTheme = () => {
-    const nextIdx = magicHandle?.cycleTheme();
-    if (typeof nextIdx === "number") {
-      setThemeIndex(nextIdx);
-    }
-  };
+  const [weatherState, setWeatherState] = useState<WeatherInfo>({
+    effect: "sunny",
+    temperature: 28,
+    isDay: true,
+    windSpeed: 12,
+    rainIntensity: "medium",
+    suggestedTrack: "lofi",
+  });
 
-  const currentThemeName = t(`lightThemes.${themeIndex}` as Parameters<typeof t>[0]);
+  const [thunderTrigger, setThunderTrigger] = useState(0);
+
+  const handleWeatherChange = useCallback((info: WeatherInfo) => {
+    setWeatherState((prev) => {
+      if (
+        prev.effect === info.effect &&
+        prev.temperature === info.temperature &&
+        prev.isDay === info.isDay &&
+        prev.windSpeed === info.windSpeed &&
+        prev.rainIntensity === info.rainIntensity &&
+        prev.suggestedTrack === info.suggestedTrack &&
+        prev.sunrise === info.sunrise &&
+        prev.sunset === info.sunset &&
+        prev.moonPhase === info.moonPhase
+      ) {
+        return prev;
+      }
+      return info;
+    });
+  }, []);
+
+  const handleThunderStrike = useCallback(() => {
+    setThunderTrigger((prev) => prev + 1);
+  }, []);
+
+  const isNight = weatherState.effect === "night" || !weatherState.isDay;
+  const isDay = !isNight;
+  const isStorm = weatherState.effect === "storm";
+  const isFog = weatherState.effect === "fog";
 
   return (
-    <div className="dark relative flex min-h-svh w-full flex-col items-center justify-between overflow-hidden bg-[#06070b] bg-[radial-gradient(ellipse_80%_60%_at_50%_35%,rgba(30,27,75,0.22)_0%,rgba(6,7,11,0.85)_60%,#06070b_100%)] px-4 pt-20 pb-8 text-slate-100 select-none">
-      {/* 1. Điêu khắc chất lỏng 3D tương tác toàn màn hình */}
-      <MagicUniverse onReady={setMagicHandle} onThemeChange={setThemeIndex} />
-
-      {/* 2. Header phụ: Huy hiệu định danh cá nhân tinh tế */}
-      <div className="relative z-10 flex flex-col items-center pt-2 sm:pt-4">
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-xs font-medium tracking-wide text-slate-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] backdrop-blur-md transition-colors hover:border-white/20">
-          <span
-            className="size-2 rounded-full transition-colors duration-700"
-            style={{ backgroundColor: LIGHT_THEMES[themeIndex].colorA }}
-          />
-          <span className="font-mono text-[11px] uppercase tracking-wider">{t("badge")}</span>
-        </div>
+    <div
+      className={`relative flex min-h-svh w-full flex-col justify-between overflow-x-hidden transition-colors duration-1000 select-none ${
+        isStorm
+          ? "dark bg-gradient-to-b from-[#0b0e17] via-[#0f1422] to-[#090c14] text-slate-100"
+          : isNight
+            ? "dark bg-gradient-to-b from-[#050711] via-[#080d1e] to-[#04060d] text-slate-100"
+            : isFog
+              ? "bg-gradient-to-b from-[#cedee8] via-[#dae6ee] to-[#e7f0f5] text-slate-800"
+              : "bg-gradient-to-b from-[#eaf4fc] via-[#f3f7fa] to-[#f9fbfb] text-slate-800"
+      }`}
+    >
+      {/* 1. Canvas thiên nhiên & thời tiết chi tiết cao (chỉ hiển thị trên tablet & desktop: md trở lên) */}
+      <div className="hidden md:block">
+        <WeatherCanvas
+          effect={weatherState.effect}
+          temperature={weatherState.temperature}
+          isDay={isDay}
+          windSpeed={weatherState.windSpeed}
+          rainIntensity={weatherState.rainIntensity}
+          sunrise={weatherState.sunrise}
+          sunset={weatherState.sunset}
+          moonPhase={weatherState.moonPhase}
+          onThunderStrike={handleThunderStrike}
+        />
       </div>
 
-      {/* 3. Nội dung trung tâm: Typography đỉnh cao & Bố cục thoáng đạt */}
-      <div className="relative z-10 mx-auto my-auto flex w-full max-w-3xl flex-col items-center text-center">
-        {/* Lời chào & Tên tác giả */}
-        <div className="space-y-3">
-          <p className="text-xs font-semibold tracking-[0.3em] text-slate-400 uppercase drop-shadow sm:text-sm">
+      {/* 2. Nội dung trung tâm: Lời chào, Đồng hồ và Thời tiết */}
+      <div className="relative z-10 mx-auto my-auto flex w-full max-w-4xl flex-col items-center px-4 pt-20 pb-8 sm:px-6">
+        {/* Lời chào nhẹ nhàng */}
+        <div className="text-center">
+          <p
+            className={`text-xs font-bold tracking-[0.22em] uppercase sm:text-sm ${
+              isStorm || isNight ? "text-slate-400" : "text-slate-500"
+            }`}
+          >
             {t("greeting")}
           </p>
-          <h1 className="bg-gradient-to-b from-white via-slate-100 to-slate-400 bg-clip-text text-6xl font-black tracking-tight text-transparent drop-shadow-[0_10px_35px_rgba(0,0,0,0.8)] sm:text-8xl lg:text-9xl">
+          <h1
+            className={`mt-1 text-4xl font-black tracking-tight drop-shadow-sm sm:text-5xl md:text-6xl ${
+              isStorm || isNight
+                ? "bg-gradient-to-b from-white via-slate-100 to-slate-300 bg-clip-text text-transparent"
+                : "bg-gradient-to-b from-slate-950 via-slate-800 to-slate-700 bg-clip-text text-transparent"
+            }`}
+          >
             {t("name")}
           </h1>
-        </div>
-
-        {/* Chức danh & Giới thiệu ngắn gọn, lịch lãm */}
-        <div className="mt-4 max-w-xl space-y-2">
-          <p className="text-sm font-medium text-slate-200 sm:text-base">{t("role")}</p>
-          <p className="text-xs font-normal text-slate-400/90 leading-relaxed sm:text-sm">{t("tagline")}</p>
-        </div>
-
-        {/* 2 Nút hành động tối giản, sang xịn */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <Button
-            asChild
-            size="lg"
-            className="group rounded-full bg-white px-7 py-6 text-sm font-semibold text-slate-950 shadow-[0_0_35px_rgba(255,255,255,0.25)] transition-all hover:scale-105 hover:bg-slate-100 active:scale-95"
+          <p
+            className={`mx-auto mt-2 max-w-md text-xs leading-relaxed font-medium sm:text-sm ${
+              isStorm || isNight ? "text-slate-400" : "text-slate-600"
+            }`}
           >
-            <Link href={MANAGE_APP_ROUTES.admin}>
-              {t("ctaAdmin")}
-              <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
-
-          <Button
-            type="button"
-            size="lg"
-            onClick={handleCycleTheme}
-            className="group rounded-full border border-white/15 bg-white/[0.06] px-6 py-6 text-sm font-medium text-slate-200 backdrop-blur-md transition-all hover:border-white/30 hover:bg-white/[0.12] active:scale-95"
-          >
-            <Palette className="mr-2 size-4 text-slate-300 transition-transform group-hover:rotate-45" />
-            <span>
-              {t("ctaTheme")}: <strong className="font-semibold text-white">{currentThemeName}</strong>
-            </span>
-          </Button>
+            {t("tagline")}
+          </p>
         </div>
-      </div>
 
-      {/* 4. Footer chân trang: Tinh giản, sạch sẽ */}
-      <div className="relative z-10 flex w-full max-w-6xl flex-col items-center justify-between gap-2 text-center text-xs text-slate-400/80 sm:flex-row sm:text-left">
-        <div>{t("footer.copyright")}</div>
-        <div className="font-mono text-[11px] text-slate-400/70">{t("footer.tech")}</div>
+        {/* Cụm Widget trong suốt nhìn xuyên thấu: Đồng hồ và Thời tiết */}
+        <div className="mt-8 grid w-full grid-cols-1 items-stretch gap-4 sm:grid-cols-2">
+          {/* Widget Đồng hồ múi giờ GMT+7 */}
+          <ClockWidget isDay={isDay && !isStorm} />
+
+          {/* Widget Thời tiết Đà Nẵng / Quảng Trị */}
+          <WeatherWidget onWeatherChange={handleWeatherChange} isDay={isDay && !isStorm} />
+        </div>
+
+        {/* Thanh âm thư giãn trong suốt (Lofi / Mưa / Dông bão / Sóng biển) */}
+        <div className="mt-6 w-full max-w-xl">
+          <ChillAudio
+            isDay={isDay && !isStorm}
+            suggestedTrack={weatherState.suggestedTrack}
+            thunderTrigger={thunderTrigger}
+          />
+        </div>
       </div>
     </div>
   );

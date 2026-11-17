@@ -6,23 +6,79 @@
     },
     "home": {
       "title": "TOANNX",
-      "description": "Không gian cá nhân & Nền tảng công nghệ số của Xuân Toàn.",
-      "badge": "Không gian cá nhân · ToanNX",
-      "greeting": "Xin chào mọi người, mình là",
+      "description": "Góc nhỏ bình yên & thư giãn của Xuân Toàn.",
+      "badge": "Không gian chill",
+      "greeting": "Xin chào, mình là",
       "name": "Xuân Toàn",
-      "role": "Kỹ sư phần mềm & Kiến trúc sư hệ thống",
-      "tagline": "Nơi chia sẻ các tiện ích công nghệ cá nhân, công cụ số và giải pháp hệ thống chuẩn mực.",
-      "ctaAdmin": "Vào bàn làm việc",
-      "ctaTheme": "Đổi ánh sáng",
-      "lightThemes": {
-        "0": "Cực quang",
-        "1": "Hoàng hôn",
-        "2": "Biển ngọc",
-        "3": "Cyber Neon"
+      "tagline": "Một góc nhỏ bình yên để thư giãn, ngắm thời tiết và lắng nghe những thanh âm dịu êm.",
+      "ctaAdmin": "Bàn làm việc",
+      "timeTitle": "Thời gian hiện tại",
+      "timezoneLabel": "GMT+7 · Hồ Chí Minh",
+      "clock": {
+        "live": "Thời gian thực",
+        "lunar": "Âm lịch",
+        "dayOfYear": "Ngày",
+        "weekOfYear": "Tuần",
+        "dayProgress": "Tiến độ ngày",
+        "yearProgress": "Tiến độ năm",
+        "timezone": "Khu vực",
+        "format": "Định dạng:",
+        "format12": "12 Giờ (SA / CH)",
+        "format24": "24 Giờ (Chuẩn)"
+      },
+      "locations": {
+        "danang": "Đà Nẵng",
+        "quangtri": "Quảng Trị"
+      },
+      "weather": {
+        "temp": "Nhiệt độ",
+        "feelsLike": "Cảm giác như",
+        "humidity": "Độ ẩm",
+        "wind": "Sức gió",
+        "gusts": "Gió giật",
+        "clouds": "Mây",
+        "pressure": "Áp suất",
+        "reload": "Làm mới dữ liệu",
+        "condition": {
+          "clear": "Trời nắng quang đãng",
+          "cloudy": "Nhiều mây dịu mát",
+          "fog": "Sương mù lãng đãng",
+          "rain": "Mưa rơi êm đềm",
+          "storm": "Dông bão & Sấm sét"
+        },
+        "effects": {
+          "auto": "Tự động",
+          "rain": "Mưa rơi",
+          "storm": "Dông bão",
+          "sunny": "Nắng ấm",
+          "fog": "Sương mù",
+          "night": "Đêm sao"
+        },
+        "rainIntensity": {
+          "light": "Mưa bay",
+          "medium": "Mưa vừa",
+          "heavy": "Mưa to"
+        },
+        "windStrength": {
+          "breeze": "Gió nhẹ",
+          "gust": "Gió giật"
+        }
+      },
+      "audio": {
+        "title": "Thanh âm thư giãn",
+        "nowPlaying": "Đang phát",
+        "paused": "Tạm dừng",
+        "trackLofi": "Lofi Chill Melody",
+        "trackRain": "Mưa rơi êm dịu",
+        "trackStorm": "Dông bão & Sấm sét",
+        "trackOcean": "Sóng biển bình yên",
+        "trackMute": "Tắt âm",
+        "volume": "Âm lượng",
+        "testThunder": "Thử sấm sét"
       },
       "footer": {
-        "copyright": "© 2026 Xuân Toàn · Bản quyền thuộc về tác giả",
-        "tech": "Điêu khắc 3D chất lỏng · Three.js WebGL"
+        "copyright": "© 2026 Xuân Toàn · toannx.com",
+        "tech": "Không gian chill cá nhân · Đà Nẵng & Quảng Trị"
       }
     },
     "nav": {

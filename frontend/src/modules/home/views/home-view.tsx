@@ -1,7 +1,7 @@
 import { HomeHero } from "../components/home-hero/home-hero";
 
 /**
- * Trang chủ giới thiệu cá nhân với hiệu ứng vũ trụ 3D ma thuật Three.js.
+ * Trang chủ cá nhân của Xuân Toàn: Không gian chill, thời tiết Đà Nẵng & Quảng Trị, thanh âm thư giãn.
  *
  * @returns Trang chủ.
  */

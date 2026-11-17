@@ -24,7 +24,7 @@ const contentSecurityPolicy = [
   "img-src 'self' https: data: blob:",
   "media-src 'self' https: blob:",
   "font-src 'self' data:",
-  "connect-src 'self'",
+  "connect-src 'self' https://api.open-meteo.com",
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
   "object-src 'none'",
   "base-uri 'self'",

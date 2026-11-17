@@ -18,9 +18,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
   const isHome = pathname === "/";
 
   return (
-    <div
-      className={`flex min-h-svh flex-col ${isHome ? "overflow-x-hidden bg-[#050510] text-slate-100" : ""}`}
-    >
+    <div className={`flex min-h-svh flex-col ${isHome ? "overflow-x-hidden" : ""}`}>
       <Suspense>
         <PublicHeader />
       </Suspense>
