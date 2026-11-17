@@ -18,7 +18,7 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
-    const picker = page.getByRole("dialog", { name: "Chọn ảnh đại diện", exact: true });
+    const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện", exact: true });
     const bounds = await picker.boundingBox();
     expect(bounds?.width).toBeGreaterThan(1300);
     await picker.getByRole("button", { name: "Quản lý thư mục", exact: true }).click();
@@ -56,16 +56,22 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
     const root = folders.find((item) => item.name === prefix)!;
     const child = folders.find((item) => item.name === `${prefix}-child`)!;
     await manager.getByRole("button", { name: "Đóng", exact: true }).click();
-    await picker.getByRole("tab", { name: "Tải lên", exact: true }).click();
-    await picker.getByRole("combobox", { name: "Thư mục đích", exact: true }).click();
+    await expect(picker.locator('input[type="file"]')).toHaveCount(0);
+    await picker.getByRole("button", { name: "Hủy", exact: true }).click();
+    await page.goto("/vi/quan-tri/thu-vien");
+    await page.getByRole("button", { name: "Tải tệp lên", exact: true }).first().click();
+    const uploadDialog = page.getByRole("dialog", { name: "Tải tệp lên", exact: true });
+    await uploadDialog.getByRole("combobox", { name: "Thư mục đích", exact: true }).click();
     await page.getByRole("option", { name: `${prefix} / ${prefix}-child`, exact: true }).click();
-    await picker
+    await uploadDialog
       .getByLabel("Chọn tệp", { exact: true })
       .setInputFiles({ name: `${prefix}.svg`, mimeType: "image/svg+xml", buffer: SVG_IMAGE });
-    await expect(picker.getByRole("tab", { name: "Thư viện", exact: true })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
+    await expect(uploadDialog.getByText("Đã tải lên", { exact: true })).toBeVisible();
+    await uploadDialog.getByRole("button", { name: "Xong", exact: true }).click();
+    await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
+    await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
+    await picker.getByRole("searchbox").fill(prefix);
+    await picker.getByRole("searchbox").press("Enter");
     const image = (await (await page.request.get(`/api/v1/attachments?search=${prefix}`)).json())
       .data[0] as { id: string; url: string; folder_id: string };
     expect(image.folder_id).toBe(child.id);
@@ -285,7 +291,7 @@ test("thư viện B: upload, chọn hết/bỏ chọn, dùng ảnh cũ làm avat
     await page.getByLabel("Tên người dùng", { exact: true }).fill(prefix);
     await page.getByLabel("Mật khẩu", { exact: true }).fill(PASSWORD);
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
-    const picker = page.getByRole("dialog", { name: "Chọn ảnh đại diện", exact: true });
+    const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện", exact: true });
     await picker.getByRole("searchbox").fill(prefix);
     await picker.getByRole("searchbox").press("Enter");
     await expect(
@@ -330,7 +336,7 @@ test("upload trong bộ chọn avatar chỉ cho xác nhận ảnh, không nhận
   try {
     await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
-    const picker = page.getByRole("dialog", { name: "Chọn ảnh đại diện", exact: true });
+    const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện", exact: true });
     await picker.getByRole("tab", { name: "Tải lên", exact: true }).click();
     await picker.getByLabel("Chọn tệp", { exact: true }).setInputFiles({
       name: `${prefix}.pdf`,

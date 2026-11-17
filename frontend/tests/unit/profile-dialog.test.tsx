@@ -22,8 +22,6 @@ vi.mock("next-intl", () => ({
       "tabs.info": "Thông tin cá nhân",
       "tabs.security": "Bảo mật",
       avatar: "Ảnh đại diện",
-      avatarChange: "Đổi ảnh",
-      avatarUpload: "Tải ảnh",
       avatarRemove: "Gỡ ảnh",
       avatarHint: "Định dạng PNG, JPG hoặc WEBP.",
       roles: "Vai trò hệ thống",

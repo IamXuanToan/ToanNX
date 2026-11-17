@@ -7,7 +7,7 @@ import { usePermission } from "@/modules/auth/hooks/use-permission";
 import { AttachmentImageUpload } from "../components/attachment-image-upload/attachment-image-upload";
 import { ATTACHMENT_PERMISSIONS } from "../constants/attachment-permissions";
 
-/** @param props - Ô ảnh của form sử dụng Attachment. @returns Adapter đã kiểm tra riêng quyền chọn ảnh và upload. */
+/** @param props - Ô ảnh của form sử dụng Attachment. @returns Adapter chọn ảnh theo quyền Thư viện. */
 export function AttachmentImageUploadView(
   props: Omit<ComponentProps<typeof AttachmentImageUpload>, "canRead" | "canUpload" | "folders">,
 ) {

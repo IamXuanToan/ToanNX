@@ -6,7 +6,24 @@
     },
     "home": {
       "title": "TOANNX",
-      "description": "Nền tảng cá nhân đang được xây dựng. Các module mới sẽ sớm xuất hiện."
+      "description": "Không gian cá nhân & Nền tảng công nghệ số của Xuân Toàn.",
+      "badge": "Không gian cá nhân · ToanNX",
+      "greeting": "Xin chào mọi người, mình là",
+      "name": "Xuân Toàn",
+      "role": "Kỹ sư phần mềm & Kiến trúc sư hệ thống",
+      "tagline": "Nơi chia sẻ các tiện ích công nghệ cá nhân, công cụ số và giải pháp hệ thống chuẩn mực.",
+      "ctaAdmin": "Vào bàn làm việc",
+      "ctaTheme": "Đổi ánh sáng",
+      "lightThemes": {
+        "0": "Cực quang",
+        "1": "Hoàng hôn",
+        "2": "Biển ngọc",
+        "3": "Cyber Neon"
+      },
+      "footer": {
+        "copyright": "© 2026 Xuân Toàn · Bản quyền thuộc về tác giả",
+        "tech": "Điêu khắc 3D chất lỏng · Three.js WebGL"
+      }
     },
     "nav": {
       "login": "Đăng nhập",
@@ -217,10 +234,8 @@
       "selectAll": "Chọn tất cả"
     },
     "imageUpload": {
-      "upload": "Tải ảnh lên",
-      "change": "Đổi ảnh",
       "remove": "Gỡ ảnh",
-      "hint": "PNG, JPG, WEBP hoặc GIF.",
+      "hint": "Chọn ảnh có sẵn trong Thư viện.",
       "choose": "Chọn ảnh"
     },
     "choice": {

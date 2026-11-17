@@ -35,9 +35,8 @@ function AdminAttachmentPickerSlot(props: {
   onSelect: (file: { id: string; url: string }) => void;
   onClose: () => void;
 }) {
-  const canRead = usePermission(ATTACHMENT_PERMISSIONS.read);
   const canUpload = usePermission(ATTACHMENT_PERMISSIONS.create);
-  return <AttachmentPicker canRead={canRead} canUpload={canUpload} {...props} />;
+  return <AttachmentPicker canUpload={canUpload} {...props} />;
 }
 
 /**
@@ -47,13 +46,18 @@ function AdminAttachmentPickerSlot(props: {
  * @returns Nhóm nút.
  */
 function HeaderActions({ withAccount = false }: { withAccount?: boolean }) {
+  const canReadLibrary = usePermission(ATTACHMENT_PERMISSIONS.read);
   return (
     <div className="flex items-center gap-2">
       <LanguageSwitcher />
       <ThemeSwitcher />
       {withAccount ? (
         <UserMenu
-          renderAttachmentPicker={(pickerProps) => <AdminAttachmentPickerSlot {...pickerProps} />}
+          renderAttachmentPicker={
+            canReadLibrary
+              ? (pickerProps) => <AdminAttachmentPickerSlot {...pickerProps} />
+              : undefined
+          }
         />
       ) : null}
     </div>
@@ -128,6 +132,7 @@ function WorkspaceLayout({
 }) {
   const breadcrumb = useGroupBreadcrumb(activeGroup);
   const t = useTranslations("manageApp.shell");
+  const canReadLibrary = usePermission(ATTACHMENT_PERMISSIONS.read);
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={onSidebarOpenChange}>
       <ModuleSidebar
@@ -136,7 +141,11 @@ function WorkspaceLayout({
         footer={
           <UserMenu
             variant="sidebar"
-            renderAttachmentPicker={(pickerProps) => <AdminAttachmentPickerSlot {...pickerProps} />}
+            renderAttachmentPicker={
+              canReadLibrary
+                ? (pickerProps) => <AdminAttachmentPickerSlot {...pickerProps} />
+                : undefined
+            }
           />
         }
       />

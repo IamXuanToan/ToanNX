@@ -59,8 +59,6 @@
     },
     "avatar": "Avatar",
     "avatarLibrary": "Choose from library",
-    "avatarChange": "Change avatar",
-    "avatarUpload": "Upload",
     "avatarRemove": "Remove",
     "avatarHint": "Choose an image from system media library.",
     "avatarSuccess": "Avatar updated successfully.",

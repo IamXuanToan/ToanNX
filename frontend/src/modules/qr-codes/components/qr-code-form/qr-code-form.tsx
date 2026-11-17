@@ -6,7 +6,7 @@ import type { ComponentType } from "react";
 import { Controller } from "react-hook-form";
 
 import { Link } from "@/i18n/navigation";
-import type { UploadedFile } from "@/shares/components/common/file-upload-field/types";
+import type { UploadedFile } from "@/shares/components/common/image-upload/types";
 import { ColorInput } from "@/shares/components/common/color-input/color-input";
 import { Form } from "@/shares/components/common/form/form";
 import { FormField } from "@/shares/components/common/form-field/form-field";
@@ -34,16 +34,15 @@ export type QrLogoUpload = ComponentType<{
   value: UploadedFile | null;
   onChange: (value: UploadedFile | null) => void;
   disabled?: boolean;
-  directUpload?: boolean;
   shape?: "square";
   hint?: string;
   "aria-label"?: string;
 }>;
 
 /**
- * Form mã QR **một form cho tạo, sửa, xem**: cột chính là loại + nội dung theo loại; cột phụ là xem trước trực
- * tiếp, kiểu dáng và nút tải PNG/SVG. Sửa nội dung/kiểu dáng thì ảnh trong Thư viện được vẽ lại (giữ id) nên
- * trang nào đã chèn ảnh này tự hiện mã mới.
+ * Form mã QR **một form cho tạo, sửa, xem**: bố cục Studio Split cân đối 55/45.
+ * Cột chính: Nội dung (tên, loại, dữ liệu) và Kiểu dáng (logo từ thư viện, màu sắc, kích thước, mức sửa lỗi).
+ * Cột phụ cố định (sticky): Xem trước trực tiếp và nút tải PNG/SVG.
  *
  * @param props - Mã QR (khi sửa) và khoá sửa.
  * @returns Form.
@@ -73,154 +72,70 @@ export function QrCodeForm({
         </p>
       ) : null}
       <FormLayout
+        className="lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]"
         aside={
-          <>
-            <FormSection title={t("sections.logo")}>
-              <Controller
-                control={form.control}
-                name="logo"
-                render={({ field, fieldState }) => (
-                  <div className="space-y-2">
-                    <LogoUpload
-                      value={field.value}
-                      onChange={(file) => {
-                        if (file?.contentType && !LOGO_CONTENT_TYPES.includes(file.contentType)) {
-                          form.setError("logo", { message: t("validation.logoFormat") });
-                          return;
-                        }
-                        form.clearErrors("logo");
-                        field.onChange(file);
-                        if (file) {
-                          form.setValue("errorCorrection", "H", { shouldDirty: true });
-                          form.setValue("margin", Math.max(4, form.getValues("margin")), {
-                            shouldDirty: true,
-                          });
-                        }
-                      }}
-                      disabled={locked}
-                      directUpload
-                      shape="square"
-                      hint={t("fields.logoHint")}
-                      aria-label={t("fields.logo")}
-                    />
-                    {fieldState.error ? (
-                      <p role="alert" className="text-destructive text-sm">
-                        {fieldState.error.message}
-                      </p>
-                    ) : null}
-                  </div>
-                )}
-              />
-            </FormSection>
-            <FormSection title={t("sections.preview")}>
-              <div className="bg-muted/40 flex aspect-square items-center justify-center rounded-xl border p-4">
+          <div className="sticky top-32 space-y-6">
+            <FormSection
+              title={t("sections.preview")}
+              headerAction={
+                svg && qrType ? (
+                  <span className="text-muted-foreground text-xs font-normal">
+                    {form.watch("size")} × {form.watch("size")}px
+                  </span>
+                ) : null
+              }
+            >
+              <div className="bg-muted/30 relative flex aspect-square items-center justify-center rounded-2xl border p-6 transition-all">
                 {svg ? (
                   // SVG do BE vẽ, hiển thị bằng <img> (không chèn SVG thô vào DOM).
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={svg} alt={t("previewAlt")} className="max-h-full max-w-full" />
+                  <img
+                    src={svg}
+                    alt={t("previewAlt")}
+                    className="max-h-full max-w-full rounded-lg shadow-xs transition-transform"
+                  />
                 ) : preview.isFetching ? (
-                  <Skeleton className="size-full rounded-lg" />
+                  <Skeleton className="size-full rounded-xl" />
                 ) : (
                   <p className="text-muted-foreground text-center text-sm">{t("previewEmpty")}</p>
                 )}
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 {code ? (
-                  <Button asChild variant="outline">
+                  <Button asChild variant="outline" className="flex-1">
                     <a
                       href={code.image.url}
                       download={`${code.name}.png`}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      <Download />
+                      <Download className="mr-1.5 size-4" />
                       PNG
                     </a>
                   </Button>
                 ) : null}
                 {svg ? (
-                  <Button asChild variant="outline">
+                  <Button asChild variant="outline" className="flex-1">
                     <a href={svg} download={`${form.getValues("name") || "qr-code"}.svg`}>
-                      <Download />
+                      <Download className="mr-1.5 size-4" />
                       SVG
                     </a>
                   </Button>
                 ) : null}
               </div>
+              {svg ? (
+                <div className="bg-muted/40 text-muted-foreground flex items-center justify-between rounded-lg px-3 py-2 text-xs">
+                  <span>
+                    {t("fields.errorCorrection")}:{" "}
+                    {t(`errorCorrection.${form.watch("errorCorrection")}`)}
+                  </span>
+                  <span>
+                    {t("fields.margin")}: {form.watch("margin")}px
+                  </span>
+                </div>
+              ) : null}
             </FormSection>
-            <FormSection title={t("sections.design")}>
-              <div className="grid grid-cols-2 gap-4">
-                <FormField control={form.control} name="size" label={t("fields.size")}>
-                  {(field) => (
-                    <NumberInput
-                      {...field}
-                      value={field.value}
-                      onChange={(value) => field.onChange(value === "" ? 512 : value)}
-                      min={128}
-                      max={1024}
-                      step={64}
-                      integer
-                      disabled={locked}
-                    />
-                  )}
-                </FormField>
-                <FormField control={form.control} name="margin" label={t("fields.margin")}>
-                  {(field) => (
-                    <NumberInput
-                      {...field}
-                      value={field.value}
-                      onChange={(value) => field.onChange(value === "" ? 0 : value)}
-                      min={form.watch("logo") ? 4 : 0}
-                      max={8}
-                      integer
-                      disabled={locked}
-                    />
-                  )}
-                </FormField>
-              </div>
-              <FormField control={form.control} name="foreground" label={t("fields.foreground")}>
-                {(field) => (
-                  <ColorInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    pickerLabel={t("fields.foreground")}
-                    disabled={locked}
-                    invalid={field["aria-invalid"]}
-                  />
-                )}
-              </FormField>
-              <FormField control={form.control} name="background" label={t("fields.background")}>
-                {(field) => (
-                  <ColorInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    pickerLabel={t("fields.background")}
-                    disabled={locked}
-                    invalid={field["aria-invalid"]}
-                  />
-                )}
-              </FormField>
-              <FormField
-                control={form.control}
-                name="errorCorrection"
-                label={t("fields.errorCorrection")}
-                description={form.watch("logo") ? t("fields.logoCorrectionHint") : undefined}
-              >
-                {(field) => (
-                  <SelectField
-                    id={field.id}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    disabled={locked || Boolean(form.watch("logo"))}
-                    options={ERROR_CORRECTION_LEVELS.map((level) => ({
-                      value: level,
-                      label: t(`errorCorrection.${level}`),
-                    }))}
-                  />
-                )}
-              </FormField>
-            </FormSection>
-          </>
+          </div>
         }
       >
         <FormSection title={t("sections.content")}>
@@ -236,6 +151,7 @@ export function QrCodeForm({
                 value={field.value}
                 onChange={field.onChange}
                 disabled={locked}
+                groupClassName="grid sm:grid-cols-3 gap-3"
                 options={QR_TYPES.map((value) => ({
                   value,
                   label: t(`types.${value}`),
@@ -327,6 +243,106 @@ export function QrCodeForm({
               {(field) => <Textarea {...field} rows={4} maxLength={1000} disabled={locked} />}
             </FormField>
           )}
+        </FormSection>
+
+        <FormSection title={t("sections.design")}>
+          <FormField control={form.control} name="logo" label={t("sections.logo")}>
+            {(field) => (
+              <LogoUpload
+                value={field.value}
+                onChange={(file) => {
+                  if (file?.contentType && !LOGO_CONTENT_TYPES.includes(file.contentType)) {
+                    form.setError("logo", { message: t("validation.logoFormat") });
+                    return;
+                  }
+                  form.clearErrors("logo");
+                  field.onChange(file);
+                  if (file) {
+                    form.setValue("errorCorrection", "H", { shouldDirty: true });
+                    form.setValue("margin", Math.max(4, form.getValues("margin")), {
+                      shouldDirty: true,
+                    });
+                  }
+                }}
+                disabled={locked}
+                shape="square"
+                hint={t("fields.logoHint")}
+                aria-label={t("fields.logo")}
+              />
+            )}
+          </FormField>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField control={form.control} name="size" label={t("fields.size")}>
+              {(field) => (
+                <NumberInput
+                  {...field}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value === "" ? 512 : value)}
+                  min={128}
+                  max={1024}
+                  step={64}
+                  integer
+                  disabled={locked}
+                />
+              )}
+            </FormField>
+            <FormField control={form.control} name="margin" label={t("fields.margin")}>
+              {(field) => (
+                <NumberInput
+                  {...field}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value === "" ? 0 : value)}
+                  min={form.watch("logo") ? 4 : 0}
+                  max={8}
+                  integer
+                  disabled={locked}
+                />
+              )}
+            </FormField>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField control={form.control} name="foreground" label={t("fields.foreground")}>
+              {(field) => (
+                <ColorInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  pickerLabel={t("fields.foreground")}
+                  disabled={locked}
+                  invalid={field["aria-invalid"]}
+                />
+              )}
+            </FormField>
+            <FormField control={form.control} name="background" label={t("fields.background")}>
+              {(field) => (
+                <ColorInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  pickerLabel={t("fields.background")}
+                  disabled={locked}
+                  invalid={field["aria-invalid"]}
+                />
+              )}
+            </FormField>
+          </div>
+          <FormField
+            control={form.control}
+            name="errorCorrection"
+            label={t("fields.errorCorrection")}
+            description={form.watch("logo") ? t("fields.logoCorrectionHint") : undefined}
+          >
+            {(field) => (
+              <SelectField
+                id={field.id}
+                value={field.value}
+                onValueChange={field.onChange}
+                disabled={locked || Boolean(form.watch("logo"))}
+                options={ERROR_CORRECTION_LEVELS.map((level) => ({
+                  value: level,
+                  label: t(`errorCorrection.${level}`),
+                }))}
+              />
+            )}
+          </FormField>
         </FormSection>
       </FormLayout>
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>

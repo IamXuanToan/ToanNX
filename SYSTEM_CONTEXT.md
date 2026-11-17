@@ -41,7 +41,8 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 - Thư viện ở Hệ thống → Thư viện (`/vi/quan-tri/thu-vien`): mặc định API chỉ trả file do actor upload;
   quyền `attachment.file.manage_all` mở phạm vi sang mọi người, vẫn cần quyền action tương ứng.
   Người thường có quyền IAM cũng dùng được API; menu quản trị giữ yêu cầu staff.
-  Avatar có thể chọn ảnh đã có hoặc upload. Xóa mềm sau xác nhận, nơi đang dùng không còn hiện ảnh;
+  Mọi upload tệp chỉ thực hiện ở trang Thư viện. Avatar, logo QR và editor chọn ảnh đã có trong
+  Thư viện; bộ chọn không có tab upload. Xóa mềm sau xác nhận, nơi đang dùng không còn hiện ảnh;
   URL file vẫn truy cập trực tiếp được và file vật lý giữ lại theo chính sách dọn storage.
   Thư mục logic nhiều cấp dùng `parent` và danh sách tổ tiên; đổi tên/chuyển nhánh không đổi
   đường dẫn `attachments/YYYY/MM/<uuid>.<ext>`. Lọc thư mục bao gồm file trong toàn bộ nhánh.

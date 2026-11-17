@@ -37,6 +37,7 @@ export function RadioGroupField({
   options,
   disabled,
   className,
+  groupClassName,
 }: {
   name?: string;
   legend?: ReactNode;
@@ -46,6 +47,7 @@ export function RadioGroupField({
   options: RadioOption[];
   disabled?: boolean;
   className?: string;
+  groupClassName?: string;
 }) {
   const groupId = useId();
   return (
@@ -57,7 +59,7 @@ export function RadioGroupField({
         value={value ?? undefined}
         onValueChange={onChange}
         disabled={disabled}
-        className="gap-2"
+        className={cn("gap-2", groupClassName)}
       >
         {options.map((option) => {
           const itemId = `${groupId}-${option.value}`;

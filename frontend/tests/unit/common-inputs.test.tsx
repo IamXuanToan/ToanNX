@@ -16,7 +16,6 @@ import { Form } from "@/shares/components/common/form/form";
 import { FormField } from "@/shares/components/common/form-field/form-field";
 import { EmailInput } from "@/shares/components/common/email-input/email-input";
 import { PasswordInput } from "@/shares/components/common/password-input/password-input";
-import { FileUploadField } from "@/shares/components/common/file-upload-field/file-upload-field";
 import { emailField, moneyField, slugField } from "@/shares/lib/field-schemas";
 import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
 const provider = ({ children }: { children: React.ReactNode }) => (
@@ -131,28 +130,6 @@ describe("common input contracts", () => {
     expect(moneyField("USD", "Lỗi").safeParse(1.234).success).toBe(false);
     expect(slugField("Lỗi").parse("Đường dẫn")).toBe("duong-dan");
     expect(slugField("Lỗi").safeParse("ab").success).toBe(false);
-  });
-  it("upload lỗi hiển thị FieldError thay alert của browser và không mất file đã tải", async () => {
-    const user = userEvent.setup();
-    const upload = vi.fn().mockRejectedValue(new Error("network"));
-    const changed = vi.fn();
-    render(
-      <FileUploadField
-        label="Tệp"
-        files={[{ id: "old", url: "/old.png", name: "old.png" }]}
-        maxFiles={2}
-        onUpload={upload}
-        onChange={changed}
-        formatError={() => "Không thể tải tệp"}
-      />,
-      { wrapper: provider },
-    );
-    await user.upload(
-      screen.getByLabelText("Tệp"),
-      new File(["x"], "new.txt", { type: "text/plain" }),
-    );
-    expect((await screen.findByRole("alert")).textContent).toBe("Không thể tải tệp");
-    expect(changed).toHaveBeenCalledWith([{ id: "old", url: "/old.png", name: "old.png" }]);
   });
   it("nhớ cấu hình từng bảng và khôi phục sau remount, bỏ qua storage hỏng", () => {
     const valid = (value: unknown): value is string[] =>

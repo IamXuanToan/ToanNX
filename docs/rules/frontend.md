@@ -93,7 +93,7 @@ common/<tên>/
 | Ô nhập | `email-input`, `password-input`, `code-input`, `slug-input`, `number-input`, `money-input`, `color-input`, `tags-input`, `search-input` |
 | Chọn | `select-field`, `multi-select`, `checkbox-field`, `radio-group-field`, `switch-field`, **`choice-list`**, **`choice-groups`** |
 | Ngày giờ | `date-picker`, `time-picker`, `date-time-picker`, `month-select` |
-| Khác | `file-upload-field`, `image-upload`, `tiptap-editor`, `tiptap-content`, `form-dialog`, `activity-timeline` |
+| Khác | `image-upload`, `tiptap-editor`, `tiptap-content`, `form-dialog`, `activity-timeline` |
 
 - Có khối dùng chung thì dùng, không dựng lại trong module: đầu trang dùng `PageHeader`, bảng dùng `DataTable`,
   ô tìm dùng `SearchInput`, ô chọn dùng `SelectField`, bộ lọc dùng `FilterSelect`, rỗng dùng `EmptyState`,
@@ -105,8 +105,9 @@ common/<tên>/
 - Ưu tiên primitive shadcn đã có. Chỉ tạo common khi cần gom hành vi dùng lại hoặc quy tắc hệ thống;
   không tạo component chỉ để bọc một thẻ HTML, bộ typography riêng, hoặc sao chép cả thư viện tham khảo.
   Editor, chart, crop ảnh và khối nghiệp vụ chỉ thêm khi màn hiện tại có yêu cầu cụ thể.
-- `ImageUpload` nhận callback `onChoose` và nhãn qua props để mở bộ chọn ảnh ngoài component;
-  adapter/view của Attachment cung cấp thư viện và quyền. Common không import module hay gọi API.
+- `ImageUpload` chỉ xem trước, chọn ảnh từ Thư viện (`onChoose`) và gỡ ảnh. Không có input file hay
+  nút tải ảnh trực tiếp trong form; adapter/view của Attachment cung cấp bộ chọn và kiểm quyền.
+  Common không import module hay gọi API.
 - Soạn thảo nội dung dùng **một** editor: `TiptapEditor` (`shares/components/common/tiptap-editor/`, giá trị là
   Tiptap JSON); hiển thị dùng `TiptapContent` (static renderer, chạy được ở server). Không còn `RichTextEditor`,
   không lưu HTML tùy ý. Extension dùng chung khai trong `tiptap-editor/extensions.ts`; module thêm node riêng
@@ -137,10 +138,11 @@ common/<tên>/
 - Số dùng `NumberInput`, tiền dùng `MoneyInput` (đều dùng `react-number-format`). Tiền nhận
   `currency="VND"` (nguyên) hoặc `currency="USD"` (tối đa hai số lẻ); form nhận số thô, không gửi
   chuỗi có phân cách/ký hiệu tiền. Kiểm tra bằng `moneyField` và hiển thị bằng `formatDisplayMoney`.
-- Upload cơ bản dùng Input file + FieldError. Common nhận callback, adapter của module Attachment
-  gọi API qua service/hook module; common không import module hoặc giữ endpoint của dự án tham khảo.
-  Ảnh đơn dùng `AttachmentImageUpload` (adapter của `ImageUpload`): khung ảnh xem trước, Tải ảnh lên /
-  Đổi ảnh / Gỡ ảnh; giá trị form là `UploadedFile | null`, gửi BE dạng `<field>Id`.
+- **Mọi upload tệp chỉ thực hiện trong trang Thư viện** (`AttachmentLibrary` → `AttachmentUpload`).
+  Form, hồ sơ cá nhân, mã QR và editor chỉ chọn tệp đã có qua `AttachmentPicker`; picker không có
+  tab upload hay input file. Nếu cần ảnh mới, mở trang Thư viện, tải lên tại đó rồi làm mới picker.
+  Ảnh đơn dùng `AttachmentImageUpload` (adapter của `ImageUpload`) với khung xem trước,
+  Chọn ảnh từ Thư viện / Gỡ ảnh; giá trị form là `UploadedFile | null`, gửi BE dạng `<field>Id`.
 - Form có đủ trường của model mà người quản trị được phép nhập (đối chiếu serializer validate của BE),
   không bỏ sót trường như ảnh, tên người dùng, cờ trạng thái. Trường chỉ một nhóm người được đặt
   (`isSuperuser`) thì ẩn với người không có quyền và không gửi lên.

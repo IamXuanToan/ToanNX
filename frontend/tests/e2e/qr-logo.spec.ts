@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 import { loginViaUi } from "./helpers";
 
@@ -7,22 +7,36 @@ const LOGO_PNG = Buffer.from(
   "base64",
 );
 
+/** Tệp mới phải được tải lên tại trang Thư viện trước khi chọn làm logo QR. */
+async function uploadLogoToLibrary(page: Page, name: string) {
+  await page.goto("/vi/quan-tri/thu-vien");
+  await page.getByRole("button", { name: "Tải tệp lên", exact: true }).click();
+  const uploadDialog = page.getByRole("dialog", { name: "Tải tệp lên", exact: true });
+  await uploadDialog.getByLabel("Chọn tệp", { exact: true }).setInputFiles({
+    name,
+    mimeType: "image/png",
+    buffer: LOGO_PNG,
+  });
+  await expect(uploadDialog.getByText("Đã tải lên", { exact: true })).toBeVisible();
+  await uploadDialog.getByRole("button", { name: "Xong", exact: true }).click();
+}
+
 test("chọn logo từ Thư viện, xem trước và lưu mã QR", async ({ page }) => {
   await loginViaUi(page);
+  const logoName = `e2e-qr-logo-${Date.now()}.png`;
+  await uploadLogoToLibrary(page, logoName);
   await page.goto("/vi/quan-tri/ma-qr/tao-moi");
   await page.getByLabel("Tên", { exact: true }).fill("QR có logo");
   await page.getByRole("radio", { name: /Liên kết/ }).click();
   await page.getByLabel("Liên kết", { exact: true }).fill("https://example.com/qr-logo");
 
   await page.getByRole("button", { name: "Chọn ảnh từ thư viện" }).click();
-  await page.getByRole("tab", { name: "Tải lên" }).click();
-  await page.getByLabel("Chọn tệp").setInputFiles({
-    name: "qr-logo.png",
-    mimeType: "image/png",
-    buffer: LOGO_PNG,
-  });
-  await expect(page.getByRole("button", { name: "Dùng ảnh này" })).toBeEnabled();
-  await page.getByRole("button", { name: "Dùng ảnh này" }).click();
+  const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện" });
+  await expect(picker.locator('input[type="file"]')).toHaveCount(0);
+  await picker.getByRole("searchbox").fill(logoName);
+  await picker.getByRole("searchbox").press("Enter");
+  await picker.getByRole("button", { name: `Xem ${logoName}`, exact: true }).click();
+  await picker.getByRole("button", { name: "Dùng ảnh này" }).click();
 
   await expect(page.getByText(/Có logo: tự dùng mức sửa lỗi H/)).toBeVisible();
   await expect(page.getByRole("img", { name: "Xem trước mã QR" })).toHaveAttribute(
@@ -49,35 +63,21 @@ test("chọn logo từ Thư viện, xem trước và lưu mã QR", async ({ page
   expect(code.design.margin).toBe(4);
 });
 
-test("tải logo tùy chỉnh trực tiếp trên trang tạo mã QR", async ({ page }) => {
+test("màn mã QR chỉ chọn logo từ Thư viện", async ({ page }) => {
   await loginViaUi(page);
+  await page.goto("/vi/quan-tri/ma-qr");
+  await expect(page.getByRole("button", { name: "Tải tệp lên", exact: true })).toHaveCount(0);
   await page.goto("/vi/quan-tri/ma-qr/tao-moi");
 
   await expect(page.getByRole("heading", { name: "Logo tùy chỉnh" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Tải ảnh lên" })).toBeVisible();
-  await page.getByLabel("Tên", { exact: true }).fill("QR logo tùy chỉnh");
-  await page.getByRole("radio", { name: /Liên kết/ }).click();
-  await page.getByLabel("Liên kết", { exact: true }).fill("https://example.com/qr-custom-logo");
-
-  await page.locator('input[type="file"][aria-label="Logo ở giữa mã"]').setInputFiles({
-    name: "custom-logo.png",
-    mimeType: "image/png",
-    buffer: LOGO_PNG,
-  });
-  await expect(page.getByRole("button", { name: "Gỡ ảnh" })).toBeVisible();
-  await expect
-    .poll(async () => {
-      const source = await page.getByRole("img", { name: "Xem trước mã QR" }).getAttribute("src");
-      return source
-        ? Buffer.from(source.split(",")[1], "base64").toString("utf8").includes("<image ")
-        : false;
-    })
-    .toBe(true);
-
-  await page.getByRole("button", { name: "Tạo", exact: true }).click();
-  await expect(page).toHaveURL(/\/vi\/quan-tri\/ma-qr\/[0-9a-f-]{36}$/);
-  const id = new URL(page.url()).pathname.split("/").pop();
-  const response = await page.request.get(`/api/v1/qr_codes/codes/${id}`);
-  expect(response.ok(), await response.text()).toBe(true);
-  expect((await response.json()).data.logo?.id).toBeTruthy();
+  await expect(page.locator('input[type="file"]')).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Tải ảnh lên" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Chọn ảnh từ thư viện" }).click();
+  const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện" });
+  await expect(picker.getByRole("tab", { name: "Tải lên" })).toHaveCount(0);
+  await expect(picker.locator('input[type="file"]')).toHaveCount(0);
+  await expect(picker.getByRole("link", { name: "Mở Thư viện" }).first()).toHaveAttribute(
+    "target",
+    "_blank",
+  );
 });

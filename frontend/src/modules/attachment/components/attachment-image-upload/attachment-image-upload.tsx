@@ -10,25 +10,20 @@ import { useAttachmentImageUpload } from "./hooks/use-attachment-image-upload";
 import { AttachmentPicker } from "../attachment-picker/attachment-picker";
 
 /**
- * `ImageUpload` chung nối với API Attachment (ảnh đại diện, logo…).
+ * Ô ảnh của form: chỉ chọn ảnh đã có trong Thư viện (avatar, logo…).
  *
- * @param props - Props của `ImageUpload` trừ phần upload.
- * @returns Ô chọn ảnh lưu vào Attachment.
+ * @param props - Props của `ImageUpload` và quyền truy cập Thư viện.
+ * @returns Ô chọn ảnh từ Thư viện.
  */
 export function AttachmentImageUpload({
   canRead,
   canUpload,
   folders,
-  directUpload = false,
   ...props
-}: Omit<
-  ComponentProps<typeof ImageUpload>,
-  "onUpload" | "formatError" | "onChoose" | "chooseLabel" | "canUpload"
-> & {
+}: Omit<ComponentProps<typeof ImageUpload>, "onChoose" | "chooseLabel"> & {
   canRead: boolean;
   canUpload: boolean;
   folders?: FolderCapabilities;
-  directUpload?: boolean;
 }) {
   const t = useTranslations("attachment");
   const upload = useAttachmentImageUpload(props.onChange);
@@ -36,15 +31,11 @@ export function AttachmentImageUpload({
     <>
       <ImageUpload
         {...props}
-        canUpload={directUpload && canUpload}
         onChoose={canRead ? upload.openLibrary : undefined}
         chooseLabel={t("chooseImage")}
-        onUpload={upload.upload}
-        formatError={upload.formatError}
       />
       {upload.libraryOpen ? (
         <AttachmentPicker
-          canRead={canRead}
           canUpload={canUpload}
           folders={folders}
           onSelect={upload.select}

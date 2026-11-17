@@ -24,7 +24,6 @@ function LibraryImageInsert({ canUpload }: { canUpload: boolean }) {
   if (!editor) return null;
   return (
     <AttachmentPicker
-      canRead
       canUpload={canUpload}
       onClose={() => setEditor(null)}
       onSelect={(file) => {
@@ -43,7 +42,7 @@ function LibraryImageInsert({ canUpload }: { canUpload: boolean }) {
 }
 
 /**
- * Plugin editor: chèn ảnh từ Thư viện (có upload nếu có quyền). Đặt trong `TiptapPluginContext` của editor.
+ * Plugin editor: chọn ảnh đã có trong Thư viện. Đặt trong `TiptapPluginContext` của editor.
  *
  * @returns Plugin (không render gì khi không có quyền xem file).
  */
