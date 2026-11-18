@@ -79,3 +79,6 @@ DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py"]
 testpaths = ["app"]
 addopts = "-ra --strict-markers"
+
+[tool.vercel.scripts]
+build = 'DATABASE_URL="$DATABASE_URL_UNPOOLED" python manage.py migrate --noinput'

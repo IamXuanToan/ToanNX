@@ -1,7 +1,7 @@
 """Dịch vụ gửi email cho module Authentication."""
 
-from concurrent.futures import ThreadPoolExecutor
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from django.conf import settings
@@ -70,11 +70,7 @@ class EmailService:
             "timeout_minutes": timeout_minutes,
         }
 
-        subject = (
-            "Reset your TOANNX password"
-            if lang == "en"
-            else "Đặt lại mật khẩu tài khoản TOANNX"
-        )
+        subject = "Reset your TOANNX password" if lang == "en" else "Đặt lại mật khẩu tài khoản TOANNX"
         text_template = f"authentication/email/password_reset_{lang}.txt"
         html_template = f"authentication/email/password_reset_{lang}.html"
 
@@ -90,9 +86,7 @@ class EmailService:
             )
             message.attach_alternative(html_body, "text/html")
 
-            should_async = (
-                async_send if async_send is not None else getattr(settings, "EMAIL_ASYNC", True)
-            )
+            should_async = async_send if async_send is not None else getattr(settings, "EMAIL_ASYNC", True)
 
             if should_async:
                 _email_executor.submit(cls._execute_send, message, user.email)

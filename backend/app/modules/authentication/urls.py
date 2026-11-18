@@ -26,7 +26,11 @@ urlpatterns = [
     path("csrf", CsrfView.as_view(), name="csrf"),
     path("login", LoginView.as_view(), name="login"),
     path("password-reset/request", PasswordResetRequestView.as_view(), name="password-reset-request"),
-    path("password-reset/validate-token", PasswordResetValidateTokenView.as_view(), name="password-reset-validate-token"),
+    path(
+        "password-reset/validate-token",
+        PasswordResetValidateTokenView.as_view(),
+        name="password-reset-validate-token",
+    ),
     path("password-reset/confirm", PasswordResetConfirmView.as_view(), name="password-reset-confirm"),
     path("refresh", RefreshView.as_view(), name="refresh"),
     path("logout", LogoutView.as_view(), name="logout"),

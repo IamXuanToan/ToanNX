@@ -55,16 +55,21 @@ class TestPasswordReset(BaseApiTestCase):
     def test_frontend_origin_resolution(self) -> None:
         """Hàm get_frontend_origin tự động giải quyết các header khác nhau."""
         from django.test import RequestFactory
+
         from app.modules.authentication.utils.frontend_url import get_frontend_origin
 
         factory = RequestFactory()
 
         # 1. Từ Origin
-        req_origin = factory.post("/api/v1/auth/password-reset/request", HTTP_ORIGIN="https://dashboard.site.vn")
+        req_origin = factory.post(
+            "/api/v1/auth/password-reset/request", HTTP_ORIGIN="https://dashboard.site.vn"
+        )
         assert get_frontend_origin(req_origin) == "https://dashboard.site.vn"
 
         # 2. Từ Referer
-        req_referer = factory.post("/api/v1/auth/password-reset/request", HTTP_REFERER="http://localhost:3005/vi/quen-mat-khau")
+        req_referer = factory.post(
+            "/api/v1/auth/password-reset/request", HTTP_REFERER="http://localhost:3005/vi/quen-mat-khau"
+        )
         assert get_frontend_origin(req_referer) == "http://localhost:3005"
 
         # 3. None fallback
@@ -73,6 +78,7 @@ class TestPasswordReset(BaseApiTestCase):
     def test_send_email_async(self, user: Any) -> None:
         """Gửi email bất đồng bộ qua thread pool."""
         import time
+
         from app.modules.authentication.services.email_service import EmailService
 
         mail.outbox.clear()
@@ -120,7 +126,9 @@ class TestPasswordReset(BaseApiTestCase):
     def test_confirm_reset_success_and_revokes_sessions(
         self, client: APIClient, user: Any, login: Any, django_capture_on_commit_callbacks: Any
     ) -> None:
-        """Đặt lại mật khẩu thành công: mật khẩu mới hoạt động, token không dùng lại được, phiên cũ bị thu hồi."""
+        """Đặt lại mật khẩu thành công: mật khẩu mới hoạt động,
+        token không dùng lại được, phiên cũ bị thu hồi.
+        """
         user_client = login(user)
         self.assert_success(user_client.get("/api/v1/auth/me"))
 

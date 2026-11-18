@@ -1,7 +1,6 @@
 """Nghiệp vụ quên mật khẩu và đặt lại mật khẩu."""
 
 import logging
-from typing import Any
 
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
@@ -94,7 +93,10 @@ class PasswordResetService:
                 async_send=async_send,
             )
         else:
-            logger.info("Yêu cầu đặt lại mật khẩu cho email không tồn tại hoặc tài khoản bị khóa: %s", normalized_email)
+            logger.info(
+                "Yêu cầu đặt lại mật khẩu cho email không tồn tại hoặc tài khoản bị khóa: %s",
+                normalized_email,
+            )
 
         return "Nếu email tồn tại trong hệ thống, bạn sẽ nhận được hướng dẫn đặt lại mật khẩu trong vài phút."
 

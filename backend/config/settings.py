@@ -77,12 +77,6 @@ DATABASES = {
         # Serverless + pooler (Neon/Vercel): 0 = mở/đóng kết nối mỗi request.
         "CONN_MAX_AGE": env.int("DB_CONN_MAX_AGE", default=0),
         "CONN_HEALTH_CHECKS": True,
-        # Neon bắt buộc `require`; local để `prefer`. statement_timeout (ms) chặn truy vấn treo giữ kết nối;
-        # pooler PgBouncer không nhận tham số này → đặt 0, dùng `ALTER ROLE … SET statement_timeout`.
-        "OPTIONS": {
-            "sslmode": env.str("DB_SSLMODE", default="prefer"),
-            **({"options": f"-c statement_timeout={_STATEMENT_TIMEOUT_MS}"} if _STATEMENT_TIMEOUT_MS else {}),
-        },
         "TEST": {"NAME": "test_toannx"},
     }
 }

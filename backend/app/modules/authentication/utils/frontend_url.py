@@ -22,7 +22,8 @@ def get_frontend_origin(request: HttpRequest | None = None) -> str:
         request: HTTP request hiện tại (có thể None khi gọi ngoài web context).
 
     Returns:
-        Chuỗi origin chuẩn (ví dụ: 'https://toannx.com' hoặc 'http://localhost:3000'), không có gạch chéo cuối.
+        Chuỗi origin chuẩn (ví dụ: 'https://toannx.com' hoặc
+        'http://localhost:3000'), không có gạch chéo cuối.
     """
     if request is not None:
         # 1. Kiểm tra Origin header
@@ -45,7 +46,7 @@ def get_frontend_origin(request: HttpRequest | None = None) -> str:
             parts = urlsplit(base_uri.strip())
             if parts.scheme in ("http", "https") and parts.netloc:
                 return f"{parts.scheme}://{parts.netloc}".rstrip("/")
-        except Exception:
+        except (ValueError, AttributeError):
             logger.warning("Không thể dựng absolute_uri từ request")
 
     # 4. Fallback setting nếu có
