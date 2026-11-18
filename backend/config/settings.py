@@ -188,7 +188,7 @@ AUTH_SESSION_HINT_COOKIE_NAME = "session_hint"
 # CSRF: double-submit cookie của Django + kiểm tra Origin
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:3000"])
 

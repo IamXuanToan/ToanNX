@@ -36,8 +36,9 @@ class AuthCookieService:
             path=settings.AUTH_ACCESS_COOKIE_PATH,
             secure=secure,
             httponly=True,
-            samesite="Lax",
+            samesite="None",
         )
+
         response.set_cookie(
             settings.AUTH_REFRESH_COOKIE_NAME,
             result.refresh_token,
@@ -45,8 +46,9 @@ class AuthCookieService:
             path=settings.AUTH_REFRESH_COOKIE_PATH,
             secure=secure,
             httponly=True,
-            samesite="Strict",
+            samesite="None",
         )
+
         response.set_cookie(
             settings.AUTH_SESSION_HINT_COOKIE_NAME,
             "1",
@@ -54,7 +56,7 @@ class AuthCookieService:
             path="/",
             secure=secure,
             httponly=True,
-            samesite="Lax",
+            samesite="None",
         )
 
     @staticmethod
