@@ -14,7 +14,7 @@ FE **không có lớp repository**: service của module gọi `apiClient` trự
 
 | Lớp | Được làm | Không được làm |
 | --- | --- | --- |
-| `page.tsx`, `layout.tsx` (`app/`) | `export const generateMetadata = createPageMetadata(...)`, `await params`, `setRequestLocale`, `<Suspense>`, render **đúng View/Layout của module** (ghép slot giữa module bằng prop) | Hook, state, gọi API, điều kiện, JSX bố cục/giao diện, component đặt trong `app/` (`_components`) |
+| `page.tsx`, `layout.tsx` (`app/`) | `export const generateMetadata = createPageMetadata(...)`, `await params` (khi cần), `<Suspense>`, render **đúng View/Layout của module** (ghép slot giữa module bằng prop) | Hook, state, gọi API, điều kiện, JSX bố cục/giao diện, component đặt trong `app/` (`_components`), gọi `setRequestLocale` (Next.js 16 dùng `next/root-params` trong `src/i18n/request.ts`) |
 | View (`modules/<m>/views`) | Ghép component của module, kiểm quyền (`usePermission`, `PermissionGate`) rồi truyền cờ quyền xuống | Gọi query/mutation, state, xử lý lỗi/loading, tính toán dữ liệu |
 | Component | Nhận props, gọi hook riêng, render (kể cả loading/lỗi) | `fetch`, gọi service, state phức tạp trong file `.tsx` |
 | Hook của component | State, sự kiện, form, ghép query/mutation | Gọi `apiClient`/service trực tiếp |
@@ -309,6 +309,7 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 
 ## 4. Quy ước
 
+- Đa ngôn ngữ: Next.js 16 tự nhận diện locale qua `next/root-params` trong `src/i18n/request.ts`; **không** gọi `setRequestLocale` (deprecated) trong `page.tsx` hay `layout.tsx`.
 - Không hardcode path API, route, query key: lấy từ `constants/` của module.
 - Điều hướng: `Link`/`useRouter`/`redirect` từ `@/i18n/navigation` (không dùng `next/link`).
 - Mọi text qua next-intl; message theo module; thêm khóa phải thêm đủ vi + en.

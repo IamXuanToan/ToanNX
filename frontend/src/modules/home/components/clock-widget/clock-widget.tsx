@@ -1,15 +1,11 @@
 "use client";
 
-import {
-  Calendar,
-  Clock,
-  Compass,
-  Hourglass,
-} from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState, useSyncExternalStore } from "react";
+import { Calendar, Clock, Compass, Hourglass } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { useSyncExternalStore } from "react";
 
 import { Badge } from "@/shares/components/ui/badge";
+import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
 
 export interface ClockSnapshot {
   hours12: string;
@@ -17,8 +13,12 @@ export interface ClockSnapshot {
   seconds: string;
   period: string;
   dateString: string;
+  dateStringVi: string;
+  dateStringEn: string;
   lunarDate: string;
   lunarYear: string;
+  lunarYearVi: string;
+  lunarYearEn: string;
   dayOfYear: number;
   totalDays: number;
   weekOfYear: number;
@@ -32,8 +32,12 @@ const SERVER_SNAPSHOT: ClockSnapshot = {
   seconds: "--",
   period: "--",
   dateString: "",
+  dateStringVi: "",
+  dateStringEn: "",
   lunarDate: "--/--",
-  lunarYear: "Đang đồng bộ...",
+  lunarYear: "",
+  lunarYearVi: "",
+  lunarYearEn: "",
   dayOfYear: 0,
   totalDays: 365,
   weekOfYear: 0,
@@ -93,8 +97,16 @@ function calculateClockSnapshot(now: Date): ClockSnapshot {
     if (p.type === "minute") m24 = p.value;
   }
 
-  // 2. Ngày Dương lịch
-  const dateString = now.toLocaleDateString("vi-VN", {
+  // 2. Ngày Dương lịch (hỗ trợ cả tiếng Việt và tiếng Anh)
+  const dateStringVi = now.toLocaleDateString("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const dateStringEn = now.toLocaleDateString("en-US", {
     timeZone: "Asia/Ho_Chi_Minh",
     weekday: "long",
     year: "numeric",
@@ -104,7 +116,8 @@ function calculateClockSnapshot(now: Date): ClockSnapshot {
 
   // 3. Âm lịch Việt Nam
   let lunarDate = "--/--";
-  let lunarYear = "";
+  let lunarYearVi = "";
+  let lunarYearEn = "";
   try {
     const lunarParts = new Intl.DateTimeFormat("vi-VN-u-ca-chinese", {
       timeZone: "Asia/Ho_Chi_Minh",
@@ -125,10 +138,12 @@ function calculateClockSnapshot(now: Date): ClockSnapshot {
     const can = CAN[(lYear + 6) % 10];
     const chi = CHI[(lYear + 8) % 12];
     lunarDate = `${lDay}/${lMonth}`;
-    lunarYear = `Năm ${can} ${chi}`;
+    lunarYearVi = `Năm ${can} ${chi}`;
+    lunarYearEn = `Year of ${can} ${chi}`;
   } catch {
     lunarDate = "--/--";
-    lunarYear = "Âm lịch";
+    lunarYearVi = "Âm lịch";
+    lunarYearEn = "Lunar Calendar";
   }
 
   // 4. Thống kê lịch: Ngày trong năm, Tuần trong năm, Tiến độ ngày %
@@ -146,7 +161,7 @@ function calculateClockSnapshot(now: Date): ClockSnapshot {
   const firstThursday = target.valueOf();
   target.setMonth(0, 1);
   if (target.getDay() !== 4) {
-    target.setMonth(0, 1 + (((4 - target.getDay()) + 7) % 7));
+    target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7));
   }
   const weekOfYear = Math.max(1, 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000));
 
@@ -157,19 +172,20 @@ function calculateClockSnapshot(now: Date): ClockSnapshot {
     100,
     Math.max(0, Math.round(((h * 3600 + m * 60 + s) / 86400) * 100)),
   );
-  const yearProgress = Math.min(
-    100,
-    Math.max(0, Math.round((dayOfYear / totalDays) * 100)),
-  );
+  const yearProgress = Math.min(100, Math.max(0, Math.round((dayOfYear / totalDays) * 100)));
 
   return {
     hours12: `${h12}:${m12}`,
     hours24: `${h24}:${m24}`,
     seconds: s12,
     period: p12,
-    dateString,
+    dateString: dateStringVi,
+    dateStringVi,
+    dateStringEn,
     lunarDate,
-    lunarYear,
+    lunarYear: lunarYearVi,
+    lunarYearVi,
+    lunarYearEn,
     dayOfYear,
     totalDays,
     weekOfYear,
@@ -212,16 +228,8 @@ interface ClockWidgetProps {
 
 const FORMAT_STORAGE_KEY = "clock_format";
 
-function getInitialClockFormat(): "12h" | "24h" {
-  if (typeof window === "undefined") return "12h";
-  try {
-    const saved = localStorage.getItem(FORMAT_STORAGE_KEY) as "12h" | "24h" | null;
-    if (saved === "12h" || saved === "24h") return saved;
-  } catch {
-    // bỏ qua
-  }
-  return "12h";
-}
+const isClockFormat = (value: unknown): value is "12h" | "24h" =>
+  value === "12h" || value === "24h";
 
 /**
  * Widget đồng hồ thời gian thực GMT+7 (Hồ Chí Minh / Việt Nam) - Thiết kế tinh giản, sang trọng:
@@ -231,21 +239,22 @@ function getInitialClockFormat(): "12h" | "24h" {
  */
 export function ClockWidget({ isDay = true }: ClockWidgetProps) {
   const t = useTranslations("common.home");
+  const locale = useLocale();
   const clock = useClock();
-  const [timeFormat, setTimeFormat] = useState<"12h" | "24h">(getInitialClockFormat);
+  const [timeFormat, setTimeFormat] = useStoredPreference<"12h" | "24h">(
+    FORMAT_STORAGE_KEY,
+    "12h",
+    isClockFormat,
+  );
 
   const toggleFormat = () => {
-    const next = timeFormat === "12h" ? "24h" : "12h";
-    setTimeFormat(next);
-    try {
-      localStorage.setItem(FORMAT_STORAGE_KEY, next);
-    } catch {
-      // bỏ qua
-    }
+    setTimeFormat(timeFormat === "12h" ? "24h" : "12h");
   };
 
   const is12h = timeFormat === "12h";
   const displayHours = is12h ? clock.hours12 : clock.hours24;
+  const dateString = locale === "vi" ? clock.dateStringVi : clock.dateStringEn;
+  const lunarYear = locale === "vi" ? clock.lunarYearVi : clock.lunarYearEn;
 
   return (
     <div
@@ -259,7 +268,9 @@ export function ClockWidget({ isDay = true }: ClockWidgetProps) {
       <div className="flex items-center justify-between">
         <div
           className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${
-            isDay ? "border-white/50 bg-white/40 text-slate-700" : "border-white/10 bg-white/[0.06] text-slate-300"
+            isDay
+              ? "border-white/50 bg-white/40 text-slate-700"
+              : "border-white/10 bg-white/[0.06] text-slate-300"
           }`}
         >
           <Clock className={`size-3.5 ${isDay ? "text-sky-600" : "text-sky-400"}`} />
@@ -270,7 +281,7 @@ export function ClockWidget({ isDay = true }: ClockWidgetProps) {
           <button
             type="button"
             onClick={toggleFormat}
-            title="Bấm để chuyển đổi 12h / 24h"
+            title={t("clock.toggleFormat")}
             className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold transition-all hover:scale-105 active:scale-95 ${
               isDay
                 ? "border-white/50 bg-white/40 text-slate-700 hover:bg-white/70"
@@ -287,7 +298,7 @@ export function ClockWidget({ isDay = true }: ClockWidgetProps) {
                 : "border-white/10 bg-white/[0.05] text-slate-300"
             }`}
           >
-            <span className="mr-1.5 inline-block size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="mr-1.5 inline-block size-1.5 animate-pulse rounded-full bg-emerald-500" />
             {t("clock.live")}
           </Badge>
         </div>
@@ -304,9 +315,7 @@ export function ClockWidget({ isDay = true }: ClockWidgetProps) {
             {displayHours}
           </span>
           <div className="flex items-baseline gap-1 font-mono">
-            <span className="text-xl font-bold text-sky-600 sm:text-2xl">
-              :{clock.seconds}
-            </span>
+            <span className="text-xl font-bold text-sky-600 sm:text-2xl">:{clock.seconds}</span>
             {is12h && clock.period ? (
               <span
                 className={`text-xs font-extrabold tracking-wider uppercase sm:text-sm ${
@@ -325,14 +334,13 @@ export function ClockWidget({ isDay = true }: ClockWidgetProps) {
               isDay ? "text-slate-800" : "text-slate-200"
             }`}
           >
-            {clock.dateString || "Đang đồng bộ..."}
+            {dateString || t("clock.syncing")}
           </div>
-          <div
-            className={`text-xs font-medium ${
-              isDay ? "text-slate-500" : "text-slate-400"
-            }`}
-          >
-            Âm lịch: Ngày {clock.lunarDate} · {clock.lunarYear}
+          <div className={`text-xs font-medium ${isDay ? "text-slate-500" : "text-slate-400"}`}>
+            {t("clock.lunarText", {
+              date: clock.lunarDate,
+              year: lunarYear || t("clock.lunarFallback"),
+            })}
           </div>
         </div>
       </div>
@@ -344,32 +352,44 @@ export function ClockWidget({ isDay = true }: ClockWidgetProps) {
         }`}
       >
         <div
-          title={`Ngày thứ ${clock.dayOfYear} trong tổng số ${clock.totalDays} ngày của năm`}
+          title={t("clock.dayOfYearTooltip", { current: clock.dayOfYear, total: clock.totalDays })}
           className="flex items-center gap-1.5"
         >
           <Calendar className="size-3.5 text-sky-500" />
           <span>
-            Ngày: <strong className={isDay ? "text-slate-900" : "text-white"}>{clock.dayOfYear}/{clock.totalDays}</strong>
+            {t("clock.dayLabel")}:{" "}
+            <strong className={isDay ? "text-slate-900" : "text-white"}>
+              {clock.dayOfYear}/{clock.totalDays}
+            </strong>
           </span>
         </div>
 
         <div
-          title={`Tuần thứ ${clock.weekOfYear} trong tổng số 52 tuần của năm`}
+          title={t("clock.weekOfYearTooltip", { current: clock.weekOfYear, total: 52 })}
           className="flex items-center gap-1.5"
         >
           <Compass className="size-3.5 text-teal-500" />
           <span>
-            Tuần: <strong className={isDay ? "text-slate-900" : "text-white"}>{clock.weekOfYear}/52</strong>
+            {t("clock.weekLabel")}:{" "}
+            <strong className={isDay ? "text-slate-900" : "text-white"}>
+              {clock.weekOfYear}/52
+            </strong>
           </span>
         </div>
 
         <div
-          title={`Tiến độ thời gian của năm ${clock.totalDays} ngày (${clock.dayOfYear}/${clock.totalDays})`}
+          title={t("clock.yearProgressTooltip", {
+            total: clock.totalDays,
+            current: clock.dayOfYear,
+          })}
           className="flex items-center gap-1.5"
         >
           <Hourglass className="size-3.5 text-amber-500" />
           <span>
-            Năm nay: <strong className={isDay ? "text-slate-900" : "text-white"}>{clock.yearProgress}%</strong>
+            {t("clock.yearProgressLabel")}:{" "}
+            <strong className={isDay ? "text-slate-900" : "text-white"}>
+              {clock.yearProgress}%
+            </strong>
           </span>
         </div>
       </div>

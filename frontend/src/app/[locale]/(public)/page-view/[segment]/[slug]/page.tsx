@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
 import { cache } from "react";
 
-import type { AppLocale } from "@/i18n/routing";
 import { CUSTOM_PAGES_API_ENDPOINTS } from "@/modules/custom-pages/constants/api-endpoints";
 import type { PublicPage } from "@/modules/custom-pages/types/custom-pages.types";
 import { PublicPageView } from "@/modules/custom-pages/views/public-page-view";
@@ -48,8 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
  * @returns Trang công khai hoặc 404.
  */
 export default async function PublicCustomPage({ params }: { params: Promise<Params> }) {
-  const { locale, segment, slug } = await params;
-  setRequestLocale(locale as AppLocale);
+  const { segment, slug } = await params;
   const page = await loadPage(segment, slug);
   if (!page) notFound();
   return <PublicPageView page={page} />;

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 
 import { type AppLocale, routing } from "@/i18n/routing";
 import { AppProviders } from "@/shares/components/providers/app-providers";
@@ -39,7 +39,6 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
-  setRequestLocale(locale);
 
   return (
     <html lang={locale} suppressHydrationWarning className={inter.variable}>

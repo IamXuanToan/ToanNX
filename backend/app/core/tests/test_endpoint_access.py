@@ -37,6 +37,9 @@ PUBLIC_VIEWS = frozenset(
         "ClientErrorView",
         "ShortLinkResolveView",
         "PagePublicView",
+        "PasswordResetRequestView",
+        "PasswordResetValidateTokenView",
+        "PasswordResetConfirmView",
     }
 )
 # View chỉ cần đăng nhập (dữ liệu của chính người dùng hoặc danh mục tĩnh).

@@ -17,6 +17,7 @@ interface WeatherCanvasProps {
   sunset?: string;
   moonPhase?: number;
   onThunderStrike?: () => void;
+  locale?: string;
 }
 
 interface RainDrop {
@@ -319,13 +320,19 @@ export function WeatherCanvas({
   sunset,
   moonPhase,
   onThunderStrike,
+  locale = "vi",
 }: WeatherCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const onThunderStrikeRef = useRef(onThunderStrike);
+  const localeRef = useRef(locale);
 
   useEffect(() => {
     onThunderStrikeRef.current = onThunderStrike;
   }, [onThunderStrike]);
+
+  useEffect(() => {
+    localeRef.current = locale;
+  }, [locale]);
 
   const activeEffect: "rain" | "storm" | "sunny" | "fog" | "night" =
     effect === "auto" ? (!isDay ? "night" : temperature > 24 ? "sunny" : "fog") : effect;
@@ -600,7 +607,7 @@ export function WeatherCanvas({
         thief.state = "sneaking";
         const clickTreeBaseX = Math.max(width * 0.14, 115);
         thief.x = Math.max(clickTreeBaseX - 30, 20);
-        thief.bubbleText = "Suỵt... 🤫";
+        thief.bubbleText = localeRef.current === "en" ? "Shh... 🤫" : "Suỵt... 🤫";
         thief.timer = 0;
       }
     };
@@ -631,7 +638,11 @@ export function WeatherCanvas({
       if (Math.random() < 0.6) {
         setTimeout(() => {
           lightningOpacity = 0.85;
-          const subBolt = createLightningTree(startX + (Math.random() - 0.5) * 120, startY, targetY);
+          const subBolt = createLightningTree(
+            startX + (Math.random() - 0.5) * 120,
+            startY,
+            targetY,
+          );
           activeBolts.push({
             segments: subBolt,
             alpha: 0.92,
@@ -812,12 +823,12 @@ export function WeatherCanvas({
       const sunY = height * (0.58 - 0.42 * Math.sin(effectiveSunProgress * Math.PI));
 
       // Mặt trăng: bắt đầu mọc lúc hoàng hôn (sunset), lên thiên đỉnh nửa đêm, lặn lúc bình minh
-      const totalNightMinutes = (24 * 60 - sunsetMinutes) + sunriseMinutes;
+      const totalNightMinutes = 24 * 60 - sunsetMinutes + sunriseMinutes;
       let minutesIntoNight = 0;
       if (currentMinutes >= sunsetMinutes) {
         minutesIntoNight = currentMinutes - sunsetMinutes;
       } else if (currentMinutes < sunriseMinutes) {
-        minutesIntoNight = (24 * 60 - sunsetMinutes) + currentMinutes;
+        minutesIntoNight = 24 * 60 - sunsetMinutes + currentMinutes;
       } else {
         minutesIntoNight = totalNightMinutes * 0.78;
       }
@@ -2715,25 +2726,26 @@ export function WeatherCanvas({
         let currGuyY = dockGuyY;
         let facingLeft = false;
         let guyBubbleText = "";
+        const isCanvasEn = localeRef.current === "en";
 
         if (tCycle < 14) {
           guyState = "sitting_fishing";
           currGuyX = dockGuyX;
           currGuyY = dockGuyY;
           if (tCycle >= 6 && tCycle < 9) {
-            guyBubbleText = "Cắn câu rồi! 🎣";
+            guyBubbleText = isCanvasEn ? "Got a bite! 🎣" : "Cắn câu rồi! 🎣";
           }
         } else if (tCycle >= 14 && tCycle < 17) {
           guyState = "stretching_at_dock";
           currGuyX = dockGuyX;
           currGuyY = dockGuyY;
-          guyBubbleText = "Haaa~ sảng khoái ✨";
+          guyBubbleText = isCanvasEn ? "Haaa~ refreshing ✨" : "Haaa~ sảng khoái ✨";
         } else if (tCycle >= 17 && tCycle < 19) {
           guyState = "announcing_walk";
           currGuyX = dockGuyX;
           currGuyY = dockGuyY;
           facingLeft = true;
-          guyBubbleText = "Chán quá, đi dạo xíu nào! 🚶‍♂️";
+          guyBubbleText = isCanvasEn ? "Time for a walk! 🚶‍♂️" : "Chán quá, đi dạo xíu nào! 🚶‍♂️";
         } else if (tCycle >= 19 && tCycle < 24) {
           guyState = "walking_to_tree";
           const p = (tCycle - 19) / 5;
@@ -2745,7 +2757,7 @@ export function WeatherCanvas({
           currGuyX = treeSpotX;
           currGuyY = groundWalkY;
           facingLeft = false;
-          guyBubbleText = "Cây to râm mát ghê 🍃";
+          guyBubbleText = isCanvasEn ? "Nice shady tree 🍃" : "Cây to râm mát ghê 🍃";
         } else if (tCycle >= 28 && tCycle < 35) {
           guyState = "walking_to_cottage";
           const p = (tCycle - 28) / 7;
@@ -2757,14 +2769,14 @@ export function WeatherCanvas({
           currGuyX = cottageSpotX;
           currGuyY = groundWalkY;
           facingLeft = true;
-          guyBubbleText = "Nhà mình ấm cúng ghê 🏡✨";
+          guyBubbleText = isCanvasEn ? "Home sweet home 🏡✨" : "Nhà mình ấm cúng ghê 🏡✨";
         } else if (tCycle >= 39 && tCycle < 46) {
           guyState = "petting_dog";
           currGuyX = dogPetSpotX;
           currGuyY = groundWalkY;
           facingLeft = true;
           if (tCycle >= 40 && tCycle < 44) {
-            guyBubbleText = "Chó ngoan của anh nè 🥰";
+            guyBubbleText = isCanvasEn ? "Good boy 🥰" : "Chó ngoan của anh nè 🥰";
           }
         } else if (tCycle >= 46 && tCycle < 53) {
           guyState = "petting_cat";
@@ -2772,14 +2784,16 @@ export function WeatherCanvas({
           currGuyY = groundWalkY;
           facingLeft = true;
           if (tCycle >= 47 && tCycle < 51) {
-            guyBubbleText = "Mèo béo ngoan ghê 🐱💖";
+            guyBubbleText = isCanvasEn ? "Cute kitty 🐱💖" : "Mèo béo ngoan ghê 🐱💖";
           }
         } else if (tCycle >= 53 && tCycle < 56) {
           guyState = "announcing_return";
           currGuyX = catPetSpotX;
           currGuyY = groundWalkY;
           facingLeft = true;
-          guyBubbleText = "Đi dạo đã ghê, câu tiếp thôi! 🎣";
+          guyBubbleText = isCanvasEn
+            ? "Nice walk, back to fishing! 🎣"
+            : "Đi dạo đã ghê, câu tiếp thôi! 🎣";
         } else if (tCycle >= 56 && tCycle < 62) {
           guyState = "walking_to_dock";
           const p = (tCycle - 56) / 6;
@@ -2791,9 +2805,9 @@ export function WeatherCanvas({
           currGuyX = dockGuyX;
           currGuyY = dockGuyY;
           if (tCycle >= 68 && tCycle < 72) {
-            guyBubbleText = "Yêu hai đứa ghê 💖";
+            guyBubbleText = isCanvasEn ? "Love you both 💖" : "Yêu hai đứa ghê 💖";
           } else if (tCycle >= 75 && tCycle < 78) {
-            guyBubbleText = "Cắn câu rồi! 🎣";
+            guyBubbleText = isCanvasEn ? "Got a bite! 🎣" : "Cắn câu rồi! 🎣";
           }
         }
 
@@ -3448,9 +3462,10 @@ export function WeatherCanvas({
 
         // 3. BONG BÓNG THOẠI CỦA BẠN NAM
         if (guyBubbleText) {
-          const bubbleX = isSittingAtDock || guyState === "stretching_at_dock" || guyState === "announcing_walk"
-            ? dockGuyX
-            : currGuyX;
+          const bubbleX =
+            isSittingAtDock || guyState === "stretching_at_dock" || guyState === "announcing_walk"
+              ? dockGuyX
+              : currGuyX;
           const bubbleY = isSittingAtDock ? dockGuyY - 52 : currGuyY - 56;
           drawSpeechBubble(bubbleX, bubbleY, guyBubbleText, {
             tailX: bubbleX,
@@ -3461,9 +3476,7 @@ export function WeatherCanvas({
         }
 
         // 4. DÂY CƯỚC CÂU & PHAO NỔI TRÊN MẶT NƯỚC HỒ (LUÔN HOẠT ĐỘNG DÙ BẠN NAM ĐI DẠO)
-        const rodTipWorldX = isSittingAtDock
-          ? dockGuyX + 32 * guyScale
-          : dockGuyX + 28 * guyScale;
+        const rodTipWorldX = isSittingAtDock ? dockGuyX + 32 * guyScale : dockGuyX + 28 * guyScale;
         const rodTipWorldY = isSittingAtDock
           ? dockGuyY - 20 * guyScale + armSway * 1.4
           : dockGuyY - 18 * guyScale;
@@ -3660,7 +3673,7 @@ export function WeatherCanvas({
             thief.x = Math.max(treeBaseX - 35, 10);
             thief.y = groundBaseY - 2;
             thief.speed = 1.3;
-            thief.bubbleText = "Suỵt... 🤫";
+            thief.bubbleText = localeRef.current === "en" ? "Shh... 🤫" : "Suỵt... 🤫";
             thief.timer = 0;
             thiefCooldown = 28.0 + Math.random() * 15.0; // Xuất hiện định kỳ
           }
@@ -3672,19 +3685,24 @@ export function WeatherCanvas({
             if (thief.x >= dogHouseX - 65) {
               thief.state = "alerted";
               thief.timer = 0;
-              thief.bubbleText = "Á! Chó giữ nhà! 😱";
+              thief.bubbleText =
+                localeRef.current === "en" ? "Ah! Guard dog! 😱" : "Á! Chó giữ nhà! 😱";
             }
           } else if (thief.state === "alerted") {
             if (thief.timer > 0.8) {
               thief.state = "bitten";
               thief.timer = 0;
-              thief.bubbleText = "Úi chà! Bị túm gấu quần rồi! 💥";
+              thief.bubbleText =
+                localeRef.current === "en"
+                  ? "Ouch! It got my pants! 💥"
+                  : "Úi chà! Bị túm gấu quần rồi! 💥";
             }
           } else if (thief.state === "bitten") {
             if (thief.timer > 1.2) {
               thief.state = "fleeing";
               thief.timer = 0;
-              thief.bubbleText = "Chạy mau thôiii! 💨";
+              thief.bubbleText =
+                localeRef.current === "en" ? "Run for it! 💨" : "Chạy mau thôiii! 💨";
             }
           } else if (thief.state === "fleeing") {
             thief.x -= 6.8; // Bỏ chạy thục mạng sang trái
@@ -3872,7 +3890,7 @@ export function WeatherCanvas({
         ctx.fill();
 
         // Bong bóng thoại sủa của chó
-        drawSpeechBubble(-45, -42, "GÂU GÂU! 🐕", {
+        drawSpeechBubble(-45, -42, localeRef.current === "en" ? "WOOF WOOF! 🐕" : "GÂU GÂU! 🐕", {
           tailX: -24,
           tailY: -26,
           bg: "#ffffff",
@@ -3941,12 +3959,17 @@ export function WeatherCanvas({
 
         // Bong bóng sủa khi ngắm mưa
         if (tCycle >= 5 && tCycle < 7.5) {
-          drawSpeechBubble(dogHeadX, dogHeadY - 24, "Gâu gâu! 🌧️", {
-            tailX: dogHeadX,
-            tailY: dogHeadY - 12,
-            border: "#e09f4a",
-            textColor: "#7a3e0c",
-          });
+          drawSpeechBubble(
+            dogHeadX,
+            dogHeadY - 24,
+            localeRef.current === "en" ? "Woof woof! 🌧️" : "Gâu gâu! 🌧️",
+            {
+              tailX: dogHeadX,
+              tailY: dogHeadY - 12,
+              border: "#e09f4a",
+              textColor: "#7a3e0c",
+            },
+          );
         }
       } else {
         // --- CHU TRÌNH DẠO CHƠI, TỚI NẰM CẠNH BẠN NAM & VỀ NHÀ (CHÚ CHÓ 84S) ---
@@ -3959,12 +3982,7 @@ export function WeatherCanvas({
         const dockDogX = targetDogX;
         const dockDogY = targetDogY;
 
-        type DogActivityState =
-          | "home"
-          | "walking"
-          | "idle"
-          | "being_petted"
-          | "cuddled";
+        type DogActivityState = "home" | "walking" | "idle" | "being_petted" | "cuddled";
 
         let dogState: DogActivityState = "home";
         let currDogX = dogHomeX;
@@ -3983,7 +4001,7 @@ export function WeatherCanvas({
           currDogX = cottageX - 16;
           currDogY = cottageY + 8;
           if (tCycle >= 20 && tCycle < 23) {
-            dogBubbleText = "Khò... 💤";
+            dogBubbleText = localeRef.current === "en" ? "Zzz... 💤" : "Khò... 💤";
           }
         } else {
           // BAN NGÀY: Chu trình 84s khám phá vườn, đón chủ ở cây, ngắm nhà, được vuốt ve, ra bến câu
@@ -3993,7 +4011,7 @@ export function WeatherCanvas({
             currDogX = dogHomeX;
             currDogY = dogHomeY;
             if (tCycle >= 4 && tCycle < 6.5) {
-              dogBubbleText = "Gâu gâu! 🐕";
+              dogBubbleText = localeRef.current === "en" ? "Woof woof! 🐕" : "Gâu gâu! 🐕";
             }
           } else if (tCycle >= 10 && tCycle < 17) {
             // 10 - 17s: Đứng dậy chạy tung tăng ra phía cây cổ thụ hít hoa cỏ
@@ -4003,7 +4021,7 @@ export function WeatherCanvas({
             currDogY = dogHomeY;
             dogFacingLeft = true;
             if (tCycle >= 13 && tCycle < 15.5) {
-              dogBubbleText = "Gâu gâu! 🍃🐾";
+              dogBubbleText = localeRef.current === "en" ? "Woof woof! 🍃🐾" : "Gâu gâu! 🍃🐾";
             }
           } else if (tCycle >= 17 && tCycle < 24) {
             // 17 - 24s: Nhìn thấy bạn Nam đang ra gốc cây! Chó chạy lại đón bạn Nam
@@ -4013,7 +4031,7 @@ export function WeatherCanvas({
             currDogY = dogHomeY;
             dogFacingLeft = true;
             if (tCycle >= 19 && tCycle < 22) {
-              dogBubbleText = "Gâu gâu! ❤️";
+              dogBubbleText = localeRef.current === "en" ? "Woof woof! ❤️" : "Gâu gâu! ❤️";
             }
           } else if (tCycle >= 24 && tCycle < 28) {
             // 24 - 28s: Đứng quấn quýt bên chân bạn Nam ngắm cây cổ thụ
@@ -4029,7 +4047,7 @@ export function WeatherCanvas({
             currDogY = dogHomeY;
             dogFacingLeft = false;
             if (tCycle >= 30 && tCycle < 32.5) {
-              dogBubbleText = "Gâu gâu! 🏡";
+              dogBubbleText = localeRef.current === "en" ? "Woof woof! 🏡" : "Gâu gâu! 🏡";
             }
           } else if (tCycle >= 35 && tCycle < 39) {
             // 35 - 39s: Đứng cạnh bạn Nam ngắm ngôi nhà
@@ -4044,7 +4062,10 @@ export function WeatherCanvas({
             currDogY = dogHomeY;
             dogFacingLeft = false;
             if (tCycle >= 40 && tCycle < 44.5) {
-              dogBubbleText = "Gâu gâu thích quá! 🐕✨";
+              dogBubbleText =
+                localeRef.current === "en"
+                  ? "Woof woof, so happy! 🐕✨"
+                  : "Gâu gâu thích quá! 🐕✨";
             }
           } else if (tCycle >= 46 && tCycle < 56) {
             // 46 - 56s: Chạy trước ra bờ hồ / bến câu
@@ -4054,7 +4075,8 @@ export function WeatherCanvas({
             currDogY = dogHomeY + (dockDogY - dogHomeY) * pDogEase(p);
             dogFacingLeft = true;
             if (tCycle >= 50 && tCycle < 53) {
-              dogBubbleText = "Ra bờ hồ thôi! 🐾";
+              dogBubbleText =
+                localeRef.current === "en" ? "Off to the pond! 🐾" : "Ra bờ hồ thôi! 🐾";
             }
           } else if (tCycle >= 56 && tCycle < 79) {
             // 56 - 79s: Nằm thảnh thơi trên thảm cỏ xanh bên bến câu
@@ -4062,9 +4084,9 @@ export function WeatherCanvas({
             currDogX = dockDogX;
             currDogY = dockDogY;
             if (tCycle >= 66 && tCycle < 69) {
-              dogBubbleText = "Gâu gâu! 🐕";
+              dogBubbleText = localeRef.current === "en" ? "Woof woof! 🐕" : "Gâu gâu! 🐕";
             } else if (tCycle >= 75 && tCycle < 78) {
-              dogBubbleText = "Khò khò... 💤";
+              dogBubbleText = localeRef.current === "en" ? "Zzz... 💤" : "Khò khò... 💤";
             }
           } else {
             // 79 - 84s: Đi dạo thong thả về chuồng để lặp lại chu kỳ
@@ -4701,12 +4723,17 @@ export function WeatherCanvas({
 
         // Bong bóng meo khi trời mưa
         if (tCycle >= 10 && tCycle < 12.5) {
-          drawSpeechBubble(catHeadX, catHeadY - 22, "Meo meo~ ☔", {
-            tailX: catHeadX,
-            tailY: catHeadY - 12,
-            border: "#2ec4b6",
-            textColor: "#0f4c5c",
-          });
+          drawSpeechBubble(
+            catHeadX,
+            catHeadY - 22,
+            localeRef.current === "en" ? "Meow meow~ ☔" : "Meo meo~ ☔",
+            {
+              tailX: catHeadX,
+              tailY: catHeadY - 12,
+              border: "#2ec4b6",
+              textColor: "#0f4c5c",
+            },
+          );
         }
       } else {
         // --- CHU TRÌNH MÈO DẠO CHƠI, ĐI TRÊN RÀO, CÀO CÂY, NGHỊCH LEN & VỀ NHÀ (CHÚ MÈO 84S) ---
@@ -4755,7 +4782,7 @@ export function WeatherCanvas({
           currCatX = catHomeX;
           currCatY = catHomeY;
           if (tCycle >= 25 && tCycle < 28) {
-            catBubbleText = "Meo meo~ 🌟";
+            catBubbleText = localeRef.current === "en" ? "Meow meow~ 🌟" : "Meo meo~ 🌟";
           }
         } else {
           // BAN NGÀY: Chu trình 84s dạo rào hoa, cào vỏ cây, vờn cuộn len, được vuốt ve, ra bến ngắm cá
@@ -4765,20 +4792,17 @@ export function WeatherCanvas({
             currCatX = catHomeX;
             currCatY = catHomeY;
             if (tCycle >= 5 && tCycle < 7.5) {
-              catBubbleText = "Meo meo~ 🐱";
+              catBubbleText = localeRef.current === "en" ? "Meow meow~ 🐱" : "Meo meo~ 🐱";
             }
           } else if (tCycle >= 10 && tCycle < 18) {
             // 10 - 18s: Nhảy xuống đi thăng bằng trên thanh rào gỗ ngập hoa
             catState = "walking_on_fence";
             const p = (tCycle - 10) / 8;
             currCatX = fenceStartX + 5 + (fenceEndX - 10 - (fenceStartX + 5)) * pCatEase(p);
-            currCatY =
-              p < 0.2
-                ? catHomeY + (fenceRailY - catHomeY) * (p / 0.2)
-                : fenceRailY;
+            currCatY = p < 0.2 ? catHomeY + (fenceRailY - catHomeY) * (p / 0.2) : fenceRailY;
             catFacingLeft = false;
             if (tCycle >= 13 && tCycle < 15.5) {
-              catBubbleText = "Meo meo~ 🌸";
+              catBubbleText = localeRef.current === "en" ? "Meow meow~ 🌸" : "Meo meo~ 🌸";
             }
           } else if (tCycle >= 18 && tCycle < 26) {
             // 18 - 26s: Nhảy xuống gốc cây cổ thụ cào móng vào vỏ cây
@@ -4797,7 +4821,7 @@ export function WeatherCanvas({
             currCatY = catGroundY;
             catFacingLeft = true;
             if (tCycle >= 30 && tCycle < 33) {
-              catBubbleText = "Meo meo~ 🧶";
+              catBubbleText = localeRef.current === "en" ? "Meow meow~ 🧶" : "Meo meo~ 🧶";
             }
           } else if (tCycle >= 36 && tCycle < 46) {
             // 36 - 46s: Ngồi trước hiên condo liếm lông rửa mặt
@@ -4806,7 +4830,7 @@ export function WeatherCanvas({
             currCatY = catGroundY;
             catFacingLeft = false;
             if (tCycle >= 37 && tCycle < 39.5) {
-              catBubbleText = "Meo~ ✨";
+              catBubbleText = localeRef.current === "en" ? "Meow~ ✨" : "Meo~ ✨";
             }
           } else if (tCycle >= 46 && tCycle < 53) {
             // 46 - 53s: Được bạn Nam cúi xuống vuốt ve xoa cằm!
@@ -4815,7 +4839,7 @@ export function WeatherCanvas({
             currCatY = catGroundY;
             catFacingLeft = false;
             if (tCycle >= 48 && tCycle < 51.5) {
-              catBubbleText = "Purrr~ meooo 🥰";
+              catBubbleText = localeRef.current === "en" ? "Purrr~ meoww 🥰" : "Purrr~ meooo 🥰";
             }
           } else if (tCycle >= 53 && tCycle < 62) {
             // 53 - 62s: Thong thả dạo bước ra mép bến ngắm cá
@@ -4823,9 +4847,7 @@ export function WeatherCanvas({
             const p = (tCycle - 53) / 9;
             currCatX = condoFrontX + (dockCatX - condoFrontX) * pCatEase(p);
             currCatY =
-              p > 0.8
-                ? catGroundY + (dockCatY - catGroundY) * ((p - 0.8) / 0.2)
-                : catGroundY;
+              p > 0.8 ? catGroundY + (dockCatY - catGroundY) * ((p - 0.8) / 0.2) : catGroundY;
             catFacingLeft = true;
           } else if (tCycle >= 62 && tCycle < 79) {
             // 62 - 79s: Ngồi / nằm loaf bên mép bến ngắm đàn cá koi bơi lượn
@@ -4834,7 +4856,8 @@ export function WeatherCanvas({
             currCatY = dockCatY;
             catFacingLeft = false;
             if (tCycle >= 69 && tCycle < 72) {
-              catBubbleText = "Cá bơi nhiều ghê meoo~ 🐟";
+              catBubbleText =
+                localeRef.current === "en" ? "So many fish meow~ 🐟" : "Cá bơi nhiều ghê meoo~ 🐟";
             } else if (tCycle >= 76 && tCycle < 78.5) {
               catBubbleText = "Zzz... 🐱💤";
             }
@@ -5047,12 +5070,17 @@ export function WeatherCanvas({
           ctx.restore();
 
           if (isCatWatchingChase) {
-            drawSpeechBubble(currCatX + 12, currCatY - 26, "Méooo? 👀", {
-              tailX: currCatX + 10,
-              tailY: currCatY - 14,
-              border: "#2ec4b6",
-              textColor: "#0f4c5c",
-            });
+            drawSpeechBubble(
+              currCatX + 12,
+              currCatY - 26,
+              localeRef.current === "en" ? "Meowww? 👀" : "Méooo? 👀",
+              {
+                tailX: currCatX + 10,
+                tailY: currCatY - 14,
+                border: "#2ec4b6",
+                textColor: "#0f4c5c",
+              },
+            );
           } else if (catBubbleText) {
             drawSpeechBubble(currCatX + 12, currCatY - 26, catBubbleText, {
               tailX: currCatX + 10,

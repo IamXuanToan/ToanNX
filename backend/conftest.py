@@ -26,6 +26,12 @@ def _isolated_media(settings: Any, tmp_path: Any) -> None:
     settings.MEDIA_ROOT = str(tmp_path / "media")
 
 
+@pytest.fixture(autouse=True)
+def _sync_email(settings: Any) -> None:
+    """Gửi email đồng bộ trong test để kiểm tra mail.outbox tức thì."""
+    settings.EMAIL_ASYNC = False
+
+
 @pytest.fixture
 def client() -> APIClient:
     """API client không kiểm tra CSRF (test CSRF dùng `csrf_client`)."""

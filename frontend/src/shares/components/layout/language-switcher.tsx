@@ -23,7 +23,7 @@ import {
  *
  * @returns Nút chọn ngôn ngữ.
  */
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ className }: { className?: string } = {}) {
   const t = useTranslations("common.language");
   const locale = useLocale();
   const router = useRouter();
@@ -56,6 +56,7 @@ export function LanguageSwitcher() {
         <Button
           variant="ghost"
           size="sm"
+          className={className}
           aria-label={t("label")}
           disabled={isPending}
           data-testid="language-switcher"

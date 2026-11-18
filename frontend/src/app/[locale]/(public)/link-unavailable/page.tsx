@@ -1,4 +1,4 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
@@ -20,7 +20,6 @@ export default async function LinkUnavailablePage({
   searchParams,
 }: PageProps<"/[locale]/link-unavailable">) {
   const locale = (await params).locale as AppLocale;
-  setRequestLocale(locale);
   const { reason } = await searchParams;
   const t = await getTranslations({ locale, namespace: "shortLinks.unavailable" });
   return (

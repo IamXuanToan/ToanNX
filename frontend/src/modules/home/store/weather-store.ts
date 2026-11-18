@@ -51,10 +51,20 @@ export function getMoonPhaseDetails(phase: number): MoonPhaseInfo {
     return { phase: p, nameVi: "Trăng non (Mới)", nameEn: "New Moon", illumination };
   }
   if (p < 0.22) {
-    return { phase: p, nameVi: "Trăng lưỡi liềm đầu tháng", nameEn: "Waxing Crescent", illumination };
+    return {
+      phase: p,
+      nameVi: "Trăng lưỡi liềm đầu tháng",
+      nameEn: "Waxing Crescent",
+      illumination,
+    };
   }
   if (p <= 0.28) {
-    return { phase: p, nameVi: "Trăng bán nguyệt đầu tháng", nameEn: "First Quarter", illumination };
+    return {
+      phase: p,
+      nameVi: "Trăng bán nguyệt đầu tháng",
+      nameEn: "First Quarter",
+      illumination,
+    };
   }
   if (p < 0.47) {
     return { phase: p, nameVi: "Trăng khuyết đầu tháng", nameEn: "Waxing Gibbous", illumination };
@@ -66,9 +76,19 @@ export function getMoonPhaseDetails(phase: number): MoonPhaseInfo {
     return { phase: p, nameVi: "Trăng khuyết cuối tháng", nameEn: "Waning Gibbous", illumination };
   }
   if (p <= 0.78) {
-    return { phase: p, nameVi: "Trăng bán nguyệt cuối tháng", nameEn: "Last Quarter", illumination };
+    return {
+      phase: p,
+      nameVi: "Trăng bán nguyệt cuối tháng",
+      nameEn: "Last Quarter",
+      illumination,
+    };
   }
-  return { phase: p, nameVi: "Trăng lưỡi liềm cuối tháng", nameEn: "Waning Crescent", illumination };
+  return {
+    phase: p,
+    nameVi: "Trăng lưỡi liềm cuối tháng",
+    nameEn: "Waning Crescent",
+    illumination,
+  };
 }
 
 export interface WeatherCacheItem {

@@ -6,6 +6,9 @@ import { SESSION_API_PATHS } from "@/shares/lib/api/session-paths";
  */
 export const AUTH_API_ENDPOINTS = {
   ...SESSION_API_PATHS,
+  passwordResetRequest: "/auth/password-reset/request",
+  passwordResetValidate: "/auth/password-reset/validate-token",
+  passwordResetConfirm: "/auth/password-reset/confirm",
   logoutAll: "/auth/logout-all",
   me: "/auth/me",
   sessions: "/auth/sessions",

@@ -13,7 +13,8 @@ import { HOME_ROUTES } from "../../constants/routes";
 
 /**
  * Header của khu vực công khai.
- * Trên trang Home: trong suốt, không viền và không hiện nút Đăng nhập để tối ưu hóa không gian 3D.
+ * Trên trang Home: trong suốt, chỉ hiển thị duy nhất nút chuyển đổi ngôn ngữ.
+ * Nút chuyển ngôn ngữ được bo viền kính mờ để hiển thị rõ ràng trên mọi điều kiện nền sáng/tối.
  *
  * @returns Header.
  */
@@ -31,11 +32,25 @@ export function PublicHeader() {
       }
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link href={HOME_ROUTES.home} aria-label="TOANNX">
+        <Link
+          href={HOME_ROUTES.home}
+          aria-label="TOANNX"
+          className={
+            isHome
+              ? "border-border/40 bg-background/60 hover:bg-background/80 flex items-center rounded-full border px-3.5 py-1.5 shadow-xs backdrop-blur-md transition-all"
+              : undefined
+          }
+        >
           <Logo />
         </Link>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
+          <LanguageSwitcher
+            className={
+              isHome
+                ? "border-border/40 bg-background/60 hover:bg-background/80 rounded-full border shadow-xs backdrop-blur-md"
+                : undefined
+            }
+          />
           {!isHome ? <ThemeSwitcher /> : null}
           {!isHome ? (
             <Button asChild variant="outline" className="ml-1">

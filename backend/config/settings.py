@@ -211,6 +211,9 @@ SHORT_LINK_INTERNAL_HOSTS = env.list(
 RATE_LIMITS: dict[str, tuple[int, int, str]] = {
     "default.write": (env.int("RL_DEFAULT_WRITE", default=300), 60, "user"),
     "public.read": (env.int("RL_PUBLIC_READ", default=120), 60, "ip"),
+    "auth.password_reset_request": (env.int("RL_AUTH_PASSWORD_RESET_REQUEST", default=5), 900, "ip"),
+    "auth.password_reset_validate": (env.int("RL_AUTH_PASSWORD_RESET_VALIDATE", default=30), 900, "ip"),
+    "auth.password_reset_confirm": (env.int("RL_AUTH_PASSWORD_RESET_CONFIRM", default=10), 900, "ip"),
     "short_links.create": (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
     "short_links.unlock": (env.int("RL_SHORT_LINK_UNLOCK", default=10), 60, "ip"),
     "custom_pages.create": (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
@@ -257,6 +260,30 @@ CUSTOM_PAGE_MAX_PER_OWNER = env.int("CUSTOM_PAGE_MAX_PER_OWNER", default=50)
 QR_CODE_MAX_PER_OWNER = env.int("QR_CODE_MAX_PER_OWNER", default=200)
 AUTH_LOGIN_RATE_LIMIT = env.int("AUTH_LOGIN_RATE_LIMIT", default=10)
 AUTH_LOGIN_RATE_WINDOW_SECONDS = 15 * 60
+
+# Cấu hình gửi email (quên mật khẩu, thông báo hệ thống...)
+# Local / test: console hoặc locmem; production: SMTP hoặc qua môi trường
+EMAIL_BACKEND = env.str(
+    "EMAIL_BACKEND",
+    default=(
+        "django.core.mail.backends.console.EmailBackend"
+        if DEBUG
+        else "django.core.mail.backends.smtp.EmailBackend"
+    ),
+)
+EMAIL_HOST = env.str("EMAIL_HOST", default="localhost")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_HOST_USER = env.str("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=False)
+EMAIL_TIMEOUT = env.int("EMAIL_TIMEOUT", default=10)
+DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="no-reply@toannx.com")
+PASSWORD_RESET_TIMEOUT = env.int("PASSWORD_RESET_TIMEOUT", default=15 * 60)
+# Mặc định lấy origin động từ request; FRONTEND_URL chỉ là fallback khi không có request
+FRONTEND_URL = env.str("FRONTEND_URL", default="")
+# Gửi email bất đồng bộ qua background worker thread (tránh block request web)
+EMAIL_ASYNC = env.bool("EMAIL_ASYNC", default=True)
 
 # Backend luôn đứng sau proxy (Next.js rewrite / Vercel): lấy domain + scheme gốc của trình duyệt
 # từ X-Forwarded-* để dựng URL tuyệt đối (ví dụ URL file). Host vẫn phải nằm trong ALLOWED_HOSTS.

@@ -5,6 +5,7 @@ import { FormField } from "@/shares/components/common/form-field/form-field";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { Link } from "@/i18n/navigation";
 import { PasswordInput } from "@/shares/components/common/password-input/password-input";
 import { Button } from "@/shares/components/ui/button";
 import { FieldGroup } from "@/shares/components/ui/field";
@@ -50,6 +51,14 @@ export function LoginForm({ redirectTo }: { redirectTo: AppPathname }) {
           {(field) => <PasswordInput {...field} autoComplete="current-password" />}
         </FormField>
       </FieldGroup>
+      <div className="flex items-center justify-end">
+        <Link
+          href="/forgot-password"
+          className="text-muted-foreground hover:text-foreground text-xs font-medium transition-colors hover:underline"
+        >
+          {t("forgotPasswordLink")}
+        </Link>
+      </div>
       <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? <Loader2 className="animate-spin" /> : null}
         {isSubmitting ? t("submitting") : t("submit")}

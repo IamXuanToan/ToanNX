@@ -9,6 +9,11 @@ from app.modules.authentication.views.login_view import LoginView
 from app.modules.authentication.views.logout_all_view import LogoutAllView
 from app.modules.authentication.views.logout_view import LogoutView
 from app.modules.authentication.views.me_view import MeView
+from app.modules.authentication.views.password_reset_confirm_view import PasswordResetConfirmView
+from app.modules.authentication.views.password_reset_request_view import PasswordResetRequestView
+from app.modules.authentication.views.password_reset_validate_token_view import (
+    PasswordResetValidateTokenView,
+)
 from app.modules.authentication.views.refresh_view import RefreshView
 from app.modules.authentication.views.session_view import SessionObjectView, SessionView
 
@@ -20,6 +25,9 @@ urlpatterns = [
     *router.urls,
     path("csrf", CsrfView.as_view(), name="csrf"),
     path("login", LoginView.as_view(), name="login"),
+    path("password-reset/request", PasswordResetRequestView.as_view(), name="password-reset-request"),
+    path("password-reset/validate-token", PasswordResetValidateTokenView.as_view(), name="password-reset-validate-token"),
+    path("password-reset/confirm", PasswordResetConfirmView.as_view(), name="password-reset-confirm"),
     path("refresh", RefreshView.as_view(), name="refresh"),
     path("logout", LogoutView.as_view(), name="logout"),
     path("logout-all", LogoutAllView.as_view(), name="logout-all"),

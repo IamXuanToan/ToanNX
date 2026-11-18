@@ -1,7 +1,15 @@
 import { apiClient } from "@/shares/lib/api/api-client";
 
 import { AUTH_API_ENDPOINTS } from "../constants/api-endpoints";
-import type { CurrentUser, LoginCredentials } from "../types/auth.types";
+import type {
+  CurrentUser,
+  LoginCredentials,
+  PasswordResetConfirmPayload,
+  PasswordResetRequestPayload,
+  PasswordResetResponse,
+  PasswordResetTokenValidResponse,
+  PasswordResetValidatePayload,
+} from "../types/auth.types";
 
 /**
  * Kiểm tra `next` an toàn để chuyển hướng sau đăng nhập (chống open redirect).
@@ -35,5 +43,46 @@ export const authService = {
   /** Đăng xuất mọi thiết bị. */
   async logoutAll(): Promise<void> {
     await apiClient.post(AUTH_API_ENDPOINTS.logoutAll);
+  },
+
+  /**
+   * Yêu cầu gửi email đặt lại mật khẩu (chống user enumeration).
+   *
+   * @param payload - Email và ngôn ngữ mong muốn.
+   * @returns Thông báo hướng dẫn.
+   */
+  async requestPasswordReset(payload: PasswordResetRequestPayload): Promise<PasswordResetResponse> {
+    return (
+      await apiClient.post<PasswordResetResponse>(AUTH_API_ENDPOINTS.passwordResetRequest, payload)
+    ).data;
+  },
+
+  /**
+   * Kiểm tra tính hợp lệ của token đặt lại mật khẩu.
+   *
+   * @param payload - Uid và token.
+   * @returns Trạng thái hợp lệ.
+   */
+  async validatePasswordResetToken(
+    payload: PasswordResetValidatePayload,
+  ): Promise<PasswordResetTokenValidResponse> {
+    return (
+      await apiClient.post<PasswordResetTokenValidResponse>(
+        AUTH_API_ENDPOINTS.passwordResetValidate,
+        payload,
+      )
+    ).data;
+  },
+
+  /**
+   * Xác nhận đặt lại mật khẩu mới.
+   *
+   * @param payload - Uid, token và mật khẩu mới.
+   * @returns Thông báo thành công.
+   */
+  async confirmPasswordReset(payload: PasswordResetConfirmPayload): Promise<PasswordResetResponse> {
+    return (
+      await apiClient.post<PasswordResetResponse>(AUTH_API_ENDPOINTS.passwordResetConfirm, payload)
+    ).data;
   },
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 
 import { ChillAudio } from "../chill-audio/chill-audio";
@@ -21,6 +21,7 @@ import { WeatherWidget, type WeatherInfo } from "../weather-widget/weather-widge
  */
 export function HomeHero() {
   const t = useTranslations("common.home");
+  const locale = useLocale();
 
   const [weatherState, setWeatherState] = useState<WeatherInfo>({
     effect: "sunny",
@@ -85,11 +86,12 @@ export function HomeHero() {
           sunset={weatherState.sunset}
           moonPhase={weatherState.moonPhase}
           onThunderStrike={handleThunderStrike}
+          locale={locale}
         />
       </div>
 
-      {/* 2. Nội dung trung tâm: Lời chào, Đồng hồ và Thời tiết */}
-      <div className="relative z-10 mx-auto my-auto flex w-full max-w-4xl flex-col items-center px-4 pt-20 pb-8 sm:px-6">
+      {/* 2. Nội dung trung tâm: Lời chào, Đồng hồ và Thời tiết (nhấc lên để không che hoạt cảnh chân trang) */}
+      <div className="relative z-10 mx-auto my-auto flex w-full max-w-4xl -translate-y-6 flex-col items-center px-4 pt-16 pb-20 sm:-translate-y-10 sm:px-6 sm:pt-18 sm:pb-28 md:-translate-y-12">
         {/* Lời chào nhẹ nhàng */}
         <div className="text-center">
           <p
@@ -108,13 +110,6 @@ export function HomeHero() {
           >
             {t("name")}
           </h1>
-          <p
-            className={`mx-auto mt-2 max-w-md text-xs leading-relaxed font-medium sm:text-sm ${
-              isStorm || isNight ? "text-slate-400" : "text-slate-600"
-            }`}
-          >
-            {t("tagline")}
-          </p>
         </div>
 
         {/* Cụm Widget trong suốt nhìn xuyên thấu: Đồng hồ và Thời tiết */}

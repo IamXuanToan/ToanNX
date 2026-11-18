@@ -57,3 +57,32 @@ export type UpdateProfilePayload = {
   /** Mật khẩu mới (tùy chọn). */
   password?: string;
 };
+
+/** Dữ liệu yêu cầu gửi email đặt lại mật khẩu. */
+export type PasswordResetRequestPayload = {
+  email: string;
+  locale?: string;
+};
+
+/** Dữ liệu kiểm tra token đặt lại mật khẩu. */
+export type PasswordResetValidatePayload = {
+  uid: string;
+  token: string;
+};
+
+/** Dữ liệu xác nhận đặt lại mật khẩu mới. */
+export type PasswordResetConfirmPayload = {
+  uid: string;
+  token: string;
+  new_password: string;
+};
+
+/** Phản hồi thông báo từ API đặt lại mật khẩu. */
+export type PasswordResetResponse = {
+  detail: string;
+};
+
+/** Phản hồi kiểm tra tính hợp lệ của token. */
+export type PasswordResetTokenValidResponse = {
+  valid: boolean;
+};

@@ -13,10 +13,11 @@ import {
   Wind,
   Zap,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { Badge } from "@/shares/components/ui/badge";
+import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
 import type { RainIntensityType, WeatherEffectType } from "../weather-canvas/weather-canvas";
 
 import {
@@ -134,16 +135,8 @@ function detectRainIntensity(
   return "medium";
 }
 
-function getInitialLocation(): LocationKey {
-  if (typeof window === "undefined") return "danang";
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY) as LocationKey | null;
-    if (saved === "danang" || saved === "quangtri") return saved;
-  } catch {
-    // bỏ qua
-  }
-  return "danang";
-}
+const isLocationKey = (value: unknown): value is LocationKey =>
+  value === "danang" || value === "quangtri";
 
 function WeatherIcon({
   conditionKey,
@@ -199,7 +192,12 @@ interface WeatherWidgetProps {
  */
 export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: WeatherWidgetProps) {
   const t = useTranslations("common.home");
-  const [selectedLocation, setSelectedLocation] = useState<LocationKey>(getInitialLocation);
+  const locale = useLocale();
+  const [selectedLocation, setSelectedLocation] = useStoredPreference<LocationKey>(
+    STORAGE_KEY,
+    "danang",
+    isLocationKey,
+  );
   const [weatherData, setWeatherData] = useState<WeatherData>(DEFAULT_FALLBACK.danang);
   const [selectedEffect, setSelectedEffect] = useState<WeatherEffectType>("auto");
   const [rainIntensity, setRainIntensity] = useState<RainIntensityType>("medium");
@@ -321,8 +319,7 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
         }
       } catch {
         if (!isCancelled) {
-          const fallback =
-            getCachedWeather(selectedLocation) ?? DEFAULT_FALLBACK[selectedLocation];
+          const fallback = getCachedWeather(selectedLocation) ?? DEFAULT_FALLBACK[selectedLocation];
           setWeatherData(fallback);
         }
       } finally {
@@ -350,13 +347,7 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
       isCancelled = true;
       clearInterval(interval);
     };
-  }, [
-    selectedLocation,
-    refreshTrigger,
-    getCachedWeather,
-    setCachedWeather,
-    setIsUpdating,
-  ]);
+  }, [selectedLocation, refreshTrigger, getCachedWeather, setCachedWeather, setIsUpdating]);
 
   // Đồng bộ hiệu ứng thời tiết và bài nhạc tương ứng ra ngoài Canvas và Audio Player
   useEffect(() => {
@@ -420,11 +411,6 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
   const handleLocationChange = (key: LocationKey) => {
     setSelectedLocation(key);
     setRefreshTrigger({ force: false, count: 0 });
-    try {
-      localStorage.setItem(STORAGE_KEY, key);
-    } catch {
-      // bỏ qua
-    }
   };
 
   const handleReload = () => {
@@ -497,7 +483,7 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
               className="animate-pulse border-amber-500/40 bg-amber-500/10 text-[11px] font-semibold text-amber-500"
             >
               <Zap className="mr-1 size-3" />
-              Cảnh báo bão
+              {t("weather.stormAlert")}
             </Badge>
           ) : null}
           <Badge
@@ -508,7 +494,11 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
                 : "border-white/10 bg-white/[0.05] text-slate-300"
             }`}
           >
-            {isUpdating ? "Đang cập nhật..." : effectiveIsDay ? "Ban ngày" : "Ban đêm"}
+            {isUpdating
+              ? t("weather.updating")
+              : effectiveIsDay
+                ? t("weather.daytime")
+                : t("weather.nighttime")}
           </Badge>
           <button
             type="button"
@@ -528,7 +518,7 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
       </div>
 
       {/* 2. Nhiệt độ và biểu tượng */}
-      <div className="my-auto py-3 flex items-center justify-between">
+      <div className="my-auto flex items-center justify-between py-3">
         <div className="flex items-center gap-3">
           <WeatherIcon conditionKey={weatherData.conditionKey} isDay={effectiveIsDay} />
           <div>
@@ -550,7 +540,7 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
               className={`text-xs font-semibold sm:text-sm ${isDay ? "text-slate-800" : "text-slate-200"}`}
             >
               {!effectiveIsDay
-                ? `${t("weather.condition.clear") === "Trời nắng quang đãng" ? "Đêm sao" : t(`weather.condition.${weatherData.conditionKey}` as Parameters<typeof t>[0])} · ${getMoonPhaseDetails(weatherData.moonPhase ?? calculateAstronomicalMoonPhase()).nameVi}`
+                ? `${weatherData.conditionKey === "clear" ? t("weather.starryNight") : t(`weather.condition.${weatherData.conditionKey}` as Parameters<typeof t>[0])} · ${locale === "vi" ? getMoonPhaseDetails(weatherData.moonPhase ?? calculateAstronomicalMoonPhase()).nameVi : getMoonPhaseDetails(weatherData.moonPhase ?? calculateAstronomicalMoonPhase()).nameEn}`
                 : t(`weather.condition.${weatherData.conditionKey}` as Parameters<typeof t>[0])}
             </div>
           </div>
@@ -575,17 +565,20 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
           isDay ? "border-slate-900/10 text-slate-600" : "border-white/10 text-slate-300"
         }`}
       >
-        <div className="flex items-center gap-1.5" title="Độ ẩm không khí">
+        <div className="flex items-center gap-1.5" title={t("weather.humidity")}>
           <Droplets className="size-3.5 text-sky-500" />
           <span>
-            Độ ẩm: <strong className={isDay ? "text-slate-900" : "text-white"}>{weatherData.humidity}%</strong>
+            {t("weather.humidity")}:{" "}
+            <strong className={isDay ? "text-slate-900" : "text-white"}>
+              {weatherData.humidity}%
+            </strong>
           </span>
         </div>
 
         <button
           type="button"
           onClick={toggleWind}
-          title="Bấm để tăng độ mạnh gió"
+          title={t("weather.windBoostTooltip")}
           className="flex items-center gap-1.5 transition-colors hover:opacity-80"
         >
           <Wind
@@ -594,14 +587,20 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
             }`}
           />
           <span>
-            Gió: <strong className={isDay ? "text-slate-900" : "text-white"}>{Math.round(weatherData.windSpeed * windMultiplier)} km/h</strong>
+            {t("weather.wind")}:{" "}
+            <strong className={isDay ? "text-slate-900" : "text-white"}>
+              {Math.round(weatherData.windSpeed * windMultiplier)} km/h
+            </strong>
           </span>
         </button>
 
-        <div className="flex items-center gap-1.5" title="Áp suất khí quyển">
+        <div className="flex items-center gap-1.5" title={t("weather.pressure")}>
           <Gauge className="size-3.5 text-indigo-400" />
           <span>
-            Áp suất: <strong className={isDay ? "text-slate-900" : "text-white"}>{weatherData.surfacePressure} hPa</strong>
+            {t("weather.pressure")}:{" "}
+            <strong className={isDay ? "text-slate-900" : "text-white"}>
+              {weatherData.surfacePressure} hPa
+            </strong>
           </span>
         </div>
       </div>
@@ -617,7 +616,7 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
         >
           <div className="flex items-center gap-1 text-[11px] font-medium">
             <Zap className="size-3 text-sky-500" />
-            <span>Mưa:</span>
+            <span>{t("weather.rainLabel")}:</span>
           </div>
           <div className="flex items-center gap-1">
             {(["light", "medium", "heavy"] as const).map((lvl) => (
@@ -648,13 +647,13 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
       >
         {(
           [
-            { key: "auto", label: "Tự động" },
-            { key: "rain", label: "Mưa" },
-            { key: "storm", label: "Bão", icon: Zap },
-            { key: "sunny", label: "Nắng" },
-            { key: "fog", label: "Sương", icon: CloudFog },
-            { key: "night", label: "Đêm", icon: Moon },
-          ] as { key: WeatherEffectType; label: string; icon?: typeof Zap }[]
+            { key: "auto" },
+            { key: "rain" },
+            { key: "storm", icon: Zap },
+            { key: "sunny" },
+            { key: "fog", icon: CloudFog },
+            { key: "night", icon: Moon },
+          ] as { key: WeatherEffectType; icon?: typeof Zap }[]
         ).map((item) => {
           const Icon = item.icon;
           return (
@@ -673,7 +672,7 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
               }`}
             >
               {Icon ? <Icon className="size-3" /> : null}
-              <span>{item.label}</span>
+              <span>{t(`weather.effects.${item.key}` as Parameters<typeof t>[0])}</span>
             </button>
           );
         })}

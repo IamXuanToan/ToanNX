@@ -4,11 +4,44 @@
     "password": "Mật khẩu",
     "submit": "Đăng nhập",
     "submitting": "Đang đăng nhập...",
-    "identifier": "Email hoặc tên người dùng"
+    "identifier": "Email hoặc tên người dùng",
+    "forgotPasswordLink": "Quên mật khẩu?"
+  },
+  "forgotPassword": {
+    "title": "Quên mật khẩu",
+    "description": "Nhập địa chỉ email tài khoản của bạn để nhận liên kết đặt lại mật khẩu.",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "submit": "Gửi liên kết",
+    "submitting": "Đang gửi...",
+    "successTitle": "Kiểm tra hộp thư của bạn",
+    "successDescription": "Nếu email tồn tại trong hệ thống, chúng tôi đã gửi đường dẫn đặt lại mật khẩu. Vui lòng kiểm tra hộp thư đến (và thư mục rác).",
+    "backToLogin": "Quay lại đăng nhập",
+    "resend": "Gửi lại email khác"
+  },
+  "resetPassword": {
+    "title": "Đặt lại mật khẩu",
+    "description": "Vui lòng nhập mật khẩu mới cho tài khoản của bạn.",
+    "password": "Mật khẩu mới",
+    "passwordPlaceholder": "Tối thiểu 8 ký tự",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
+    "submit": "Đổi mật khẩu",
+    "submitting": "Đang xử lý...",
+    "successTitle": "Đặt lại mật khẩu thành công",
+    "successDescription": "Mật khẩu của bạn đã được cập nhật. Bạn có thể đăng nhập ngay bây giờ.",
+    "backToLogin": "Đăng nhập ngay",
+    "invalidTokenTitle": "Liên kết không hợp lệ hoặc đã hết hạn",
+    "invalidTokenDescription": "Liên kết đặt lại mật khẩu này đã hết hạn hoặc đã được sử dụng. Vui lòng gửi yêu cầu mới.",
+    "requestNewLink": "Yêu cầu liên kết mới"
   },
   "validation": {
     "passwordRequired": "Vui lòng nhập mật khẩu.",
-    "identifierRequired": "Vui lòng nhập email hoặc tên người dùng."
+    "identifierRequired": "Vui lòng nhập email hoặc tên người dùng.",
+    "emailRequired": "Vui lòng nhập email.",
+    "emailInvalid": "Email không hợp lệ.",
+    "passwordMin": "Mật khẩu phải có ít nhất 8 ký tự.",
+    "passwordMismatch": "Mật khẩu xác nhận không khớp."
   },
   "userMenu": {
     "open": "Mở menu tài khoản",

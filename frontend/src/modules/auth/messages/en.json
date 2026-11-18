@@ -4,11 +4,44 @@
     "password": "Password",
     "submit": "Sign in",
     "submitting": "Signing in...",
-    "identifier": "Email or username"
+    "identifier": "Email or username",
+    "forgotPasswordLink": "Forgot password?"
+  },
+  "forgotPassword": {
+    "title": "Forgot password",
+    "description": "Enter your account email address and we'll send you a password reset link.",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "submit": "Send reset link",
+    "submitting": "Sending...",
+    "successTitle": "Check your email",
+    "successDescription": "If that email exists in our system, we've sent you instructions to reset your password. Please check your inbox (and spam folder).",
+    "backToLogin": "Back to sign in",
+    "resend": "Send another email"
+  },
+  "resetPassword": {
+    "title": "Reset password",
+    "description": "Please enter a new password for your account.",
+    "password": "New password",
+    "passwordPlaceholder": "At least 8 characters",
+    "confirmPassword": "Confirm password",
+    "confirmPasswordPlaceholder": "Re-enter new password",
+    "submit": "Reset password",
+    "submitting": "Resetting...",
+    "successTitle": "Password reset successful",
+    "successDescription": "Your password has been updated. You can now sign in with your new password.",
+    "backToLogin": "Sign in now",
+    "invalidTokenTitle": "Invalid or expired link",
+    "invalidTokenDescription": "This password reset link has expired or has already been used. Please request a new link.",
+    "requestNewLink": "Request a new link"
   },
   "validation": {
     "passwordRequired": "Please enter your password.",
-    "identifierRequired": "Enter your email or username."
+    "identifierRequired": "Enter your email or username.",
+    "emailRequired": "Please enter your email.",
+    "emailInvalid": "Invalid email address.",
+    "passwordMin": "Password must be at least 8 characters.",
+    "passwordMismatch": "Passwords do not match."
   },
   "userMenu": {
     "open": "Open account menu",

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/shares/components/ui/button";
 import { Slider } from "@/shares/components/ui/slider";
+import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
 
 export type ChillTrack = "lofi" | "rain" | "storm" | "ocean";
 
@@ -18,32 +19,10 @@ interface ChillAudioProps {
 const VOLUME_STORAGE_KEY = "audio_volume";
 const MUTED_STORAGE_KEY = "audio_muted";
 
-function getInitialVolume(): number {
-  if (typeof window === "undefined") return 70;
-  try {
-    const saved = localStorage.getItem(VOLUME_STORAGE_KEY);
-    if (saved !== null) {
-      const parsed = Number(saved);
-      if (!Number.isNaN(parsed) && parsed >= 0 && parsed <= 100) {
-        return parsed;
-      }
-    }
-  } catch {
-    // bỏ qua
-  }
-  return 70;
-}
+const isValidVolume = (value: unknown): value is number =>
+  typeof value === "number" && !Number.isNaN(value) && value >= 0 && value <= 100;
 
-function getInitialMuted(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    const saved = localStorage.getItem(MUTED_STORAGE_KEY);
-    return saved === "true";
-  } catch {
-    // bỏ qua
-  }
-  return false;
-}
+const isBoolean = (value: unknown): value is boolean => typeof value === "boolean";
 
 /**
  * Trình phát thanh âm thư giãn & Hệ thống mô phỏng âm thanh thời tiết (Web Audio API Synthesizer):
@@ -56,8 +35,8 @@ export function ChillAudio({ isDay = true, suggestedTrack, thunderTrigger }: Chi
   const t = useTranslations("common.home.audio");
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<ChillTrack>(suggestedTrack || "lofi");
-  const [volume, setVolume] = useState<number>(getInitialVolume);
-  const [isMuted, setIsMuted] = useState<boolean>(getInitialMuted);
+  const [volume, setVolume] = useStoredPreference<number>(VOLUME_STORAGE_KEY, 70, isValidVolume);
+  const [isMuted, setIsMuted] = useStoredPreference<boolean>(MUTED_STORAGE_KEY, false, isBoolean);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
@@ -521,13 +500,6 @@ export function ChillAudio({ isDay = true, suggestedTrack, thunderTrigger }: Chi
     const shouldMute = newVal === 0;
     setIsMuted(shouldMute);
 
-    try {
-      localStorage.setItem(VOLUME_STORAGE_KEY, String(newVal));
-      localStorage.setItem(MUTED_STORAGE_KEY, shouldMute ? "true" : "false");
-    } catch {
-      // bỏ qua
-    }
-
     if (masterGainRef.current && audioCtxRef.current) {
       const targetGain = shouldMute ? 0 : (newVal / 100) * 0.45;
       masterGainRef.current.gain.setTargetAtTime(targetGain, audioCtxRef.current.currentTime, 0.05);
@@ -539,23 +511,16 @@ export function ChillAudio({ isDay = true, suggestedTrack, thunderTrigger }: Chi
       const restored = volume === 0 ? 70 : volume;
       setVolume(restored);
       setIsMuted(false);
-      try {
-        localStorage.setItem(MUTED_STORAGE_KEY, "false");
-        localStorage.setItem(VOLUME_STORAGE_KEY, String(restored));
-      } catch {
-        // bỏ qua
-      }
       if (masterGainRef.current && audioCtxRef.current) {
         const targetGain = (restored / 100) * 0.45;
-        masterGainRef.current.gain.setTargetAtTime(targetGain, audioCtxRef.current.currentTime, 0.05);
+        masterGainRef.current.gain.setTargetAtTime(
+          targetGain,
+          audioCtxRef.current.currentTime,
+          0.05,
+        );
       }
     } else {
       setIsMuted(true);
-      try {
-        localStorage.setItem(MUTED_STORAGE_KEY, "true");
-      } catch {
-        // bỏ qua
-      }
       if (masterGainRef.current && audioCtxRef.current) {
         masterGainRef.current.gain.setTargetAtTime(0, audioCtxRef.current.currentTime, 0.05);
       }
@@ -592,19 +557,21 @@ export function ChillAudio({ isDay = true, suggestedTrack, thunderTrigger }: Chi
           <Music className={`size-3.5 ${isDay ? "text-slate-600" : "text-slate-400"}`} />
           <div className="flex flex-col">
             <span
-              className={`text-xs font-semibold leading-tight whitespace-nowrap ${
+              className={`text-xs leading-tight font-semibold whitespace-nowrap ${
                 isDay ? "text-slate-800" : "text-slate-200"
               }`}
             >
               {currentTrack === "lofi"
-                ? "Lofi Melody"
+                ? t("trackLofi")
                 : currentTrack === "rain"
-                  ? "Mưa rơi êm"
+                  ? t("trackRain")
                   : currentTrack === "storm"
-                    ? "Dông bão"
-                    : "Sóng biển"}
+                    ? t("trackStorm")
+                    : t("trackOcean")}
             </span>
-            <span className={`text-[10px] leading-tight ${isDay ? "text-slate-500" : "text-slate-400"}`}>
+            <span
+              className={`text-[10px] leading-tight ${isDay ? "text-slate-500" : "text-slate-400"}`}
+            >
               {isPlaying ? t("nowPlaying") : t("paused")}
             </span>
           </div>
@@ -628,11 +595,11 @@ export function ChillAudio({ isDay = true, suggestedTrack, thunderTrigger }: Chi
       >
         {(
           [
-            { key: "lofi", label: "Lofi" },
-            { key: "rain", label: "Mưa" },
-            { key: "storm", label: "Bão", icon: Zap },
-            { key: "ocean", label: "Sóng" },
-          ] as { key: ChillTrack; label: string; icon?: typeof Zap }[]
+            { key: "lofi", labelKey: "tabLofi" },
+            { key: "rain", labelKey: "tabRain" },
+            { key: "storm", labelKey: "tabStorm", icon: Zap },
+            { key: "ocean", labelKey: "tabOcean" },
+          ] as { key: ChillTrack; labelKey: string; icon?: typeof Zap }[]
         ).map((item) => {
           const Icon = item.icon;
           return (
@@ -651,7 +618,7 @@ export function ChillAudio({ isDay = true, suggestedTrack, thunderTrigger }: Chi
               }`}
             >
               {Icon ? <Icon className="size-2.5 text-amber-400" /> : null}
-              <span>{item.label}</span>
+              <span>{t(item.labelKey as Parameters<typeof t>[0])}</span>
             </button>
           );
         })}
