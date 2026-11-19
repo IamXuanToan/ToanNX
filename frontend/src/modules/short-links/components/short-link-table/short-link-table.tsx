@@ -12,7 +12,7 @@ import { FilterSelect } from "@/shares/components/common/filter-select/filter-se
 import { Badge } from "@/shares/components/ui/badge";
 
 import { SHORT_LINKS_ROUTES } from "../../constants/routes";
-import type { ShortLink } from "../../types/short-links.types";
+import type { ShortLink } from "../../types/short-link.types";
 import { useShortLinkTable } from "./hooks/use-short-link-table";
 
 /**

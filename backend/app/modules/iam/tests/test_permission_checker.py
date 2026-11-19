@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 
 from app.modules.account.models.user import User
-from app.modules.account.permissions.account_permission import AccountPermission as A
+from app.modules.account.permissions.user_permission import UserPermission as A
 from app.modules.account.tests.factories.user_factory import UserFactory
 from app.modules.iam.models.permission import Permission
 from app.modules.iam.models.role import Role

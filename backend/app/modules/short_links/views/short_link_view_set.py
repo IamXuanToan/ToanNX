@@ -14,7 +14,7 @@ from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.iam.types.permission_rule import permission_rule
 from app.modules.short_links.filters.short_link_filter import ShortLinkFilter
 from app.modules.short_links.models.short_link import ShortLink
-from app.modules.short_links.permissions.short_links_permission import ShortLinksPermission as P
+from app.modules.short_links.permissions.short_link_permission import ShortLinkPermission as P
 from app.modules.short_links.serializers.responses.short_link_detail_response_serializer import (
     ShortLinkDetailResponseSerializer,
 )

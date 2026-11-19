@@ -1,7 +1,7 @@
 """Decorator kiểm tra dữ liệu đầu vào cho method của view.
 
 ```python
-@require_permission(AccountPermission.USER_CREATE)
+@require_permission(UserPermission.USER_CREATE)
 @validate_request(UserCreateValidateSerializer)
 def post(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse: ...
 ```

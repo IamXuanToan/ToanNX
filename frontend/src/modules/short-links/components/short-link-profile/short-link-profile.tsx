@@ -7,7 +7,7 @@ import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
 import { SHORT_LINKS_ROUTES } from "../../constants/routes";
-import { useShortLink } from "../../hooks/use-short-links";
+import { useShortLink } from "../../hooks/use-short-link";
 import { ShortLinkForm } from "../short-link-form/short-link-form";
 
 /**

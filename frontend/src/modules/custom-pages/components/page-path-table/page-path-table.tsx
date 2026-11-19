@@ -9,7 +9,7 @@ import type { DataTableColumn } from "@/shares/components/common/data-table/type
 import { FilterSelect } from "@/shares/components/common/filter-select/filter-select";
 
 import { CUSTOM_PAGES_ROUTES } from "../../constants/routes";
-import type { PagePath } from "../../types/custom-pages.types";
+import type { PagePath } from "../../types/page-path.types";
 import { usePagePathTable } from "./hooks/use-page-path-table";
 
 /**

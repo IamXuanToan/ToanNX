@@ -10,6 +10,7 @@ import {
   RESERVED_SEGMENTS,
 } from "./modules/custom-pages/constants/routes";
 import { MANAGE_APP_ROUTES } from "./modules/manage-app/constants/routes";
+import { NOVEL_ROUTES } from "./modules/novel/constants/routes";
 
 /** Cookie "gợi ý có phiên" do backend đặt (HttpOnly, không chứa token; khớp `AUTH_SESSION_HINT_COOKIE_NAME`). */
 const SESSION_HINT_COOKIE = "session_hint";
@@ -39,7 +40,15 @@ export default function proxy(request: NextRequest) {
     const hasSession = request.cookies.has(SESSION_HINT_COOKIE);
     const adminPath = localizedPath(MANAGE_APP_ROUTES.admin, locale);
     const loginPath = localizedPath(AUTH_ROUTES.login, locale);
+    const novelPath = getPathname({ href: NOVEL_ROUTES.catalog, locale });
     const isAdmin = pathname === adminPath || pathname.startsWith(`${adminPath}/`);
+    const isNovel = pathname === novelPath || pathname.startsWith(`${novelPath}/`);
+
+    if (isNovel && !hasSession) {
+      const url = new URL(loginPath, request.url);
+      url.searchParams.set("redirect", pathname + search);
+      return NextResponse.redirect(url);
+    }
 
     if (isAdmin && !hasSession) {
       const url = new URL(loginPath, request.url);

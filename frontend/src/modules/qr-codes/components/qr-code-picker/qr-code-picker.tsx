@@ -16,7 +16,7 @@ import {
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
 import { useQrCodes } from "../../hooks/use-qr-codes";
-import type { QrCode } from "../../types/qr-codes.types";
+import type { QrCode } from "../../types/qr-code.types";
 
 /**
  * Dialog chọn một mã QR của mình (lưới ảnh, tìm theo tên). Chọn xong trả về mã QR; nơi gọi chèn ảnh của nó.

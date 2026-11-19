@@ -13,8 +13,9 @@ import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 
 import { ACCOUNT_ROUTES } from "../../../constants/routes";
-import { useCreateUser, useUpdateUser } from "../../../hooks/use-account-mutations";
-import { useUser } from "../../../hooks/use-account-queries";
+import { useCreateUser } from "../../../hooks/use-create-user";
+import { useUpdateUser } from "../../../hooks/use-update-user";
+import { useUser } from "../../../hooks/use-user";
 import {
   type CreateUserFormValues,
   createUserSchema,
@@ -22,7 +23,7 @@ import {
   updateUserSchema,
   USER_FORM_FIELDS,
 } from "../../../schemas/user.schema";
-import type { User } from "../../../types/account.types";
+import type { User } from "../../../types/user.types";
 
 const EMPTY: CreateUserFormValues = {
   email: "",

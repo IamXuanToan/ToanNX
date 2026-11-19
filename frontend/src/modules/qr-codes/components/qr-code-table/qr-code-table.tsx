@@ -9,7 +9,7 @@ import { FilterSelect } from "@/shares/components/common/filter-select/filter-se
 import { Badge } from "@/shares/components/ui/badge";
 
 import { QR_CODES_ROUTES } from "../../constants/routes";
-import { QR_TYPES, type QrCode } from "../../types/qr-codes.types";
+import { QR_TYPES, type QrCode } from "../../types/qr-code.types";
 import { useQrCodeTable } from "./hooks/use-qr-code-table";
 
 /**

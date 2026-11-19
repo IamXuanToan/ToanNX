@@ -11,13 +11,14 @@ import { isApiError } from "@/shares/lib/api/api-error";
 import { formatDateTimeLocal, parseDateTimeLocal } from "@/shares/lib/date-time-input";
 
 import { SHORT_LINKS_ROUTES } from "../../../constants/routes";
-import { useCreateShortLink, useUpdateShortLink } from "../../../hooks/use-short-links";
+import { useCreateShortLink } from "../../../hooks/use-create-short-link";
+import { useUpdateShortLink } from "../../../hooks/use-update-short-link";
 import {
   SHORT_LINK_FORM_FIELDS,
   shortLinkSchema,
   type ShortLinkFormValues,
 } from "../../../schemas/short-link.schema";
-import type { ShortLinkDetail, ShortLinkInput } from "../../../types/short-links.types";
+import type { ShortLinkDetail, ShortLinkInput } from "../../../types/short-link.types";
 
 const EMPTY: ShortLinkFormValues = {
   name: "",

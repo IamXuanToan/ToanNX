@@ -12,6 +12,9 @@
   "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
   "python.testing.pytestEnabled": true,
   "python.testing.cwd": "${workspaceFolder}/backend",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportIncompatibleVariableOverride": "none"
+  },
   "eslint.workingDirectories": ["frontend"],
   "prettier.prettierPath": "frontend/node_modules/prettier",
   "typescript.tsdk": "frontend/node_modules/typescript/lib"

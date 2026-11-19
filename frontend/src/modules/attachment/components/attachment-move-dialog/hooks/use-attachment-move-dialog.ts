@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { useAttachmentFolders } from "../../../hooks/use-attachment-folders";
-import { useMoveAttachments } from "../../../hooks/use-attachments";
+import { useMoveAttachments } from "../../../hooks/use-move-attachments";
 import type { Attachment } from "../../../types/attachment.types";
 
 /** @param files - Các file đích. @param canReadFolders - Quyền danh mục. @param onDone - Sau khi chuyển thành công. @returns Nhóm tương thích owner và mutation. */

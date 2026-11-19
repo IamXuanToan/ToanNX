@@ -7,7 +7,7 @@ import { PageHeader } from "@/shares/components/common/page-header/page-header";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 
 import { JournalTable } from "../components/journal-table/journal-table";
-import { JOURNAL_PERMISSIONS } from "../constants/journal-permissions";
+import { JOURNAL_ENTRY_PERMISSIONS } from "../permissions/journal-entry-permission";
 
 /**
  * Trang Nhật ký: lịch sử thay đổi của mọi bản ghi, lọc theo module.model.
@@ -16,7 +16,7 @@ import { JOURNAL_PERMISSIONS } from "../constants/journal-permissions";
  */
 export function JournalListView() {
   const t = useTranslations("journal");
-  const canRead = usePermission(JOURNAL_PERMISSIONS.entryRead);
+  const canRead = usePermission(JOURNAL_ENTRY_PERMISSIONS.entryRead);
   if (!canRead) return <ForbiddenView />;
   return (
     <div className="space-y-6">

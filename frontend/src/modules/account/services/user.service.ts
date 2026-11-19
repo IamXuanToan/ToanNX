@@ -1,7 +1,7 @@
 import { createCrudService } from "@/shares/lib/api/create-crud-service";
 
 import { ACCOUNT_API_ENDPOINTS } from "../constants/api-endpoints";
-import type { CreateUserInput, UpdateUserInput, User, UserFilters } from "../types/account.types";
+import type { CreateUserInput, UpdateUserInput, User, UserFilters } from "../types/user.types";
 
 const crud = createCrudService<User, UserFilters, CreateUserInput, UpdateUserInput>(
   ACCOUNT_API_ENDPOINTS.users,

@@ -4,8 +4,10 @@ import { useRouter } from "@/i18n/navigation";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
 
 import { QR_CODES_ROUTES } from "../../../constants/routes";
-import { useBulkDeleteQrCodes, useDeleteQrCode, useQrCodes } from "../../../hooks/use-qr-codes";
-import { QR_TYPES, type QrCode } from "../../../types/qr-codes.types";
+import { useBulkDeleteQrCodes } from "../../../hooks/use-bulk-delete-qr-codes";
+import { useDeleteQrCode } from "../../../hooks/use-delete-qr-code";
+import { useQrCodes } from "../../../hooks/use-qr-codes";
+import { QR_TYPES, type QrCode } from "../../../types/qr-code.types";
 
 /**
  * State bảng mã QR: tìm theo tên, lọc loại (chọn nhiều), sắp xếp, phân trang URL, xóa và xóa hàng loạt.

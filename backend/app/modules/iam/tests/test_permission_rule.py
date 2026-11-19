@@ -8,7 +8,7 @@ from rest_framework.request import Request
 
 from app.core.exceptions.authorization_error import AuthorizationError
 from app.modules.account.models.user import User
-from app.modules.account.permissions.account_permission import AccountPermission as A
+from app.modules.account.permissions.user_permission import UserPermission as A
 from app.modules.account.tests.factories.user_factory import UserFactory
 from app.modules.iam.permissions.iam_permission import IamPermission as P
 from app.modules.iam.services.permission_checker import permission_checker

@@ -18,7 +18,8 @@ import {
 } from "@/shares/components/ui/dialog";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
-import type { Attachment, FolderCapabilities } from "../../types/attachment.types";
+import type { Attachment } from "../../types/attachment.types";
+import type { FolderCapabilities } from "../../types/attachment-folder.types";
 import { ATTACHMENT_ROUTES } from "../../constants/routes";
 import { AttachmentMediaFilters } from "../attachment-media-filters/attachment-media-filters";
 import { AttachmentFolderFilter } from "../attachment-folder-filter/attachment-folder-filter";

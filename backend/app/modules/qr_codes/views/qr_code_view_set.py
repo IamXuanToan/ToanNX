@@ -13,7 +13,7 @@ from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.iam.types.permission_rule import permission_rule
 from app.modules.qr_codes.filters.qr_code_filter import QrCodeFilter
 from app.modules.qr_codes.models.qr_code import QrCode
-from app.modules.qr_codes.permissions.qr_codes_permission import QrCodesPermission as P
+from app.modules.qr_codes.permissions.qr_code_permission import QrCodePermission as P
 from app.modules.qr_codes.serializers.responses.qr_code_detail_response_serializer import (
     QrCodeDetailResponseSerializer,
 )

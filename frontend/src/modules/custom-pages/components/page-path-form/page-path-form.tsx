@@ -17,7 +17,7 @@ import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
 
 import { CUSTOM_PAGES_ROUTES } from "../../constants/routes";
-import type { PagePath } from "../../types/custom-pages.types";
+import type { PagePath } from "../../types/page-path.types";
 import { usePagePathForm } from "./hooks/use-page-path-form";
 
 /**

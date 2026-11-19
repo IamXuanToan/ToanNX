@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 
 import { PagePathProfile } from "../components/page-path-profile/page-path-profile";
-import { CUSTOM_PAGES_PERMISSIONS as P } from "../constants/custom-pages-permissions";
+import { PAGE_PATH_PERMISSIONS } from "../permissions/page-path-permission";
 
 /**
  * Trang chi tiết đường dẫn giữa.
@@ -14,6 +14,6 @@ import { CUSTOM_PAGES_PERMISSIONS as P } from "../constants/custom-pages-permiss
  * @returns Giao diện chi tiết.
  */
 export function PagePathDetailView({ id, history }: { id: string; history?: ReactNode }) {
-  const canUpdate = usePermission(P.pathUpdate);
+  const canUpdate = usePermission(PAGE_PATH_PERMISSIONS.pathUpdate);
   return <PagePathProfile id={id} canUpdate={canUpdate} history={history} />;
 }

@@ -10,7 +10,9 @@ from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.serializers.core_bulk_result_response_serializer import CoreBulkResultResponseSerializer
 from app.core.views.core_api_view import CoreApiView
-from app.modules.attachment.permissions.attachment_permission import AttachmentPermission
+from app.modules.attachment.permissions.attachment_folder_permission import (
+    AttachmentFolderPermission,
+)
 from app.modules.attachment.serializers.validates.attachment_folder_delete_validate_serializer import (
     AttachmentFolderDeleteValidateSerializer,
 )
@@ -27,7 +29,7 @@ class AttachmentFolderDeleteView(CoreApiView):
         self.attachment_folder_service = AttachmentFolderService()
 
     @extend_schema(responses=CoreBulkResultResponseSerializer)
-    @require_permission(AttachmentPermission.FOLDER_DELETE)
+    @require_permission(AttachmentFolderPermission.FOLDER_DELETE)
     @validate_request(AttachmentFolderDeleteValidateSerializer)
     def post(self, request: Request, pk: UUID, validated_data: dict[str, Any]) -> CoreResponse:
         """Xóa nhánh và trả số thư mục đã xóa mềm."""

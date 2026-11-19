@@ -457,6 +457,84 @@ export interface paths {
     patch: operations["auth_me_partial_update"];
     trace?: never;
   };
+  "/api/v1/auth/password-reset/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Cập nhật mật khẩu mới cho tài khoản.
+     *
+     *     Args:
+     *         request: Request.
+     *         validated_data: Body đã validate gồm uid, token, new_password.
+     *
+     *     Returns:
+     *         Thông báo đặt lại mật khẩu thành công.
+     */
+    post: operations["auth_password_reset_confirm_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/password-reset/request": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Nhận email và gửi đường dẫn đặt lại mật khẩu nếu tài khoản tồn tại.
+     *
+     *     Args:
+     *         request: Request.
+     *         validated_data: Body đã validate chứa email và locale.
+     *
+     *     Returns:
+     *         Thông báo kết quả.
+     */
+    post: operations["auth_password_reset_request_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/password-reset/validate-token": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Xác thực token một lần.
+     *
+     *     Args:
+     *         request: Request.
+     *         validated_data: Body đã validate chứa uid và token.
+     *
+     *     Returns:
+     *         Trạng thái hợp lệ.
+     */
+    post: operations["auth_password_reset_validate_token_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/auth/refresh": {
     parameters: {
       query?: never;
@@ -1146,6 +1224,452 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/novel/authors": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["novel_authors_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["novel_authors_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/authors/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["novel_authors_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["novel_authors_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["novel_authors_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/novel/authors/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["novel_authors_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/chapters": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["novel_chapters_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["novel_chapters_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/chapters/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["novel_chapters_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["novel_chapters_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["novel_chapters_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/novel/chapters/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["novel_chapters_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/client/chapters/{novel_slug}/{chapter_number}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lấy nội dung chương đọc theo slug truyện và số chương. */
+    get: operations["novel_client_chapters_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/client/novels/{slug}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lấy chi tiết truyện theo slug cùng lịch sử đọc của người dùng. */
+    get: operations["novel_client_novels_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/favorites": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lấy danh sách các truyện yêu thích của người dùng hiện tại. */
+    get: operations["novel_favorites_list"];
+    put?: never;
+    /** @description Bật hoặc tắt trạng thái yêu thích cho một bộ truyện. */
+    post: operations["novel_favorites_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/favorites/toggle": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lấy danh sách các truyện yêu thích của người dùng hiện tại. */
+    get: operations["novel_favorites_toggle_list"];
+    put?: never;
+    /** @description Bật hoặc tắt trạng thái yêu thích cho một bộ truyện. */
+    post: operations["novel_favorites_toggle_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/genres": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["novel_genres_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["novel_genres_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/genres/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["novel_genres_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["novel_genres_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["novel_genres_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/novel/genres/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["novel_genres_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/novels": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["novel_novels_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["novel_novels_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/novels/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["novel_novels_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["novel_novels_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["novel_novels_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/novel/novels/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["novel_novels_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/novels/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["novel_novels_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/novels/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["novel_novels_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/novels/import": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Tải cấu trúc template mẫu JSON để import truyện. */
+    get: operations["novel_novels_import_retrieve"];
+    put?: never;
+    /** @description Import truyện và toàn bộ danh sách chương trong một transaction. */
+    post: operations["novel_novels_import_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/novels/import-template": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Tải cấu trúc template mẫu JSON để import truyện. */
+    get: operations["novel_novels_import_template_retrieve"];
+    put?: never;
+    /** @description Import truyện và toàn bộ danh sách chương trong một transaction. */
+    post: operations["novel_novels_import_template_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/reading-history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lấy danh sách lịch sử đọc của người dùng hiện tại. */
+    get: operations["novel_reading_history_list"];
+    put?: never;
+    /** @description Ghi nhận người dùng đã đọc một chương. */
+    post: operations["novel_reading_history_create"];
+    /** @description Xóa toàn bộ lịch sử đọc của người dùng hiện tại. */
+    delete: operations["novel_reading_history_clear"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/reading-history/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** @description Xóa một mục khỏi lịch sử đọc. */
+    delete: operations["novel_reading_history_delete"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/tags": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["novel_tags_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["novel_tags_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/tags/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["novel_tags_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["novel_tags_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["novel_tags_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/novel/tags/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["novel_tags_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/qr_codes/banks": {
     parameters: {
       query?: never;
@@ -1645,6 +2169,46 @@ export interface components {
        */
       file: string;
     };
+    /** @description Thông tin tóm tắt của tác giả. */
+    AuthorSummaryResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tên tác giả
+       * @description Tên hoặc bút danh của tác giả.
+       */
+      name: string;
+      /**
+       * Đường dẫn tĩnh
+       * @description Slug định danh tác giả trên URL.
+       */
+      slug: string;
+      /**
+       * Tiểu sử
+       * @description Giới thiệu về tác giả.
+       */
+      bio?: string;
+      /** @description Ảnh đại diện tác giả. */
+      readonly avatar: components["schemas"]["AttachmentSummaryResponse"] | null;
+    };
+    /** @description Input tạo hoặc sửa tác giả. */
+    AuthorValidateRequest: {
+      /** @description Tên tác giả. */
+      name: string;
+      /** @description Slug định danh. */
+      slug?: string;
+      /** @description Tiểu sử. */
+      bio?: string;
+      /**
+       * Format: uuid
+       * @description Mã ảnh đại diện.
+       */
+      avatar_id?: string | null;
+    };
     /**
      * @description * `none` - Không tự cấp (quyền gán thủ công)
      *     * `all` - Mọi quyền đang hoạt động
@@ -1652,6 +2216,148 @@ export interface components {
      * @enum {string}
      */
     AutoGrantEnum: "none" | "all" | "read_only";
+    /** @description Input tạo chương truyện mới. */
+    ChapterCreateValidateRequest: {
+      /**
+       * Format: uuid
+       * @description Mã định danh bộ truyện (UUID).
+       */
+      novel_id: string;
+      /** @description Số thứ tự chương (1, 2, 3...). */
+      chapter_number: number;
+      /** @description Tiêu đề chương. */
+      title: string;
+      /** @description Slug của chương (tùy chọn). */
+      slug?: string;
+      /** @description Nội dung văn bản của chương. */
+      content: string;
+      /**
+       * Format: uuid
+       * @description Mã ảnh minh họa chương (UUID).
+       */
+      thumbnail_id?: string | null;
+      /**
+       * @description Cho phép xuất bản chương.
+       * @default true
+       */
+      is_published: boolean;
+    };
+    /** @description Chi tiết chương truyện: kèm nội dung văn bản và số chương liền kề. */
+    ChapterDetailResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Truyện
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly novel_id: string;
+      /**
+       * Số thứ tự chương
+       * @description Số thứ tự của chương trong truyện (1, 2, 3...).
+       */
+      chapter_number: number;
+      /**
+       * Tiêu đề chương
+       * @description Tiêu đề chương (ví dụ: Tiết 1: Thiếu niên xuất sơn).
+       */
+      title: string;
+      /**
+       * Đường dẫn tĩnh
+       * @description Slug định danh chương.
+       */
+      slug: string;
+      /** @description Ảnh bìa/minh họa chương. */
+      readonly thumbnail: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /** Số từ */
+      word_count?: number;
+      /** Lượt xem chương */
+      views_count?: number;
+      /**
+       * Đã xuất bản
+       * @description Cho phép người dùng đọc chương này.
+       */
+      is_published?: boolean;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+      /** @description Nội dung văn bản chương truyện. */
+      content: string;
+      /** @description Số thứ tự chương trước đó. */
+      prev_chapter_number?: number | null;
+      /** @description Số thứ tự chương tiếp theo. */
+      next_chapter_number?: number | null;
+      /** @description Tên bộ truyện. */
+      readonly novel_title: string;
+      /** @description Slug bộ truyện. */
+      readonly novel_slug: string;
+    };
+    /** @description Thông tin chương trong danh sách. */
+    ChapterListResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Truyện
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly novel_id: string;
+      /**
+       * Số thứ tự chương
+       * @description Số thứ tự của chương trong truyện (1, 2, 3...).
+       */
+      chapter_number: number;
+      /**
+       * Tiêu đề chương
+       * @description Tiêu đề chương (ví dụ: Tiết 1: Thiếu niên xuất sơn).
+       */
+      title: string;
+      /**
+       * Đường dẫn tĩnh
+       * @description Slug định danh chương.
+       */
+      slug: string;
+      /** @description Ảnh bìa/minh họa chương. */
+      readonly thumbnail: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /** Số từ */
+      word_count?: number;
+      /** Lượt xem chương */
+      views_count?: number;
+      /**
+       * Đã xuất bản
+       * @description Cho phép người dùng đọc chương này.
+       */
+      is_published?: boolean;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
     /** @description Kết quả từng task dọn dữ liệu. */
     CleanupResponse: {
       /** @description `{đường dẫn task: số bản ghi đã xóa}`; -1 là task lỗi. */
@@ -1735,6 +2441,84 @@ export interface components {
      * @enum {string}
      */
     CustomPageStatusEnum: "DRAFT" | "PUBLISHED" | "UNPUBLISHED";
+    /** @description Thông tin một mục truyện yêu thích. */
+    FavoriteResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Format: uuid
+       * @description Mã truyện.
+       */
+      novel_id: string;
+      /** @description Tên truyện. */
+      novel_title: string;
+      /** @description Slug truyện. */
+      novel_slug: string;
+      /** @description Trạng thái truyện. */
+      novel_status: string;
+      /** @description Ảnh bìa truyện. */
+      readonly novel_thumbnail: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /** @description Tên tác giả. */
+      novel_author_name?: string | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+    };
+    /** @description Kết quả bật/tắt yêu thích. */
+    FavoriteToggleResponse: {
+      /** @description Trạng thái yêu thích mới. */
+      is_favorite: boolean;
+      /** @description Tổng lượt thích của truyện sau khi cập nhật. */
+      favorites_count: number;
+    };
+    /** @description Input bật/tắt yêu thích truyện. */
+    FavoriteToggleValidateRequest: {
+      /**
+       * Format: uuid
+       * @description Mã truyện (UUID).
+       */
+      novel_id: string;
+    };
+    /** @description Thông tin tóm tắt thể loại. */
+    GenreSummaryResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tên thể loại
+       * @description Tên thể loại truyện.
+       */
+      name: string;
+      /**
+       * Đường dẫn tĩnh
+       * @description Slug định danh thể loại trên URL.
+       */
+      slug: string;
+      /**
+       * Mô tả
+       * @description Mô tả chi tiết thể loại.
+       */
+      description?: string;
+    };
+    /** @description Input tạo hoặc sửa thể loại. */
+    GenreValidateRequest: {
+      /** @description Tên thể loại. */
+      name: string;
+      /** @description Slug định danh. */
+      slug?: string;
+      /** @description Mô tả thể loại. */
+      description?: string;
+    };
     /** @description Trạng thái tiến trình. */
     HealthResponse: {
       /** @description Luôn là `ok` khi tiến trình phản hồi. */
@@ -1769,6 +2553,376 @@ export interface components {
       /** @description Số phiên đã bị thu hồi. */
       revoked_sessions: number;
     };
+    /** @description Cập nhật trạng thái hoặc xuất bản nhiều truyện cùng lúc. */
+    NovelBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      /**
+       * @description Trạng thái truyện.
+       *
+       *     * `ONGOING` - Đang ra
+       *     * `COMPLETED` - Hoàn thành
+       *     * `PAUSED` - Tạm dừng
+       */
+      status?: components["schemas"]["NovelStatusEnum"];
+      /** @description Cờ xuất bản truyện. */
+      is_published?: boolean;
+    };
+    /** @description Thông tin chương trong gói import. */
+    NovelChapterImportItemRequest: {
+      /** @description Số chương. */
+      chapter_number?: number;
+      /** @description Tiêu đề chương. */
+      title: string;
+      /** @description Slug của chương. */
+      slug?: string;
+      /** @description Nội dung chương. */
+      content: string;
+      /** @description Số từ (tùy chọn). */
+      word_count?: number;
+      /**
+       * @description Xuất bản.
+       * @default true
+       */
+      is_published: boolean;
+    };
+    /** @description Thông tin truyện phía client: kèm trạng thái yêu thích và lịch sử đọc của người dùng. */
+    NovelClientDetailResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tiêu đề truyện
+       * @description Tên truyện chính thức.
+       */
+      title: string;
+      /**
+       * Đường dẫn tĩnh
+       * @description Slug định danh truyện trên URL.
+       */
+      slug: string;
+      /**
+       * Tên gốc
+       * @description Tên gốc của truyện nếu là tác phẩm dịch.
+       */
+      original_title?: string;
+      /**
+       * Trạng thái
+       * @description Tình trạng phát hành của truyện.
+       *
+       *     * `ONGOING` - Đang ra
+       *     * `COMPLETED` - Hoàn thành
+       *     * `PAUSED` - Tạm dừng
+       */
+      status?: components["schemas"]["NovelStatusEnum"];
+      /** @description Ảnh bìa truyện. */
+      readonly thumbnail: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /** @description Tác giả truyện. */
+      author: components["schemas"]["AuthorSummaryResponse"] | null;
+      /** @description Danh sách thể loại. */
+      genres: components["schemas"]["GenreSummaryResponse"][];
+      /** @description Danh sách thẻ. */
+      tags: components["schemas"]["TagSummaryResponse"][];
+      /** Lượt xem */
+      views_count?: number;
+      /** Lượt thích */
+      favorites_count?: number;
+      /**
+       * Đã xuất bản
+       * @description Cho phép người dùng đọc truyện.
+       */
+      is_published?: boolean;
+      /** @description Tổng số chương đã phát hành. */
+      readonly chapters_count: number;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+      /**
+       * Giới thiệu
+       * @description Tóm tắt nội dung truyện.
+       */
+      description?: string;
+      /**
+       * Người đăng
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly owner_id: string | null;
+      /**
+       * @description Người dùng hiện tại đã đánh dấu yêu thích truyện hay chưa.
+       * @default false
+       */
+      is_favorite: boolean;
+      /** @description Danh sách số thứ tự các chương người dùng đã đọc. */
+      read_chapter_numbers?: number[];
+      /** @description Số thứ tự chương người dùng đọc gần đây nhất. */
+      latest_read_chapter_number?: number | null;
+      /** @description Số thứ tự chương đầu tiên của truyện. */
+      first_chapter_number?: number | null;
+    };
+    /** @description Input tạo truyện. */
+    NovelCreateValidateRequest: {
+      /** @description Tiêu đề truyện. */
+      title: string;
+      /** @description Slug tùy chọn; để trống sẽ tự sinh từ tiêu đề. */
+      slug?: string;
+      /** @description Tên gốc của truyện. */
+      original_title?: string;
+      /**
+       * Format: uuid
+       * @description Mã định danh tác giả (UUID).
+       */
+      author_id?: string | null;
+      /**
+       * Format: uuid
+       * @description Mã định danh ảnh bìa Attachment (UUID).
+       */
+      thumbnail_id?: string | null;
+      /** @description Tóm tắt giới thiệu truyện. */
+      description?: string;
+      /**
+       * @description Trạng thái truyện.
+       *
+       *     * `ONGOING` - Đang ra
+       *     * `COMPLETED` - Hoàn thành
+       *     * `PAUSED` - Tạm dừng
+       * @default ONGOING
+       */
+      status: components["schemas"]["NovelStatusEnum"];
+      /** @description Danh sách UUID thể loại. */
+      genre_ids?: string[];
+      /** @description Danh sách UUID thẻ. */
+      tag_ids?: string[];
+      /**
+       * @description Cho phép xuất bản truyện.
+       * @default true
+       */
+      is_published: boolean;
+    };
+    /** @description Thông tin chi tiết đầy đủ của truyện. */
+    NovelDetailResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tiêu đề truyện
+       * @description Tên truyện chính thức.
+       */
+      title: string;
+      /**
+       * Đường dẫn tĩnh
+       * @description Slug định danh truyện trên URL.
+       */
+      slug: string;
+      /**
+       * Tên gốc
+       * @description Tên gốc của truyện nếu là tác phẩm dịch.
+       */
+      original_title?: string;
+      /**
+       * Trạng thái
+       * @description Tình trạng phát hành của truyện.
+       *
+       *     * `ONGOING` - Đang ra
+       *     * `COMPLETED` - Hoàn thành
+       *     * `PAUSED` - Tạm dừng
+       */
+      status?: components["schemas"]["NovelStatusEnum"];
+      /** @description Ảnh bìa truyện. */
+      readonly thumbnail: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /** @description Tác giả truyện. */
+      author: components["schemas"]["AuthorSummaryResponse"] | null;
+      /** @description Danh sách thể loại. */
+      genres: components["schemas"]["GenreSummaryResponse"][];
+      /** @description Danh sách thẻ. */
+      tags: components["schemas"]["TagSummaryResponse"][];
+      /** Lượt xem */
+      views_count?: number;
+      /** Lượt thích */
+      favorites_count?: number;
+      /**
+       * Đã xuất bản
+       * @description Cho phép người dùng đọc truyện.
+       */
+      is_published?: boolean;
+      /** @description Tổng số chương đã phát hành. */
+      readonly chapters_count: number;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+      /**
+       * Giới thiệu
+       * @description Tóm tắt nội dung truyện.
+       */
+      description?: string;
+      /**
+       * Người đăng
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly owner_id: string | null;
+    };
+    /** @description Kết quả sau khi import truyện thành công. */
+    NovelImportResultResponse: {
+      /**
+       * Format: uuid
+       * @description Mã truyện vừa tạo.
+       */
+      novel_id: string;
+      /** @description Tên truyện vừa tạo. */
+      novel_title: string;
+      /** @description Slug truyện vừa tạo. */
+      novel_slug: string;
+      /** @description Số chương đã import thành công. */
+      chapters_count: number;
+    };
+    /** @description Cấu trúc template mẫu import truyện. */
+    NovelImportTemplateResponse: {
+      /** @description Phiên bản định dạng. */
+      format_version: string;
+      /** @description Dữ liệu mẫu của truyện. */
+      novel: {
+        [key: string]: unknown;
+      };
+      /** @description Danh sách chương mẫu. */
+      chapters: {
+        [key: string]: unknown;
+      }[];
+    };
+    /** @description Toàn bộ cấu trúc JSON gói import. */
+    NovelImportValidateRequest: {
+      /**
+       * @description Phiên bản mẫu.
+       * @default 1.0
+       */
+      format_version: string;
+      /** @description Thông tin chi tiết truyện. */
+      novel: components["schemas"]["NovelInfoImportRequest"];
+      /** @description Danh sách các chương truyện. */
+      chapters: components["schemas"]["NovelChapterImportItemRequest"][];
+    };
+    /** @description Thông tin truyện trong gói import. */
+    NovelInfoImportRequest: {
+      /** @description Tiêu đề truyện. */
+      title: string;
+      /** @description Slug của truyện. */
+      slug?: string;
+      /** @description Tên gốc. */
+      original_title?: string;
+      /** @description Tên tác giả. */
+      author?: string;
+      /** @description Giới thiệu. */
+      description?: string;
+      /**
+       * @description Trạng thái.
+       * @default ONGOING
+       */
+      status: string;
+      /** @description Danh sách tên thể loại. */
+      genres?: string[];
+      /** @description Danh sách tên thẻ / hashtag. */
+      tags?: string[];
+      /**
+       * @description Xuất bản.
+       * @default true
+       */
+      is_published: boolean;
+    };
+    /** @description Thông tin truyện trong danh sách. */
+    NovelListResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tiêu đề truyện
+       * @description Tên truyện chính thức.
+       */
+      title: string;
+      /**
+       * Đường dẫn tĩnh
+       * @description Slug định danh truyện trên URL.
+       */
+      slug: string;
+      /**
+       * Tên gốc
+       * @description Tên gốc của truyện nếu là tác phẩm dịch.
+       */
+      original_title?: string;
+      /**
+       * Trạng thái
+       * @description Tình trạng phát hành của truyện.
+       *
+       *     * `ONGOING` - Đang ra
+       *     * `COMPLETED` - Hoàn thành
+       *     * `PAUSED` - Tạm dừng
+       */
+      status?: components["schemas"]["NovelStatusEnum"];
+      /** @description Ảnh bìa truyện. */
+      readonly thumbnail: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /** @description Tác giả truyện. */
+      author: components["schemas"]["AuthorSummaryResponse"] | null;
+      /** @description Danh sách thể loại. */
+      genres: components["schemas"]["GenreSummaryResponse"][];
+      /** @description Danh sách thẻ. */
+      tags: components["schemas"]["TagSummaryResponse"][];
+      /** Lượt xem */
+      views_count?: number;
+      /** Lượt thích */
+      favorites_count?: number;
+      /**
+       * Đã xuất bản
+       * @description Cho phép người dùng đọc truyện.
+       */
+      is_published?: boolean;
+      /** @description Tổng số chương đã phát hành. */
+      readonly chapters_count: number;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /**
+     * @description * `ONGOING` - Đang ra
+     *     * `COMPLETED` - Hoàn thành
+     *     * `PAUSED` - Tạm dừng
+     * @enum {string}
+     */
+    NovelStatusEnum: "ONGOING" | "COMPLETED" | "PAUSED";
     /** @description Công khai / ngừng công khai nhiều trang. */
     PageBulkUpdateValidateRequest: {
       /** @description Id các bản ghi cần thao tác (tối đa 100). */
@@ -2189,10 +3343,110 @@ export interface components {
         };
       };
     };
+    PaginatedAuthorSummaryResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["AuthorSummaryResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedChapterListResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["ChapterListResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedCoreJournalEntryResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
       data: components["schemas"]["CoreJournalEntryResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedGenreSummaryResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["GenreSummaryResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedNovelListResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["NovelListResponse"][];
       meta: {
         /** @description Id request (khớp header X-Request-ID). */
         request_id: string;
@@ -2364,6 +3618,31 @@ export interface components {
         };
       };
     };
+    PaginatedTagSummaryResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["TagSummaryResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedUserListResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -2389,6 +3668,45 @@ export interface components {
         };
       };
     };
+    /** @description Xác nhận đặt lại mật khẩu mới. */
+    PasswordResetConfirmValidateRequest: {
+      /** @description Base64 encode của mã người dùng. */
+      uid: string;
+      /** @description Token xác thực một lần. */
+      token: string;
+      /** @description Mật khẩu mới. */
+      new_password: string;
+    };
+    /** @description Thông báo chi tiết kết quả thao tác. */
+    PasswordResetDetailResponse: {
+      /** @description Nội dung thông báo. */
+      detail: string;
+    };
+    /** @description Yêu cầu gửi liên kết đặt lại mật khẩu qua email. */
+    PasswordResetRequestValidateRequest: {
+      /**
+       * Format: email
+       * @description Địa chỉ email đã đăng ký của tài khoản.
+       */
+      email: string;
+      /**
+       * @description Mã ngôn ngữ giao diện (vi hoặc en).
+       * @default vi
+       */
+      locale: string;
+    };
+    /** @description Kết quả kiểm tra tính hợp lệ của token. */
+    PasswordResetTokenValidResponse: {
+      /** @description True nếu token hợp lệ và còn hạn. */
+      valid: boolean;
+    };
+    /** @description Kiểm tra tính hợp lệ của token đặt lại mật khẩu. */
+    PasswordResetValidateTokenRequest: {
+      /** @description Base64 encode của mã người dùng. */
+      uid: string;
+      /** @description Token xác thực một lần. */
+      token: string;
+    };
     /** @description Cho phép chỉ đổi cha hoặc chỉ đổi tên, không bỏ qua kiểm tra tên rỗng. */
     PatchedAttachmentFolderUpdateValidateRequest: {
       /** @description Tên mới, tối đa 150 ký tự. */
@@ -2406,6 +3724,47 @@ export interface components {
        * @description Thư mục đích; null để đưa về chưa phân loại.
        */
       folder_id?: string | null;
+    };
+    /** @description Input tạo hoặc sửa tác giả. */
+    PatchedAuthorValidateRequest: {
+      /** @description Tên tác giả. */
+      name?: string;
+      /** @description Slug định danh. */
+      slug?: string;
+      /** @description Tiểu sử. */
+      bio?: string;
+      /**
+       * Format: uuid
+       * @description Mã ảnh đại diện.
+       */
+      avatar_id?: string | null;
+    };
+    /** @description Input cập nhật chương truyện. */
+    PatchedChapterUpdateValidateRequest: {
+      /** @description Số thứ tự chương. */
+      chapter_number?: number;
+      /** @description Tiêu đề chương. */
+      title?: string;
+      /** @description Slug của chương. */
+      slug?: string;
+      /** @description Nội dung văn bản chương. */
+      content?: string;
+      /**
+       * Format: uuid
+       * @description Mã ảnh minh họa chương (UUID).
+       */
+      thumbnail_id?: string | null;
+      /** @description Cho phép xuất bản chương. */
+      is_published?: boolean;
+    };
+    /** @description Input tạo hoặc sửa thể loại. */
+    PatchedGenreValidateRequest: {
+      /** @description Tên thể loại. */
+      name?: string;
+      /** @description Slug định danh. */
+      slug?: string;
+      /** @description Mô tả thể loại. */
+      description?: string;
     };
     /** @description Dữ liệu cập nhật hồ sơ cá nhân của người dùng hiện tại. */
     PatchedMeUpdateValidateRequest: {
@@ -2427,6 +3786,41 @@ export interface components {
       avatar_id?: string | null;
       /** @description Mật khẩu mới. */
       password?: string;
+    };
+    /** @description Input cập nhật truyện (các trường tùy chọn). */
+    PatchedNovelUpdateValidateRequest: {
+      /** @description Tiêu đề truyện. */
+      title?: string;
+      /** @description Slug định danh. */
+      slug?: string;
+      /** @description Tên gốc của truyện. */
+      original_title?: string;
+      /**
+       * Format: uuid
+       * @description Mã định danh tác giả (UUID).
+       */
+      author_id?: string | null;
+      /**
+       * Format: uuid
+       * @description Mã định danh ảnh bìa Attachment (UUID).
+       */
+      thumbnail_id?: string | null;
+      /** @description Tóm tắt giới thiệu truyện. */
+      description?: string;
+      /**
+       * @description Trạng thái truyện.
+       *
+       *     * `ONGOING` - Đang ra
+       *     * `COMPLETED` - Hoàn thành
+       *     * `PAUSED` - Tạm dừng
+       */
+      status?: components["schemas"]["NovelStatusEnum"];
+      /** @description Danh sách UUID thể loại. */
+      genre_ids?: string[];
+      /** @description Danh sách UUID thẻ. */
+      tag_ids?: string[];
+      /** @description Cho phép xuất bản truyện. */
+      is_published?: boolean;
     };
     /** @description Mọi trường tùy chọn; đổi segment làm URL cũ 404. */
     PatchedPagePathUpdateValidateRequest: {
@@ -2543,6 +3937,13 @@ export interface components {
        * @description Thời điểm hết hạn.
        */
       expires_at?: string | null;
+    };
+    /** @description Input tạo hoặc sửa thẻ. */
+    PatchedTagValidateRequest: {
+      /** @description Tên thẻ. */
+      name?: string;
+      /** @description Slug định danh. */
+      slug?: string;
     };
     /** @description Dữ liệu cập nhật người dùng (mọi field tùy chọn). `avatar_id: null` để gỡ ảnh. */
     PatchedUserUpdateValidateRequest: {
@@ -2791,6 +4192,65 @@ export interface components {
     ReadinessResponse: {
       /** @description `ready` khi database kết nối được. */
       status: string;
+    };
+    /** @description Kết quả xóa toàn bộ lịch sử đọc. */
+    ReadingHistoryClearResponse: {
+      /** @description Số mục đã xóa. */
+      deleted_count: number;
+    };
+    /** @description Kết quả xóa một mục lịch sử đọc. */
+    ReadingHistoryDeleteResponse: {
+      /** @description Đã xóa thành công. */
+      deleted: boolean;
+    };
+    /** @description Input ghi nhận lịch sử đã đọc một chương. */
+    ReadingHistoryRecordValidateRequest: {
+      /**
+       * Format: uuid
+       * @description Mã truyện (UUID).
+       */
+      novel_id: string;
+      /**
+       * Format: uuid
+       * @description Mã chương đã đọc (UUID).
+       */
+      chapter_id: string;
+    };
+    /** @description Thông tin một mục lịch sử đọc. */
+    ReadingHistoryResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Format: uuid
+       * @description Mã truyện.
+       */
+      novel_id: string;
+      /** @description Tên truyện. */
+      novel_title: string;
+      /** @description Slug truyện. */
+      novel_slug: string;
+      /** @description Ảnh bìa truyện. */
+      readonly novel_thumbnail: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /** @description Tên tác giả. */
+      novel_author_name?: string | null;
+      /**
+       * Format: uuid
+       * @description Mã chương.
+       */
+      chapter_id: string;
+      /** @description Số thứ tự chương. */
+      chapter_number: number;
+      /** @description Tiêu đề chương. */
+      chapter_title: string;
+      /**
+       * Thời điểm đọc gần nhất
+       * Format: date-time
+       */
+      readonly last_read_at: string;
     };
     /** @description Bật/tắt nhiều vai trò cùng lúc. */
     RoleBulkUpdateValidateRequest: {
@@ -3247,6 +4707,32 @@ export interface components {
     ShortLinkUnlockValidateRequest: {
       /** @description Mật khẩu do người tạo đặt; rỗng với link không khóa. */
       password: string;
+    };
+    /** @description Thông tin tóm tắt thẻ. */
+    TagSummaryResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tên thẻ
+       * @description Tên hashtag/thẻ truyện.
+       */
+      name: string;
+      /**
+       * Đường dẫn tĩnh
+       * @description Slug định danh thẻ trên URL.
+       */
+      slug: string;
+    };
+    /** @description Input tạo hoặc sửa thẻ. */
+    TagValidateRequest: {
+      /** @description Tên thẻ. */
+      name: string;
+      /** @description Slug định danh. */
+      slug?: string;
     };
     /**
      * @description * `blank` - blank
@@ -4703,6 +6189,114 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["CurrentUserResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  auth_password_reset_confirm_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordResetConfirmValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PasswordResetDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  auth_password_reset_request_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordResetRequestValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PasswordResetDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  auth_password_reset_validate_token_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordResetValidateTokenRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PasswordResetTokenValidResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;
@@ -6176,6 +7770,1560 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["JournalResourceResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_authors_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedAuthorSummaryResponseList"];
+        };
+      };
+    };
+  };
+  novel_authors_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AuthorValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AuthorSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_authors_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AuthorSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_authors_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  novel_authors_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedAuthorValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AuthorSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_authors_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_chapters_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Lọc theo cờ xuất bản (true, false).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_published?: ("false" | "true")[];
+        /** @description Lọc theo ID truyện. */
+        novel_id?: string[];
+        /** @description Lọc theo slug truyện. */
+        novel_slug?: string[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedChapterListResponseList"];
+        };
+      };
+    };
+  };
+  novel_chapters_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChapterCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ChapterDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_chapters_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ChapterDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_chapters_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  novel_chapters_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedChapterUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ChapterDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_chapters_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_client_chapters_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        chapter_number: number;
+        novel_slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ChapterDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_client_novels_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NovelClientDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_favorites_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["FavoriteResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_favorites_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FavoriteToggleValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["FavoriteToggleResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_favorites_toggle_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["FavoriteResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_favorites_toggle_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FavoriteToggleValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["FavoriteToggleResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_genres_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedGenreSummaryResponseList"];
+        };
+      };
+    };
+  };
+  novel_genres_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["GenreValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["GenreSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_genres_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["GenreSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_genres_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  novel_genres_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedGenreValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["GenreSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_genres_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_novels_list: {
+    parameters: {
+      query?: {
+        /** @description Lọc theo ID tác giả. */
+        author?: string[];
+        /** @description Lọc theo ID thể loại. */
+        genre?: string[];
+        /**
+         * @description Lọc theo cờ xuất bản (true, false).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_published?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Lọc theo trạng thái: ONGOING, COMPLETED, PAUSED.
+         *
+         *     * `ONGOING` - Đang ra
+         *     * `COMPLETED` - Hoàn thành
+         *     * `PAUSED` - Tạm dừng
+         */
+        status?: ("COMPLETED" | "ONGOING" | "PAUSED")[];
+        /** @description Lọc theo ID thẻ. */
+        tag?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedNovelListResponseList"];
+        };
+      };
+    };
+  };
+  novel_novels_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["NovelCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NovelDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_novels_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NovelDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_novels_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  novel_novels_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedNovelUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NovelDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_novels_history_list: {
+    parameters: {
+      query?: {
+        /** @description Lọc theo ID tác giả. */
+        author?: string[];
+        /** @description Lọc theo ID thể loại. */
+        genre?: string[];
+        /**
+         * @description Lọc theo cờ xuất bản (true, false).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_published?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Lọc theo trạng thái: ONGOING, COMPLETED, PAUSED.
+         *
+         *     * `ONGOING` - Đang ra
+         *     * `COMPLETED` - Hoàn thành
+         *     * `PAUSED` - Tạm dừng
+         */
+        status?: ("COMPLETED" | "ONGOING" | "PAUSED")[];
+        /** @description Lọc theo ID thẻ. */
+        tag?: string[];
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  novel_novels_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_novels_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["NovelBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_novels_import_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NovelImportTemplateResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_novels_import_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["NovelImportValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NovelImportResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_novels_import_template_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NovelImportTemplateResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_novels_import_template_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["NovelImportValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NovelImportResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_reading_history_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReadingHistoryResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_reading_history_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReadingHistoryRecordValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReadingHistoryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_reading_history_clear: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReadingHistoryClearResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_reading_history_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReadingHistoryDeleteResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_tags_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedTagSummaryResponseList"];
+        };
+      };
+    };
+  };
+  novel_tags_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TagValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TagSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_tags_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TagSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_tags_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  novel_tags_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedTagValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TagSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_tags_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;

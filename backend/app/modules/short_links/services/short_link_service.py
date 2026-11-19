@@ -19,7 +19,7 @@ from app.core.utils.url import validate_public_url
 from app.modules.short_links.exceptions.short_link_expired_error import ShortLinkExpiredError
 from app.modules.short_links.exceptions.short_link_password_error import ShortLinkPasswordError
 from app.modules.short_links.models.short_link import ShortLink
-from app.modules.short_links.permissions.short_links_permission import ShortLinksPermission
+from app.modules.short_links.permissions.short_link_permission import ShortLinkPermission
 from app.modules.short_links.repositories.short_link_repository import ShortLinkRepository
 
 
@@ -29,7 +29,7 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
     repository_class = ShortLinkRepository
     owner_field = "owner"
     owner_quota_setting = "SHORT_LINK_MAX_PER_OWNER"
-    manage_all_permission = ShortLinksPermission.MANAGE_ALL.code
+    manage_all_permission = ShortLinkPermission.MANAGE_ALL.code
 
     @transaction.atomic
     def create(self, actor: Any, data: dict[str, Any]) -> ShortLink:

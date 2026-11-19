@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.modules.authentication.models.auth_session import AuthSession
-from app.modules.authentication.permissions.authentication_permission import AuthenticationPermission as P
+from app.modules.authentication.permissions.session_permission import SessionPermission as P
 from app.modules.iam.tests.helpers.permission_helper import grant
 
 pytestmark = pytest.mark.django_db

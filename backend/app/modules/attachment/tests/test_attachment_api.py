@@ -1,13 +1,13 @@
 """Test /attachments và ảnh đại diện người dùng."""
 
-from collections.abc import Iterator
+from collections.abc import Generator
 from typing import Any
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.modules.account.permissions.account_permission import AccountPermission
+from app.modules.account.permissions.user_permission import UserPermission
 from app.modules.attachment.models.attachment import Attachment
 from app.modules.attachment.permissions.attachment_permission import AttachmentPermission
 from app.modules.iam.tests.helpers.permission_helper import grant
@@ -38,7 +38,7 @@ UNSAFE_SVGS = {
 
 
 @pytest.fixture(autouse=True)
-def _media_root(settings: Any, tmp_path: Any) -> Iterator[None]:
+def _media_root(settings: Any, tmp_path: Any) -> Generator[None]:
     """Lưu file test vào thư mục tạm."""
     settings.MEDIA_ROOT = tmp_path
     yield
@@ -210,7 +210,7 @@ class TestAttachmentLibrary(BaseApiTestCase):
     def test_avatar_id_cannot_bypass_owner(self, staff: Any, user: Any, superuser: Any, login: Any) -> None:
         """Account không thể gán ảnh ngoài phạm vi chỉ bằng cách gửi id đoán được."""
         foreign = self.assert_success(_upload(login(superuser), "foreign.png", PNG_BYTES, "image/png"), 201)
-        grant(staff, AccountPermission.USER_UPDATE, AttachmentPermission.FILE_READ)
+        grant(staff, UserPermission.USER_UPDATE, AttachmentPermission.FILE_READ)
         api = login(staff)
         url = f"/api/v1/account/users/{user.pk}"
         self.assert_error(api.patch(url, {"avatar_id": foreign["id"]}, format="json"), 404, "NOT_FOUND")
@@ -232,7 +232,7 @@ class TestAttachmentLibrary(BaseApiTestCase):
     ) -> None:
         """Quyền mở rộng phạm vi không thể thay quyền đọc khi tham chiếu file qua Account."""
         image = self.assert_success(_upload(login(superuser), "avatar.png", PNG_BYTES, "image/png"), 201)
-        grant(staff, AccountPermission.USER_UPDATE, AttachmentPermission.FILE_MANAGE_ALL)
+        grant(staff, UserPermission.USER_UPDATE, AttachmentPermission.FILE_MANAGE_ALL)
         response = login(staff).patch(
             f"/api/v1/account/users/{user.pk}", {"avatar_id": image["id"]}, format="json"
         )

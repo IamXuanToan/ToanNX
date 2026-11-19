@@ -7,7 +7,8 @@ import pytest
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.modules.account.tests.factories.user_factory import UserFactory
 from app.modules.custom_pages.models.page_path import PagePath
-from app.modules.custom_pages.permissions.custom_pages_permission import CustomPagesPermission as P
+from app.modules.custom_pages.permissions.page_path_permission import PagePathPermission
+from app.modules.custom_pages.permissions.page_permission import PagePermission
 from app.modules.iam.tests.helpers.permission_helper import grant
 from app.modules.qr_codes.services.qr_code_service import QrCodeService
 from app.modules.short_links.models.short_link import ShortLink
@@ -17,7 +18,7 @@ pytestmark = pytest.mark.django_db
 PAGES = "/api/v1/custom_pages/pages"
 PATHS = "/api/v1/custom_pages/paths"
 PUBLIC = "/api/v1/custom_pages/public"
-ALL = (P.READ, P.CREATE, P.UPDATE, P.DELETE)
+ALL = (PagePermission.READ, PagePermission.CREATE, PagePermission.UPDATE, PagePermission.DELETE)
 
 
 def _doc(*nodes: dict[str, Any]) -> dict[str, Any]:
@@ -57,7 +58,7 @@ class TestPagePaths(BaseApiTestCase):
     def test_seed_crud_and_rules(self, user: Any, login: Any) -> None:
         api = login(user)
         self.assert_forbidden(api.get(PATHS))
-        grant(user, P.PATH_READ, P.PATH_CREATE, P.PATH_UPDATE, P.PATH_DELETE, *ALL)
+        grant(user, *PagePathPermission.all(), *ALL)
         segments = [item["segment"] for item in self.assert_success(api.get(PATHS))]
         assert segments[:2] == ["p", "qr"]
         created = self.assert_success(
@@ -193,7 +194,7 @@ class TestPublicPage(BaseApiTestCase):
         assert preview["X-Robots-Tag"] == "noindex"
 
         stranger = UserFactory()
-        grant(stranger, P.READ)
+        grant(stranger, PagePermission.READ)
         self.assert_error(login(stranger).get(f"{PUBLIC}/qr/nhap"), 404, "NOT_FOUND")
 
         broken = login(UserFactory())

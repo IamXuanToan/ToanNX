@@ -11,7 +11,7 @@ import { FilterSelect } from "@/shares/components/common/filter-select/filter-se
 import { Badge } from "@/shares/components/ui/badge";
 
 import { JOURNAL_ROUTES } from "../../constants/routes";
-import { JOURNAL_ACTIONS, type JournalEntry } from "../../types/journal.types";
+import { JOURNAL_ACTIONS, type JournalEntry } from "../../types/journal-entry.types";
 import { useJournalTable } from "./hooks/use-journal-table";
 
 /**

@@ -10,7 +10,7 @@ import type {
   QrCodeInput,
   QrPreview,
   QrPreviewInput,
-} from "../types/qr-codes.types";
+} from "../types/qr-code.types";
 
 const crud = createCrudService<
   QrCode,

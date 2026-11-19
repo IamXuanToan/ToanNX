@@ -8,7 +8,7 @@ import type {
   ShortLinkFilters,
   ShortLinkInput,
   ShortLinkStatus,
-} from "../types/short-links.types";
+} from "../types/short-link.types";
 
 const crud = createCrudService<
   ShortLink,

@@ -11,8 +11,9 @@ import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 
 import { CUSTOM_PAGES_ROUTES } from "../../../constants/routes";
-import { usePagePathOptions } from "../../../hooks/use-page-paths";
-import { useCreatePage, useUpdatePage } from "../../../hooks/use-pages";
+import { useCreatePage } from "../../../hooks/use-create-page";
+import { usePagePathOptions } from "../../../hooks/use-page-path-options";
+import { useUpdatePage } from "../../../hooks/use-update-page";
 import {
   fromPage,
   PAGE_FORM_DEFAULTS,
@@ -21,7 +22,7 @@ import {
   type PageFormValues,
   toPageInput,
 } from "../../../schemas/page.schema";
-import type { PageDetail } from "../../../types/custom-pages.types";
+import type { PageDetail } from "../../../types/page.types";
 
 const VERSION_CONFLICT = "CUSTOM_PAGES_VERSION_CONFLICT";
 const DRAFT_PREFIX = "custom-page-draft:";

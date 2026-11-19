@@ -9,7 +9,7 @@ import { usePermission } from "@/modules/auth/hooks/use-permission";
 import { useTiptapInsertItem } from "@/shares/components/common/tiptap-editor/hooks/use-tiptap-plugins";
 
 import { AttachmentPicker } from "../components/attachment-picker/attachment-picker";
-import { ATTACHMENT_PERMISSIONS } from "../constants/attachment-permissions";
+import { ATTACHMENT_PERMISSIONS } from "../permissions/attachment-permission";
 
 /** Mục "Ảnh từ Thư viện" trong menu Chèn; lưu `attachmentId` để BE dựng URL theo file hiện tại. */
 function LibraryImageInsert({ canUpload }: { canUpload: boolean }) {

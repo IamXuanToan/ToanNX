@@ -10,7 +10,7 @@ import { FilterSelect } from "@/shares/components/common/filter-select/filter-se
 import { StatusBadge } from "@/shares/components/common/status-badge/status-badge";
 
 import { CUSTOM_PAGES_ROUTES } from "../../constants/routes";
-import { PAGE_STATUSES, type Page } from "../../types/custom-pages.types";
+import { PAGE_STATUSES, type Page } from "../../types/page.types";
 import { usePageTable } from "./hooks/use-page-table";
 
 const STATUS_TONE = { DRAFT: "neutral", PUBLISHED: "success", UNPUBLISHED: "warning" } as const;

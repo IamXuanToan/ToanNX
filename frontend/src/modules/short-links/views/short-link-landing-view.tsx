@@ -1,4 +1,4 @@
-import type { PublicShortLink } from "../types/short-links.types";
+import type { PublicShortLink } from "../types/short-link.types";
 import { ShortLinkLandingCard } from "../components/short-link-landing/short-link-landing-card";
 
 /** Trang trung gian công khai của một link rút gọn. */

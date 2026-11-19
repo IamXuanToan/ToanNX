@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 
 import { UserProfile } from "../components/user-profile/user-profile";
-import { ACCOUNT_PERMISSIONS } from "../constants/account-permissions";
+import { USER_PERMISSIONS } from "../permissions/user-permission";
 
 /**
  * Trang chi tiết người dùng: thông tin và trạng thái tài khoản.
@@ -25,6 +25,6 @@ export function UserDetailView({
   extensions?: ReactNode;
   history?: ReactNode;
 }) {
-  const canEdit = usePermission(ACCOUNT_PERMISSIONS.userUpdate);
+  const canEdit = usePermission(USER_PERMISSIONS.userUpdate);
   return <UserProfile id={id} canEdit={canEdit} extensions={extensions} history={history} />;
 }

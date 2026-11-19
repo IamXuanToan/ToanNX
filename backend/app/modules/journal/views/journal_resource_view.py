@@ -8,7 +8,7 @@ from rest_framework.request import Request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
 from app.modules.iam.decorators.require_permission import require_permission
-from app.modules.journal.permissions.journal_permission import JournalPermission
+from app.modules.journal.permissions.journal_entry_permission import JournalEntryPermission
 from app.modules.journal.serializers.responses.journal_resource_response_serializer import (
     JournalResourceResponseSerializer,
 )
@@ -24,7 +24,7 @@ class JournalResourceView(CoreApiView):
         self.journal_entry_service = JournalEntryService()
 
     @extend_schema(responses=JournalResourceResponseSerializer(many=True))
-    @require_permission(JournalPermission.ENTRY_READ)
+    @require_permission(JournalEntryPermission.ENTRY_READ)
     def get(self, request: Request) -> CoreResponse:
         """Danh mục tài nguyên.
 

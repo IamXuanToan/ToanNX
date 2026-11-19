@@ -5,9 +5,9 @@ import { useTranslations } from "next-intl";
 
 import { EmptyState } from "@/shares/components/common/empty-state/empty-state";
 
-import { LauncherFooter } from "./components/launcher-footer";
-import { LauncherHeader } from "./components/launcher-header";
-import { ModuleGroupCard } from "./components/module-group-card";
+import { LauncherFooter } from "./launcher-footer";
+import { LauncherHeader } from "./launcher-header";
+import { ModuleGroupCard } from "./module-group-card";
 import { useModuleLauncher } from "./hooks/use-module-launcher";
 
 /**

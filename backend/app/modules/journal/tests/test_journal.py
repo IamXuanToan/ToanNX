@@ -13,7 +13,7 @@ from app.modules.iam.permissions.iam_permission import IamPermission
 from app.modules.iam.repositories.role_repository import RoleRepository
 from app.modules.iam.tests.helpers.permission_helper import grant
 from app.modules.journal.models.journal_entry import JournalEntry
-from app.modules.journal.permissions.journal_permission import JournalPermission
+from app.modules.journal.permissions.journal_entry_permission import JournalEntryPermission
 
 pytestmark = pytest.mark.django_db
 
@@ -93,7 +93,7 @@ class TestJournalApi(BaseApiTestCase):
         self.assert_success(admin.post(ROLES, {"code": "FILTERED", "name": "Lọc"}, format="json"), 201)
         api = login(user)
         self.assert_forbidden(api.get(ENTRIES))
-        grant(user, JournalPermission.ENTRY_READ)
+        grant(user, JournalEntryPermission.ENTRY_READ)
         items, _ = self.assert_paginated(api.get(ENTRIES, {"page": 1, "resource": "iam.role"}))
         assert items and all(item["resource"] == "iam.role" for item in items)
         items = self.assert_success(api.get(ENTRIES, {"module": "iam,journal"}))

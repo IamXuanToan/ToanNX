@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 
 import { CUSTOM_PAGES_API_ENDPOINTS } from "@/modules/custom-pages/constants/api-endpoints";
-import type { PublicPage } from "@/modules/custom-pages/types/custom-pages.types";
+import type { PublicPage } from "@/modules/custom-pages/types/page.types";
 import { PublicPageView } from "@/modules/custom-pages/views/public-page-view";
 import { serverApiGet } from "@/shares/lib/api/server-api";
 

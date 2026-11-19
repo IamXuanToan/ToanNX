@@ -17,6 +17,7 @@ uv run pytest -q
 | `app/core/tests/base/base_api_test_case.py` | `BaseApiTestCase`: `assert_success`, `assert_error`, `assert_paginated`, `assert_unauthorized`, `assert_forbidden`, `assert_no_sensitive_data` |
 | `app/modules/iam/tests/factories/` | `user_factory.py`, `staff_factory.py`, `superuser_factory.py`, `role_factory.py` |
 | `app/modules/iam/tests/helpers/permission_helper.py` | `grant(user, *permissions)` |
+| `modules/novel/tests/` | Mỗi API một file riêng (`test_novel_api`, `test_chapter_api`, `test_author_api`, `test_genre_api`, `test_tag_api`, `test_novel_client_api`, `test_reading_history_api`, `test_favorite_api`, `test_novel_import_api`), `test_novel_permission` |
 | `modules/attachment/tests/` | upload, nhận diện chữ ký file, giới hạn dung lượng, quyền, xóa mềm, ảnh đại diện |
 | `modules/authentication/` | `test_login` (đúng/sai/inactive/validation/rate limit/không có register), `test_csrf`, `test_me` (JWT sai/hết hạn, khóa tài khoản), `test_refresh` (xoay vòng/expired/revoked/reuse/conflict, **refresh đồng thời 2 thread**), `test_logout`, `test_session` (list/revoke, đổi mật khẩu thu hồi phiên) |
 | `modules/account/` | `test_user_api` (CRUD, `search`/filter/`ordering`/phân trang, chống leo thang, superuser cuối cùng), `test_account_auth_backend` (authenticate qua Django, `has_perm` qua IAM backend) |

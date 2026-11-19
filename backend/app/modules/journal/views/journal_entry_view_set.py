@@ -10,7 +10,7 @@ from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.iam.types.permission_rule import permission_rule
 from app.modules.journal.filters.journal_entry_filter import JournalEntryFilter
 from app.modules.journal.models.journal_entry import JournalEntry
-from app.modules.journal.permissions.journal_permission import JournalPermission
+from app.modules.journal.permissions.journal_entry_permission import JournalEntryPermission
 from app.modules.journal.services.journal_entry_service import JournalEntryService
 
 
@@ -29,6 +29,6 @@ class JournalEntryViewSet(CoreModelViewSet[JournalEntry]):
     detail_serializer_class = CoreJournalEntryResponseSerializer
     http_method_names = ["get", "head", "options"]
     action_permissions = {
-        "list": permission_rule(JournalPermission.ENTRY_READ),
-        "retrieve": permission_rule(JournalPermission.ENTRY_READ),
+        "list": permission_rule(JournalEntryPermission.ENTRY_READ),
+        "retrieve": permission_rule(JournalEntryPermission.ENTRY_READ),
     }

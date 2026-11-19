@@ -1,7 +1,7 @@
 import { apiClient } from "@/shares/lib/api/api-client";
 
 import { ATTACHMENT_API_ENDPOINTS } from "../constants/api-endpoints";
-import type { AttachmentFolder } from "../types/attachment.types";
+import type { AttachmentFolder } from "../types/attachment-folder.types";
 
 /** Service khớp AttachmentFolderService; thư mục chỉ là metadata DB. */
 export const attachmentFolderService = {

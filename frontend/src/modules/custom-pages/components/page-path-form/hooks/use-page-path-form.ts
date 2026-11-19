@@ -10,7 +10,8 @@ import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 
 import { CUSTOM_PAGES_ROUTES } from "../../../constants/routes";
-import { useCreatePagePath, useUpdatePagePath } from "../../../hooks/use-page-paths";
+import { useCreatePagePath } from "../../../hooks/use-create-page-path";
+import { useUpdatePagePath } from "../../../hooks/use-update-page-path";
 import {
   fromPagePath,
   PAGE_PATH_DEFAULTS,
@@ -19,7 +20,7 @@ import {
   type PagePathFormValues,
   toPagePathInput,
 } from "../../../schemas/page-path.schema";
-import type { PagePath } from "../../../types/custom-pages.types";
+import type { PagePath } from "../../../types/page-path.types";
 
 /**
  * State form đường dẫn giữa **dùng chung cho trang riêng và dialog tạo/sửa nhanh**. Có `onSaved` (dialog) thì

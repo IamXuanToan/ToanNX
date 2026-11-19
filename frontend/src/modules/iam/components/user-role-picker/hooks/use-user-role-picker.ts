@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import { useUser } from "@/modules/account/hooks/use-account-queries";
+import { useUser } from "@/modules/account/hooks/use-user";
 import { useFormExtension } from "@/shares/components/common/form/hooks/use-form-extension";
 
 import { diffIds, useSyncUserRoles } from "../../../hooks/use-iam-mutations";

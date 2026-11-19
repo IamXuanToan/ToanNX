@@ -177,6 +177,10 @@
       "content": {
         "name": "Utilities",
         "description": "Short links, QR codes and pages."
+      },
+      "novel": {
+        "name": "Novels",
+        "description": "Manage and read web novels."
       }
     },
     "select": {
@@ -377,7 +381,13 @@
       "SHORT_LINK_INVALID_PASSWORD": "The link password is incorrect.",
       "CUSTOM_PAGES_PATH_IN_USE": "This path still has pages and cannot be deleted.",
       "CUSTOM_PAGES_PATH_INACTIVE": "This path is disabled; new pages cannot be added to it.",
-      "CUSTOM_PAGES_VERSION_CONFLICT": "This page was changed elsewhere. Reload to see the latest version."
+      "CUSTOM_PAGES_VERSION_CONFLICT": "This page was changed elsewhere. Reload to see the latest version.",
+      "NOVEL_NOT_FOUND": "Novel not found.",
+      "NOVEL_SLUG_EXISTS": "Novel slug already exists.",
+      "NOVEL_FORBIDDEN": "You do not have permission to perform this action.",
+      "NOVEL_IMPORT_INVALID": "Invalid novel import data.",
+      "CHAPTER_NOT_FOUND": "Chapter not found.",
+      "CHAPTER_NUMBER_EXISTS": "Chapter number already exists in this novel."
     },
     "generic": {
       "title": "Could not load data",

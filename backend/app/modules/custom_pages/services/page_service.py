@@ -18,7 +18,7 @@ from app.modules.attachment.services.attachment_service import AttachmentService
 from app.modules.custom_pages.constants.custom_pages_error_code import CustomPagesErrorCode
 from app.modules.custom_pages.constants.page_templates import PAGE_TEMPLATES
 from app.modules.custom_pages.models.page import Page
-from app.modules.custom_pages.permissions.custom_pages_permission import CustomPagesPermission
+from app.modules.custom_pages.permissions.page_permission import PagePermission
 from app.modules.custom_pages.repositories.page_path_repository import PagePathRepository
 from app.modules.custom_pages.repositories.page_repository import PageRepository
 from app.modules.custom_pages.validators.page_content_validator import PageContentRefs, validate_page_content
@@ -37,7 +37,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
     repository_class = PageRepository
     owner_field = "owner"
     owner_quota_setting = "CUSTOM_PAGE_MAX_PER_OWNER"
-    manage_all_permission = CustomPagesPermission.MANAGE_ALL.code
+    manage_all_permission = PagePermission.MANAGE_ALL.code
 
     def __init__(
         self,
@@ -178,7 +178,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
         return bool(
             viewer is not None
             and getattr(viewer, "is_authenticated", False)
-            and viewer.has_perm(CustomPagesPermission.READ.code)
+            and viewer.has_perm(PagePermission.READ.code)
             and self.can_access(viewer, page)
         )
 

@@ -8,6 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.modules.attachment.models.attachment import Attachment
 from app.modules.attachment.models.attachment_folder import AttachmentFolder
+from app.modules.attachment.permissions.attachment_folder_permission import AttachmentFolderPermission
 from app.modules.attachment.permissions.attachment_permission import AttachmentPermission as P
 from app.modules.attachment.tests.test_attachment_api import PNG_BYTES
 from app.modules.iam.tests.helpers.permission_helper import grant
@@ -127,10 +128,10 @@ class TestAttachmentFolders(BaseApiTestCase):
         foreign = self.folder(login(superuser), "Private")
         grant(
             user,
-            P.FOLDER_READ,
-            P.FOLDER_CREATE,
-            P.FOLDER_UPDATE,
-            P.FOLDER_DELETE,
+            AttachmentFolderPermission.FOLDER_READ,
+            AttachmentFolderPermission.FOLDER_CREATE,
+            AttachmentFolderPermission.FOLDER_UPDATE,
+            AttachmentFolderPermission.FOLDER_DELETE,
             P.FILE_CREATE,
             P.FILE_READ,
             P.FILE_UPDATE,

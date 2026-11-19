@@ -10,7 +10,7 @@ from app.core.utils.text import ascii_slug
 from app.modules.attachment.models.attachment import Attachment
 from app.modules.attachment.services.attachment_service import AttachmentService
 from app.modules.qr_codes.models.qr_code import QrCode
-from app.modules.qr_codes.permissions.qr_codes_permission import QrCodesPermission
+from app.modules.qr_codes.permissions.qr_code_permission import QrCodePermission
 from app.modules.qr_codes.repositories.qr_code_repository import QrCodeRepository
 from app.modules.qr_codes.utils.qr_content import build_payload, validate_qr_content
 from app.modules.qr_codes.utils.qr_image_renderer import render_png, render_svg_data_url
@@ -24,7 +24,7 @@ class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
 
     repository_class = QrCodeRepository
     owner_field = "owner"
-    manage_all_permission = QrCodesPermission.MANAGE_ALL.code
+    manage_all_permission = QrCodePermission.MANAGE_ALL.code
     owner_quota_setting = "QR_CODE_MAX_PER_OWNER"
 
     def __init__(

@@ -15,6 +15,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("api/v1/custom_pages/", include("app.modules.custom_pages.urls")),
     path("api/v1/journal/", include("app.modules.journal.urls")),
     path("api/v1/qr_codes/", include("app.modules.qr_codes.urls")),
+    path("api/v1/novel/", include("app.modules.novel.urls")),
 ]
 
 if settings.DEBUG:

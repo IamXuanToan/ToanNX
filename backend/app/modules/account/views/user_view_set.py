@@ -12,7 +12,7 @@ GET    /account/users/{id}/history
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.account.filters.user_filter import UserFilter
 from app.modules.account.models.user import User
-from app.modules.account.permissions.account_permission import AccountPermission
+from app.modules.account.permissions.user_permission import UserPermission
 from app.modules.account.serializers.responses.user_detail_response_serializer import (
     UserDetailResponseSerializer,
 )
@@ -49,12 +49,12 @@ class UserViewSet(CoreModelViewSet[User]):
     history_enabled = True
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
     action_permissions = {
-        "list": permission_rule(AccountPermission.USER_READ),
-        "retrieve": permission_rule(AccountPermission.USER_READ),
-        "create": permission_rule(AccountPermission.USER_CREATE),
-        "partial_update": permission_rule(AccountPermission.USER_UPDATE),
-        "destroy": permission_rule(AccountPermission.USER_DELETE),
-        "bulk_update": permission_rule(AccountPermission.USER_UPDATE),
-        "bulk_delete": permission_rule(AccountPermission.USER_DELETE),
-        "history": permission_rule(AccountPermission.USER_READ),
+        "list": permission_rule(UserPermission.USER_READ),
+        "retrieve": permission_rule(UserPermission.USER_READ),
+        "create": permission_rule(UserPermission.USER_CREATE),
+        "partial_update": permission_rule(UserPermission.USER_UPDATE),
+        "destroy": permission_rule(UserPermission.USER_DELETE),
+        "bulk_update": permission_rule(UserPermission.USER_UPDATE),
+        "bulk_delete": permission_rule(UserPermission.USER_DELETE),
+        "history": permission_rule(UserPermission.USER_READ),
     }

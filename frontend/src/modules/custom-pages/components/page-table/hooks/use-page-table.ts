@@ -4,15 +4,13 @@ import { useRouter } from "@/i18n/navigation";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
 
 import { CUSTOM_PAGES_ROUTES } from "../../../constants/routes";
-import { usePagePathOptions } from "../../../hooks/use-page-paths";
-import {
-  useBulkDeletePages,
-  useBulkSetPageStatus,
-  useDeletePage,
-  useDuplicatePage,
-  usePages,
-} from "../../../hooks/use-pages";
-import { PAGE_STATUSES, type Page, type PageStatus } from "../../../types/custom-pages.types";
+import { useBulkDeletePages } from "../../../hooks/use-bulk-delete-pages";
+import { useBulkSetPageStatus } from "../../../hooks/use-bulk-set-page-status";
+import { useDeletePage } from "../../../hooks/use-delete-page";
+import { useDuplicatePage } from "../../../hooks/use-duplicate-page";
+import { usePagePathOptions } from "../../../hooks/use-page-path-options";
+import { usePages } from "../../../hooks/use-pages";
+import { PAGE_STATUSES, type Page, type PageStatus } from "../../../types/page.types";
 
 /**
  * State bảng trang: tìm, lọc trạng thái và đường dẫn giữa (chọn nhiều), sắp xếp, phân trang URL, xóa,

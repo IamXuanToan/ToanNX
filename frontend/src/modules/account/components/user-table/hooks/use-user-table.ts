@@ -5,13 +5,11 @@ import { useCurrentUser } from "@/modules/auth/hooks/use-current-user";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
 
 import { ACCOUNT_ROUTES } from "../../../constants/routes";
-import {
-  useBulkDeleteUsers,
-  useBulkSetUsersActive,
-  useDeleteUser,
-} from "../../../hooks/use-account-mutations";
-import { useUsers } from "../../../hooks/use-account-queries";
-import { USER_ACCESS_VALUES, type User } from "../../../types/account.types";
+import { useBulkDeleteUsers } from "../../../hooks/use-bulk-delete-users";
+import { useBulkSetUsersActive } from "../../../hooks/use-bulk-set-users-active";
+import { useDeleteUser } from "../../../hooks/use-delete-user";
+import { useUsers } from "../../../hooks/use-users";
+import { USER_ACCESS_VALUES, type User } from "../../../types/user.types";
 
 /**
  * Dữ liệu và hành động của bảng người dùng: state chuẩn của bảng (tìm, sắp xếp, phân trang đồng bộ URL),

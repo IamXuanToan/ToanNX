@@ -2,7 +2,7 @@ import { QrCode } from "lucide-react";
 
 import type { AdminModuleNavigation } from "@/shares/types/navigation.types";
 
-import { QR_CODES_PERMISSIONS } from "./constants/qr-codes-permissions";
+import { QR_CODE_PERMISSIONS } from "./permissions/qr-code-permission";
 import { QR_CODES_ROUTES } from "./constants/routes";
 
 /** Mã QR nằm trong nhóm Tiện ích. */
@@ -17,7 +17,7 @@ export const qrCodesNavigation: AdminModuleNavigation = {
       labelKey: "qrCodes.nav.codes",
       href: QR_CODES_ROUTES.codes,
       icon: QrCode,
-      permission: QR_CODES_PERMISSIONS.read,
+      permission: QR_CODE_PERMISSIONS.read,
     },
   ],
 };

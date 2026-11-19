@@ -11,22 +11,22 @@ import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { Button } from "@/shares/components/ui/button";
 
 import { PagePathTable } from "../components/page-path-table/page-path-table";
-import { CUSTOM_PAGES_PERMISSIONS as P } from "../constants/custom-pages-permissions";
+import { PAGE_PATH_PERMISSIONS } from "../permissions/page-path-permission";
 import { CUSTOM_PAGES_ROUTES } from "../constants/routes";
 
 /** Trang danh sách đường dẫn giữa. */
 export function PagePathListView() {
   const t = useTranslations("customPages.paths");
-  const canRead = usePermission(P.pathRead);
-  const canUpdate = usePermission(P.pathUpdate);
-  const canDelete = usePermission(P.pathDelete);
+  const canRead = usePermission(PAGE_PATH_PERMISSIONS.pathRead);
+  const canUpdate = usePermission(PAGE_PATH_PERMISSIONS.pathUpdate);
+  const canDelete = usePermission(PAGE_PATH_PERMISSIONS.pathDelete);
   if (!canRead) return <ForbiddenView />;
   return (
     <div className="space-y-6">
       <PageHeader
         title={t("title")}
         actions={
-          <PermissionGate permission={P.pathCreate}>
+          <PermissionGate permission={PAGE_PATH_PERMISSIONS.pathCreate}>
             <Button asChild>
               <Link href={CUSTOM_PAGES_ROUTES.pathCreate}>
                 <Plus />

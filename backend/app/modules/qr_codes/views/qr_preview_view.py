@@ -10,7 +10,7 @@ from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
 from app.modules.iam.decorators.require_permission import require_permission
-from app.modules.qr_codes.permissions.qr_codes_permission import QrCodesPermission
+from app.modules.qr_codes.permissions.qr_code_permission import QrCodePermission
 from app.modules.qr_codes.serializers.responses.qr_preview_response_serializer import (
     QrPreviewResponseSerializer,
 )
@@ -29,7 +29,7 @@ class QrPreviewView(CoreApiView):
         self.qr_code_service = QrCodeService()
 
     @extend_schema(responses=QrPreviewResponseSerializer)
-    @require_permission(QrCodesPermission.CREATE, QrCodesPermission.UPDATE)
+    @require_permission(QrCodePermission.CREATE, QrCodePermission.UPDATE)
     @rate_limit("qr_codes.preview")
     @validate_request(QrPreviewValidateSerializer)
     def post(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse:

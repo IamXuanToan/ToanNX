@@ -10,11 +10,11 @@ import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 import { useCurrentUser } from "@/modules/auth/hooks/use-current-user";
 
-import {
-  useAttachmentFolders,
-  useAttachmentFolderMutations,
-} from "../../../hooks/use-attachment-folders";
-import type { AttachmentFolder } from "../../../types/attachment.types";
+import { useAttachmentFolders } from "../../../hooks/use-attachment-folders";
+import { useCreateAttachmentFolder } from "../../../hooks/use-create-attachment-folder";
+import { useDeleteAttachmentFolder } from "../../../hooks/use-delete-attachment-folder";
+import { useUpdateAttachmentFolder } from "../../../hooks/use-update-attachment-folder";
+import type { AttachmentFolder } from "../../../types/attachment-folder.types";
 import { canParentFolder, folderPath } from "../../../utils/folder-path";
 import { UNFILED_FOLDER } from "../../../constants/media-types";
 
@@ -40,7 +40,9 @@ export function useAttachmentFolderManager(canRead: boolean) {
     defaultValues: { name: "", parentId: UNFILED_FOLDER },
   });
   const query = useAttachmentFolders(canRead && open);
-  const mutations = useAttachmentFolderMutations();
+  const createFolder = useCreateAttachmentFolder();
+  const updateFolder = useUpdateAttachmentFolder();
+  const removeFolder = useDeleteAttachmentFolder();
   const cancelEdit = () => {
     setEditing(null);
     form.reset({ name: "", parentId: UNFILED_FOLDER });
@@ -48,8 +50,8 @@ export function useAttachmentFolderManager(canRead: boolean) {
   const save = form.handleSubmit(async ({ name, parentId }) => {
     const data = { name, parentId: parentId === UNFILED_FOLDER ? null : parentId };
     try {
-      if (editing) await mutations.update.mutateAsync({ id: editing.id, ...data });
-      else await mutations.create.mutateAsync(data);
+      if (editing) await updateFolder.mutateAsync({ id: editing.id, ...data });
+      else await createFolder.mutateAsync(data);
       cancelEdit();
     } catch (error) {
       const message = isApiError(error) ? error.fieldErrors().name : undefined;
@@ -80,14 +82,14 @@ export function useAttachmentFolderManager(canRead: boolean) {
     save,
     query,
     cancelEdit,
-    busy: mutations.create.isPending || mutations.update.isPending || mutations.remove.isPending,
+    busy: createFolder.isPending || updateFolder.isPending || removeFolder.isPending,
     edit: (folder: AttachmentFolder) => {
       setEditing(folder);
       form.reset({ name: folder.name, parentId: folder.parentId ?? UNFILED_FOLDER });
     },
     confirmDelete: () => {
       if (pendingDelete)
-        mutations.remove.mutate(
+        removeFolder.mutate(
           { id: pendingDelete.id, deleteFiles },
           {
             onSuccess: () => {

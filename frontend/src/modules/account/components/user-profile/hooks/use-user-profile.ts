@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "../../../hooks/use-account-queries";
+import { useUser } from "../../../hooks/use-user";
 
 /**
  * Dữ liệu hồ sơ người dùng: truy vấn chi tiết (lỗi do `QueryErrorState` hiển thị).

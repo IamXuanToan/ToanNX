@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { QrCodeDetail, QrCodeInput, QrContent } from "../types/qr-codes.types";
+import type { QrCodeDetail, QrCodeInput, QrContent } from "../types/qr-code.types";
 
 type Translate = (key: "required" | "url" | "accountNumber" | "message" | "color") => string;
 

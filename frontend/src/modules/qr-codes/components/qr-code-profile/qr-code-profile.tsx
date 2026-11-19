@@ -7,7 +7,7 @@ import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
 import { QR_CODES_ROUTES } from "../../constants/routes";
-import { useQrCode } from "../../hooks/use-qr-codes";
+import { useQrCode } from "../../hooks/use-qr-code";
 import { QrCodeForm } from "../qr-code-form/qr-code-form";
 import type { QrLogoUpload } from "../qr-code-form/qr-code-form";
 

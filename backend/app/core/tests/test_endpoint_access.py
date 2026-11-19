@@ -43,7 +43,20 @@ PUBLIC_VIEWS = frozenset(
     }
 )
 # View chỉ cần đăng nhập (dữ liệu của chính người dùng hoặc danh mục tĩnh).
-LOGIN_ONLY_VIEWS = frozenset({"LogoutAllView", "MeView", "SessionView", "SessionObjectView", "QrBankView"})
+LOGIN_ONLY_VIEWS = frozenset(
+    {
+        "LogoutAllView",
+        "MeView",
+        "SessionView",
+        "SessionObjectView",
+        "QrBankView",
+        "ReadingHistoryView",
+        "ReadingHistoryObjectView",
+        "FavoriteView",
+        "NovelClientView",
+        "ChapterClientView",
+    }
+)
 
 _REGEX_GROUP = re.compile(r"\(\?P<\w+>[^)]*\)")
 _CONVERTER = re.compile(r"<(?:(\w+):)?\w+>")
@@ -51,6 +64,8 @@ _CONVERTER = re.compile(r"<(?:(\w+):)?\w+>")
 
 def _sample(converter: str | None) -> str:
     """Giá trị mẫu cho tham số URL."""
+    if converter == "int":
+        return "1"
     return str(uuid.uuid4()) if converter == "uuid" else "sample"
 
 

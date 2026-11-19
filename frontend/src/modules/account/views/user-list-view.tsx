@@ -11,7 +11,7 @@ import { PageHeader } from "@/shares/components/common/page-header/page-header";
 import { Button } from "@/shares/components/ui/button";
 
 import { UserTable } from "../components/user-table/user-table";
-import { ACCOUNT_PERMISSIONS } from "../constants/account-permissions";
+import { USER_PERMISSIONS } from "../permissions/user-permission";
 import { ACCOUNT_ROUTES } from "../constants/routes";
 
 /**
@@ -21,15 +21,15 @@ import { ACCOUNT_ROUTES } from "../constants/routes";
  */
 export function UserListView({ roleFilter }: { roleFilter?: ReactNode }) {
   const t = useTranslations("account.users");
-  const canCreate = usePermission(ACCOUNT_PERMISSIONS.userCreate);
-  const canUpdate = usePermission(ACCOUNT_PERMISSIONS.userUpdate);
-  const canDelete = usePermission(ACCOUNT_PERMISSIONS.userDelete);
+  const canCreate = usePermission(USER_PERMISSIONS.userCreate);
+  const canUpdate = usePermission(USER_PERMISSIONS.userUpdate);
+  const canDelete = usePermission(USER_PERMISSIONS.userDelete);
   return (
     <div className="space-y-6">
       <PageHeader
         title={t("title")}
         actions={
-          <PermissionGate permission={ACCOUNT_PERMISSIONS.userCreate}>
+          <PermissionGate permission={USER_PERMISSIONS.userCreate}>
             <Button asChild>
               <Link href={ACCOUNT_ROUTES.userCreate}>
                 <Plus />

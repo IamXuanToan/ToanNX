@@ -10,7 +10,7 @@ from app.modules.account.tests.factories.user_factory import UserFactory
 from app.modules.iam.services.role_service import RoleService
 from app.modules.iam.tests.helpers.permission_helper import grant
 from app.modules.short_links.models.short_link import ShortLink
-from app.modules.short_links.permissions.short_links_permission import ShortLinksPermission as P
+from app.modules.short_links.permissions.short_link_permission import ShortLinkPermission as P
 from app.modules.short_links.services.short_link_service import ShortLinkService
 
 pytestmark = pytest.mark.django_db

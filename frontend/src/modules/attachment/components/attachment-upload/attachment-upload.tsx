@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/shares/components/ui/button";
 
-import type { Attachment, FolderCapabilities } from "../../types/attachment.types";
+import type { Attachment } from "../../types/attachment.types";
+import type { FolderCapabilities } from "../../types/attachment-folder.types";
 import { UNFILED_FOLDER } from "../../constants/media-types";
 import { folderPath } from "../../utils/folder-path";
 import { SelectField } from "@/shares/components/common/select-field/select-field";

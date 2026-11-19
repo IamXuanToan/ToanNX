@@ -2,8 +2,8 @@ import { Link2 } from "lucide-react";
 
 import type { AdminModuleNavigation } from "@/shares/types/navigation.types";
 
+import { SHORT_LINK_PERMISSIONS } from "./permissions/short-link-permission";
 import { SHORT_LINKS_ROUTES } from "./constants/routes";
-import { SHORT_LINKS_PERMISSIONS } from "./constants/short-links-permissions";
 
 /** Link rút gọn nằm trong nhóm Tiện ích. */
 export const shortLinksNavigation: AdminModuleNavigation = {
@@ -17,7 +17,7 @@ export const shortLinksNavigation: AdminModuleNavigation = {
       labelKey: "shortLinks.nav.links",
       href: SHORT_LINKS_ROUTES.links,
       icon: Link2,
-      permission: SHORT_LINKS_PERMISSIONS.read,
+      permission: SHORT_LINK_PERMISSIONS.read,
     },
   ],
 };

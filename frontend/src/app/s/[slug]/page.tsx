@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 
 import { SHORT_LINKS_API_ENDPOINTS } from "@/modules/short-links/constants/api-endpoints";
-import type { PublicShortLink } from "@/modules/short-links/types/short-links.types";
+import type { PublicShortLink } from "@/modules/short-links/types/short-link.types";
 import { LinkUnavailableView } from "@/modules/short-links/views/link-unavailable-view";
 import { ShortLinkLandingView } from "@/modules/short-links/views/short-link-landing-view";
 import { serverApiGet } from "@/shares/lib/api/server-api";

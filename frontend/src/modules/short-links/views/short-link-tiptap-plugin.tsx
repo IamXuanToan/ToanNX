@@ -20,8 +20,8 @@ import {
 import { Field, FieldLabel } from "@/shares/components/ui/field";
 import { Input } from "@/shares/components/ui/input";
 
-import { SHORT_LINKS_PERMISSIONS } from "../constants/short-links-permissions";
-import { useShortLinkOptions } from "../hooks/use-short-links";
+import { SHORT_LINK_PERMISSIONS } from "../permissions/short-link-permission";
+import { useShortLinkOptions } from "../hooks/use-short-link-options";
 
 /** Dialog chọn link rút gọn của mình và nhãn nút. */
 function ShortLinkButtonInsert() {
@@ -117,6 +117,6 @@ function ShortLinkButtonInsert() {
  * @returns Plugin (không render gì khi không có quyền xem link).
  */
 export function ShortLinkTiptapPlugin() {
-  const canRead = usePermission(SHORT_LINKS_PERMISSIONS.read);
+  const canRead = usePermission(SHORT_LINK_PERMISSIONS.read);
   return canRead ? <ShortLinkButtonInsert /> : null;
 }

@@ -24,7 +24,7 @@ import { Skeleton } from "@/shares/components/ui/skeleton";
 import { Textarea } from "@/shares/components/ui/textarea";
 
 import { QR_CODES_ROUTES } from "../../constants/routes";
-import { ERROR_CORRECTION_LEVELS, QR_TYPES, type QrCodeDetail } from "../../types/qr-codes.types";
+import { ERROR_CORRECTION_LEVELS, QR_TYPES, type QrCodeDetail } from "../../types/qr-code.types";
 import { useQrCodeForm } from "./hooks/use-qr-code-form";
 
 const LOGO_CONTENT_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];

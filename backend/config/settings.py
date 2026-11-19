@@ -14,6 +14,7 @@ from app.modules.attachment.constants.media_types import ALLOWED_CONTENT_TYPES
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
+environ.Env.read_env(BASE_DIR / ".env.local", overwrite=False)
 environ.Env.read_env(BASE_DIR / ".env", overwrite=False)
 
 # Secret dùng chung cho toàn hệ thống: session/CSRF của Django, ký access JWT, HMAC refresh token.
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     "app.modules.custom_pages",
     "app.modules.journal",
     "app.modules.qr_codes",
+    "app.modules.novel",
 ]
 
 MIDDLEWARE = [
@@ -166,6 +168,11 @@ SPECTACULAR_SETTINGS = {
             ("UNPUBLISHED", "Ngừng công khai"),
         ],
         "ShortLinkStatusEnum": [("ACTIVE", "Hoạt động"), ("INACTIVE", "Tạm tắt")],
+        "NovelStatusEnum": [
+            ("ONGOING", "Đang ra"),
+            ("COMPLETED", "Hoàn thành"),
+            ("PAUSED", "Tạm dừng"),
+        ],
     },
 }
 
@@ -215,6 +222,8 @@ RATE_LIMITS: dict[str, tuple[int, int, str]] = {
     "qr_codes.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
     "qr_codes.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
     "health.client_error": (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
+    "novel.create": (env.int("RL_NOVEL_CREATE", default=60), 3600, "user"),
+    "novel.import": (env.int("RL_NOVEL_IMPORT", default=10), 3600, "user"),
 }
 # Lịch sử thay đổi: model kế thừa JournalTracker tự ghi qua recorder này (rỗng = tắt).
 CORE_CHANGE_RECORDER = "app.modules.journal.recorders.journal_recorder.JournalRecorder"

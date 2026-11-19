@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.modules.account.permissions.account_permission import AccountPermission
+from app.modules.account.permissions.user_permission import UserPermission
 from app.modules.account.tests.factories.user_factory import UserFactory
 from app.modules.iam.models.user_role import UserRole
 from app.modules.iam.tests.factories.role_factory import RoleFactory
@@ -18,7 +18,7 @@ class TestUserRoleFilter(BaseApiTestCase):
     """Vai trò là điều kiện trên toàn bộ queryset, không lọc trên một trang FE."""
 
     def test_combines_role_search_and_status(self, staff: Any, login: Any) -> None:
-        grant(staff, AccountPermission.USER_READ)
+        grant(staff, UserPermission.USER_READ)
         role = RoleFactory()
         user = UserFactory(email="role-filter@example.com")
         other = UserFactory()
@@ -36,7 +36,7 @@ class TestUserRoleFilter(BaseApiTestCase):
         self.assert_error(api.get("/api/v1/account/users", {"role": "invalid"}), 400, "VALIDATION_ERROR")
 
     def test_multiple_values_per_filter(self, staff: Any, login: Any) -> None:
-        grant(staff, AccountPermission.USER_READ)
+        grant(staff, UserPermission.USER_READ)
         first, second = RoleFactory(), RoleFactory()
         a = UserFactory(email="multi-a@example.com")
         b = UserFactory(email="multi-b@example.com", is_active=False)
@@ -62,7 +62,7 @@ class TestUserRoleFilter(BaseApiTestCase):
         assert meta["total"] == 1
 
     def test_access_filter_matches_any_selected(self, staff: Any, login: Any) -> None:
-        grant(staff, AccountPermission.USER_READ)
+        grant(staff, UserPermission.USER_READ)
         UserFactory(email="acc-staff@example.com", is_staff=True)
         UserFactory(email="acc-novel@example.com", is_novel=True)
         UserFactory(email="acc-plain@example.com")

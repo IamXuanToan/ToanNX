@@ -1,6 +1,6 @@
 import { PreviewNotice } from "../components/preview-notice/preview-notice";
 import { PublicPage } from "../components/public-page/public-page";
-import type { PublicPage as PublicPageData } from "../types/custom-pages.types";
+import type { PublicPage as PublicPageData } from "../types/page.types";
 
 /**
  * Trang công khai `toannx.com/<segment>/<slug>`; bản nháp (chỉ người có quyền thấy) kèm toast nhắc.

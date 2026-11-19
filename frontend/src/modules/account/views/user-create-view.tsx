@@ -8,7 +8,7 @@ import { FormPage } from "@/shares/components/common/form-page/form-page";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 
 import { UserForm } from "../components/user-form/user-form";
-import { ACCOUNT_PERMISSIONS } from "../constants/account-permissions";
+import { USER_PERMISSIONS } from "../permissions/user-permission";
 
 /**
  * Trang tạo người dùng (có thể sao chép từ người dùng khác).
@@ -24,7 +24,7 @@ export function UserCreateView({
   extensions?: ReactNode;
 }) {
   const t = useTranslations("account.users");
-  const canCreate = usePermission(ACCOUNT_PERMISSIONS.userCreate);
+  const canCreate = usePermission(USER_PERMISSIONS.userCreate);
   if (!canCreate) return <ForbiddenView />;
   return (
     <FormPage title={t("create")}>

@@ -20,7 +20,7 @@ from app.core.serializers.core_bulk_result_response_serializer import CoreBulkRe
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.authentication.filters.admin_auth_session_filter import AdminAuthSessionFilter
 from app.modules.authentication.models.auth_session import AuthSession
-from app.modules.authentication.permissions.authentication_permission import AuthenticationPermission
+from app.modules.authentication.permissions.session_permission import SessionPermission
 from app.modules.authentication.serializers.responses.admin_auth_session_response_serializer import (
     AdminAuthSessionResponseSerializer,
 )
@@ -49,13 +49,13 @@ class AdminAuthSessionViewSet(CoreModelViewSet[AuthSession]):
     bulk_delete_enabled = True
     http_method_names = ["get", "post", "delete", "head", "options"]
     action_permissions = {
-        "list": permission_rule(AuthenticationPermission.SESSION_READ),
-        "retrieve": permission_rule(AuthenticationPermission.SESSION_READ),
+        "list": permission_rule(SessionPermission.SESSION_READ),
+        "retrieve": permission_rule(SessionPermission.SESSION_READ),
         "create": DENY,  # phiên chỉ tạo qua đăng nhập; POST chỉ mở cho bulk
-        "users": permission_rule(AuthenticationPermission.SESSION_READ),
-        "destroy": permission_rule(AuthenticationPermission.SESSION_REVOKE),
-        "bulk_revoke": permission_rule(AuthenticationPermission.SESSION_REVOKE),
-        "bulk_delete": permission_rule(AuthenticationPermission.SESSION_DELETE),
+        "users": permission_rule(SessionPermission.SESSION_READ),
+        "destroy": permission_rule(SessionPermission.SESSION_REVOKE),
+        "bulk_revoke": permission_rule(SessionPermission.SESSION_REVOKE),
+        "bulk_delete": permission_rule(SessionPermission.SESSION_DELETE),
     }
 
     def get_serializer_context(self) -> dict[str, Any]:

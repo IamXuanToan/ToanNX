@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { isApiError } from "@/shares/lib/api/api-error";
 
 import { shortLinkService } from "../../../services/short-link.service";
-import type { PublicShortLink } from "../../../types/short-links.types";
+import type { PublicShortLink } from "../../../types/short-link.types";
 
 /** Quản lý mở khóa và đếm ngược trên trang trung gian. */
 export function useShortLinkLanding(slug: string, link: PublicShortLink, preview: boolean) {

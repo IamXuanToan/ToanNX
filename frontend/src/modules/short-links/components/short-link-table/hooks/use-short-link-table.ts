@@ -4,17 +4,15 @@ import { useRouter } from "@/i18n/navigation";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
 
 import { SHORT_LINKS_ROUTES } from "../../../constants/routes";
-import {
-  useBulkDeleteShortLinks,
-  useBulkSetShortLinkStatus,
-  useDeleteShortLink,
-  useShortLinks,
-} from "../../../hooks/use-short-links";
+import { useBulkDeleteShortLinks } from "../../../hooks/use-bulk-delete-short-links";
+import { useBulkSetShortLinkStatus } from "../../../hooks/use-bulk-set-short-link-status";
+import { useDeleteShortLink } from "../../../hooks/use-delete-short-link";
+import { useShortLinks } from "../../../hooks/use-short-links";
 import {
   SHORT_LINK_FILTER_STATUSES,
   type ShortLink,
   type ShortLinkStatus,
-} from "../../../types/short-links.types";
+} from "../../../types/short-link.types";
 
 /**
  * State bảng link rút gọn: tìm, lọc trạng thái (gồm EXPIRED), sắp xếp, phân trang URL,

@@ -5,6 +5,7 @@ Module mới thêm endpoint danh sách thì thêm một dòng vào `CASES`; quê
 """
 
 import io
+import uuid
 from collections.abc import Callable
 from datetime import timedelta
 from typing import Any
@@ -97,6 +98,63 @@ def _attachments(owner: Any, count: int) -> None:
         service.create_generated(owner, buffer.getvalue(), f"qc-{index}.png")
 
 
+def _novels(owner: Any, count: int) -> None:
+    from app.modules.novel.services.novel_service import NovelService
+
+    service = NovelService()
+    for _ in range(count):
+        uid = uuid.uuid4().hex[:8]
+        service.create(owner, {"title": f"Truyen {uid}", "slug": f"truyen-{uid}"})
+
+
+def _chapters(owner: Any, count: int) -> None:
+    from app.modules.novel.models.novel import Novel
+    from app.modules.novel.services.chapter_service import ChapterService
+
+    novel, _ = Novel.objects.get_or_create(
+        slug="truyen-test-ch", defaults={"title": "Truyen Test", "owner": owner}
+    )
+    service = ChapterService()
+    start = novel.chapters.count() + 1
+    for index in range(count):
+        service.create(
+            owner,
+            {
+                "novel_id": novel.pk,
+                "chapter_number": start + index,
+                "title": f"Chuong {start + index}",
+                "content": "Noi dung",
+            },
+        )
+
+
+def _authors(owner: Any, count: int) -> None:
+    from app.modules.novel.services.author_service import AuthorService
+
+    service = AuthorService()
+    for _ in range(count):
+        uid = uuid.uuid4().hex[:8]
+        service.create(owner, {"name": f"Tac gia {uid}", "slug": f"tg-{uid}"})
+
+
+def _genres(owner: Any, count: int) -> None:
+    from app.modules.novel.services.genre_service import GenreService
+
+    service = GenreService()
+    for _ in range(count):
+        uid = uuid.uuid4().hex[:8]
+        service.create(owner, {"name": f"The loai {uid}", "slug": f"tl-{uid}"})
+
+
+def _tags(owner: Any, count: int) -> None:
+    from app.modules.novel.services.tag_service import TagService
+
+    service = TagService()
+    for _ in range(count):
+        uid = uuid.uuid4().hex[:8]
+        service.create(owner, {"name": f"The {uid}", "slug": f"tag-{uid}"})
+
+
 CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/account/users", lambda owner, n: UserFactory.create_batch(n)),
     ("/api/v1/iam/roles", lambda owner, n: RoleFactory.create_batch(n)),
@@ -109,6 +167,11 @@ CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/iam/permissions", _permissions),
     ("/api/v1/attachments/folders", _folders),
     ("/api/v1/attachments", _attachments),
+    ("/api/v1/novel/novels", _novels),
+    ("/api/v1/novel/chapters", _chapters),
+    ("/api/v1/novel/authors", _authors),
+    ("/api/v1/novel/genres", _genres),
+    ("/api/v1/novel/tags", _tags),
 ]
 
 

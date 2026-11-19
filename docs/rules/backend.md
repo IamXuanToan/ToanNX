@@ -31,7 +31,7 @@ url → view (+ @require_permission, @validate_request | action_permissions) →
 ```
 app/modules/<module>/
   apps.py  module.py  urls.py  signals.py (nếu có)
-  permissions/<module>_permission.py        # PermissionCatalog có name + description
+  permissions/<model>_permission.py         # Mỗi model 1 file permission riêng, kế thừa PermissionCatalog có name + description
   models/<model>.py  models/__init__.py     # __init__ import model để Django nạp
   repositories/<model>_repository.py        # kế thừa CoreRepository
   services/<model>_service.py               # mỗi model một service (+ service điều phối nếu cần)
@@ -224,12 +224,10 @@ class UserRoleView(CoreApiView):
 
 ## 9. Quyền và vai trò
 
-- Quyền khai báo trong `permissions/<module>_permission.py` (kế thừa `PermissionCatalog`), dạng
-  `PermissionDefinition(code="module.resource.action", name=..., description=...)`. Chỉ khai báo quyền của
-  chức năng đã có API.
-- `module.py`: `ModuleDescriptor(code=..., name=..., description=..., version=..., permissions=XxxPermission.all(), dependencies=(...))`.
-- Không hardcode mã vai trò trong code. Vai trò hệ thống seed bằng data migration; quyền tự cấp theo
-  `Role.auto_grant` (`all` / `read_only` / `none`) mỗi lần `sync_iam`/`migrate`.
+- Mỗi model có một file permission riêng trong `permissions/<model>_permission.py` (kế thừa `PermissionCatalog`), không gộp chung các model vào một file. Mỗi quyền có dạng
+  `PermissionDefinition(code="module.resource.action", name=..., description=...)`. Chỉ khai báo quyền của chức năng đã có API.
+- `module.py`: gom các catalog quyền bằng `permissions=(*ModelAPermission.all(), *ModelBPermission.all(), ...)`.
+- Hệ thống vai trò mẫu (Admin, User Manager, Content Manager, Novel Manager, Novel Author, Marketing Manager...): quản lý qua `RoleSeedService` và lệnh `uv run python manage.py seed_roles`. Vai trò hệ thống tự cấp quyền theo `Role.auto_grant` (`all` / `read_only`) mỗi lần `sync_iam`/`migrate`.
 - Superuser bỏ qua kiểm tra quyền tầng ứng dụng (trừ `check`), không bỏ qua đăng nhập.
 
 ### Xoá và thao tác hàng loạt

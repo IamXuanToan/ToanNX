@@ -4,12 +4,10 @@ import { useRouter } from "@/i18n/navigation";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
 
 import { CUSTOM_PAGES_ROUTES } from "../../../constants/routes";
-import {
-  useDeletePagePath,
-  usePagePaths,
-  useSetPagePathActive,
-} from "../../../hooks/use-page-paths";
-import type { PagePath } from "../../../types/custom-pages.types";
+import { useDeletePagePath } from "../../../hooks/use-delete-page-path";
+import { usePagePaths } from "../../../hooks/use-page-paths";
+import { useSetPagePathActive } from "../../../hooks/use-set-page-path-active";
+import type { PagePath } from "../../../types/page-path.types";
 
 /**
  * State bảng đường dẫn giữa: tìm, lọc bật/tắt, sắp xếp, phân trang URL, bật/tắt ở cột Trạng thái, xóa.

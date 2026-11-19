@@ -23,7 +23,7 @@ export type AdminNavItem = {
 };
 
 /** Mã nhóm module hiển thị ở màn chọn module. */
-export type AdminGroupCode = "system" | "content";
+export type AdminGroupCode = "system" | "content" | "novel";
 
 /** Khai báo điều hướng của một module FE (mỗi module một file `navigation.ts`). */
 export type AdminModuleNavigation = {

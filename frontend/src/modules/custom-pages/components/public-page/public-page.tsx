@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import { TiptapContent } from "@/shares/components/common/tiptap-content/tiptap-content";
 
 import { PAGE_EXTENSIONS } from "../../extensions/page-extensions";
-import type { PublicPage as PublicPageData } from "../../types/custom-pages.types";
+import type { PublicPage as PublicPageData } from "../../types/page.types";
 
 const BUTTON_RADIUS = {
   rounded: "[&_.page-button]:rounded-xl",

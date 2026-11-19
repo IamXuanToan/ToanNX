@@ -7,7 +7,7 @@ import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
 import { CUSTOM_PAGES_ROUTES } from "../../constants/routes";
-import { usePagePath } from "../../hooks/use-page-paths";
+import { usePagePath } from "../../hooks/use-page-path";
 import { PagePathForm } from "../page-path-form/page-path-form";
 
 /**

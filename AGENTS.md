@@ -17,9 +17,10 @@ Tài liệu chi tiết: [docs/architecture.md](docs/architecture.md), [docs/auth
 Backend:
 1. `uv run python manage.py startapp links app/modules/links`; `apps.py` kế thừa `CoreModuleConfig`
    (`default = True`, `name = "app.modules.links"`, `label = "links"` = mã module).
-2. `permissions/links_permission.py` (PermissionCatalog, mỗi quyền có name + description),
-   `constants/links_error_code.py` (StrEnum mã lỗi riêng, thêm bản dịch FE — test bắt nếu thiếu), `module.py`
-   (`ModuleDescriptor(..., permissions=..., dependencies=..., cleanup_tasks=...)`).
+2. `permissions/<model>_permission.py` (PermissionCatalog cho từng model riêng biệt, mỗi model 1 file, không gộp chung; mỗi quyền có name + description; mã dạng `<module>.<resource>.<action>`),
+   `constants/<module>_error_code.py` (StrEnum mã lỗi riêng, thêm bản dịch FE — test bắt nếu thiếu), `module.py`
+   (`ModuleDescriptor(..., permissions=(*ModelAPermission.all(), *ModelBPermission.all()), dependencies=..., cleanup_tasks=...)`).
+   Chuẩn hóa bộ vai trò mẫu hệ thống theo phân cấp module: `uv run python manage.py seed_roles`.
 3. Model kế thừa `CoreModel`; muốn có lịch sử thay đổi thì thêm `JournalTracker` **trước** `CoreModel`
    (`class Link(JournalTracker, CoreModel)`, tùy chọn `journal_fields`/`journal_masked_fields`). Index owner có
    điều kiện `deleted_at IS NULL`. `makemigrations`.

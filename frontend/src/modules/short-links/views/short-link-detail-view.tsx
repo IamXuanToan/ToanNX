@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 
 import { ShortLinkProfile } from "../components/short-link-profile/short-link-profile";
-import { SHORT_LINKS_PERMISSIONS } from "../constants/short-links-permissions";
+import { SHORT_LINK_PERMISSIONS } from "../permissions/short-link-permission";
 
 /**
  * Trang chi tiết link rút gọn.
@@ -14,6 +14,6 @@ import { SHORT_LINKS_PERMISSIONS } from "../constants/short-links-permissions";
  * @returns Giao diện chi tiết.
  */
 export function ShortLinkDetailView({ id, history }: { id: string; history?: ReactNode }) {
-  const canUpdate = usePermission(SHORT_LINKS_PERMISSIONS.update);
+  const canUpdate = usePermission(SHORT_LINK_PERMISSIONS.update);
   return <ShortLinkProfile id={id} canUpdate={canUpdate} history={history} />;
 }

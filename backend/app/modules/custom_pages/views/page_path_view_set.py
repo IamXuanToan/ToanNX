@@ -11,7 +11,7 @@ GET    /custom_pages/paths/{id}/history
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.custom_pages.filters.page_path_filter import PagePathFilter
 from app.modules.custom_pages.models.page_path import PagePath
-from app.modules.custom_pages.permissions.custom_pages_permission import CustomPagesPermission as P
+from app.modules.custom_pages.permissions.page_path_permission import PagePathPermission as P
 from app.modules.custom_pages.serializers.responses.page_path_response_serializer import (
     PagePathResponseSerializer,
 )

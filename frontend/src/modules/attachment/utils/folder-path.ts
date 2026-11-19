@@ -1,4 +1,4 @@
-import type { AttachmentFolder } from "../types/attachment.types";
+import type { AttachmentFolder } from "../types/attachment-folder.types";
 
 /** @param folder - Thư mục cần hiển thị. @param folders - Danh mục đã giới hạn quyền. @returns Đường dẫn logic có chặn dữ liệu vòng lặp. */
 export function folderPath(folder: AttachmentFolder, folders: readonly AttachmentFolder[]): string {

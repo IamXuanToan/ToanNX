@@ -6,6 +6,7 @@ import { customPagesNavigation } from "@/modules/custom-pages/navigation";
 import { qrCodesNavigation } from "@/modules/qr-codes/navigation";
 import { shortLinksNavigation } from "@/modules/short-links/navigation";
 import { journalNavigation } from "@/modules/journal/navigation";
+import { novelNavigation } from "@/modules/novel/navigation";
 import { LayoutTemplate, type LucideIcon, Settings } from "lucide-react";
 
 import type { AdminGroupCode, AdminModuleNavigation } from "@/shares/types/navigation.types";
@@ -33,6 +34,7 @@ export const ADMIN_MODULE_NAVIGATION: AdminModuleNavigation[] = [
   shortLinksNavigation,
   qrCodesNavigation,
   customPagesNavigation,
+  novelNavigation,
 ];
 
 /**

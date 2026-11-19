@@ -8,6 +8,7 @@ import type customPages from "./modules/custom-pages/messages/vi.json";
 import type qrCodes from "./modules/qr-codes/messages/vi.json";
 import type shortLinks from "./modules/short-links/messages/vi.json";
 import type journal from "./modules/journal/messages/vi.json";
+import type novel from "./modules/novel/messages/vi.json";
 import type { routing } from "./i18n/routing";
 
 /** Kiểu message gộp (tiếng Việt là nguồn chuẩn; test đảm bảo tiếng Anh có đủ khóa). */
@@ -21,6 +22,7 @@ type Messages = typeof common & {
   qrCodes: typeof qrCodes;
   shortLinks: typeof shortLinks;
   journal: typeof journal;
+  novel: typeof novel;
 };
 
 declare module "next-intl" {

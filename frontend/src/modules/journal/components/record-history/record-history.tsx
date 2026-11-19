@@ -9,7 +9,7 @@ import { Skeleton } from "@/shares/components/ui/skeleton";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import type { MessageKey } from "@/shares/types/navigation.types";
 
-import { useRecordHistory } from "../../hooks/use-journal";
+import { useRecordHistory } from "../../hooks/use-record-history";
 import { useRecordHistoryItems } from "./hooks/use-record-history-items";
 
 /**

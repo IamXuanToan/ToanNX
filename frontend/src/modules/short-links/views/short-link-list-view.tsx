@@ -11,23 +11,23 @@ import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { Button } from "@/shares/components/ui/button";
 
 import { ShortLinkTable } from "../components/short-link-table/short-link-table";
+import { SHORT_LINK_PERMISSIONS } from "../permissions/short-link-permission";
 import { SHORT_LINKS_ROUTES } from "../constants/routes";
-import { SHORT_LINKS_PERMISSIONS } from "../constants/short-links-permissions";
 
 /** Trang danh sách link rút gọn. */
 export function ShortLinkListView() {
   const t = useTranslations("shortLinks");
-  const canRead = usePermission(SHORT_LINKS_PERMISSIONS.read);
-  const canUpdate = usePermission(SHORT_LINKS_PERMISSIONS.update);
-  const canDelete = usePermission(SHORT_LINKS_PERMISSIONS.delete);
-  const canManageAll = usePermission(SHORT_LINKS_PERMISSIONS.manageAll);
+  const canRead = usePermission(SHORT_LINK_PERMISSIONS.read);
+  const canUpdate = usePermission(SHORT_LINK_PERMISSIONS.update);
+  const canDelete = usePermission(SHORT_LINK_PERMISSIONS.delete);
+  const canManageAll = usePermission(SHORT_LINK_PERMISSIONS.manageAll);
   if (!canRead) return <ForbiddenView />;
   return (
     <div className="space-y-6">
       <PageHeader
         title={t("title")}
         actions={
-          <PermissionGate permission={SHORT_LINKS_PERMISSIONS.create}>
+          <PermissionGate permission={SHORT_LINK_PERMISSIONS.create}>
             <Button asChild>
               <Link href={SHORT_LINKS_ROUTES.linkCreate}>
                 <Plus />

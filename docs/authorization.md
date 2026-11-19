@@ -93,15 +93,25 @@ Người không có quyền `*.manage_all` chỉ thấy/sửa bản của mình;
 - Không thể vô hiệu hóa/hạ quyền superuser đang hoạt động cuối cùng (`ACCOUNT_LAST_SUPERUSER`, khóa dòng `SELECT FOR UPDATE`).
   Khôi phục khẩn cấp: `uv run python manage.py createsuperuser`.
 
-## Vai trò hệ thống
+## Vai trò hệ thống & Bộ vai trò mẫu
 
-Được `sync_iam` (chạy sau mỗi `migrate`) đảm bảo tồn tại:
-- `ADMIN`: mọi quyền đang hoạt động (module mới cài tự được thêm).
-- `VIEWER`: mọi quyền `*.read`.
+Hệ thống quản lý vai trò theo hai cấp độ:
+1. **Vai trò hệ thống cốt lõi (System Roles):** Được `sync_iam` (chạy sau mỗi `migrate`) đảm bảo luôn tồn tại:
+   - `ADMIN`: mọi quyền đang hoạt động (`auto_grant="all"`, module mới cài tự được thêm).
+   - `VIEWER`: mọi quyền đọc `*.read` (`auto_grant="read_only"`).
 
-Vai trò hệ thống được seed bằng data migration `iam/0002_seed_system_roles`. Code không hardcode mã vai trò:
-`sync_iam` cấp quyền cho **mọi** vai trò theo field `Role.auto_grant` (`all` / `read_only` / `none`).
-Quyền khai báo bằng `PermissionDefinition(code, name, description)`; mô tả được lưu vào `iam_permission.description`.
+2. **Bộ vai trò phân quyền nghiệp vụ mẫu (Predefined Business Roles):** Khởi tạo và đồng bộ bằng lệnh:
+   ```bash
+   uv run python manage.py seed_roles
+   ```
+   Dịch vụ `RoleSeedService` (`app/modules/iam/services/role_seed_service.py`) phân tách theo nhóm module và trách nhiệm:
+   - `USER_MANAGER`: Quản lý người dùng, gán vai trò IAM, giám sát phiên (`account.user.*`, `iam.role.read/assign`, `iam.permission.read`, `authentication.session.*`, `journal.entry.read`).
+   - `CONTENT_MANAGER`: Quản lý nội dung xuất bản (`custom_pages.page.*`, `custom_pages.path.*`, `attachment.file.*`, `attachment.folder.*`, `short_links.link.*`, `qr_codes.code.*`).
+   - `NOVEL_MANAGER`: Quản trị toàn bộ phân hệ truyện (`novel.novel.*`, `novel.chapter.*`, `novel.author.*`, `novel.genre.*`, `novel.tag.*`, `attachment.file.read/create`).
+   - `NOVEL_AUTHOR`: Tác giả sáng tác truyện (chỉ tạo/sửa truyện và chương của chính mình, tra cứu tác giả/thể loại/thẻ).
+   - `MARKETING_MANAGER`: Chuyên viên Marketing (`short_links.link.*`, `qr_codes.code.*`, `attachment.file.*`).
+
+Mỗi model có **một file permission riêng** trong `permissions/<model>_permission.py` (kế thừa `PermissionCatalog`), không gộp chung nhiều model vào một file. Quyền khai báo bằng `PermissionDefinition(code, name, description)`; mô tả được lưu vào `iam_permission.description`.
 
 ## API quản trị (`/api/v1`)
 
@@ -122,6 +132,11 @@ CRUD theo `CoreModelViewSet`: `GET/POST /<resource>`, `GET/PATCH/DELETE /<resour
 | `/qr-codes/codes` (+ bulk, history), `/qr-codes/preview`, `/qr-codes/banks` | `qr_codes.code.{read,create,update,delete,manage_all}` |
 | `/custom-pages/paths` | `custom_pages.path.{read,create,update,delete}` |
 | `/custom-pages/pages` (+ `duplicate`, bulk, history) | `custom_pages.page.{read,create,update,delete,manage_all}` |
+| `/novel/novels` (+ bulk, history), `/novel/novels/import-template`, `/novel/novels/import` | `novel.novel.{read,create,update,delete,manage_all,import}` |
+| `/novel/chapters` (+ bulk) | `novel.chapter.{read,create,update,delete}` |
+| `/novel/authors` (+ bulk) | `novel.author.{read,create,update,delete}` |
+| `/novel/genres` (+ bulk) | `novel.genre.{read,create,update,delete}` |
+| `/novel/tags` (+ bulk) | `novel.tag.{read,create,update,delete}` |
 
 Công khai (ghi đè `permission_classes`): `/auth/csrf|login|refresh`, `/health`, `/short-links/resolve/{slug}`,
 `/custom-pages/public/{segment}/{slug}` (người có quyền đọc trang xem được bản nháp qua `?preview=1`),

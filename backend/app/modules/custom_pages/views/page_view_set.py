@@ -21,7 +21,7 @@ from app.core.responses.core_response import CoreResponse
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.custom_pages.filters.page_filter import PageFilter
 from app.modules.custom_pages.models.page import Page
-from app.modules.custom_pages.permissions.custom_pages_permission import CustomPagesPermission as P
+from app.modules.custom_pages.permissions.page_permission import PagePermission as P
 from app.modules.custom_pages.serializers.responses.page_detail_response_serializer import (
     PageDetailResponseSerializer,
 )

@@ -5,9 +5,10 @@ import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state
 
 import { JOURNAL_FIELD_PREFIXES } from "../../../constants/journal-field-prefixes";
 import { JOURNAL_ROUTES } from "../../../constants/routes";
-import { useJournalEntries, useJournalResources } from "../../../hooks/use-journal";
+import { useJournalEntries } from "../../../hooks/use-journal-entries";
 import { useJournalFormat } from "../../../hooks/use-journal-format";
-import { JOURNAL_ACTIONS, type JournalEntry } from "../../../types/journal.types";
+import { useJournalResources } from "../../../hooks/use-journal-resources";
+import { JOURNAL_ACTIONS, type JournalEntry } from "../../../types/journal-entry.types";
 
 /** Số field hiện ngay trong bảng; phần còn lại xem ở trang chi tiết. */
 const SUMMARY_FIELDS = 2;

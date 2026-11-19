@@ -9,7 +9,7 @@ import { usePermission } from "@/modules/auth/hooks/use-permission";
 import { useTiptapInsertItem } from "@/shares/components/common/tiptap-editor/hooks/use-tiptap-plugins";
 
 import { QrCodePicker } from "../components/qr-code-picker/qr-code-picker";
-import { QR_CODES_PERMISSIONS } from "../constants/qr-codes-permissions";
+import { QR_CODE_PERMISSIONS } from "../permissions/qr-code-permission";
 
 /** Mục "Mã QR" trong menu Chèn (chỉ đăng ký khi có quyền xem mã QR). */
 function QrCodeInsert() {
@@ -43,6 +43,6 @@ function QrCodeInsert() {
  * @returns Plugin (không render gì khi không có quyền).
  */
 export function QrCodeTiptapPlugin() {
-  const canRead = usePermission(QR_CODES_PERMISSIONS.read);
+  const canRead = usePermission(QR_CODE_PERMISSIONS.read);
   return canRead ? <QrCodeInsert /> : null;
 }

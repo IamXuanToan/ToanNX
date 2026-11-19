@@ -4,7 +4,7 @@ import type { ComponentProps } from "react";
 import { useTranslations } from "next-intl";
 
 import { ImageUpload } from "@/shares/components/common/image-upload/image-upload";
-import type { FolderCapabilities } from "../../types/attachment.types";
+import type { FolderCapabilities } from "../../types/attachment-folder.types";
 
 import { useAttachmentImageUpload } from "./hooks/use-attachment-image-upload";
 import { AttachmentPicker } from "../attachment-picker/attachment-picker";

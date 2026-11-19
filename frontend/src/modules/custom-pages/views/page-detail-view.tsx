@@ -5,7 +5,8 @@ import type { ReactNode } from "react";
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 
 import { PageProfile } from "../components/page-profile/page-profile";
-import { CUSTOM_PAGES_PERMISSIONS as P } from "../constants/custom-pages-permissions";
+import { PAGE_PATH_PERMISSIONS } from "../permissions/page-path-permission";
+import { PAGE_PERMISSIONS } from "../permissions/page-permission";
 
 /**
  * Trang soạn trang.
@@ -22,9 +23,9 @@ export function PageDetailView({
   editorPlugins?: ReactNode;
   history?: ReactNode;
 }) {
-  const canUpdate = usePermission(P.update);
-  const canCreatePath = usePermission(P.pathCreate);
-  const canUpdatePath = usePermission(P.pathUpdate);
+  const canUpdate = usePermission(PAGE_PERMISSIONS.update);
+  const canCreatePath = usePermission(PAGE_PATH_PERMISSIONS.pathCreate);
+  const canUpdatePath = usePermission(PAGE_PATH_PERMISSIONS.pathUpdate);
   return (
     <PageProfile
       id={id}

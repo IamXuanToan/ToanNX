@@ -1,8 +1,9 @@
 "use client";
 
 import { JOURNAL_FIELD_PREFIXES } from "../../../constants/journal-field-prefixes";
-import { useJournalEntry, useJournalResources } from "../../../hooks/use-journal";
+import { useJournalEntry } from "../../../hooks/use-journal-entry";
 import { useJournalFormat } from "../../../hooks/use-journal-format";
+import { useJournalResources } from "../../../hooks/use-journal-resources";
 
 /**
  * Dữ liệu trang chi tiết một mục nhật ký: mục, tên tài nguyên và từng field đổi kèm nhãn, giá trị cũ/mới,

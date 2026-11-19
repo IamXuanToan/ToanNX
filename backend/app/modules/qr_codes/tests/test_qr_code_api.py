@@ -16,7 +16,7 @@ from app.modules.attachment.models.attachment import Attachment
 from app.modules.attachment.permissions.attachment_permission import AttachmentPermission
 from app.modules.attachment.services.attachment_service import AttachmentService
 from app.modules.iam.tests.helpers.permission_helper import grant
-from app.modules.qr_codes.permissions.qr_codes_permission import QrCodesPermission as P
+from app.modules.qr_codes.permissions.qr_code_permission import QrCodePermission as P
 from app.modules.qr_codes.utils.qr_image_renderer import render_png
 from app.modules.qr_codes.utils.vietqr_payload import build_vietqr_payload
 

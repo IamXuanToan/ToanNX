@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useMediaQuery } from "@/shares/hooks/use-media-query";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
 
-import { useAttachments, useDeleteAttachments } from "../../../hooks/use-attachments";
+import { useAttachments } from "../../../hooks/use-attachments";
+import { useDeleteAttachments } from "../../../hooks/use-delete-attachments";
 import type { Attachment, AttachmentCapabilities } from "../../../types/attachment.types";
 import { MEDIA_KINDS, normalizeMediaFormats } from "../../../constants/media-types";
 

@@ -7,12 +7,12 @@ import { FormPage } from "@/shares/components/common/form-page/form-page";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 
 import { ShortLinkForm } from "../components/short-link-form/short-link-form";
-import { SHORT_LINKS_PERMISSIONS } from "../constants/short-links-permissions";
+import { SHORT_LINK_PERMISSIONS } from "../permissions/short-link-permission";
 
 /** Trang tạo link rút gọn. */
 export function ShortLinkCreateView() {
   const t = useTranslations("shortLinks");
-  const canCreate = usePermission(SHORT_LINKS_PERMISSIONS.create);
+  const canCreate = usePermission(SHORT_LINK_PERMISSIONS.create);
   if (!canCreate) return <ForbiddenView />;
   return (
     <FormPage title={t("create")}>

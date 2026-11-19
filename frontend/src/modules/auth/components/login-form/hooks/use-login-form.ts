@@ -41,7 +41,7 @@ export function useLoginForm(redirectTo: AppPathname) {
       form.setError("root", { message: errorMessage(error) });
       return;
     }
-    const next = sanitizeNextPath(searchParams.get("next"));
+    const next = sanitizeNextPath(searchParams.get("redirect") || searchParams.get("next"));
     if (next) {
       // `next` là URL đã có locale do proxy tạo ra.
       window.location.assign(next);

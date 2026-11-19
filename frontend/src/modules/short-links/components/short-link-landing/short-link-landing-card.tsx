@@ -27,7 +27,7 @@ import { PasswordInput } from "@/shares/components/common/password-input/passwor
 import { Button } from "@/shares/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shares/components/ui/field";
 
-import type { PublicShortLink } from "../../types/short-links.types";
+import type { PublicShortLink } from "../../types/short-link.types";
 import { useShortLinkLanding } from "./hooks/use-short-link-landing";
 
 /**

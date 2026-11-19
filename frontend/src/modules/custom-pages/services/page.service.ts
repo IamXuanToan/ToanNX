@@ -2,13 +2,7 @@ import { apiClient } from "@/shares/lib/api/api-client";
 import { createCrudService } from "@/shares/lib/api/create-crud-service";
 
 import { CUSTOM_PAGES_API_ENDPOINTS } from "../constants/api-endpoints";
-import type {
-  Page,
-  PageDetail,
-  PageFilters,
-  PageInput,
-  PageStatus,
-} from "../types/custom-pages.types";
+import type { Page, PageDetail, PageFilters, PageInput, PageStatus } from "../types/page.types";
 
 /** `content` là tài liệu Tiptap: giữ nguyên khóa camelCase của Tiptap (`attachmentId`, `textAlign`). */
 const OPAQUE = ["content"] as const;

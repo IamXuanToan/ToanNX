@@ -3,7 +3,7 @@ import type { HistoryEntry, Paginated } from "@/shares/types/api.types";
 import { toPaginated } from "@/shares/lib/api/to-paginated";
 
 import { JOURNAL_API_ENDPOINTS } from "../constants/api-endpoints";
-import type { JournalEntry, JournalFilters, JournalResource } from "../types/journal.types";
+import type { JournalEntry, JournalFilters, JournalResource } from "../types/journal-entry.types";
 
 /** Service nhật ký (BE `journal/services/journal_entry_service.py`, chỉ đọc). */
 export const journalEntryService = {

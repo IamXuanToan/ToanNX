@@ -166,17 +166,22 @@ class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
     detail_serializer_class = ShortLinkDetailResponseSerializer
     create_serializer_class = ShortLinkCreateValidateSerializer
     update_serializer_class = ShortLinkUpdateValidateSerializer
-    bulk_update_serializer_class = ShortLinkBulkUpdateValidateSerializer   # None = không có bulk-update
-    bulk_delete_enabled = True                                             # False = không có bulk-delete
-    history_enabled = True                                                 # cần model có journal (4.7)
+    bulk_update_serializer_class = (
+        ShortLinkBulkUpdateValidateSerializer  # None = không có bulk-update
+    )
+    bulk_delete_enabled = True  # False = không có bulk-delete
+    history_enabled = True  # cần model có journal (4.7)
     action_permissions = {
-        "list": permission_rule(P.READ), "retrieve": permission_rule(P.READ),
-        "create": permission_rule(P.CREATE), "partial_update": permission_rule(P.UPDATE),
+        "list": permission_rule(P.READ),
+        "retrieve": permission_rule(P.READ),
+        "create": permission_rule(P.CREATE),
+        "partial_update": permission_rule(P.UPDATE),
         "destroy": permission_rule(P.DELETE),
-        "bulk_update": permission_rule(P.UPDATE), "bulk_delete": permission_rule(P.DELETE),
+        "bulk_update": permission_rule(P.UPDATE),
+        "bulk_delete": permission_rule(P.DELETE),
         "history": permission_rule(P.READ),
     }
-    action_rate_limits = {"create": "short_links.create"}                  # 4.5
+    action_rate_limits = {"create": "short_links.create"}  # 4.5
 ```
 
 - Mọi action gọi `service.*_for(actor)` nên owner tự áp. `create` trả `get_by_id_for`.
@@ -203,9 +208,9 @@ class HasIamPermission(BasePermission):
 ```python
 class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
     repository_class = ShortLinkRepository
-    owner_field = "owner"                                     # None = tài nguyên chung (users, roles, paths)
+    owner_field = "owner"  # None = tài nguyên chung (users, roles, paths)
     manage_all_permission = ShortLinksPermission.MANAGE_ALL.code
-    owner_quota_setting = "SHORT_LINK_MAX_PER_OWNER"          # None = không giới hạn tổng
+    owner_quota_setting = "SHORT_LINK_MAX_PER_OWNER"  # None = không giới hạn tổng
 ```
 
 | Method | Hành vi mặc định |
@@ -236,13 +241,17 @@ Dùng `actor.has_perm()` (Django gọi `IamPermissionBackend`) nên core **khôn
 # config/settings.py — một bảng duy nhất, đổi được bằng biến môi trường
 RATE_LIMITS = {
     #  khóa                  (số lần, cửa sổ giây, theo)
-    "default.write":        (env.int("RL_DEFAULT_WRITE", 300), 60, "user"),   # áp mọi POST/PATCH/DELETE không khai riêng
-    "short_links.create":   (env.int("RL_SHORT_LINK_CREATE", 30), 3600, "user"),
-    "custom_pages.create":  (env.int("RL_PAGE_CREATE", 20), 3600, "user"),
+    "default.write": (
+        env.int("RL_DEFAULT_WRITE", 300),
+        60,
+        "user",
+    ),  # áp mọi POST/PATCH/DELETE không khai riêng
+    "short_links.create": (env.int("RL_SHORT_LINK_CREATE", 30), 3600, "user"),
+    "custom_pages.create": (env.int("RL_PAGE_CREATE", 20), 3600, "user"),
     "custom_pages.path.create": (env.int("RL_PAGE_PATH_CREATE", 10), 3600, "user"),
-    "qr_codes.create":      (env.int("RL_QR_CREATE", 60), 3600, "user"),
-    "qr_codes.preview":     (env.int("RL_QR_PREVIEW", 120), 60, "user"),
-    "public.read":          (env.int("RL_PUBLIC_READ", 120), 60, "ip"),
+    "qr_codes.create": (env.int("RL_QR_CREATE", 60), 3600, "user"),
+    "qr_codes.preview": (env.int("RL_QR_PREVIEW", 120), 60, "user"),
+    "public.read": (env.int("RL_PUBLIC_READ", 120), 60, "ip"),
 }
 ```
 
@@ -265,8 +274,8 @@ RATE_LIMITS = {
 ### 4.7 Lịch sử thay đổi (journal) — model kế thừa tracker là chạy
 
 ```python
-class ShortLink(JournalTracker, CoreModel):         # tracker là mixin, thêm vào lớp model
-    journal_masked_fields = ("password_hash",)       # ghi "đã đổi" nhưng không lưu mã băm
+class ShortLink(JournalTracker, CoreModel):  # tracker là mixin, thêm vào lớp model
+    journal_masked_fields = ("password_hash",)  # ghi "đã đổi" nhưng không lưu mã băm
 ```
 
 - `JournalTracker` (`core/tracking/journal_tracker.py`) là mixin trừu tượng: model kế thừa thì CRUD qua repository **tự

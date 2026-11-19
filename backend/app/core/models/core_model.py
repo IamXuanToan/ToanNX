@@ -13,7 +13,7 @@ Quy ước:
 """
 
 import uuid
-from collections.abc import Iterator
+from collections.abc import Generator
 from typing import Any
 
 from django.conf import settings
@@ -27,7 +27,7 @@ DELETED_SUFFIX = "_deleted_"
 _UNIQUE_TEXT_FIELDS: dict[type, tuple[str, ...]] = {}
 
 
-def _field_refs(expression: Any) -> Iterator[str]:
+def _field_refs(expression: Any) -> Generator[str]:
     """Tên field được tham chiếu trong biểu thức (`Lower("slug")` → `slug`)."""
     if isinstance(expression, F):
         yield str(getattr(expression, "name", ""))

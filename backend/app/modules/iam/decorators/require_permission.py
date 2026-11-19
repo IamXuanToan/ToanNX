@@ -1,11 +1,11 @@
 """Decorator kiểm tra quyền cho method của APIView quản trị.
 
 ```python
-@require_permission(AccountPermission.USER_READ)                                   # một quyền
-@require_permission(IamPermission.ROLE_ASSIGN, AccountPermission.USER_UPDATE)      # ít nhất một
-@require_permission(IamPermission.ROLE_ASSIGN, AccountPermission.USER_UPDATE, require_all=True)
-@require_permission(AccountPermission.USER_UPDATE, check=is_not_self)              # + điều kiện riêng
-@require_permission(AccountPermission.USER_READ, allow_if=is_owner)                # hoặc chính chủ
+@require_permission(UserPermission.USER_READ)                                   # một quyền
+@require_permission(IamPermission.ROLE_ASSIGN, UserPermission.USER_UPDATE)      # ít nhất một
+@require_permission(IamPermission.ROLE_ASSIGN, UserPermission.USER_UPDATE, require_all=True)
+@require_permission(UserPermission.USER_UPDATE, check=is_not_self)              # + điều kiện riêng
+@require_permission(UserPermission.USER_READ, allow_if=is_owner)                # hoặc chính chủ
 ```
 
 - Đặt `@require_permission` NGOÀI `@validate_request` để kiểm tra quyền trước khi validate.

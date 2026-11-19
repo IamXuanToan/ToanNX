@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { PagePath, PagePathInput } from "../types/custom-pages.types";
+import type { PagePath, PagePathInput } from "../types/page-path.types";
 
 type Translate = (key: "required" | "segment") => string;
 

@@ -177,6 +177,10 @@
       "content": {
         "name": "Tiện ích",
         "description": "Liên kết rút gọn, mã QR và trang."
+      },
+      "novel": {
+        "name": "Tiểu thuyết",
+        "description": "Quản lý và đọc truyện chữ."
       }
     },
     "select": {
@@ -377,7 +381,13 @@
       "SHORT_LINK_INVALID_PASSWORD": "Mật khẩu liên kết không đúng.",
       "CUSTOM_PAGES_PATH_IN_USE": "Đường dẫn giữa còn trang, không xóa được.",
       "CUSTOM_PAGES_PATH_INACTIVE": "Đường dẫn giữa đang tắt, không tạo trang mới vào đây được.",
-      "CUSTOM_PAGES_VERSION_CONFLICT": "Trang đã được sửa ở nơi khác. Tải lại để xem bản mới nhất."
+      "CUSTOM_PAGES_VERSION_CONFLICT": "Trang đã được sửa ở nơi khác. Tải lại để xem bản mới nhất.",
+      "NOVEL_NOT_FOUND": "Không tìm thấy truyện.",
+      "NOVEL_SLUG_EXISTS": "Đường dẫn định danh (slug) truyện đã tồn tại.",
+      "NOVEL_FORBIDDEN": "Bạn không có quyền thao tác trên truyện này.",
+      "NOVEL_IMPORT_INVALID": "Dữ liệu import truyện không hợp lệ.",
+      "CHAPTER_NOT_FOUND": "Không tìm thấy chương truyện.",
+      "CHAPTER_NUMBER_EXISTS": "Số thứ tự chương của truyện đã tồn tại."
     },
     "generic": {
       "title": "Không tải được dữ liệu",

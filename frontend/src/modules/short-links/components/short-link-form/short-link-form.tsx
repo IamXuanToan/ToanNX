@@ -21,7 +21,7 @@ import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
 
 import { SHORT_LINKS_ROUTES } from "../../constants/routes";
-import type { ShortLinkDetail } from "../../types/short-links.types";
+import type { ShortLinkDetail } from "../../types/short-link.types";
 import { useShortLinkForm } from "./hooks/use-short-link-form";
 
 /**

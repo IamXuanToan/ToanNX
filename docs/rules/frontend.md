@@ -27,11 +27,21 @@ UI primitive thuần (Button, Separator...) không cần hook riêng.
 
 ```
 src/modules/<m>/
-  views/  components/<c>/{<c>.tsx, hooks/use-<c>.ts}  hooks/  services/<model>.service.ts
-  constants/{routes,api-endpoints,query-keys,<m>-permissions}.ts
+  views/  components/<c>/{<c>.tsx, hooks/use-<c>.ts}  hooks/use-<tên>.ts
+  permissions/<model>-permission.ts  services/<model>.service.ts
+  constants/{routes,api-endpoints,query-keys}.ts
   schemas/  types/  messages/{vi,en}.json  navigation.ts
 ```
 
+- **Mỗi model một file quyền trong `permissions/`**, đặt tên `permissions/<model>-permission.ts` (khớp với
+  phân quyền backend), ví dụ: `author-permission.ts`, `chapter-permission.ts`, `novel-permission.ts`. Không
+  gộp chung quyền của nhiều model vào một file constants.
+- **Mỗi hook một file trong `hooks/`**, đặt tên `hooks/use-<tên-hành-động>.ts` (ví dụ `use-client-novel.ts`,
+  `use-toggle-favorite.ts`, `use-import-novel.ts`). Tuyệt đối không gom nhiều hook vào một file `use-<m>.ts`.
+- **Chuẩn hóa JSDoc docstring bắt buộc**:
+  - Mọi file, exported component, custom hook, service object, service method, schema, helper và kiểu (types/interfaces)
+    phải có JSDoc docstring rõ ràng bằng tiếng Việt.
+  - Phải có `@param` mô tả chi tiết cho từng tham số, `@returns` mô tả dữ liệu trả về, giải thích rõ ràng vai trò nghiệp vụ.
 - **Service tách theo model của BE**, mỗi model một file và một object, tên trùng service BE:
   `iam/services/role.service.ts` ↔ `iam/services/role_service.py`, `user-role.service.ts` ↔
   `user_role_service.py`. Không gộp cả module vào một `<m>.service.ts`. Method theo hành động

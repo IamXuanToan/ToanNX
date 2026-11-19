@@ -6,7 +6,7 @@ import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.modules.account.models.user import User
-from app.modules.account.permissions.account_permission import AccountPermission as A
+from app.modules.account.permissions.user_permission import UserPermission as A
 from app.modules.iam.models.permission import Permission
 from app.modules.iam.models.role import Role
 from app.modules.iam.models.role_permission import RolePermission

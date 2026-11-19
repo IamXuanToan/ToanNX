@@ -23,8 +23,8 @@ import { Input } from "@/shares/components/ui/input";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
 import { ACCOUNT_ROUTES } from "../../constants/routes";
-import type { User } from "../../types/account.types";
-import { UserActivitySection } from "./components/user-activity-section";
+import type { User } from "../../types/user.types";
+import { UserActivitySection } from "./user-activity-section";
 import { useUserForm } from "./hooks/use-user-form";
 
 const FLAGS = ["isActive", "isStaff", "isSuperuser", "isNovel"] as const;

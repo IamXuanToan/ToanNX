@@ -3,7 +3,9 @@
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.modules.attachment.filters.attachment_folder_filter import AttachmentFolderFilter
 from app.modules.attachment.models.attachment_folder import AttachmentFolder
-from app.modules.attachment.permissions.attachment_permission import AttachmentPermission as P
+from app.modules.attachment.permissions.attachment_folder_permission import (
+    AttachmentFolderPermission as P,
+)
 from app.modules.attachment.serializers.responses.attachment_folder_response_serializer import (
     AttachmentFolderResponseSerializer,
 )

@@ -7,7 +7,7 @@ import {
   PAGE_TEMPLATES,
   type PageDetail,
   type PageInput,
-} from "../types/custom-pages.types";
+} from "../types/page.types";
 
 type Translate = (key: "required" | "slug" | "color") => string;
 

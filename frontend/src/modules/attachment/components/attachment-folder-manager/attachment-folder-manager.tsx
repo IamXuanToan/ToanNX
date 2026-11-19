@@ -18,7 +18,7 @@ import {
 import { Input } from "@/shares/components/ui/input";
 import { SelectField } from "@/shares/components/common/select-field/select-field";
 
-import type { FolderCapabilities } from "../../types/attachment.types";
+import type { FolderCapabilities } from "../../types/attachment-folder.types";
 import { UNFILED_FOLDER } from "../../constants/media-types";
 import { folderPath } from "../../utils/folder-path";
 import { useAttachmentFolderManager } from "./hooks/use-attachment-folder-manager";

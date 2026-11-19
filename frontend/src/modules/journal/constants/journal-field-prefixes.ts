@@ -12,4 +12,5 @@ export const JOURNAL_FIELD_PREFIXES: Readonly<Record<string, MessageKey>> = {
   "qr_codes.qrcode": "qrCodes.fields",
   "custom_pages.page": "customPages.pages.fields",
   "custom_pages.pagepath": "customPages.paths.fields",
+  "novel.novel": "novel.module.name",
 };

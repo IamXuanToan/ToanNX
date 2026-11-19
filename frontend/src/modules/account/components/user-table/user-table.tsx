@@ -13,7 +13,7 @@ import { Badge } from "@/shares/components/ui/badge";
 import { isOnline } from "@/shares/lib/presence";
 
 import { ACCOUNT_ROUTES } from "../../constants/routes";
-import type { User } from "../../types/account.types";
+import type { User } from "../../types/user.types";
 import { useUserTable } from "./hooks/use-user-table";
 
 /**

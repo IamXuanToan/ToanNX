@@ -20,6 +20,7 @@ export async function loadMessages(locale: AppLocale) {
     qrCodes,
     shortLinks,
     journal,
+    novel,
   ] = await Promise.all([
     import(`../messages/${locale}.json`),
     import(`../modules/auth/messages/${locale}.json`),
@@ -31,6 +32,7 @@ export async function loadMessages(locale: AppLocale) {
     import(`../modules/qr-codes/messages/${locale}.json`),
     import(`../modules/short-links/messages/${locale}.json`),
     import(`../modules/journal/messages/${locale}.json`),
+    import(`../modules/novel/messages/${locale}.json`),
   ]);
   return {
     ...common.default,
@@ -43,6 +45,7 @@ export async function loadMessages(locale: AppLocale) {
     qrCodes: qrCodes.default,
     shortLinks: shortLinks.default,
     journal: journal.default,
+    novel: novel.default,
   };
 }
 

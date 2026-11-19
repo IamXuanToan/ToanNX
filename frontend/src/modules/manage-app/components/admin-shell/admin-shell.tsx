@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { AttachmentPicker } from "@/modules/attachment/components/attachment-picker/attachment-picker";
-import { ATTACHMENT_PERMISSIONS } from "@/modules/attachment/constants/attachment-permissions";
+import { ATTACHMENT_PERMISSIONS } from "@/modules/attachment/permissions/attachment-permission";
 import { UserMenu } from "@/modules/auth/components/user-menu/user-menu";
 import { useLogout } from "@/modules/auth/hooks/use-logout";
 import { usePermission } from "@/modules/auth/hooks/use-permission";

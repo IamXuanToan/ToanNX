@@ -10,6 +10,7 @@ from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
 from app.modules.attachment.constants.attachment_error_code import AttachmentErrorCode
 from app.modules.attachment.models.attachment_folder import AttachmentFolder
+from app.modules.attachment.permissions.attachment_folder_permission import AttachmentFolderPermission
 from app.modules.attachment.permissions.attachment_permission import AttachmentPermission
 from app.modules.attachment.repositories.attachment_folder_repository import AttachmentFolderRepository
 from app.modules.attachment.repositories.attachment_repository import AttachmentRepository
@@ -35,8 +36,8 @@ class AttachmentFolderService(CoreCrudService[AttachmentFolder, AttachmentFolder
 
     def get_for_file(self, actor: Any, pk: Any, owner_id: Any) -> AttachmentFolder:
         """Khóa nhóm trước file; chỉ gom file vào thư mục cùng người sở hữu."""
-        if not actor.has_perm(AttachmentPermission.FOLDER_READ.code):
-            raise AuthorizationError(details={"permissions": [AttachmentPermission.FOLDER_READ.code]})
+        if not actor.has_perm(AttachmentFolderPermission.FOLDER_READ.code):
+            raise AuthorizationError(details={"permissions": [AttachmentFolderPermission.FOLDER_READ.code]})
         folder = self.get_by_id_for(actor, pk)
         if folder.created_by_id != owner_id:
             raise ValidationError(code=AttachmentErrorCode.ATTACHMENT_FOLDER_OWNER_MISMATCH)

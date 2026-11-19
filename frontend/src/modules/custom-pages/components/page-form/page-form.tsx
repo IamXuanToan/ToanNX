@@ -32,8 +32,8 @@ import { Textarea } from "@/shares/components/ui/textarea";
 import { CUSTOM_PAGES_ROUTES } from "../../constants/routes";
 import { PAGE_EXTENSIONS } from "../../extensions/page-extensions";
 import { PAGE_STATUSES, PAGE_TEMPLATES, type PageDetail } from "../../types/custom-pages.types";
-import { PageButtonDialog } from "./components/page-button-dialog";
-import { PagePathSelect } from "./components/page-path-select";
+import { PageButtonDialog } from "./page-button-dialog";
+import { PagePathSelect } from "./page-path-select";
 import { usePageForm } from "./hooks/use-page-form";
 
 /**

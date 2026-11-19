@@ -10,12 +10,10 @@ import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 
 import { QR_CODES_ROUTES } from "../../../constants/routes";
-import {
-  useCreateQrCode,
-  useQrBanks,
-  useQrPreview,
-  useUpdateQrCode,
-} from "../../../hooks/use-qr-codes";
+import { useCreateQrCode } from "../../../hooks/use-create-qr-code";
+import { useQrBanks } from "../../../hooks/use-qr-banks";
+import { useQrPreview } from "../../../hooks/use-qr-preview";
+import { useUpdateQrCode } from "../../../hooks/use-update-qr-code";
 import {
   fromQrCode,
   QR_FORM_DEFAULTS,
@@ -23,7 +21,7 @@ import {
   type QrCodeFormValues,
   toQrInput,
 } from "../../../schemas/qr-code.schema";
-import type { QrCodeDetail, QrPreviewInput } from "../../../types/qr-codes.types";
+import type { QrCodeDetail, QrPreviewInput } from "../../../types/qr-code.types";
 
 const PREVIEW_DELAY_MS = 300;
 

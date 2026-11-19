@@ -10,6 +10,7 @@ import { CUSTOM_PAGES_PATHNAMES } from "@/modules/custom-pages/constants/routes"
 import { QR_CODES_PATHNAMES } from "@/modules/qr-codes/constants/routes";
 import { SHORT_LINKS_PATHNAMES } from "@/modules/short-links/constants/routes";
 import { JOURNAL_PATHNAMES } from "@/modules/journal/constants/routes";
+import { NOVEL_PATHNAMES } from "@/modules/novel/constants/routes";
 
 export const LOCALES = ["vi", "en"] as const;
 export type AppLocale = (typeof LOCALES)[number];
@@ -32,6 +33,7 @@ export const routing = defineRouting({
     ...QR_CODES_PATHNAMES,
     ...SHORT_LINKS_PATHNAMES,
     ...JOURNAL_PATHNAMES,
+    ...NOVEL_PATHNAMES,
   },
 });
 

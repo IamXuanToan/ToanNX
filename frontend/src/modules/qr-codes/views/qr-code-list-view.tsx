@@ -11,23 +11,23 @@ import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { Button } from "@/shares/components/ui/button";
 
 import { QrCodeTable } from "../components/qr-code-table/qr-code-table";
-import { QR_CODES_PERMISSIONS } from "../constants/qr-codes-permissions";
+import { QR_CODE_PERMISSIONS } from "../permissions/qr-code-permission";
 import { QR_CODES_ROUTES } from "../constants/routes";
 
 /** Trang danh sách mã QR. */
 export function QrCodeListView() {
   const t = useTranslations("qrCodes");
-  const canRead = usePermission(QR_CODES_PERMISSIONS.read);
-  const canUpdate = usePermission(QR_CODES_PERMISSIONS.update);
-  const canDelete = usePermission(QR_CODES_PERMISSIONS.delete);
-  const canManageAll = usePermission(QR_CODES_PERMISSIONS.manageAll);
+  const canRead = usePermission(QR_CODE_PERMISSIONS.read);
+  const canUpdate = usePermission(QR_CODE_PERMISSIONS.update);
+  const canDelete = usePermission(QR_CODE_PERMISSIONS.delete);
+  const canManageAll = usePermission(QR_CODE_PERMISSIONS.manageAll);
   if (!canRead) return <ForbiddenView />;
   return (
     <div className="space-y-6">
       <PageHeader
         title={t("title")}
         actions={
-          <PermissionGate permission={QR_CODES_PERMISSIONS.create}>
+          <PermissionGate permission={QR_CODE_PERMISSIONS.create}>
             <Button asChild>
               <Link href={QR_CODES_ROUTES.codeCreate}>
                 <Plus />

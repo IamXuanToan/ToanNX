@@ -2,7 +2,7 @@ import { Images } from "lucide-react";
 
 import type { AdminModuleNavigation } from "@/shares/types/navigation.types";
 
-import { ATTACHMENT_PERMISSIONS } from "./constants/attachment-permissions";
+import { ATTACHMENT_PERMISSIONS } from "./permissions/attachment-permission";
 import { ATTACHMENT_ROUTES } from "./constants/routes";
 
 /** Thư viện nằm trong nhóm Hệ thống, chỉ hiện khi có quyền xem file. */
