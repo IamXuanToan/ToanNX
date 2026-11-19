@@ -34,6 +34,7 @@ Thumbs.db
 # chỉ bỏ qua cấu hình cá nhân và dữ liệu cục bộ.
 /.codex/
 /.claude/settings.local.json
+.gemini/
 
 # graphify: commit graph (graph.json, graph.html, GRAPH_REPORT.md, manifest.json);
 # bỏ qua cache và file chỉ đúng trên một máy.
