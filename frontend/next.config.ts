@@ -37,6 +37,18 @@ const nextConfig: NextConfig = {
   // E2E build vào thư mục riêng (`NEXT_DIST_DIR=.next-e2e`) để không ghi đè bản build thường.
   distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "media.toannx.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.r2.dev",
+      },
+    ],
+  },
   turbopack: {
     rules: {
       "*.css": {

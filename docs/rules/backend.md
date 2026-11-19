@@ -41,7 +41,15 @@ app/modules/<module>/
   views/<resource>_view_set.py              # CRUD trên model
   views/<resource>_view.py                  # XxxView (collection) + XxxObjectView (theo id)
   schemas/  types/  utils/  decorators/  constants/  exceptions/   # chỉ tạo khi có
-  tests/                                    # test của module
+  tests/                                    # test của module: mỗi endpoint đúng 1 file riêng biệt
+    test_<resource>_list_api.py             # danh sách: phân trang, tìm kiếm, lọc, sắp xếp, 401, 403
+    test_<resource>_create_api.py           # tạo mới: full data, min data, validate, 401, 403
+    test_<resource>_detail_api.py           # chi tiết: full data, owner isolation, 401, 403, 404
+    test_<resource>_update_api.py           # sửa: full data, min/partial data, validate, owner, 401, 403, 404
+    test_<resource>_delete_api.py           # xóa: soft delete, owner isolation, 401, 403, 404
+    test_<resource>_bulk_delete_api.py      # xóa lô: quyền, owner, rollback transaction
+    test_<resource>_<action>_api.py         # các endpoint tùy biến khác (import, resolve, toggle...)
+    factories/                              # model factory phục vụ test
   migrations/
 ```
 
@@ -269,8 +277,20 @@ class UserRoleView(CoreApiView):
 
 - pytest + pytest-django trên PostgreSQL (`test_toannx`). Fixture chung ở `backend/conftest.py`.
 - Base assertion: `app/core/tests/base/base_api_test_case.py`. Factory/helper IAM: `app/modules/iam/tests/`.
-- Mỗi endpoint mới: test thành công, validate sai, chưa đăng nhập, thiếu quyền, quy tắc nghiệp vụ, owner (người
-  khác nhận 404); API danh sách thêm test `search`/filter nhiều giá trị/`ordering`/phân trang.
+- **Nguyên tắc tổ chức test: Mỗi endpoint một file test riêng biệt** (`test_<resource>_<action>_api.py`).
+  - Tuyệt đối **không gộp chung** toàn bộ action CRUD của một model vào một file `test_<model>_api.py`.
+  - Tuyệt đối **không tách riêng** file kiểm tra quyền `test_<model>_permission.py`: kiểm tra phân quyền (401, 403, owner) là một phần của contract của endpoint đó và bắt buộc phải nằm trực tiếp trong file test của chính endpoint đó.
+- **Yêu cầu bao phủ của mỗi file test endpoint**:
+  - `full_data`: Thành công với payload đầy đủ tất cả các trường (required + optional + quan hệ liên kết), DB ghi đúng, response trả về đầy đủ.
+  - `min_data`: Thành công với payload tối thiểu (chỉ các trường bắt buộc), các trường tùy chọn nhận giá trị mặc định / null hợp lệ.
+  - `validation_errors`: Kiểm tra validation thất bại (thiếu trường bắt buộc, sai kiểu dữ liệu, vượt quá độ dài tối đa, trùng lặp unique slug/code/email, vi phạm quy tắc nghiệp vụ).
+  - `unauthenticated`: Khách chưa đăng nhập gọi request nhận `401` `AUTH_UNAUTHENTICATED`.
+  - `permission_denied`: Người dùng đã đăng nhập nhưng thiếu quyền nhận `403` `PERMISSION_DENIED`.
+  - `owner_isolation`: Đối với endpoint làm việc trên đối tượng có owner (detail, update, delete):
+    - Người dùng khác không được truy cập / chỉnh sửa (nhận `404` `NOT_FOUND` hoặc `403`).
+    - Người dùng có quyền `manage_all` (hoặc superuser) được phép thao tác bình thường.
+  - `response_structure`: Kiểm tra đúng cấu trúc envelope `{success: true, data: ..., meta: {request_id: ...}}`, status code chuẩn (200, 201, 204), không rò rỉ trường nhạy cảm (`password`, `secret`...).
+  - `list_features` (cho endpoint danh sách): Tìm kiếm `search`, bộ lọc nhiều giá trị `Core*InFilter`, sắp xếp `ordering` (tăng/giảm), phân trang `page`/`page_size`, trang vượt quá trả `404`.
 - Mỗi endpoint danh sách thêm một dòng vào `core/tests/test_list_query_count.py` (số query không tăng theo số bản ghi).
 - `core/tests/test_endpoint_access.py` gọi thật **mọi** route: khách nhận 401, người không có quyền nhận 403
   `PERMISSION_DENIED`. View công khai / chỉ đăng nhập phải khai tên trong `PUBLIC_VIEWS` / `LOGIN_ONLY_VIEWS`.

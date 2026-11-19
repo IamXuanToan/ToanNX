@@ -79,6 +79,10 @@ async function send(method: HttpMethod, path: string, options: RequestOptions): 
     () => controller.abort("timeout"),
     options.timeoutMs ?? env.apiTimeoutMs,
   );
+  if (options.signal?.aborted) {
+    clearTimeout(timeout);
+    throw options.signal.reason ?? new DOMException("This operation was aborted", "AbortError");
+  }
   options.signal?.addEventListener("abort", () => controller.abort(options.signal?.reason), {
     once: true,
   });

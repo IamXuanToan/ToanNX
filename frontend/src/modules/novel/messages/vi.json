@@ -4,7 +4,11 @@
     "description": "Quản lý truyện, chương và nhập dữ liệu truyện từ JSON."
   },
   "nav": {
-    "novels": "Truyện tiểu thuyết"
+    "novels": "Truyện tiểu thuyết",
+    "chapters": "Chương truyện",
+    "authors": "Tác giả",
+    "genres": "Thể loại",
+    "tags": "Thẻ truyện"
   },
   "status": {
     "ONGOING": "Đang ra",
@@ -235,7 +239,12 @@
       "actions": "Thao tác"
     },
     "unknownAuthor": "Khuyết danh",
-    "viewPublic": "Xem"
+    "viewPublic": "Xem",
+    "createNovel": "Thêm truyện mới",
+    "createTitle": "Thêm tiểu thuyết mới",
+    "editTitle": "Chỉnh sửa tiểu thuyết",
+    "createDescription": "Nhập thông tin chi tiết để thêm một bộ truyện mới vào hệ thống.",
+    "editDescription": "Cập nhật thông tin chi tiết của bộ truyện."
   },
   "errors": {
     "novel_not_found": "Không tìm thấy truyện.",
@@ -243,5 +252,130 @@
     "novel_import_invalid_data": "Dữ liệu import truyện không hợp lệ.",
     "novel_already_exists": "Truyện hoặc slug này đã tồn tại.",
     "novel_access_denied": "Tài khoản không có quyền truy cập."
+  },
+  "novelForm": {
+    "sections": {
+      "general": "Thông tin chung",
+      "thumbnail": "Ảnh bìa",
+      "settings": "Cấu hình xuất bản"
+    },
+    "fields": {
+      "title": "Tiêu đề truyện",
+      "titlePlaceholder": "Nhập tên truyện...",
+      "slug": "Đường dẫn (Slug)",
+      "slugPlaceholder": "duong-dan-truyen",
+      "originalTitle": "Tên gốc (nếu có)",
+      "originalTitlePlaceholder": "Tên tiếng Trung, tiếng Anh...",
+      "author": "Tác giả",
+      "authorPlaceholder": "Chọn tác giả",
+      "noAuthor": "Khuyết danh / Không rõ",
+      "status": "Trạng thái",
+      "genres": "Thể loại",
+      "genresPlaceholder": "Chọn thể loại...",
+      "tags": "Thẻ nhãn",
+      "tagsPlaceholder": "Chọn thẻ...",
+      "description": "Giới thiệu / Tóm tắt",
+      "descriptionPlaceholder": "Tóm tắt nội dung bộ truyện...",
+      "thumbnail": "Ảnh bìa",
+      "isPublished": "Trạng thái phát hành",
+      "isPublishedHelp": "Hiển thị công khai truyện trên trang đọc truyện",
+      "published": "Công khai",
+      "draft": "Bản nháp / Ẩn"
+    }
+  },
+  "authors": {
+    "title": "Quản lý tác giả",
+    "description": "Danh sách các tác giả tiểu thuyết trong hệ thống.",
+    "createTitle": "Thêm tác giả mới",
+    "editTitle": "Chỉnh sửa tác giả",
+    "createDescription": "Thêm tác giả mới vào danh mục hệ thống.",
+    "editDescription": "Cập nhật thông tin chi tiết của tác giả.",
+    "searchPlaceholder": "Tìm tên tác giả, slug...",
+    "noAuthors": "Không tìm thấy tác giả nào.",
+    "sections": {
+      "general": "Thông tin chung",
+      "avatar": "Ảnh đại diện"
+    },
+    "fields": {
+      "name": "Tên tác giả",
+      "namePlaceholder": "Nhập tên tác giả...",
+      "slug": "Đường dẫn (Slug)",
+      "slugPlaceholder": "ten-tac-gia",
+      "avatar": "Ảnh đại diện",
+      "bio": "Tiểu sử / Giới thiệu",
+      "bioPlaceholder": "Thông tin về tác giả..."
+    }
+  },
+  "genres": {
+    "title": "Quản lý thể loại",
+    "description": "Danh sách các thể loại tiểu thuyết.",
+    "createTitle": "Thêm thể loại mới",
+    "editTitle": "Chỉnh sửa thể loại",
+    "createDescription": "Thêm thể loại tiểu thuyết mới.",
+    "editDescription": "Cập nhật thông tin thể loại tiểu thuyết.",
+    "searchPlaceholder": "Tìm tên thể loại, slug...",
+    "noGenres": "Không tìm thấy thể loại nào.",
+    "sections": {
+      "general": "Thông tin chung"
+    },
+    "fields": {
+      "name": "Tên thể loại",
+      "namePlaceholder": "Nhập tên thể loại...",
+      "slug": "Đường dẫn (Slug)",
+      "slugPlaceholder": "ten-the-loai",
+      "description": "Mô tả",
+      "descriptionPlaceholder": "Mô tả ngắn về thể loại..."
+    }
+  },
+  "tags": {
+    "title": "Quản lý thẻ truyện",
+    "description": "Danh sách các thẻ phân loại truyện.",
+    "createTitle": "Thêm thẻ mới",
+    "editTitle": "Chỉnh sửa thẻ",
+    "createDescription": "Thêm thẻ phân loại mới.",
+    "editDescription": "Cập nhật thông tin thẻ phân loại.",
+    "searchPlaceholder": "Tìm tên thẻ, slug...",
+    "noTags": "Không tìm thấy thẻ nào.",
+    "sections": {
+      "general": "Thông tin chung"
+    },
+    "fields": {
+      "name": "Tên thẻ",
+      "namePlaceholder": "Nhập tên thẻ...",
+      "slug": "Đường dẫn (Slug)",
+      "slugPlaceholder": "ten-the",
+      "description": "Mô tả",
+      "descriptionPlaceholder": "Mô tả ngắn về thẻ..."
+    }
+  },
+  "chapters": {
+    "title": "Quản lý chương truyện",
+    "description": "Danh sách các chương của các bộ tiểu thuyết.",
+    "createTitle": "Thêm chương mới",
+    "editTitle": "Chỉnh sửa chương truyện",
+    "createDescription": "Thêm một chương mới cho bộ truyện.",
+    "editDescription": "Cập nhật nội dung và thông tin chương truyện.",
+    "searchPlaceholder": "Tìm tên chương, số chương...",
+    "noChapters": "Không tìm thấy chương nào.",
+    "sections": {
+      "general": "Thông tin chương",
+      "content": "Nội dung chương",
+      "settings": "Cài đặt"
+    },
+    "fields": {
+      "novel": "Bộ truyện",
+      "novelPlaceholder": "Chọn bộ truyện",
+      "chapterNumber": "Số thứ tự chương",
+      "chapterNumberPlaceholder": "VD: 1, 2, 3...",
+      "title": "Tiêu đề chương",
+      "titlePlaceholder": "Nhập tiêu đề chương...",
+      "slug": "Đường dẫn (Slug)",
+      "slugPlaceholder": "chuong-1",
+      "content": "Nội dung chương",
+      "contentPlaceholder": "Nhập hoặc dán nội dung chữ của chương...",
+      "wordCount": "Số từ",
+      "isPublished": "Xuất bản ngay",
+      "viewsCount": "Lượt đọc"
+    }
   }
 }

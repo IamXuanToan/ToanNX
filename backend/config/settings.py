@@ -106,12 +106,37 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # File upload (module attachment).
 # Local: lưu filesystem `media/`. Production (Vercel không có filesystem bền): cấu hình
-# STORAGES["default"] sang object storage (S3/R2/Vercel Blob) qua biến môi trường.
-MEDIA_URL = "/media/"
+# Cloudflare R2 Object Storage (Zero Egress fees) qua biến môi trường.
+CLOUDFLARE_R2_ACCOUNT_ID = env.str("CLOUDFLARE_R2_ACCOUNT_ID", default="")
+CLOUDFLARE_R2_ACCESS_KEY_ID = env.str("CLOUDFLARE_R2_ACCESS_KEY_ID", default="")
+CLOUDFLARE_R2_SECRET_ACCESS_KEY = env.str("CLOUDFLARE_R2_SECRET_ACCESS_KEY", default="")
+CLOUDFLARE_R2_BUCKET_NAME = env.str("CLOUDFLARE_R2_BUCKET_NAME", default="")
+CLOUDFLARE_R2_CUSTOM_DOMAIN = env.str("CLOUDFLARE_R2_CUSTOM_DOMAIN", default="")
+CLOUDFLARE_R2_ENDPOINT_URL = env.str("CLOUDFLARE_R2_ENDPOINT_URL", default="")
+
+_configured_storage = env.str("FILE_STORAGE_BACKEND", default="")
+_use_r2 = bool(
+    _configured_storage == "app.core.storage.r2_storage.R2Storage"
+    or (CLOUDFLARE_R2_BUCKET_NAME and _configured_storage != "django.core.files.storage.FileSystemStorage")
+)
+
+if not _configured_storage:
+    _configured_storage = (
+        "app.core.storage.r2_storage.R2Storage"
+        if _use_r2
+        else "django.core.files.storage.FileSystemStorage"
+    )
+
 MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = (
+    f"https://{CLOUDFLARE_R2_CUSTOM_DOMAIN.replace('https://', '').replace('http://', '').rstrip('/')}/"
+    if (_use_r2 and CLOUDFLARE_R2_CUSTOM_DOMAIN)
+    else "/media/"
+)
+
 STORAGES = {
     "default": {
-        "BACKEND": env.str("FILE_STORAGE_BACKEND", default="django.core.files.storage.FileSystemStorage")
+        "BACKEND": _configured_storage,
     },
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }

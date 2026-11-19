@@ -71,6 +71,10 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 - Không báo PASS khi chưa chạy thật. Trước khi báo xong: `scripts/check-all.ps1` (hoặc `.sh`) và `pnpm e2e`.
 - Sửa bug: thêm test tái hiện trước/cùng lúc với bản sửa.
 - Test nằm cạnh code: `app/modules/<m>/tests/`, `app/core/tests/` (BE); `frontend/tests/` (FE).
+- **Quy chuẩn API test backend**: Mỗi endpoint đúng 1 file test riêng biệt (`test_<resource>_<action>_api.py`).
+  Không gộp chung các action CRUD vào một file model; không tách file test quyền riêng biệt.
+  Mỗi file test endpoint phải bao phủ toàn diện: full data, min data, validation errors, mã HTTP status, envelope response,
+  chưa đăng nhập (401), thiếu quyền (403), cô lập owner (404/403 cho người khác, manage_all thành công).
 
 ## 8. Git
 

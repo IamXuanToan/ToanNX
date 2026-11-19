@@ -8,9 +8,17 @@
 import { apiClient } from "@/shares/lib/api/api-client";
 import { createCrudService } from "@/shares/lib/api/create-crud-service";
 
+import type { ListParams } from "@/shares/types/api.types";
+
 import { NOVEL_API_ENDPOINTS } from "../constants/api-endpoints";
 import type { NovelImportPayload, NovelImportResult } from "../types/novel-import.types";
-import type { Novel, NovelClientDetail, NovelDetail } from "../types/novel.types";
+import type {
+  Novel,
+  NovelClientDetail,
+  NovelCreateInput,
+  NovelDetail,
+  NovelUpdateInput,
+} from "../types/novel.types";
 
 // ============================================================================
 // CRUD SERVICE
@@ -18,9 +26,9 @@ import type { Novel, NovelClientDetail, NovelDetail } from "../types/novel.types
 
 const crud = createCrudService<
   Novel,
-  Record<string, unknown>,
-  Record<string, unknown>,
-  Record<string, unknown>,
+  ListParams,
+  NovelCreateInput,
+  NovelUpdateInput,
   NovelDetail
 >(NOVEL_API_ENDPOINTS.novels);
 
@@ -66,17 +74,15 @@ export const novelService = {
   },
 
   /**
-   * Thực hiện nhập khẩu một tiểu thuyết kèm danh sách các chương từ payload JSON.
+   * Thực hiện nhập khẩu toàn bộ dữ liệu truyện (tiêu đề, tác giả, thể loại, chương...).
    *
-   * @param payload - Dữ liệu truyện và các chương cần import.
-   * @param signal - AbortSignal hỗ trợ hủy request khi cần.
-   * @returns Kết quả nhập khẩu gồm ID truyện, slug và số lượng chương đã tạo.
+   * @param payload - Nội dung truyện dạng JSON theo đúng schema mẫu.
+   * @returns Kết quả import gồm ID, slug truyện và số lượng chương đã nạp thành công.
    */
-  async importNovel(payload: NovelImportPayload, signal?: AbortSignal): Promise<NovelImportResult> {
+  async importNovel(payload: NovelImportPayload): Promise<NovelImportResult> {
     const response = await apiClient.post<NovelImportResult>(
       NOVEL_API_ENDPOINTS.importNovel,
       payload,
-      { signal },
     );
     return response.data;
   },

@@ -24,8 +24,61 @@ export const NOVEL_ROUTES = {
     pathname: "/novels/[slug]/[chapterNumber]" as const,
     params: { slug, chapterNumber: String(chapterNumber) },
   }),
+
+  // ================= Quản trị Tiểu thuyết =================
   /** Trang quản trị danh sách tiểu thuyết (`/admin/novels`) */
   adminNovels: "/admin/novels",
+  /** Trang tạo tiểu thuyết mới (`/admin/novels/new`) */
+  adminNovelCreate: "/admin/novels/new",
+  /**
+   * Trang chỉnh sửa tiểu thuyết
+   * @param id - UUID tiểu thuyết
+   */
+  adminNovelDetail: (id: string) => ({ pathname: "/admin/novels/[id]" as const, params: { id } }),
+
+  // ================= Quản trị Tác giả =================
+  /** Trang quản trị danh sách tác giả (`/admin/authors`) */
+  adminAuthors: "/admin/authors",
+  /** Trang tạo tác giả mới (`/admin/authors/new`) */
+  adminAuthorCreate: "/admin/authors/new",
+  /**
+   * Trang chi tiết/chỉnh sửa tác giả
+   * @param id - UUID tác giả
+   */
+  adminAuthorDetail: (id: string) => ({ pathname: "/admin/authors/[id]" as const, params: { id } }),
+
+  // ================= Quản trị Thể loại =================
+  /** Trang quản trị danh sách thể loại (`/admin/genres`) */
+  adminGenres: "/admin/genres",
+  /** Trang tạo thể loại mới (`/admin/genres/new`) */
+  adminGenreCreate: "/admin/genres/new",
+  /**
+   * Trang chi tiết/chỉnh sửa thể loại
+   * @param id - UUID thể loại
+   */
+  adminGenreDetail: (id: string) => ({ pathname: "/admin/genres/[id]" as const, params: { id } }),
+
+  // ================= Quản trị Thẻ =================
+  /** Trang quản trị danh sách thẻ (`/admin/tags`) */
+  adminTags: "/admin/tags",
+  /** Trang tạo thẻ mới (`/admin/tags/new`) */
+  adminTagCreate: "/admin/tags/new",
+  /**
+   * Trang chi tiết/chỉnh sửa thẻ
+   * @param id - UUID thẻ
+   */
+  adminTagDetail: (id: string) => ({ pathname: "/admin/tags/[id]" as const, params: { id } }),
+
+  // ================= Quản trị Chương truyện =================
+  /** Trang quản trị danh sách chương truyện (`/admin/chapters`) */
+  adminChapters: "/admin/chapters",
+  /** Trang tạo chương truyện mới (`/admin/chapters/new`) */
+  adminChapterCreate: "/admin/chapters/new",
+  /**
+   * Trang chi tiết/chỉnh sửa chương truyện
+   * @param id - UUID chương
+   */
+  adminChapterDetail: (id: string) => ({ pathname: "/admin/chapters/[id]" as const, params: { id } }),
 } as const;
 
 /**
@@ -40,5 +93,25 @@ export const NOVEL_PATHNAMES = {
     vi: "/truyen/[slug]/[chapterNumber]",
     en: "/novels/[slug]/[chapterNumber]",
   },
+
+  // Quản trị
   "/admin/novels": { vi: "/quan-tri/truyen", en: "/admin/novels" },
+  "/admin/novels/new": { vi: "/quan-tri/truyen/them-moi", en: "/admin/novels/new" },
+  "/admin/novels/[id]": { vi: "/quan-tri/truyen/[id]", en: "/admin/novels/[id]" },
+
+  "/admin/authors": { vi: "/quan-tri/tac-gia", en: "/admin/authors" },
+  "/admin/authors/new": { vi: "/quan-tri/tac-gia/them-moi", en: "/admin/authors/new" },
+  "/admin/authors/[id]": { vi: "/quan-tri/tac-gia/[id]", en: "/admin/authors/[id]" },
+
+  "/admin/genres": { vi: "/quan-tri/the-loai", en: "/admin/genres" },
+  "/admin/genres/new": { vi: "/quan-tri/the-loai/them-moi", en: "/admin/genres/new" },
+  "/admin/genres/[id]": { vi: "/quan-tri/the-loai/[id]", en: "/admin/genres/[id]" },
+
+  "/admin/tags": { vi: "/quan-tri/the", en: "/admin/tags" },
+  "/admin/tags/new": { vi: "/quan-tri/the/them-moi", en: "/admin/tags/new" },
+  "/admin/tags/[id]": { vi: "/quan-tri/the/[id]", en: "/admin/tags/[id]" },
+
+  "/admin/chapters": { vi: "/quan-tri/chuong-truyen", en: "/admin/chapters" },
+  "/admin/chapters/new": { vi: "/quan-tri/chuong-truyen/them-moi", en: "/admin/chapters/new" },
+  "/admin/chapters/[id]": { vi: "/quan-tri/chuong-truyen/[id]", en: "/admin/chapters/[id]" },
 } as const;

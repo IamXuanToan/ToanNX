@@ -7,7 +7,7 @@ import { qrCodesNavigation } from "@/modules/qr-codes/navigation";
 import { shortLinksNavigation } from "@/modules/short-links/navigation";
 import { journalNavigation } from "@/modules/journal/navigation";
 import { novelNavigation } from "@/modules/novel/navigation";
-import { LayoutTemplate, type LucideIcon, Settings } from "lucide-react";
+import { BookOpen, LayoutTemplate, type LucideIcon, Settings } from "lucide-react";
 
 import type { AdminGroupCode, AdminModuleNavigation } from "@/shares/types/navigation.types";
 
@@ -19,6 +19,7 @@ import type { AdminGroupCode, AdminModuleNavigation } from "@/shares/types/navig
 export const ADMIN_GROUPS: { code: AdminGroupCode; icon: LucideIcon }[] = [
   { code: "system", icon: Settings },
   { code: "content", icon: LayoutTemplate },
+  { code: "novel", icon: BookOpen },
 ];
 
 /**

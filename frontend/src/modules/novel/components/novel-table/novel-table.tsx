@@ -33,7 +33,13 @@ const NOVEL_STATUS_BADGE_VARIANTS: Record<NovelStatus, "default" | "secondary" |
  * @param props - Quyền sửa, quyền xóa.
  * @returns DataTable tiểu thuyết.
  */
-export function NovelTable({ canDelete }: { canUpdate?: boolean; canDelete: boolean }) {
+export function NovelTable({
+  canUpdate = false,
+  canDelete = false,
+}: {
+  canUpdate?: boolean;
+  canDelete?: boolean;
+}) {
   const t = useTranslations("novel");
   const format = useFormatter();
   const state = useNovelTable();
@@ -161,6 +167,7 @@ export function NovelTable({ canDelete }: { canUpdate?: boolean; canDelete: bool
             }
           : undefined
       }
+      onEdit={canUpdate ? state.edit : undefined}
       onDelete={canDelete ? state.remove : undefined}
       onBulkDelete={canDelete ? state.bulkDelete : undefined}
       aria-label={t("admin.title")}

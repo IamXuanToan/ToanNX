@@ -17,6 +17,7 @@ export function createQueryClient(): QueryClient {
         staleTime: STALE_TIME_MS,
         refetchOnWindowFocus: false,
         retry: (failureCount, error) => {
+          if (error instanceof Error && error.name === "AbortError") return false;
           if (isApiError(error) && error.status >= 400 && error.status < 500) return false;
           return failureCount < MAX_RETRIES;
         },

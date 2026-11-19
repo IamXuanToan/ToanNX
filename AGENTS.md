@@ -35,8 +35,11 @@ Backend:
    `action_permissions` (mọi action phải có rule — mặc định 403), `action_rate_limits` (khóa trong
    `settings.RATE_LIMITS`). API khác dùng `CoreApiView` + `@require_permission` (+ `@rate_limit`, `@validate_request`);
    công khai/chỉ đăng nhập thì ghi đè `permission_classes` theo bảng trong `core_api_view.py`. Không tạo lớp view nền.
-7. `INSTALLED_APPS`, `config/urls.py`, `migrate` (quyền tự đồng bộ). Test trong `tests/` (factory, quyền, owner,
-   bulk, lịch sử) + một dòng trong `core/tests/test_list_query_count.py` cho endpoint danh sách (quên là test đỏ).
+7. `INSTALLED_APPS`, `config/urls.py`, `migrate` (quyền tự đồng bộ). Test trong `tests/`: **mỗi endpoint đúng 1 file test riêng biệt**
+   (`test_<resource>_<action>_api.py`), tuyệt đối không gộp chung các action CRUD theo model, tuyệt đối không tách quyền ra file riêng;
+   mỗi file test endpoint phải bao phủ đủ: `full_data`, `min_data`, `validation_errors`, quyền (`unauthenticated` 401, `forbidden` 403),
+   `owner_isolation` (nếu có owner: 404 cho người khác, `manage_all` được phép), response envelope `{success, data, meta}` và status code chuẩn +
+   một dòng trong `core/tests/test_list_query_count.py` cho endpoint danh sách (quên là test đỏ).
    Khóa `action_rate_limits` phải có trong `settings.RATE_LIMITS` (test quy ước kiểm). API công khai hoặc chỉ
    cần đăng nhập phải thêm tên view vào `core/tests/test_endpoint_access.py` (test gọi thật mọi route).
    `spectacular --validate --fail-on-warn` phải sạch.

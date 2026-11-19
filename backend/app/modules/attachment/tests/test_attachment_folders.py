@@ -10,7 +10,7 @@ from app.modules.attachment.models.attachment import Attachment
 from app.modules.attachment.models.attachment_folder import AttachmentFolder
 from app.modules.attachment.permissions.attachment_folder_permission import AttachmentFolderPermission
 from app.modules.attachment.permissions.attachment_permission import AttachmentPermission as P
-from app.modules.attachment.tests.test_attachment_api import PNG_BYTES
+from app.modules.attachment.tests.helpers.attachment_test_helper import PNG_BYTES
 from app.modules.iam.tests.helpers.permission_helper import grant
 
 pytestmark = pytest.mark.django_db

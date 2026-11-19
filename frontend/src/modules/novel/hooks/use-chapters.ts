@@ -3,6 +3,7 @@
  */
 
 import { useListQuery } from "@/shares/hooks/use-list-query";
+import type { Paginated } from "@/shares/types/api.types";
 
 import { novelKeys } from "../constants/query-keys";
 import { chapterService } from "../services/chapter.service";
@@ -21,10 +22,10 @@ import type { ChapterListItem } from "../types/chapter.types";
  */
 export function useChapters(params?: Record<string, unknown>, enabled = true) {
   const safeParams = params ?? {};
-  return useListQuery<ChapterListItem[]>(
+  return useListQuery<Paginated<ChapterListItem>>(
     novelKeys.chapter.list(safeParams),
     (signal) =>
-      chapterService.list(safeParams, signal) as Promise<unknown> as Promise<ChapterListItem[]>,
+      chapterService.list(safeParams, signal) as Promise<unknown> as Promise<Paginated<ChapterListItem>>,
     { enabled },
   );
 }

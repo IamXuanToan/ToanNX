@@ -22,6 +22,23 @@ export type NovelDetail = ApiModel<"NovelDetailResponse">;
 /** Kiểu dữ liệu chi tiết tiểu thuyết dành cho giao diện độc giả (khớp `NovelClientDetailResponse`). */
 export type NovelClientDetail = ApiModel<"NovelClientDetailResponse">;
 
+/** Input tạo mới tiểu thuyết. */
+export interface NovelCreateInput {
+  title: string;
+  slug?: string;
+  originalTitle?: string;
+  authorId?: string | null;
+  thumbnailId?: string | null;
+  description?: string;
+  status?: NovelStatus;
+  genreIds?: string[];
+  tagIds?: string[];
+  isPublished?: boolean;
+}
+
+/** Input cập nhật tiểu thuyết. */
+export type NovelUpdateInput = Partial<NovelCreateInput>;
+
 export * from "./chapter.types";
 export * from "./author.types";
 export * from "./genre.types";

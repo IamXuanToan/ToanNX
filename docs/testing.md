@@ -17,12 +17,27 @@ uv run pytest -q
 | `app/core/tests/base/base_api_test_case.py` | `BaseApiTestCase`: `assert_success`, `assert_error`, `assert_paginated`, `assert_unauthorized`, `assert_forbidden`, `assert_no_sensitive_data` |
 | `app/modules/iam/tests/factories/` | `user_factory.py`, `staff_factory.py`, `superuser_factory.py`, `role_factory.py` |
 | `app/modules/iam/tests/helpers/permission_helper.py` | `grant(user, *permissions)` |
-| `modules/novel/tests/` | Mỗi API một file riêng (`test_novel_api`, `test_chapter_api`, `test_author_api`, `test_genre_api`, `test_tag_api`, `test_novel_client_api`, `test_reading_history_api`, `test_favorite_api`, `test_novel_import_api`), `test_novel_permission` |
-| `modules/attachment/tests/` | upload, nhận diện chữ ký file, giới hạn dung lượng, quyền, xóa mềm, ảnh đại diện |
-| `modules/authentication/` | `test_login` (đúng/sai/inactive/validation/rate limit/không có register), `test_csrf`, `test_me` (JWT sai/hết hạn, khóa tài khoản), `test_refresh` (xoay vòng/expired/revoked/reuse/conflict, **refresh đồng thời 2 thread**), `test_logout`, `test_session` (list/revoke, đổi mật khẩu thu hồi phiên) |
-| `modules/account/` | `test_user_api` (CRUD, `search`/filter/`ordering`/phân trang, chống leo thang, superuser cuối cùng), `test_account_auth_backend` (authenticate qua Django, `has_perm` qua IAM backend) |
-| `modules/iam/` | `test_permission_checker`, `test_permission_rule` (any/all, `check`, `allow_if`), `test_admin_access`, `test_user_role_api` (gán/thu hồi, `GET` vai trò của người dùng), `test_role_api` (filter `auto_grant`) |
+| `modules/novel/tests/` | Mỗi endpoint một file riêng (`test_<resource>_<action>_api.py`), bao phủ full/min data, validation, response, 401, 403, owner |
+| `modules/attachment/tests/` | Mỗi endpoint một file test riêng biệt; upload, nhận diện chữ ký file, dung lượng, quyền, xóa mềm, thư mục |
+| `modules/authentication/` | Mỗi endpoint một file test riêng: `test_login`, `test_csrf`, `test_me`, `test_refresh`, `test_logout`, `test_password_reset_*`, `test_session_*`, `test_admin_session_*` |
+| `modules/account/` | Mỗi endpoint một file test riêng (`test_user_*_api.py`), `test_account_auth_backend` |
+| `modules/iam/` | Mỗi endpoint một file test riêng (`test_role_*_api.py`, `test_user_role_*_api.py`), permission checker/rules |
 | `core/` | `test_user_context`, `test_responses` (request id, 404/405, readiness), `test_core_repository` (audit, 409, soft delete), `test_module_registry`, `test_settings`, `test_openapi_schema` (schema hợp lệ, không cảnh báo, đúng envelope/security), `test_module_conventions` (CoreModuleConfig, mã module = label, mọi view có kiểm tra module) |
+
+### Chuẩn kiểm thử API từng endpoint (1 endpoint = 1 file test)
+
+- **Cấu trúc đặt tên**: `test_<resource>_<action>_api.py` (ví dụ `test_novel_list_api.py`, `test_novel_create_api.py`, `test_novel_update_api.py`...).
+- **Không gộp theo model**: Không viết gom chung các action CRUD của model vào 1 file `test_<model>_api.py`.
+- **Không tách file quyền riêng**: Quyền truy cập (401, 403) và quyền sở hữu (owner, manage_all) phải nằm trong chính file test của endpoint đó.
+- **Tiêu chuẩn bao phủ bắt buộc trong mỗi file**:
+  1. `full_data`: Gửi toàn bộ các trường (required + optional), kiểm tra DB và response.
+  2. `min_data`: Gửi chỉ các trường bắt buộc tối thiểu, kiểm tra default/null của các trường còn lại.
+  3. `validation_errors`: Kiểm tra các case validate lỗi (thiếu trường, sai định dạng, vượt ký tự, trùng lặp unique slug/code).
+  4. `unauthenticated`: Chưa đăng nhập -> nhận 401 `AUTH_UNAUTHENTICATED`.
+  5. `forbidden`: Đăng nhập nhưng thiếu quyền -> nhận 403 `PERMISSION_DENIED`.
+  6. `owner_isolation`: Tài nguyên có owner: người dùng khác truy cập nhận 404/403, người có `manage_all` thao tác thành công.
+  7. `response_envelope`: Response bọc chuẩn `{success, data, meta: {request_id}}`, status code chuẩn.
+  8. `list_features` (với endpoint list): Lọc nhiều giá trị, tìm kiếm (`search`), sắp xếp (`ordering`), phân trang (`page`, `page_size`).
 
 Base class CRUD (`base_create_api_test_case`...) theo kiểu PMS **không** được tạo: các endpoint hiện tại có quy
 tắc riêng, test tường minh dễ đọc hơn. Có thể bổ sung khi có module CRUD lặp lại nhiều.

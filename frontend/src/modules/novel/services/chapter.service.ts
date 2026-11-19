@@ -8,14 +8,21 @@
 import { apiClient } from "@/shares/lib/api/api-client";
 import { createCrudService } from "@/shares/lib/api/create-crud-service";
 
+import type { ListParams } from "@/shares/types/api.types";
+
 import { NOVEL_API_ENDPOINTS } from "../constants/api-endpoints";
-import type { ChapterDetail, ChapterListItem } from "../types/novel.types";
+import type {
+  ChapterCreateInput,
+  ChapterDetail,
+  ChapterListItem,
+  ChapterUpdateInput,
+} from "../types/novel.types";
 
 const crud = createCrudService<
   ChapterListItem,
-  Record<string, unknown>,
-  Record<string, unknown>,
-  Record<string, unknown>,
+  ListParams,
+  ChapterCreateInput,
+  ChapterUpdateInput,
   ChapterDetail
 >(NOVEL_API_ENDPOINTS.chapters);
 
@@ -59,6 +66,9 @@ export const chapterService = {
       `${NOVEL_API_ENDPOINTS.chapters}?novel=${novelId}&ordering=chapter_number&page_size=1000`,
       { signal },
     );
-    return Array.isArray(response.data) ? response.data : (response.data.results ?? []);
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    return (response.data as { results: ChapterListItem[] })?.results ?? [];
   },
 };
