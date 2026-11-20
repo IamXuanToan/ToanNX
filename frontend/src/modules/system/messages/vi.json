@@ -1,0 +1,457 @@
+{
+  "module": {
+    "name": "Hệ thống",
+    "description": "Tài khoản, phiên, phân quyền, thư viện và nhật ký thay đổi."
+  },
+  "account": {
+    "feedback": {
+      "saved": "Đã lưu thay đổi."
+    },
+    "validation": {
+      "emailInvalid": "Email không hợp lệ.",
+      "passwordMin": "Mật khẩu tối thiểu 10 ký tự.",
+      "required": "Trường này là bắt buộc.",
+      "usernameFormat": "Chỉ dùng chữ, số và các ký tự . _ - @ +"
+    },
+    "users": {
+      "title": "Người dùng",
+      "searchPlaceholder": "Tìm theo email, tên…",
+      "empty": "Chưa có người dùng.",
+      "superuser": "Superuser",
+      "create": "Tạo người dùng",
+      "profile": "Thông tin tài khoản",
+      "columns": {
+        "user": "Người dùng",
+        "status": "Trạng thái",
+        "lastLogin": "Đăng nhập gần nhất",
+        "access": "Quyền truy cập",
+        "lastSeen": "Hoạt động gần nhất"
+      },
+      "fields": {
+        "email": "Email",
+        "password": "Mật khẩu",
+        "newPassword": "Mật khẩu mới",
+        "newPasswordHint": "Để trống nếu không đổi. Đổi mật khẩu sẽ đăng xuất mọi phiên của người dùng.",
+        "firstName": "Tên",
+        "lastName": "Họ",
+        "isActive": "Đang hoạt động",
+        "isActiveHint": "Tắt để khóa tài khoản và thu hồi mọi phiên.",
+        "isStaff": "Truy cập quản trị",
+        "isStaffHint": "Cho phép vào khu vực quản trị; từng chức năng vẫn cần quyền.",
+        "isNovel": "Nhóm Novel",
+        "isNovelHint": "Chỉ đánh dấu nhóm nghiệp vụ Novel, không tự cấp quyền.",
+        "username": "Tên người dùng",
+        "passwordHint": "Tối thiểu 10 ký tự, không toàn số.",
+        "avatar": "Ảnh đại diện",
+        "isSuperuser": "Siêu quản trị",
+        "isSuperuserHint": "Toàn quyền, bỏ qua kiểm tra quyền. Chỉ superuser bật được.",
+        "dateJoined": "Ngày tham gia"
+      },
+      "staff": "Quản trị",
+      "novel": "Novel",
+      "actions": {
+        "lock": "Khoá tài khoản",
+        "unlock": "Mở khoá"
+      },
+      "extensionFailed": "Đã lưu người dùng nhưng chưa cập nhật xong vai trò: {message}",
+      "sections": {
+        "access": "Truy cập",
+        "activity": "Hoạt động"
+      },
+      "presence": {
+        "label": "Trạng thái",
+        "online": "Đang trực tuyến",
+        "offline": "Ngoại tuyến"
+      }
+    }
+  },
+  "attachment": {
+    "title": "Thư viện",
+    "video": "Video",
+    "format": "Đuôi tệp",
+    "folder": "Thư mục",
+    "unfiled": "Chưa phân loại",
+    "manageFolders": "Quản lý thư mục",
+    "folderDescription": "Tạo thư mục nhiều cấp để gom tệp. Đường dẫn lưu trữ và URL tệp được giữ nguyên.",
+    "folderName": "Tên thư mục",
+    "folderNameRequired": "Nhập tên thư mục.",
+    "folderNameMax": "Tên thư mục tối đa 150 ký tự.",
+    "parentFolder": "Thư mục cha",
+    "rootFolder": "Cấp gốc",
+    "saveFolder": "Lưu thư mục",
+    "createFolder": "Tạo thư mục",
+    "fileCount": "Tệp trực tiếp",
+    "folderCount": "{count} tệp trực tiếp · bộ lọc gồm cả thư mục con",
+    "noFolders": "Chưa có thư mục",
+    "deleteFolder": "Xóa thư mục",
+    "deleteFolderDescription": "Thư mục này và toàn bộ thư mục con sẽ bị xóa mềm. Chọn cách xử lý tệp bên trong.",
+    "folderDeleteMode": "Xử lý tệp trong nhánh",
+    "keepFiles": "Giữ tất cả tệp",
+    "deleteFolderFiles": "Xóa mềm cả tệp bên trong",
+    "keepFilesDescription": "Tệp trong cả nhánh được đưa về Chưa phân loại. URL tệp không thay đổi.",
+    "requiresFileDelete": "Cần quyền xóa tệp để chọn xóa cả tệp bên trong.",
+    "folderSaved": "Đã lưu thư mục.",
+    "folderDeleted": "Đã xóa nhánh thư mục.",
+    "moveFiles": "Chuyển thư mục",
+    "moveDescription": "Gom các tệp đã chọn vào thư mục cùng chủ sở hữu. Đường dẫn và URL tệp không thay đổi.",
+    "destinationFolder": "Thư mục đích",
+    "filesMoved": "Đã chuyển {count} tệp.",
+    "incompatibleSelection": "Chỉ chọn tệp hình ảnh.",
+    "upload": "Tải tệp lên",
+    "chooseImage": "Chọn ảnh từ thư viện",
+    "pickerTitle": "Chọn ảnh từ Thư viện",
+    "pickerUploadHint": "Chọn ảnh từ thư viện hoặc tải ảnh mới trực tiếp từ thiết bị.",
+    "uploadShort": "Tải lên",
+    "clearFiltersShort": "Xóa lọc",
+    "uploadingHint": "Đang tải ảnh lên…",
+    "dropImageHere": "Thả ảnh vào đây để tải lên ngay",
+    "doubleClickToUse": "Nhấp đúp vào ảnh để chọn ngay",
+    "openLibrary": "Mở Thư viện",
+    "useImage": "Dùng ảnh này",
+    "selectedImage": "Đã chọn 1 ảnh",
+    "noImage": "Chưa chọn ảnh",
+    "search": "Tìm theo tên tệp…",
+    "kind": "Loại tệp",
+    "image": "Ảnh",
+    "document": "Tài liệu",
+    "scope": "Phạm vi",
+    "mine": "Của tôi",
+    "others": "Của người khác",
+    "selectPage": "Chọn tất cả trong trang",
+    "clearSelection": "Bỏ chọn tất cả",
+    "selectedCount": "Đã chọn {count} / {total} tệp trong trang",
+    "inspect": "Xem {name}",
+    "select": "Chọn {name}",
+    "viewDetails": "Xem chi tiết",
+    "details": "Thông tin tệp",
+    "name": "Tên tệp",
+    "type": "Định dạng",
+    "size": "Dung lượng",
+    "uploadedAt": "Ngày tải lên",
+    "uploader": "Người tải lên",
+    "copyUrl": "Sao chép URL",
+    "copied": "Đã sao chép URL.",
+    "copyFailed": "Không thể sao chép URL. Hãy dùng liên kết mở tệp.",
+    "openFile": "Mở tệp",
+    "deleteFile": "Xóa tệp",
+    "deleteSelected": "Xóa ({count})",
+    "deleteTitle": "Xóa {count} tệp?",
+    "deleteDescription": "Tệp sẽ bị xóa khỏi thư viện. Ảnh đại diện và nội dung đang sử dụng tệp sẽ mất ảnh.",
+    "deleted": "Đã xóa {count} tệp.",
+    "empty": "Thư viện chưa có tệp",
+    "emptyDescription": "Tải tệp đầu tiên để bắt đầu sử dụng.",
+    "noResults": "Không tìm thấy tệp",
+    "clearFilters": "Xóa tìm kiếm và bộ lọc",
+    "selectPrompt": "Chọn một tệp để xem thông tin",
+    "imageUnavailable": "Không xem trước được ảnh",
+    "dropTitle": "Kéo thả tệp vào đây",
+    "dropHint": "hoặc chọn tệp từ thiết bị",
+    "chooseFiles": "Chọn tệp",
+    "uploadHint": "Định dạng và dung lượng được kiểm tra khi tải lên.",
+    "uploading": "Đang tải lên…",
+    "uploaded": "Đã tải lên",
+    "waiting": "Đang chờ",
+    "failed": "Tải lên thất bại",
+    "done": "Xong",
+    "cancel": "Hủy",
+    "close": "Đóng",
+    "reload": "Tải lại",
+    "loading": "Đang tải thư viện",
+    "newest": "Mới nhất trước",
+    "oldest": "Cũ nhất trước",
+    "largest": "Dung lượng lớn nhất",
+    "ordering": "Sắp xếp",
+    "imageOnly": "Tệp đã tải lên nhưng không phải ảnh. Hãy chọn một ảnh khác.",
+    "editorInsert": "Ảnh từ Thư viện",
+    "altText": "Văn bản thay thế (alt)",
+    "noAltText": "Chưa có alt text",
+    "altTextPlaceholder": "Mô tả hình ảnh cho trình đọc màn hình và SEO…",
+    "altTextHint": "Văn bản thay thế giúp người khiếm thị hiểu được nội dung ảnh và tối ưu SEO.",
+    "edit": "Sửa",
+    "editFile": "Đổi tên & Alt",
+    "editFileTitle": "Chỉnh sửa thông tin tệp",
+    "editFileDescription": "Đổi tên tệp và cấu hình văn bản thay thế (alt text) hiển thị cho hình ảnh.",
+    "fileName": "Tên tệp",
+    "fileNameRequired": "Vui lòng nhập tên tệp.",
+    "fileNameMax": "Tên tệp tối đa 255 ký tự.",
+    "altTextMax": "Văn bản thay thế tối đa 255 ký tự.",
+    "saveChanges": "Lưu thay đổi",
+    "saving": "Đang lưu…",
+    "fileUpdated": "Đã cập nhật thông tin tệp.",
+    "copyName": "Chép tên",
+    "copiedName": "Đã chép"
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng nhập",
+      "password": "Mật khẩu",
+      "submit": "Đăng nhập",
+      "submitting": "Đang đăng nhập...",
+      "identifier": "Email hoặc tên người dùng",
+      "forgotPasswordLink": "Quên mật khẩu?"
+    },
+    "forgotPassword": {
+      "title": "Quên mật khẩu",
+      "description": "Nhập địa chỉ email tài khoản của bạn để nhận liên kết đặt lại mật khẩu.",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "submit": "Gửi liên kết",
+      "submitting": "Đang gửi...",
+      "successTitle": "Kiểm tra hộp thư của bạn",
+      "successDescription": "Nếu email tồn tại trong hệ thống, chúng tôi đã gửi đường dẫn đặt lại mật khẩu. Vui lòng kiểm tra hộp thư đến (và thư mục rác).",
+      "backToLogin": "Quay lại đăng nhập",
+      "resend": "Gửi lại email khác"
+    },
+    "resetPassword": {
+      "title": "Đặt lại mật khẩu",
+      "description": "Vui lòng nhập mật khẩu mới cho tài khoản của bạn.",
+      "password": "Mật khẩu mới",
+      "passwordPlaceholder": "Tối thiểu 8 ký tự",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
+      "submit": "Đổi mật khẩu",
+      "submitting": "Đang xử lý...",
+      "successTitle": "Đặt lại mật khẩu thành công",
+      "successDescription": "Mật khẩu của bạn đã được cập nhật. Bạn có thể đăng nhập ngay bây giờ.",
+      "backToLogin": "Đăng nhập ngay",
+      "invalidTokenTitle": "Liên kết không hợp lệ hoặc đã hết hạn",
+      "invalidTokenDescription": "Liên kết đặt lại mật khẩu này đã hết hạn hoặc đã được sử dụng. Vui lòng gửi yêu cầu mới.",
+      "requestNewLink": "Yêu cầu liên kết mới"
+    },
+    "validation": {
+      "passwordRequired": "Vui lòng nhập mật khẩu.",
+      "identifierRequired": "Vui lòng nhập email hoặc tên người dùng.",
+      "emailRequired": "Vui lòng nhập email.",
+      "emailInvalid": "Email không hợp lệ.",
+      "passwordMin": "Mật khẩu phải có ít nhất 8 ký tự.",
+      "passwordMismatch": "Mật khẩu xác nhận không khớp."
+    },
+    "userMenu": {
+      "open": "Mở menu tài khoản",
+      "profile": "Hồ sơ cá nhân",
+      "logout": "Đăng xuất",
+      "logoutAll": "Đăng xuất mọi thiết bị"
+    },
+    "session": {
+      "expired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
+    },
+    "sessions": {
+      "title": "Phiên",
+      "empty": "Chưa có phiên đăng nhập.",
+      "searchPlaceholder": "Tìm người dùng, thiết bị, IP…",
+      "usersRetry": "Không tải được người dùng · Thử lại",
+      "current": "Phiên hiện tại",
+      "manage": "Quản lý phiên",
+      "revoke": "Thu hồi",
+      "revoked": "Đã thu hồi phiên.",
+      "revokeTitle": "Thu hồi phiên đăng nhập?",
+      "revokeDescription": "Thiết bị này của {email} sẽ phải đăng nhập lại.",
+      "allStatuses": "Mọi trạng thái",
+      "statuses": {
+        "ACTIVE": "Đang hoạt động",
+        "REVOKED": "Đã thu hồi",
+        "EXPIRED": "Đã hết hạn"
+      },
+      "columns": {
+        "user": "Người dùng",
+        "device": "Thiết bị",
+        "ipAddress": "Địa chỉ IP",
+        "lastUsedAt": "Hoạt động gần nhất",
+        "expiresAt": "Hết hạn lúc",
+        "status": "Trạng thái",
+        "id": "Mã phiên"
+      },
+      "bulkRevoke": "Thu hồi đã chọn",
+      "bulkRevokeTitle": "Thu hồi {count} phiên?",
+      "bulkRevokeDescription": "Các thiết bị này sẽ phải đăng nhập lại. Phiên đã hết hạn hoặc đã thu hồi được bỏ qua.",
+      "bulkRevoked": "Đã thu hồi {count} phiên."
+    },
+    "profile": {
+      "title": "Hồ sơ cá nhân",
+      "description": "Quản lý thông tin tài khoản, quyền truy cập và bảo mật của bạn.",
+      "tabs": {
+        "info": "Thông tin cá nhân",
+        "security": "Bảo mật"
+      },
+      "avatar": "Ảnh đại diện",
+      "avatarLibrary": "Thư viện ảnh",
+      "avatarRemove": "Gỡ ảnh",
+      "avatarHint": "Chọn ảnh từ thư viện đính kèm hệ thống.",
+      "avatarSuccess": "Cập nhật ảnh đại diện thành công.",
+      "avatarRemoved": "Đã gỡ ảnh đại diện thành công.",
+      "avatarError": "Không thể xử lý ảnh đại diện.",
+      "roles": "Vai trò hệ thống",
+      "roleSuperuser": "Siêu quản trị",
+      "roleStaff": "Quản trị viên",
+      "roleNovel": "Tác giả Novel",
+      "roleUser": "Người dùng",
+      "noRoles": "Chưa gán vai trò riêng",
+      "email": "Email đăng nhập",
+      "emailPlaceholder": "name@example.com",
+      "emailInvalid": "Email chưa đúng định dạng.",
+      "username": "Tên người dùng",
+      "usernamePlaceholder": "Nhập tên người dùng",
+      "usernameRequired": "Vui lòng nhập tên người dùng.",
+      "lastName": "Họ và tên đệm",
+      "lastNamePlaceholder": "Nguyễn Văn",
+      "firstName": "Tên",
+      "firstNamePlaceholder": "An",
+      "securityTitle": "Thay đổi mật khẩu đăng nhập",
+      "securityDescription": "Khi đổi mật khẩu thành công, toàn bộ phiên đăng nhập trên các thiết bị khác sẽ được tự động thu hồi vì lý do an toàn.",
+      "newPassword": "Mật khẩu mới",
+      "newPasswordPlaceholder": "Tối thiểu 8 ký tự",
+      "confirmPassword": "Xác nhận mật khẩu mới",
+      "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
+      "passwordMin": "Mật khẩu phải có ít nhất 8 ký tự.",
+      "passwordMismatch": "Mật khẩu xác nhận không khớp.",
+      "passwordRequired": "Vui lòng xác nhận mật khẩu mới.",
+      "saveInfo": "Lưu thông tin",
+      "savePassword": "Cập nhật mật khẩu",
+      "saving": "Đang lưu...",
+      "cancel": "Đóng",
+      "successMessage": "Cập nhật hồ sơ thành công.",
+      "passwordSuccessMessage": "Đổi mật khẩu thành công.",
+      "errorMessage": "Cập nhật hồ sơ thất bại.",
+      "activity": {
+        "title": "Thông tin tài khoản",
+        "lastLogin": "Lần đăng nhập cuối",
+        "lastSeen": "Hoạt động gần nhất",
+        "dateJoined": "Ngày tham gia",
+        "never": "Chưa từng đăng nhập"
+      }
+    }
+  },
+  "iam": {
+    "feedback": {
+      "saved": "Đã lưu thay đổi."
+    },
+    "validation": {
+      "required": "Trường này là bắt buộc.",
+      "codeFormat": "Mã gồm CHỮ IN HOA, số, dấu gạch dưới; bắt đầu bằng chữ cái."
+    },
+    "roles": {
+      "title": "Vai trò",
+      "empty": "Chưa có vai trò.",
+      "system": "Hệ thống",
+      "create": "Tạo vai trò",
+      "info": "Thông tin vai trò",
+      "permissions": "Quyền",
+      "systemHint": "Vai trò hệ thống, chỉ superuser được thay đổi.",
+      "columns": {
+        "role": "Vai trò",
+        "permissions": "Số quyền",
+        "users": "Số người dùng",
+        "status": "Trạng thái"
+      },
+      "fields": {
+        "code": "Mã vai trò",
+        "codeHint": "Ví dụ: NOVEL_EDITOR. Không đổi được sau khi tạo.",
+        "name": "Tên vai trò",
+        "description": "Mô tả",
+        "isActive": "Đang hoạt động",
+        "isActiveHint": "Tắt để vai trò không còn cấp quyền cho người dùng."
+      },
+      "searchPlaceholder": "Tìm theo mã, tên…",
+      "actions": {
+        "deactivate": "Tắt vai trò",
+        "activate": "Bật vai trò"
+      },
+      "copyName": "{name} (bản sao)",
+      "filters": {
+        "allStatuses": "Mọi trạng thái",
+        "type": "Loại vai trò",
+        "allTypes": "Mọi loại vai trò",
+        "custom": "Tùy chỉnh",
+        "policy": "Chính sách tự cấp quyền",
+        "allPolicies": "Mọi chính sách"
+      },
+      "policies": {
+        "none": "Cấp thủ công",
+        "all": "Tự cấp mọi quyền",
+        "read_only": "Tự cấp quyền đọc"
+      },
+      "sections": {
+        "status": "Trạng thái"
+      },
+      "clearPermissions": "Bỏ chọn tất cả quyền",
+      "inactive": "Đang tắt",
+      "permissionsSelected": "Đã chọn {count} quyền. Quyền được lưu cùng nút Tạo/Lưu; bạn chỉ cấp được quyền mà bạn đang có."
+    },
+    "userRoles": {
+      "title": "Vai trò",
+      "hint": "Quyền của người dùng là tổng hợp quyền từ các vai trò đang bật. Lưu cùng nút Tạo/Lưu.",
+      "superuserHint": "Superuser có toàn quyền; vai trò không ảnh hưởng.",
+      "selectedCount": "Đã chọn {count}/{total}"
+    },
+    "permissions": {
+      "title": "Quyền",
+      "searchPlaceholder": "Tìm theo tên, mã, mô tả…",
+      "allModules": "Mọi module",
+      "module": "Module",
+      "empty": "Không có quyền phù hợp.",
+      "clearFilters": "Xóa bộ lọc",
+      "modules": {
+        "system": "Hệ thống",
+        "utilities": "Tiện ích"
+      }
+    }
+  },
+  "journal": {
+    "nav": {
+      "entries": "Nhật ký"
+    },
+    "title": "Nhật ký thay đổi",
+    "history": "Lịch sử thay đổi",
+    "empty": "Chưa có thay đổi nào.",
+    "searchPlaceholder": "Tìm theo bản ghi, người thực hiện…",
+    "system": "Hệ thống",
+    "masked": "(ẩn)",
+    "yes": "Có",
+    "no": "Không",
+    "columns": {
+      "object": "Bản ghi",
+      "resource": "Tài nguyên",
+      "action": "Hành động",
+      "changes": "Trường thay đổi",
+      "actor": "Người thực hiện",
+      "createdAt": "Thời điểm"
+    },
+    "actions": {
+      "CREATE": "đã tạo",
+      "UPDATE": "đã cập nhật",
+      "DELETE": "đã xóa",
+      "EVENT": "sự kiện"
+    },
+    "events": {
+      "system_role_assigned": "đã gán vai trò",
+      "system_role_revoked": "đã gỡ vai trò",
+      "system_permission_assigned": "đã cấp quyền",
+      "system_permission_revoked": "đã thu hồi quyền",
+      "system_permissions_changed": "đã cập nhật quyền",
+      "system_roles_changed": "đã cập nhật vai trò"
+    },
+    "viewDetail": "Xem chi tiết",
+    "moreFields": "+{count} trường khác",
+    "fields": {
+      "permissions": "Quyền",
+      "roles": "Vai trò",
+      "permission": "Quyền",
+      "role": "Vai trò"
+    },
+    "detail": {
+      "title": "Chi tiết thay đổi",
+      "summary": "Thông tin",
+      "changes": "Các trường thay đổi",
+      "object": "Bản ghi",
+      "objectId": "Id bản ghi",
+      "requestId": "Request id",
+      "field": "Trường",
+      "before": "Giá trị cũ",
+      "after": "Giá trị mới",
+      "added": "Thêm {count}",
+      "removed": "Bỏ {count}",
+      "noChanges": "Không có trường nào thay đổi.",
+      "recordHistory": "Lịch sử của bản ghi"
+    }
+  }
+}

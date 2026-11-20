@@ -3,10 +3,10 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from app.attachment.serializers.responses.attachment_summary_response_serializer import (
+from app.novel.models.favorite import Favorite
+from app.system.serializers.responses.attachment_summary_response_serializer import (
     AttachmentSummaryResponseSerializer,
 )
-from app.novel.models.favorite import Favorite
 
 
 class FavoriteResponseSerializer(serializers.ModelSerializer[Favorite]):

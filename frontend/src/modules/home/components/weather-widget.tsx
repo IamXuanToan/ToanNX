@@ -1,13 +1,30 @@
 "use client";
 
-import { CloudFog, CloudLightning, CloudRain, CloudSun, Droplets, Gauge, Moon, RotateCw, Sun, Wind, Zap } from "lucide-react";
+import {
+  CloudFog,
+  CloudLightning,
+  CloudRain,
+  CloudSun,
+  Droplets,
+  Gauge,
+  Moon,
+  RotateCw,
+  Sun,
+  Wind,
+  Zap,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import type { WeatherEffectType } from "./weather-canvas";
 
-import { calculateAstronomicalMoonPhase, getMoonPhaseDetails, type LocationKey, type WeatherData } from "../store/weather-store";
+import {
+  calculateAstronomicalMoonPhase,
+  getMoonPhaseDetails,
+  type LocationKey,
+  type WeatherData,
+} from "../store/weather-store";
 import { useWeatherWidget, type WeatherInfo } from "./hooks/use-weather-widget";
 
 export type { LocationKey, WeatherData, WeatherInfo };

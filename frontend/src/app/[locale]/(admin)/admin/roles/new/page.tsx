@@ -1,7 +1,7 @@
-import { RoleCreateView } from "@/modules/iam/views/role-create-view";
+import { RoleCreateView } from "@/modules/system/views/role-create-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
-export const generateMetadata = createPageMetadata({ title: "iam.roles.create" });
+export const generateMetadata = createPageMetadata({ title: "system.iam.roles.create" });
 
 /**
  * Trang tạo mới; `?copyFrom=<id>` để sao chép từ bản ghi có sẵn.

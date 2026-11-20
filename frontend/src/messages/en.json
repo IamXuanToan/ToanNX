@@ -155,20 +155,6 @@
       "active": "Active",
       "inactive": "Locked"
     },
-    "adminModules": {
-      "account": {
-        "name": "Accounts",
-        "description": "Users and sign-in sessions."
-      },
-      "iam": {
-        "name": "Access control",
-        "description": "Roles and permission catalog."
-      },
-      "attachment": {
-        "name": "Attachments",
-        "description": "Image and document library."
-      }
-    },
     "adminGroups": {
       "system": {
         "name": "System",

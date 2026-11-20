@@ -1,0 +1,457 @@
+{
+  "module": {
+    "name": "System",
+    "description": "Accounts, sessions, access control, media library and change journal."
+  },
+  "account": {
+    "feedback": {
+      "saved": "Changes saved."
+    },
+    "validation": {
+      "emailInvalid": "Invalid email address.",
+      "passwordMin": "Password must be at least 10 characters.",
+      "required": "This field is required.",
+      "usernameFormat": "Use letters, digits and . _ - @ + only"
+    },
+    "users": {
+      "title": "Users",
+      "searchPlaceholder": "Search by email, name…",
+      "empty": "No users yet.",
+      "superuser": "Superuser",
+      "create": "Create user",
+      "profile": "Account information",
+      "columns": {
+        "user": "User",
+        "status": "Status",
+        "lastLogin": "Last sign-in",
+        "access": "Access",
+        "lastSeen": "Last active"
+      },
+      "fields": {
+        "email": "Email",
+        "password": "Password",
+        "newPassword": "New password",
+        "newPasswordHint": "Leave blank to keep it. Changing it signs the user out everywhere.",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "isActive": "Active",
+        "isActiveHint": "Turn off to lock the account and revoke all sessions.",
+        "isStaff": "Admin access",
+        "isStaffHint": "Allows entering the admin area; each feature still needs permissions.",
+        "isNovel": "Novel group",
+        "isNovelHint": "Marks the Novel business group only; grants no permissions.",
+        "username": "Username",
+        "passwordHint": "At least 10 characters, not all digits.",
+        "avatar": "Avatar",
+        "isSuperuser": "Superuser",
+        "isSuperuserHint": "Full access, skips permission checks. Only superusers can enable it.",
+        "dateJoined": "Joined"
+      },
+      "staff": "Staff",
+      "novel": "Novel",
+      "actions": {
+        "lock": "Lock account",
+        "unlock": "Unlock"
+      },
+      "extensionFailed": "User saved but roles were not fully updated: {message}",
+      "sections": {
+        "access": "Access",
+        "activity": "Activity"
+      },
+      "presence": {
+        "label": "Presence",
+        "online": "Online",
+        "offline": "Offline"
+      }
+    }
+  },
+  "attachment": {
+    "title": "Media library",
+    "video": "Video",
+    "format": "File extension",
+    "folder": "Folder",
+    "unfiled": "Unfiled",
+    "manageFolders": "Manage folders",
+    "folderDescription": "Organize files in nested folders. Storage paths and file URLs stay unchanged.",
+    "folderName": "Folder name",
+    "folderNameRequired": "Enter a folder name.",
+    "folderNameMax": "Use at most 150 characters.",
+    "parentFolder": "Parent folder",
+    "rootFolder": "Root level",
+    "saveFolder": "Save folder",
+    "createFolder": "Create folder",
+    "fileCount": "Direct files",
+    "folderCount": "{count} direct files · filter includes subfolders",
+    "noFolders": "No folders yet",
+    "deleteFolder": "Delete folder",
+    "deleteFolderDescription": "This folder and every subfolder will be soft deleted. Choose what happens to their files.",
+    "folderDeleteMode": "Files in this branch",
+    "keepFiles": "Keep all files",
+    "deleteFolderFiles": "Soft delete files too",
+    "keepFilesDescription": "Files throughout this branch become unfiled. Their URLs stay unchanged.",
+    "requiresFileDelete": "Deleting files too requires file deletion permission.",
+    "folderSaved": "Folder saved.",
+    "folderDeleted": "Folder branch deleted.",
+    "moveFiles": "Move to folder",
+    "moveDescription": "Move selected files to a folder owned by the same person. Storage paths and URLs stay unchanged.",
+    "destinationFolder": "Destination folder",
+    "filesMoved": "Moved {count} files.",
+    "incompatibleSelection": "Only image files can be selected.",
+    "upload": "Upload files",
+    "chooseImage": "Choose from library",
+    "pickerTitle": "Choose an image from the library",
+    "pickerUploadHint": "Choose an image from the library or upload a new one directly from your device.",
+    "uploadShort": "Upload",
+    "clearFiltersShort": "Clear filters",
+    "uploadingHint": "Uploading image…",
+    "dropImageHere": "Drop image here to upload immediately",
+    "doubleClickToUse": "Double-click an image to use it immediately",
+    "openLibrary": "Open library",
+    "useImage": "Use this image",
+    "selectedImage": "1 image selected",
+    "noImage": "No image selected",
+    "search": "Search by filename…",
+    "kind": "File type",
+    "image": "Images",
+    "document": "Documents",
+    "scope": "Scope",
+    "mine": "Mine",
+    "others": "Other people's files",
+    "selectPage": "Select all on this page",
+    "clearSelection": "Clear selection",
+    "selectedCount": "{count} / {total} files selected on this page",
+    "inspect": "View {name}",
+    "select": "Select {name}",
+    "viewDetails": "View details",
+    "details": "File details",
+    "name": "Filename",
+    "type": "Format",
+    "size": "Size",
+    "uploadedAt": "Uploaded",
+    "uploader": "Uploaded by",
+    "copyUrl": "Copy URL",
+    "copied": "URL copied.",
+    "copyFailed": "Could not copy the URL. Use the open file link.",
+    "openFile": "Open file",
+    "deleteFile": "Delete file",
+    "deleteSelected": "Delete ({count})",
+    "deleteTitle": "Delete {count} files?",
+    "deleteDescription": "Files will be removed from the library. Avatars and content using them will lose their images.",
+    "deleted": "Deleted {count} files.",
+    "empty": "No files yet",
+    "emptyDescription": "Upload your first file to get started.",
+    "noResults": "No matching files",
+    "clearFilters": "Clear search and filters",
+    "selectPrompt": "Select a file to view its details",
+    "imageUnavailable": "Image preview unavailable",
+    "dropTitle": "Drop files here",
+    "dropHint": "or choose files from your device",
+    "chooseFiles": "Choose files",
+    "uploadHint": "File format and size are checked during upload.",
+    "uploading": "Uploading…",
+    "uploaded": "Uploaded",
+    "waiting": "Waiting",
+    "failed": "Upload failed",
+    "done": "Done",
+    "cancel": "Cancel",
+    "close": "Close",
+    "reload": "Reload",
+    "loading": "Loading the library",
+    "newest": "Newest first",
+    "oldest": "Oldest first",
+    "largest": "Largest first",
+    "ordering": "Sort order",
+    "imageOnly": "The uploaded file is not an image. Choose another image.",
+    "editorInsert": "Image from library",
+    "altText": "Alt text",
+    "noAltText": "No alt text",
+    "altTextPlaceholder": "Describe the image for screen readers and SEO…",
+    "altTextHint": "Alt text helps visually impaired users understand images and improves SEO.",
+    "edit": "Edit",
+    "editFile": "Rename & Alt",
+    "editFileTitle": "Edit file details",
+    "editFileDescription": "Change the filename and configure alt text for the image.",
+    "fileName": "Filename",
+    "fileNameRequired": "Please enter a filename.",
+    "fileNameMax": "Filename cannot exceed 255 characters.",
+    "altTextMax": "Alt text cannot exceed 255 characters.",
+    "saveChanges": "Save changes",
+    "saving": "Saving…",
+    "fileUpdated": "File details updated.",
+    "copyName": "Copy name",
+    "copiedName": "Copied"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "password": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "identifier": "Email or username",
+      "forgotPasswordLink": "Forgot password?"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "description": "Enter your account email address and we'll send you a password reset link.",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "submit": "Send reset link",
+      "submitting": "Sending...",
+      "successTitle": "Check your email",
+      "successDescription": "If that email exists in our system, we've sent you instructions to reset your password. Please check your inbox (and spam folder).",
+      "backToLogin": "Back to sign in",
+      "resend": "Send another email"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "description": "Please enter a new password for your account.",
+      "password": "New password",
+      "passwordPlaceholder": "At least 8 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Re-enter new password",
+      "submit": "Reset password",
+      "submitting": "Resetting...",
+      "successTitle": "Password reset successful",
+      "successDescription": "Your password has been updated. You can now sign in with your new password.",
+      "backToLogin": "Sign in now",
+      "invalidTokenTitle": "Invalid or expired link",
+      "invalidTokenDescription": "This password reset link has expired or has already been used. Please request a new link.",
+      "requestNewLink": "Request a new link"
+    },
+    "validation": {
+      "passwordRequired": "Please enter your password.",
+      "identifierRequired": "Enter your email or username.",
+      "emailRequired": "Please enter your email.",
+      "emailInvalid": "Invalid email address.",
+      "passwordMin": "Password must be at least 8 characters.",
+      "passwordMismatch": "Passwords do not match."
+    },
+    "userMenu": {
+      "open": "Open account menu",
+      "profile": "Profile settings",
+      "logout": "Sign out",
+      "logoutAll": "Sign out of all devices"
+    },
+    "session": {
+      "expired": "Your session has expired, please sign in again."
+    },
+    "sessions": {
+      "title": "Sessions",
+      "empty": "No sign-in sessions.",
+      "searchPlaceholder": "Search users, devices, IP…",
+      "usersRetry": "Could not load users · Retry",
+      "current": "Current session",
+      "manage": "Session management",
+      "revoke": "Revoke",
+      "revoked": "Session revoked.",
+      "revokeTitle": "Revoke this session?",
+      "revokeDescription": "This device for {email} will need to sign in again.",
+      "allStatuses": "All statuses",
+      "statuses": {
+        "ACTIVE": "Active",
+        "REVOKED": "Revoked",
+        "EXPIRED": "Expired"
+      },
+      "columns": {
+        "user": "User",
+        "device": "Device",
+        "ipAddress": "IP address",
+        "lastUsedAt": "Last activity",
+        "expiresAt": "Expires at",
+        "status": "Status",
+        "id": "Session ID"
+      },
+      "bulkRevoke": "Revoke selected",
+      "bulkRevokeTitle": "Revoke {count} sessions?",
+      "bulkRevokeDescription": "These devices will need to sign in again. Expired or revoked sessions are skipped.",
+      "bulkRevoked": "Revoked {count} sessions."
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "description": "Manage your personal account information, roles, and security.",
+      "tabs": {
+        "info": "Personal Info",
+        "security": "Security"
+      },
+      "avatar": "Avatar",
+      "avatarLibrary": "Choose from library",
+      "avatarRemove": "Remove",
+      "avatarHint": "Choose an image from system media library.",
+      "avatarSuccess": "Avatar updated successfully.",
+      "avatarRemoved": "Avatar removed successfully.",
+      "avatarError": "Failed to update avatar.",
+      "roles": "Assigned Roles",
+      "roleSuperuser": "Superuser",
+      "roleStaff": "Staff",
+      "roleNovel": "Novel Author",
+      "roleUser": "User",
+      "noRoles": "No specific roles assigned",
+      "email": "Email address",
+      "emailPlaceholder": "name@example.com",
+      "emailInvalid": "Invalid email address format.",
+      "username": "Username",
+      "usernamePlaceholder": "Enter username",
+      "usernameRequired": "Username is required.",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Doe",
+      "firstName": "First name",
+      "firstNamePlaceholder": "John",
+      "securityTitle": "Change account password",
+      "securityDescription": "Changing your password will revoke active sessions on all other devices for security.",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Minimum 8 characters",
+      "confirmPassword": "Confirm new password",
+      "confirmPasswordPlaceholder": "Re-enter new password",
+      "passwordMin": "Password must be at least 8 characters.",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordRequired": "Please confirm your new password.",
+      "saveInfo": "Save changes",
+      "savePassword": "Change password",
+      "saving": "Saving...",
+      "cancel": "Close",
+      "successMessage": "Profile updated successfully.",
+      "passwordSuccessMessage": "Password changed successfully.",
+      "errorMessage": "Failed to update profile.",
+      "activity": {
+        "title": "Account Activity",
+        "lastLogin": "Last login",
+        "lastSeen": "Last active",
+        "dateJoined": "Date joined",
+        "never": "Never logged in"
+      }
+    }
+  },
+  "iam": {
+    "feedback": {
+      "saved": "Changes saved."
+    },
+    "validation": {
+      "required": "This field is required.",
+      "codeFormat": "Use UPPERCASE letters, digits and underscores; start with a letter."
+    },
+    "roles": {
+      "title": "Roles",
+      "empty": "No roles yet.",
+      "system": "System",
+      "create": "Create role",
+      "info": "Role information",
+      "permissions": "Permissions",
+      "systemHint": "System role; only superusers can change it.",
+      "columns": {
+        "role": "Role",
+        "permissions": "Permissions",
+        "users": "Users",
+        "status": "Status"
+      },
+      "fields": {
+        "code": "Role code",
+        "codeHint": "For example: NOVEL_EDITOR. Cannot be changed later.",
+        "name": "Role name",
+        "description": "Description",
+        "isActive": "Active",
+        "isActiveHint": "Turn off so the role no longer grants permissions."
+      },
+      "searchPlaceholder": "Search by code, name…",
+      "actions": {
+        "deactivate": "Deactivate role",
+        "activate": "Activate role"
+      },
+      "copyName": "{name} (copy)",
+      "filters": {
+        "allStatuses": "All statuses",
+        "type": "Role type",
+        "allTypes": "All role types",
+        "custom": "Custom",
+        "policy": "Auto-grant policy",
+        "allPolicies": "All policies"
+      },
+      "policies": {
+        "none": "Manual grants",
+        "all": "Grant all permissions",
+        "read_only": "Grant read permissions"
+      },
+      "sections": {
+        "status": "Status"
+      },
+      "clearPermissions": "Clear all permissions",
+      "inactive": "Inactive",
+      "permissionsSelected": "{count} permissions selected. Saved with Create/Save; you can only grant permissions you hold."
+    },
+    "userRoles": {
+      "title": "Roles",
+      "hint": "A user’s permissions are the union of their active roles. Saved with Create/Save.",
+      "superuserHint": "Superusers have full access; roles have no effect.",
+      "selectedCount": "{count}/{total} selected"
+    },
+    "permissions": {
+      "title": "Permissions",
+      "searchPlaceholder": "Search name, code, description…",
+      "allModules": "All modules",
+      "module": "Module",
+      "empty": "No matching permissions.",
+      "clearFilters": "Clear filters",
+      "modules": {
+        "system": "System",
+        "utilities": "Utilities"
+      }
+    }
+  },
+  "journal": {
+    "nav": {
+      "entries": "Journal"
+    },
+    "title": "Change journal",
+    "history": "Change history",
+    "empty": "No changes yet.",
+    "searchPlaceholder": "Search by record or actor…",
+    "system": "System",
+    "masked": "(hidden)",
+    "yes": "Yes",
+    "no": "No",
+    "columns": {
+      "object": "Record",
+      "resource": "Resource",
+      "action": "Action",
+      "changes": "Changed fields",
+      "actor": "Actor",
+      "createdAt": "Time"
+    },
+    "actions": {
+      "CREATE": "created",
+      "UPDATE": "updated",
+      "DELETE": "deleted",
+      "EVENT": "event"
+    },
+    "events": {
+      "system_role_assigned": "assigned a role",
+      "system_role_revoked": "removed a role",
+      "system_permission_assigned": "granted a permission",
+      "system_permission_revoked": "revoked a permission",
+      "system_permissions_changed": "updated permissions",
+      "system_roles_changed": "updated roles"
+    },
+    "viewDetail": "View details",
+    "moreFields": "+{count} more fields",
+    "fields": {
+      "permissions": "Permissions",
+      "roles": "Roles",
+      "permission": "Permission",
+      "role": "Role"
+    },
+    "detail": {
+      "title": "Change details",
+      "summary": "Overview",
+      "changes": "Changed fields",
+      "object": "Record",
+      "objectId": "Record id",
+      "requestId": "Request id",
+      "field": "Field",
+      "before": "Old value",
+      "after": "New value",
+      "added": "Added {count}",
+      "removed": "Removed {count}",
+      "noChanges": "No field changed.",
+      "recordHistory": "Record history"
+    }
+  }
+}

@@ -9,7 +9,7 @@ class Favorite(CoreModel):
     """Đánh dấu truyện yêu thích của người dùng."""
 
     user = models.ForeignKey(
-        "account.User",
+        "system.User",
         on_delete=models.CASCADE,
         related_name="novel_favorites",
         verbose_name="Người dùng",

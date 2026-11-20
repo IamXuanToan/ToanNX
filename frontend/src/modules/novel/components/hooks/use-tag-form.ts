@@ -7,7 +7,13 @@ import { useForm } from "react-hook-form";
 
 import { useCreateTag } from "../../hooks/use-create-tag";
 import { useUpdateTag } from "../../hooks/use-update-tag";
-import { TAG_DEFAULTS, type TagFormValues, fromTag, tagSchema, toTagInput } from "../../schemas/tag.schema";
+import {
+  TAG_DEFAULTS,
+  type TagFormValues,
+  fromTag,
+  tagSchema,
+  toTagInput,
+} from "../../schemas/tag.schema";
 import type { Tag } from "../../types/tag.types";
 
 /**

@@ -12,7 +12,13 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shares/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shares/components/ui/select";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
 import { NOVEL_ROUTES } from "../constants/routes";

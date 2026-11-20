@@ -11,7 +11,7 @@ GET    /utilities/short-links/{id}/history
 """
 
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.types.permission_rule import permission_rule
+from app.system.types.permission_rule import permission_rule
 from app.utilities.filters.short_link_filter import ShortLinkFilter
 from app.utilities.models.short_link import ShortLink
 from app.utilities.permissions.short_link_permission import ShortLinkPermission as P

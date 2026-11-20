@@ -1,6 +1,6 @@
 "use client";
 
-import { useCurrentUser } from "@/modules/auth/hooks/use-current-user";
+import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 import { getUserDisplayName } from "@/shares/components/common/user-avatar";
 
 import { useAdminGroups } from "../admin-modules-provider";

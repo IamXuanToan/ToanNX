@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('attachment', '0005_attachment_alt_text'),
+        ('system', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -66,8 +66,8 @@ class Migration(migrations.Migration):
                 ('seo_title', models.CharField(blank=True, db_comment='Tiêu đề SEO', help_text='Tiêu đề SEO, rỗng dùng title.', max_length=160, verbose_name='SEO title')),
                 ('seo_description', models.CharField(blank=True, db_comment='Mô tả SEO', help_text='Mô tả SEO.', max_length=300, verbose_name='SEO description')),
                 ('theme', models.JSONField(blank=True, db_comment='Cấu hình theme', default=dict, help_text='Theme có cấu trúc, không chứa CSS/JS tùy ý.', verbose_name='Giao diện')),
-                ('avatar', models.ForeignKey(blank=True, db_comment='Ảnh đại diện trang', help_text='Attachment ảnh đại diện.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='attachment.attachment', verbose_name='Ảnh đại diện')),
-                ('cover', models.ForeignKey(blank=True, db_comment='Ảnh bìa trang', help_text='Attachment ảnh bìa.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='attachment.attachment', verbose_name='Ảnh bìa')),
+                ('avatar', models.ForeignKey(blank=True, db_comment='Ảnh đại diện trang', help_text='Attachment ảnh đại diện.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='system.attachment', verbose_name='Ảnh đại diện')),
+                ('cover', models.ForeignKey(blank=True, db_comment='Ảnh bìa trang', help_text='Attachment ảnh bìa.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='system.attachment', verbose_name='Ảnh bìa')),
                 ('created_by', models.ForeignKey(blank=True, db_comment='Người tạo bản ghi', help_text='NULL nếu do hệ thống tạo (migration, lệnh quản trị).', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người tạo')),
                 ('deleted_by', models.ForeignKey(blank=True, db_comment='Người thực hiện xóa mềm', help_text='Người dùng thực hiện xóa mềm.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người xóa')),
                 ('owner', models.ForeignKey(db_comment='Chủ sở hữu trang', help_text='Người dùng sở hữu trang.', on_delete=django.db.models.deletion.PROTECT, related_name='custom_pages', to=settings.AUTH_USER_MODEL, verbose_name='Chủ sở hữu')),
@@ -94,8 +94,8 @@ class Migration(migrations.Migration):
                 ('payload', models.TextField(db_comment='Chuỗi mã hóa', help_text='Chuỗi được mã hóa vào mã QR (VietQR EMVCo với chuyển khoản).', max_length=2048, verbose_name='Payload')),
                 ('created_by', models.ForeignKey(blank=True, db_comment='Người tạo bản ghi', help_text='NULL nếu do hệ thống tạo (migration, lệnh quản trị).', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người tạo')),
                 ('deleted_by', models.ForeignKey(blank=True, db_comment='Người thực hiện xóa mềm', help_text='Người dùng thực hiện xóa mềm.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người xóa')),
-                ('image', models.ForeignKey(db_comment='Ảnh PNG của mã QR', help_text='Ảnh PNG trong Thư viện; sửa mã QR thay nội dung ảnh, giữ id.', on_delete=django.db.models.deletion.PROTECT, related_name='+', to='attachment.attachment', verbose_name='Ảnh')),
-                ('logo', models.ForeignKey(blank=True, db_comment='Logo tùy chọn của mã QR', help_text='Ảnh logo ở giữa mã QR; chỉ nhận PNG, JPEG, WebP hoặc GIF.', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='qr_codes_as_logo', to='attachment.attachment', verbose_name='Logo')),
+                ('image', models.ForeignKey(db_comment='Ảnh PNG của mã QR', help_text='Ảnh PNG trong Thư viện; sửa mã QR thay nội dung ảnh, giữ id.', on_delete=django.db.models.deletion.PROTECT, related_name='+', to='system.attachment', verbose_name='Ảnh')),
+                ('logo', models.ForeignKey(blank=True, db_comment='Logo tùy chọn của mã QR', help_text='Ảnh logo ở giữa mã QR; chỉ nhận PNG, JPEG, WebP hoặc GIF.', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='qr_codes_as_logo', to='system.attachment', verbose_name='Logo')),
                 ('owner', models.ForeignKey(db_comment='Chủ sở hữu mã QR', help_text='Người dùng sở hữu mã QR.', on_delete=django.db.models.deletion.PROTECT, related_name='qr_codes', to=settings.AUTH_USER_MODEL, verbose_name='Chủ sở hữu')),
                 ('updated_by', models.ForeignKey(blank=True, db_comment='Người cập nhật gần nhất', help_text='Người dùng sửa bản ghi gần nhất; NULL nếu do hệ thống.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người cập nhật')),
             ],

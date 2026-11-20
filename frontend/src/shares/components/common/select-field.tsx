@@ -5,9 +5,22 @@ import { Check, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/shares/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/shares/components/ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/shares/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shares/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shares/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shares/components/ui/select";
 
 import { FORM_CONTROL_TRIGGER_CLASS } from "./form-control.styles";
 import { SEARCHABLE_THRESHOLD, useSelectField } from "./hooks/use-select-field";

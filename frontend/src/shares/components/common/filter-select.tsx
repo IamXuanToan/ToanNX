@@ -6,7 +6,15 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/shares/components/ui/button";
 import { Checkbox } from "@/shares/components/ui/checkbox";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/shares/components/ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/shares/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shares/components/ui/popover";
 
 import { FORM_CONTROL_TRIGGER_CLASS } from "./form-control.styles";

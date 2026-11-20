@@ -5,10 +5,10 @@ from typing import Any
 import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.iam.tests.helpers.permission_helper import grant
 from app.novel.permissions.chapter_permission import ChapterPermission
 from app.novel.tests.factories.chapter_factory import ChapterFactory
 from app.novel.tests.factories.novel_factory import NovelFactory
+from app.system.tests.helpers.permission_helper import grant
 
 pytestmark = pytest.mark.django_db
 URL = "/api/v1/novel/chapters"

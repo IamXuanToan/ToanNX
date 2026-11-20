@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { usePermission } from "@/modules/auth/hooks/use-permission";
+import { usePermission } from "@/modules/system/hooks/use-permission";
 
 import { QrCodeProfile } from "../components/qr-code-profile";
 import { QR_CODE_PERMISSIONS } from "../permissions/qr-code-permission";

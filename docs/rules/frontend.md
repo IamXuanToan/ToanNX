@@ -43,7 +43,7 @@ src/modules/<m>/
     phải có JSDoc docstring rõ ràng bằng tiếng Việt.
   - Phải có `@param` mô tả chi tiết cho từng tham số, `@returns` mô tả dữ liệu trả về, giải thích rõ ràng vai trò nghiệp vụ.
 - **Service tách theo model của BE**, mỗi model một file và một object, tên trùng service BE:
-  `iam/services/role.service.ts` ↔ `iam/services/role_service.py`, `user-role.service.ts` ↔
+  `system/services/role.service.ts` ↔ `system/services/role_service.py`, `user-role.service.ts` ↔
   `user_role_service.py`. Không gộp cả module vào một `<m>.service.ts`. Method theo hành động
   (`list`, `get`, `create`, `update`, `assign`, `revoke`), không lặp tên model (`roleService.list`, không `listRoles`).
   CRUD chuẩn lấy từ `createCrudService<List, Detail, Create, Update>(endpoint)` (`list/listAll/get/create/update/
@@ -61,7 +61,7 @@ src/modules/<m>/
     `history(id)`), thêm key riêng nếu cần.
   - Module khác cần route/key thì import từ `@/modules/<khác>/constants/...` (ví dụ invalidate `authKeys.me()`).
 - Ngoại lệ duy nhất ở `shares/`: `shares/lib/api/session-paths.ts` (CSRF, login, refresh, logout) vì chính
-  `apiClient` cần để lấy CSRF và silent refresh; module `auth` dùng lại trong `AUTH_API_ENDPOINTS`.
+  `apiClient` cần để lấy CSRF và silent refresh; module `system` dùng lại trong `SYSTEM_API_ENDPOINTS`.
 - Module không có BE tương ứng: `manage-app` (khung quản trị: `AdminShell`, sidebar, màn chọn module,
   `constants/admin-navigation.ts`) và `home` (trang công khai, header, trang 404).
 
@@ -235,8 +235,8 @@ mặc định không ghi) nên tải lại hay gửi link vẫn giữ nguyên. �
 
 **Quy chuẩn Tên tệp trong Thư viện (Attachment).**
 - Trường `original_name` của tệp (mặc định lấy theo tên file người dùng tải lên) **bắt buộc phải cho phép chỉnh sửa/đổi tên được** (Rename) cả ở tầng Backend (API PATCH nhận `original_name`) và Frontend (nút đổi tên nhanh trên card lưới và trong panel chi tiết), kèm thuộc tính `alt_text` cho hình ảnh để phục vụ SEO và accessibility.
-- Nhóm Hệ thống: **Tài khoản → Người dùng, Phiên**; **Phân quyền → Vai trò, Quyền**. Phiên là nghiệp vụ
-  Authentication, menu ghép vào Tài khoản ở `manage-app`; không chuyển service sang Account. Bảng Phiên có
+- Nhóm Hệ thống có một module `system`, menu theo thứ tự: Người dùng, Phiên, Vai trò, Quyền, Thư viện,
+  Nhật ký (`modules/system/navigation.ts`). Bảng Phiên có
   chọn dòng, `#`, mã phiên, **Thu hồi** trong cột Thao tác và thu hồi hàng loạt (hỏi xác nhận). Danh mục
   Quyền chỉ đọc; có tìm/lọc nhiều module; không có link chi tiết hay nút CRUD.
 - Người dùng có cột **Hoạt động gần nhất** (`lastSeenAt`, chấm xanh "Đang trực tuyến" khi trong 5 phút —
@@ -288,8 +288,8 @@ FormPage (mx-auto max-w-6xl; CARD ĐẦU TRANG dính dưới header: tiêu đề
 - **Quan hệ (vai trò, quyền…) lưu cùng nút Tạo/Lưu**, ở cả tạo và sửa: chọn bằng checkbox, lưu bản ghi
   chính trước rồi đồng bộ quan hệ (`diffIds` → gán phần mới, gỡ phần bỏ; mutation `useSync…`). Không có
   công tắc gán ngay ở trang sửa mà trang tạo lại khác.
-- Module khác cắm phần của mình vào form của module nền qua slot `extensions` do page ghép (Account không
-  import IAM). Slot gọi `useFormExtension(handler, dirty)`: `handler(record)` chạy sau khi lưu, `dirty` bật
+- Module khác cắm phần của mình vào form của module nền qua slot `extensions` do page ghép (form người
+  dùng không import phần IAM). Slot gọi `useFormExtension(handler, dirty)`: `handler(record)` chạy sau khi lưu, `dirty` bật
   nút Lưu; form bọc slot bằng `FormExtensionContext.Provider` và gọi `registry.run(record)`.
 - Dưới `lg` hai cột xếp chồng, cột phụ xuống dưới; khối quan hệ luôn ở cuối, đầu card có nhãn "Đã chọn n/tổng".
 
@@ -343,8 +343,37 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 - Schema Zod là factory nhận hàm dịch (`createLoginSchema(t)`).
 - Màu dùng token semantic (`bg-primary`, `text-muted-foreground`, `bg-canvas`); không hardcode màu.
 - `PermissionGate`/`usePermission` chỉ để ẩn/hiện; backend luôn enforce.
+
+### 4.0 Thương hiệu: màu, logo, favicon (bắt buộc)
+
+**Màu thương hiệu xanh lá** (theo logo cỏ bốn lá). Mọi màu nhấn đi qua token trong `src/app/globals.css`,
+khai ở cả `:root` và `.dark`; không viết cứng mã màu hay class màu Tailwind (`violet-600`, `sky-500`…) trong
+component. Vai trò từng màu (đã đo tương phản WCAG AA):
+
+| Token | Light | Dark | Dùng cho |
+| --- | --- | --- | --- |
+| `--primary` | `#3D812E` (chữ trắng 4.8:1) | `oklch(0.72 0.15 135)` + chữ `--primary-foreground` tối | Nút chính, link, mục đang chọn, sidebar đang chọn |
+| `--primary-hover` | `#206A2D` (6.6:1) | `oklch(0.78 0.15 135)` | Hover/nhấn của nút chính (`hover:bg-primary-hover`) |
+| `--ring` | `#569533` | `oklch(0.62 0.14 136)` | Vòng focus, điểm nhấn trang trí (vầng sáng, chấm) |
+| `--primary-light` | `oklch(0.98 0.018 138)` | primary 16% | Nền badge/ô chọn; chữ trên đó dùng `text-primary` (≥ 4.5:1) |
+| `--chart-1…5` | dải xanh lá từ ba màu trên | bản sáng | Biểu đồ một sắc |
+
+- `#569533` chỉ đạt 3.7:1 với chữ trắng: **không** dùng làm nền nút có chữ, chỉ làm focus/trang trí.
+- Nền trung tính (`--canvas`, `--item-hover`, `--surface-hover`) pha nhẹ sắc xanh (hue 140), không pha sắc khác.
+- `--success` là xanh ngọc (hue 175) để khác nút chính; số liệu không tô màu nhấn (tránh bị đọc là "tốt").
+  `--destructive` giữ đỏ, `--warning` giữ hổ phách.
+- Ở dark mode màu nhấn chỉ làm nền; đường mảnh (viền focus, gạch chân) dùng `--ring` hoặc giảm độ đục.
+- Email HTML (backend `templates/system/email`) không đọc được CSS biến: dùng đúng mã hex của bảng trên
+  (nút `#3D812E`, link `#206A2D`).
+
+**Logo và favicon** chỉ có một nguồn: `public/brand/logo.png` (PNG nền trong suốt). Mọi kích thước sinh bằng
+`uv run --project backend python scripts/build_brand_assets.py` (cắt sát, chừa lề, thu nhỏ), không sửa tay:
+`public/brand/logo-mark.png` (giao diện), `src/app/icon.png`, `src/app/favicon.ico`, `src/app/apple-icon.png`
+(Next.js tự gắn thẻ `<link>`). Đổi logo = thay `logo.png` rồi chạy lại script. Giao diện chỉ hiển thị logo qua
+`LogoMark`/`Logo` (`shares/components/layout/logo.tsx`, dùng `next/image`), không tự đặt `<Image src="/brand/…">`
+hay vẽ SVG logo riêng.
 - URL file/ảnh/icon từ API là URL tuyệt đối: dùng trực tiếp (`<img src={url}>`), không nối domain/basePath.
-- Module FE theo đúng module BE (`account`, `iam`...), trừ `manage-app` và `home` chỉ có ở FE. Module nền không import module phụ thuộc nó;
+- Module FE theo đúng module BE (`system`, `novel`, `utilities`), trừ `manage-app` và `home` chỉ có ở FE. Module nền không import module phụ thuộc nó;
   page ghép giao diện nhiều module qua prop slot (ví dụ `UserDetailView aside={<UserRolesCard />}`,
   `history={<RecordHistoryView … />}`, `editorPlugins={<QrCodeTiptapPlugin />}`).
 - Tạo/sửa nhanh tài nguyên liên quan ngay trong form khác dùng `FormDialog` bọc đúng form của tài nguyên đó
@@ -361,7 +390,7 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 - `/admin` (`/vi/quan-tri`) là **màn chọn module**: mỗi thẻ là một nhóm. Danh sách **khai tĩnh ở FE**, không
   có API hay bảng cấu hình module: mỗi module khai `group`, `icon` (component lucide), `items` trong
   `navigation.ts`; `ADMIN_MODULE_NAVIGATION` + `ADMIN_GROUPS` (`modules/manage-app/constants/admin-navigation.ts`)
-  gộp lại, lọc theo quyền trong `/auth/me`.
+  gộp lại, lọc theo quyền trong `/system/auth/me`.
 - Trong một nhóm: sidebar của nhóm (đầu là bộ chuyển nhóm, thân chia mục theo module, chân là tài khoản),
   nội dung bên phải. Breadcrumb trên header chỉ ghi các cấp cha; tên trang là `<h1>` trong `PageHeader`.
 - Nhóm hiển thị khai ở `ADMIN_GROUPS`; tên/mô tả ở `common.adminGroups.<group>`, tên module ở
@@ -388,7 +417,7 @@ pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build && p
 - Kiểu dữ liệu: `pnpm api:types` sinh `shares/types/api-schema.gen.ts` từ OpenAPI (không sửa tay; CI đỏ nếu
   cũ). `ApiModel<"…Response">` là kiểu FE nhận được (đã camelCase). Kiểu viết tay phải có đúng tập field
   của response, kiểm trong `tests/unit/api-contract.test.ts` lúc `pnpm typecheck`.
-- Lỗi ở error boundary được gửi về `/api/v1/health/client-errors` (log + Sentry khi bật).
+- Lỗi ở error boundary được gửi về `/api/v1/system/health/client-errors` (log + Sentry khi bật).
 
 ## 7. Chuẩn hóa hệ thống xử lý lỗi (Error System)
 

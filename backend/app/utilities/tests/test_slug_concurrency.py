@@ -6,7 +6,7 @@ from threading import Barrier
 import pytest
 from django.db import IntegrityError, connections
 
-from app.account.tests.factories.user_factory import UserFactory
+from app.system.tests.factories.user_factory import UserFactory
 from app.utilities.models.short_link import ShortLink
 
 

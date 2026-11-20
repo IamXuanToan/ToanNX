@@ -50,7 +50,7 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
     // Submit trong dialog con không được submit form tạo người dùng phía sau.
     await expect(page).toHaveURL(/\/nguoi-dung\/tao-moi$/);
     const folders: { id: string; name: string }[] = (
-      await (await page.request.get(`/api/v1/attachments/folders?search=${prefix}`)).json()
+      await (await page.request.get(`/api/v1/system/attachments/folders?search=${prefix}`)).json()
     ).data;
     folderIds.push(...folders.map((item) => item.id));
     const root = folders.find((item) => item.name === prefix)!;
@@ -72,8 +72,9 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
     await picker.getByRole("searchbox").fill(prefix);
     await picker.getByRole("searchbox").press("Enter");
-    const image = (await (await page.request.get(`/api/v1/attachments?search=${prefix}`)).json())
-      .data[0] as { id: string; url: string; folder_id: string };
+    const image = (
+      await (await page.request.get(`/api/v1/system/attachments?search=${prefix}`)).json()
+    ).data[0] as { id: string; url: string; folder_id: string };
     expect(image.folder_id).toBe(child.id);
     await picker.getByRole("button", { name: "Thư mục", exact: true }).click();
     await page
@@ -130,11 +131,12 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
     await confirm.getByTestId("confirm-dialog-confirm").click();
     await expect(confirm).toHaveCount(0);
     await manager.getByRole("button", { name: "Đóng", exact: true }).click();
-    const kept = (await (await page.request.get(`/api/v1/attachments/${image.id}`)).json()).data;
+    const kept = (await (await page.request.get(`/api/v1/system/attachments/${image.id}`)).json())
+      .data;
     expect(kept.folder_id).toBeNull();
     expect(kept.url).toBe(image.url);
     // Tạo nhánh mới để xác nhận lựa chọn xóa mềm cả file.
-    const next = await post<{ id: string }>(page.request, "/api/v1/attachments/folders", {
+    const next = await post<{ id: string }>(page.request, "/api/v1/system/attachments/folders", {
       name: `${prefix}-delete`,
     });
     folderIds.push(next.id);
@@ -147,7 +149,8 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
     await move.getByRole("button", { name: "Chuyển thư mục", exact: true }).click();
     await expect(move).toHaveCount(0);
     expect(
-      (await (await page.request.get(`/api/v1/attachments/${image.id}`)).json()).data.folder_id,
+      (await (await page.request.get(`/api/v1/system/attachments/${image.id}`)).json()).data
+        .folder_id,
     ).toBe(next.id);
     await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
@@ -164,7 +167,7 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
     await page.getByRole("option", { name: "Xóa mềm cả tệp bên trong", exact: true }).click();
     await confirm.getByTestId("confirm-dialog-confirm").click();
     await expect(confirm).toHaveCount(0);
-    expect((await page.request.get(`/api/v1/attachments/${image.id}`)).status()).toBe(404);
+    expect((await page.request.get(`/api/v1/system/attachments/${image.id}`)).status()).toBe(404);
     await manager.getByRole("button", { name: "Đóng", exact: true }).click();
     await expect(picker.getByRole("button", { name: "Dùng ảnh này", exact: true })).toBeDisabled();
     expect(errors).toEqual([]);
@@ -172,8 +175,8 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
   } finally {
     await cleanupFiles(page.request, prefix);
     for (const id of folderIds) {
-      if ((await page.request.get(`/api/v1/attachments/folders/${id}`)).ok())
-        await remove(page.request, `/api/v1/attachments/folders/${id}`);
+      if ((await page.request.get(`/api/v1/system/attachments/folders/${id}`)).ok())
+        await remove(page.request, `/api/v1/system/attachments/folders/${id}`);
     }
   }
 });
@@ -184,7 +187,7 @@ async function post<T>(
   path: string,
   data: Record<string, unknown>,
 ): Promise<T> {
-  const csrf = await request.get("/api/v1/auth/csrf");
+  const csrf = await request.get("/api/v1/system/auth/csrf");
   const token = (await csrf.json()).data.csrf_token as string;
   const response = await request.post(path, { data, headers: { "X-CSRFToken": token } });
   expect(response.ok(), await response.text()).toBe(true);
@@ -193,16 +196,16 @@ async function post<T>(
 
 /** Xóa tài khoản/vai trò kiểm thử do chính ca kiểm thử tạo. */
 async function remove(request: APIRequestContext, path: string) {
-  const csrf = await request.get("/api/v1/auth/csrf");
+  const csrf = await request.get("/api/v1/system/auth/csrf");
   const token = (await csrf.json()).data.csrf_token as string;
   expect((await request.delete(path, { headers: { "X-CSRFToken": token } })).status()).toBe(204);
 }
 
 /** Upload ảnh mẫu qua API thật để kiểm tra cách ly quyền. */
 async function upload(request: APIRequestContext, name: string): Promise<string> {
-  const csrf = await request.get("/api/v1/auth/csrf");
+  const csrf = await request.get("/api/v1/system/auth/csrf");
   const token = (await csrf.json()).data.csrf_token as string;
-  const response = await request.post("/api/v1/attachments", {
+  const response = await request.post("/api/v1/system/attachments", {
     headers: { "X-CSRFToken": token },
     multipart: { file: { name, mimeType: "image/svg+xml", buffer: SVG_IMAGE } },
   });
@@ -212,10 +215,12 @@ async function upload(request: APIRequestContext, name: string): Promise<string>
 
 /** Chỉ dọn các file còn sống của ca kiểm thử; xóa mềm không xóa lịch sử DB. */
 async function cleanupFiles(request: APIRequestContext, prefix: string) {
-  const response = await request.get(`/api/v1/attachments?search=${prefix}&page_size=100`);
+  const response = await request.get(`/api/v1/system/attachments?search=${prefix}&page_size=100`);
   const files: { id: string }[] = (await response.json()).data;
   if (files.length)
-    await post(request, "/api/v1/attachments/bulk-delete", { ids: files.map((file) => file.id) });
+    await post(request, "/api/v1/system/attachments/bulk-delete", {
+      ids: files.map((file) => file.id),
+    });
 }
 
 /** Chụp và xác nhận không tràn ngang ở các bề rộng đã chốt trong rule. */
@@ -283,7 +288,9 @@ test("thư viện B: upload, chọn hết/bỏ chọn, dùng ảnh cũ làm avat
     await captureResponsive(page);
     await page.getByRole("button", { name: `Xem ${prefix}.svg`, exact: true }).click();
     await expect(page.getByTestId("attachment-details")).toContainText(`${prefix}.svg`);
-    const response = await page.request.get(`/api/v1/attachments?search=${prefix}&kind=IMAGE`);
+    const response = await page.request.get(
+      `/api/v1/system/attachments?search=${prefix}&kind=IMAGE`,
+    );
     const imageId: string = (await response.json()).data[0].id;
 
     await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
@@ -307,7 +314,7 @@ test("thư viện B: upload, chọn hết/bỏ chọn, dùng ảnh cũ làm avat
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
     await expect(page).toHaveURL(/\/nguoi-dung\/[0-9a-f-]{36}$/);
     userId = page.url().split("/").pop();
-    const saved = await page.request.get(`/api/v1/account/users/${userId}`);
+    const saved = await page.request.get(`/api/v1/system/users/${userId}`);
     expect((await saved.json()).data.avatar.id).toBe(imageId);
 
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -322,10 +329,10 @@ test("thư viện B: upload, chọn hết/bỏ chọn, dùng ảnh cũ làm avat
     await page.reload();
     await expect(page.getByText("Không tìm thấy tệp", { exact: true })).toBeVisible();
     expect(
-      (await (await page.request.get(`/api/v1/account/users/${userId}`)).json()).data.avatar,
+      (await (await page.request.get(`/api/v1/system/users/${userId}`)).json()).data.avatar,
     ).toBeNull();
   } finally {
-    if (userId) await remove(page.request, `/api/v1/account/users/${userId}`);
+    if (userId) await remove(page.request, `/api/v1/system/users/${userId}`);
     await cleanupFiles(page.request, prefix);
   }
 });
@@ -371,11 +378,11 @@ test("staff chỉ xem thư viện của mình và không thể truy cập file n
   await loginViaUi(page);
   const suffix = Date.now();
   const prefix = `e2e-private-media-${suffix}`;
-  const role = await post<{ id: string }>(page.request, "/api/v1/iam/roles", {
+  const role = await post<{ id: string }>(page.request, "/api/v1/system/roles", {
     code: `MEDIA_${suffix}`,
     name: "Media member",
   });
-  const member = await post<{ id: string; email: string }>(page.request, "/api/v1/account/users", {
+  const member = await post<{ id: string; email: string }>(page.request, "/api/v1/system/users", {
     username: `media_${suffix}`,
     email: `media_${suffix}@toannx.local`,
     password: PASSWORD,
@@ -384,17 +391,17 @@ test("staff chỉ xem thư viện của mình và không thể truy cập file n
   const context = await browser.newContext({ baseURL: new URL(page.url()).origin });
   try {
     const permissions = await page.request.get(
-      "/api/v1/iam/permissions?search=attachment.file.&page_size=100",
+      "/api/v1/system/permissions?search=attachment.file.&page_size=100",
     );
     const data: { data: { id: string; code: string }[] } = await permissions.json();
     for (const permission of data.data.filter((item) =>
-      ["attachment.file.read", "attachment.file.create"].includes(item.code),
+      ["system.attachment.read", "system.attachment.create"].includes(item.code),
     )) {
-      await post(page.request, `/api/v1/iam/roles/${role.id}/permissions`, {
+      await post(page.request, `/api/v1/system/roles/${role.id}/permissions`, {
         permission_id: permission.id,
       });
     }
-    await post(page.request, `/api/v1/iam/users/${member.id}/roles`, { role_id: role.id });
+    await post(page.request, `/api/v1/system/users/${member.id}/roles`, { role_id: role.id });
     const foreignId = await upload(page.request, `${prefix}-foreign.svg`);
     const memberPage = await context.newPage();
     await loginViaUi(memberPage, { email: member.email, password: PASSWORD });
@@ -408,11 +415,13 @@ test("staff chỉ xem thư viện của mình và không thể truy cập file n
     ).toHaveCount(0);
     await expect(memberPage.getByRole("checkbox")).toHaveCount(0);
     await expect(memberPage.getByRole("button", { name: "Xóa tệp", exact: true })).toHaveCount(0);
-    expect((await memberPage.request.get(`/api/v1/attachments/${foreignId}`)).status()).toBe(404);
+    expect((await memberPage.request.get(`/api/v1/system/attachments/${foreignId}`)).status()).toBe(
+      404,
+    );
   } finally {
     await context.close();
     await cleanupFiles(page.request, prefix);
-    await remove(page.request, `/api/v1/account/users/${member.id}`);
-    await remove(page.request, `/api/v1/iam/roles/${role.id}`);
+    await remove(page.request, `/api/v1/system/users/${member.id}`);
+    await remove(page.request, `/api/v1/system/roles/${role.id}`);
   }
 });

@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 
-import { ForgotPasswordView } from "@/modules/auth/views/forgot-password-view";
+import { ForgotPasswordView } from "@/modules/system/views/forgot-password-view";
 import { HOME_ROUTES } from "@/modules/home/constants/routes";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({
-  title: "auth.forgotPassword.title",
+  title: "system.auth.forgotPassword.title",
   index: false,
   alternates: "/forgot-password",
 });

@@ -9,7 +9,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
-from app.iam.decorators.require_permission import require_permission
+from app.system.decorators.require_permission import require_permission
 from app.utilities.permissions.qr_code_permission import QrCodePermission
 from app.utilities.serializers.responses.qr_preview_response_serializer import (
     QrPreviewResponseSerializer,

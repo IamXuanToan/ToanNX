@@ -1,4 +1,11 @@
+import Image from "next/image";
+
 import { cn } from "cn";
+
+/** Ảnh logo đã cắt sát và thu nhỏ, sinh bằng `scripts/build_brand_assets.py` từ `public/brand/logo.png`. */
+const LOGO_MARK_SRC = "/brand/logo-mark.png";
+/** Cạnh ảnh gốc của `logo-mark.png` (px); kích thước hiển thị do `className` quyết định. */
+const LOGO_MARK_SIZE = 256;
 
 type LogoMarkProps = {
   className?: string;
@@ -7,25 +14,22 @@ type LogoMarkProps = {
 };
 
 /**
- * Biểu tượng chữ T cách điệu của TOANNX (SVG, dùng màu theo `currentColor`/token theme).
- * Khối vuông bo góc + chữ T hình học + điểm vuông "nx" ở góc dưới phải.
+ * Biểu tượng cỏ bốn lá của TOANNX (ảnh PNG nền trong suốt, giữ nguyên màu thương hiệu ở cả hai theme).
  *
- * @param props - className và tiêu đề truy cập.
- * @returns SVG logo.
+ * @param props - className (mặc định `size-8`) và tiêu đề truy cập.
+ * @returns Ảnh logo.
  */
 export function LogoMark({ className, title }: LogoMarkProps) {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      className={cn("size-8 shrink-0", className)}
-      role={title ? "img" : undefined}
+    <Image
+      src={LOGO_MARK_SRC}
+      width={LOGO_MARK_SIZE}
+      height={LOGO_MARK_SIZE}
+      alt={title ?? ""}
       aria-hidden={title ? undefined : true}
-      aria-label={title}
-    >
-      <rect width="32" height="32" rx="8" className="fill-primary" />
-      <path d="M8 8h16v4.5h-5.75V24h-4.5V12.5H8z" className="fill-primary-foreground" />
-      <rect x="20.5" y="19.5" width="4.5" height="4.5" rx="1" className="fill-primary-foreground" />
-    </svg>
+      priority
+      className={cn("size-8 shrink-0 object-contain", className)}
+    />
   );
 }
 

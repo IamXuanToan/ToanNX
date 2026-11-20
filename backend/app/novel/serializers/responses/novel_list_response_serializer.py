@@ -3,9 +3,6 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from app.attachment.serializers.responses.attachment_summary_response_serializer import (
-    AttachmentSummaryResponseSerializer,
-)
 from app.novel.models.novel import Novel
 from app.novel.serializers.responses.author_summary_response_serializer import (
     AuthorSummaryResponseSerializer,
@@ -15,6 +12,9 @@ from app.novel.serializers.responses.genre_summary_response_serializer import (
 )
 from app.novel.serializers.responses.tag_summary_response_serializer import (
     TagSummaryResponseSerializer,
+)
+from app.system.serializers.responses.attachment_summary_response_serializer import (
+    AttachmentSummaryResponseSerializer,
 )
 
 

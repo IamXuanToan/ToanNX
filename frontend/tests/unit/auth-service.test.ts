@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { createForgotPasswordSchema } from "@/modules/auth/schemas/forgot-password.schema";
-import { createResetPasswordSchema } from "@/modules/auth/schemas/reset-password.schema";
-import { sanitizeNextPath } from "@/modules/auth/services/auth.service";
-import { canAccessAdmin, hasPermission } from "@/modules/auth/services/current-user.service";
-import type { CurrentUser } from "@/modules/auth/types/auth.types";
+import { createForgotPasswordSchema } from "@/modules/system/schemas/forgot-password.schema";
+import { createResetPasswordSchema } from "@/modules/system/schemas/reset-password.schema";
+import { sanitizeNextPath } from "@/modules/system/services/auth.service";
+import { canAccessAdmin, hasPermission } from "@/modules/system/services/current-user.service";
+import type { CurrentUser } from "@/modules/system/types/auth.types";
 
 function current(overrides: Partial<CurrentUser["user"]>, permissions: string[] = []): CurrentUser {
   return {
@@ -42,11 +42,11 @@ describe("sanitizeNextPath", () => {
 
 describe("hasPermission / canAccessAdmin", () => {
   it("superuser có mọi quyền, người dùng thường theo danh sách", () => {
-    expect(hasPermission(current({ isSuperuser: true }), "iam.user.read")).toBe(true);
-    expect(hasPermission(current({}, ["iam.user.read"]), "iam.user.read")).toBe(true);
-    expect(hasPermission(current({}, ["iam.user.read"]), "iam.user.create")).toBe(false);
+    expect(hasPermission(current({ isSuperuser: true }), "system.user.read")).toBe(true);
+    expect(hasPermission(current({}, ["system.user.read"]), "system.user.read")).toBe(true);
+    expect(hasPermission(current({}, ["system.user.read"]), "system.user.create")).toBe(false);
     expect(hasPermission(current({ isActive: false, isSuperuser: true }), "x.y.z")).toBe(false);
-    expect(hasPermission(undefined, "iam.user.read")).toBe(false);
+    expect(hasPermission(undefined, "system.user.read")).toBe(false);
   });
 
   it("chỉ staff/superuser đang hoạt động được vào quản trị", () => {

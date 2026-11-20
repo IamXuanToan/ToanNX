@@ -1,4 +1,4 @@
-"""Hợp đồng nơi lưu lịch sử thay đổi (module journal cung cấp bản thật)."""
+"""Hợp đồng nơi lưu lịch sử thay đổi (module system cung cấp bản thật)."""
 
 from typing import Any
 
@@ -8,7 +8,7 @@ from app.core.tracking.change_set import ChangeSet
 class ChangeRecorder:
     """Lưu `ChangeSet`. Lớp con khai qua setting `CORE_CHANGE_RECORDER`.
 
-    Core chỉ biết hợp đồng này, không import module journal (giống `AUTHENTICATION_BACKENDS`).
+    Core chỉ biết hợp đồng này, không import module system (giống `AUTHENTICATION_BACKENDS`).
     """
 
     def record(self, change: ChangeSet) -> None:

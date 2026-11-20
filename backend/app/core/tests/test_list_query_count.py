@@ -17,13 +17,13 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import URLPattern, URLResolver, get_resolver
 from django.utils import timezone
 
-from app.account.tests.factories.user_factory import UserFactory
-from app.attachment.services.attachment_folder_service import AttachmentFolderService
-from app.attachment.services.attachment_service import AttachmentService
-from app.authentication.models.auth_session import AuthSession
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.models.permission import Permission
-from app.iam.tests.factories.role_factory import RoleFactory
+from app.system.models.auth_session import AuthSession
+from app.system.models.permission import Permission
+from app.system.services.attachment_folder_service import AttachmentFolderService
+from app.system.services.attachment_service import AttachmentService
+from app.system.tests.factories.role_factory import RoleFactory
+from app.system.tests.factories.user_factory import UserFactory
 from app.utilities.models.page_path import PagePath
 from app.utilities.services.page_service import PageService
 from app.utilities.services.qr_code_service import QrCodeService
@@ -156,17 +156,17 @@ def _tags(owner: Any, count: int) -> None:
 
 
 CASES: list[tuple[str, Callable[[Any, int], None]]] = [
-    ("/api/v1/account/users", lambda owner, n: UserFactory.create_batch(n)),
-    ("/api/v1/iam/roles", lambda owner, n: RoleFactory.create_batch(n)),
+    ("/api/v1/system/users", lambda owner, n: UserFactory.create_batch(n)),
+    ("/api/v1/system/roles", lambda owner, n: RoleFactory.create_batch(n)),
     ("/api/v1/utilities/short-links", _short_links),
-    ("/api/v1/journal/entries", lambda owner, n: RoleFactory.create_batch(n)),
+    ("/api/v1/system/journal-entries", lambda owner, n: RoleFactory.create_batch(n)),
     ("/api/v1/utilities/pages", _pages),
     ("/api/v1/utilities/page-paths", lambda owner, n: None),
     ("/api/v1/utilities/qr-codes", _qr_codes),
-    ("/api/v1/auth/admin-sessions", _sessions),
-    ("/api/v1/iam/permissions", _permissions),
-    ("/api/v1/attachments/folders", _folders),
-    ("/api/v1/attachments", _attachments),
+    ("/api/v1/system/auth/admin-sessions", _sessions),
+    ("/api/v1/system/permissions", _permissions),
+    ("/api/v1/system/attachments/folders", _folders),
+    ("/api/v1/system/attachments", _attachments),
     ("/api/v1/novel/novels", _novels),
     ("/api/v1/novel/chapters", _chapters),
     ("/api/v1/novel/authors", _authors),

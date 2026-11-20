@@ -1,7 +1,6 @@
 """ViewSet quản lý chương truyện."""
 
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.types.permission_rule import permission_rule
 from app.novel.filters.chapter_filter import ChapterFilter
 from app.novel.models.chapter import Chapter
 from app.novel.permissions.chapter_permission import ChapterPermission as P
@@ -18,6 +17,7 @@ from app.novel.serializers.validates.chapter_update_validate_serializer import (
     ChapterUpdateValidateSerializer,
 )
 from app.novel.services.chapter_service import ChapterService
+from app.system.types.permission_rule import permission_rule
 
 
 class ChapterViewSet(CoreModelViewSet[Chapter]):

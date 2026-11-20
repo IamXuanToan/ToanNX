@@ -5,7 +5,12 @@ import { Check, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/shares/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shares/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shares/components/ui/dropdown-menu";
 import { Input } from "@/shares/components/ui/input";
 import type { Pagination } from "@/shares/types/api.types";
 

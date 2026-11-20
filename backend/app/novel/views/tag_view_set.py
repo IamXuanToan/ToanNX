@@ -1,7 +1,6 @@
 """ViewSet quản lý thẻ / hashtag tiểu thuyết."""
 
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.types.permission_rule import permission_rule
 from app.novel.models.tag import Tag
 from app.novel.permissions.tag_permission import TagPermission as P
 from app.novel.serializers.responses.tag_summary_response_serializer import (
@@ -14,6 +13,7 @@ from app.novel.serializers.validates.tag_validate_serializer import (
     TagValidateSerializer,
 )
 from app.novel.services.tag_service import TagService
+from app.system.types.permission_rule import permission_rule
 
 
 class TagViewSet(CoreModelViewSet[Tag]):

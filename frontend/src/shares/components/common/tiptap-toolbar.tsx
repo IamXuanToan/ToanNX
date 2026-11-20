@@ -1,12 +1,42 @@
 "use client";
 
 import type { Editor } from "@tiptap/react";
-import { AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Code, Highlighter, ImageIcon, ImagePlus, Italic, Link2, List, ListChecks, ListOrdered, Minus, Plus, Quote, Redo2, Strikethrough, Table, Underline, Undo2, Video } from "lucide-react";
+import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
+  Bold,
+  Code,
+  Highlighter,
+  ImageIcon,
+  ImagePlus,
+  Italic,
+  Link2,
+  List,
+  ListChecks,
+  ListOrdered,
+  Minus,
+  Plus,
+  Quote,
+  Redo2,
+  Strikethrough,
+  Table,
+  Underline,
+  Undo2,
+  Video,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { Button } from "@/shares/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shares/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shares/components/ui/dropdown-menu";
 import { FieldError } from "@/shares/components/ui/field";
 import { Input } from "@/shares/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shares/components/ui/popover";

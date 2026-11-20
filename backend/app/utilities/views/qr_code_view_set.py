@@ -10,7 +10,7 @@ GET    /utilities/qr-codes/{id}/history
 """
 
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.types.permission_rule import permission_rule
+from app.system.types.permission_rule import permission_rule
 from app.utilities.filters.qr_code_filter import QrCodeFilter
 from app.utilities.models.qr_code import QrCode
 from app.utilities.permissions.qr_code_permission import QrCodePermission as P

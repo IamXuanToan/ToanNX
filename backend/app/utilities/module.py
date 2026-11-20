@@ -14,7 +14,7 @@ MODULE = ModuleDescriptor(
         "Thư viện và trang tùy chỉnh `/<đường dẫn giữa>/<slug>` soạn bằng Tiptap (JSON)."
     ),
     version="1.0.0",
-    dependencies=("account", "iam", "attachment"),
+    dependencies=("system",),
     permissions=(
         *ShortLinkPermission.all(),
         *QrCodePermission.all(),

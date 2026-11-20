@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { usePermission } from "@/modules/auth/hooks/use-permission";
+import { usePermission } from "@/modules/system/hooks/use-permission";
 
 import { ShortLinkProfile } from "../components/short-link-profile";
 import { SHORT_LINK_PERMISSIONS } from "../permissions/short-link-permission";

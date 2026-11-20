@@ -2,12 +2,12 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ProfileDialog } from "@/modules/auth/components/profile-dialog";
-import type { AuthRole, AuthUser } from "@/modules/auth/types/auth.types";
+import { ProfileDialog } from "@/modules/system/components/profile-dialog";
+import type { AuthRole, AuthUser } from "@/modules/system/types/auth.types";
 
 const mockUpdateAsync = vi.fn().mockResolvedValue({});
 
-vi.mock("@/modules/auth/hooks/use-update-profile", () => ({
+vi.mock("@/modules/system/hooks/use-update-profile", () => ({
   useUpdateProfile: () => ({
     mutateAsync: mockUpdateAsync,
     isPending: false,

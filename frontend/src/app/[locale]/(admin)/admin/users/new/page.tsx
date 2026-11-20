@@ -1,8 +1,8 @@
-import { UserCreateView } from "@/modules/account/views/user-create-view";
-import { UserRolePickerView } from "@/modules/iam/views/user-role-picker-view";
+import { UserCreateView } from "@/modules/system/views/user-create-view";
+import { UserRolePickerView } from "@/modules/system/views/user-role-picker-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
-export const generateMetadata = createPageMetadata({ title: "account.users.create" });
+export const generateMetadata = createPageMetadata({ title: "system.account.users.create" });
 
 /**
  * Trang tạo người dùng (Account) + chọn vai trò (IAM) qua slot `extensions`;

@@ -15,9 +15,9 @@ from django.urls import URLPattern, URLResolver, get_resolver
 from rest_framework.permissions import AllowAny
 from rest_framework.test import APIClient
 
-from app.account.models.user import User
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
-from app.iam.permissions.has_iam_permission import HasIamPermission
+from app.system.models.user import User
+from app.system.permissions.has_iam_permission import HasIamPermission
 
 pytestmark = pytest.mark.django_db
 

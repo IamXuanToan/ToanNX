@@ -8,8 +8,7 @@ import { LogoMark } from "@/shares/components/layout/logo";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 
-import { ATTACHMENT_ROUTES } from "@/modules/attachment/constants/routes";
-import { AUTH_ROUTES } from "@/modules/auth/constants/routes";
+import { SYSTEM_ROUTES } from "@/modules/system/constants/routes";
 import { HOME_ROUTES } from "../constants/routes";
 
 /**
@@ -95,7 +94,7 @@ export function NotFoundView() {
             size="sm"
             className="text-muted-foreground hover:text-foreground h-7 gap-1 px-2 text-xs"
           >
-            <Link href={ATTACHMENT_ROUTES.library}>
+            <Link href={SYSTEM_ROUTES.library}>
               <Images className="size-3.5" />
               {t("library")}
             </Link>
@@ -107,7 +106,7 @@ export function NotFoundView() {
             size="sm"
             className="text-muted-foreground hover:text-foreground h-7 gap-1 px-2 text-xs"
           >
-            <Link href={AUTH_ROUTES.login}>
+            <Link href={SYSTEM_ROUTES.login}>
               <LogIn className="size-3.5" />
               {t("signIn")}
             </Link>

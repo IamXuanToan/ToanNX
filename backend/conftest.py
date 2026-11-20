@@ -7,11 +7,11 @@ import pytest
 from django.conf import settings as django_settings
 from rest_framework.test import APIClient
 
-from app.account.models.user import User
-from app.account.tests.factories.staff_factory import StaffFactory
-from app.account.tests.factories.superuser_factory import SuperuserFactory
-from app.account.tests.factories.user_factory import DEFAULT_PASSWORD, UserFactory
-from app.iam.tests.helpers.permission_helper import grant
+from app.system.models.user import User
+from app.system.tests.factories.staff_factory import StaffFactory
+from app.system.tests.factories.superuser_factory import SuperuserFactory
+from app.system.tests.factories.user_factory import DEFAULT_PASSWORD, UserFactory
+from app.system.tests.helpers.permission_helper import grant
 
 
 @pytest.fixture(autouse=True)
@@ -60,7 +60,7 @@ def login() -> Callable[..., APIClient]:
     def _login(user: User, password: str = DEFAULT_PASSWORD, client: APIClient | None = None) -> APIClient:
         api = client or APIClient()
         response = api.post(
-            "/api/v1/auth/login", {"identifier": user.email, "password": password}, format="json"
+            "/api/v1/system/auth/login", {"identifier": user.email, "password": password}, format="json"
         )
         assert response.status_code == 200, response.content
         return api

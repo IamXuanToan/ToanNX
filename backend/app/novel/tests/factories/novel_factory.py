@@ -2,9 +2,9 @@
 
 import factory
 
-from app.account.tests.factories.user_factory import UserFactory
 from app.novel.models.novel import Novel
 from app.novel.tests.factories.author_factory import AuthorFactory
+from app.system.tests.factories.user_factory import UserFactory
 
 
 class NovelFactory(factory.django.DjangoModelFactory):

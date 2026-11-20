@@ -4,11 +4,11 @@ from typing import Any
 
 import pytest
 
-from app.account.tests.factories.user_factory import UserFactory
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.novel.models.reading_history import ReadingHistory
 from app.novel.tests.factories.chapter_factory import ChapterFactory
 from app.novel.tests.factories.novel_factory import NovelFactory
+from app.system.tests.factories.user_factory import UserFactory
 
 pytestmark = pytest.mark.django_db
 URL = "/api/v1/novel/reading-history"

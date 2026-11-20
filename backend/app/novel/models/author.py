@@ -30,13 +30,13 @@ class Author(JournalTracker, CoreModel):
         db_comment="Tiểu sử tác giả",
     )
     avatar = models.ForeignKey(
-        "attachment.Attachment",
+        "system.Attachment",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name="+",
         verbose_name="Ảnh đại diện",
-        help_text="File ảnh lưu ở module attachment.",
+        help_text="File ảnh lưu ở thư viện (module system).",
         db_comment="Ảnh đại diện tác giả",
     )
 

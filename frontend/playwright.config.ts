@@ -30,7 +30,7 @@ export default defineConfig({
     {
       command: `uv run python manage.py prepare_e2e && uv run python manage.py runserver ${BACKEND_PORT} --noreload`,
       cwd: "../backend",
-      url: `${BACKEND_ORIGIN}/api/v1/health`,
+      url: `${BACKEND_ORIGIN}/api/v1/system/health`,
       env: {
         DB_NAME: process.env.E2E_DB_NAME ?? "toannx_e2e",
         DJANGO_DEBUG: "True",
@@ -42,7 +42,7 @@ export default defineConfig({
     },
     {
       command: `pnpm build && pnpm start -p ${FRONTEND_PORT}`,
-      url: `http://localhost:${FRONTEND_PORT}/api/v1/health`,
+      url: `http://localhost:${FRONTEND_PORT}/api/v1/system/health`,
       // `next build` cần NODE_ENV chuẩn; môi trường của test runner có thể khác.
       env: { NODE_ENV: "production", NEXT_DIST_DIR: ".next-e2e", BACKEND_ORIGIN },
       reuseExistingServer: !process.env.CI,

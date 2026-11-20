@@ -41,7 +41,7 @@ export type HistoryEntry = {
   id: string;
   createdAt: string;
   action: "CREATE" | "UPDATE" | "DELETE" | "EVENT";
-  /** Mã sự kiện khi `action = EVENT` (ví dụ `iam.role_assigned`). */
+  /** Mã sự kiện khi `action = EVENT` (ví dụ `system.role_assigned`). */
   event: string;
   /** `<module>.<model>`. */
   resource: string;

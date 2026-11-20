@@ -1,0 +1,31 @@
+"""API danh mục quyền (chỉ đọc): /iam/permissions và /iam/permissions/{id}.
+
+GET /iam/permissions?module=iam&search=&ordering=&page=&page_size=
+"""
+
+from app.core.views.core_model_view_set import CoreModelViewSet
+from app.system.filters.permission_filter import PermissionFilter
+from app.system.models.permission import Permission
+from app.system.permissions.iam_permission import IamPermission
+from app.system.serializers.responses.permission_list_response_serializer import (
+    PermissionListResponseSerializer,
+)
+from app.system.services.permission_service import PermissionService
+from app.system.types.permission_rule import permission_rule
+
+
+class PermissionViewSet(CoreModelViewSet[Permission]):
+    """Danh mục quyền do các module khai báo."""
+
+    service_class = PermissionService
+    filterset_class = PermissionFilter
+    search_fields = ("code", "name", "description")
+    ordering_fields = ("code", "module", "created_at")
+    ordering = ("-created_at", "-pk")
+    list_serializer_class = PermissionListResponseSerializer
+    detail_serializer_class = PermissionListResponseSerializer
+    http_method_names = ["get", "head", "options"]
+    action_permissions = {
+        "list": permission_rule(IamPermission.PERMISSION_READ),
+        "retrieve": permission_rule(IamPermission.PERMISSION_READ),
+    }

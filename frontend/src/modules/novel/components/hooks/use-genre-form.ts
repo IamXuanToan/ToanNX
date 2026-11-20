@@ -7,7 +7,13 @@ import { useForm } from "react-hook-form";
 
 import { useCreateGenre } from "../../hooks/use-create-genre";
 import { useUpdateGenre } from "../../hooks/use-update-genre";
-import { GENRE_DEFAULTS, type GenreFormValues, fromGenre, genreSchema, toGenreInput } from "../../schemas/genre.schema";
+import {
+  GENRE_DEFAULTS,
+  type GenreFormValues,
+  fromGenre,
+  genreSchema,
+  toGenreInput,
+} from "../../schemas/genre.schema";
 import type { Genre } from "../../types/genre.types";
 
 /**

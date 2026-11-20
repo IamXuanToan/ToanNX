@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import type { AuthUser } from "@/modules/auth/types/auth.types";
+import type { AuthUser } from "@/modules/system/types/auth.types";
 
 /**
  * Phần đầu màn chọn module: hiển thị huy hiệu trạng thái vận hành, lời chào cá nhân hóa và định danh tài khoản.

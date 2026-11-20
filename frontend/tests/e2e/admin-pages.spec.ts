@@ -3,14 +3,14 @@ import { expect, test } from "@playwright/test";
 import { E2E_ADMIN, loginViaUi, openModule } from "./helpers";
 
 test.describe("Trang quản trị", () => {
-  test("nhóm Hệ thống ở giữa màn, sidebar chia theo module, quay về màn chọn", async ({ page }) => {
+  test("nhóm Hệ thống ở giữa màn, sidebar module System đủ mục, quay về màn chọn", async ({
+    page,
+  }) => {
     await loginViaUi(page);
     const launcher = page.getByTestId("module-launcher");
     await expect(launcher.getByRole("link")).toHaveCount(2);
     const systemCard = launcher.getByRole("link", { name: /Hệ thống/ });
-    await expect(systemCard).toContainText("Tài khoản");
-    await expect(systemCard).toContainText("Phân quyền");
-    await expect(systemCard).toContainText("Nhật ký");
+    await expect(systemCard).toContainText("Tài khoản người dùng và phân quyền.");
     const utilitiesCard = launcher.getByRole("link", { name: /Tiện ích/ });
     await expect(utilitiesCard).toContainText("Liên kết rút gọn, mã QR và trang.");
     await expect(utilitiesCard).toContainText("Link rút gọn");
@@ -21,10 +21,10 @@ test.describe("Trang quản trị", () => {
     await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung$/);
     const sidebar = page.locator("[data-slot=sidebar]");
     await expect(sidebar.getByTestId("module-switcher")).toContainText("Hệ thống");
-    await expect(sidebar.getByTestId("sidebar-module-account")).toContainText("Người dùng");
-    await expect(sidebar.getByTestId("sidebar-module-account")).toContainText("Phiên");
-    await expect(sidebar.getByTestId("sidebar-module-iam")).toContainText("Vai trò");
-    await expect(sidebar.getByTestId("sidebar-module-iam")).toContainText("Quyền");
+    const systemModule = sidebar.getByTestId("sidebar-module-system");
+    for (const label of ["Người dùng", "Phiên", "Vai trò", "Quyền", "Thư viện", "Nhật ký"]) {
+      await expect(systemModule).toContainText(label);
+    }
 
     await sidebar.getByRole("link", { name: "Vai trò" }).click();
     await expect(page).toHaveURL(/\/vi\/quan-tri\/vai-tro$/);
@@ -124,9 +124,9 @@ test.describe("Trang quản trị", () => {
         page.getByRole("checkbox", { name: "Người xem", exact: true }),
       ).not.toBeChecked();
     } finally {
-      const csrf = await page.request.get("/api/v1/auth/csrf");
+      const csrf = await page.request.get("/api/v1/system/auth/csrf");
       const token = (await csrf.json()).data.csrf_token as string;
-      await page.request.delete(`/api/v1/account/users/${id}`, {
+      await page.request.delete(`/api/v1/system/users/${id}`, {
         headers: { "X-CSRFToken": token },
       });
     }
@@ -154,14 +154,16 @@ test.describe("Trang quản trị", () => {
       await expect(
         page.getByRole("checkbox", { name: "Tạo vai trò", exact: true }),
       ).not.toBeChecked();
-      const accountModule = page
+      const systemModule = page
         .getByTestId("admin-content")
-        .getByRole("button", { name: /^Tài khoản 1\// });
-      await expect(accountModule).toHaveAttribute("aria-expanded", "true");
+        .getByRole("button", { name: /^Hệ thống 2\// });
+      await expect(systemModule).toHaveAttribute("aria-expanded", "true");
     } finally {
-      const csrf = await page.request.get("/api/v1/auth/csrf");
+      const csrf = await page.request.get("/api/v1/system/auth/csrf");
       const token = (await csrf.json()).data.csrf_token as string;
-      await page.request.delete(`/api/v1/iam/roles/${id}`, { headers: { "X-CSRFToken": token } });
+      await page.request.delete(`/api/v1/system/roles/${id}`, {
+        headers: { "X-CSRFToken": token },
+      });
     }
   });
 });

@@ -4,7 +4,7 @@ import createMiddleware from "next-intl/middleware";
 import { getPathname } from "./i18n/navigation";
 import { LOCALE_COOKIE, resolveRequestLocale } from "./i18n/request-locale";
 import { type AppLocale, routing } from "./i18n/routing";
-import { AUTH_ROUTES } from "./modules/auth/constants/routes";
+import { SYSTEM_ROUTES } from "./modules/system/constants/routes";
 import { PUBLIC_PAGE_ROUTE_PREFIX, RESERVED_SEGMENTS } from "./modules/utilities/constants/routes";
 import { MANAGE_APP_ROUTES } from "./modules/manage-app/constants/routes";
 import { NOVEL_ROUTES } from "./modules/novel/constants/routes";
@@ -15,7 +15,7 @@ const SESSION_HINT_COOKIE = "session_hint";
 const intlProxy = createMiddleware(routing);
 
 function localizedPath(
-  href: typeof MANAGE_APP_ROUTES.admin | typeof AUTH_ROUTES.login,
+  href: typeof MANAGE_APP_ROUTES.admin | typeof SYSTEM_ROUTES.login,
   locale: AppLocale,
 ): string {
   return getPathname({ href, locale });
@@ -36,7 +36,7 @@ export default function proxy(request: NextRequest) {
   if (locale) {
     const hasSession = request.cookies.has(SESSION_HINT_COOKIE);
     const adminPath = localizedPath(MANAGE_APP_ROUTES.admin, locale);
-    const loginPath = localizedPath(AUTH_ROUTES.login, locale);
+    const loginPath = localizedPath(SYSTEM_ROUTES.login, locale);
     const novelPath = getPathname({ href: NOVEL_ROUTES.catalog, locale });
     const isAdmin = pathname === adminPath || pathname.startsWith(`${adminPath}/`);
     const isNovel = pathname === novelPath || pathname.startsWith(`${novelPath}/`);

@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import type { AppPathname } from "@/i18n/routing";
 
 /**
- * Khóa dịch đầy đủ từ gốc message (`<namespace>.<key>`), ví dụ `account.nav.users`.
+ * Khóa dịch đầy đủ từ gốc message (`<namespace>.<key>`), ví dụ `system.account.nav.users`.
  * Module tự khai trong namespace của mình; `shares` không liệt kê khóa của module nào.
  */
 export type MessageKey = `${string}.${string}`;

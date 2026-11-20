@@ -8,7 +8,7 @@ Quy tắc: **mỗi class một file**, tên file snake_case trùng tên class. `
 ```
 config/                                 # django-admin startproject config .
   settings.py                           # một file cấu hình, đọc biến môi trường
-  urls.py                               # /api/v1/{auth,account,iam,attachments,health,journal,novel,utilities}
+  urls.py                               # /api/v1/{system,novel,utilities}
   wsgi.py                               # WSGI `application` + `app` (entrypoint Vercel)
 app/
   core/
@@ -75,9 +75,9 @@ Chỉ hai lớp nền. Hành vi chung là **thuộc tính khai báo** (mặc đ�
 | Trường hợp | Ví dụ |
 | --- | --- |
 | Mặc định (đăng nhập + quyền IAM) | users, roles, attachments, short links, QR, trang, journal |
-| `permission_classes = [IsActiveAuthenticated]` | `/auth/me`, `/auth/sessions`, `/auth/logout-all` |
-| `authentication_classes = []`, `[AllowAny]` | `/auth/csrf`, `/health`, `/utilities/short-links/resolve/{slug}` (xem trang và mở khóa) |
-| như trên + `CsrfProtected` | `/auth/login`, `/auth/refresh`, `/auth/logout` |
+| `permission_classes = [IsActiveAuthenticated]` | `/system/auth/me`, `/system/auth/sessions`, `/system/auth/logout-all` |
+| `authentication_classes = []`, `[AllowAny]` | `/system/auth/csrf`, `/system/health`, `/utilities/short-links/resolve/{slug}` (xem trang và mở khóa) |
+| như trên + `CsrfProtected` | `/system/auth/login`, `/system/auth/refresh`, `/system/auth/logout` |
 | `[AllowAny]` + ghi đè `perform_authentication` | `/utilities/pages/public/...` (xem trước bản nháp khi có quyền) |
 
 `CoreModelViewSet` ủy quyền list/retrieve/create/partial_update/destroy cho `service_class`, dùng
@@ -94,7 +94,7 @@ dependency qua constructor (`repository`, `<tên>_repository`, `<tên>_service`)
 
 Model kế thừa `JournalTracker` (`core/tracking/`) giữ ảnh chụp field khi nạp từ DB; `save()`/`delete()` (kể cả
 qua `CoreRepository.update_where`) tạo `ChangeSet` (field cũ → mới, che field nhạy cảm) và gửi cho recorder ở
-`settings.CORE_CHANGE_RECORDER` (module `journal`) **trong cùng transaction**. Sự kiện không phải đổi field (gán vai
+`settings.CORE_CHANGE_RECORDER` (Journal của module `system`) **trong cùng transaction**. Sự kiện không phải đổi field (gán vai
 trò, cấp quyền) dùng `journal_event(...)`. `GET /<resource>/{id}/history` (bật `history_enabled`) và trang Journal
 lọc theo `module.model`; bản ghi cũ hơn `JOURNAL_RETENTION_DAYS` được dọn bằng `run_cleanup`.
 
@@ -150,7 +150,7 @@ Luồng: `page` → `View` (ghép + kiểm quyền) → component (+hook riêng)
 ### API client
 
 - Gọi `/api/v1/*` cùng origin (Next rewrite sang Django), `credentials: same-origin`.
-- Gắn `X-Request-ID`, `X-CSRFToken` (tự lấy `/auth/csrf` khi thiếu), timeout 15s.
+- Gắn `X-Request-ID`, `X-CSRFToken` (tự lấy `/system/auth/csrf` khi thiếu), timeout 15s.
 - Chuyển camelCase ⇄ snake_case chỉ cho plain object/mảng; không đụng `File/Blob/FormData/Date`; hỗ trợ `opaqueKeys`.
 - 401 có mã refresh được → refresh single-flight → thử lại **một** lần; refresh thất bại → `markSessionExpired`.
 - 403 `AUTH_CSRF_FAILED` → lấy CSRF mới → thử lại một lần.
@@ -160,14 +160,15 @@ Luồng: `page` → `View` (ghép + kiểm quyền) → component (+hook riêng)
 | Khái niệm | Nơi định nghĩa |
 | --- | --- |
 | Installed | App trong `INSTALLED_APPS` kế thừa `CoreModuleConfig` → tự đăng ký `module.MODULE` (`code` = `label`) |
-| Quyền | `PermissionDefinition` trong descriptor → `sync_iam` ghi vào `iam_permission` |
+| Quyền | `PermissionDefinition` trong descriptor → `sync_iam` ghi vào `system_permission` |
 | Hiển thị | Nhóm, icon, thứ tự khai tĩnh ở FE (`modules/manage-app/constants/admin-navigation.ts` + `navigation.ts` của module) |
 
 Module hiện có và chiều phụ thuộc:
 
 ```
-attachment ← account (tài khoản, AUTH_USER_MODEL) ← iam (vai trò, quyền) ← authentication
-health (độc lập)
+system (tài khoản/AUTH_USER_MODEL, IAM, đăng nhập/phiên, thư viện, journal, health)
+  ← novel
+  ← utilities
 ```
 
 Module đã cài luôn hoạt động; không có bảng cấu hình, cờ bật/tắt hay icon ở backend.

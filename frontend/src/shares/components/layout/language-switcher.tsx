@@ -9,7 +9,13 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { LOCALE_COOKIE } from "@/i18n/request-locale";
 import { type AppLocale, LOCALES } from "@/i18n/routing";
 import { Button } from "@/shares/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/shares/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/shares/components/ui/dropdown-menu";
 
 /**
  * Chuyển ngôn ngữ, giữ nguyên trang tương ứng (pathname đã dịch), tham số động và query.

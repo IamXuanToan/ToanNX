@@ -13,7 +13,7 @@ def test_rejects_permission_of_other_module() -> None:
         "Links",
         "",
         "1.0.0",
-        permissions=(PermissionDefinition("iam.user.read", "x", "y"),),
+        permissions=(PermissionDefinition("system.user.read", "x", "y"),),
     )
     with pytest.raises(ValueError, match="phải thuộc module"):
         ModuleRegistry().register(bad)

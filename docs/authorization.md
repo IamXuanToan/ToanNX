@@ -1,24 +1,24 @@
 # Phân quyền (IAM / RBAC)
 
 ```
-account.User ─< UserRole >─ Role ─< RolePermission >─ Permission (module.resource.action)
+system.User ─< UserRole >─ Role ─< RolePermission >─ Permission (module.resource.action)
 ```
 
-Tài khoản (`account.User`) thuộc module **Account**; IAM chỉ quản lý vai trò/quyền và phụ thuộc Account
-(không có chiều ngược lại).
+Tài khoản (`system.User`) và IAM (vai trò/quyền) cùng thuộc module **System**; phần tài khoản không gọi
+service IAM, quyền đi qua authentication backend.
 
 Nguồn sự thật duy nhất là các bảng IAM. Django `Group`/`Permission` (bảng của `django.contrib.auth`) vẫn tồn tại
 do Django yêu cầu nhưng **không được dùng**. `AUTHENTICATION_BACKENDS` gồm hai backend tách trách nhiệm:
 
 | Backend | Module | Việc |
 | --- | --- | --- |
-| `AccountAuthBackend` | account | `authenticate` (email + mật khẩu qua `UserService`), `get_user` |
-| `IamPermissionBackend` | iam | `has_perm`, `has_module_perms` qua `PermissionChecker` |
+| `AccountAuthBackend` | system | `authenticate` (email + mật khẩu qua `UserService`), `get_user` |
+| `IamPermissionBackend` | system | `has_perm`, `has_module_perms` qua `PermissionChecker` |
 
-`User.has_perm()` hỏi lần lượt các backend (chuẩn Django), nên Account không import IAM mà mọi API kiểu
+`User.has_perm()` hỏi lần lượt các backend (chuẩn Django), nên service tài khoản không import IAM mà mọi API kiểu
 Django vẫn dùng cùng nguồn quyền.
 
-## Đánh giá quyền (`app/iam/services/permission_checker.py`)
+## Đánh giá quyền (`app/system/services/permission_checker.py`)
 
 1. Chưa đăng nhập → DENY.
 2. `is_active=False` → DENY.
@@ -82,7 +82,7 @@ Người không có quyền `*.manage_all` chỉ thấy/sửa bản của mình;
 | `is_novel` | Đánh dấu nhóm nghiệp vụ Novel; không cấp quyền nào (quyền Novel sẽ do IAM khi có module Novel). |
 | `is_active` | Khóa/mở tài khoản; khóa sẽ thu hồi mọi phiên. |
 
-## Chống leo thang đặc quyền (`account/services/user_service.py`, `iam/services/user_role_service.py`, `role_service.py`, `role_permission_service.py`)
+## Chống leo thang đặc quyền (`system/services/user_service.py`, `user_role_service.py`, `role_service.py`, `role_permission_service.py`)
 
 - Người không phải superuser không được đổi `is_active/is_staff/is_superuser` của **chính mình** (`ACCOUNT_SELF_MODIFICATION`)
   hay vai trò của chính mình (`IAM_SELF_MODIFICATION`).
@@ -93,25 +93,30 @@ Người không có quyền `*.manage_all` chỉ thấy/sửa bản của mình;
 - Không thể vô hiệu hóa/hạ quyền superuser đang hoạt động cuối cùng (`ACCOUNT_LAST_SUPERUSER`, khóa dòng `SELECT FOR UPDATE`).
   Khôi phục khẩn cấp: `uv run python manage.py createsuperuser`.
 
-## Vai trò hệ thống & Bộ vai trò mẫu
+## Vai trò hệ thống & vai trò theo module
 
-Hệ thống quản lý vai trò theo hai cấp độ:
-1. **Vai trò hệ thống cốt lõi (System Roles):** Được `sync_iam` (chạy sau mỗi `migrate`) đảm bảo luôn tồn tại:
-   - `ADMIN`: mọi quyền đang hoạt động (`auto_grant="all"`, module mới cài tự được thêm).
-   - `VIEWER`: mọi quyền đọc `*.read` (`auto_grant="read_only"`).
+Vai trò mẫu chỉ có hai loại, dựng tự động từ module registry (`RoleSeedService`,
+`app/system/services/role_seed_service.py`; khai báo ở `app/system/constants/predefined_roles.py`). Không khai
+vai trò nghiệp vụ tự đặt (tiếp thị, tác giả...): quản trị viên tự tạo trên trang Vai trò khi cần.
 
-2. **Bộ vai trò phân quyền nghiệp vụ mẫu (Predefined Business Roles):** Khởi tạo và đồng bộ bằng lệnh:
+1. **`ADMIN` (vai trò hệ thống duy nhất):** mọi quyền đang hoạt động (`auto_grant="all"`, module cài sau tự
+   được thêm). `RoleSeedService.seed(system_only=True)` tạo/chuẩn hóa sau mỗi `migrate` (post_migrate, kể cả sau
+   `flush`) rồi gọi `sync_iam` cấp quyền. Không seed vai trò bằng data migration.
+2. **Hai vai trò cho mỗi module có khai quyền**, tạo bằng lệnh (chạy lại được, chạy lại khi cài module hoặc thêm
+   quyền mới):
    ```bash
    uv run python manage.py seed_roles
    ```
-   Dịch vụ `RoleSeedService` (`app/iam/services/role_seed_service.py`) phân tách theo nhóm module và trách nhiệm:
-   - `USER_MANAGER`: Quản lý người dùng, gán vai trò IAM, giám sát phiên (`account.user.*`, `iam.role.read/assign`, `iam.permission.read`, `authentication.session.*`, `journal.entry.read`).
-   - `CONTENT_MANAGER`: Quản lý nội dung xuất bản (`utilities.page.*`, `utilities.page_path.*`, `attachment.file.*`, `attachment.folder.*`, `utilities.short_link.*`, `utilities.qr_code.*`).
-   - `NOVEL_MANAGER`: Quản trị toàn bộ phân hệ truyện (`novel.novel.*`, `novel.chapter.*`, `novel.author.*`, `novel.genre.*`, `novel.tag.*`, `attachment.file.read/create`).
-   - `NOVEL_AUTHOR`: Tác giả sáng tác truyện (chỉ tạo/sửa truyện và chương của chính mình, tra cứu tác giả/thể loại/thẻ).
-   - `MARKETING_MANAGER`: Chuyên viên Marketing (`utilities.short_link.*`, `utilities.qr_code.*`, `attachment.file.*`).
+   | Mã | Tên | Quyền |
+   | --- | --- | --- |
+   | `<MÃ_MODULE>_MANAGER` | Quản lý `<tên module>` | mọi quyền của module (`<module>.*`) |
+   | `<MÃ_MODULE>_VIEWER` | Xem `<tên module>` | chỉ quyền đọc của module (`<module>.*.read`) |
 
-Mỗi model có **một file permission riêng** trong `permissions/<model>_permission.py` (kế thừa `PermissionCatalog`), không gộp chung nhiều model vào một file. Quyền khai báo bằng `PermissionDefinition(code, name, description)`; mô tả được lưu vào `iam_permission.description`.
+   Hiện có: `SYSTEM_MANAGER`/`SYSTEM_VIEWER`, `NOVEL_MANAGER`/`NOVEL_VIEWER`, `UTILITIES_MANAGER`/`UTILITIES_VIEWER`.
+   Đây là vai trò thường (không phải hệ thống): sửa/xóa được; chạy lại `seed_roles` đưa tên/mô tả về mặc định và
+   bổ sung quyền còn thiếu, không gỡ quyền quản trị viên đã thêm.
+
+Mỗi model có **một file permission riêng** trong `permissions/<model>_permission.py` (kế thừa `PermissionCatalog`), không gộp chung nhiều model vào một file. Quyền khai báo bằng `PermissionDefinition(code, name, description)`; mô tả được lưu vào `system_permission.description`.
 
 ## API quản trị (`/api/v1`)
 
@@ -120,14 +125,14 @@ CRUD theo `CoreModelViewSet`: `GET/POST /<resource>`, `GET/PATCH/DELETE /<resour
 
 | Tài nguyên | Quyền |
 | --- | --- |
-| `/account/users` (+ bulk, history) | `account.user.{read,create,update,delete}` |
-| `/iam/users/{id}/roles` | đọc `iam.role.read` hoặc `iam.role.assign`; gán/gỡ và `PUT` thay toàn bộ (`role_ids`) `iam.role.assign` |
-| `/iam/roles` (+ bulk, history) | `iam.role.{read,create,update,delete}` |
-| `/iam/roles/{id}/permissions` (`PUT` thay toàn bộ `permission_ids`) | `iam.permission.assign` |
-| `/iam/permissions` | `iam.permission.read` |
-| `/attachments`, `/attachments/folders` | `attachment.{file,folder}.{read,create,update,delete}`, `attachment.file.manage_all` |
-| `/auth/admin-sessions` (+ `bulk-revoke`, `users`) | `authentication.session.{read,revoke,delete}` |
-| `/journal/entries`, `/journal/resources` | `journal.entry.read` |
+| `/system/users` (+ bulk, history) | `system.user.{read,create,update,delete}` |
+| `/system/users/{id}/roles` | đọc `system.role.read` hoặc `system.role.assign`; gán/gỡ và `PUT` thay toàn bộ (`role_ids`) `system.role.assign` |
+| `/system/roles` (+ bulk, history) | `system.role.{read,create,update,delete}` |
+| `/system/roles/{id}/permissions` (`PUT` thay toàn bộ `permission_ids`) | `system.permission.assign` |
+| `/system/permissions` | `system.permission.read` |
+| `/system/attachments`, `/system/attachments/folders` | `system.{attachment,attachment_folder}.{read,create,update,delete}`, `system.attachment.manage_all` |
+| `/system/auth/admin-sessions` (+ `bulk-revoke`, `users`) | `system.session.{read,revoke,delete}` |
+| `/system/journal-entries`, `/system/journal-resources` | `system.journal_entry.read` |
 | `/utilities/short-links` (+ bulk, history) | `utilities.short_link.{read,create,update,delete,manage_all}` |
 | `/utilities/qr-codes` (+ bulk, history), `/utilities/qr-codes/preview`, `/utilities/qr-codes/banks` | `utilities.qr_code.{read,create,update,delete,manage_all}` (`banks` chỉ cần đăng nhập) |
 | `/utilities/page-paths` (+ history) | `utilities.page_path.{read,create,update,delete}` |
@@ -138,9 +143,9 @@ CRUD theo `CoreModelViewSet`: `GET/POST /<resource>`, `GET/PATCH/DELETE /<resour
 | `/novel/genres` (+ bulk) | `novel.genre.{read,create,update,delete}` |
 | `/novel/tags` (+ bulk) | `novel.tag.{read,create,update,delete}` |
 
-Công khai (ghi đè `permission_classes`): `/auth/csrf|login|refresh`, `/health`, `/utilities/short-links/resolve/{slug}`,
+Công khai (ghi đè `permission_classes`): `/system/auth/csrf|login|refresh`, `/system/health`, `/utilities/short-links/resolve/{slug}`,
 `/utilities/pages/public/{segment}/{slug}` (người có quyền đọc trang xem được bản nháp qua `?preview=1`),
-`/health/cleanup` (khóa bằng `CRON_SECRET`).
+`/system/health/cleanup` (khóa bằng `CRON_SECRET`).
 
 Quyền tạo bởi module được khai báo trong `module.py` của module đó; không cần sửa IAM core.
 Xoá người dùng và vai trò là xoá mềm, có quyền `delete` riêng; khoá tài khoản (`is_active=false`) vẫn là cách tạm
@@ -149,6 +154,6 @@ BE gán phần mới, gỡ phần bị bỏ trong **một transaction** theo cù
 
 ## Frontend
 
-`usePermission(code)`, `useHasRole(code)` (đọc `roles` của `/auth/me`), `useCurrentUser()`,
-`<PermissionGate permission="account.user.create">` chỉ
+`usePermission(code)`, `useHasRole(code)` (đọc `roles` của `/system/auth/me`), `useCurrentUser()`,
+`<PermissionGate permission="system.user.create">` chỉ
 điều khiển hiển thị. Sau khi đổi vai trò/quyền, cache `authKeys.me()` được invalidate.

@@ -1,6 +1,11 @@
 "use client";
 
-import { type RainIntensityType, useWeatherCanvas, type WeatherCanvasProps, type WeatherEffectType } from "./hooks/use-weather-canvas";
+import {
+  type RainIntensityType,
+  useWeatherCanvas,
+  type WeatherCanvasProps,
+  type WeatherEffectType,
+} from "./hooks/use-weather-canvas";
 
 export type { RainIntensityType, WeatherCanvasProps, WeatherEffectType };
 

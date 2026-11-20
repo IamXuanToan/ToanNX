@@ -12,7 +12,10 @@ Quyết định giao diện đã chốt cho `/admin`. Màn mới theo file này,
 
 - **Clean** (P13): điều hướng `sidebar`, vùng chứa `classic`, bề mặt flat, font Inter (giữ font hiện có).
 - Sidebar nền trắng (`--sidebar`), không kẻ dọc; nội dung trên nền xám `--canvas`; header `h-16` nền `--card`.
-- Màu nhấn: indigo của brand (`--primary`, oklch hue 275). Mục sidebar đang chọn: `bg-primary-light text-primary`.
+- Màu nhấn: xanh lá của brand theo logo cỏ bốn lá: `--primary` `#3D812E` (nút, link, mục đang chọn), `--primary-hover`
+  `#206A2D`, `--ring` `#569533` (focus, trang trí; không làm nền chữ trắng). Neutral pha sắc xanh hue 140; `--success`
+  xanh ngọc hue 175. Mục sidebar đang chọn: `bg-primary-light text-primary`. Chi tiết: rule frontend §4.0.
+- Logo: cỏ bốn lá PNG (`public/brand/logo.png`), favicon/logo-mark sinh bằng `scripts/build_brand_assets.py`.
 - Sắc: Neutral. Trạng thái: badge `success` (hoạt động) / `destructive` (khóa) khi chỉ xem; có quyền đổi thì
   cột Trạng thái chỉ là công tắc (nhãn ở tooltip), không kèm chữ.
 - Dark mode: có (dùng `.dark` sẵn có).

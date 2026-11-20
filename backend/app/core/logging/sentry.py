@@ -1,7 +1,7 @@
 """Báo lỗi lên Sentry (chỉ bật khi có `SENTRY_DSN`).
 
-- Lỗi 500 (exception chưa xử lý) và log mức ERROR (gồm lỗi trình duyệt gửi về `/health/client-errors`) thành
-  event; mỗi event gắn tag `request_id` để đối chiếu log và response.
+- Lỗi 500 (exception chưa xử lý) và log mức ERROR (gồm lỗi trình duyệt gửi về
+  `/system/health/client-errors`) thành event; mỗi event gắn tag `request_id` để đối chiếu log và response.
 - Không gửi dữ liệu cá nhân (`send_default_pii=False`): không cookie, header, body.
 """
 

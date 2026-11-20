@@ -7,7 +7,7 @@
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
-import { usePermission } from "@/modules/auth/hooks/use-permission";
+import { usePermission } from "@/modules/system/hooks/use-permission";
 import { FormPage } from "@/shares/components/common/form-page";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";

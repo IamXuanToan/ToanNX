@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 
 import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
 
-import { calculateAstronomicalMoonPhase, type LocationKey, useWeatherStore, type WeatherData } from "../../store/weather-store";
+import {
+  calculateAstronomicalMoonPhase,
+  type LocationKey,
+  useWeatherStore,
+  type WeatherData,
+} from "../../store/weather-store";
 import type { RainIntensityType, WeatherEffectType } from "../weather-canvas";
 
 export interface WeatherInfo {

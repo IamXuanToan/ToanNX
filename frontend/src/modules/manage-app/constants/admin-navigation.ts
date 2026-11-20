@@ -1,9 +1,5 @@
-import { accountNavigation } from "@/modules/account/navigation";
-import { attachmentNavigation } from "@/modules/attachment/navigation";
-import { authenticationAccountItems } from "@/modules/auth/navigation";
-import { iamNavigation } from "@/modules/iam/navigation";
-import { journalNavigation } from "@/modules/journal/navigation";
 import { novelNavigation } from "@/modules/novel/navigation";
+import { systemNavigation } from "@/modules/system/navigation";
 import { utilitiesNavigation } from "@/modules/utilities/navigation";
 import { BookOpen, LayoutTemplate, type LucideIcon, Settings } from "lucide-react";
 
@@ -26,10 +22,7 @@ export const ADMIN_GROUPS: { code: AdminGroupCode; icon: LucideIcon }[] = [
  * `tests/unit/module-registry.test.ts` báo lỗi nếu module có `navigation.ts` mà quên đăng ký.
  */
 export const ADMIN_MODULE_NAVIGATION: AdminModuleNavigation[] = [
-  { ...accountNavigation, items: [...accountNavigation.items, ...authenticationAccountItems] },
-  iamNavigation,
-  attachmentNavigation,
-  journalNavigation,
+  systemNavigation,
   utilitiesNavigation,
   novelNavigation,
 ];

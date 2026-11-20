@@ -26,7 +26,7 @@ Frontend rewrite `/api/v1/*` → `${BACKEND_ORIGIN}/api/v1/*` (Vercel external r
   `uv export --no-dev --no-hashes -o requirements.txt` cho runtime đọc requirements (chạy lại khi đổi dependency).
 - Không phụ thuộc filesystem, bộ nhớ hay worker. File lưu ở object storage (`FILE_STORAGE_BACKEND`).
   Swagger chỉ bật khi DEBUG (asset CDN).
-- Dọn dữ liệu: `vercel.json` khai Vercel Cron gọi `GET /api/v1/health/cleanup` lúc 03:00 UTC mỗi ngày; Vercel tự gửi
+- Dọn dữ liệu: `vercel.json` khai Vercel Cron gọi `GET /api/v1/system/health/cleanup` lúc 03:00 UTC mỗi ngày; Vercel tự gửi
   `Authorization: Bearer <CRON_SECRET>`. Cron chạy mọi `cleanup_tasks` của module: phiên/token/bucket hết hạn,
   journal quá `JOURNAL_RETENTION_DAYS`, file của tệp đã xóa mềm và file mồ côi quá `ATTACHMENT_PURGE_DAYS`.
 
@@ -80,7 +80,7 @@ Framework preset Next.js, install `pnpm install`, build `pnpm build`.
 ## 5. Kiểm tra sau deploy
 
 ```bash
-curl -s https://toannx.com/api/v1/health/ready      # {"success":true,"data":{"status":"ready"}...}
+curl -s https://toannx.com/api/v1/system/health/ready      # {"success":true,"data":{"status":"ready"}...}
 curl -sI https://toannx.com/vi/quan-tri              # 307 → /vi/dang-nhap?next=...
 ```
 
@@ -92,4 +92,4 @@ curl -sI https://toannx.com/vi/quan-tri              # 307 → /vi/dang-nhap?nex
   `X-Forwarded-For`; cần xác minh trên Vercel thật. Giới hạn đăng nhập vẫn có khóa theo email.
 - Content Security Policy (khai trong `frontend/next.config.ts`) cho phép script inline do Next sinh (không dùng
   nonce để giữ trang tĩnh), ảnh `https:` và iframe YouTube. Thêm dịch vụ ngoài (analytics, font CDN) phải sửa CSP.
-- Báo lỗi Sentry chỉ ở BE; lỗi trình duyệt đi qua `/api/v1/health/client-errors` (log ERROR → Sentry).
+- Báo lỗi Sentry chỉ ở BE; lỗi trình duyệt đi qua `/api/v1/system/health/client-errors` (log ERROR → Sentry).

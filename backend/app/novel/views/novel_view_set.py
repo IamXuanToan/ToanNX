@@ -1,7 +1,6 @@
 """ViewSet quản lý tiểu thuyết."""
 
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.types.permission_rule import permission_rule
 from app.novel.filters.novel_filter import NovelFilter
 from app.novel.models.novel import Novel
 from app.novel.permissions.novel_permission import NovelPermission as P
@@ -21,6 +20,7 @@ from app.novel.serializers.validates.novel_update_validate_serializer import (
     NovelUpdateValidateSerializer,
 )
 from app.novel.services.novel_service import NovelService
+from app.system.types.permission_rule import permission_rule
 
 
 class NovelViewSet(CoreModelViewSet[Novel]):

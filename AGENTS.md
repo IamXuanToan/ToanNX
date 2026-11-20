@@ -20,7 +20,8 @@ Backend:
 2. `permissions/<model>_permission.py` (PermissionCatalog cho từng model riêng biệt, mỗi model 1 file, không gộp chung; mỗi quyền có name + description; mã dạng `<module>.<resource>.<action>`),
    `constants/<module>_error_code.py` (StrEnum mã lỗi riêng, thêm bản dịch FE — test bắt nếu thiếu), `module.py`
    (`ModuleDescriptor(..., permissions=(*ModelAPermission.all(), *ModelBPermission.all()), dependencies=..., cleanup_tasks=...)`).
-   Chuẩn hóa bộ vai trò mẫu hệ thống theo phân cấp module: `uv run python manage.py seed_roles`.
+   Module mới tự có vai trò `<MÃ_MODULE>_MANAGER`/`<MÃ_MODULE>_VIEWER` khi chạy `uv run python manage.py seed_roles`
+   (không khai vai trò riêng trong code).
 3. Model kế thừa `CoreModel`; muốn có lịch sử thay đổi thì thêm `JournalTracker` **trước** `CoreModel`
    (`class Link(JournalTracker, CoreModel)`, tùy chọn `journal_fields`/`journal_masked_fields`). Index owner có
    điều kiện `deleted_at IS NULL`. `makemigrations`.

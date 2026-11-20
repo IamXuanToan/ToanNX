@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('attachment', '0004_attachment_purged_at'),
+        ('system', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(db_comment='Tên tác giả', help_text='Tên hoặc bút danh của tác giả.', max_length=255, verbose_name='Tên tác giả')),
                 ('slug', models.SlugField(db_comment='Slug định danh tác giả', help_text='Slug định danh tác giả trên URL.', max_length=255, unique=True, verbose_name='Đường dẫn tĩnh')),
                 ('bio', models.TextField(blank=True, db_comment='Tiểu sử tác giả', default='', help_text='Giới thiệu về tác giả.', verbose_name='Tiểu sử')),
-                ('avatar', models.ForeignKey(blank=True, db_comment='Ảnh đại diện tác giả', help_text='File ảnh lưu ở module attachment.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='attachment.attachment', verbose_name='Ảnh đại diện')),
+                ('avatar', models.ForeignKey(blank=True, db_comment='Ảnh đại diện tác giả', help_text='File ảnh lưu ở module attachment.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='system.attachment', verbose_name='Ảnh đại diện')),
                 ('created_by', models.ForeignKey(blank=True, db_comment='Người tạo bản ghi', help_text='NULL nếu do hệ thống tạo (migration, lệnh quản trị).', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người tạo')),
                 ('deleted_by', models.ForeignKey(blank=True, db_comment='Người thực hiện xóa mềm', help_text='Người dùng thực hiện xóa mềm.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người xóa')),
                 ('updated_by', models.ForeignKey(blank=True, db_comment='Người cập nhật gần nhất', help_text='Người dùng sửa bản ghi gần nhất; NULL nếu do hệ thống.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người cập nhật')),
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
                 ('deleted_by', models.ForeignKey(blank=True, db_comment='Người thực hiện xóa mềm', help_text='Người dùng thực hiện xóa mềm.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người xóa')),
                 ('genres', models.ManyToManyField(blank=True, related_name='novels', to='novel.genre', verbose_name='Thể loại')),
                 ('owner', models.ForeignKey(blank=True, db_comment='Người tạo hoặc quản lý truyện', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='novels', to=settings.AUTH_USER_MODEL, verbose_name='Người đăng')),
-                ('thumbnail', models.ForeignKey(blank=True, db_comment='Ảnh bìa truyện', help_text='Ảnh bìa đại diện cho truyện.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='attachment.attachment', verbose_name='Ảnh bìa truyện')),
+                ('thumbnail', models.ForeignKey(blank=True, db_comment='Ảnh bìa truyện', help_text='Ảnh bìa đại diện cho truyện.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='system.attachment', verbose_name='Ảnh bìa truyện')),
                 ('updated_by', models.ForeignKey(blank=True, db_comment='Người cập nhật gần nhất', help_text='Người dùng sửa bản ghi gần nhất; NULL nếu do hệ thống.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người cập nhật')),
             ],
             options={
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
                 ('is_published', models.BooleanField(db_comment='Trạng thái xuất bản chương', default=True, help_text='Cho phép người dùng đọc chương này.', verbose_name='Đã xuất bản')),
                 ('created_by', models.ForeignKey(blank=True, db_comment='Người tạo bản ghi', help_text='NULL nếu do hệ thống tạo (migration, lệnh quản trị).', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người tạo')),
                 ('deleted_by', models.ForeignKey(blank=True, db_comment='Người thực hiện xóa mềm', help_text='Người dùng thực hiện xóa mềm.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người xóa')),
-                ('thumbnail', models.ForeignKey(blank=True, db_comment='Ảnh minh họa chương', help_text='Ảnh bìa hoặc ảnh minh họa của chương.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='attachment.attachment', verbose_name='Ảnh minh họa chương')),
+                ('thumbnail', models.ForeignKey(blank=True, db_comment='Ảnh minh họa chương', help_text='Ảnh bìa hoặc ảnh minh họa của chương.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='system.attachment', verbose_name='Ảnh minh họa chương')),
                 ('updated_by', models.ForeignKey(blank=True, db_comment='Người cập nhật gần nhất', help_text='Người dùng sửa bản ghi gần nhất; NULL nếu do hệ thống.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL, verbose_name='Người cập nhật')),
                 ('novel', models.ForeignKey(db_comment='Truyện chứa chương này', on_delete=django.db.models.deletion.CASCADE, related_name='chapters', to='novel.novel', verbose_name='Truyện')),
             ],

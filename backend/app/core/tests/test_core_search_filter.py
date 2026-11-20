@@ -5,15 +5,15 @@ from typing import Any
 import pytest
 from django.db import connection
 
-from app.account.models.user import User
-from app.account.tests.factories.user_factory import UserFactory
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.core.utils.text import ascii_slug, to_ascii
-from app.iam.tests.factories.role_factory import RoleFactory
+from app.system.models.user import User
+from app.system.tests.factories.role_factory import RoleFactory
+from app.system.tests.factories.user_factory import UserFactory
 
 pytestmark = pytest.mark.django_db
 
-USERS = "/api/v1/account/users"
+USERS = "/api/v1/system/users"
 
 
 # Toàn bộ nguyên âm tiếng Việt (12 nguyên âm × 6 thanh, hoa + thường) và đ/Đ.
@@ -74,13 +74,15 @@ class TestAccentInsensitiveSearch(BaseApiTestCase):
 
     def test_accented_term_matches_plain_value(self, superuser: User, login: Any) -> None:
         role = RoleFactory(name="Quan tri noi dung")
-        data = self.assert_success(login(superuser).get("/api/v1/iam/roles", {"search": "quản trị"}))
+        data = self.assert_success(login(superuser).get("/api/v1/system/roles", {"search": "quản trị"}))
         assert str(role.pk) in {item["id"] for item in data}
 
     def test_search_through_relation(self, superuser: User, login: Any) -> None:
         owner = UserFactory(first_name="Thảo", last_name="Lê")
         login(owner)
-        data = self.assert_success(login(superuser).get("/api/v1/auth/admin-sessions", {"search": "thao"}))
+        data = self.assert_success(
+            login(superuser).get("/api/v1/system/auth/admin-sessions", {"search": "thao"})
+        )
         assert any(item["user_id"] == str(owner.pk) for item in data)
 
     def test_non_matching_term_returns_nothing(self, superuser: User, login: Any) -> None:

@@ -4,9 +4,9 @@ from typing import Any
 
 import pytest
 
-from app.account.tests.factories.user_factory import UserFactory
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.iam.tests.helpers.permission_helper import grant
+from app.system.tests.factories.user_factory import UserFactory
+from app.system.tests.helpers.permission_helper import grant
 from app.utilities.permissions.qr_code_permission import QrCodePermission as P
 from app.utilities.tests.helpers.qr_test_helper import create_test_qr
 

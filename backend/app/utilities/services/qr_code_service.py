@@ -4,11 +4,11 @@ from typing import Any
 
 from django.db import transaction
 
-from app.attachment.models.attachment import Attachment
-from app.attachment.services.attachment_service import AttachmentService
 from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
 from app.core.utils.text import ascii_slug
+from app.system.models.attachment import Attachment
+from app.system.services.attachment_service import AttachmentService
 from app.utilities.models.qr_code import QrCode
 from app.utilities.permissions.qr_code_permission import QrCodePermission
 from app.utilities.repositories.qr_code_repository import QrCodeRepository

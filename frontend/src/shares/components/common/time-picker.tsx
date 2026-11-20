@@ -5,7 +5,12 @@ import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/shares/components/ui/button";
-import { formatTimeString, MINUTE_OPTIONS, parseTimeString, snapMinuteToStep } from "@/shares/lib/date-time-input";
+import {
+  formatTimeString,
+  MINUTE_OPTIONS,
+  parseTimeString,
+  snapMinuteToStep,
+} from "@/shares/lib/date-time-input";
 
 import { TimePickerPopover } from "./time-picker-popover";
 

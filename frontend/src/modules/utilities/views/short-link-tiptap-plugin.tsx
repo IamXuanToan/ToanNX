@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { usePermission } from "@/modules/auth/hooks/use-permission";
+import { usePermission } from "@/modules/system/hooks/use-permission";
 import { SelectField } from "@/shares/components/common/select-field";
 import { Button } from "@/shares/components/ui/button";
 import {

@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from app.attachment.serializers.responses.attachment_summary_response_serializer import (
+from app.system.serializers.responses.attachment_summary_response_serializer import (
     AttachmentSummaryResponseSerializer,
 )
 from app.utilities.models.qr_code import QrCode

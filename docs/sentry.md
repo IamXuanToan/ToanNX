@@ -14,7 +14,7 @@ Hệ thống TOANNX tích hợp Sentry để theo dõi lỗi chưa xử lý (unh
 
 ### Lỗi từ Frontend (Trình duyệt)
 - Frontend **không cần cài SDK Sentry nặng nề** ở client. Khi xảy ra lỗi chưa bắt được (qua Error Boundary hoặc unhandled error), frontend tự động gửi payload báo cáo lỗi về endpoint backend:
-  $$\text{POST } /api/v1/health/client-errors$$
+  $$\text{POST } /api/v1/system/health/client-errors$$
 - Backend ghi nhận log mức `ERROR` kèm thông tin trình duyệt, URL và stack trace, từ đó Sentry tự động thu thập và cảnh báo.
 
 ---

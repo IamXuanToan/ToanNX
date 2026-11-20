@@ -5,8 +5,6 @@ from typing import Any
 from django.db import transaction
 from django.utils import timezone
 
-from app.attachment.models.attachment import Attachment
-from app.attachment.services.attachment_service import AttachmentService
 from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.exceptions.conflict_error import ConflictError
@@ -15,6 +13,8 @@ from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
 from app.core.utils.slug import generate_slug, normalize_slug
 from app.core.utils.url import build_absolute_url
+from app.system.models.attachment import Attachment
+from app.system.services.attachment_service import AttachmentService
 from app.utilities.constants.page_templates import PAGE_TEMPLATES
 from app.utilities.constants.utilities_error_code import UtilitiesErrorCode
 from app.utilities.models.page import Page

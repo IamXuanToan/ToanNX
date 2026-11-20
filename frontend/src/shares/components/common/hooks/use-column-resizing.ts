@@ -1,6 +1,14 @@
 "use client";
 
-import { type CSSProperties, type KeyboardEvent, type PointerEvent, type RefObject, useLayoutEffect, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+  type RefObject,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { useMediaQuery } from "@/shares/hooks/use-media-query";
 import { useStoredPreference } from "@/shares/hooks/use-stored-preference";

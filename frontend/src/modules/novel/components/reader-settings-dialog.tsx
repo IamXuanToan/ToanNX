@@ -8,7 +8,13 @@ import { Check, Settings2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/shares/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/shares/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shares/components/ui/dialog";
 import { Label } from "@/shares/components/ui/label";
 import { Slider } from "@/shares/components/ui/slider";
 

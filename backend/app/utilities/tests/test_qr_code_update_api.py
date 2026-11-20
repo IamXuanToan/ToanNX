@@ -4,12 +4,12 @@ from typing import Any
 
 import pytest
 
-from app.account.tests.factories.user_factory import UserFactory
-from app.attachment.models.attachment import Attachment
-from app.attachment.permissions.attachment_permission import AttachmentPermission
-from app.attachment.services.attachment_service import AttachmentService
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.iam.tests.helpers.permission_helper import grant
+from app.system.models.attachment import Attachment
+from app.system.permissions.attachment_permission import AttachmentPermission
+from app.system.services.attachment_service import AttachmentService
+from app.system.tests.factories.user_factory import UserFactory
+from app.system.tests.helpers.permission_helper import grant
 from app.utilities.permissions.qr_code_permission import QrCodePermission as P
 from app.utilities.tests.helpers.qr_test_helper import create_test_qr, make_logo_png
 

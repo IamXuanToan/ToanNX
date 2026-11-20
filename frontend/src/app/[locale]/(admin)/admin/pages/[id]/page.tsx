@@ -1,4 +1,4 @@
-import { RecordHistoryView } from "@/modules/journal/views/record-history-view";
+import { RecordHistoryView } from "@/modules/system/views/record-history-view";
 import { UTILITIES_API_ENDPOINTS } from "@/modules/utilities/constants/api-endpoints";
 import { PageDetailView } from "@/modules/utilities/views/page-detail-view";
 import { createPageMetadata } from "@/shares/lib/seo";

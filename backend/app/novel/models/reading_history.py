@@ -9,7 +9,7 @@ class ReadingHistory(CoreModel):
     """Lịch sử đọc chương truyện của người dùng."""
 
     user = models.ForeignKey(
-        "account.User",
+        "system.User",
         on_delete=models.CASCADE,
         related_name="novel_reading_histories",
         verbose_name="Người đọc",

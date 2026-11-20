@@ -8,8 +8,8 @@ from pathlib import Path
 
 import environ
 
-from app.attachment.constants.media_types import ALLOWED_CONTENT_TYPES
 from app.core.logging.sentry import init_sentry
+from app.system.constants.media_types import ALLOWED_CONTENT_TYPES
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,12 +32,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "django_filters",
-    "app.attachment",
-    "app.account",
-    "app.iam",
-    "app.authentication",
-    "app.health",
-    "app.journal",
+    "app.system",
     "app.novel",
     "app.utilities",
 ]
@@ -84,10 +79,10 @@ DATABASES = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Người dùng & mật khẩu
-AUTH_USER_MODEL = "account.User"
+AUTH_USER_MODEL = "system.User"
 AUTHENTICATION_BACKENDS = [
-    "app.account.backends.account_auth_backend.AccountAuthBackend",
-    "app.iam.backends.iam_permission_backend.IamPermissionBackend",
+    "app.system.backends.account_auth_backend.AccountAuthBackend",
+    "app.system.backends.iam_permission_backend.IamPermissionBackend",
 ]
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
@@ -155,16 +150,16 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "app.authentication.authentications.cookie_jwt_authentication.CookieJwtAuthentication",
+        "app.system.authentications.cookie_jwt_authentication.CookieJwtAuthentication",
     ],
     # Mặc định DENY: endpoint public phải khai báo AllowAny tường minh.
     # Mặc định: đăng nhập + quyền IAM đã khai (không khai → 403). View công khai ghi đè trong chính view đó.
     "DEFAULT_PERMISSION_CLASSES": [
         "app.core.permissions.is_active_authenticated.IsActiveAuthenticated",
-        "app.iam.permissions.has_iam_permission.HasIamPermission",
+        "app.system.permissions.has_iam_permission.HasIamPermission",
     ],
     # Rate limit khai báo (`action_rate_limits` / `@rate_limit`), đếm bằng bucket PostgreSQL.
-    "DEFAULT_THROTTLE_CLASSES": ["app.authentication.throttles.bucket_throttle.BucketThrottle"],
+    "DEFAULT_THROTTLE_CLASSES": ["app.system.throttles.bucket_throttle.BucketThrottle"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "EXCEPTION_HANDLER": "app.core.exceptions.exception_handler.app_exception_handler",
@@ -211,7 +206,7 @@ AUTH_COOKIE_SECURE = not DEBUG
 AUTH_ACCESS_COOKIE_NAME = "access_token"
 AUTH_ACCESS_COOKIE_PATH = "/api"
 AUTH_REFRESH_COOKIE_NAME = "refresh_token"
-AUTH_REFRESH_COOKIE_PATH = "/api/v1/auth"
+AUTH_REFRESH_COOKIE_PATH = "/api/v1/system/auth"
 AUTH_SESSION_HINT_COOKIE_NAME = "session_hint"
 
 # CSRF: double-submit cookie của Django + kiểm tra Origin
@@ -234,25 +229,25 @@ SHORT_LINK_INTERNAL_HOSTS = env.list(
 RATE_LIMITS: dict[str, tuple[int, int, str]] = {
     "default.write": (env.int("RL_DEFAULT_WRITE", default=300), 60, "user"),
     "public.read": (env.int("RL_PUBLIC_READ", default=120), 60, "ip"),
-    "auth.password_reset_request": (env.int("RL_AUTH_PASSWORD_RESET_REQUEST", default=5), 900, "ip"),
-    "auth.password_reset_validate": (env.int("RL_AUTH_PASSWORD_RESET_VALIDATE", default=30), 900, "ip"),
-    "auth.password_reset_confirm": (env.int("RL_AUTH_PASSWORD_RESET_CONFIRM", default=10), 900, "ip"),
+    "system.password_reset.request": (env.int("RL_AUTH_PASSWORD_RESET_REQUEST", default=5), 900, "ip"),
+    "system.password_reset.validate": (env.int("RL_AUTH_PASSWORD_RESET_VALIDATE", default=30), 900, "ip"),
+    "system.password_reset.confirm": (env.int("RL_AUTH_PASSWORD_RESET_CONFIRM", default=10), 900, "ip"),
     "utilities.short_link.create": (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
     "utilities.short_link.unlock": (env.int("RL_SHORT_LINK_UNLOCK", default=10), 60, "ip"),
     "utilities.page.create": (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
     "utilities.page_path.create": (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
     "utilities.qr_code.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
     "utilities.qr_code.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
-    "health.client_error": (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
+    "system.client_error.create": (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
     "novel.create": (env.int("RL_NOVEL_CREATE", default=60), 3600, "user"),
     "novel.import": (env.int("RL_NOVEL_IMPORT", default=10), 3600, "user"),
 }
 # Lịch sử thay đổi: model kế thừa JournalTracker tự ghi qua recorder này (rỗng = tắt).
-CORE_CHANGE_RECORDER = "app.journal.recorders.journal_recorder.JournalRecorder"
+CORE_CHANGE_RECORDER = "app.system.recorders.journal_recorder.JournalRecorder"
 JOURNAL_RETENTION_DAYS = env.int("JOURNAL_RETENTION_DAYS", default=365)
 # Phiên/refresh token hết hạn quá số ngày này thì bị dọn.
 AUTH_EXPIRED_RETENTION_DAYS = env.int("AUTH_EXPIRED_RETENTION_DAYS", default=30)
-# Header bí mật của Vercel Cron khi gọi POST /health/cleanup (rỗng = tắt endpoint).
+# Header bí mật của Vercel Cron khi gọi /api/v1/system/health/cleanup (rỗng = tắt endpoint).
 CRON_SECRET = env.str("CRON_SECRET", default="")
 
 # Tiện ích → Trang tùy chỉnh: giới hạn nội dung Tiptap và đoạn đường dẫn giữa dành riêng (một chỗ duy nhất).

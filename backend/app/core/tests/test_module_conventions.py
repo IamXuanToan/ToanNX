@@ -17,8 +17,8 @@ from app.core.registry.module_registry import ModuleRegistry, module_registry
 from app.core.services.core_crud_service import CoreCrudService
 from app.core.views.core_api_view import CoreApiView
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.decorators.require_permission import PERMISSION_RULE_ATTR
-from app.iam.permissions.has_iam_permission import HasIamPermission
+from app.system.decorators.require_permission import PERMISSION_RULE_ATTR
+from app.system.permissions.has_iam_permission import HasIamPermission
 
 MODULE_APP_PREFIX = "app."
 

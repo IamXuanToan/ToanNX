@@ -47,7 +47,7 @@ Scope là tên module hoặc khu vực, chữ thường, gạch ngang thay cho g
 
 | Khu vực | Scope |
 | --- | --- |
-| Module backend/frontend | `account`, `iam`, `authentication`, `attachment`, `health`, `journal`, `novel`, `utilities`, `manage-app` |
+| Module backend/frontend | `system`, `novel`, `utilities`, `manage-app` |
 | Hạ tầng chung | `core` (backend `app/core`), `shares` (frontend `src/shares`), `i18n` |
 | Toàn tầng | `backend`, `frontend` |
 | Repo, công cụ, tài liệu chung | `repo`, `deps`, `docs` |

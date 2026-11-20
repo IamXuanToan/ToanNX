@@ -39,7 +39,7 @@ class Chapter(JournalTracker, CoreModel):
         db_comment="Nội dung chương",
     )
     thumbnail = models.ForeignKey(
-        "attachment.Attachment",
+        "system.Attachment",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,

@@ -5,7 +5,12 @@ import { ArrowDown, ArrowUp, ChevronsUpDown, Pin, PinOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/shares/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shares/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shares/components/ui/dropdown-menu";
 
 /** Vị trí ghim của cột. */
 export type ColumnPin = "left" | "right" | false;

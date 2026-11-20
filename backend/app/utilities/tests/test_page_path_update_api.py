@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.iam.tests.helpers.permission_helper import grant
+from app.system.tests.helpers.permission_helper import grant
 from app.utilities.models.page_path import PagePath
 from app.utilities.permissions.page_path_permission import PagePathPermission as P
 

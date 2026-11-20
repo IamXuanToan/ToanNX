@@ -90,7 +90,7 @@ MODULE = ModuleDescriptor(code="utilities", ..., permissions=(*ShortLinkPermissi
 | `services/core_crud_service.py` | Gốc mọi service CRUD: owner (`owner_field`, `manage_all_permission`), quota (`owner_quota_setting`), `*_for(actor)`, `bulk_update`/`bulk_delete`, `log_event` |
 | `views/core_api_view.py` | Gốc mọi API không phải CRUD: `get_actor(request)`; bảng override công khai/chỉ đăng nhập |
 | `views/core_model_view_set.py` | Gốc mọi CRUD: list/retrieve/create/partial_update/destroy + action `bulk-update`, `bulk-delete`, `history` bật bằng thuộc tính |
-| `permissions/` | `IsActiveAuthenticated`, `CsrfProtected` (quyền IAM: `iam/permissions/has_iam_permission.py`) |
+| `permissions/` | `IsActiveAuthenticated`, `CsrfProtected` (quyền IAM: `system/permissions/has_iam_permission.py`) |
 | `decorators/` | `validate_request` (input → `validated_data`), `rate_limit` (khóa `RATE_LIMITS` cho APIView) |
 | `pagination/core_page_number_pagination.py` | Phân trang **chỉ khi request có `page`/`page_size`** (≤ 100); không có thì trả hết |
 | `filters/*` | `CoreSearchFilter` (tìm **không dấu**: "nguyen" khớp "Nguyễn", qua `unaccent`; ≤ 100 ký tự, ≤ 5 từ) và bộ lọc nhiều giá trị `Core{Boolean,Choice,Char,UUID}InFilter` (≤ 50 giá trị) |
@@ -165,7 +165,7 @@ class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
 - **Mọi bộ lọc nhận nhiều giá trị** phân tách dấu phẩy (`app/core/filters/*`); điều kiện suy ra (EXPIRED, ACTIVE…)
   dùng `method=` và gộp OR. Giá trị ngoài `choices`, quá 50 giá trị → 400.
 - Danh sách không có `page`/`page_size` trả **toàn bộ** (danh mục, ô chọn); bảng ở FE luôn gửi `page`.
-- Đăng nhập `POST /auth/login` nhận `identifier` + `password`; sai thì một lỗi chung `AUTH_INVALID_CREDENTIALS`.
+- Đăng nhập `POST /system/auth/login` nhận `identifier` + `password`; sai thì một lỗi chung `AUTH_INVALID_CREDENTIALS`.
 - `User.last_seen_at` chỉ Authentication ghi (tối đa mỗi phút mỗi phiên), không đổi `updated_at`/`updated_by`.
 
 ### 5.2 Tài nguyên con/hành động → `CoreApiView`
@@ -213,11 +213,11 @@ class UserRoleView(CoreApiView):
 ## 7. Phụ thuộc giữa module
 
 - Chiều phụ thuộc khai báo trong `ModuleDescriptor.dependencies` và phải khớp import thực tế:
-  `attachment` ← `account` (tài khoản) ← `iam` (vai trò/quyền) ← `authentication`.
+  `system` (nền: tài khoản, IAM, phiên, thư viện, journal, health) ← `novel`, `utilities`.
 - Module nền không import module phụ thuộc nó. Cần hành vi chéo → dùng cơ chế chuẩn của Django:
   authentication backend (`User.has_perm` hỏi `IamPermissionBackend`), signal (`user_credentials_changed`).
-- Dữ liệu của module khác không nhét vào response của module nền: vai trò lấy ở `GET /iam/users/{id}/roles`,
-  không nằm trong `/account/users`. API tổng hợp (ví dụ `/auth/me`) đặt ở module phụ thuộc cả hai.
+- Dữ liệu của module khác không nhét vào response của module nền: vai trò lấy ở `GET /system/users/{id}/roles`,
+  không nằm trong `/system/users`. API tổng hợp (ví dụ `/system/auth/me`) đặt ở module phụ thuộc cả hai.
 - Đổi `AUTH_USER_MODEL` sau khi đã có migration: chỉ làm khi chưa có dữ liệu thật (reset migration);
   có dữ liệu thì phải viết migration chuyển bảng riêng.
 
@@ -235,7 +235,11 @@ class UserRoleView(CoreApiView):
 - Mỗi model có một file permission riêng trong `permissions/<model>_permission.py` (kế thừa `PermissionCatalog`), không gộp chung các model vào một file. Mỗi quyền có dạng
   `PermissionDefinition(code="module.resource.action", name=..., description=...)`. Chỉ khai báo quyền của chức năng đã có API.
 - `module.py`: gom các catalog quyền bằng `permissions=(*ModelAPermission.all(), *ModelBPermission.all(), ...)`.
-- Hệ thống vai trò mẫu (Admin, User Manager, Content Manager, Novel Manager, Novel Author, Marketing Manager...): quản lý qua `RoleSeedService` và lệnh `uv run python manage.py seed_roles`. Vai trò hệ thống tự cấp quyền theo `Role.auto_grant` (`all` / `read_only`) mỗi lần `sync_iam`/`migrate`.
+- Vai trò mẫu chỉ gồm `ADMIN` và hai vai trò cho mỗi module (`<MÃ_MODULE>_MANAGER`: mọi quyền của module,
+  `<MÃ_MODULE>_VIEWER`: chỉ quyền `read`), dựng từ module registry trong `RoleSeedService`; khai báo ở
+  `system/constants/predefined_roles.py`. **Không** thêm vai trò nghiệp vụ tự đặt (tiếp thị, tác giả...) vào code.
+  `ADMIN` (vai trò hệ thống duy nhất, `auto_grant=all`) được tạo sau mỗi `migrate` (post_migrate); vai trò theo
+  module tạo bằng `uv run python manage.py seed_roles`. **Không** seed vai trò bằng data migration.
 - Superuser bỏ qua kiểm tra quyền tầng ứng dụng (trừ `check`), không bỏ qua đăng nhập.
 
 ### Xoá và thao tác hàng loạt
@@ -256,7 +260,7 @@ class UserRoleView(CoreApiView):
 
 - **Mọi field có thể khai báo `help_text` đều phải có** (model field, serializer field, filter):
   model field kèm `verbose_name` tiếng Việt và `db_comment`; đặt `db_table`.
-- File/ảnh lưu qua module `attachment` (FK tới `attachment.Attachment`), không dùng URL tự do.
+- File/ảnh lưu qua Thư viện của module `system` (FK tới `system.Attachment`), không dùng URL tự do.
 - Migration sinh bằng `makemigrations`; data migration tạo bằng `makemigrations <app> --empty --name ...`.
 - Đổi kiểu cột không tương thích (ví dụ varchar → FK uuid) phải `RemoveField` + `AddField`.
 - Không chạy migration khi cold start/request; chạy thủ công trước khi deploy.
@@ -276,7 +280,7 @@ class UserRoleView(CoreApiView):
 ## 12. Test
 
 - pytest + pytest-django trên PostgreSQL (`test_toannx`). Fixture chung ở `backend/conftest.py`.
-- Base assertion: `app/core/tests/base/base_api_test_case.py`. Factory/helper IAM: `app/iam/tests/`.
+- Base assertion: `app/core/tests/base/base_api_test_case.py`. Factory/helper IAM: `app/system/tests/`.
 - **Nguyên tắc tổ chức test: Mỗi endpoint một file test riêng biệt** (`test_<resource>_<action>_api.py`).
   - Tuyệt đối **không gộp chung** toàn bộ action CRUD của một model vào một file `test_<model>_api.py`.
   - Tuyệt đối **không tách riêng** file kiểm tra quyền `test_<model>_permission.py`: kiểm tra phân quyền (401, 403, owner) là một phần của contract của endpoint đó và bắt buộc phải nằm trực tiếp trong file test của chính endpoint đó.

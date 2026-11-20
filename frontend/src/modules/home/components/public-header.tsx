@@ -7,7 +7,7 @@ import { Button } from "@/shares/components/ui/button";
 import { LanguageSwitcher } from "@/shares/components/layout/language-switcher";
 import { Logo } from "@/shares/components/layout/logo";
 import { ThemeSwitcher } from "@/shares/components/layout/theme-switcher";
-import { AUTH_ROUTES } from "@/modules/auth/constants/routes";
+import { SYSTEM_ROUTES } from "@/modules/system/constants/routes";
 
 import { HOME_ROUTES } from "../constants/routes";
 
@@ -54,7 +54,7 @@ export function PublicHeader() {
           {!isHome ? <ThemeSwitcher /> : null}
           {!isHome ? (
             <Button asChild variant="outline" className="ml-1">
-              <Link href={AUTH_ROUTES.login}>{t("login")}</Link>
+              <Link href={SYSTEM_ROUTES.login}>{t("login")}</Link>
             </Button>
           ) : null}
         </div>

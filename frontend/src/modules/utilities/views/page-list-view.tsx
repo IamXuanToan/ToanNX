@@ -4,8 +4,8 @@ import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-import { PermissionGate } from "@/modules/auth/components/permission-gate";
-import { usePermission } from "@/modules/auth/hooks/use-permission";
+import { PermissionGate } from "@/modules/system/components/permission-gate";
+import { usePermission } from "@/modules/system/hooks/use-permission";
 import { PageHeader } from "@/shares/components/common/page-header";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { Button } from "@/shares/components/ui/button";

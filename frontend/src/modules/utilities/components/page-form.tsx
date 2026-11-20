@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
 import { Link } from "@/i18n/navigation";
-import { AttachmentImageUploadView } from "@/modules/attachment/views/attachment-image-upload-view";
-import { AttachmentTiptapImagePlugin } from "@/modules/attachment/views/attachment-tiptap-image-plugin";
+import { AttachmentImageUploadView } from "@/modules/system/views/attachment-image-upload-view";
+import { AttachmentTiptapImagePlugin } from "@/modules/system/views/attachment-tiptap-image-plugin";
 import { ColorInput } from "@/shares/components/common/color-input";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";

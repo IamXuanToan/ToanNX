@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 
-import { ResetPasswordView } from "@/modules/auth/views/reset-password-view";
+import { ResetPasswordView } from "@/modules/system/views/reset-password-view";
 import { HOME_ROUTES } from "@/modules/home/constants/routes";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({
-  title: "auth.resetPassword.title",
+  title: "system.auth.resetPassword.title",
   index: false,
   alternates: "/reset-password",
 });

@@ -155,20 +155,6 @@
       "active": "Hoạt động",
       "inactive": "Đã khóa"
     },
-    "adminModules": {
-      "account": {
-        "name": "Tài khoản",
-        "description": "Người dùng và phiên đăng nhập."
-      },
-      "iam": {
-        "name": "Phân quyền",
-        "description": "Vai trò và danh mục quyền."
-      },
-      "attachment": {
-        "name": "Tệp đính kèm",
-        "description": "Thư viện ảnh và tài liệu."
-      }
-    },
     "adminGroups": {
       "system": {
         "name": "Hệ thống",

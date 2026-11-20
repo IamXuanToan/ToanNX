@@ -98,7 +98,7 @@ class Page(JournalTracker, CoreModel):
         db_comment="Cấu hình theme",
     )
     avatar = models.ForeignKey(
-        "attachment.Attachment",
+        "system.Attachment",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -108,7 +108,7 @@ class Page(JournalTracker, CoreModel):
         db_comment="Ảnh đại diện trang",
     )
     cover = models.ForeignKey(
-        "attachment.Attachment",
+        "system.Attachment",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,

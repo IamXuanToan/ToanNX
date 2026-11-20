@@ -3,10 +3,10 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from app.attachment.serializers.responses.attachment_summary_response_serializer import (
+from app.novel.models.author import Author
+from app.system.serializers.responses.attachment_summary_response_serializer import (
     AttachmentSummaryResponseSerializer,
 )
-from app.novel.models.author import Author
 
 
 class AuthorSummaryResponseSerializer(serializers.ModelSerializer[Author]):

@@ -1,6 +1,6 @@
 "use client";
 
-import { usePermission } from "@/modules/auth/hooks/use-permission";
+import { usePermission } from "@/modules/system/hooks/use-permission";
 
 import { QrCodePicker } from "../components/qr-code-picker";
 import { QR_CODE_PERMISSIONS } from "../permissions/qr-code-permission";

@@ -4,13 +4,13 @@ from typing import Any
 
 import pytest
 
-from app.account.models.user import User
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
+from app.system.models.user import User
 
 pytestmark = pytest.mark.django_db
 
-USERS = "/api/v1/account/users"
-ROLES = "/api/v1/iam/roles"
+USERS = "/api/v1/system/users"
+ROLES = "/api/v1/system/roles"
 
 
 class TestRequestLimits(BaseApiTestCase):

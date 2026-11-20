@@ -22,7 +22,7 @@ uv run python manage.py migrate            # also syncs permissions/system roles
 uv run python manage.py sync_iam           # re-sync permissions/roles manually
 uv run python manage.py seed_local         # local only (DEBUG): sync_iam + superuser toannx / nxtoan2k4@gmail.com
 uv run pytest -q                           # all tests (creates test_toannx DB)
-uv run pytest app/iam/tests/test_role_api.py::test_name   # single test
+uv run pytest app/system/tests/test_role_api.py::test_name   # single test
 uv run ruff format --check . && uv run ruff check . && uv run mypy .
 uv run python manage.py spectacular --validate --fail-on-warn     # OpenAPI must be warning-free
 ```
@@ -69,12 +69,12 @@ rotating refresh token stored as HMAC; every request checks the session is still
   `ModuleDescriptor` in `module.py` (permissions, dependencies); registration is automatic. Installed modules are
   always on: there is no module table, runtime enable/disable or icon on the backend. How modules are shown
   (groups, icons, order) is declared statically in the FE `manage-app` module.
-- Permissions source of truth is the IAM tables (`iam_role`, `iam_permission`, ...), not Django groups/`PermissionsMixin`.
+- Permissions source of truth is the IAM tables (`system_role`, `system_permission`, ...), not Django groups/`PermissionsMixin`.
   Superuser bypasses permission checks; `is_staff` only gates the FE admin shell and is never checked by the API.
 
 ### Frontend layering — `page → View → component(+own hook) → module hook (React Query) → service → apiClient`
-- No repository layer on the FE. Services are split **one file per backend model** (`iam/services/role.service.ts`
-  ↔ `iam/services/role_service.py`); never one merged `<module>.service.ts`. CRUD comes from `createCrudService`,
+- No repository layer on the FE. Services are split **one file per backend model** (`system/services/role.service.ts`
+  ↔ `system/services/role_service.py`); never one merged `<module>.service.ts`. CRUD comes from `createCrudService`,
   keys from `createResourceKeys`, writes via `useResourceMutation`, lists via `useListQuery`.
 - `app/**/page.tsx` and `layout.tsx` only declare metadata (`createPageMetadata` from `shares/lib/seo.ts`), await
   params and render a module View/Layout — no hooks, state or UI markup. Views only compose components and check

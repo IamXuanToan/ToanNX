@@ -2,8 +2,8 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { UserMenu } from "@/modules/auth/components/user-menu";
-import type { AuthUser } from "@/modules/auth/types/auth.types";
+import { UserMenu } from "@/modules/system/components/user-menu";
+import type { AuthUser } from "@/modules/system/types/auth.types";
 
 const mockLogout = vi.fn();
 const mockLogoutAll = vi.fn();
@@ -25,7 +25,7 @@ const mockUser: AuthUser = {
   dateJoined: "2026-01-01T00:00:00Z",
 };
 
-vi.mock("@/modules/auth/components/hooks/use-user-menu", async () => {
+vi.mock("@/modules/system/components/hooks/use-user-menu", async () => {
   const React = await vi.importActual<typeof import("react")>("react");
   return {
     useUserMenu: () => {
@@ -43,7 +43,7 @@ vi.mock("@/modules/auth/components/hooks/use-user-menu", async () => {
   };
 });
 
-vi.mock("@/modules/auth/hooks/use-update-profile", () => ({
+vi.mock("@/modules/system/hooks/use-update-profile", () => ({
   useUpdateProfile: () => ({
     mutateAsync: vi.fn(),
     isPending: false,

@@ -56,7 +56,7 @@ class QrCode(JournalTracker, CoreModel):
         db_comment="Chuỗi mã hóa",
     )
     image = models.ForeignKey(
-        "attachment.Attachment",
+        "system.Attachment",
         on_delete=models.PROTECT,
         related_name="+",
         verbose_name="Ảnh",
@@ -64,7 +64,7 @@ class QrCode(JournalTracker, CoreModel):
         db_comment="Ảnh PNG của mã QR",
     )
     logo = models.ForeignKey(
-        "attachment.Attachment",
+        "system.Attachment",
         on_delete=models.PROTECT,
         null=True,
         blank=True,

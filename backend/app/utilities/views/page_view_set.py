@@ -19,7 +19,7 @@ from rest_framework.request import Request
 
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.types.permission_rule import permission_rule
+from app.system.types.permission_rule import permission_rule
 from app.utilities.filters.page_filter import PageFilter
 from app.utilities.models.page import Page
 from app.utilities.permissions.page_permission import PagePermission as P

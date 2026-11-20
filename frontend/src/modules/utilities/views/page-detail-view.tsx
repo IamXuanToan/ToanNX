@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { usePermission } from "@/modules/auth/hooks/use-permission";
+import { usePermission } from "@/modules/system/hooks/use-permission";
 
 import { PageProfile } from "../components/page-profile";
 import { PAGE_PATH_PERMISSIONS } from "../permissions/page-path-permission";

@@ -3,7 +3,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from app.account.tests.factories.user_factory import UserFactory
+from app.system.tests.factories.user_factory import UserFactory
 from app.utilities.models.short_link import ShortLink
 
 

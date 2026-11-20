@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { permissionService } from "@/modules/iam/services/permission.service";
-import { roleService } from "@/modules/iam/services/role.service";
-import type { Permission, Role } from "@/modules/iam/types/iam.types";
+import { permissionService } from "@/modules/system/services/permission.service";
+import { roleService } from "@/modules/system/services/role.service";
+import type { Permission, Role } from "@/modules/system/types/iam.types";
 import { apiClient } from "@/shares/lib/api/api-client";
 import type { ApiResult } from "@/shares/types/api.types";
 
@@ -14,7 +14,7 @@ function allResult<T>(items: T[]): ApiResult<T[]> {
 
 const permission: Permission = {
   id: "1",
-  code: "account.user.read",
+  code: "system.user.read",
   module: "account",
   resource: "user",
   action: "read",
@@ -41,13 +41,13 @@ beforeEach(() => vi.clearAllMocks());
 describe("danh mục IAM tải đủ trong một request", () => {
   it("không truyền page/pageSize nên BE trả toàn bộ quyền; truyền signal", async () => {
     vi.mocked(apiClient.get).mockResolvedValueOnce(
-      allResult([permission, { ...permission, id: "101", code: "authentication.session.read" }]),
+      allResult([permission, { ...permission, id: "101", code: "system.session.read" }]),
     );
     const signal = new AbortController().signal;
     const result = await permissionService.list(signal);
     expect(result.map((item) => item.id)).toEqual(["1", "101"]);
     expect(apiClient.get).toHaveBeenCalledTimes(1);
-    expect(apiClient.get).toHaveBeenCalledWith("/iam/permissions", {
+    expect(apiClient.get).toHaveBeenCalledWith("/system/permissions", {
       query: { ordering: "-created_at" },
       signal,
     });
@@ -68,7 +68,7 @@ describe("danh mục IAM tải đủ trong một request", () => {
       meta: { requestId: null, timestamp: "" },
     });
     expect(await roleService.bulkSetActive(["1", "2"], false)).toBe(2);
-    expect(apiClient.post).toHaveBeenCalledWith("/iam/roles/bulk-update", {
+    expect(apiClient.post).toHaveBeenCalledWith("/system/roles/bulk-update", {
       ids: ["1", "2"],
       isActive: false,
     });

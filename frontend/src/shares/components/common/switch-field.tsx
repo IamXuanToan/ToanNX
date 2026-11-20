@@ -2,7 +2,13 @@
 
 import { useId } from "react";
 
-import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from "@/shares/components/ui/field";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/shares/components/ui/field";
 import { Switch } from "@/shares/components/ui/switch";
 
 /**

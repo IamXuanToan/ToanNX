@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from "next-intl";
 
-import type { AuthUser } from "@/modules/auth/types/auth.types";
+import type { AuthUser } from "@/modules/system/types/auth.types";
 
 /**
  * Thanh trạng thái hệ thống ở chân màn chọn module: hiển thị trạng thái vận hành và thời điểm đăng nhập gần nhất.

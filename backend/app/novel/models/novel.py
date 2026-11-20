@@ -48,7 +48,7 @@ class Novel(JournalTracker, CoreModel):
         db_comment="Tác giả của truyện",
     )
     thumbnail = models.ForeignKey(
-        "attachment.Attachment",
+        "system.Attachment",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -101,7 +101,7 @@ class Novel(JournalTracker, CoreModel):
         db_comment="Cho phép người dùng đọc",
     )
     owner = models.ForeignKey(
-        "account.User",
+        "system.User",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,

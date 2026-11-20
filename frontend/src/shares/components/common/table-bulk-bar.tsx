@@ -6,7 +6,12 @@ import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
 import { Button } from "@/shares/components/ui/button";
 import { Card } from "@/shares/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shares/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shares/components/ui/dropdown-menu";
 
 import type { DataTableBulkAction, DataTableBulkStatus } from "./data-table.types";
 import { useTableBulkBar } from "./hooks/use-table-bulk-bar";

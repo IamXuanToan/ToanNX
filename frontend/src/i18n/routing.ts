@@ -1,12 +1,8 @@
 import { defineRouting } from "next-intl/routing";
 
-import { ACCOUNT_PATHNAMES } from "@/modules/account/constants/routes";
-import { ATTACHMENT_PATHNAMES } from "@/modules/attachment/constants/routes";
-import { AUTH_PATHNAMES } from "@/modules/auth/constants/routes";
+import { SYSTEM_PATHNAMES } from "@/modules/system/constants/routes";
 import { MANAGE_APP_PATHNAMES } from "@/modules/manage-app/constants/routes";
 import { HOME_PATHNAMES } from "@/modules/home/constants/routes";
-import { IAM_PATHNAMES } from "@/modules/iam/constants/routes";
-import { JOURNAL_PATHNAMES } from "@/modules/journal/constants/routes";
 import { NOVEL_PATHNAMES } from "@/modules/novel/constants/routes";
 import { UTILITIES_PATHNAMES } from "@/modules/utilities/constants/routes";
 
@@ -22,12 +18,8 @@ export const routing = defineRouting({
   // Mỗi module khai pathname của mình trong `modules/<m>/constants/routes.ts`; ở đây chỉ gộp lại.
   pathnames: {
     ...HOME_PATHNAMES,
-    ...AUTH_PATHNAMES,
+    ...SYSTEM_PATHNAMES,
     ...MANAGE_APP_PATHNAMES,
-    ...ACCOUNT_PATHNAMES,
-    ...IAM_PATHNAMES,
-    ...ATTACHMENT_PATHNAMES,
-    ...JOURNAL_PATHNAMES,
     ...NOVEL_PATHNAMES,
     ...UTILITIES_PATHNAMES,
   },

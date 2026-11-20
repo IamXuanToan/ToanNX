@@ -6,12 +6,7 @@ from django.urls import URLPattern, URLResolver, include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns: list[URLPattern | URLResolver] = [
-    path("api/v1/auth/", include("app.authentication.urls")),
-    path("api/v1/account/", include("app.account.urls")),
-    path("api/v1/iam/", include("app.iam.urls")),
-    path("api/v1/", include("app.attachment.urls")),
-    path("api/v1/health", include("app.health.urls")),
-    path("api/v1/journal/", include("app.journal.urls")),
+    path("api/v1/system/", include("app.system.urls")),
     path("api/v1/novel/", include("app.novel.urls")),
     path("api/v1/utilities/", include("app.utilities.urls")),
 ]

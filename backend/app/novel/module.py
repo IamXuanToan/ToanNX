@@ -12,7 +12,7 @@ MODULE = ModuleDescriptor(
     name="Novel",
     description="Quản lý và đọc truyện tiểu thuyết.",
     version="1.0.0",
-    dependencies=("account", "iam", "authentication", "attachment"),
+    dependencies=("system",),
     permissions=(
         *NovelPermission.all(),
         *ChapterPermission.all(),

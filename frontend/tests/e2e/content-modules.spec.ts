@@ -103,7 +103,7 @@ test.describe("Nhóm Tiện ích", () => {
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
     await expect(page).toHaveURL(/\/vi\/quan-tri\/link-rut-gon\/[0-9a-f-]{36}$/);
     const id = new URL(page.url()).pathname.split("/").pop();
-    const csrf = await page.request.get("/api/v1/auth/csrf");
+    const csrf = await page.request.get("/api/v1/system/auth/csrf");
     const token = (await csrf.json()).data.csrf_token as string;
     const update = await page.request.patch(`/api/v1/utilities/short-links/${id}`, {
       data: { expires_at: new Date(Date.now() + 3000).toISOString() },

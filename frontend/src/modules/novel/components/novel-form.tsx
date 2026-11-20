@@ -9,7 +9,7 @@
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-import { AttachmentImageUploadView } from "@/modules/attachment/views/attachment-image-upload-view";
+import { AttachmentImageUploadView } from "@/modules/system/views/attachment-image-upload-view";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormActions } from "@/shares/components/common/form-actions";

@@ -4,9 +4,9 @@ from typing import Any
 
 import pytest
 
-from app.account.tests.factories.user_factory import UserFactory
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.iam.tests.helpers.permission_helper import grant
+from app.system.tests.factories.user_factory import UserFactory
+from app.system.tests.helpers.permission_helper import grant
 from app.utilities.models.short_link import ShortLink
 from app.utilities.permissions.short_link_permission import ShortLinkPermission as P
 from app.utilities.tests.factories.short_link_factory import ShortLinkFactory

@@ -2,7 +2,7 @@
 
 Không có đăng ký (`/register`, `/signup` trả 404). Đăng nhập bằng email + mật khẩu (Argon2id).
 
-## API (`/api/v1/auth`)
+## API (`/api/v1/system/auth`)
 
 | Method | Path | Xác thực | CSRF | Mô tả |
 | --- | --- | --- | --- | --- |
@@ -14,12 +14,12 @@ Không có đăng ký (`/register`, `/signup` trả 404). Đăng nhập bằng e
 | GET | `/me` | access | — | Người dùng, vai trò, quyền hiệu lực |
 | GET | `/sessions` | access | — | Phiên còn hiệu lực (`is_current`) |
 | DELETE | `/sessions/{id}` | access | ✔ | Thu hồi một phiên của chính mình |
-| GET | `/admin-sessions` | staff + `authentication.session.read` | — | Phiên của mọi người dùng, phân trang; tìm email/tên/thiết bị/IP; lọc `user` (UUID), `status` (`ACTIVE/REVOKED/EXPIRED`) |
-| DELETE | `/admin-sessions/{id}` | staff + `authentication.session.revoke` | ✔ | Thu hồi phiên, giữ lịch sử; chỉ superuser được tác động phiên superuser |
+| GET | `/admin-sessions` | staff + `system.session.read` | — | Phiên của mọi người dùng, phân trang; tìm email/tên/thiết bị/IP; lọc `user` (UUID), `status` (`ACTIVE/REVOKED/EXPIRED`) |
+| DELETE | `/admin-sessions/{id}` | staff + `system.session.revoke` | ✔ | Thu hồi phiên, giữ lịch sử; chỉ superuser được tác động phiên superuser |
 
 API quản trị không trả token/hash. Thu hồi có khóa dòng và có hiệu lực ngay với access/refresh token.
 `POST /admin-sessions/bulk-delete` nhận `ids` (1–100), yêu cầu staff và quyền
-`authentication.session.delete`: thu hồi hiệu lực rồi xóa mềm (`deleted_at`), ẩn khỏi mọi danh sách.
+`system.session.delete`: thu hồi hiệu lực rồi xóa mềm (`deleted_at`), ẩn khỏi mọi danh sách.
 Giữ nguyên bản ghi và token hash để bảo toàn lịch sử; chỉ superuser được xóa phiên của superuser.
 Toàn bộ lô nằm trong một transaction; xóa chính phiên đang dùng sẽ xóa cookie.
 Phiên đã thu hồi/hết hạn không bị xóa; gọi thu hồi lại không đổi lịch sử. Khi thu hồi chính phiên đang dùng,
@@ -30,9 +30,9 @@ backend xóa cookie. Giao diện đánh dấu phiên hiện tại và chỉ cho 
 | | Access token | Refresh token |
 | --- | --- | --- |
 | Dạng | JWT HS256 (`sub`, `sid`, `jti`, `typ=access`, `iss`, `aud`, `exp`) | 48 byte ngẫu nhiên (`secrets.token_urlsafe`) |
-| Lưu server | Không | `auth_refresh_token.token_hash` = HMAC-SHA256(SECRET_KEY, token) |
+| Lưu server | Không | `system_auth_refresh_token.token_hash` = HMAC-SHA256(SECRET_KEY, token) |
 | Thời hạn | `AUTH_ACCESS_TOKEN_LIFETIME_SECONDS` (mặc định 600) | Bằng thời hạn phiên `AUTH_REFRESH_TOKEN_LIFETIME_SECONDS` (mặc định 7 ngày, tuyệt đối) |
-| Cookie | `access_token`, HttpOnly, SameSite=Lax, Path=`/api` | `refresh_token`, HttpOnly, SameSite=Strict, Path=`/api/v1/auth` |
+| Cookie | `access_token`, HttpOnly, SameSite=Lax, Path=`/api` | `refresh_token`, HttpOnly, SameSite=Strict, Path=`/api/v1/system/auth` |
 
 Access JWT ký HS256 bằng chính `SECRET_KEY` (biến `DJANGO_SECRET_KEY`, secret chung của hệ thống);
 không có secret JWT riêng. Đổi `DJANGO_SECRET_KEY` sẽ vô hiệu mọi access/refresh token đang có.
@@ -68,7 +68,7 @@ Sau đăng nhập CSRF token được xoay vòng (`rotate_token`).
 
 ## Rate limit
 
-Bảng `auth_rate_limit_bucket` (khóa băm SHA-256, cửa sổ cố định, `INSERT ... ON CONFLICT ... RETURNING`).
+Bảng `system_rate_limit_bucket` (khóa băm SHA-256, cửa sổ cố định, `INSERT ... ON CONFLICT ... RETURNING`).
 - Đăng nhập: `login:<email>:<ip>` tối đa `AUTH_LOGIN_RATE_LIMIT` (10) / 15 phút, reset khi đăng nhập thành công → 429 + `Retry-After`.
 - Refresh: 30/phút/IP.
 

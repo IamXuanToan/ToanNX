@@ -8,7 +8,15 @@ import { Download, FileJson, Loader2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/shares/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/shares/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shares/components/ui/dialog";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { Textarea } from "@/shares/components/ui/textarea";

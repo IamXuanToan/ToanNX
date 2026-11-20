@@ -2,7 +2,13 @@
 
 import type { ReactNode } from "react";
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/shares/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/shares/components/ui/dialog";
 
 import { FormPageActionsContext } from "./hooks/use-form-page-header";
 import { useFormDialog } from "./hooks/use-form-dialog";

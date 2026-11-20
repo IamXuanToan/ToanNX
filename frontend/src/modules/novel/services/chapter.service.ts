@@ -11,7 +11,12 @@ import { createCrudService } from "@/shares/lib/api/create-crud-service";
 import type { ListParams } from "@/shares/types/api.types";
 
 import { NOVEL_API_ENDPOINTS } from "../constants/api-endpoints";
-import type { ChapterCreateInput, ChapterDetail, ChapterListItem, ChapterUpdateInput } from "../types/novel.types";
+import type {
+  ChapterCreateInput,
+  ChapterDetail,
+  ChapterListItem,
+  ChapterUpdateInput,
+} from "../types/novel.types";
 
 const crud = createCrudService<
   ChapterListItem,

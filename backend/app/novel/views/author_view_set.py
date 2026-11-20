@@ -1,7 +1,6 @@
 """ViewSet quản lý tác giả tiểu thuyết."""
 
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.types.permission_rule import permission_rule
 from app.novel.models.author import Author
 from app.novel.permissions.author_permission import AuthorPermission as P
 from app.novel.serializers.responses.author_summary_response_serializer import (
@@ -14,6 +13,7 @@ from app.novel.serializers.validates.author_validate_serializer import (
     AuthorValidateSerializer,
 )
 from app.novel.services.author_service import AuthorService
+from app.system.types.permission_rule import permission_rule
 
 
 class AuthorViewSet(CoreModelViewSet[Author]):

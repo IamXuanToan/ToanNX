@@ -4,7 +4,12 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/shares/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/shares/components/ui/accordion";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 

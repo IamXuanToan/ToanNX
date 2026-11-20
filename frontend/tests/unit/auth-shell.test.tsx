@@ -2,7 +2,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { AuthShell } from "@/modules/auth/components/auth-shell";
+import { AuthShell } from "@/modules/system/components/auth-shell";
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({

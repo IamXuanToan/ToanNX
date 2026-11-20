@@ -8,7 +8,7 @@ class PermissionCatalog:
 
     ```python
     class IamPermission(PermissionCatalog):
-        USER_READ = PermissionDefinition("account.user.read", "Xem người dùng", "Xem danh sách ...")
+        USER_READ = PermissionDefinition("system.user.read", "Xem người dùng", "Xem danh sách ...")
     ```
     """
 

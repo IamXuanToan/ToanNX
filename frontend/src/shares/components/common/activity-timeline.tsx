@@ -20,7 +20,7 @@ export type ActivityItem = {
 };
 
 /**
- * Dòng thời gian lịch sử thay đổi (chỉ hiển thị). Module journal dịch hành động, nhãn field và định dạng
+ * Dòng thời gian lịch sử thay đổi (chỉ hiển thị). Phần Journal của module system dịch hành động, nhãn field và định dạng
  * giá trị rồi truyền vào; common không gọi API.
  *
  * @param props - Các sự kiện (mới nhất trước) và nội dung khi trống.

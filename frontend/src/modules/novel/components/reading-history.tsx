@@ -13,7 +13,15 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/shares/components/ui/button";
 import { Card } from "@/shares/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/shares/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shares/components/ui/dialog";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
 import { NOVEL_ROUTES } from "../constants/routes";

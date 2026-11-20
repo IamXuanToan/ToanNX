@@ -5,11 +5,11 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
-import { AttachmentPicker } from "@/modules/attachment/components/attachment-picker";
-import { ATTACHMENT_PERMISSIONS } from "@/modules/attachment/permissions/attachment-permission";
-import { UserMenu } from "@/modules/auth/components/user-menu";
-import { useLogout } from "@/modules/auth/hooks/use-logout";
-import { usePermission } from "@/modules/auth/hooks/use-permission";
+import { AttachmentPicker } from "@/modules/system/components/attachment-picker";
+import { ATTACHMENT_PERMISSIONS } from "@/modules/system/permissions/attachment-permission";
+import { UserMenu } from "@/modules/system/components/user-menu";
+import { useLogout } from "@/modules/system/hooks/use-logout";
+import { usePermission } from "@/modules/system/hooks/use-permission";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { LanguageSwitcher } from "@/shares/components/layout/language-switcher";
@@ -243,7 +243,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const { status, refetch, isLauncher, groups, activeGroup, sidebarOpen, setSidebarOpen } =
     useAdminShell();
   const logout = useLogout();
-  const t = useTranslations("auth.userMenu");
+  const t = useTranslations("system.auth.userMenu");
 
   if (status === "loading") return isLauncher ? <LauncherSkeleton /> : <WorkspaceSkeleton />;
   if (status === "error") {

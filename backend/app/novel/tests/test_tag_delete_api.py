@@ -5,10 +5,10 @@ from typing import Any
 import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.iam.tests.helpers.permission_helper import grant
 from app.novel.models.tag import Tag
 from app.novel.permissions.tag_permission import TagPermission
 from app.novel.tests.factories.tag_factory import TagFactory
+from app.system.tests.helpers.permission_helper import grant
 
 pytestmark = pytest.mark.django_db
 BASE_URL = "/api/v1/novel/tags"

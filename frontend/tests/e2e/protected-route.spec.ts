@@ -25,7 +25,7 @@ test.describe("Bảo vệ route quản trị", () => {
   });
 
   test("API quản trị trả 401 khi không có phiên", async ({ request }) => {
-    const response = await request.get("/api/v1/account/users");
+    const response = await request.get("/api/v1/system/users");
     expect(response.status()).toBe(401);
     expect((await response.json()).error.code).toBe("AUTH_NOT_AUTHENTICATED");
   });

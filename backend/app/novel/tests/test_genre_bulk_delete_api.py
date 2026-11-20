@@ -5,9 +5,9 @@ from typing import Any
 import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.iam.tests.helpers.permission_helper import grant
 from app.novel.permissions.genre_permission import GenrePermission
 from app.novel.tests.factories.genre_factory import GenreFactory
+from app.system.tests.helpers.permission_helper import grant
 
 pytestmark = pytest.mark.django_db
 URL = "/api/v1/novel/genres/bulk-delete"

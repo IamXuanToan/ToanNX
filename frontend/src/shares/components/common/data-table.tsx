@@ -13,7 +13,14 @@ import { Button } from "@/shares/components/ui/button";
 import { Card } from "@/shares/components/ui/card";
 import { Checkbox } from "@/shares/components/ui/checkbox";
 import { Skeleton } from "@/shares/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shares/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shares/components/ui/table";
 
 import { TableBulkBar } from "./table-bulk-bar";
 import { TableColumnResizer } from "./table-column-resizer";

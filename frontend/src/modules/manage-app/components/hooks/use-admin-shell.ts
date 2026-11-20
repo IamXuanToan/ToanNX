@@ -6,9 +6,9 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { useCurrentUser } from "@/modules/auth/hooks/use-current-user";
-import { AUTH_ROUTES } from "@/modules/auth/constants/routes";
-import { canAccessAdmin, hasPermission } from "@/modules/auth/services/current-user.service";
+import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
+import { SYSTEM_ROUTES } from "@/modules/system/constants/routes";
+import { canAccessAdmin, hasPermission } from "@/modules/system/services/current-user.service";
 import { useMediaQuery } from "@/shares/hooks/use-media-query";
 import { useMessage } from "@/shares/hooks/use-message";
 import { isApiError } from "@/shares/lib/api/api-error";
@@ -31,7 +31,7 @@ const TABLET_QUERY = "(min-width: 768px) and (max-width: 1279px)";
  * @returns Trạng thái hiển thị của khung quản trị.
  */
 export function useAdminShell() {
-  const t = useTranslations("auth.session");
+  const t = useTranslations("system.auth.session");
   const message = useMessage();
   const tGroups = useTranslations("common.adminGroups");
   const queryClient = useQueryClient();
@@ -59,7 +59,7 @@ export function useAdminShell() {
     resetSession();
     // Refresh thất bại thì backend đã xóa cookie phiên → proxy không đẩy ngược về admin.
     router.replace({
-      pathname: AUTH_ROUTES.login,
+      pathname: SYSTEM_ROUTES.login,
       query: { next: window.location.pathname + window.location.search },
     });
   }, [sessionExpired, unauthenticated, queryClient, resetSession, router, t]);

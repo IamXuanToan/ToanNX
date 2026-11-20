@@ -4,1040 +4,6 @@
  */
 
 export interface paths {
-  "/api/v1/account/users": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["account_users_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["account_users_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/account/users/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["account_users_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Xóa bản ghi (204 không body). */
-    delete: operations["account_users_destroy"];
-    options?: never;
-    head?: never;
-    /** @description Cập nhật một phần (PATCH). */
-    patch: operations["account_users_partial_update"];
-    trace?: never;
-  };
-  "/api/v1/account/users/{id}/history": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
-    get: operations["account_users_history_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/account/users/bulk-delete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["account_users_bulk_delete_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/account/users/bulk-update": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["account_users_bulk_update_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/attachments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["attachments_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["attachments_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/attachments/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["attachments_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Xóa bản ghi (204 không body). */
-    delete: operations["attachments_destroy"];
-    options?: never;
-    head?: never;
-    /** @description Cập nhật một phần (PATCH). */
-    patch: operations["attachments_partial_update"];
-    trace?: never;
-  };
-  "/api/v1/attachments/{id}/history": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
-    get: operations["attachments_history_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/attachments/bulk-delete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["attachments_bulk_delete_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/attachments/bulk-update": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["attachments_bulk_update_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/attachments/folders": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["attachments_folders_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["attachments_folders_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/attachments/folders/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["attachments_folders_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Xóa bản ghi (204 không body). */
-    delete: operations["attachments_folders_destroy"];
-    options?: never;
-    head?: never;
-    /** @description Cập nhật một phần (PATCH). */
-    patch: operations["attachments_folders_partial_update"];
-    trace?: never;
-  };
-  "/api/v1/attachments/folders/{id}/delete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Xóa nhánh và trả số thư mục đã xóa mềm. */
-    post: operations["attachments_folders_delete_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/admin-sessions": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["auth_admin_sessions_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["auth_admin_sessions_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/admin-sessions/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["auth_admin_sessions_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Thu hồi phiên và xóa cookie khi quản trị viên thu hồi chính phiên đang dùng. */
-    delete: operations["auth_admin_sessions_destroy"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/admin-sessions/bulk-delete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["auth_admin_sessions_bulk_delete_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/admin-sessions/bulk-revoke": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Thu hồi nhiều phiên; thu hồi cả phiên đang dùng thì xóa cookie của request này. */
-    post: operations["auth_admin_sessions_bulk_revoke_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/admin-sessions/users": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Mỗi chủ phiên một lần, mới nhất trước (bộ lọc theo người dùng). */
-    get: operations["auth_admin_sessions_users_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/csrf": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * @description Cấp CSRF token.
-     *
-     *     Args:
-     *         request: Request.
-     *
-     *     Returns:
-     *         CSRF token (cũng nằm trong cookie `csrftoken`).
-     */
-    get: operations["auth_csrf_retrieve"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/login": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * @description Đăng nhập.
-     *
-     *     Args:
-     *         request: Request.
-     *         validated_data: Body đã validate.
-     *
-     *     Returns:
-     *         Hồ sơ người dùng hiện tại + cookie phiên.
-     */
-    post: operations["auth_login_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/logout": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * @description Thu hồi phiên và xóa cookie.
-     *
-     *     Args:
-     *         request: Request.
-     *
-     *     Returns:
-     *         Response không có dữ liệu.
-     */
-    post: operations["auth_logout_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/logout-all": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * @description Thu hồi mọi phiên của người dùng.
-     *
-     *     Args:
-     *         request: Request.
-     *
-     *     Returns:
-     *         Số phiên đã thu hồi.
-     */
-    post: operations["auth_logout_all_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/me": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * @description Hồ sơ người dùng hiện tại.
-     *
-     *     Args:
-     *         request: Request.
-     *
-     *     Returns:
-     *         Hồ sơ.
-     */
-    get: operations["auth_me_retrieve"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /**
-     * @description Cập nhật thông tin hồ sơ cá nhân của người dùng hiện tại.
-     *
-     *     Args:
-     *         request: Request.
-     *         validated_data: Dữ liệu đã validate.
-     *
-     *     Returns:
-     *         Hồ sơ sau cập nhật.
-     */
-    patch: operations["auth_me_partial_update"];
-    trace?: never;
-  };
-  "/api/v1/auth/password-reset/confirm": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * @description Cập nhật mật khẩu mới cho tài khoản.
-     *
-     *     Args:
-     *         request: Request.
-     *         validated_data: Body đã validate gồm uid, token, new_password.
-     *
-     *     Returns:
-     *         Thông báo đặt lại mật khẩu thành công.
-     */
-    post: operations["auth_password_reset_confirm_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/password-reset/request": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * @description Nhận email và gửi đường dẫn đặt lại mật khẩu nếu tài khoản tồn tại.
-     *
-     *     Args:
-     *         request: Request.
-     *         validated_data: Body đã validate chứa email và locale.
-     *
-     *     Returns:
-     *         Thông báo kết quả.
-     */
-    post: operations["auth_password_reset_request_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/password-reset/validate-token": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * @description Xác thực token một lần.
-     *
-     *     Args:
-     *         request: Request.
-     *         validated_data: Body đã validate chứa uid và token.
-     *
-     *     Returns:
-     *         Trạng thái hợp lệ.
-     */
-    post: operations["auth_password_reset_validate_token_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/refresh": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * @description Xoay vòng refresh token.
-     *
-     *     Lỗi xác thực trả 401 và xóa cookie để client không lặp refresh.
-     *
-     *     Args:
-     *         request: Request.
-     *
-     *     Returns:
-     *         Hồ sơ người dùng hiện tại + cookie mới.
-     */
-    post: operations["auth_refresh_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/sessions": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * @description Danh sách phiên (đánh dấu phiên hiện tại).
-     *
-     *     Args:
-     *         request: Request.
-     *
-     *     Returns:
-     *         Danh sách phiên.
-     */
-    get: operations["auth_sessions_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/sessions/{session_id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /**
-     * @description Thu hồi phiên; xóa cookie nếu là phiên hiện tại.
-     *
-     *     Args:
-     *         request: Request.
-     *         session_id: Id phiên.
-     *
-     *     Returns:
-     *         204 không body.
-     */
-    delete: operations["auth_sessions_destroy"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/health": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * @description Trả trạng thái ok.
-     *
-     *     Args:
-     *         request: Request.
-     *
-     *     Returns:
-     *         Trạng thái.
-     */
-    get: operations["health_retrieve"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/health/cleanup": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * @description Chạy mọi task dọn dữ liệu.
-     *
-     *     Args:
-     *         request: Request có header `Authorization: Bearer <CRON_SECRET>`.
-     *
-     *     Returns:
-     *         Số bản ghi đã xóa theo task.
-     *
-     *     Raises:
-     *         NotFoundError: Chưa cấu hình bí mật hoặc bí mật sai (không lộ endpoint tồn tại).
-     */
-    get: operations["health_cleanup_retrieve"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/health/client-errors": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * @description Ghi lỗi vào log.
-     *
-     *     Args:
-     *         request: Request.
-     *         validated_data: Thông tin lỗi.
-     *
-     *     Returns:
-     *         204 không body.
-     */
-    post: operations["health_client_errors_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/health/ready": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * @description Kiểm tra kết nối database.
-     *
-     *     Args:
-     *         request: Request.
-     *
-     *     Returns:
-     *         200 nếu sẵn sàng, 503 nếu không.
-     */
-    get: operations["health_ready_retrieve"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/iam/permissions": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["iam_permissions_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/iam/permissions/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["iam_permissions_retrieve"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/iam/roles": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["iam_roles_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["iam_roles_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/iam/roles/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["iam_roles_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Xóa bản ghi (204 không body). */
-    delete: operations["iam_roles_destroy"];
-    options?: never;
-    head?: never;
-    /** @description Cập nhật một phần (PATCH). */
-    patch: operations["iam_roles_partial_update"];
-    trace?: never;
-  };
-  "/api/v1/iam/roles/{id}/history": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
-    get: operations["iam_roles_history_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/iam/roles/{role_id}/permissions": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    /**
-     * @description Thay toàn bộ quyền trong một transaction (lỗi một quyền thì không đổi gì).
-     *
-     *     Args:
-     *         request: Request.
-     *         role_id: Id vai trò.
-     *         validated_data: Body đã validate.
-     *
-     *     Returns:
-     *         Vai trò kèm quyền.
-     */
-    put: operations["iam_roles_permissions_update"];
-    /**
-     * @description Gán quyền (idempotent).
-     *
-     *     Args:
-     *         request: Request.
-     *         role_id: Id vai trò.
-     *         validated_data: Body đã validate.
-     *
-     *     Returns:
-     *         Vai trò kèm quyền.
-     */
-    post: operations["iam_roles_permissions_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/iam/roles/{role_id}/permissions/{permission_id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /**
-     * @description Thu hồi quyền.
-     *
-     *     Args:
-     *         request: Request.
-     *         role_id: Id vai trò.
-     *         permission_id: Id quyền.
-     *
-     *     Returns:
-     *         204 không body.
-     */
-    delete: operations["iam_roles_permissions_destroy"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/iam/roles/bulk-delete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["iam_roles_bulk_delete_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/iam/roles/bulk-update": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["iam_roles_bulk_update_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/iam/users/{user_id}/roles": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * @description Vai trò đang gán cho người dùng.
-     *
-     *     Args:
-     *         request: Request.
-     *         user_id: Id người dùng.
-     *
-     *     Returns:
-     *         Danh sách vai trò.
-     */
-    get: operations["iam_users_roles_list"];
-    /**
-     * @description Thay toàn bộ vai trò trong một transaction (lỗi một vai trò thì không đổi gì).
-     *
-     *     Args:
-     *         request: Request.
-     *         user_id: Id người dùng.
-     *         validated_data: Body đã validate.
-     *
-     *     Returns:
-     *         Vai trò của người dùng sau khi đồng bộ.
-     */
-    put: operations["iam_users_roles_update"];
-    /**
-     * @description Gán vai trò (idempotent).
-     *
-     *     Args:
-     *         request: Request.
-     *         user_id: Id người dùng.
-     *         validated_data: Body đã validate.
-     *
-     *     Returns:
-     *         Vai trò của người dùng sau khi gán.
-     */
-    post: operations["iam_users_roles_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/iam/users/{user_id}/roles/{role_id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /**
-     * @description Thu hồi vai trò.
-     *
-     *     Args:
-     *         request: Request.
-     *         user_id: Id người dùng.
-     *         role_id: Id vai trò.
-     *
-     *     Returns:
-     *         204 không body.
-     */
-    delete: operations["iam_users_roles_destroy"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/journal/entries": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["journal_entries_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/journal/entries/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["journal_entries_retrieve"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/journal/resources": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * @description Danh mục tài nguyên.
-     *
-     *     Args:
-     *         request: Request.
-     *
-     *     Returns:
-     *         Danh sách tài nguyên.
-     */
-    get: operations["journal_resources_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/api/v1/novel/authors": {
     parameters: {
       query?: never;
@@ -1608,6 +574,1040 @@ export interface paths {
     put?: never;
     /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
     post: operations["novel_tags_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/attachments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_attachments_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_attachments_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/attachments/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_attachments_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_attachments_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["system_attachments_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/attachments/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["system_attachments_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/attachments/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_attachments_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/attachments/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_attachments_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/attachments/folders": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_attachments_folders_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_attachments_folders_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/attachments/folders/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_attachments_folders_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_attachments_folders_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["system_attachments_folders_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/attachments/folders/{id}/delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhánh và trả số thư mục đã xóa mềm. */
+    post: operations["system_attachments_folders_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/admin-sessions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_auth_admin_sessions_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_auth_admin_sessions_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/admin-sessions/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_auth_admin_sessions_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Thu hồi phiên và xóa cookie khi quản trị viên thu hồi chính phiên đang dùng. */
+    delete: operations["system_auth_admin_sessions_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/admin-sessions/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_auth_admin_sessions_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/admin-sessions/bulk-revoke": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Thu hồi nhiều phiên; thu hồi cả phiên đang dùng thì xóa cookie của request này. */
+    post: operations["system_auth_admin_sessions_bulk_revoke_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/admin-sessions/users": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Mỗi chủ phiên một lần, mới nhất trước (bộ lọc theo người dùng). */
+    get: operations["system_auth_admin_sessions_users_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/csrf": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Cấp CSRF token.
+     *
+     *     Args:
+     *         request: Request.
+     *
+     *     Returns:
+     *         CSRF token (cũng nằm trong cookie `csrftoken`).
+     */
+    get: operations["system_auth_csrf_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/login": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Đăng nhập.
+     *
+     *     Args:
+     *         request: Request.
+     *         validated_data: Body đã validate.
+     *
+     *     Returns:
+     *         Hồ sơ người dùng hiện tại + cookie phiên.
+     */
+    post: operations["system_auth_login_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/logout": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Thu hồi phiên và xóa cookie.
+     *
+     *     Args:
+     *         request: Request.
+     *
+     *     Returns:
+     *         Response không có dữ liệu.
+     */
+    post: operations["system_auth_logout_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/logout-all": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Thu hồi mọi phiên của người dùng.
+     *
+     *     Args:
+     *         request: Request.
+     *
+     *     Returns:
+     *         Số phiên đã thu hồi.
+     */
+    post: operations["system_auth_logout_all_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/me": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Hồ sơ người dùng hiện tại.
+     *
+     *     Args:
+     *         request: Request.
+     *
+     *     Returns:
+     *         Hồ sơ.
+     */
+    get: operations["system_auth_me_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * @description Cập nhật thông tin hồ sơ cá nhân của người dùng hiện tại.
+     *
+     *     Args:
+     *         request: Request.
+     *         validated_data: Dữ liệu đã validate.
+     *
+     *     Returns:
+     *         Hồ sơ sau cập nhật.
+     */
+    patch: operations["system_auth_me_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/auth/password-reset/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Cập nhật mật khẩu mới cho tài khoản.
+     *
+     *     Args:
+     *         request: Request.
+     *         validated_data: Body đã validate gồm uid, token, new_password.
+     *
+     *     Returns:
+     *         Thông báo đặt lại mật khẩu thành công.
+     */
+    post: operations["system_auth_password_reset_confirm_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/password-reset/request": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Nhận email và gửi đường dẫn đặt lại mật khẩu nếu tài khoản tồn tại.
+     *
+     *     Args:
+     *         request: Request.
+     *         validated_data: Body đã validate chứa email và locale.
+     *
+     *     Returns:
+     *         Thông báo kết quả.
+     */
+    post: operations["system_auth_password_reset_request_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/password-reset/validate-token": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Xác thực token một lần.
+     *
+     *     Args:
+     *         request: Request.
+     *         validated_data: Body đã validate chứa uid và token.
+     *
+     *     Returns:
+     *         Trạng thái hợp lệ.
+     */
+    post: operations["system_auth_password_reset_validate_token_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/refresh": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Xoay vòng refresh token.
+     *
+     *     Lỗi xác thực trả 401 và xóa cookie để client không lặp refresh.
+     *
+     *     Args:
+     *         request: Request.
+     *
+     *     Returns:
+     *         Hồ sơ người dùng hiện tại + cookie mới.
+     */
+    post: operations["system_auth_refresh_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/sessions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Danh sách phiên (đánh dấu phiên hiện tại).
+     *
+     *     Args:
+     *         request: Request.
+     *
+     *     Returns:
+     *         Danh sách phiên.
+     */
+    get: operations["system_auth_sessions_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/sessions/{session_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * @description Thu hồi phiên; xóa cookie nếu là phiên hiện tại.
+     *
+     *     Args:
+     *         request: Request.
+     *         session_id: Id phiên.
+     *
+     *     Returns:
+     *         204 không body.
+     */
+    delete: operations["system_auth_sessions_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/health": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Trả trạng thái ok.
+     *
+     *     Args:
+     *         request: Request.
+     *
+     *     Returns:
+     *         Trạng thái.
+     */
+    get: operations["system_health_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/health/cleanup": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Chạy mọi task dọn dữ liệu.
+     *
+     *     Args:
+     *         request: Request có header `Authorization: Bearer <CRON_SECRET>`.
+     *
+     *     Returns:
+     *         Số bản ghi đã xóa theo task.
+     *
+     *     Raises:
+     *         NotFoundError: Chưa cấu hình bí mật hoặc bí mật sai (không lộ endpoint tồn tại).
+     */
+    get: operations["system_health_cleanup_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/health/client-errors": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Ghi lỗi vào log.
+     *
+     *     Args:
+     *         request: Request.
+     *         validated_data: Thông tin lỗi.
+     *
+     *     Returns:
+     *         204 không body.
+     */
+    post: operations["system_health_client_errors_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/health/ready": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Kiểm tra kết nối database.
+     *
+     *     Args:
+     *         request: Request.
+     *
+     *     Returns:
+     *         200 nếu sẵn sàng, 503 nếu không.
+     */
+    get: operations["system_health_ready_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/journal-entries": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_journal_entries_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/journal-entries/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_journal_entries_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/journal-resources": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Danh mục tài nguyên.
+     *
+     *     Args:
+     *         request: Request.
+     *
+     *     Returns:
+     *         Danh sách tài nguyên.
+     */
+    get: operations["system_journal_resources_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/permissions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_permissions_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/permissions/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_permissions_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/roles": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_roles_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_roles_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/roles/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_roles_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_roles_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["system_roles_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/roles/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["system_roles_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/roles/{role_id}/permissions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * @description Thay toàn bộ quyền trong một transaction (lỗi một quyền thì không đổi gì).
+     *
+     *     Args:
+     *         request: Request.
+     *         role_id: Id vai trò.
+     *         validated_data: Body đã validate.
+     *
+     *     Returns:
+     *         Vai trò kèm quyền.
+     */
+    put: operations["system_roles_permissions_update"];
+    /**
+     * @description Gán quyền (idempotent).
+     *
+     *     Args:
+     *         request: Request.
+     *         role_id: Id vai trò.
+     *         validated_data: Body đã validate.
+     *
+     *     Returns:
+     *         Vai trò kèm quyền.
+     */
+    post: operations["system_roles_permissions_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/roles/{role_id}/permissions/{permission_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * @description Thu hồi quyền.
+     *
+     *     Args:
+     *         request: Request.
+     *         role_id: Id vai trò.
+     *         permission_id: Id quyền.
+     *
+     *     Returns:
+     *         204 không body.
+     */
+    delete: operations["system_roles_permissions_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/roles/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_roles_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/roles/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_roles_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/users": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_users_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_users_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/users/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_users_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_users_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["system_users_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/users/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["system_users_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/users/{user_id}/roles": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Vai trò đang gán cho người dùng.
+     *
+     *     Args:
+     *         request: Request.
+     *         user_id: Id người dùng.
+     *
+     *     Returns:
+     *         Danh sách vai trò.
+     */
+    get: operations["system_users_roles_list"];
+    /**
+     * @description Thay toàn bộ vai trò trong một transaction (lỗi một vai trò thì không đổi gì).
+     *
+     *     Args:
+     *         request: Request.
+     *         user_id: Id người dùng.
+     *         validated_data: Body đã validate.
+     *
+     *     Returns:
+     *         Vai trò của người dùng sau khi đồng bộ.
+     */
+    put: operations["system_users_roles_update"];
+    /**
+     * @description Gán vai trò (idempotent).
+     *
+     *     Args:
+     *         request: Request.
+     *         user_id: Id người dùng.
+     *         validated_data: Body đã validate.
+     *
+     *     Returns:
+     *         Vai trò của người dùng sau khi gán.
+     */
+    post: operations["system_users_roles_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/users/{user_id}/roles/{role_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * @description Thu hồi vai trò.
+     *
+     *     Args:
+     *         request: Request.
+     *         user_id: Id người dùng.
+     *         role_id: Id vai trò.
+     *
+     *     Returns:
+     *         204 không body.
+     */
+    delete: operations["system_users_roles_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/users/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_users_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/users/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_users_bulk_update_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -4128,7 +4128,7 @@ export interface components {
       readonly id: string;
       /**
        * Mã quyền
-       * @description Mã quyền dạng `module.resource.action`, ví dụ `account.user.read`.
+       * @description Mã quyền dạng `module.resource.action`, ví dụ `system.user.read`.
        */
       code: string;
       /** @description Mã module khai báo quyền. */
@@ -5102,2281 +5102,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  account_users_list: {
-    parameters: {
-      query?: {
-        /**
-         * @description Loại truy cập, nhiều giá trị (khớp một trong các loại): `superuser,staff,novel`.
-         *
-         *     * `superuser` - superuser
-         *     * `staff` - staff
-         *     * `novel` - novel
-         */
-        access?: ("novel" | "staff" | "superuser")[];
-        /**
-         * @description Trạng thái hoạt động, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_active?: ("false" | "true")[];
-        /**
-         * @description Nhóm Novel, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_novel?: ("false" | "true")[];
-        /**
-         * @description Quyền vào khu vực quản trị, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_staff?: ("false" | "true")[];
-        /**
-         * @description Superuser, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_superuser?: ("false" | "true")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description UUID vai trò đã gán, nhiều giá trị phân tách bằng dấu phẩy (có ít nhất một). */
-        role?: string[];
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedUserListResponseList"];
-        };
-      };
-    };
-  };
-  account_users_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserCreateValidateRequest"];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["UserDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  account_users_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["UserDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  account_users_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  account_users_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["PatchedUserUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["UserDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  account_users_history_list: {
-    parameters: {
-      query?: {
-        /**
-         * @description Loại truy cập, nhiều giá trị (khớp một trong các loại): `superuser,staff,novel`.
-         *
-         *     * `superuser` - superuser
-         *     * `staff` - staff
-         *     * `novel` - novel
-         */
-        access?: ("novel" | "staff" | "superuser")[];
-        /**
-         * @description Trạng thái hoạt động, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_active?: ("false" | "true")[];
-        /**
-         * @description Nhóm Novel, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_novel?: ("false" | "true")[];
-        /**
-         * @description Quyền vào khu vực quản trị, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_staff?: ("false" | "true")[];
-        /**
-         * @description Superuser, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_superuser?: ("false" | "true")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description UUID vai trò đã gán, nhiều giá trị phân tách bằng dấu phẩy (có ít nhất một). */
-        role?: string[];
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
-        };
-      };
-    };
-  };
-  account_users_bulk_delete_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  account_users_bulk_update_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserBulkUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  attachments_list: {
-    parameters: {
-      query?: {
-        /** @description MIME type; nhận nhiều giá trị phân tách dấu phẩy. */
-        content_type?: string[];
-        /** @description Id thư mục hoặc UNFILED; nhận nhiều giá trị phân tách dấu phẩy. */
-        folder?: string[];
-        /**
-         * @description Loại file: IMAGE, VIDEO, DOCUMENT; nhận nhiều giá trị.
-         *
-         *     * `IMAGE` - Ảnh
-         *     * `VIDEO` - Video
-         *     * `DOCUMENT` - Tài liệu
-         */
-        kind?: ("DOCUMENT" | "IMAGE" | "VIDEO")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /**
-         * @description MINE, OTHERS; không mở rộng phạm vi quyền của người dùng.
-         *
-         *     * `MINE` - Của tôi
-         *     * `OTHERS` - Của người khác
-         */
-        scope?: ("MINE" | "OTHERS")[];
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedAttachmentDetailResponseList"];
-        };
-      };
-    };
-  };
-  attachments_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "multipart/form-data": components["schemas"]["AttachmentUploadValidateRequest"];
-        "application/json": components["schemas"]["AttachmentUploadValidateRequest"];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["AttachmentDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  attachments_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["AttachmentDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  attachments_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  attachments_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "multipart/form-data": components["schemas"]["PatchedAttachmentUpdateValidateRequest"];
-        "application/json": components["schemas"]["PatchedAttachmentUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["AttachmentDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  attachments_history_list: {
-    parameters: {
-      query?: {
-        /** @description MIME type; nhận nhiều giá trị phân tách dấu phẩy. */
-        content_type?: string[];
-        /** @description Id thư mục hoặc UNFILED; nhận nhiều giá trị phân tách dấu phẩy. */
-        folder?: string[];
-        /**
-         * @description Loại file: IMAGE, VIDEO, DOCUMENT; nhận nhiều giá trị.
-         *
-         *     * `IMAGE` - Ảnh
-         *     * `VIDEO` - Video
-         *     * `DOCUMENT` - Tài liệu
-         */
-        kind?: ("DOCUMENT" | "IMAGE" | "VIDEO")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /**
-         * @description MINE, OTHERS; không mở rộng phạm vi quyền của người dùng.
-         *
-         *     * `MINE` - Của tôi
-         *     * `OTHERS` - Của người khác
-         */
-        scope?: ("MINE" | "OTHERS")[];
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
-        };
-      };
-    };
-  };
-  attachments_bulk_delete_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "multipart/form-data": components["schemas"]["CoreBulkIdsValidateRequest"];
-        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  attachments_bulk_update_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "multipart/form-data": components["schemas"]["AttachmentBulkUpdateValidateRequest"];
-        "application/json": components["schemas"]["AttachmentBulkUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  attachments_folders_list: {
-    parameters: {
-      query?: {
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /**
-         * @description Phạm vi người tạo, nhận nhiều giá trị.
-         *
-         *     * `MINE` - Của tôi
-         *     * `OTHERS` - Của người khác
-         */
-        scope?: ("MINE" | "OTHERS")[];
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedAttachmentFolderResponseList"];
-        };
-      };
-    };
-  };
-  attachments_folders_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AttachmentFolderValidateRequest"];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["AttachmentFolderResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  attachments_folders_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["AttachmentFolderResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  attachments_folders_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  attachments_folders_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["PatchedAttachmentFolderUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["AttachmentFolderResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  attachments_folders_delete_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["AttachmentFolderDeleteValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_admin_sessions_list: {
-    parameters: {
-      query?: {
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description A search term. */
-        search?: string;
-        /**
-         * @description Trạng thái thực tế, nhiều giá trị: `ACTIVE,REVOKED,EXPIRED`.
-         *
-         *     * `ACTIVE` - Hoạt động
-         *     * `REVOKED` - Đã thu hồi
-         *     * `EXPIRED` - Hết hạn
-         */
-        status?: ("ACTIVE" | "EXPIRED" | "REVOKED")[];
-        /** @description UUID người dùng, nhiều giá trị. */
-        user?: string[];
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedAdminAuthSessionResponseList"];
-        };
-      };
-    };
-  };
-  auth_admin_sessions_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AdminAuthSessionResponseRequest"];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["AdminAuthSessionResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_admin_sessions_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["AdminAuthSessionResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_admin_sessions_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  auth_admin_sessions_bulk_delete_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_admin_sessions_bulk_revoke_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_admin_sessions_users_list: {
-    parameters: {
-      query?: {
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedAdminSessionUserResponseList"];
-        };
-      };
-    };
-  };
-  auth_csrf_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CsrfResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_login_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["LoginValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CurrentUserResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_logout_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  auth_logout_all_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["LogoutAllResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_me_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CurrentUserResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_me_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["PatchedMeUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CurrentUserResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_password_reset_confirm_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PasswordResetConfirmValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PasswordResetDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_password_reset_request_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PasswordResetRequestValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PasswordResetDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_password_reset_validate_token_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PasswordResetValidateTokenRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PasswordResetTokenValidResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_refresh_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CurrentUserResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_sessions_list: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["SessionListResponse"][];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  auth_sessions_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        session_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  health_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["HealthResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  health_cleanup_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CleanupResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  health_client_errors_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ClientErrorReportValidateRequest"];
-      };
-    };
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  health_ready_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["ReadinessResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-      /** @description No response body */
-      503: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  iam_permissions_list: {
-    parameters: {
-      query?: {
-        /** @description Hành động, nhiều giá trị: `read,update`. */
-        action?: string[];
-        /** @description Mã module, nhiều giá trị: `iam,account`. */
-        module?: string[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description Tài nguyên, nhiều giá trị: `user,role`. */
-        resource?: string[];
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedPermissionListResponseList"];
-        };
-      };
-    };
-  };
-  iam_permissions_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PermissionListResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_roles_list: {
-    parameters: {
-      query?: {
-        /**
-         * @description Chính sách tự cấp quyền, nhiều giá trị: `none,all,read_only`.
-         *
-         *     * `none` - Không tự cấp (quyền gán thủ công)
-         *     * `all` - Mọi quyền đang hoạt động
-         *     * `read_only` - Mọi quyền đọc (*.read)
-         */
-        auto_grant?: ("all" | "none" | "read_only")[];
-        /**
-         * @description Trạng thái hoạt động, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_active?: ("false" | "true")[];
-        /**
-         * @description Vai trò hệ thống, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_system?: ("false" | "true")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedRoleListResponseList"];
-        };
-      };
-    };
-  };
-  iam_roles_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RoleCreateValidateRequest"];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["RoleDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_roles_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["RoleDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_roles_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  iam_roles_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["PatchedRoleUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["RoleDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_roles_history_list: {
-    parameters: {
-      query?: {
-        /**
-         * @description Chính sách tự cấp quyền, nhiều giá trị: `none,all,read_only`.
-         *
-         *     * `none` - Không tự cấp (quyền gán thủ công)
-         *     * `all` - Mọi quyền đang hoạt động
-         *     * `read_only` - Mọi quyền đọc (*.read)
-         */
-        auto_grant?: ("all" | "none" | "read_only")[];
-        /**
-         * @description Trạng thái hoạt động, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_active?: ("false" | "true")[];
-        /**
-         * @description Vai trò hệ thống, nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_system?: ("false" | "true")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
-        };
-      };
-    };
-  };
-  iam_roles_permissions_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        role_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RolePermissionSyncValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["RoleDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_roles_permissions_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        role_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RolePermissionAssignValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["RoleDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_roles_permissions_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        permission_id: string;
-        role_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  iam_roles_bulk_delete_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_roles_bulk_update_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RoleBulkUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_users_roles_list: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        user_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["RoleSummaryResponse"][];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_users_roles_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        user_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserRoleSyncValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["RoleSummaryResponse"][];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_users_roles_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        user_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserRoleAssignValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["RoleSummaryResponse"][];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  iam_users_roles_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        role_id: string;
-        user_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  journal_entries_list: {
-    parameters: {
-      query?: {
-        /**
-         * @description Hành động, nhiều giá trị.
-         *
-         *     * `CREATE` - Tạo
-         *     * `UPDATE` - Cập nhật
-         *     * `DELETE` - Xóa
-         *     * `EVENT` - Sự kiện
-         */
-        action?: ("CREATE" | "DELETE" | "EVENT" | "UPDATE")[];
-        /** @description Id người thực hiện, nhiều giá trị. */
-        actor?: string[];
-        /** @description Từ thời điểm (ISO 8601). */
-        created_from?: string;
-        /** @description Đến thời điểm (ISO 8601). */
-        created_to?: string;
-        /** @description Mã module, nhiều giá trị: `account,iam`. */
-        module?: unknown[];
-        /** @description Id bản ghi. */
-        object_id?: string;
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description `<module>.<model>`, nhiều giá trị: `account.user,iam.role`. */
-        resource?: string[];
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
-        };
-      };
-    };
-  };
-  journal_entries_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreJournalEntryResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  journal_resources_list: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["JournalResourceResponse"][];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
   novel_authors_list: {
     parameters: {
       query?: {
@@ -8905,6 +6630,2281 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_attachments_list: {
+    parameters: {
+      query?: {
+        /** @description MIME type; nhận nhiều giá trị phân tách dấu phẩy. */
+        content_type?: string[];
+        /** @description Id thư mục hoặc UNFILED; nhận nhiều giá trị phân tách dấu phẩy. */
+        folder?: string[];
+        /**
+         * @description Loại file: IMAGE, VIDEO, DOCUMENT; nhận nhiều giá trị.
+         *
+         *     * `IMAGE` - Ảnh
+         *     * `VIDEO` - Video
+         *     * `DOCUMENT` - Tài liệu
+         */
+        kind?: ("DOCUMENT" | "IMAGE" | "VIDEO")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /**
+         * @description MINE, OTHERS; không mở rộng phạm vi quyền của người dùng.
+         *
+         *     * `MINE` - Của tôi
+         *     * `OTHERS` - Của người khác
+         */
+        scope?: ("MINE" | "OTHERS")[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedAttachmentDetailResponseList"];
+        };
+      };
+    };
+  };
+  system_attachments_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["AttachmentUploadValidateRequest"];
+        "application/json": components["schemas"]["AttachmentUploadValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AttachmentDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_attachments_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AttachmentDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_attachments_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_attachments_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "multipart/form-data": components["schemas"]["PatchedAttachmentUpdateValidateRequest"];
+        "application/json": components["schemas"]["PatchedAttachmentUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AttachmentDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_attachments_history_list: {
+    parameters: {
+      query?: {
+        /** @description MIME type; nhận nhiều giá trị phân tách dấu phẩy. */
+        content_type?: string[];
+        /** @description Id thư mục hoặc UNFILED; nhận nhiều giá trị phân tách dấu phẩy. */
+        folder?: string[];
+        /**
+         * @description Loại file: IMAGE, VIDEO, DOCUMENT; nhận nhiều giá trị.
+         *
+         *     * `IMAGE` - Ảnh
+         *     * `VIDEO` - Video
+         *     * `DOCUMENT` - Tài liệu
+         */
+        kind?: ("DOCUMENT" | "IMAGE" | "VIDEO")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /**
+         * @description MINE, OTHERS; không mở rộng phạm vi quyền của người dùng.
+         *
+         *     * `MINE` - Của tôi
+         *     * `OTHERS` - Của người khác
+         */
+        scope?: ("MINE" | "OTHERS")[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  system_attachments_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["CoreBulkIdsValidateRequest"];
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_attachments_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["AttachmentBulkUpdateValidateRequest"];
+        "application/json": components["schemas"]["AttachmentBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_attachments_folders_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /**
+         * @description Phạm vi người tạo, nhận nhiều giá trị.
+         *
+         *     * `MINE` - Của tôi
+         *     * `OTHERS` - Của người khác
+         */
+        scope?: ("MINE" | "OTHERS")[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedAttachmentFolderResponseList"];
+        };
+      };
+    };
+  };
+  system_attachments_folders_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AttachmentFolderValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AttachmentFolderResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_attachments_folders_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AttachmentFolderResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_attachments_folders_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_attachments_folders_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedAttachmentFolderUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AttachmentFolderResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_attachments_folders_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["AttachmentFolderDeleteValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_admin_sessions_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Trạng thái thực tế, nhiều giá trị: `ACTIVE,REVOKED,EXPIRED`.
+         *
+         *     * `ACTIVE` - Hoạt động
+         *     * `REVOKED` - Đã thu hồi
+         *     * `EXPIRED` - Hết hạn
+         */
+        status?: ("ACTIVE" | "EXPIRED" | "REVOKED")[];
+        /** @description UUID người dùng, nhiều giá trị. */
+        user?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedAdminAuthSessionResponseList"];
+        };
+      };
+    };
+  };
+  system_auth_admin_sessions_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AdminAuthSessionResponseRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AdminAuthSessionResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_admin_sessions_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AdminAuthSessionResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_admin_sessions_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_auth_admin_sessions_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_admin_sessions_bulk_revoke_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_admin_sessions_users_list: {
+    parameters: {
+      query?: {
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedAdminSessionUserResponseList"];
+        };
+      };
+    };
+  };
+  system_auth_csrf_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CsrfResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_login_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LoginValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CurrentUserResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_logout_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_auth_logout_all_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["LogoutAllResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_me_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CurrentUserResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_me_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedMeUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CurrentUserResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_password_reset_confirm_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordResetConfirmValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PasswordResetDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_password_reset_request_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordResetRequestValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PasswordResetDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_password_reset_validate_token_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordResetValidateTokenRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PasswordResetTokenValidResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_refresh_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CurrentUserResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_sessions_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SessionListResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_sessions_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        session_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_health_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["HealthResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_health_cleanup_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CleanupResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_health_client_errors_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ClientErrorReportValidateRequest"];
+      };
+    };
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_health_ready_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReadinessResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description No response body */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_journal_entries_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Hành động, nhiều giá trị.
+         *
+         *     * `CREATE` - Tạo
+         *     * `UPDATE` - Cập nhật
+         *     * `DELETE` - Xóa
+         *     * `EVENT` - Sự kiện
+         */
+        action?: ("CREATE" | "DELETE" | "EVENT" | "UPDATE")[];
+        /** @description Id người thực hiện, nhiều giá trị. */
+        actor?: string[];
+        /** @description Từ thời điểm (ISO 8601). */
+        created_from?: string;
+        /** @description Đến thời điểm (ISO 8601). */
+        created_to?: string;
+        /** @description Mã module, nhiều giá trị: `account,iam`. */
+        module?: unknown[];
+        /** @description Id bản ghi. */
+        object_id?: string;
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description `<module>.<model>`, nhiều giá trị: `account.user,iam.role`. */
+        resource?: string[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  system_journal_entries_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreJournalEntryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_journal_resources_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["JournalResourceResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_permissions_list: {
+    parameters: {
+      query?: {
+        /** @description Hành động, nhiều giá trị: `read,update`. */
+        action?: string[];
+        /** @description Mã module, nhiều giá trị: `iam,account`. */
+        module?: string[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description Tài nguyên, nhiều giá trị: `user,role`. */
+        resource?: string[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedPermissionListResponseList"];
+        };
+      };
+    };
+  };
+  system_permissions_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PermissionListResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_roles_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Chính sách tự cấp quyền, nhiều giá trị: `none,all,read_only`.
+         *
+         *     * `none` - Không tự cấp (quyền gán thủ công)
+         *     * `all` - Mọi quyền đang hoạt động
+         *     * `read_only` - Mọi quyền đọc (*.read)
+         */
+        auto_grant?: ("all" | "none" | "read_only")[];
+        /**
+         * @description Trạng thái hoạt động, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /**
+         * @description Vai trò hệ thống, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_system?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedRoleListResponseList"];
+        };
+      };
+    };
+  };
+  system_roles_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RoleCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["RoleDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_roles_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["RoleDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_roles_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_roles_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedRoleUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["RoleDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_roles_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Chính sách tự cấp quyền, nhiều giá trị: `none,all,read_only`.
+         *
+         *     * `none` - Không tự cấp (quyền gán thủ công)
+         *     * `all` - Mọi quyền đang hoạt động
+         *     * `read_only` - Mọi quyền đọc (*.read)
+         */
+        auto_grant?: ("all" | "none" | "read_only")[];
+        /**
+         * @description Trạng thái hoạt động, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /**
+         * @description Vai trò hệ thống, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_system?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  system_roles_permissions_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        role_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RolePermissionSyncValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["RoleDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_roles_permissions_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        role_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RolePermissionAssignValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["RoleDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_roles_permissions_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        permission_id: string;
+        role_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_roles_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_roles_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RoleBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_users_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Loại truy cập, nhiều giá trị (khớp một trong các loại): `superuser,staff,novel`.
+         *
+         *     * `superuser` - superuser
+         *     * `staff` - staff
+         *     * `novel` - novel
+         */
+        access?: ("novel" | "staff" | "superuser")[];
+        /**
+         * @description Trạng thái hoạt động, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /**
+         * @description Nhóm Novel, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_novel?: ("false" | "true")[];
+        /**
+         * @description Quyền vào khu vực quản trị, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_staff?: ("false" | "true")[];
+        /**
+         * @description Superuser, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_superuser?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description UUID vai trò đã gán, nhiều giá trị phân tách bằng dấu phẩy (có ít nhất một). */
+        role?: string[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedUserListResponseList"];
+        };
+      };
+    };
+  };
+  system_users_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["UserDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_users_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["UserDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_users_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_users_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedUserUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["UserDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_users_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Loại truy cập, nhiều giá trị (khớp một trong các loại): `superuser,staff,novel`.
+         *
+         *     * `superuser` - superuser
+         *     * `staff` - staff
+         *     * `novel` - novel
+         */
+        access?: ("novel" | "staff" | "superuser")[];
+        /**
+         * @description Trạng thái hoạt động, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /**
+         * @description Nhóm Novel, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_novel?: ("false" | "true")[];
+        /**
+         * @description Quyền vào khu vực quản trị, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_staff?: ("false" | "true")[];
+        /**
+         * @description Superuser, nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_superuser?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description UUID vai trò đã gán, nhiều giá trị phân tách bằng dấu phẩy (có ít nhất một). */
+        role?: string[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  system_users_roles_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["RoleSummaryResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_users_roles_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserRoleSyncValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["RoleSummaryResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_users_roles_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserRoleAssignValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["RoleSummaryResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_users_roles_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        role_id: string;
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_users_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_users_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserBulkUpdateValidateRequest"];
       };
     };
     responses: {

@@ -9,7 +9,7 @@ GET    /utilities/page-paths/{id}/history
 """
 
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.types.permission_rule import permission_rule
+from app.system.types.permission_rule import permission_rule
 from app.utilities.filters.page_path_filter import PagePathFilter
 from app.utilities.models.page_path import PagePath
 from app.utilities.permissions.page_path_permission import PagePathPermission as P

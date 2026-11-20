@@ -1,7 +1,6 @@
 """ViewSet quản lý thể loại tiểu thuyết."""
 
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.iam.types.permission_rule import permission_rule
 from app.novel.models.genre import Genre
 from app.novel.permissions.genre_permission import GenrePermission as P
 from app.novel.serializers.responses.genre_summary_response_serializer import (
@@ -14,6 +13,7 @@ from app.novel.serializers.validates.genre_validate_serializer import (
     GenreValidateSerializer,
 )
 from app.novel.services.genre_service import GenreService
+from app.system.types.permission_rule import permission_rule
 
 
 class GenreViewSet(CoreModelViewSet[Genre]):

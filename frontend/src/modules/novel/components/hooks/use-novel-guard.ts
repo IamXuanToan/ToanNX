@@ -5,8 +5,8 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { useRouter } from "@/i18n/navigation";
-import { AUTH_ROUTES } from "@/modules/auth/constants/routes";
-import { useCurrentUser } from "@/modules/auth/hooks/use-current-user";
+import { SYSTEM_ROUTES } from "@/modules/system/constants/routes";
+import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 
 import { NOVEL_ROUTES } from "../../constants/routes";
 
@@ -32,7 +32,7 @@ export function useNovelGuard() {
           ? window.location.pathname + window.location.search
           : NOVEL_ROUTES.catalog;
       router.replace({
-        pathname: AUTH_ROUTES.login,
+        pathname: SYSTEM_ROUTES.login,
         query: { redirect: currentUrl },
       });
       return;

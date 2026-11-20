@@ -4,12 +4,12 @@ from typing import Any
 
 import pytest
 
-from app.account.tests.factories.user_factory import UserFactory
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.iam.tests.helpers.permission_helper import grant
 from app.novel.models.novel import Novel
 from app.novel.permissions.novel_permission import NovelPermission
 from app.novel.tests.factories.novel_factory import NovelFactory
+from app.system.tests.factories.user_factory import UserFactory
+from app.system.tests.helpers.permission_helper import grant
 
 pytestmark = pytest.mark.django_db
 BASE_URL = "/api/v1/novel/novels"
