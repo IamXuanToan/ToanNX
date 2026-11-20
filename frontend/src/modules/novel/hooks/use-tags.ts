@@ -20,8 +20,7 @@ export function useTags(params?: Record<string, unknown>, enabled = true) {
   const safeParams = params ?? {};
   return useListQuery<Paginated<Tag>>(
     novelKeys.tag.list(safeParams),
-    (signal) =>
-      tagService.list(safeParams, signal) as Promise<unknown> as Promise<Paginated<Tag>>,
+    (signal) => tagService.list(safeParams, signal) as Promise<unknown> as Promise<Paginated<Tag>>,
     { enabled },
   );
 }

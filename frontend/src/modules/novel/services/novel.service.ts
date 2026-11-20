@@ -24,13 +24,9 @@ import type {
 // CRUD SERVICE
 // ============================================================================
 
-const crud = createCrudService<
-  Novel,
-  ListParams,
-  NovelCreateInput,
-  NovelUpdateInput,
-  NovelDetail
->(NOVEL_API_ENDPOINTS.novels);
+const crud = createCrudService<Novel, ListParams, NovelCreateInput, NovelUpdateInput, NovelDetail>(
+  NOVEL_API_ENDPOINTS.novels,
+);
 
 // ============================================================================
 // EXTENDED SERVICE METHODS

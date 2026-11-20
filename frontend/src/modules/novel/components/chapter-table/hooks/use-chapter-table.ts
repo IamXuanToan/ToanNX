@@ -32,7 +32,6 @@ export function useChapterTable({ novelId }: { novelId?: string } = {}) {
     query,
     edit: (chapter: ChapterListItem) => router.push(NOVEL_ROUTES.adminChapterDetail(chapter.id)),
     remove: (chapter: ChapterListItem) => remove.mutateAsync(chapter.id),
-    bulkDelete: (chapters: ChapterListItem[]) =>
-      bulkDelete.mutateAsync(chapters.map((c) => c.id)),
+    bulkDelete: (chapters: ChapterListItem[]) => bulkDelete.mutateAsync(chapters.map((c) => c.id)),
   };
 }

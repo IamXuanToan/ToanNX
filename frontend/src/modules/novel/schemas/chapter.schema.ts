@@ -48,9 +48,10 @@ export const CHAPTER_DEFAULTS: ChapterFormValues = {
  */
 export function fromChapter(chapter: ChapterDetail | ChapterListItem): ChapterFormValues {
   return {
-    novelId: "novel" in chapter && typeof chapter.novel === "object" && chapter.novel !== null
-      ? (chapter.novel as { id: string }).id
-      : "",
+    novelId:
+      "novel" in chapter && typeof chapter.novel === "object" && chapter.novel !== null
+        ? (chapter.novel as { id: string }).id
+        : "",
     chapterNumber: chapter.chapterNumber,
     title: chapter.title,
     slug: chapter.slug,

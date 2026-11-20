@@ -78,9 +78,7 @@ export function AuthorTable({
       id: "bio",
       header: t("fields.bio"),
       cell: (author) => (
-        <span className="text-muted-foreground line-clamp-2 text-xs">
-          {author.bio || "—"}
-        </span>
+        <span className="text-muted-foreground line-clamp-2 text-xs">{author.bio || "—"}</span>
       ),
     },
   ];

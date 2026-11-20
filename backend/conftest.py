@@ -23,7 +23,16 @@ def _fast_hasher(settings: Any) -> None:
 @pytest.fixture(autouse=True)
 def _isolated_media(settings: Any, tmp_path: Any) -> None:
     """Mỗi test ghi file vào thư mục tạm, không đụng `backend/media` của dev."""
-    settings.MEDIA_ROOT = str(tmp_path / "media")
+    media_dir = str(tmp_path / "media")
+    settings.MEDIA_ROOT = media_dir
+    settings.MEDIA_URL = "/media/"
+    settings.STORAGES = {
+        **settings.STORAGES,
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "OPTIONS": {"location": media_dir, "base_url": "/media/"},
+        },
+    }
 
 
 @pytest.fixture(autouse=True)

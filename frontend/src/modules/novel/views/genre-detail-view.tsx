@@ -32,7 +32,8 @@ export function GenreDetailView({ id, history }: { id: string; history?: ReactNo
   const query = useGenre(id, canRead);
 
   if (!canRead) return <ForbiddenView />;
-  if (query.isPending || !query.data) return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
+  if (query.isPending || !query.data)
+    return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
   if (query.isError) {
     return (
       <QueryErrorState

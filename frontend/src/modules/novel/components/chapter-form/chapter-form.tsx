@@ -60,7 +60,12 @@ export function ChapterForm({
         <FormSection title={t("sections.general")}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <div className="sm:col-span-1">
-              <FormField control={form.control} name="chapterNumber" label={t("fields.chapterNumber")} required>
+              <FormField
+                control={form.control}
+                name="chapterNumber"
+                label={t("fields.chapterNumber")}
+                required
+              >
                 {(field) => (
                   <NumberInput
                     value={field.value}

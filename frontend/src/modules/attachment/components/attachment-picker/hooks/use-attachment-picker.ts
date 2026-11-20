@@ -1,21 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+
+import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 
 import { useAttachments } from "../../../hooks/use-attachments";
+import { useUploadAttachment } from "../../../hooks/use-upload-attachment";
 import type { Attachment } from "../../../types/attachment.types";
-import { normalizeMediaFormats } from "../../../constants/media-types";
+import { UNFILED_FOLDER, normalizeMediaFormats } from "../../../constants/media-types";
 
 const PICKER_PAGE_SIZE = 12;
 
-/** @returns State chọn ảnh trong Thư viện, không thay URL của form phía sau dialog. */
+/** @returns State chọn ảnh trong Thư viện, hỗ trợ tải lên trực tiếp và chọn ngay tệp vừa tải. */
 export function useAttachmentPicker() {
+  const t = useTranslations("attachment");
+  const errorMessage = useApiErrorMessage();
+  const uploadMutation = useUploadAttachment();
+
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Attachment | null>(null);
   const [kinds, setKinds] = useState<string[]>(["IMAGE"]);
   const [formats, setFormats] = useState<string[]>([]);
   const [folders, setFolders] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgressName, setUploadProgressName] = useState<string | null>(null);
+
   const query = useAttachments({
     search,
     page,
@@ -25,9 +37,11 @@ export function useAttachmentPicker() {
     contentType: formats,
     folder: folders,
   });
+
   // Bỏ lựa chọn đã bị xóa qua quản lý thư mục hoặc không còn trong trang hiện tại.
   if (
     selected &&
+    !isUploading &&
     query.isSuccess &&
     !query.isFetching &&
     !query.isPlaceholderData &&
@@ -35,6 +49,43 @@ export function useAttachmentPicker() {
   ) {
     setSelected(null);
   }
+
+  const upload = async (files: File[]): Promise<Attachment | null> => {
+    if (!files.length || isUploading) return null;
+    const file = files[0];
+    setIsUploading(true);
+    setUploadProgressName(file.name);
+    try {
+      const activeFolder =
+        folders.length === 1 && folders[0] !== UNFILED_FOLDER ? folders[0] : null;
+      const uploaded = await uploadMutation.mutateAsync({
+        file,
+        folderId: activeFolder,
+      });
+
+      if (
+        kinds.length === 1 &&
+        kinds[0] === "IMAGE" &&
+        !uploaded.contentType.startsWith("image/")
+      ) {
+        toast.error(t("imageOnly"));
+        return null;
+      }
+
+      setSelected(uploaded);
+      setPage(1);
+      await query.refetch();
+      toast.success(t("uploaded"));
+      return uploaded;
+    } catch (error) {
+      toast.error(errorMessage(error));
+      return null;
+    } finally {
+      setIsUploading(false);
+      setUploadProgressName(null);
+    }
+  };
+
   return {
     search,
     page,
@@ -45,6 +96,9 @@ export function useAttachmentPicker() {
     kinds,
     formats,
     folders,
+    isUploading,
+    uploadProgressName,
+    upload,
     changeKinds: (values: string[]) => {
       setKinds(values);
       setFormats((current) => normalizeMediaFormats(values, current));

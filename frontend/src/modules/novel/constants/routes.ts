@@ -78,7 +78,10 @@ export const NOVEL_ROUTES = {
    * Trang chi tiết/chỉnh sửa chương truyện
    * @param id - UUID chương
    */
-  adminChapterDetail: (id: string) => ({ pathname: "/admin/chapters/[id]" as const, params: { id } }),
+  adminChapterDetail: (id: string) => ({
+    pathname: "/admin/chapters/[id]" as const,
+    params: { id },
+  }),
 } as const;
 
 /**

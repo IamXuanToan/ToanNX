@@ -25,7 +25,9 @@ export function useChapters(params?: Record<string, unknown>, enabled = true) {
   return useListQuery<Paginated<ChapterListItem>>(
     novelKeys.chapter.list(safeParams),
     (signal) =>
-      chapterService.list(safeParams, signal) as Promise<unknown> as Promise<Paginated<ChapterListItem>>,
+      chapterService.list(safeParams, signal) as Promise<unknown> as Promise<
+        Paginated<ChapterListItem>
+      >,
     { enabled },
   );
 }

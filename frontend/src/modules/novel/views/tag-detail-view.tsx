@@ -32,7 +32,8 @@ export function TagDetailView({ id, history }: { id: string; history?: ReactNode
   const query = useTag(id, canRead);
 
   if (!canRead) return <ForbiddenView />;
-  if (query.isPending || !query.data) return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
+  if (query.isPending || !query.data)
+    return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
   if (query.isError) {
     return (
       <QueryErrorState

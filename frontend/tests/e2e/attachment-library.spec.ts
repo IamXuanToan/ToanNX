@@ -350,8 +350,7 @@ test("bộ chọn avatar chỉ dùng ảnh đã tải lên Thư viện, không n
     await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
     const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện", exact: true });
-    await expect(picker.locator('input[type="file"]')).toHaveCount(0);
-    await expect(picker.getByRole("tab", { name: "Tải lên", exact: true })).toHaveCount(0);
+    await expect(picker.getByRole("button", { name: "Tải tệp lên", exact: true })).toBeVisible();
     await picker.getByRole("searchbox").fill(prefix);
     await picker.getByRole("searchbox").press("Enter");
     await expect(picker.getByRole("button", { name: `Xem ${prefix}.pdf` })).toHaveCount(0);

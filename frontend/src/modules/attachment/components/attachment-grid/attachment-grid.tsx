@@ -17,27 +17,36 @@ export function AttachmentGrid({
   selectedIds,
   onInspect,
   onToggle,
+  onConfirm,
   disabled,
+  className,
 }: {
   files: Attachment[];
   activeId?: string;
   selectedIds?: readonly string[];
   onInspect: (file: Attachment) => void;
   onToggle?: (id: string, selected: boolean) => void;
+  onConfirm?: (file: Attachment) => void;
   disabled?: boolean;
+  className?: string;
 }) {
   const t = useTranslations("attachment");
   return (
     <div
-      className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,8rem),1fr))] gap-3"
+      className={cn(
+        "grid grid-cols-[repeat(auto-fill,minmax(min(100%,9.5rem),1fr))] gap-3 sm:gap-3.5",
+        className,
+      )}
       data-testid="attachment-grid"
     >
       {files.map((file) => (
         <div
           key={file.id}
           className={cn(
-            "bg-card relative min-w-0 overflow-hidden rounded-xl border",
-            activeId === file.id && "border-primary ring-primary ring-1",
+            "bg-card group relative min-w-0 overflow-hidden rounded-xl border transition-all duration-150",
+            activeId === file.id
+              ? "border-primary ring-primary/25 shadow-xs ring-2"
+              : "hover:border-primary/40 hover:shadow-xs",
           )}
         >
           <button
@@ -46,17 +55,18 @@ export function AttachmentGrid({
             aria-label={t("inspect", { name: file.originalName })}
             aria-pressed={activeId === file.id}
             onClick={() => onInspect(file)}
-            className="hover:bg-surface-hover block w-full min-w-0 text-left disabled:opacity-60"
+            onDoubleClick={() => onConfirm?.(file)}
+            className="hover:bg-surface-hover block w-full min-w-0 text-left focus-visible:outline-hidden disabled:opacity-60"
           >
             <AttachmentPreview key={file.id} file={file} />
-            <div className="space-y-2 p-3">
+            <div className="space-y-1.5 p-2.5 sm:p-3">
               <p
-                className="line-clamp-2 min-h-10 text-sm font-medium break-all"
+                className="line-clamp-2 min-h-9 text-xs leading-snug font-medium break-all sm:text-sm"
                 title={file.originalName}
               >
                 {file.originalName}
               </p>
-              <div className="text-muted-foreground flex justify-between gap-2 text-xs">
+              <div className="text-muted-foreground flex justify-between gap-1 text-[11px] sm:text-xs">
                 <span>{file.contentType.split("/")[1]?.toUpperCase()}</span>
                 <span className="shrink-0 tabular-nums">{formatAttachmentSize(file.size)}</span>
               </div>
@@ -72,8 +82,8 @@ export function AttachmentGrid({
               />
             </label>
           ) : activeId === file.id ? (
-            <span className="bg-primary text-primary-foreground pointer-events-none absolute top-2 left-2 flex size-8 items-center justify-center rounded-lg">
-              <Check className="size-4" />
+            <span className="bg-primary text-primary-foreground animate-in zoom-in-75 pointer-events-none absolute top-2 right-2 flex size-6 items-center justify-center rounded-full shadow-xs duration-150">
+              <Check className="size-3.5 stroke-[2.5]" />
             </span>
           ) : null}
         </div>

@@ -32,7 +32,7 @@ test("chọn logo từ Thư viện, xem trước và lưu mã QR", async ({ page
 
   await page.getByRole("button", { name: "Chọn ảnh từ thư viện" }).click();
   const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện" });
-  await expect(picker.locator('input[type="file"]')).toHaveCount(0);
+  await expect(picker.getByRole("button", { name: "Tải tệp lên" })).toBeVisible();
   await picker.getByRole("searchbox").fill(logoName);
   await picker.getByRole("searchbox").press("Enter");
   await picker.getByRole("button", { name: `Xem ${logoName}`, exact: true }).click();
@@ -74,10 +74,5 @@ test("màn mã QR chỉ chọn logo từ Thư viện", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Tải ảnh lên" })).toHaveCount(0);
   await page.getByRole("button", { name: "Chọn ảnh từ thư viện" }).click();
   const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện" });
-  await expect(picker.getByRole("tab", { name: "Tải lên" })).toHaveCount(0);
-  await expect(picker.locator('input[type="file"]')).toHaveCount(0);
-  await expect(picker.getByRole("link", { name: "Mở Thư viện" }).first()).toHaveAttribute(
-    "target",
-    "_blank",
-  );
+  await expect(picker.getByRole("button", { name: "Tải tệp lên" })).toBeVisible();
 });

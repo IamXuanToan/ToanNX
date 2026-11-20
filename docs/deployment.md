@@ -46,7 +46,7 @@ Biến môi trường (Vercel → Settings → Environment Variables):
 | `AUTH_REFRESH_TOKEN_LIFETIME_SECONDS` | `604800` |
 | `CRON_SECRET` | chuỗi ngẫu nhiên; trống thì endpoint dọn dẹp trả 404 |
 | `JOURNAL_RETENTION_DAYS` / `ATTACHMENT_PURGE_DAYS` | `365` / `30` |
-| `SENTRY_DSN` | DSN project Sentry (trống = tắt báo lỗi) |
+| `SENTRY_DSN` | DSN project Sentry (trống = tắt báo lỗi, chi tiết xem [sentry.md](sentry.md)) |
 | `SENTRY_ENVIRONMENT` / `SENTRY_TRACES_SAMPLE_RATE` | `production` / `0` |
 
 Backend luôn đứng sau proxy (Next rewrite / Vercel) và bật `USE_X_FORWARDED_HOST` + `SECURE_PROXY_SSL_HEADER`

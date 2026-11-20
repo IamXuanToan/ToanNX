@@ -38,9 +38,7 @@ export function ChapterTable({
       id: "chapterNumber",
       header: "#",
       sortKey: "chapter_number",
-      cell: (chapter) => (
-        <span className="font-mono font-medium">#{chapter.chapterNumber}</span>
-      ),
+      cell: (chapter) => <span className="font-mono font-medium">#{chapter.chapterNumber}</span>,
     },
     {
       id: "title",

@@ -60,10 +60,7 @@ export function NovelForm({
   const { options: genreOptions } = useGenreOptions();
   const { options: tagOptions } = useTagOptions();
 
-  const authorSelectOptions = [
-    { value: "", label: t("fields.noAuthor") },
-    ...authorOptions,
-  ];
+  const authorSelectOptions = [{ value: "", label: t("fields.noAuthor") }, ...authorOptions];
 
   const statusOptions = [
     { value: "ONGOING", label: tNovel("status.ONGOING") },
@@ -122,7 +119,7 @@ export function NovelForm({
                     />
                     <label
                       htmlFor="isPublished-switch"
-                      className="text-muted-foreground text-sm cursor-pointer select-none"
+                      className="text-muted-foreground cursor-pointer text-sm select-none"
                     >
                       {field.value ? t("fields.published") : t("fields.draft")}
                     </label>
