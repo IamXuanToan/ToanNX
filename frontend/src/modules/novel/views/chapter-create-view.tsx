@@ -8,10 +8,10 @@ import { useTranslations } from "next-intl";
 
 import { useRouter } from "@/i18n/navigation";
 import { usePermission } from "@/modules/auth/hooks/use-permission";
-import { FormPage } from "@/shares/components/common/form-page/form-page";
+import { FormPage } from "@/shares/components/common/form-page";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 
-import { ChapterForm } from "../components/chapter-form/chapter-form";
+import { ChapterForm } from "../components/chapter-form";
 import { NOVEL_ROUTES } from "../constants/routes";
 import { CHAPTER_PERMISSIONS } from "../permissions/chapter-permission";
 

@@ -3,8 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
-import type { ChoiceGroup } from "@/shares/components/common/choice-groups/choice-groups";
-import type { ChoiceItem } from "@/shares/components/common/choice-list/types";
+import type { ChoiceGroup } from "@/shares/components/common/choice-groups";
+import type { ChoiceItem } from "@/shares/components/common/choice-list.types";
 
 import { groupPermissionsByModule } from "../services/permission.service";
 import type { Permission, RoleSummary } from "../types/iam.types";

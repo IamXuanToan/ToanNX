@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  getPageRange,
-  parseJumpPage,
-} from "@/shares/components/common/data-pagination/data-pagination";
+import { getPageRange, parseJumpPage } from "@/shares/components/common/data-pagination";
 
 describe("getPageRange", () => {
   it("không có bản ghi thì 0–0", () => {

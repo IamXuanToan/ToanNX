@@ -14,8 +14,8 @@
 | `hotfix/<ten-ngan>` | `main` | `main` + `develop` | Lỗi khẩn cấp trên production |
 
 - Tên nhánh: chữ thường ASCII, số, dấu gạch ngang; không khoảng trắng, không dấu tiếng Việt.
-  Ví dụ: `feat/short-links-ui`, `fix/page-block-owner`, `ref/module-config`, `release/1.2.0`.
-- Có ticket thì thêm mã sau type: `feat/tnx-12-short-links-ui`.
+  Ví dụ: `feat/utilities-qr-logo`, `fix/page-block-owner`, `ref/module-config`, `release/1.2.0`.
+- Có ticket thì thêm mã sau type: `feat/tnx-12-utilities-qr-logo`.
 - Không force push nhánh dùng chung (`main`, `develop`, `release/*`). Trước khi push: kiểm tra nhánh hiện
   tại và `git pull --rebase` để đồng bộ với remote.
 - Merge vào `develop`: squash merge (một nhánh = một commit đúng chuẩn). Merge `release/*`, `hotfix/*`
@@ -29,17 +29,17 @@ Viết mô tả bằng tiếng Anh, ở dạng mệnh lệnh, không viết hoa 
 
 | Type | Dùng khi | Ví dụ |
 | --- | --- | --- |
-| `feat` | Thêm hành vi hoặc API | `feat(short-links): add public redirects` |
-| `fix` | Sửa lỗi | `fix(custom-pages): protect block ownership` |
+| `feat` | Thêm hành vi hoặc API | `feat(utilities): add public redirects` |
+| `fix` | Sửa lỗi | `fix(utilities): protect page ownership` |
 | `ref` | Đổi cấu trúc, giữ nguyên hành vi | `ref(iam): move permission catalogs` |
 | `docs` | Chỉ sửa tài liệu | `docs(repo): define Git workflow` |
-| `test` | Chỉ thêm hoặc sửa test | `test(short-links): cover slug collisions` |
+| `test` | Chỉ thêm hoặc sửa test | `test(utilities): cover slug collisions` |
 | `perf` | Cải thiện hiệu năng | `perf(pages): prefetch visible blocks` |
 | `style` | Định dạng code, không đổi logic (ruff format, prettier) | `style(frontend): apply prettier` |
 | `build` | Dependency hoặc cách build | `build(frontend): update pnpm lockfile` |
 | `ci` | Pipeline kiểm tra, deploy | `ci(repo): run backend checks` |
 | `chore` | Bảo trì không đổi hành vi | `chore(repo): add Git ignore rules` |
-| `revert` | Hoàn tác commit | `revert: feat(short-links): add public redirects` |
+| `revert` | Hoàn tác commit | `revert: feat(utilities): add public redirects` |
 
 ### Scope
 
@@ -47,7 +47,7 @@ Scope là tên module hoặc khu vực, chữ thường, gạch ngang thay cho g
 
 | Khu vực | Scope |
 | --- | --- |
-| Module backend/frontend | `account`, `iam`, `authentication`, `attachment`, `health`, `custom-pages`, `short-links`, `manage-app` |
+| Module backend/frontend | `account`, `iam`, `authentication`, `attachment`, `health`, `journal`, `novel`, `utilities`, `manage-app` |
 | Hạ tầng chung | `core` (backend `app/core`), `shares` (frontend `src/shares`), `i18n` |
 | Toàn tầng | `backend`, `frontend` |
 | Repo, công cụ, tài liệu chung | `repo`, `deps`, `docs` |

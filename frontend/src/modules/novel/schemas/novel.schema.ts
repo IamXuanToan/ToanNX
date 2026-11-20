@@ -4,7 +4,7 @@
 
 import { z } from "zod";
 
-import type { UploadedFile } from "@/shares/components/common/image-upload/types";
+import type { UploadedFile } from "@/shares/components/common/image-upload.types";
 
 import type { Novel, NovelCreateInput, NovelDetail, NovelStatus } from "../types/novel.types";
 

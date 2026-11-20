@@ -6,10 +6,10 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PermissionGate } from "@/modules/auth/components/permission-gate";
 import { usePermission } from "@/modules/auth/hooks/use-permission";
-import { PageHeader } from "@/shares/components/common/page-header/page-header";
+import { PageHeader } from "@/shares/components/common/page-header";
 import { Button } from "@/shares/components/ui/button";
 
-import { RoleTable } from "../components/role-table/role-table";
+import { RoleTable } from "../components/role-table";
 import { IAM_PERMISSIONS } from "../constants/iam-permissions";
 import { IAM_ROUTES } from "../constants/routes";
 

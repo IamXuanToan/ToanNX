@@ -56,10 +56,10 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 - Quyền hiện có: `account.user.{read,create,update,delete}`, `iam.role.{read,create,update,delete,assign}`,
   `iam.permission.{read,assign}`, `authentication.session.{read,revoke,delete}` (quản trị phiên mọi người dùng),
   `attachment.file.{read,create,update,delete,manage_all}`, `attachment.folder.{read,create,update,delete}`,
-  `journal.entry.read`, `short_links.link.{read,create,update,delete,manage_all}`,
-  `qr_codes.code.{read,create,update,delete,manage_all}`, `custom_pages.path.{read,create,update,delete}` và
-  `custom_pages.page.{read,create,update,delete,manage_all}`.
-  Catalog quyền của từng module đặt tại `app/modules/<module>/permissions/<module>_permission.py`.
+  `journal.entry.read`, `utilities.short_link.{read,create,update,delete,manage_all}`,
+  `utilities.qr_code.{read,create,update,delete,manage_all}`, `utilities.page_path.{read,create,update,delete}` và
+  `utilities.page.{read,create,update,delete,manage_all}`.
+  Catalog quyền của từng module đặt tại `app/<module>/permissions/<module>_permission.py`.
 - Base chuẩn: BE chỉ có `CoreApiView`, `CoreModelViewSet`, `CoreCrudService`, `CoreRepository`; khác thì ghi đè
   thuộc tính trong view/service (xem `AGENTS.md`). Danh sách chỉ phân trang khi gửi `page`/`page_size`.
 - Lịch sử thay đổi: model kế thừa `JournalTracker` tự ghi Journal khi CRUD (cùng transaction); trang Journal lọc
@@ -69,11 +69,11 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 - File vật lý: tệp đã xóa mềm và file mồ côi bị dọn sau `ATTACHMENT_PURGE_DAYS` ngày (giữ dòng dữ liệu).
 - Báo lỗi: Sentry ở BE khi có `SENTRY_DSN`; lỗi trình duyệt gửi về BE.
 - Soạn thảo dùng Tiptap JSON (`TiptapEditor` / `TiptapContent`); không lưu HTML tùy ý.
-- Mã QR là module riêng (`qr_codes`, trang tạo QR URL/văn bản/Wi-Fi/VietQR, PNG lưu ở Attachment). Payload chuyển
-  khoản dùng `napas-qr-python` (gồm CRC); ảnh PNG/SVG dùng `segno`. Logo tùy chọn lấy từ ảnh raster trong
+- Module **Tiện ích** (`utilities`, BE `app/utilities`, FE `modules/utilities`, API `/api/v1/utilities/...`) gộp
+  link rút gọn, mã QR và trang tùy chỉnh (bảng `utilities_*`). Mã QR: URL/văn bản/VietQR, PNG lưu ở Attachment. Payload chuyển khoản dùng `napas-qr-python` (gồm CRC); ảnh PNG/SVG dùng `segno`. Logo tùy chọn lấy từ ảnh raster trong
   Thư viện, ghép bằng Pillow với mức sửa lỗi H. Chèn QR vào
   editor là chèn ảnh PNG của mã đó. Link rút gọn `/s/{slug}`; trang tự tạo `/{đường dẫn}/{slug}` (đường dẫn
-  quản lý ở `custom_pages.path`, `p` và `qr` có sẵn), bản nháp xem trước bằng `?preview=1` khi có quyền.
+  quản lý ở `utilities.page_path`, `p` và `qr` có sẵn), bản nháp xem trước bằng `?preview=1` khi có quyền.
 - Link rút gọn `/s/{slug}` mở trang trung gian HTTP 200: chờ người xem bấm hoặc tự mở đích sau 1–60 giây.
   Có thể đặt mật khẩu và thời điểm hết hạn; link hết hạn hiện trang thông báo. Slug tự sinh là UUID.
   Mật khẩu được băm, không trả mã băm hay URL đích của link khóa ở API công khai.

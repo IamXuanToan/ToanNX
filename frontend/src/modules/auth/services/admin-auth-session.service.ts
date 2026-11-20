@@ -2,11 +2,7 @@ import { apiClient } from "@/shares/lib/api/api-client";
 import { createCrudService } from "@/shares/lib/api/create-crud-service";
 
 import { AUTH_API_ENDPOINTS } from "../constants/api-endpoints";
-import type {
-  AdminSession,
-  AdminSessionFilters,
-  AdminSessionUser,
-} from "../types/admin-session.types";
+import type { AdminSession, AdminSessionFilters, AdminSessionUser } from "../types/admin-session.types";
 
 const crud = createCrudService<AdminSession, AdminSessionFilters>(AUTH_API_ENDPOINTS.adminSessions);
 

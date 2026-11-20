@@ -17,7 +17,7 @@ const FORWARDED_HEADERS = [
  * Gọi Django từ server (route handler, server component) kèm header cần thiết của request gốc:
  * cookie (để BE biết ai đang xem), IP và host gốc (rate limit, URL tuyệt đối).
  *
- * @param path - Path tương đối `/api/v1` (ví dụ `/short_links/resolve/abc`).
+ * @param path - Path tương đối `/api/v1` (ví dụ `/utilities/short-links/resolve/abc`).
  * @param source - Header của request gốc.
  * @param init - Tùy chọn fetch thêm.
  * @returns Response gốc của Django.

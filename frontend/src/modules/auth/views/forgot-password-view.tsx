@@ -2,8 +2,8 @@ import { useTranslations } from "next-intl";
 
 import type { AppPathname } from "@/i18n/routing";
 
-import { AuthShell } from "../components/auth-shell/auth-shell";
-import { ForgotPasswordForm } from "../components/forgot-password-form/forgot-password-form";
+import { AuthShell } from "../components/auth-shell";
+import { ForgotPasswordForm } from "../components/forgot-password-form";
 
 /**
  * Màn hình quên mật khẩu.

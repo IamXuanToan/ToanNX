@@ -17,7 +17,7 @@ test.describe("Bảo vệ route quản trị", () => {
 
   test("cookie gợi ý phiên giả không vượt qua được backend", async ({ page, context, baseURL }) => {
     await context.addCookies([
-      { name: "session_hint", value: "1", url: baseURL ?? "http://localhost:3000" },
+      { name: "session_hint", value: "1", url: baseURL ?? "http://localhost:3001" },
     ]);
     await page.goto("/vi/quan-tri");
     // Proxy cho qua (kiểm tra lạc quan) nhưng backend từ chối → về trang đăng nhập.

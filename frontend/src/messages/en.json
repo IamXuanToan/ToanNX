@@ -377,11 +377,11 @@
       "IAM_PRIVILEGE_ESCALATION": "You cannot grant more privileges than you have.",
       "IAM_SYSTEM_ROLE_PROTECTED": "Only a superuser can edit system roles.",
       "QUOTA_EXCEEDED": "You have reached the maximum allowed.",
-      "SHORT_LINK_EXPIRED": "This link has expired.",
-      "SHORT_LINK_INVALID_PASSWORD": "The link password is incorrect.",
-      "CUSTOM_PAGES_PATH_IN_USE": "This path still has pages and cannot be deleted.",
-      "CUSTOM_PAGES_PATH_INACTIVE": "This path is disabled; new pages cannot be added to it.",
-      "CUSTOM_PAGES_VERSION_CONFLICT": "This page was changed elsewhere. Reload to see the latest version.",
+      "UTILITIES_SHORT_LINK_EXPIRED": "This link has expired.",
+      "UTILITIES_SHORT_LINK_INVALID_PASSWORD": "The link password is incorrect.",
+      "UTILITIES_PAGE_PATH_IN_USE": "This path still has pages and cannot be deleted.",
+      "UTILITIES_PAGE_PATH_INACTIVE": "This path is disabled; new pages cannot be added to it.",
+      "UTILITIES_PAGE_VERSION_CONFLICT": "This page was changed elsewhere. Reload to see the latest version.",
       "NOVEL_NOT_FOUND": "Novel not found.",
       "NOVEL_SLUG_EXISTS": "Novel slug already exists.",
       "NOVEL_FORBIDDEN": "You do not have permission to perform this action.",
@@ -391,22 +391,66 @@
     },
     "generic": {
       "title": "Could not load data",
-      "description": "An error occurred while loading data.",
-      "retry": "Try again"
+      "description": "An error occurred while loading data. Please check your connection and try again.",
+      "retry": "Try again",
+      "backHome": "Back to home",
+      "backPrevious": "Go back"
     },
     "forbidden": {
+      "badge": "403 · FORBIDDEN",
       "title": "Access denied",
-      "description": "Your account is not allowed to access the admin area."
+      "description": "You do not have permission to access this area or resource. Please contact an administrator if you need access.",
+      "backHome": "Back to home",
+      "backPrevious": "Go back",
+      "back": "Go back",
+      "switchAccount": "Sign in with another account",
+      "contactAdmin": "Contact administrator"
     },
     "notFound": {
+      "badge": "404 · NOT FOUND",
       "title": "Page not found",
-      "description": "This link does not exist or has changed.",
-      "backHome": "Back to home"
+      "description": "The page you are looking for does not exist, was removed, or the URL has changed.",
+      "rootTitle": "Page not found",
+      "rootDescription": "The requested URL was not found.",
+      "backHome": "Back to home",
+      "backPrevious": "Go back",
+      "helpfulLinks": "Helpful links",
+      "home": "Home",
+      "library": "Library",
+      "signIn": "Sign in"
+    },
+    "serverError": {
+      "badge": "500 · SERVER ERROR",
+      "title": "Server error",
+      "description": "The system encountered an unexpected issue while processing your request. The issue has been recorded for review.",
+      "retry": "Try again",
+      "backHome": "Back to home",
+      "technicalDetails": "Technical details",
+      "devOnly": "Development only",
+      "errorDigest": "Issue code (Digest)",
+      "copyDigest": "Copy code",
+      "copiedDigest": "Copied"
+    },
+    "network": {
+      "title": "Connection lost",
+      "description": "Cannot connect to the server. Please check your internet connection and try again.",
+      "retry": "Reconnect"
     },
     "recordNotFound": {
       "title": "Record not found",
-      "description": "This record was deleted or the link is wrong.",
-      "back": "Back to list"
+      "description": "This record was deleted, does not exist, or you lack access permission.",
+      "back": "Back to list",
+      "backPrevious": "Go back"
+    },
+    "global": {
+      "badge": "500 · SYSTEM ERROR",
+      "title": "System Error Occurred",
+      "documentTitle": "System Error · TOANNX",
+      "subtitle": "Critical issue in root layout",
+      "description": "The system encountered an unexpected issue while rendering the root layout. Please retry or reload the page.",
+      "retry": "Try again",
+      "reload": "Reload page",
+      "errorDigest": "Issue code (Digest)"
     }
   }
 }

@@ -19,7 +19,7 @@ type Query = NonNullable<RequestOptions["query"]>;
  *
  * ```ts
  * export const shortLinkService = {
- *   ...createCrudService<ShortLink, ShortLinkFilters, ShortLinkInput>(SHORT_LINKS_API_ENDPOINTS.links),
+ *   ...createCrudService<ShortLink, ShortLinkFilters, ShortLinkInput>(UTILITIES_API_ENDPOINTS.shortLinks),
  *   // method riêng của tài nguyên
  * };
  * ```

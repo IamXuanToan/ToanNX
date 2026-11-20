@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 
-import { UserProfile } from "../components/user-profile/user-profile";
+import { UserProfile } from "../components/user-profile";
 import { USER_PERMISSIONS } from "../permissions/user-permission";
 
 /**

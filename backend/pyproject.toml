@@ -66,7 +66,7 @@ warn_unused_ignores = true
 exclude = ["migrations/", "tests/", "conftest.py", "manage.py"]
 
 [[tool.mypy.overrides]]
-module = ["environ.*", "factory.*"]
+module = ["environ.*", "factory.*", "storages.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

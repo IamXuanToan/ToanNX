@@ -2,8 +2,8 @@ import { useTranslations } from "next-intl";
 
 import type { AppPathname } from "@/i18n/routing";
 
-import { AuthShell } from "../components/auth-shell/auth-shell";
-import { ResetPasswordForm } from "../components/reset-password-form/reset-password-form";
+import { AuthShell } from "../components/auth-shell";
+import { ResetPasswordForm } from "../components/reset-password-form";
 
 /**
  * Màn hình đặt lại mật khẩu mới.

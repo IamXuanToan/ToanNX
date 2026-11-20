@@ -1,15 +1,12 @@
-import { CUSTOM_PAGES_API_ENDPOINTS } from "@/modules/custom-pages/constants/api-endpoints";
-import { PageDetailView } from "@/modules/custom-pages/views/page-detail-view";
 import { RecordHistoryView } from "@/modules/journal/views/record-history-view";
-import { QrCodeTiptapPlugin } from "@/modules/qr-codes/views/qr-code-tiptap-plugin";
-import { ShortLinkTiptapPlugin } from "@/modules/short-links/views/short-link-tiptap-plugin";
+import { UTILITIES_API_ENDPOINTS } from "@/modules/utilities/constants/api-endpoints";
+import { PageDetailView } from "@/modules/utilities/views/page-detail-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
-export const generateMetadata = createPageMetadata({ title: "customPages.nav.pages" });
+export const generateMetadata = createPageMetadata({ title: "utilities.nav.pages" });
 
 /**
- * Trang soạn (Custom Pages) ghép plugin editor của module cùng cấp (Mã QR, nút link rút gọn) và lịch sử
- * thay đổi (Journal) qua slot — các module không import lẫn nhau.
+ * Trang soạn trang tùy chỉnh (module Tiện ích) + lịch sử thay đổi (Journal) qua slot `history`.
  *
  * @param props - Tham số route.
  * @returns PageDetailView.
@@ -21,16 +18,10 @@ export default async function CustomPageDetailPage({
   return (
     <PageDetailView
       id={id}
-      editorPlugins={
-        <>
-          <QrCodeTiptapPlugin />
-          <ShortLinkTiptapPlugin />
-        </>
-      }
       history={
         <RecordHistoryView
-          path={`${CUSTOM_PAGES_API_ENDPOINTS.pages}/${id}/history`}
-          fieldPrefix="customPages.pages.fields"
+          path={`${UTILITIES_API_ENDPOINTS.pages}/${id}/history`}
+          fieldPrefix="utilities.customPages.pages.fields"
         />
       }
     />

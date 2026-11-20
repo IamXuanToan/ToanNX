@@ -6,8 +6,8 @@
 
 "use client";
 
-import { NovelDetail } from "../components/novel-detail/novel-detail";
-import { NovelGuard } from "../components/novel-guard/novel-guard";
+import { NovelDetail } from "../components/novel-detail";
+import { NovelGuard } from "../components/novel-guard";
 
 /**
  * Giao diện hiển thị chi tiết tiểu thuyết và danh sách chương.

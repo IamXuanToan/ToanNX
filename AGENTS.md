@@ -15,8 +15,8 @@ Tài liệu chi tiết: [docs/architecture.md](docs/architecture.md), [docs/auth
 ## Thêm module mới (ví dụ `links`) — chỉ khai báo theo base
 
 Backend:
-1. `uv run python manage.py startapp links app/modules/links`; `apps.py` kế thừa `CoreModuleConfig`
-   (`default = True`, `name = "app.modules.links"`, `label = "links"` = mã module).
+1. `uv run python manage.py startapp links app/links`; `apps.py` kế thừa `CoreModuleConfig`
+   (`default = True`, `name = "app.links"`, `label = "links"` = mã module).
 2. `permissions/<model>_permission.py` (PermissionCatalog cho từng model riêng biệt, mỗi model 1 file, không gộp chung; mỗi quyền có name + description; mã dạng `<module>.<resource>.<action>`),
    `constants/<module>_error_code.py` (StrEnum mã lỗi riêng, thêm bản dịch FE — test bắt nếu thiếu), `module.py`
    (`ModuleDescriptor(..., permissions=(*ModelAPermission.all(), *ModelBPermission.all()), dependencies=..., cleanup_tasks=...)`).
@@ -61,5 +61,9 @@ Frontend:
    `journal/constants/journal-field-prefixes.ts`. Lỗi tải bản ghi dùng `QueryErrorState`.
 5. Module cùng cấp không import nhau: page ghép qua slot (`extensions`, `history`, `editorPlugins`).
    Lịch sử thay đổi: page truyền `<RecordHistoryView path=".../{id}/history" fieldPrefix="links.fields" />`.
+6. Quy chuẩn UI & Tối ưu:
+   - Hiển thị ảnh bắt buộc dùng `<Image />` từ `next/image` (không dùng thẻ `<img>` trần).
+   - Mọi UI primitive (`Button`, `Checkbox`, `Label`, `Input`, `Dialog`, `Card`...) bắt buộc dùng từ `@/shares/components/ui/` (nếu thiếu thì tải bằng `pnpm dlx shadcn@latest add <name>`, không tự chế; không bọc button/checkbox vào thẻ `<label>`).
+   - Tên tệp đính kèm (`original_name` / `alt_text`) phải cho phép người dùng đổi tên và cấu hình alt text.
 
 Không cần sửa core hay IAM.

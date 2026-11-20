@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 
-import { RoleProfile } from "../components/role-profile/role-profile";
+import { RoleProfile } from "../components/role-profile";
 import { IAM_PERMISSIONS } from "../constants/iam-permissions";
 
 /**

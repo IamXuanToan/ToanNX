@@ -9,11 +9,11 @@ import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { usePermission } from "@/modules/auth/hooks/use-permission";
-import { PageHeader } from "@/shares/components/common/page-header/page-header";
+import { PageHeader } from "@/shares/components/common/page-header";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { Button } from "@/shares/components/ui/button";
 
-import { GenreTable } from "../components/genre-table/genre-table";
+import { GenreTable } from "../components/genre-table";
 import { NOVEL_ROUTES } from "../constants/routes";
 import { GENRE_PERMISSIONS } from "../permissions/genre-permission";
 

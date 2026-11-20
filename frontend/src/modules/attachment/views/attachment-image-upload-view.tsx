@@ -4,7 +4,7 @@ import type { ComponentProps } from "react";
 
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 
-import { AttachmentImageUpload } from "../components/attachment-image-upload/attachment-image-upload";
+import { AttachmentImageUpload } from "../components/attachment-image-upload";
 import { ATTACHMENT_FOLDER_PERMISSIONS } from "../permissions/attachment-folder-permission";
 import { ATTACHMENT_PERMISSIONS } from "../permissions/attachment-permission";
 

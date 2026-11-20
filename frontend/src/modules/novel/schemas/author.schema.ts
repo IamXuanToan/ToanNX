@@ -4,7 +4,7 @@
 
 import { z } from "zod";
 
-import type { UploadedFile } from "@/shares/components/common/image-upload/types";
+import type { UploadedFile } from "@/shares/components/common/image-upload.types";
 
 import type { Author, AuthorCreateInput } from "../types/author.types";
 

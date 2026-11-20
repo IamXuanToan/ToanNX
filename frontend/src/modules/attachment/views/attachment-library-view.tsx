@@ -3,7 +3,7 @@
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 
-import { AttachmentLibrary } from "../components/attachment-library/attachment-library";
+import { AttachmentLibrary } from "../components/attachment-library";
 import { ATTACHMENT_FOLDER_PERMISSIONS } from "../permissions/attachment-folder-permission";
 import { ATTACHMENT_PERMISSIONS } from "../permissions/attachment-permission";
 

@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ProfileDialog } from "@/modules/auth/components/profile-dialog/profile-dialog";
+import { ProfileDialog } from "@/modules/auth/components/profile-dialog";
 import type { AuthRole, AuthUser } from "@/modules/auth/types/auth.types";
 
 const mockUpdateAsync = vi.fn().mockResolvedValue({});

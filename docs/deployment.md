@@ -36,9 +36,7 @@ Biến môi trường (Vercel → Settings → Environment Variables):
 | --- | --- |
 | `DJANGO_DEBUG` | `False` |
 | `DJANGO_SECRET_KEY` | chuỗi ngẫu nhiên ≥ 50 ký tự; secret chung (Django, ký JWT, HMAC refresh token) |
-| `DB_NAME` / `DB_USER` / `DB_PASSWORD` | thông tin database Neon |
-| `DB_HOST` / `DB_PORT` | host pooled (`...-pooler...`) / `5432` |
-| `DB_SSLMODE` | `require` |
+| `DATABASE_URL` | PostgreSQL connection URL (Neon host pooled `...-pooler...` với `sslmode=require&channel_binding=require` hoặc direct host) |
 | `DB_CONN_MAX_AGE` | `0` (serverless + pooler) |
 | `DJANGO_ALLOWED_HOSTS` | `toannx.com,api.toannx.com,<project>.vercel.app` (gồm cả domain frontend, xem dưới) |
 | `CSRF_TRUSTED_ORIGINS` | `https://toannx.com` |
@@ -61,10 +59,10 @@ promote deployment:
 
 ```bash
 cd backend
-DB_HOST=<neon-direct-host> DB_NAME=toannx DB_USER=... DB_PASSWORD=... DB_SSLMODE=require DJANGO_SECRET_KEY=x \
+DATABASE_URL="postgresql://user:password@<neon-direct-host>:5432/toannx?sslmode=require&channel_binding=require" DJANGO_SECRET_KEY=x \
   uv run python manage.py migrate --plan     # xem trước
-DB_HOST=... uv run python manage.py migrate          # áp dụng + đồng bộ quyền (cùng bộ biến DB_*)
-DB_HOST=... uv run python manage.py createsuperuser
+DATABASE_URL=... uv run python manage.py migrate          # áp dụng + đồng bộ quyền (dùng direct URL)
+DATABASE_URL=... uv run python manage.py createsuperuser
 ```
 
 Dùng **direct** connection (không pooler) cho migration. Migration phải tương thích ngược với bản đang chạy

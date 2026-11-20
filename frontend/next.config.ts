@@ -7,7 +7,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
  * Origin của Django API. Chỉ dùng phía server (rewrite), không lộ ra bundle client.
  * Frontend gọi `/api/v1/*` cùng origin → cookie phiên là cookie host-only của toannx.com.
  */
-const backendOrigin = process.env.BACKEND_ORIGIN ?? "http://localhost:8000";
+const backendOrigin = process.env.BACKEND_ORIGIN ?? "http://localhost:8001";
 const isDev = process.env.NODE_ENV === "development";
 const isHttps = (process.env.NEXT_PUBLIC_SITE_URL ?? "").startsWith("https://");
 
@@ -46,6 +46,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "**.r2.dev",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
       },
     ],
   },

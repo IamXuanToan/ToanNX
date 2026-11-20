@@ -15,13 +15,13 @@ uv run pytest -q
 | --- | --- |
 | `backend/conftest.py` | `client`, `csrf_client` (kiểm tra CSRF thật), `login` (đăng nhập qua API), `user/staff/superuser`, `staff_with(*perms)` |
 | `app/core/tests/base/base_api_test_case.py` | `BaseApiTestCase`: `assert_success`, `assert_error`, `assert_paginated`, `assert_unauthorized`, `assert_forbidden`, `assert_no_sensitive_data` |
-| `app/modules/iam/tests/factories/` | `user_factory.py`, `staff_factory.py`, `superuser_factory.py`, `role_factory.py` |
-| `app/modules/iam/tests/helpers/permission_helper.py` | `grant(user, *permissions)` |
-| `modules/novel/tests/` | Mỗi endpoint một file riêng (`test_<resource>_<action>_api.py`), bao phủ full/min data, validation, response, 401, 403, owner |
-| `modules/attachment/tests/` | Mỗi endpoint một file test riêng biệt; upload, nhận diện chữ ký file, dung lượng, quyền, xóa mềm, thư mục |
-| `modules/authentication/` | Mỗi endpoint một file test riêng: `test_login`, `test_csrf`, `test_me`, `test_refresh`, `test_logout`, `test_password_reset_*`, `test_session_*`, `test_admin_session_*` |
-| `modules/account/` | Mỗi endpoint một file test riêng (`test_user_*_api.py`), `test_account_auth_backend` |
-| `modules/iam/` | Mỗi endpoint một file test riêng (`test_role_*_api.py`, `test_user_role_*_api.py`), permission checker/rules |
+| `app/iam/tests/factories/` | `user_factory.py`, `staff_factory.py`, `superuser_factory.py`, `role_factory.py` |
+| `app/iam/tests/helpers/permission_helper.py` | `grant(user, *permissions)` |
+| `app/novel/tests/` | Mỗi endpoint một file riêng (`test_<resource>_<action>_api.py`), bao phủ full/min data, validation, response, 401, 403, owner |
+| `app/attachment/tests/` | Mỗi endpoint một file test riêng biệt; upload, nhận diện chữ ký file, dung lượng, quyền, xóa mềm, thư mục |
+| `app/authentication/tests/` | Mỗi endpoint một file test riêng: `test_login`, `test_csrf`, `test_me`, `test_refresh`, `test_logout`, `test_password_reset_*`, `test_session_*`, `test_admin_session_*` |
+| `app/account/tests/` | Mỗi endpoint một file test riêng (`test_user_*_api.py`), `test_account_auth_backend` |
+| `app/iam/tests/` | Mỗi endpoint một file test riêng (`test_role_*_api.py`, `test_user_role_*_api.py`), permission checker/rules |
 | `core/` | `test_user_context`, `test_responses` (request id, 404/405, readiness), `test_core_repository` (audit, 409, soft delete), `test_module_registry`, `test_settings`, `test_openapi_schema` (schema hợp lệ, không cảnh báo, đúng envelope/security), `test_module_conventions` (CoreModuleConfig, mã module = label, mọi view có kiểm tra module) |
 
 ### Chuẩn kiểm thử API từng endpoint (1 endpoint = 1 file test)

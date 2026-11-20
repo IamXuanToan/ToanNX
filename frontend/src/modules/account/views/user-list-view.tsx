@@ -7,10 +7,10 @@ import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { PermissionGate } from "@/modules/auth/components/permission-gate";
 import { usePermission } from "@/modules/auth/hooks/use-permission";
-import { PageHeader } from "@/shares/components/common/page-header/page-header";
+import { PageHeader } from "@/shares/components/common/page-header";
 import { Button } from "@/shares/components/ui/button";
 
-import { UserTable } from "../components/user-table/user-table";
+import { UserTable } from "../components/user-table";
 import { USER_PERMISSIONS } from "../permissions/user-permission";
 import { ACCOUNT_ROUTES } from "../constants/routes";
 

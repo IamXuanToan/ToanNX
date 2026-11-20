@@ -17,17 +17,17 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import URLPattern, URLResolver, get_resolver
 from django.utils import timezone
 
+from app.account.tests.factories.user_factory import UserFactory
+from app.attachment.services.attachment_folder_service import AttachmentFolderService
+from app.attachment.services.attachment_service import AttachmentService
+from app.authentication.models.auth_session import AuthSession
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.modules.account.tests.factories.user_factory import UserFactory
-from app.modules.attachment.services.attachment_folder_service import AttachmentFolderService
-from app.modules.attachment.services.attachment_service import AttachmentService
-from app.modules.authentication.models.auth_session import AuthSession
-from app.modules.custom_pages.models.page_path import PagePath
-from app.modules.custom_pages.services.page_service import PageService
-from app.modules.iam.models.permission import Permission
-from app.modules.iam.tests.factories.role_factory import RoleFactory
-from app.modules.qr_codes.services.qr_code_service import QrCodeService
-from app.modules.short_links.services.short_link_service import ShortLinkService
+from app.iam.models.permission import Permission
+from app.iam.tests.factories.role_factory import RoleFactory
+from app.utilities.models.page_path import PagePath
+from app.utilities.services.page_service import PageService
+from app.utilities.services.qr_code_service import QrCodeService
+from app.utilities.services.short_link_service import ShortLinkService
 
 pytestmark = pytest.mark.django_db
 
@@ -99,7 +99,7 @@ def _attachments(owner: Any, count: int) -> None:
 
 
 def _novels(owner: Any, count: int) -> None:
-    from app.modules.novel.services.novel_service import NovelService
+    from app.novel.services.novel_service import NovelService
 
     service = NovelService()
     for _ in range(count):
@@ -108,8 +108,8 @@ def _novels(owner: Any, count: int) -> None:
 
 
 def _chapters(owner: Any, count: int) -> None:
-    from app.modules.novel.models.novel import Novel
-    from app.modules.novel.services.chapter_service import ChapterService
+    from app.novel.models.novel import Novel
+    from app.novel.services.chapter_service import ChapterService
 
     novel, _ = Novel.objects.get_or_create(
         slug="truyen-test-ch", defaults={"title": "Truyen Test", "owner": owner}
@@ -129,7 +129,7 @@ def _chapters(owner: Any, count: int) -> None:
 
 
 def _authors(owner: Any, count: int) -> None:
-    from app.modules.novel.services.author_service import AuthorService
+    from app.novel.services.author_service import AuthorService
 
     service = AuthorService()
     for _ in range(count):
@@ -138,7 +138,7 @@ def _authors(owner: Any, count: int) -> None:
 
 
 def _genres(owner: Any, count: int) -> None:
-    from app.modules.novel.services.genre_service import GenreService
+    from app.novel.services.genre_service import GenreService
 
     service = GenreService()
     for _ in range(count):
@@ -147,7 +147,7 @@ def _genres(owner: Any, count: int) -> None:
 
 
 def _tags(owner: Any, count: int) -> None:
-    from app.modules.novel.services.tag_service import TagService
+    from app.novel.services.tag_service import TagService
 
     service = TagService()
     for _ in range(count):
@@ -158,11 +158,11 @@ def _tags(owner: Any, count: int) -> None:
 CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/account/users", lambda owner, n: UserFactory.create_batch(n)),
     ("/api/v1/iam/roles", lambda owner, n: RoleFactory.create_batch(n)),
-    ("/api/v1/short_links/links", _short_links),
+    ("/api/v1/utilities/short-links", _short_links),
     ("/api/v1/journal/entries", lambda owner, n: RoleFactory.create_batch(n)),
-    ("/api/v1/custom_pages/pages", _pages),
-    ("/api/v1/custom_pages/paths", lambda owner, n: None),
-    ("/api/v1/qr_codes/codes", _qr_codes),
+    ("/api/v1/utilities/pages", _pages),
+    ("/api/v1/utilities/page-paths", lambda owner, n: None),
+    ("/api/v1/utilities/qr-codes", _qr_codes),
     ("/api/v1/auth/admin-sessions", _sessions),
     ("/api/v1/iam/permissions", _permissions),
     ("/api/v1/attachments/folders", _folders),

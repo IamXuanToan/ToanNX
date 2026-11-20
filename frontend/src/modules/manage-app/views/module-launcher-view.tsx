@@ -1,4 +1,4 @@
-import { ModuleLauncher } from "../components/module-launcher/module-launcher";
+import { ModuleLauncher } from "../components/module-launcher";
 
 /**
  * Màn chọn module (`/admin`).

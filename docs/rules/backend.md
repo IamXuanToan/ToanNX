@@ -29,7 +29,7 @@ url → view (+ @require_permission, @validate_request | action_permissions) →
 ## 2. Cấu trúc module
 
 ```
-app/modules/<module>/
+app/<module>/
   apps.py  module.py  urls.py  signals.py (nếu có)
   permissions/<model>_permission.py         # Mỗi model 1 file permission riêng, kế thừa PermissionCatalog có name + description
   models/<model>.py  models/__init__.py     # __init__ import model để Django nạp
@@ -53,22 +53,22 @@ app/modules/<module>/
   migrations/
 ```
 
-Tạo module: `uv run python manage.py startapp <m> app/modules/<m>` rồi tổ chức như trên.
+Tạo module: `uv run python manage.py startapp <m> app/<m>` rồi tổ chức như trên.
 
 ### 2.1 Khai báo module (mã module chỉ viết **một lần**)
 
 ```python
-# app/modules/custom_pages/apps.py
-class CustomPagesConfig(CoreModuleConfig):
-    """App Custom Pages."""
+# app/utilities/apps.py
+class UtilitiesConfig(CoreModuleConfig):
+    """App Tiện ích."""
 
     default = True                      # bắt buộc (Django chọn đúng config trong apps.py)
-    name = "app.modules.custom_pages"
-    label = "custom_pages"              # = MODULE.code
-    verbose_name = "Custom Pages"
+    name = "app.utilities"
+    label = "utilities"                 # = MODULE.code
+    verbose_name = "Utilities"
 
-# app/modules/custom_pages/module.py
-MODULE = ModuleDescriptor(code="custom_pages", ..., permissions=CustomPagesPermission.all())
+# app/utilities/module.py
+MODULE = ModuleDescriptor(code="utilities", ..., permissions=(*ShortLinkPermission.all(), *PagePermission.all()))
 ```
 
 - `apps.py` kế thừa `CoreModuleConfig` (không dùng `AppConfig` trực tiếp): tự nạp `module.MODULE`,
@@ -77,7 +77,7 @@ MODULE = ModuleDescriptor(code="custom_pages", ..., permissions=CustomPagesPermi
   OpenAPI extension) thì override `ready()` và gọi `super().ready()` trước.
 - Module đã cài luôn hoạt động: **không có** bảng cấu hình module, cờ bật/tắt runtime hay icon ở backend.
   Cách hiển thị module (nhóm, icon, thứ tự) do frontend khai tĩnh (`modules/manage-app`).
-- `app/core/tests/test_module_conventions.py` kiểm tra: mọi app trong `app/modules` dùng `CoreModuleConfig`,
+- `app/core/tests/test_module_conventions.py` kiểm tra: mọi app trong `app/` dùng `CoreModuleConfig`,
   đã đăng ký đúng mã, và mọi view của module kế thừa `CoreApiView`/`CoreModelViewSet`.
 
 ## 3. Core (`app/core`) — base duy nhất, module chỉ khai báo
@@ -98,7 +98,7 @@ MODULE = ModuleDescriptor(code="custom_pages", ..., permissions=CustomPagesPermi
 | `utils/text.py` | Bỏ dấu ở Python: `to_ascii`, `ascii_slug` (thư viện `anyascii`). **Không tự viết bảng bỏ dấu**; tìm kiếm dùng `unaccent` của PostgreSQL |
 | `schemas/*`, `responses/*`, `exceptions/*`, `registry/*`, `utils/{url,slug}.py` | Envelope OpenAPI/response, lỗi có mã, module registry, URL tuyệt đối/slug |
 
-`app/core` **không import** `app/modules/*` (trừ `TYPE_CHECKING`). Core nối với module qua setting:
+`app/core` **không import** các app nghiệp vụ khác (trừ `TYPE_CHECKING`). Core nối với module qua setting:
 `DEFAULT_PERMISSION_CLASSES` (IAM), `DEFAULT_THROTTLE_CLASSES` (bucket PostgreSQL), `CORE_CHANGE_RECORDER`
 (journal), `AUTHENTICATION_BACKENDS` (`User.has_perm` hỏi IAM).
 
@@ -148,7 +148,7 @@ class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
     bulk_update_serializer_class = ShortLinkBulkUpdateValidateSerializer   # POST …/bulk-update
     bulk_delete_enabled = True                                             # POST …/bulk-delete
     history_enabled = True                                                 # GET …/{id}/history
-    action_rate_limits = {"create": "short_links.create"}                  # settings.RATE_LIMITS
+    action_rate_limits = {"create": "utilities.short_link.create"}        # settings.RATE_LIMITS
     action_permissions = {
         "list": permission_rule(P.READ), "retrieve": permission_rule(P.READ),
         "create": permission_rule(P.CREATE), "partial_update": permission_rule(P.UPDATE),
@@ -264,8 +264,8 @@ class UserRoleView(CoreApiView):
 ## 11. Lỗi, log, bảo mật
 
 - Raise `ValidationError`/`AuthorizationError`/`NotFoundError`/`ConflictError`/`BusinessRuleError`... kèm mã lỗi.
-  Core chỉ giữ mã chung (`ErrorCode`); mã riêng nằm ở `app/modules/<m>/constants/<m>_error_code.py` (StrEnum,
-  tiền tố theo module: `ACCOUNT_*`, `IAM_*`, `CUSTOM_PAGES_*`…). `core/tests/test_error_codes.py` kiểm mã không trùng
+  Core chỉ giữ mã chung (`ErrorCode`); mã riêng nằm ở `app/<m>/constants/<m>_error_code.py` (StrEnum,
+  tiền tố theo module: `ACCOUNT_*`, `IAM_*`, `UTILITIES_*`…). `core/tests/test_error_codes.py` kiểm mã không trùng
   và FE có bản dịch vi/en cho mọi mã.
 - Quy tắc kiểm tra riêng của module đặt trong module (`account/validators/password_validator.py`,
   `iam/constants/role_code.py`); `CoreValidator` chỉ giữ định dạng dùng chung của core.
@@ -276,7 +276,7 @@ class UserRoleView(CoreApiView):
 ## 12. Test
 
 - pytest + pytest-django trên PostgreSQL (`test_toannx`). Fixture chung ở `backend/conftest.py`.
-- Base assertion: `app/core/tests/base/base_api_test_case.py`. Factory/helper IAM: `app/modules/iam/tests/`.
+- Base assertion: `app/core/tests/base/base_api_test_case.py`. Factory/helper IAM: `app/iam/tests/`.
 - **Nguyên tắc tổ chức test: Mỗi endpoint một file test riêng biệt** (`test_<resource>_<action>_api.py`).
   - Tuyệt đối **không gộp chung** toàn bộ action CRUD của một model vào một file `test_<model>_api.py`.
   - Tuyệt đối **không tách riêng** file kiểm tra quyền `test_<model>_permission.py`: kiểm tra phân quyền (401, 403, owner) là một phần của contract của endpoint đó và bắt buộc phải nằm trực tiếp trong file test của chính endpoint đó.

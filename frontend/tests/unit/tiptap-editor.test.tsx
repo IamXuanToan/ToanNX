@@ -5,10 +5,10 @@ import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import messages from "@/messages/vi.json";
-import { TiptapContent } from "@/shares/components/common/tiptap-content/tiptap-content";
-import { useTiptapEditor } from "@/shares/components/common/tiptap-editor/hooks/use-tiptap-editor";
-import { isAllowedLink } from "@/shares/components/common/tiptap-editor/hooks/use-tiptap-toolbar";
-import { TiptapEditor } from "@/shares/components/common/tiptap-editor/tiptap-editor";
+import { TiptapContent } from "@/shares/components/common/tiptap-content";
+import { useTiptapEditor } from "@/shares/components/common/hooks/use-tiptap-editor";
+import { isAllowedLink } from "@/shares/components/common/hooks/use-tiptap-toolbar";
+import { TiptapEditor } from "@/shares/components/common/tiptap-editor";
 
 afterEach(cleanup);
 

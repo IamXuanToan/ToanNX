@@ -3,10 +3,10 @@
 import { useTranslations } from "next-intl";
 
 import { usePermission } from "@/modules/auth/hooks/use-permission";
-import { FormPage } from "@/shares/components/common/form-page/form-page";
+import { FormPage } from "@/shares/components/common/form-page";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 
-import { RoleCreateForm } from "../components/role-create-form/role-create-form";
+import { RoleCreateForm } from "../components/role-create-form";
 import { IAM_PERMISSIONS } from "../constants/iam-permissions";
 
 /**

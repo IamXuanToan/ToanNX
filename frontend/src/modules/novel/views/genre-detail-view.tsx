@@ -8,12 +8,12 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 import { usePermission } from "@/modules/auth/hooks/use-permission";
-import { FormPage } from "@/shares/components/common/form-page/form-page";
+import { FormPage } from "@/shares/components/common/form-page";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
-import { GenreForm } from "../components/genre-form/genre-form";
+import { GenreForm } from "../components/genre-form";
 import { NOVEL_ROUTES } from "../constants/routes";
 import { useGenre } from "../hooks/use-genre";
 import { GENRE_PERMISSIONS } from "../permissions/genre-permission";

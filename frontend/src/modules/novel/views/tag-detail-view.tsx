@@ -8,12 +8,12 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 import { usePermission } from "@/modules/auth/hooks/use-permission";
-import { FormPage } from "@/shares/components/common/form-page/form-page";
+import { FormPage } from "@/shares/components/common/form-page";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
-import { TagForm } from "../components/tag-form/tag-form";
+import { TagForm } from "../components/tag-form";
 import { NOVEL_ROUTES } from "../constants/routes";
 import { useTag } from "../hooks/use-tag";
 import { TAG_PERMISSIONS } from "../permissions/tag-permission";

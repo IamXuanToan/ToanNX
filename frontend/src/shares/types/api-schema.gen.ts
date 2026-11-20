@@ -613,192 +613,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/custom_pages/pages": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["custom_pages_pages_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["custom_pages_pages_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/custom_pages/pages/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["custom_pages_pages_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Xóa bản ghi (204 không body). */
-    delete: operations["custom_pages_pages_destroy"];
-    options?: never;
-    head?: never;
-    /** @description Cập nhật một phần (PATCH). */
-    patch: operations["custom_pages_pages_partial_update"];
-    trace?: never;
-  };
-  "/api/v1/custom_pages/pages/{id}/duplicate": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Nhân bản trang thành bản nháp của người thực hiện. */
-    post: operations["custom_pages_pages_duplicate_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/custom_pages/pages/{id}/history": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
-    get: operations["custom_pages_pages_history_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/custom_pages/pages/bulk-delete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["custom_pages_pages_bulk_delete_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/custom_pages/pages/bulk-update": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["custom_pages_pages_bulk_update_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/custom_pages/paths": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["custom_pages_paths_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["custom_pages_paths_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/custom_pages/paths/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["custom_pages_paths_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Xóa bản ghi (204 không body). */
-    delete: operations["custom_pages_paths_destroy"];
-    options?: never;
-    head?: never;
-    /** @description Cập nhật một phần (PATCH). */
-    patch: operations["custom_pages_paths_partial_update"];
-    trace?: never;
-  };
-  "/api/v1/custom_pages/paths/{id}/history": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
-    get: operations["custom_pages_paths_history_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/custom_pages/public/{segment}/{slug}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * @description Dữ liệu trang công khai (hoặc bản nháp cho người có quyền).
-     *
-     *     Args:
-     *         request: Request.
-     *         segment: Đường dẫn giữa.
-     *         slug: Slug trang.
-     *
-     *     Returns:
-     *         Trang đã lọc nội dung.
-     */
-    get: operations["custom_pages_public_retrieve"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/api/v1/health": {
     parameters: {
       query?: never;
@@ -1339,7 +1153,20 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** @description Lấy nội dung chương đọc theo slug truyện và số chương. */
+    /**
+     * @description Lấy nội dung chương đọc theo slug truyện và số chương.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *         novel_slug: Slug định danh tiểu thuyết.
+     *         chapter_number: Số thứ tự chương cần đọc.
+     *
+     *     Returns:
+     *         CoreResponse: Chi tiết nội dung chương kèm điều hướng chương kế bên.
+     *
+     *     Raises:
+     *         NotFoundError: Nếu truyện hoặc chương không tồn tại hoặc chưa xuất bản.
+     */
     get: operations["novel_client_chapters_retrieve"];
     put?: never;
     post?: never;
@@ -1356,7 +1183,19 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** @description Lấy chi tiết truyện theo slug cùng lịch sử đọc của người dùng. */
+    /**
+     * @description Lấy chi tiết truyện theo slug cùng lịch sử đọc của người dùng.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *         slug: Chuỗi slug định danh tiểu thuyết trên URL.
+     *
+     *     Returns:
+     *         CoreResponse: Chi tiết tiểu thuyết kèm các cờ hiển thị độc giả.
+     *
+     *     Raises:
+     *         NotFoundError: Nếu truyện không tồn tại hoặc chưa phát hành và user không phải staff.
+     */
     get: operations["novel_client_novels_retrieve"];
     put?: never;
     post?: never;
@@ -1373,10 +1212,27 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** @description Lấy danh sách các truyện yêu thích của người dùng hiện tại. */
+    /**
+     * @description Lấy danh sách các truyện yêu thích của người dùng hiện tại.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *
+     *     Returns:
+     *         CoreResponse: Danh sách các bản ghi truyện yêu thích đã serialize.
+     */
     get: operations["novel_favorites_list"];
     put?: never;
-    /** @description Bật hoặc tắt trạng thái yêu thích cho một bộ truyện. */
+    /**
+     * @description Bật hoặc tắt trạng thái yêu thích cho một bộ truyện.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *         validated_data: Dữ liệu đã validate chứa `novel_id`.
+     *
+     *     Returns:
+     *         CoreResponse: Kết quả trạng thái yêu thích mới và tổng lượt thích.
+     */
     post: operations["novel_favorites_create"];
     delete?: never;
     options?: never;
@@ -1391,10 +1247,27 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** @description Lấy danh sách các truyện yêu thích của người dùng hiện tại. */
+    /**
+     * @description Lấy danh sách các truyện yêu thích của người dùng hiện tại.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *
+     *     Returns:
+     *         CoreResponse: Danh sách các bản ghi truyện yêu thích đã serialize.
+     */
     get: operations["novel_favorites_toggle_list"];
     put?: never;
-    /** @description Bật hoặc tắt trạng thái yêu thích cho một bộ truyện. */
+    /**
+     * @description Bật hoặc tắt trạng thái yêu thích cho một bộ truyện.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *         validated_data: Dữ liệu đã validate chứa `novel_id`.
+     *
+     *     Returns:
+     *         CoreResponse: Kết quả trạng thái yêu thích mới và tổng lượt thích.
+     */
     post: operations["novel_favorites_toggle_create"];
     delete?: never;
     options?: never;
@@ -1551,10 +1424,27 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** @description Tải cấu trúc template mẫu JSON để import truyện. */
+    /**
+     * @description Tải cấu trúc template mẫu JSON để import tiểu thuyết.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *
+     *     Returns:
+     *         CoreResponse: Cấu trúc JSON mẫu gồm thông tin truyện và danh sách chương.
+     */
     get: operations["novel_novels_import_retrieve"];
     put?: never;
-    /** @description Import truyện và toàn bộ danh sách chương trong một transaction. */
+    /**
+     * @description Import tiểu thuyết và toàn bộ danh sách chương trong một transaction cơ sở dữ liệu.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *         validated_data: Dữ liệu JSON đã qua validate.
+     *
+     *     Returns:
+     *         CoreResponse: Kết quả import với HTTP status 201 Created.
+     */
     post: operations["novel_novels_import_create"];
     delete?: never;
     options?: never;
@@ -1569,10 +1459,27 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** @description Tải cấu trúc template mẫu JSON để import truyện. */
+    /**
+     * @description Tải cấu trúc template mẫu JSON để import tiểu thuyết.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *
+     *     Returns:
+     *         CoreResponse: Cấu trúc JSON mẫu gồm thông tin truyện và danh sách chương.
+     */
     get: operations["novel_novels_import_template_retrieve"];
     put?: never;
-    /** @description Import truyện và toàn bộ danh sách chương trong một transaction. */
+    /**
+     * @description Import tiểu thuyết và toàn bộ danh sách chương trong một transaction cơ sở dữ liệu.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *         validated_data: Dữ liệu JSON đã qua validate.
+     *
+     *     Returns:
+     *         CoreResponse: Kết quả import với HTTP status 201 Created.
+     */
     post: operations["novel_novels_import_template_create"];
     delete?: never;
     options?: never;
@@ -1587,12 +1494,37 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** @description Lấy danh sách lịch sử đọc của người dùng hiện tại. */
+    /**
+     * @description Lấy danh sách lịch sử đọc của người dùng hiện tại.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *
+     *     Returns:
+     *         CoreResponse: Danh sách lịch sử đọc truyện đã serialize.
+     */
     get: operations["novel_reading_history_list"];
     put?: never;
-    /** @description Ghi nhận người dùng đã đọc một chương. */
+    /**
+     * @description Ghi nhận người dùng đã đọc một chương truyện.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *         validated_data: Dữ liệu đã validate chứa `novel_id` và `chapter_id`.
+     *
+     *     Returns:
+     *         CoreResponse: Bản ghi lịch sử đọc vừa được ghi nhận.
+     */
     post: operations["novel_reading_history_create"];
-    /** @description Xóa toàn bộ lịch sử đọc của người dùng hiện tại. */
+    /**
+     * @description Xóa toàn bộ lịch sử đọc của người dùng hiện tại.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *
+     *     Returns:
+     *         CoreResponse: Số lượng bản ghi lịch sử đọc đã bị xóa.
+     */
     delete: operations["novel_reading_history_clear"];
     options?: never;
     head?: never;
@@ -1609,7 +1541,19 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    /** @description Xóa một mục khỏi lịch sử đọc. */
+    /**
+     * @description Xóa một mục khỏi lịch sử đọc của người dùng.
+     *
+     *     Args:
+     *         request: Đối tượng Request từ client.
+     *         pk: ID của bản ghi lịch sử đọc cần xóa.
+     *
+     *     Returns:
+     *         CoreResponse: Kết quả xóa thành công `{"deleted": True}`.
+     *
+     *     Raises:
+     *         NotFoundError: Nếu bản ghi không tồn tại hoặc không thuộc quyền sở hữu của user.
+     */
     delete: operations["novel_reading_history_delete"];
     options?: never;
     head?: never;
@@ -1670,7 +1614,247 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/qr_codes/banks": {
+  "/api/v1/utilities/page-paths": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["utilities_page_paths_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["utilities_page_paths_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/page-paths/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["utilities_page_paths_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["utilities_page_paths_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["utilities_page_paths_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/utilities/page-paths/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["utilities_page_paths_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/pages": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["utilities_pages_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["utilities_pages_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/pages/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["utilities_pages_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["utilities_pages_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["utilities_pages_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/utilities/pages/{id}/duplicate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Nhân bản trang thành bản nháp của người thực hiện. */
+    post: operations["utilities_pages_duplicate_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/pages/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["utilities_pages_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/pages/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["utilities_pages_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/pages/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["utilities_pages_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/pages/public/{segment}/{slug}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Dữ liệu trang công khai (hoặc bản nháp cho người có quyền).
+     *
+     *     Args:
+     *         request: Request.
+     *         segment: Đường dẫn giữa.
+     *         slug: Slug trang.
+     *
+     *     Returns:
+     *         Trang đã lọc nội dung.
+     */
+    get: operations["utilities_pages_public_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/qr-codes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["utilities_qr_codes_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["utilities_qr_codes_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/qr-codes/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["utilities_qr_codes_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["utilities_qr_codes_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["utilities_qr_codes_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/utilities/qr-codes/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["utilities_qr_codes_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/qr-codes/banks": {
     parameters: {
       query?: never;
       header?: never;
@@ -1686,7 +1870,7 @@ export interface paths {
      *     Returns:
      *         Ngân hàng theo thứ tự khai báo.
      */
-    get: operations["qr_codes_banks_list"];
+    get: operations["utilities_qr_codes_banks_list"];
     put?: never;
     post?: never;
     delete?: never;
@@ -1695,61 +1879,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/qr_codes/codes": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["qr_codes_codes_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["qr_codes_codes_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/qr_codes/codes/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["qr_codes_codes_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Xóa bản ghi (204 không body). */
-    delete: operations["qr_codes_codes_destroy"];
-    options?: never;
-    head?: never;
-    /** @description Cập nhật một phần (PATCH). */
-    patch: operations["qr_codes_codes_partial_update"];
-    trace?: never;
-  };
-  "/api/v1/qr_codes/codes/{id}/history": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
-    get: operations["qr_codes_codes_history_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/qr_codes/codes/bulk-delete": {
+  "/api/v1/utilities/qr-codes/bulk-delete": {
     parameters: {
       query?: never;
       header?: never;
@@ -1759,14 +1889,14 @@ export interface paths {
     get?: never;
     put?: never;
     /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["qr_codes_codes_bulk_delete_create"];
+    post: operations["utilities_qr_codes_bulk_delete_create"];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/api/v1/qr_codes/preview": {
+  "/api/v1/utilities/qr-codes/preview": {
     parameters: {
       query?: never;
       header?: never;
@@ -1785,14 +1915,14 @@ export interface paths {
      *     Returns:
      *         Payload và SVG data URL.
      */
-    post: operations["qr_codes_preview_create"];
+    post: operations["utilities_qr_codes_preview_create"];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/api/v1/short_links/links": {
+  "/api/v1/utilities/short-links": {
     parameters: {
       query?: never;
       header?: never;
@@ -1800,17 +1930,17 @@ export interface paths {
       cookie?: never;
     };
     /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["short_links_links_list"];
+    get: operations["utilities_short_links_list"];
     put?: never;
     /** @description Tạo bản ghi (201). */
-    post: operations["short_links_links_create"];
+    post: operations["utilities_short_links_create"];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/api/v1/short_links/links/{id}": {
+  "/api/v1/utilities/short-links/{id}": {
     parameters: {
       query?: never;
       header?: never;
@@ -1818,18 +1948,18 @@ export interface paths {
       cookie?: never;
     };
     /** @description Chi tiết bản ghi. */
-    get: operations["short_links_links_retrieve"];
+    get: operations["utilities_short_links_retrieve"];
     put?: never;
     post?: never;
     /** @description Xóa bản ghi (204 không body). */
-    delete: operations["short_links_links_destroy"];
+    delete: operations["utilities_short_links_destroy"];
     options?: never;
     head?: never;
     /** @description Cập nhật một phần (PATCH). */
-    patch: operations["short_links_links_partial_update"];
+    patch: operations["utilities_short_links_partial_update"];
     trace?: never;
   };
-  "/api/v1/short_links/links/{id}/history": {
+  "/api/v1/utilities/short-links/{id}/history": {
     parameters: {
       query?: never;
       header?: never;
@@ -1837,7 +1967,7 @@ export interface paths {
       cookie?: never;
     };
     /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
-    get: operations["short_links_links_history_list"];
+    get: operations["utilities_short_links_history_list"];
     put?: never;
     post?: never;
     delete?: never;
@@ -1846,7 +1976,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/short_links/links/bulk-delete": {
+  "/api/v1/utilities/short-links/bulk-delete": {
     parameters: {
       query?: never;
       header?: never;
@@ -1856,14 +1986,14 @@ export interface paths {
     get?: never;
     put?: never;
     /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["short_links_links_bulk_delete_create"];
+    post: operations["utilities_short_links_bulk_delete_create"];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/api/v1/short_links/links/bulk-update": {
+  "/api/v1/utilities/short-links/bulk-update": {
     parameters: {
       query?: never;
       header?: never;
@@ -1873,14 +2003,14 @@ export interface paths {
     get?: never;
     put?: never;
     /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["short_links_links_bulk_update_create"];
+    post: operations["utilities_short_links_bulk_update_create"];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/api/v1/short_links/resolve/{slug}": {
+  "/api/v1/utilities/short-links/resolve/{slug}": {
     parameters: {
       query?: never;
       header?: never;
@@ -1897,7 +2027,7 @@ export interface paths {
      *     Returns:
      *         Thông tin trang trung gian với HTTP 200.
      */
-    get: operations["short_links_resolve_retrieve"];
+    get: operations["utilities_short_links_resolve_retrieve"];
     put?: never;
     /**
      * @description Kiểm mật khẩu với giới hạn số lần thử rồi trả URL đích.
@@ -1910,7 +2040,7 @@ export interface paths {
      *     Returns:
      *         URL đích khi người xem nhập đúng mật khẩu.
      */
-    post: operations["short_links_resolve_create"];
+    post: operations["utilities_short_links_resolve_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2058,6 +2188,11 @@ export interface components {
        */
       original_name: string;
       /**
+       * @description Văn bản thay thế (alt) cho ảnh phục vụ SEO & accessibility.
+       * @default
+       */
+      readonly alt_text: string;
+      /**
        * Kiểu nội dung
        * @description Kiểu xác định từ chữ ký file (không tin header của client).
        */
@@ -2163,6 +2298,11 @@ export interface components {
        * @description Nhóm logic tùy chọn; không đổi nơi lưu file.
        */
       folder_id?: string | null;
+      /**
+       * @description Văn bản thay thế (alt) cho ảnh.
+       * @default
+       */
+      alt_text: string;
       /**
        * Format: binary
        * @description File upload: PNG, JPEG, WEBP, GIF, SVG an toàn, PDF, MP4, MOV hoặc WEBM.
@@ -2402,7 +2542,7 @@ export interface components {
       action: string;
       /** @description Mã sự kiện khi action = EVENT. */
       event: string;
-      /** @description `<module>.<model>`, ví dụ `short_links.shortlink`. */
+      /** @description `<module>.<model>`, ví dụ `utilities.shortlink`. */
       resource: string;
       /** @description Id bản ghi. */
       object_id: string;
@@ -3717,16 +3857,20 @@ export interface components {
        */
       parent_id?: string | null;
     };
-    /** @description Chỉ nhận folder_id; không mở quyền thay nội dung hoặc đường dẫn file. */
+    /** @description Cập nhật thông tin file; không mở quyền thay nội dung hoặc đường dẫn file. */
     PatchedAttachmentUpdateValidateRequest: {
+      /** @description Tên hiển thị của file. */
+      original_name?: string;
+      /** @description Văn bản thay thế (alt) cho ảnh phục vụ SEO & accessibility. */
+      alt_text?: string;
       /**
        * Format: uuid
        * @description Thư mục đích; null để đưa về chưa phân loại.
        */
       folder_id?: string | null;
     };
-    /** @description Input tạo hoặc sửa tác giả. */
-    PatchedAuthorValidateRequest: {
+    /** @description Input cập nhật tác giả. */
+    PatchedAuthorUpdateValidateRequest: {
       /** @description Tên tác giả. */
       name?: string;
       /** @description Slug định danh. */
@@ -3757,13 +3901,13 @@ export interface components {
       /** @description Cho phép xuất bản chương. */
       is_published?: boolean;
     };
-    /** @description Input tạo hoặc sửa thể loại. */
-    PatchedGenreValidateRequest: {
+    /** @description Input cập nhật thể loại. */
+    PatchedGenreUpdateValidateRequest: {
       /** @description Tên thể loại. */
       name?: string;
       /** @description Slug định danh. */
       slug?: string;
-      /** @description Mô tả thể loại. */
+      /** @description Mô tả. */
       description?: string;
     };
     /** @description Dữ liệu cập nhật hồ sơ cá nhân của người dùng hiện tại. */
@@ -3938,8 +4082,8 @@ export interface components {
        */
       expires_at?: string | null;
     };
-    /** @description Input tạo hoặc sửa thẻ. */
-    PatchedTagValidateRequest: {
+    /** @description Input cập nhật thẻ. */
+    PatchedTagUpdateValidateRequest: {
       /** @description Tên thẻ. */
       name?: string;
       /** @description Slug định danh. */
@@ -6395,557 +6539,6 @@ export interface operations {
       };
     };
   };
-  custom_pages_pages_list: {
-    parameters: {
-      query?: {
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description Id chủ sở hữu, nhiều giá trị. */
-        owner?: string[];
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description Id đường dẫn giữa, nhiều giá trị. */
-        path?: string[];
-        /** @description A search term. */
-        search?: string;
-        /**
-         * @description Nhiều giá trị.
-         *
-         *     * `DRAFT` - Bản nháp
-         *     * `PUBLISHED` - Công khai
-         *     * `UNPUBLISHED` - Ngừng công khai
-         */
-        status?: ("DRAFT" | "PUBLISHED" | "UNPUBLISHED")[];
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedPageListResponseList"];
-        };
-      };
-    };
-  };
-  custom_pages_pages_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PageCreateValidateRequest"];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PageDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  custom_pages_pages_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PageDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  custom_pages_pages_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  custom_pages_pages_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["PatchedPageUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PageDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  custom_pages_pages_duplicate_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PageDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  custom_pages_pages_history_list: {
-    parameters: {
-      query?: {
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description Id chủ sở hữu, nhiều giá trị. */
-        owner?: string[];
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description Id đường dẫn giữa, nhiều giá trị. */
-        path?: string[];
-        /** @description A search term. */
-        search?: string;
-        /**
-         * @description Nhiều giá trị.
-         *
-         *     * `DRAFT` - Bản nháp
-         *     * `PUBLISHED` - Công khai
-         *     * `UNPUBLISHED` - Ngừng công khai
-         */
-        status?: ("DRAFT" | "PUBLISHED" | "UNPUBLISHED")[];
-      };
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
-        };
-      };
-    };
-  };
-  custom_pages_pages_bulk_delete_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  custom_pages_pages_bulk_update_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PageBulkUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  custom_pages_paths_list: {
-    parameters: {
-      query?: {
-        /**
-         * @description Nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_active?: ("false" | "true")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedPagePathResponseList"];
-        };
-      };
-    };
-  };
-  custom_pages_paths_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PagePathCreateValidateRequest"];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PagePathResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  custom_pages_paths_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PagePathResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  custom_pages_paths_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  custom_pages_paths_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["PatchedPagePathUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PagePathResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  custom_pages_paths_history_list: {
-    parameters: {
-      query?: {
-        /**
-         * @description Nhiều giá trị: `true,false`.
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_active?: ("false" | "true")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
-        };
-      };
-    };
-  };
-  custom_pages_public_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        segment: string;
-        slug: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["PagePublicResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
   health_retrieve: {
     parameters: {
       query?: never;
@@ -7913,7 +7506,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["PatchedAuthorValidateRequest"];
+        "application/json": components["schemas"]["PatchedAuthorUpdateValidateRequest"];
       };
     };
     responses: {
@@ -8513,7 +8106,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["PatchedGenreValidateRequest"];
+        "application/json": components["schemas"]["PatchedGenreUpdateValidateRequest"];
       };
     };
     responses: {
@@ -9275,7 +8868,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["PatchedTagValidateRequest"];
+        "application/json": components["schemas"]["PatchedTagUpdateValidateRequest"];
       };
     };
     responses: {
@@ -9338,9 +8931,25 @@ export interface operations {
       };
     };
   };
-  qr_codes_banks_list: {
+  utilities_page_paths_list: {
     parameters: {
-      query?: never;
+      query?: {
+        /**
+         * @description Nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -9352,10 +8961,33 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
+          "application/json": components["schemas"]["PaginatedPagePathResponseList"];
+        };
+      };
+    };
+  };
+  utilities_page_paths_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PagePathCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
           "application/json": {
             /** @description Luôn true với response thành công. */
             success: boolean;
-            data: components["schemas"]["QrBankResponse"][];
+            data: components["schemas"]["PagePathResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;
@@ -9370,7 +9002,487 @@ export interface operations {
       };
     };
   };
-  qr_codes_codes_list: {
+  utilities_page_paths_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PagePathResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_page_paths_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  utilities_page_paths_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedPagePathUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PagePathResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_page_paths_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Nhiều giá trị: `true,false`.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  utilities_pages_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description Id chủ sở hữu, nhiều giá trị. */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description Id đường dẫn giữa, nhiều giá trị. */
+        path?: string[];
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Nhiều giá trị.
+         *
+         *     * `DRAFT` - Bản nháp
+         *     * `PUBLISHED` - Công khai
+         *     * `UNPUBLISHED` - Ngừng công khai
+         */
+        status?: ("DRAFT" | "PUBLISHED" | "UNPUBLISHED")[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedPageListResponseList"];
+        };
+      };
+    };
+  };
+  utilities_pages_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PageCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PageDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_pages_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PageDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_pages_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  utilities_pages_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedPageUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PageDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_pages_duplicate_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PageDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_pages_history_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description Id chủ sở hữu, nhiều giá trị. */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description Id đường dẫn giữa, nhiều giá trị. */
+        path?: string[];
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Nhiều giá trị.
+         *
+         *     * `DRAFT` - Bản nháp
+         *     * `PUBLISHED` - Công khai
+         *     * `UNPUBLISHED` - Ngừng công khai
+         */
+        status?: ("DRAFT" | "PUBLISHED" | "UNPUBLISHED")[];
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  utilities_pages_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_pages_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PageBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_pages_public_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        segment: string;
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PagePublicResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_qr_codes_list: {
     parameters: {
       query?: {
         /** @description Which field to use when ordering the results. */
@@ -9408,7 +9520,7 @@ export interface operations {
       };
     };
   };
-  qr_codes_codes_create: {
+  utilities_qr_codes_create: {
     parameters: {
       query?: never;
       header?: never;
@@ -9444,7 +9556,7 @@ export interface operations {
       };
     };
   };
-  qr_codes_codes_retrieve: {
+  utilities_qr_codes_retrieve: {
     parameters: {
       query?: never;
       header?: never;
@@ -9478,7 +9590,7 @@ export interface operations {
       };
     };
   };
-  qr_codes_codes_destroy: {
+  utilities_qr_codes_destroy: {
     parameters: {
       query?: never;
       header?: never;
@@ -9498,7 +9610,7 @@ export interface operations {
       };
     };
   };
-  qr_codes_codes_partial_update: {
+  utilities_qr_codes_partial_update: {
     parameters: {
       query?: never;
       header?: never;
@@ -9536,7 +9648,7 @@ export interface operations {
       };
     };
   };
-  qr_codes_codes_history_list: {
+  utilities_qr_codes_history_list: {
     parameters: {
       query?: {
         /** @description Which field to use when ordering the results. */
@@ -9576,7 +9688,39 @@ export interface operations {
       };
     };
   };
-  qr_codes_codes_bulk_delete_create: {
+  utilities_qr_codes_banks_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["QrBankResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_qr_codes_bulk_delete_create: {
     parameters: {
       query?: never;
       header?: never;
@@ -9612,7 +9756,7 @@ export interface operations {
       };
     };
   };
-  qr_codes_preview_create: {
+  utilities_qr_codes_preview_create: {
     parameters: {
       query?: never;
       header?: never;
@@ -9648,7 +9792,7 @@ export interface operations {
       };
     };
   };
-  short_links_links_list: {
+  utilities_short_links_list: {
     parameters: {
       query?: {
         /** @description Which field to use when ordering the results. */
@@ -9686,7 +9830,7 @@ export interface operations {
       };
     };
   };
-  short_links_links_create: {
+  utilities_short_links_create: {
     parameters: {
       query?: never;
       header?: never;
@@ -9722,7 +9866,7 @@ export interface operations {
       };
     };
   };
-  short_links_links_retrieve: {
+  utilities_short_links_retrieve: {
     parameters: {
       query?: never;
       header?: never;
@@ -9756,7 +9900,7 @@ export interface operations {
       };
     };
   };
-  short_links_links_destroy: {
+  utilities_short_links_destroy: {
     parameters: {
       query?: never;
       header?: never;
@@ -9776,7 +9920,7 @@ export interface operations {
       };
     };
   };
-  short_links_links_partial_update: {
+  utilities_short_links_partial_update: {
     parameters: {
       query?: never;
       header?: never;
@@ -9814,7 +9958,7 @@ export interface operations {
       };
     };
   };
-  short_links_links_history_list: {
+  utilities_short_links_history_list: {
     parameters: {
       query?: {
         /** @description Which field to use when ordering the results. */
@@ -9854,7 +9998,7 @@ export interface operations {
       };
     };
   };
-  short_links_links_bulk_delete_create: {
+  utilities_short_links_bulk_delete_create: {
     parameters: {
       query?: never;
       header?: never;
@@ -9890,7 +10034,7 @@ export interface operations {
       };
     };
   };
-  short_links_links_bulk_update_create: {
+  utilities_short_links_bulk_update_create: {
     parameters: {
       query?: never;
       header?: never;
@@ -9926,7 +10070,7 @@ export interface operations {
       };
     };
   };
-  short_links_resolve_retrieve: {
+  utilities_short_links_resolve_retrieve: {
     parameters: {
       query?: never;
       header?: never;
@@ -9960,7 +10104,7 @@ export interface operations {
       };
     };
   };
-  short_links_resolve_create: {
+  utilities_short_links_resolve_create: {
     parameters: {
       query?: never;
       header?: never;

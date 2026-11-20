@@ -1,15 +1,15 @@
 """Cấu hình Django của TOANNX.
 
 Một file cấu hình duy nhất; local và production chỉ khác nhau ở biến môi trường
-(DJANGO_DEBUG, DB_*, DJANGO_SECRET_KEY...). Không hardcode secrets.
+(DJANGO_DEBUG, DATABASE_URL, DJANGO_SECRET_KEY...). Không hardcode secrets.
 """
 
 from pathlib import Path
 
 import environ
 
+from app.attachment.constants.media_types import ALLOWED_CONTENT_TYPES
 from app.core.logging.sentry import init_sentry
-from app.modules.attachment.constants.media_types import ALLOWED_CONTENT_TYPES
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,16 +32,14 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "django_filters",
-    "app.modules.attachment",
-    "app.modules.account",
-    "app.modules.iam",
-    "app.modules.authentication",
-    "app.modules.health",
-    "app.modules.short_links",
-    "app.modules.custom_pages",
-    "app.modules.journal",
-    "app.modules.qr_codes",
-    "app.modules.novel",
+    "app.attachment",
+    "app.account",
+    "app.iam",
+    "app.authentication",
+    "app.health",
+    "app.journal",
+    "app.novel",
+    "app.utilities",
 ]
 
 MIDDLEWARE = [
@@ -68,27 +66,28 @@ TEMPLATES = [
 
 # Database. Test do pytest-django tạo DB riêng `test_toannx`, không đụng DB thật.
 _STATEMENT_TIMEOUT_MS = env.int("DB_STATEMENT_TIMEOUT_MS", default=5000)
+_DEFAULT_DB_CONFIG = env.db_url("DATABASE_URL")
+_DEFAULT_DB_CONFIG.setdefault("OPTIONS", {})
+_DEFAULT_DB_CONFIG["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=0)
+_DEFAULT_DB_CONFIG["CONN_HEALTH_CHECKS"] = True
+_DEFAULT_DB_CONFIG["TEST"] = {"NAME": "test_toannx"}
+if "DB_NAME" in env:
+    _DEFAULT_DB_CONFIG["NAME"] = env.str("DB_NAME")
+if not _DEFAULT_DB_CONFIG.get("PORT"):
+    _DEFAULT_DB_CONFIG["PORT"] = 5432
+else:
+    _DEFAULT_DB_CONFIG["PORT"] = int(_DEFAULT_DB_CONFIG["PORT"])
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env.str("DB_NAME"),
-        "USER": env.str("DB_USER"),
-        "PASSWORD": env.str("DB_PASSWORD"),
-        "HOST": env.str("DB_HOST", default="localhost"),
-        "PORT": env.int("DB_PORT", default=5432),
-        # Serverless + pooler (Neon/Vercel): 0 = mở/đóng kết nối mỗi request.
-        "CONN_MAX_AGE": env.int("DB_CONN_MAX_AGE", default=0),
-        "CONN_HEALTH_CHECKS": True,
-        "TEST": {"NAME": "test_toannx"},
-    }
+    "default": _DEFAULT_DB_CONFIG,
 }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Người dùng & mật khẩu
 AUTH_USER_MODEL = "account.User"
 AUTHENTICATION_BACKENDS = [
-    "app.modules.account.backends.account_auth_backend.AccountAuthBackend",
-    "app.modules.iam.backends.iam_permission_backend.IamPermissionBackend",
+    "app.account.backends.account_auth_backend.AccountAuthBackend",
+    "app.iam.backends.iam_permission_backend.IamPermissionBackend",
 ]
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
@@ -122,9 +121,7 @@ _use_r2 = bool(
 
 if not _configured_storage:
     _configured_storage = (
-        "app.core.storage.r2_storage.R2Storage"
-        if _use_r2
-        else "django.core.files.storage.FileSystemStorage"
+        "app.core.storage.r2_storage.R2Storage" if _use_r2 else "django.core.files.storage.FileSystemStorage"
     )
 
 MEDIA_ROOT = BASE_DIR / "media"
@@ -158,16 +155,16 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "app.modules.authentication.authentications.cookie_jwt_authentication.CookieJwtAuthentication",
+        "app.authentication.authentications.cookie_jwt_authentication.CookieJwtAuthentication",
     ],
     # Mặc định DENY: endpoint public phải khai báo AllowAny tường minh.
     # Mặc định: đăng nhập + quyền IAM đã khai (không khai → 403). View công khai ghi đè trong chính view đó.
     "DEFAULT_PERMISSION_CLASSES": [
         "app.core.permissions.is_active_authenticated.IsActiveAuthenticated",
-        "app.modules.iam.permissions.has_iam_permission.HasIamPermission",
+        "app.iam.permissions.has_iam_permission.HasIamPermission",
     ],
     # Rate limit khai báo (`action_rate_limits` / `@rate_limit`), đếm bằng bucket PostgreSQL.
-    "DEFAULT_THROTTLE_CLASSES": ["app.modules.authentication.throttles.bucket_throttle.BucketThrottle"],
+    "DEFAULT_THROTTLE_CLASSES": ["app.authentication.throttles.bucket_throttle.BucketThrottle"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "EXCEPTION_HANDLER": "app.core.exceptions.exception_handler.app_exception_handler",
@@ -222,7 +219,7 @@ CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = not DEBUG
-CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:3000"])
+CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:3001"])
 
 CORS_ALLOWED_ORIGINS: list[str] = env.list("CORS_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_CREDENTIALS = True
@@ -240,25 +237,25 @@ RATE_LIMITS: dict[str, tuple[int, int, str]] = {
     "auth.password_reset_request": (env.int("RL_AUTH_PASSWORD_RESET_REQUEST", default=5), 900, "ip"),
     "auth.password_reset_validate": (env.int("RL_AUTH_PASSWORD_RESET_VALIDATE", default=30), 900, "ip"),
     "auth.password_reset_confirm": (env.int("RL_AUTH_PASSWORD_RESET_CONFIRM", default=10), 900, "ip"),
-    "short_links.create": (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
-    "short_links.unlock": (env.int("RL_SHORT_LINK_UNLOCK", default=10), 60, "ip"),
-    "custom_pages.create": (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
-    "custom_pages.path.create": (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
-    "qr_codes.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
-    "qr_codes.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
+    "utilities.short_link.create": (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
+    "utilities.short_link.unlock": (env.int("RL_SHORT_LINK_UNLOCK", default=10), 60, "ip"),
+    "utilities.page.create": (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
+    "utilities.page_path.create": (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
+    "utilities.qr_code.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
+    "utilities.qr_code.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
     "health.client_error": (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
     "novel.create": (env.int("RL_NOVEL_CREATE", default=60), 3600, "user"),
     "novel.import": (env.int("RL_NOVEL_IMPORT", default=10), 3600, "user"),
 }
 # Lịch sử thay đổi: model kế thừa JournalTracker tự ghi qua recorder này (rỗng = tắt).
-CORE_CHANGE_RECORDER = "app.modules.journal.recorders.journal_recorder.JournalRecorder"
+CORE_CHANGE_RECORDER = "app.journal.recorders.journal_recorder.JournalRecorder"
 JOURNAL_RETENTION_DAYS = env.int("JOURNAL_RETENTION_DAYS", default=365)
 # Phiên/refresh token hết hạn quá số ngày này thì bị dọn.
 AUTH_EXPIRED_RETENTION_DAYS = env.int("AUTH_EXPIRED_RETENTION_DAYS", default=30)
 # Header bí mật của Vercel Cron khi gọi POST /health/cleanup (rỗng = tắt endpoint).
 CRON_SECRET = env.str("CRON_SECRET", default="")
 
-# Custom Pages: giới hạn nội dung Tiptap và đoạn đường dẫn giữa dành riêng (một chỗ duy nhất).
+# Tiện ích → Trang tùy chỉnh: giới hạn nội dung Tiptap và đoạn đường dẫn giữa dành riêng (một chỗ duy nhất).
 CUSTOM_PAGE_CONTENT_MAX_BYTES = env.int("CUSTOM_PAGE_CONTENT_MAX_BYTES", default=256 * 1024)
 CUSTOM_PAGE_MAX_IMAGES = env.int("CUSTOM_PAGE_MAX_IMAGES", default=30)
 CUSTOM_PAGE_MAX_VIDEOS = env.int("CUSTOM_PAGE_MAX_VIDEOS", default=10)

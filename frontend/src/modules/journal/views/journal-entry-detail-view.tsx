@@ -3,7 +3,7 @@
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 
-import { JournalEntryDetail } from "../components/journal-entry-detail/journal-entry-detail";
+import { JournalEntryDetail } from "../components/journal-entry-detail";
 import { JOURNAL_ENTRY_PERMISSIONS } from "../permissions/journal-entry-permission";
 
 /**

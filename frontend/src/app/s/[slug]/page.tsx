@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 
-import { SHORT_LINKS_API_ENDPOINTS } from "@/modules/short-links/constants/api-endpoints";
-import type { PublicShortLink } from "@/modules/short-links/types/short-link.types";
-import { LinkUnavailableView } from "@/modules/short-links/views/link-unavailable-view";
-import { ShortLinkLandingView } from "@/modules/short-links/views/short-link-landing-view";
+import { UTILITIES_API_ENDPOINTS } from "@/modules/utilities/constants/api-endpoints";
+import type { PublicShortLink } from "@/modules/utilities/types/short-link.types";
+import { LinkUnavailableView } from "@/modules/utilities/views/link-unavailable-view";
+import { ShortLinkLandingView } from "@/modules/utilities/views/short-link-landing-view";
 import { serverApiGet } from "@/shares/lib/api/server-api";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +14,7 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
 export default async function ShortLinkPage({ params }: PageProps<"/s/[slug]">) {
   const { slug } = await params;
   const result = await serverApiGet<PublicShortLink>(
-    SHORT_LINKS_API_ENDPOINTS.resolve(slug),
+    UTILITIES_API_ENDPOINTS.shortLinkResolve(slug),
     await headers(),
   );
   if (!result.data) {

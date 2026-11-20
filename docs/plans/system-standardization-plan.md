@@ -139,10 +139,10 @@ Mặc định toàn hệ thống trong `config/settings.py` (lớp base **không
 ```python
 "DEFAULT_PERMISSION_CLASSES": [
     "app.core.permissions.is_active_authenticated.IsActiveAuthenticated",   # chuyển từ iam về core
-    "app.modules.iam.permissions.has_iam_permission.HasIamPermission",
+    "app.iam.permissions.has_iam_permission.HasIamPermission",
 ],
 "DEFAULT_THROTTLE_CLASSES": [
-    "app.modules.authentication.throttles.bucket_throttle.BucketThrottle",  # 4.5
+    "app.authentication.throttles.bucket_throttle.BucketThrottle",  # 4.5
 ],
 ```
 
@@ -264,7 +264,7 @@ RATE_LIMITS = {
 
 ### 4.6 Mã lỗi
 
-- `app/modules/<m>/constants/<m>_error_code.py`: `class ShortLinksErrorCode(StrEnum)`. Core chỉ giữ mã chung
+- `app/<m>/constants/<m>_error_code.py`: `class ShortLinksErrorCode(StrEnum)`. Core chỉ giữ mã chung
   (`VALIDATION_ERROR`, `NOT_FOUND`, `CONFLICT`, `PERMISSION_DENIED`, `RATE_LIMITED`, `AUTH_*`…). `AppException.code`
   nhận `str`.
 - Test BE `core/tests/test_error_codes.py`: gom mọi enum mã lỗi, kiểm không trùng giá trị, và đọc
@@ -481,7 +481,7 @@ Index: `(resource, object_id, created_at DESC)`, `(actor, created_at DESC)`, `(c
 ### 7.2 Ghi
 
 - `JournalRecorder` (`journal/recorders/journal_recorder.py`) thực thi `ChangeRecorder`; settings
-  `CORE_CHANGE_RECORDER = "app.modules.journal.recorders.journal_recorder.JournalRecorder"`.
+  `CORE_CHANGE_RECORDER = "app.journal.recorders.journal_recorder.JournalRecorder"`.
 - Một lần gọi repository = một `INSERT` (bulk). Không có thay đổi thực sự thì không ghi.
 - Bật ngay cho: `User` (trừ `password` ẩn, `last_login`, `last_seen_at` không theo dõi), `Role`, `Attachment`
   (`original_name`, `folder`), `AttachmentFolder`, `ShortLink`, `PagePath`, `Page` (trừ `content`: chỉ ghi "đã đổi nội

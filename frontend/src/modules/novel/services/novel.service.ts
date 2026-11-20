@@ -12,13 +12,7 @@ import type { ListParams } from "@/shares/types/api.types";
 
 import { NOVEL_API_ENDPOINTS } from "../constants/api-endpoints";
 import type { NovelImportPayload, NovelImportResult } from "../types/novel-import.types";
-import type {
-  Novel,
-  NovelClientDetail,
-  NovelCreateInput,
-  NovelDetail,
-  NovelUpdateInput,
-} from "../types/novel.types";
+import type { Novel, NovelClientDetail, NovelCreateInput, NovelDetail, NovelUpdateInput } from "../types/novel.types";
 
 // ============================================================================
 // CRUD SERVICE

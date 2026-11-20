@@ -6,7 +6,7 @@ trước khi dùng API mới (middleware → `src/proxy.ts`, error boundary dùn
 ## 1. Luồng xử lý (bắt buộc)
 
 ```
-app/[locale]/.../page.tsx → modules/<m>/views → components/<c>/<c>.tsx (+ hooks/use-<c>.ts)
+app/[locale]/.../page.tsx → modules/<m>/views → components/<c>.tsx (+ components/hooks/use-<c>.ts)
   → modules/<m>/hooks (React Query) → modules/<m>/services → shares/lib/api/api-client.ts
 ```
 
@@ -27,7 +27,7 @@ UI primitive thuần (Button, Separator...) không cần hook riêng.
 
 ```
 src/modules/<m>/
-  views/  components/<c>/{<c>.tsx, hooks/use-<c>.ts}  hooks/use-<tên>.ts
+  views/  components/*.tsx  components/hooks/use-*.ts  hooks/use-<tên>.ts
   permissions/<model>-permission.ts  services/<model>.service.ts
   constants/{routes,api-endpoints,query-keys}.ts
   schemas/  types/  messages/{vi,en}.json  navigation.ts
@@ -72,7 +72,7 @@ src/modules/<m>/
 | Thư mục | Nội dung |
 | --- | --- |
 | `components/ui` | Primitive shadcn (thêm bằng `pnpm dlx shadcn@latest add <name>`) |
-| `components/common` | Khối giao diện dùng lại, **mỗi component một thư mục** (xem dưới bảng) |
+| `components/common` | Khối giao diện dùng lại đặt trực tiếp ở gốc `common/`, hook trong `common/hooks/` |
 | `components/errors` | `ErrorState`, `QueryErrorState` (lỗi tải bản ghi: 404 → không tìm thấy + về danh sách), `ForbiddenView` |
 | `components/layout` | `Logo`, `LanguageSwitcher`, `ThemeSwitcher` (không chứa route của module) |
 | `components/providers` | Provider gốc của app |
@@ -83,17 +83,15 @@ src/modules/<m>/
 **Cấu trúc `components/common`** (giống `components/` của module):
 
 ```
-common/<tên>/
-  <tên>.tsx              # component chính, tên file = tên thư mục (kebab-case)
-  hooks/use-<tên>.ts     # hook riêng của component (nếu có); hook phụ đặt cùng thư mục hooks/
-  components/<con>.tsx   # mảnh con chỉ component này dùng (nếu có)
-  types.ts               # kiểu dùng chung trong thư mục (nếu có)
+common/
+  <tên>.tsx              # component, đặt trực tiếp ở gốc common/ (kebab-case)
+  <tên>.types.ts         # kiểu dùng chung của component phức tạp (data-table.types.ts, choice-list.types.ts...)
+  hooks/use-<tên>.ts     # hook riêng của component, tập trung tại common/hooks/
 ```
 
-- Không đặt file component rời ở gốc `common/`, không có thư mục `common/hooks/` chung, không gom nhiều
-  component vào một thư mục (mỗi picker một thư mục: `date-picker/`, `time-picker/`, `date-time-picker/`,
-  `month-select/`). Import theo đường dẫn đầy đủ: `@/shares/components/common/page-header/page-header`.
-- Class dùng chung của control nằm ở `common/form-control/form-control.styles.ts`.
+- Không tạo mỗi component một thư mục con riêng lẻ; mọi component đặt trực tiếp trong `common/`, hook của component nằm trong `common/hooks/`.
+- Import theo đường dẫn đầy đủ tới file (tận gốc, không magic/barrel): `@/shares/components/common/page-header`, `@/shares/components/common/hooks/use-data-table`.
+- Class dùng chung của control nằm ở `common/form-control.styles.ts`.
 
 | Nhóm | Component |
 | --- | --- |
@@ -118,10 +116,10 @@ common/<tên>/
 - `ImageUpload` chỉ xem trước, chọn ảnh từ Thư viện (`onChoose`) và gỡ ảnh. Không có input file hay
   nút tải ảnh trực tiếp trong form; adapter/view của Attachment cung cấp bộ chọn và kiểm quyền.
   Common không import module hay gọi API.
-- Soạn thảo nội dung dùng **một** editor: `TiptapEditor` (`shares/components/common/tiptap-editor/`, giá trị là
+- Soạn thảo nội dung dùng **một** editor: `TiptapEditor` (`shares/components/common/tiptap-editor`, giá trị là
   Tiptap JSON); hiển thị dùng `TiptapContent` (static renderer, chạy được ở server). Không còn `RichTextEditor`,
-  không lưu HTML tùy ý. Extension dùng chung khai trong `tiptap-editor/extensions.ts`; module thêm node riêng
-  (ví dụ nút, banner của Custom Pages) qua prop `extensions`.
+  không lưu HTML tùy ý. Extension dùng chung khai trong `common/tiptap-extensions.ts`; module thêm node riêng
+  (ví dụ nút, banner của trang tùy chỉnh — module Tiện ích) qua prop `extensions`.
 - Module khác cắm vào editor qua plugin: component gọi `useTiptapInsertItem({key, label, icon, run})` và được page
   truyền vào slot `editorPlugins` (ảnh từ Attachment, mã QR là chèn ảnh PNG của QR, nút trỏ link rút gọn).
   Common không import module hay gọi API.
@@ -205,7 +203,7 @@ CommonDataTable của LoveMe, chạy trên `@tanstack/react-table`). Không dự
   toast theo số bản ghi, invalidate cache, lỗi thì toast thông báo đã dịch. Backend chạy cả lô trong một
   transaction nên lỗi một dòng thì không dòng nào đổi.
 - Cột đầu là link tới trang chi tiết (`font-medium`, hover gạch chân); dòng phụ (email, mã) `text-xs text-muted-foreground`.
-- Hộp xác nhận dùng `ConfirmDialog` (`shares/components/common/confirm-dialog/confirm-dialog.tsx`), không dùng `confirm()`.
+- Hộp xác nhận dùng `ConfirmDialog` (`shares/components/common/confirm-dialog`), không dùng `confirm()`.
 
 **State bảng.** Hook của component bảng dùng `useTableState` (`shares/hooks/use-table-state.ts`), không tự viết
 `useState` cho từ khóa/trang/sắp xếp. State đồng bộ lên URL (`search`, `page`, `pageSize`, `ordering`; giá trị
@@ -218,6 +216,25 @@ mặc định không ghi) nên tải lại hay gửi link vẫn giữ nguyên. �
   `clearFilters`; không tự giữ state thứ hai. Đổi bộ lọc về trang 1 và giữ các tham số còn lại trên URL.
   Truyền `onClearFilters={table.hasFilters ? table.clearFilters : undefined}` cho bảng.
 - Danh sách dùng làm danh mục/ô chọn phải tải đủ các trang API, không chỉ lấy trang đầu hoặc cắt ở 100.
+
+## 3.2 Chuẩn hình ảnh (Next.js Image) và Shadcn UI (bắt buộc)
+
+**Tối ưu hình ảnh với `next/image`.**
+- Mọi hình ảnh hiển thị trong project **bắt buộc sử dụng component `<Image />` từ `next/image`** để tự động tối ưu hóa định dạng hiện đại (WebP, AVIF), responsive srcset, lazy loading và chống layout shift (CLS).
+- **Tuyệt đối không dùng thẻ `<img>` trần** hoặc viết chú thích tắt cảnh báo eslint `// eslint-disable-next-line @next/next/no-img-element`.
+- Cấu hình domains/remotePatterns tập trung tại `frontend/next.config.ts` (hỗ trợ `media.toannx.com`, Cloudflare R2 `**.r2.dev`, và `localhost`/`127.0.0.1`).
+- Với khung chứa linh hoạt theo tỷ lệ (aspect-square, avatar, preview), container cha đặt `relative`, thẻ `<Image />` sử dụng `fill`, `className="object-cover"` (hoặc `object-contain`), và khai báo prop `sizes` phù hợp (ví dụ `sizes="80px"` hoặc `sizes="(max-width: 768px) 100vw, 33vw"`).
+- Khi ảnh là chuỗi data URI (`data:image/...`) hoặc blob URL cục bộ từ browser: thêm prop `unoptimized`.
+
+**Sử dụng triệt để primitives của Shadcn UI.**
+- Mọi thành phần tương tác và cấu trúc giao diện cơ bản (`Button`, `Checkbox`, `RadioGroup`, `Label`, `Input`, `Textarea`, `Dialog`, `Card`, `Tooltip`, `Badge`, `Avatar`, `Switch`, `Sheet`, `Popover`, `Select`, `Table`, `Tabs`, `Separator`...) **bắt buộc dùng component trong `@/shares/components/ui/*`**.
+- Khi cần một component primitive mà thư mục `@/shares/components/ui/` chưa có: **bắt buộc chạy lệnh `pnpm dlx shadcn@latest add <tên-component>`** để cài đặt chuẩn từ thư viện shadcn, không tự viết component thủ công để thay thế.
+- **Nghiêm cấm lồng lộn thẻ HTML sai ngữ nghĩa**: Tuyệt đối không bọc `<Checkbox />` hay `<Button />` (vốn là thẻ `<button>` của Radix) bên trong thẻ `<label>` để tự vẽ giả lập checkbox/nút bấm (vi phạm chuẩn HTML, gây lặp sự kiện click và phá vỡ trợ năng).
+- **Nghiêm cấm viết thẻ `<button>` trần** kèm class CSS tự chế khi đã có component `Button` chuẩn của shadcn.
+- Các item dạng card trong lưới (như media file, thẻ danh sách) phải sử dụng component `Card` của shadcn để đồng nhất border, background và shadow theo design system.
+
+**Quy chuẩn Tên tệp trong Thư viện (Attachment).**
+- Trường `original_name` của tệp (mặc định lấy theo tên file người dùng tải lên) **bắt buộc phải cho phép chỉnh sửa/đổi tên được** (Rename) cả ở tầng Backend (API PATCH nhận `original_name`) và Frontend (nút đổi tên nhanh trên card lưới và trong panel chi tiết), kèm thuộc tính `alt_text` cho hình ảnh để phục vụ SEO và accessibility.
 - Nhóm Hệ thống: **Tài khoản → Người dùng, Phiên**; **Phân quyền → Vai trò, Quyền**. Phiên là nghiệp vụ
   Authentication, menu ghép vào Tài khoản ở `manage-app`; không chuyển service sang Account. Bảng Phiên có
   chọn dòng, `#`, mã phiên, **Thu hồi** trong cột Thao tác và thu hồi hàng loạt (hỏi xác nhận). Danh mục
@@ -372,3 +389,36 @@ pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build && p
   cũ). `ApiModel<"…Response">` là kiểu FE nhận được (đã camelCase). Kiểu viết tay phải có đúng tập field
   của response, kiểm trong `tests/unit/api-contract.test.ts` lúc `pnpm typecheck`.
 - Lỗi ở error boundary được gửi về `/api/v1/health/client-errors` (log + Sentry khi bật).
+
+## 7. Chuẩn hóa hệ thống xử lý lỗi (Error System)
+
+### 7.1 Bộ trang lỗi toàn trang (Full-page Error Routes)
+Mọi trang lỗi toàn cục phải tuân thủ layout tiêu chuẩn, giao diện trang nhã chuẩn Shadcn UI + Tailwind CSS, đầy đủ i18n và điều hướng thoát an toàn:
+
+- **Lỗi 404 (Not Found)**:
+  - Khai báo tại `app/[locale]/not-found.tsx` (sử dụng `NotFoundView` từ `@/modules/home/views/not-found-view`) và `app/not-found.tsx` cấp gốc (cho đường dẫn không mang tiền tố locale).
+  - Giao diện gồm: Logo hệ thống, Badge `404 · KHÔNG TÌM THẤY`, số `404` lớn phong cách mờ, icon minh họa `FileQuestion`, tiêu đề và mô tả thân thiện.
+  - Cung cấp 2 lối điều hướng chính: nút **Về trang chủ** (`Home`) và nút **Quay lại trang trước** (`ArrowLeft`, `history.back()`), kèm các liên kết nhanh (Trang chủ, Thư viện, Đăng nhập).
+- **Lỗi 403 (Forbidden - Truy cập bị từ chối)**:
+  - Khai báo tại `shares/components/errors/forbidden-view.tsx`.
+  - Hiển thị khi người dùng vào vùng quản trị hoặc xem tài nguyên không có quyền sở hữu/thẩm quyền.
+  - Giao diện gồm: Badge `403 · TỪ CHỐI`, icon cảnh báo `ShieldAlert` (màu `destructive`), giải thích nguyên nhân rõ ràng.
+  - Cung cấp nút **Về trang chủ**, **Quay lại**, và nút chuyển đổi **Đăng nhập tài khoản khác**.
+- **Lỗi 500 (Server Error / Runtime Crash)**:
+  - Khai báo tại `app/[locale]/error.tsx` (sử dụng `AppErrorView` từ `@/modules/home/views/app-error-view`).
+  - Giao diện gồm: Badge `500 · LỖI MÁY CHỦ`, icon `ServerCrash`, thông điệp an toàn không lộ lỗ hổng bảo mật.
+  - Cung cấp nút **Thử lại ngay** (`retry()`) và nút **Về trang chủ**.
+  - Hiển thị khối mã **Digest sự cố** kèm nút Sao chép để người dùng gửi cho bộ phận kỹ thuật; hiển thị chi tiết thông điệp kỹ thuật trong môi trường development.
+  - Tự động báo cáo lỗi client về backend qua `useReportClientError(error)`.
+- **Lỗi Global Error (Root Layout Crash)**:
+  - Khai báo tại `app/global-error.tsx` (sử dụng `GlobalErrorView` từ `@/modules/home/views/global-error-view`).
+  - Tự dựng cấu trúc `<html>`/`<body>` độc lập, hỗ trợ dark mode tự nhiên, trình bày song ngữ (Việt - Anh), cung cấp nút **Thử lại** và **Tải lại trang**.
+
+### 7.2 Khối báo lỗi trong trang (In-page Error States)
+- **`ErrorState` (`shares/components/errors/error-state.tsx`)**: Dùng cho widget, section, bảng dữ liệu khi truy vấn thất bại. Sử dụng `Card` của Shadcn UI với token `destructive`, icon `AlertCircle` và nút **Thử lại**.
+- **`QueryErrorState` (`shares/components/errors/query-error-state.tsx`)**: Phân loại tự động theo mã lỗi của `ApiError`:
+  - `404 Not Found`: Hiển thị `SearchX` "Không tìm thấy bản ghi" + nút **Quay về danh sách** (tắt nút thử lại vô ích).
+  - `403 Forbidden`: Hiển thị `ShieldAlert` "Truy cập bị từ chối" + thông báo quyền.
+  - `Mất mạng / Timeout / Status 0`: Hiển thị `WifiOff` "Mất kết nối mạng" + nút **Thử kết nối lại**.
+  - `500+ Server Error`: Hiển thị `ServerCrash` "Lỗi máy chủ" + nút **Thử lại**.
+  - Các lỗi khác: Hiển thị thông báo đã dịch theo mã lỗi BE kèm nút **Thử lại**.

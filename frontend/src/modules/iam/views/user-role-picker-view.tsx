@@ -2,7 +2,7 @@
 
 import { usePermission } from "@/modules/auth/hooks/use-permission";
 
-import { UserRolePicker } from "../components/user-role-picker/user-role-picker";
+import { UserRolePicker } from "../components/user-role-picker";
 import { IAM_PERMISSIONS } from "../constants/iam-permissions";
 
 /**

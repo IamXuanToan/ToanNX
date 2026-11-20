@@ -8,7 +8,7 @@ Quy tắc: **mỗi class một file**, tên file snake_case trùng tên class. `
 ```
 config/                                 # django-admin startproject config .
   settings.py                           # một file cấu hình, đọc biến môi trường
-  urls.py                               # /api/v1/{auth,account,iam,attachments,system,health,short_links,custom_pages}
+  urls.py                               # /api/v1/{auth,account,iam,attachments,health,journal,novel,utilities}
   wsgi.py                               # WSGI `application` + `app` (entrypoint Vercel)
 app/
   core/
@@ -76,9 +76,9 @@ Chỉ hai lớp nền. Hành vi chung là **thuộc tính khai báo** (mặc đ�
 | --- | --- |
 | Mặc định (đăng nhập + quyền IAM) | users, roles, attachments, short links, QR, trang, journal |
 | `permission_classes = [IsActiveAuthenticated]` | `/auth/me`, `/auth/sessions`, `/auth/logout-all` |
-| `authentication_classes = []`, `[AllowAny]` | `/auth/csrf`, `/health`, `/short_links/resolve/{slug}` (xem trang và mở khóa) |
+| `authentication_classes = []`, `[AllowAny]` | `/auth/csrf`, `/health`, `/utilities/short-links/resolve/{slug}` (xem trang và mở khóa) |
 | như trên + `CsrfProtected` | `/auth/login`, `/auth/refresh`, `/auth/logout` |
-| `[AllowAny]` + ghi đè `perform_authentication` | `/custom-pages/public/...` (xem trước bản nháp khi có quyền) |
+| `[AllowAny]` + ghi đè `perform_authentication` | `/utilities/pages/public/...` (xem trước bản nháp khi có quyền) |
 
 `CoreModelViewSet` ủy quyền list/retrieve/create/partial_update/destroy cho `service_class`, dùng
 validate serializer riêng (`create_serializer_class`, `update_serializer_class`, `bulk_update_serializer_class`)

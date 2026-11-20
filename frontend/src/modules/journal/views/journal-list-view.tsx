@@ -3,10 +3,10 @@
 import { useTranslations } from "next-intl";
 
 import { usePermission } from "@/modules/auth/hooks/use-permission";
-import { PageHeader } from "@/shares/components/common/page-header/page-header";
+import { PageHeader } from "@/shares/components/common/page-header";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 
-import { JournalTable } from "../components/journal-table/journal-table";
+import { JournalTable } from "../components/journal-table";
 import { JOURNAL_ENTRY_PERMISSIONS } from "../permissions/journal-entry-permission";
 
 /**

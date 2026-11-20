@@ -3,14 +3,20 @@ import { apiClient } from "@/shares/lib/api/api-client";
 import { createCrudService } from "@/shares/lib/api/create-crud-service";
 
 import { ATTACHMENT_API_ENDPOINTS } from "../constants/api-endpoints";
-import type { Attachment, AttachmentFilters } from "../types/attachment.types";
+import type { Attachment, AttachmentFilters, AttachmentUploadInput, UpdateAttachmentInput } from "../types/attachment.types";
 
-const crud = createCrudService<Attachment, AttachmentFilters>(ATTACHMENT_API_ENDPOINTS.files);
+const crud = createCrudService<
+  Attachment,
+  AttachmentFilters,
+  AttachmentUploadInput,
+  UpdateAttachmentInput
+>(ATTACHMENT_API_ENDPOINTS.files);
 
 /** Service tương ứng `AttachmentService` của backend: CRUD chuẩn + upload multipart + chuyển thư mục. */
 export const attachmentService = {
   list: crud.list,
   get: crud.get,
+  update: crud.update,
   delete: crud.delete,
   history: crud.history,
   /** Xóa mềm nhiều file trong cùng transaction. @returns Số file đã xóa. */

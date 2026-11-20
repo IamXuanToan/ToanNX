@@ -1,4 +1,4 @@
-import { PublicLayout } from "@/modules/home/components/public-layout/public-layout";
+import { PublicLayout } from "@/modules/home/components/public-layout";
 
 /**
  * Layout khu vực công khai.

@@ -9,13 +9,7 @@ import { useIsMobile } from "@/shares/hooks/use-mobile";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Separator } from "@/shares/components/ui/separator";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/shares/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/shares/components/ui/sheet";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
 import { PanelLeftIcon } from "lucide-react";

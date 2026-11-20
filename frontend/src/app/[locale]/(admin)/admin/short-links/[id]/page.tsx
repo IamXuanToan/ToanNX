@@ -1,9 +1,9 @@
 import { RecordHistoryView } from "@/modules/journal/views/record-history-view";
-import { SHORT_LINKS_API_ENDPOINTS } from "@/modules/short-links/constants/api-endpoints";
-import { ShortLinkDetailView } from "@/modules/short-links/views/short-link-detail-view";
+import { UTILITIES_API_ENDPOINTS } from "@/modules/utilities/constants/api-endpoints";
+import { ShortLinkDetailView } from "@/modules/utilities/views/short-link-detail-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
-export const generateMetadata = createPageMetadata({ title: "shortLinks.nav.links" });
+export const generateMetadata = createPageMetadata({ title: "utilities.nav.shortLinks" });
 
 /**
  * Trang chi tiết link rút gọn (Short Links) + lịch sử thay đổi (Journal) qua slot `history`.
@@ -20,8 +20,8 @@ export default async function ShortLinkDetailPage({
       id={id}
       history={
         <RecordHistoryView
-          path={`${SHORT_LINKS_API_ENDPOINTS.links}/${id}/history`}
-          fieldPrefix="shortLinks.fields"
+          path={`${UTILITIES_API_ENDPOINTS.shortLinks}/${id}/history`}
+          fieldPrefix="utilities.shortLinks.fields"
         />
       }
     />

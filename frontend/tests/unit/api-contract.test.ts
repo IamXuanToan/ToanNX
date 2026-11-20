@@ -9,16 +9,16 @@ import type { User } from "@/modules/account/types/user.types";
 import type { Attachment } from "@/modules/attachment/types/attachment.types";
 import type { AttachmentFolder } from "@/modules/attachment/types/attachment-folder.types";
 import type { AdminSession } from "@/modules/auth/types/admin-session.types";
-import type { PagePath } from "@/modules/custom-pages/types/page-path.types";
-import type { Page, PageDetail } from "@/modules/custom-pages/types/page.types";
+import type { PagePath } from "@/modules/utilities/types/page-path.types";
+import type { Page, PageDetail } from "@/modules/utilities/types/page.types";
 import type { Permission, Role, RoleDetail, RoleSummary } from "@/modules/iam/types/iam.types";
 import type { JournalResource } from "@/modules/journal/types/journal-entry.types";
-import type { QrCode, QrCodeDetail } from "@/modules/qr-codes/types/qr-code.types";
+import type { QrCode, QrCodeDetail } from "@/modules/utilities/types/qr-code.types";
 import type {
   PublicShortLink,
   ShortLink,
   ShortLinkDetail,
-} from "@/modules/short-links/types/short-link.types";
+} from "@/modules/utilities/types/short-link.types";
 import type { ChapterDetail } from "@/modules/novel/types/chapter.types";
 import type { FavoriteItem } from "@/modules/novel/types/favorite.types";
 import type { Novel, NovelDetail } from "@/modules/novel/types/novel.types";

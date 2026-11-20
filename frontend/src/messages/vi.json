@@ -377,11 +377,11 @@
       "IAM_PRIVILEGE_ESCALATION": "Bạn không thể cấp quyền vượt quá quyền của bạn.",
       "IAM_SYSTEM_ROLE_PROTECTED": "Chỉ superuser mới được sửa vai trò hệ thống.",
       "QUOTA_EXCEEDED": "Bạn đã đạt số lượng tối đa cho phép.",
-      "SHORT_LINK_EXPIRED": "Liên kết đã hết hạn.",
-      "SHORT_LINK_INVALID_PASSWORD": "Mật khẩu liên kết không đúng.",
-      "CUSTOM_PAGES_PATH_IN_USE": "Đường dẫn giữa còn trang, không xóa được.",
-      "CUSTOM_PAGES_PATH_INACTIVE": "Đường dẫn giữa đang tắt, không tạo trang mới vào đây được.",
-      "CUSTOM_PAGES_VERSION_CONFLICT": "Trang đã được sửa ở nơi khác. Tải lại để xem bản mới nhất.",
+      "UTILITIES_SHORT_LINK_EXPIRED": "Liên kết đã hết hạn.",
+      "UTILITIES_SHORT_LINK_INVALID_PASSWORD": "Mật khẩu liên kết không đúng.",
+      "UTILITIES_PAGE_PATH_IN_USE": "Đường dẫn giữa còn trang, không xóa được.",
+      "UTILITIES_PAGE_PATH_INACTIVE": "Đường dẫn giữa đang tắt, không tạo trang mới vào đây được.",
+      "UTILITIES_PAGE_VERSION_CONFLICT": "Trang đã được sửa ở nơi khác. Tải lại để xem bản mới nhất.",
       "NOVEL_NOT_FOUND": "Không tìm thấy truyện.",
       "NOVEL_SLUG_EXISTS": "Đường dẫn định danh (slug) truyện đã tồn tại.",
       "NOVEL_FORBIDDEN": "Bạn không có quyền thao tác trên truyện này.",
@@ -391,22 +391,66 @@
     },
     "generic": {
       "title": "Không tải được dữ liệu",
-      "description": "Đã xảy ra lỗi khi tải dữ liệu.",
-      "retry": "Thử lại"
+      "description": "Đã xảy ra lỗi khi tải dữ liệu. Vui lòng kiểm tra lại kết nối hoặc thử lại sau.",
+      "retry": "Thử lại",
+      "backHome": "Về trang chủ",
+      "backPrevious": "Quay lại"
     },
     "forbidden": {
-      "title": "Không có quyền truy cập",
-      "description": "Tài khoản của bạn không được phép vào khu vực quản trị."
+      "badge": "403 · TỪ CHỐI",
+      "title": "Truy cập bị từ chối",
+      "description": "Bạn không có quyền truy cập vào khu vực hoặc tài nguyên này. Vui lòng liên hệ quản trị viên nếu bạn cần được cấp quyền.",
+      "backHome": "Về trang chủ",
+      "backPrevious": "Quay lại trang trước",
+      "back": "Quay lại",
+      "switchAccount": "Đăng nhập tài khoản khác",
+      "contactAdmin": "Liên hệ quản trị"
     },
     "notFound": {
+      "badge": "404 · KHÔNG TÌM THẤY",
       "title": "Không tìm thấy trang",
-      "description": "Đường dẫn không tồn tại hoặc đã bị thay đổi.",
-      "backHome": "Về trang chủ"
+      "description": "Trang bạn đang tìm kiếm không tồn tại, đã bị xóa hoặc đường dẫn đã thay đổi.",
+      "rootTitle": "Không tìm thấy trang",
+      "rootDescription": "Đường dẫn không tồn tại hoặc đã bị xóa.",
+      "backHome": "Về trang chủ",
+      "backPrevious": "Quay lại trang trước",
+      "helpfulLinks": "Liên kết hữu ích",
+      "home": "Trang chủ",
+      "library": "Thư viện",
+      "signIn": "Đăng nhập"
+    },
+    "serverError": {
+      "badge": "500 · LỖI MÁY CHỦ",
+      "title": "Đã xảy ra lỗi máy chủ",
+      "description": "Hệ thống gặp sự cố ngoài ý muốn trong quá trình xử lý yêu cầu. Sự cố đã được tự động ghi nhận để khắc phục.",
+      "retry": "Thử lại ngay",
+      "backHome": "Về trang chủ",
+      "technicalDetails": "Chi tiết kỹ thuật",
+      "devOnly": "Chỉ môi trường phát triển",
+      "errorDigest": "Mã sự cố (Digest)",
+      "copyDigest": "Sao chép mã lỗi",
+      "copiedDigest": "Đã sao chép"
+    },
+    "network": {
+      "title": "Mất kết nối mạng",
+      "description": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra đường truyền Internet của bạn và thử lại.",
+      "retry": "Thử kết nối lại"
     },
     "recordNotFound": {
       "title": "Không tìm thấy bản ghi",
-      "description": "Bản ghi đã bị xóa hoặc đường dẫn không đúng.",
-      "back": "Về danh sách"
+      "description": "Bản ghi không tồn tại, đã bị xóa hoặc bạn không có quyền xem.",
+      "back": "Về danh sách",
+      "backPrevious": "Quay lại"
+    },
+    "global": {
+      "badge": "500 · LỖI HỆ THỐNG",
+      "title": "Đã xảy ra lỗi hệ thống",
+      "documentTitle": "Lỗi hệ thống · TOANNX",
+      "subtitle": "Sự cố nghiêm trọng ở tầng giao diện gốc",
+      "description": "Hệ thống gặp sự cố ngoài ý muốn trong quá trình kết xuất layout gốc. Vui lòng thử lại hoặc tải lại trang.",
+      "retry": "Thử lại",
+      "reload": "Tải lại trang",
+      "errorDigest": "Mã sự cố (Digest)"
     }
   }
 }

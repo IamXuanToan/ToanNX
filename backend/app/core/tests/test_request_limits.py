@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
+from app.account.models.user import User
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
-from app.modules.account.models.user import User
 
 pytestmark = pytest.mark.django_db
 

@@ -105,7 +105,7 @@ test.describe("Nhóm Tiện ích", () => {
     const id = new URL(page.url()).pathname.split("/").pop();
     const csrf = await page.request.get("/api/v1/auth/csrf");
     const token = (await csrf.json()).data.csrf_token as string;
-    const update = await page.request.patch(`/api/v1/short_links/links/${id}`, {
+    const update = await page.request.patch(`/api/v1/utilities/short-links/${id}`, {
       data: { expires_at: new Date(Date.now() + 3000).toISOString() },
       headers: { "X-CSRFToken": token },
     });

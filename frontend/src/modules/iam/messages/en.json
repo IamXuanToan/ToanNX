@@ -72,8 +72,7 @@
       "authentication": "Authentication",
       "iam": "Access control",
       "attachment": "Attachments",
-      "short_links": "Short links",
-      "custom_pages": "Custom pages"
+      "utilities": "Utilities"
     }
   }
 }

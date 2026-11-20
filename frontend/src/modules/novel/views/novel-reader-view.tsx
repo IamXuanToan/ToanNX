@@ -6,8 +6,8 @@
 
 "use client";
 
-import { NovelGuard } from "../components/novel-guard/novel-guard";
-import { NovelReader } from "../components/novel-reader/novel-reader";
+import { NovelGuard } from "../components/novel-guard";
+import { NovelReader } from "../components/novel-reader";
 
 /**
  * Giao diện đọc truyện cho độc giả.

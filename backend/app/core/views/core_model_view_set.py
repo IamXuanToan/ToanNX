@@ -20,7 +20,7 @@ class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
         "destroy": permission_rule(P.DELETE), "bulk_update": permission_rule(P.UPDATE),
         "bulk_delete": permission_rule(P.DELETE), "history": permission_rule(P.READ),
     }
-    action_rate_limits = {"create": "short_links.create"}   # khóa trong settings.RATE_LIMITS
+    action_rate_limits = {"create": "utilities.short_link.create"}   # khóa trong settings.RATE_LIMITS
 ```
 
 Luồng: view → `self.service` (CoreCrudService, luôn gọi bản `*_for(actor)` nên owner tự áp) → repository.

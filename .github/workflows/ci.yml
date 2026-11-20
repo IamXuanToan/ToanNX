@@ -37,12 +37,7 @@ jobs:
       PYTHONUTF8: "1"
       DJANGO_DEBUG: "False"
       DJANGO_SECRET_KEY: ci-only-secret-key-not-used-anywhere-else-0123456789abcdef
-      DB_NAME: toannx
-      DB_USER: toannx
-      DB_PASSWORD: toannx
-      DB_HOST: localhost
-      DB_PORT: "5432"
-      DB_SSLMODE: disable
+      DATABASE_URL: postgresql://toannx:toannx@localhost:5432/toannx?sslmode=disable
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
@@ -97,9 +92,7 @@ jobs:
     env:
       PYTHONUTF8: "1"
       DJANGO_SECRET_KEY: ci-only-secret-key-not-used-anywhere-else-0123456789abcdef
-      DB_NAME: toannx
-      DB_USER: toannx
-      DB_PASSWORD: toannx
+      DATABASE_URL: postgresql://toannx:toannx@localhost:5432/toannx?sslmode=disable
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6

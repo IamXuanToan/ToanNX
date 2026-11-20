@@ -1,4 +1,4 @@
-"""AppConfig gốc của mọi module trong `app/modules`.
+"""AppConfig gốc của mọi module trong `app`.
 
 Mỗi module chỉ khai báo tên module **một lần** trong `module.py` (`MODULE = ModuleDescriptor(code=...)`).
 Lớp này tự nạp `<app>.module.MODULE` và đăng ký vào registry ở `ready()`, đồng thời bắt buộc
@@ -8,8 +8,8 @@ suy ra module từ app chứa code, không phải khai lại chuỗi mã module.
 ```python
 class CustomPagesConfig(CoreModuleConfig):
     default = True                  # bắt buộc: Django chọn đúng config này trong apps.py
-    name = "app.modules.custom_pages"
-    label = "custom_pages"          # = MODULE.code
+    name = "app.utilities"
+    label = "utilities"          # = MODULE.code
     verbose_name = "Custom Pages"
 ```
 

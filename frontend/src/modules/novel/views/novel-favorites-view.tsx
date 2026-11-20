@@ -6,8 +6,8 @@
 
 "use client";
 
-import { NovelFavorites } from "../components/novel-favorites/novel-favorites";
-import { NovelGuard } from "../components/novel-guard/novel-guard";
+import { NovelFavorites } from "../components/novel-favorites";
+import { NovelGuard } from "../components/novel-guard";
 
 /**
  * Giao diện tiểu thuyết yêu thích của người dùng.

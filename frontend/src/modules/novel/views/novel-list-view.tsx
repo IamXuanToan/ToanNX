@@ -6,8 +6,8 @@
 
 "use client";
 
-import { NovelCatalog } from "../components/novel-catalog/novel-catalog";
-import { NovelGuard } from "../components/novel-guard/novel-guard";
+import { NovelCatalog } from "../components/novel-catalog";
+import { NovelGuard } from "../components/novel-guard";
 
 /**
  * Giao diện danh mục tiểu thuyết công khai dành cho độc giả.

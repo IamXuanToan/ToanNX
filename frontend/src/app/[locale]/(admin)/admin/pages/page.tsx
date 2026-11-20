@@ -1,7 +1,7 @@
-import { PageListView } from "@/modules/custom-pages/views/page-list-view";
+import { PageListView } from "@/modules/utilities/views/page-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
-export const generateMetadata = createPageMetadata({ title: "customPages.nav.pages" });
+export const generateMetadata = createPageMetadata({ title: "utilities.nav.pages" });
 
 /** Trang danh sách trang công khai. */
 export default function CustomPagesPage() {

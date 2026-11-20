@@ -7,11 +7,11 @@ import pytest
 from django.conf import settings as django_settings
 from rest_framework.test import APIClient
 
-from app.modules.account.models.user import User
-from app.modules.account.tests.factories.staff_factory import StaffFactory
-from app.modules.account.tests.factories.superuser_factory import SuperuserFactory
-from app.modules.account.tests.factories.user_factory import DEFAULT_PASSWORD, UserFactory
-from app.modules.iam.tests.helpers.permission_helper import grant
+from app.account.models.user import User
+from app.account.tests.factories.staff_factory import StaffFactory
+from app.account.tests.factories.superuser_factory import SuperuserFactory
+from app.account.tests.factories.user_factory import DEFAULT_PASSWORD, UserFactory
+from app.iam.tests.helpers.permission_helper import grant
 
 
 @pytest.fixture(autouse=True)

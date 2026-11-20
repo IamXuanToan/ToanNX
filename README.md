@@ -9,7 +9,7 @@ Website cá nhân **toannx.com** — monorepo gồm:
 | `docs/`     | Tài liệu kiến trúc, xác thực, phân quyền, i18n, deploy, test          | —                        |
 | `scripts/`  | `check-all.sh` / `check-all.ps1`                                      | —                        |
 
-Phạm vi hiện tại: **foundation** (IAM, xác thực, module registry, i18n vi/en, layout admin/public, design system) và backend cho `short_links`, `custom_pages`. QR là block của Custom Pages; frontend cho hai module nội dung chưa triển khai. Analytics, Novel và CMS chưa có module nghiệp vụ.
+Phạm vi hiện tại: **foundation** (IAM, xác thực, module registry, i18n vi/en, layout admin/public, design system) module **Tiện ích** (`utilities`: link rút gọn, mã QR, trang tùy chỉnh) và Novel.
 
 ## Yêu cầu
 
@@ -47,27 +47,27 @@ docker run -d --name toannx-db -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgr
 
 ```bash
 cd backend
-cp .env.example .env        # điền DJANGO_SECRET_KEY, DB_USER/DB_PASSWORD (DB_*), DJANGO_DEBUG=True
+cp .env.example .env        # điền DJANGO_SECRET_KEY, DATABASE_URL, DJANGO_DEBUG=True
 uv sync
 uv run python manage.py migrate          # tạo bảng + đồng bộ quyền/vai trò hệ thống
 uv run python manage.py createsuperuser  # nhập email + mật khẩu
 uv run python manage.py seed_local       # hoặc: local, đồng bộ quyền + superuser mặc định của chủ dự án
-uv run python manage.py runserver 8000
+uv run python manage.py runserver 8001
 ```
 
 Sinh secret: `uv run python -c "import secrets; print(secrets.token_urlsafe(50))"`.
-API docs (chỉ khi `DJANGO_DEBUG=True`): http://localhost:8000/api/v1/docs
+API docs (chỉ khi `DJANGO_DEBUG=True`): http://localhost:8001/api/v1/docs
 
 ### 3. Frontend
 
 ```bash
 cd frontend
-cp .env.example .env.local   # BACKEND_ORIGIN=http://localhost:8000
+cp .env.example .env.local   # BACKEND_ORIGIN=http://localhost:8001
 pnpm install
-pnpm dev                     # http://localhost:3000 → /vi
+pnpm dev                     # http://localhost:3001 → /vi
 ```
 
-Đăng nhập tại http://localhost:3000/vi/dang-nhap bằng superuser vừa tạo.
+Đăng nhập tại http://localhost:3001/vi/dang-nhap bằng superuser vừa tạo.
 
 ## Kiểm tra
 

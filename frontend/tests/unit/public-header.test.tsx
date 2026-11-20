@@ -2,7 +2,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { PublicHeader } from "@/modules/home/components/public-header/public-header";
+import { PublicHeader } from "@/modules/home/components/public-header";
 
 let mockPathname = "/";
 

@@ -10,7 +10,7 @@ class ChangeSet:
 
     Attributes:
         action: `CREATE`, `UPDATE`, `DELETE` hoặc `EVENT`.
-        resource: `<app_label>.<model_name>` (ví dụ `short_links.shortlink`).
+        resource: `<app_label>.<model_name>` (ví dụ `utilities.shortlink`).
         object_id: Khóa chính dạng chuỗi.
         object_label: `str(instance)` lúc ghi.
         changes: `{field: [cũ, mới]}`; field ẩn ghi `["***", "***"]`.

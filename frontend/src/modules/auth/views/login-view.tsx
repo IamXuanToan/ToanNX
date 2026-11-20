@@ -2,8 +2,8 @@ import { useTranslations } from "next-intl";
 
 import type { AppPathname } from "@/i18n/routing";
 
-import { AuthShell } from "../components/auth-shell/auth-shell";
-import { LoginForm } from "../components/login-form/login-form";
+import { AuthShell } from "../components/auth-shell";
+import { LoginForm } from "../components/login-form";
 
 /**
  * Trang đăng nhập (không có đăng ký).

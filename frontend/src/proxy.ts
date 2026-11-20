@@ -5,10 +5,7 @@ import { getPathname } from "./i18n/navigation";
 import { LOCALE_COOKIE, resolveRequestLocale } from "./i18n/request-locale";
 import { type AppLocale, routing } from "./i18n/routing";
 import { AUTH_ROUTES } from "./modules/auth/constants/routes";
-import {
-  PUBLIC_PAGE_ROUTE_PREFIX,
-  RESERVED_SEGMENTS,
-} from "./modules/custom-pages/constants/routes";
+import { PUBLIC_PAGE_ROUTE_PREFIX, RESERVED_SEGMENTS } from "./modules/utilities/constants/routes";
 import { MANAGE_APP_ROUTES } from "./modules/manage-app/constants/routes";
 import { NOVEL_ROUTES } from "./modules/novel/constants/routes";
 
@@ -74,7 +71,7 @@ export default function proxy(request: NextRequest) {
 }
 
 /**
- * URL đúng hai đoạn mà đoạn đầu không phải locale/đoạn dành riêng → trang công khai của Custom Pages.
+ * URL đúng hai đoạn mà đoạn đầu không phải locale/đoạn dành riêng → trang công khai (trang tùy chỉnh của module Tiện ích).
  *
  * @param pathname - Pathname gốc.
  * @returns Segment và slug, hoặc null.

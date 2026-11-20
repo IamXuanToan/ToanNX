@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import messages from "@/messages/vi.json";
-import { SearchInput } from "@/shares/components/common/search-input/search-input";
+import { SearchInput } from "@/shares/components/common/search-input";
 
 function Provider({ children }: { children: ReactNode }) {
   return (

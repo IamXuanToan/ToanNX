@@ -6,16 +6,14 @@ from django.urls import URLPattern, URLResolver, include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns: list[URLPattern | URLResolver] = [
-    path("api/v1/auth/", include("app.modules.authentication.urls")),
-    path("api/v1/account/", include("app.modules.account.urls")),
-    path("api/v1/iam/", include("app.modules.iam.urls")),
-    path("api/v1/", include("app.modules.attachment.urls")),
-    path("api/v1/health", include("app.modules.health.urls")),
-    path("api/v1/short_links/", include("app.modules.short_links.urls")),
-    path("api/v1/custom_pages/", include("app.modules.custom_pages.urls")),
-    path("api/v1/journal/", include("app.modules.journal.urls")),
-    path("api/v1/qr_codes/", include("app.modules.qr_codes.urls")),
-    path("api/v1/novel/", include("app.modules.novel.urls")),
+    path("api/v1/auth/", include("app.authentication.urls")),
+    path("api/v1/account/", include("app.account.urls")),
+    path("api/v1/iam/", include("app.iam.urls")),
+    path("api/v1/", include("app.attachment.urls")),
+    path("api/v1/health", include("app.health.urls")),
+    path("api/v1/journal/", include("app.journal.urls")),
+    path("api/v1/novel/", include("app.novel.urls")),
+    path("api/v1/utilities/", include("app.utilities.urls")),
 ]
 
 if settings.DEBUG:
@@ -26,5 +24,7 @@ if settings.DEBUG:
         *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     ]
 
+handler400 = "app.core.exceptions.exception_handler.handler400"
+handler403 = "app.core.exceptions.exception_handler.handler403"
 handler404 = "app.core.exceptions.exception_handler.handler404"
 handler500 = "app.core.exceptions.exception_handler.handler500"

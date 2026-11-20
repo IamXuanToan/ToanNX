@@ -12,7 +12,7 @@ class CoreJournalEntryResponseSerializer(serializers.Serializer[Any]):
     created_at = serializers.DateTimeField(help_text="Thời điểm thay đổi.")
     action = serializers.CharField(help_text="CREATE, UPDATE, DELETE hoặc EVENT.")
     event = serializers.CharField(help_text="Mã sự kiện khi action = EVENT.")
-    resource = serializers.CharField(help_text="`<module>.<model>`, ví dụ `short_links.shortlink`.")
+    resource = serializers.CharField(help_text="`<module>.<model>`, ví dụ `utilities.shortlink`.")
     object_id = serializers.CharField(help_text="Id bản ghi.")
     object_label = serializers.CharField(help_text="Tên bản ghi lúc thay đổi.")
     actor_id = serializers.UUIDField(allow_null=True, help_text="Người thực hiện (null = hệ thống).")

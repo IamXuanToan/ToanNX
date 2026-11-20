@@ -6,8 +6,8 @@
 
 "use client";
 
-import { NovelGuard } from "../components/novel-guard/novel-guard";
-import { ReadingHistory } from "../components/reading-history/reading-history";
+import { NovelGuard } from "../components/novel-guard";
+import { ReadingHistory } from "../components/reading-history";
 
 /**
  * Giao diện lịch sử đọc tiểu thuyết.

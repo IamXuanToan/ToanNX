@@ -18,7 +18,7 @@ do Django yêu cầu nhưng **không được dùng**. `AUTHENTICATION_BACKENDS`
 `User.has_perm()` hỏi lần lượt các backend (chuẩn Django), nên Account không import IAM mà mọi API kiểu
 Django vẫn dùng cùng nguồn quyền.
 
-## Đánh giá quyền (`app/modules/iam/services/permission_checker.py`)
+## Đánh giá quyền (`app/iam/services/permission_checker.py`)
 
 1. Chưa đăng nhập → DENY.
 2. `is_active=False` → DENY.
@@ -104,12 +104,12 @@ Hệ thống quản lý vai trò theo hai cấp độ:
    ```bash
    uv run python manage.py seed_roles
    ```
-   Dịch vụ `RoleSeedService` (`app/modules/iam/services/role_seed_service.py`) phân tách theo nhóm module và trách nhiệm:
+   Dịch vụ `RoleSeedService` (`app/iam/services/role_seed_service.py`) phân tách theo nhóm module và trách nhiệm:
    - `USER_MANAGER`: Quản lý người dùng, gán vai trò IAM, giám sát phiên (`account.user.*`, `iam.role.read/assign`, `iam.permission.read`, `authentication.session.*`, `journal.entry.read`).
-   - `CONTENT_MANAGER`: Quản lý nội dung xuất bản (`custom_pages.page.*`, `custom_pages.path.*`, `attachment.file.*`, `attachment.folder.*`, `short_links.link.*`, `qr_codes.code.*`).
+   - `CONTENT_MANAGER`: Quản lý nội dung xuất bản (`utilities.page.*`, `utilities.page_path.*`, `attachment.file.*`, `attachment.folder.*`, `utilities.short_link.*`, `utilities.qr_code.*`).
    - `NOVEL_MANAGER`: Quản trị toàn bộ phân hệ truyện (`novel.novel.*`, `novel.chapter.*`, `novel.author.*`, `novel.genre.*`, `novel.tag.*`, `attachment.file.read/create`).
    - `NOVEL_AUTHOR`: Tác giả sáng tác truyện (chỉ tạo/sửa truyện và chương của chính mình, tra cứu tác giả/thể loại/thẻ).
-   - `MARKETING_MANAGER`: Chuyên viên Marketing (`short_links.link.*`, `qr_codes.code.*`, `attachment.file.*`).
+   - `MARKETING_MANAGER`: Chuyên viên Marketing (`utilities.short_link.*`, `utilities.qr_code.*`, `attachment.file.*`).
 
 Mỗi model có **một file permission riêng** trong `permissions/<model>_permission.py` (kế thừa `PermissionCatalog`), không gộp chung nhiều model vào một file. Quyền khai báo bằng `PermissionDefinition(code, name, description)`; mô tả được lưu vào `iam_permission.description`.
 
@@ -128,18 +128,18 @@ CRUD theo `CoreModelViewSet`: `GET/POST /<resource>`, `GET/PATCH/DELETE /<resour
 | `/attachments`, `/attachments/folders` | `attachment.{file,folder}.{read,create,update,delete}`, `attachment.file.manage_all` |
 | `/auth/admin-sessions` (+ `bulk-revoke`, `users`) | `authentication.session.{read,revoke,delete}` |
 | `/journal/entries`, `/journal/resources` | `journal.entry.read` |
-| `/short-links/links` (+ bulk, history) | `short_links.link.{read,create,update,delete,manage_all}` |
-| `/qr-codes/codes` (+ bulk, history), `/qr-codes/preview`, `/qr-codes/banks` | `qr_codes.code.{read,create,update,delete,manage_all}` |
-| `/custom-pages/paths` | `custom_pages.path.{read,create,update,delete}` |
-| `/custom-pages/pages` (+ `duplicate`, bulk, history) | `custom_pages.page.{read,create,update,delete,manage_all}` |
+| `/utilities/short-links` (+ bulk, history) | `utilities.short_link.{read,create,update,delete,manage_all}` |
+| `/utilities/qr-codes` (+ bulk, history), `/utilities/qr-codes/preview`, `/utilities/qr-codes/banks` | `utilities.qr_code.{read,create,update,delete,manage_all}` (`banks` chỉ cần đăng nhập) |
+| `/utilities/page-paths` (+ history) | `utilities.page_path.{read,create,update,delete}` |
+| `/utilities/pages` (+ `duplicate`, bulk, history) | `utilities.page.{read,create,update,delete,manage_all}` |
 | `/novel/novels` (+ bulk, history), `/novel/novels/import-template`, `/novel/novels/import` | `novel.novel.{read,create,update,delete,manage_all,import}` |
 | `/novel/chapters` (+ bulk) | `novel.chapter.{read,create,update,delete}` |
 | `/novel/authors` (+ bulk) | `novel.author.{read,create,update,delete}` |
 | `/novel/genres` (+ bulk) | `novel.genre.{read,create,update,delete}` |
 | `/novel/tags` (+ bulk) | `novel.tag.{read,create,update,delete}` |
 
-Công khai (ghi đè `permission_classes`): `/auth/csrf|login|refresh`, `/health`, `/short-links/resolve/{slug}`,
-`/custom-pages/public/{segment}/{slug}` (người có quyền đọc trang xem được bản nháp qua `?preview=1`),
+Công khai (ghi đè `permission_classes`): `/auth/csrf|login|refresh`, `/health`, `/utilities/short-links/resolve/{slug}`,
+`/utilities/pages/public/{segment}/{slug}` (người có quyền đọc trang xem được bản nháp qua `?preview=1`),
 `/health/cleanup` (khóa bằng `CRON_SECRET`).
 
 Quyền tạo bởi module được khai báo trong `module.py` của module đó; không cần sửa IAM core.

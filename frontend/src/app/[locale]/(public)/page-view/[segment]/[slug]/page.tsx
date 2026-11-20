@@ -3,9 +3,9 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-import { CUSTOM_PAGES_API_ENDPOINTS } from "@/modules/custom-pages/constants/api-endpoints";
-import type { PublicPage } from "@/modules/custom-pages/types/page.types";
-import { PublicPageView } from "@/modules/custom-pages/views/public-page-view";
+import { UTILITIES_API_ENDPOINTS } from "@/modules/utilities/constants/api-endpoints";
+import type { PublicPage } from "@/modules/utilities/types/page.types";
+import { PublicPageView } from "@/modules/utilities/views/public-page-view";
 import { serverApiGet } from "@/shares/lib/api/server-api";
 
 type Params = { locale: string; segment: string; slug: string };
@@ -13,7 +13,7 @@ type Params = { locale: string; segment: string; slug: string };
 /** Tải một lần cho cả metadata và nội dung (kèm cookie: người có quyền xem được bản nháp). */
 const loadPage = cache(async (segment: string, slug: string): Promise<PublicPage | null> => {
   const result = await serverApiGet<PublicPage>(
-    CUSTOM_PAGES_API_ENDPOINTS.public(segment, slug),
+    UTILITIES_API_ENDPOINTS.pagePublic(segment, slug),
     await headers(),
     { opaqueKeys: ["content"] },
   );

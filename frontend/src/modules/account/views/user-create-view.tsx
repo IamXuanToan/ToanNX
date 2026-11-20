@@ -4,10 +4,10 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { usePermission } from "@/modules/auth/hooks/use-permission";
-import { FormPage } from "@/shares/components/common/form-page/form-page";
+import { FormPage } from "@/shares/components/common/form-page";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 
-import { UserForm } from "../components/user-form/user-form";
+import { UserForm } from "../components/user-form";
 import { USER_PERMISSIONS } from "../permissions/user-permission";
 
 /**

@@ -1,7 +1,7 @@
-import { QrCodeListView } from "@/modules/qr-codes/views/qr-code-list-view";
+import { QrCodeListView } from "@/modules/utilities/views/qr-code-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
-export const generateMetadata = createPageMetadata({ title: "qrCodes.nav.codes" });
+export const generateMetadata = createPageMetadata({ title: "utilities.nav.qrCodes" });
 
 /** Trang danh sách mã QR. */
 export default function QrCodesPage() {

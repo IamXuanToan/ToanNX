@@ -5,11 +5,11 @@ from typing import Any
 import pytest
 from django.db import connection
 
+from app.account.models.user import User
+from app.account.tests.factories.user_factory import UserFactory
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.core.utils.text import ascii_slug, to_ascii
-from app.modules.account.models.user import User
-from app.modules.account.tests.factories.user_factory import UserFactory
-from app.modules.iam.tests.factories.role_factory import RoleFactory
+from app.iam.tests.factories.role_factory import RoleFactory
 
 pytestmark = pytest.mark.django_db
 

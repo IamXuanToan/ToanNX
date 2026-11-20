@@ -15,13 +15,13 @@ from django.urls import URLPattern, URLResolver, get_resolver
 from rest_framework.permissions import AllowAny
 from rest_framework.test import APIClient
 
+from app.account.models.user import User
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
-from app.modules.account.models.user import User
-from app.modules.iam.permissions.has_iam_permission import HasIamPermission
+from app.iam.permissions.has_iam_permission import HasIamPermission
 
 pytestmark = pytest.mark.django_db
 
-MODULE_PREFIX = "app.modules."
+MODULE_PREFIX = "app."
 METHODS = ("get", "post", "put", "patch", "delete")
 
 # View công khai (AllowAny): đăng nhập, CSRF, health, link rút gọn, trang công khai, cron dọn dẹp (có secret).
@@ -87,7 +87,11 @@ def _endpoints(patterns: list[URLPattern | URLResolver], prefix: str = "/") -> l
             continue
         callback = pattern.callback
         view_class = getattr(callback, "cls", None) or getattr(callback, "view_class", None)
-        if view_class is None or not view_class.__module__.startswith(MODULE_PREFIX):
+        if (
+            view_class is None
+            or not view_class.__module__.startswith(MODULE_PREFIX)
+            or view_class.__module__.startswith("app.core")
+        ):
             continue
         actions = getattr(callback, "actions", None) or {}
         methods = [m for m in actions if m in METHODS] or [m for m in METHODS if hasattr(view_class, m)]

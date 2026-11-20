@@ -1,6 +1,6 @@
 import type { MessageKey } from "@/shares/types/navigation.types";
 
-import { RecordHistory } from "../components/record-history/record-history";
+import { RecordHistory } from "../components/record-history";
 
 /**
  * Lịch sử thay đổi của một bản ghi, ghép vào trang chi tiết của module khác qua slot `history`.

@@ -1,15 +1,7 @@
 import { apiClient } from "@/shares/lib/api/api-client";
 
 import { AUTH_API_ENDPOINTS } from "../constants/api-endpoints";
-import type {
-  CurrentUser,
-  LoginCredentials,
-  PasswordResetConfirmPayload,
-  PasswordResetRequestPayload,
-  PasswordResetResponse,
-  PasswordResetTokenValidResponse,
-  PasswordResetValidatePayload,
-} from "../types/auth.types";
+import type { CurrentUser, LoginCredentials, PasswordResetConfirmPayload, PasswordResetRequestPayload, PasswordResetResponse, PasswordResetTokenValidResponse, PasswordResetValidatePayload } from "../types/auth.types";
 
 /**
  * Kiểm tra `next` an toàn để chuyển hướng sau đăng nhập (chống open redirect).

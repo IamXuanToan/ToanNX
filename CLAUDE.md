@@ -22,7 +22,7 @@ uv run python manage.py migrate            # also syncs permissions/system roles
 uv run python manage.py sync_iam           # re-sync permissions/roles manually
 uv run python manage.py seed_local         # local only (DEBUG): sync_iam + superuser toannx / nxtoan2k4@gmail.com
 uv run pytest -q                           # all tests (creates test_toannx DB)
-uv run pytest app/modules/iam/tests/test_role_api.py::test_name   # single test
+uv run pytest app/iam/tests/test_role_api.py::test_name   # single test
 uv run ruff format --check . && uv run ruff check . && uv run mypy .
 uv run python manage.py spectacular --validate --fail-on-warn     # OpenAPI must be warning-free
 ```
@@ -65,7 +65,7 @@ rotating refresh token stored as HMAC; every request checks the session is still
   `page`/`page_size` is sent. Input via `@validate_request` + `serializers/validates/`; output via `serializers/responses/`.
 - Responses use a fixed envelope (`{success, data, meta}` / `{success:false, error:{code,...}}`) with stable
   error codes (core `ErrorCode` + per-module `constants/<m>_error_code.py`); the frontend translates by code.
-- **Module registry**: each app in `app/modules/` subclasses `CoreModuleConfig` (label = module code) and exposes a
+- **Module registry**: each app in `app/` subclasses `CoreModuleConfig` (label = module code) and exposes a
   `ModuleDescriptor` in `module.py` (permissions, dependencies); registration is automatic. Installed modules are
   always on: there is no module table, runtime enable/disable or icon on the backend. How modules are shown
   (groups, icons, order) is declared statically in the FE `manage-app` module.
@@ -115,7 +115,7 @@ rotating refresh token stored as HMAC; every request checks the session is still
 
 Branches from `develop` as `feat|fix|ref|docs|test|chore/...-<short-name>` (lowercase ASCII). Commits:
 `<type>(<scope>): <imperative english, lowercase, no period, ≤72 chars>`, types include `ref` (refactor); scopes are
-module names with hyphens (`short-links`, `custom-pages`) or `core`/`shares`/`i18n`/`backend`/`frontend`/`repo`.
+module names with hyphens (`utilities`, `manage-app`) or `core`/`shares`/`i18n`/`backend`/`frontend`/`repo`.
 Hooks in `.githooks` enforce this (`git config core.hooksPath .githooks`). See [docs/rules/git.md](docs/rules/git.md).
 
 ## graphify

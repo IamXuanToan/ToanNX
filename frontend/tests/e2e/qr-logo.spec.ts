@@ -55,7 +55,7 @@ test("chọn logo từ Thư viện, xem trước và lưu mã QR", async ({ page
   await expect(page).toHaveURL(/\/vi\/quan-tri\/ma-qr\/[0-9a-f-]{36}$/);
 
   const id = new URL(page.url()).pathname.split("/").pop();
-  const response = await page.request.get(`/api/v1/qr_codes/codes/${id}`);
+  const response = await page.request.get(`/api/v1/utilities/qr-codes/${id}`);
   expect(response.ok(), await response.text()).toBe(true);
   const code = (await response.json()).data;
   expect(code.logo?.id).toBeTruthy();

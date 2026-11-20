@@ -2,11 +2,9 @@ import { accountNavigation } from "@/modules/account/navigation";
 import { attachmentNavigation } from "@/modules/attachment/navigation";
 import { authenticationAccountItems } from "@/modules/auth/navigation";
 import { iamNavigation } from "@/modules/iam/navigation";
-import { customPagesNavigation } from "@/modules/custom-pages/navigation";
-import { qrCodesNavigation } from "@/modules/qr-codes/navigation";
-import { shortLinksNavigation } from "@/modules/short-links/navigation";
 import { journalNavigation } from "@/modules/journal/navigation";
 import { novelNavigation } from "@/modules/novel/navigation";
+import { utilitiesNavigation } from "@/modules/utilities/navigation";
 import { BookOpen, LayoutTemplate, type LucideIcon, Settings } from "lucide-react";
 
 import type { AdminGroupCode, AdminModuleNavigation } from "@/shares/types/navigation.types";
@@ -32,9 +30,7 @@ export const ADMIN_MODULE_NAVIGATION: AdminModuleNavigation[] = [
   iamNavigation,
   attachmentNavigation,
   journalNavigation,
-  shortLinksNavigation,
-  qrCodesNavigation,
-  customPagesNavigation,
+  utilitiesNavigation,
   novelNavigation,
 ];
 

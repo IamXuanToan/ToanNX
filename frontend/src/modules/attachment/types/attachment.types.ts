@@ -4,6 +4,7 @@ export type Attachment = {
   id: string;
   url: string;
   originalName: string;
+  altText: string;
   contentType: string;
   size: number;
   createdAt: string;
@@ -11,6 +12,13 @@ export type Attachment = {
   uploaderName: string;
   folderId: string | null;
   folderName: string;
+};
+
+/** Dữ liệu cập nhật tệp (đổi tên, văn bản thay thế alt text, chuyển thư mục). */
+export type UpdateAttachmentInput = {
+  originalName?: string;
+  altText?: string;
+  folderId?: string | null;
 };
 
 /** Bộ lọc thư viện; mảng gửi qua API dưới dạng phân tách dấu phẩy. */
