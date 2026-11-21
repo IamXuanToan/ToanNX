@@ -146,7 +146,7 @@ export function ShortLinkLandingCard({
               <div className="bg-primary/15 text-primary flex size-5 items-center justify-center rounded-md">
                 <Link2 aria-hidden="true" className="size-3" />
               </div>
-              <span className="font-mono text-[11px]">TOANNX</span>
+              <span className="font-mono text-[11px]">ToanNX</span>
             </div>
 
             {/* Dòng xung động ở giữa */}

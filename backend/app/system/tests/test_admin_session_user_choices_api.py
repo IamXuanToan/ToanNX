@@ -35,7 +35,7 @@ class TestAdminSessionUserChoicesApi(BaseApiTestCase):
         assert meta["total"] == 2
         assert {item["id"] for item in items} == {str(user.pk), str(staff.pk)}
         assert str(superuser.pk) not in {item["id"] for item in items}
-        assert set(items[0]) == {"id", "email", "username", "first_name", "last_name"}
+        assert set(items[0]) == {"id", "email", "username", "full_name"}
 
         first, page = self.assert_paginated(api.get(URL, {"page_size": 1}))
         second, _ = self.assert_paginated(api.get(URL, {"page_size": 1, "page": 2}))

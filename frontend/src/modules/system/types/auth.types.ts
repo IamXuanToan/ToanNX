@@ -8,14 +8,15 @@ export type AuthUser = {
   id: string;
   email: string;
   username: string | null;
-  firstName: string;
-  lastName: string;
   fullName: string;
   avatar: AttachmentSummary | null;
   isActive: boolean;
   isStaff: boolean;
   isSuperuser: boolean;
   isNovel: boolean;
+  isVerified: boolean;
+  emailVerifiedAt: string | null;
+  socialAccounts?: UserSocialAccountSummary[];
   lastLogin: string | null;
   lastSeenAt: string | null;
   dateJoined: string;
@@ -46,9 +47,11 @@ export type LoginCredentials = {
 export type UpdateProfilePayload = {
   /** Email đăng nhập mới (tùy chọn). */
   email?: string;
-  /** Tên. */
+  /** Họ và tên đầy đủ. */
+  fullName?: string;
+  /** Tên (tương thích cũ). */
   firstName?: string;
-  /** Họ (và tên đệm). */
+  /** Họ (tương thích cũ). */
   lastName?: string;
   /** Tên người dùng. */
   username?: string;
@@ -85,4 +88,46 @@ export type PasswordResetResponse = {
 /** Phản hồi kiểm tra tính hợp lệ của token. */
 export type PasswordResetTokenValidResponse = {
   valid: boolean;
+};
+
+/** Dữ liệu gửi request xác minh email. */
+export type VerifyEmailPayload = {
+  token: string;
+};
+
+/** Dữ liệu phản hồi kiểm tra token lời mời. */
+export type InvitationValidateResponse = {
+  email: string;
+  fullName: string;
+  username: string | null;
+};
+
+/** Dữ liệu chấp nhận lời mời và kích hoạt tài khoản. */
+export type AcceptInvitationPayload = {
+  token: string;
+  fullName: string;
+  username?: string;
+  password: string;
+};
+
+/** Thông tin tóm tắt trạng thái liên kết mạng xã hội của người dùng. */
+export type UserSocialAccountSummary = {
+  provider: string;
+  isConfigured: boolean;
+  isConnected: boolean;
+  email: string;
+  displayName: string;
+  avatarUrl: string;
+  connectedAt: string | null;
+};
+
+/** URL chuyển hướng OAuth do backend sinh. */
+export type SocialAuthUrlResponse = {
+  authorizationUrl: string;
+};
+
+/** Payload trao đổi mã code OAuth để đăng nhập hoặc liên kết. */
+export type SocialAuthCodePayload = {
+  code: string;
+  redirectUri: string;
 };

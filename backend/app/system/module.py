@@ -6,6 +6,7 @@ from app.system.permissions.attachment_permission import AttachmentPermission
 from app.system.permissions.iam_permission import IamPermission
 from app.system.permissions.journal_entry_permission import JournalEntryPermission
 from app.system.permissions.session_permission import SessionPermission
+from app.system.permissions.setting_permission import SettingPermission
 from app.system.permissions.user_permission import UserPermission
 
 MODULE = ModuleDescriptor(
@@ -23,6 +24,7 @@ MODULE = ModuleDescriptor(
         *AttachmentPermission.all(),
         *AttachmentFolderPermission.all(),
         *JournalEntryPermission.all(),
+        *SettingPermission.all(),
     ),
     cleanup_tasks=(
         "app.system.tasks.purge_expired_auth.purge_expired_auth",

@@ -1,18 +1,29 @@
 import type { AttachmentSummary } from "@/shares/types/attachment.types";
 
+/** Thông tin tài khoản mạng xã hội liên kết của người dùng. */
+export type UserConnectedSocial = {
+  id?: string;
+  provider: string;
+  uid?: string;
+  email: string;
+  displayName: string;
+  avatarUrl?: string;
+  createdAt?: string;
+};
+
 /** Người dùng (không bao giờ có mật khẩu; vai trò lấy ở API IAM `/system/users/{id}/roles`). */
 export type User = {
   id: string;
   email: string;
   username: string | null;
-  firstName: string;
-  lastName: string;
   fullName: string;
   avatar: AttachmentSummary | null;
   isActive: boolean;
   isStaff: boolean;
   isSuperuser: boolean;
   isNovel: boolean;
+  isVerified: boolean;
+  socialAccounts: UserConnectedSocial[];
   lastLogin: string | null;
   /** Hoạt động gần nhất (đăng nhập hoặc gọi API), BE ghi tối đa mỗi phút. */
   lastSeenAt: string | null;
@@ -44,10 +55,10 @@ export type UserFilters = {
 /** Dữ liệu tạo người dùng. */
 export type CreateUserInput = {
   email: string;
-  password: string;
+  password?: string;
+  sendInvitation?: boolean;
   username?: string;
-  firstName?: string;
-  lastName?: string;
+  fullName?: string;
   avatarId?: string | null;
   isActive?: boolean;
   isStaff?: boolean;
@@ -55,5 +66,5 @@ export type CreateUserInput = {
   isNovel?: boolean;
 };
 
-/** Dữ liệu cập nhật người dùng. */
-export type UpdateUserInput = Partial<CreateUserInput>;
+/** Dữ liệu cập nhật người dùng (không bao gồm sendInvitation vì chỉ áp dụng khi tạo mới). */
+export type UpdateUserInput = Omit<Partial<CreateUserInput>, "sendInvitation">;

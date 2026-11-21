@@ -1,18 +1,20 @@
 "use client";
 
+import { AlertCircle, CheckCircle2, Mail } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 
 import { FormSection } from "@/shares/components/common/form-section";
+import { Badge } from "@/shares/components/ui/badge";
 import { isOnline } from "@/shares/lib/presence";
 
 import type { User } from "../types/account.types";
 
 /**
- * Card "Hoạt động" (chỉ ở trang chi tiết): đang trực tuyến hay không, hoạt động gần nhất, đăng nhập gần
- * nhất, ngày tham gia. Chỉ đọc.
+ * Card "Hoạt động" (chỉ ở trang chi tiết): trạng thái trực tuyến, hoạt động gần nhất, đăng nhập gần
+ * nhất, ngày tham gia, kèm thông tin xác minh email. Chỉ đọc.
  *
  * @param props - Người dùng.
- * @returns Card hoạt động.
+ * @returns Card hoạt động và xác thực.
  */
 export function UserActivitySection({ user }: { user: User }) {
   const t = useTranslations("system.account.users");
@@ -60,6 +62,37 @@ export function UserActivitySection({ user }: { user: User }) {
           </div>
         ))}
       </dl>
+
+      <div className="border-border/40 mt-4 border-t pt-3">
+        <p className="text-muted-foreground mb-2.5 text-xs font-semibold">
+          {t("sections.verification")}
+        </p>
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between gap-2 text-xs">
+            <span className="text-muted-foreground flex items-center gap-1.5">
+              <Mail className="size-3.5" />
+              <span>{t("fields.emailVerified")}</span>
+            </span>
+            {user.isVerified ? (
+              <Badge
+                variant="outline"
+                className="gap-1 border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0 text-[11px] text-emerald-700 dark:text-emerald-400"
+              >
+                <CheckCircle2 className="size-3" />
+                <span>{t("fields.emailVerifiedTrue")}</span>
+              </Badge>
+            ) : (
+              <Badge
+                variant="outline"
+                className="gap-1 border-amber-500/30 bg-amber-500/10 px-1.5 py-0 text-[11px] text-amber-700 dark:text-amber-400"
+              >
+                <AlertCircle className="size-3" />
+                <span>{t("fields.emailVerifiedFalse")}</span>
+              </Badge>
+            )}
+          </div>
+        </div>
+      </div>
     </FormSection>
   );
 }

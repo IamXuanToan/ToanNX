@@ -7,6 +7,7 @@ import { ATTACHMENT_PERMISSIONS } from "./permissions/attachment-permission";
 import { IAM_PERMISSIONS } from "./permissions/iam-permission";
 import { JOURNAL_ENTRY_PERMISSIONS } from "./permissions/journal-entry-permission";
 import { SESSION_PERMISSIONS } from "./permissions/session-permission";
+import { SETTING_PERMISSIONS } from "./permissions/setting-permission";
 import { USER_PERMISSIONS } from "./permissions/user-permission";
 
 /**
@@ -49,6 +50,12 @@ export const systemNavigation: AdminModuleNavigation = {
       href: SYSTEM_ROUTES.library,
       icon: Images,
       permission: ATTACHMENT_PERMISSIONS.read,
+    },
+    {
+      labelKey: "common.nav.settings",
+      href: SYSTEM_ROUTES.settings,
+      icon: Settings,
+      permission: SETTING_PERMISSIONS.settingRead,
     },
     {
       labelKey: "system.journal.nav.entries",

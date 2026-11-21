@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "cn";
-import { FolderInput, Images, PanelRight, RotateCw, Trash2, Upload, X } from "lucide-react";
+import { FolderInput, Images, RotateCw, Trash2, Upload, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
@@ -24,10 +24,12 @@ import {
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
 import type { AttachmentCapabilities } from "../types/attachment.types";
-import { AttachmentDetails } from "./attachment-details";
+import { useAdminSessionUsers } from "../hooks/use-admin-session-users";
 import { AttachmentDetailDialog } from "./attachment-detail-dialog";
 import { AttachmentEditDialog } from "./attachment-edit-dialog";
 import { AttachmentGrid } from "./attachment-grid";
+import { AttachmentViewModeToggle } from "./attachment-view-mode-toggle";
+import { useAttachmentViewMode } from "./hooks/use-attachment-view-mode";
 import { AttachmentUpload } from "./attachment-upload";
 import { useAttachmentLibrary } from "./hooks/use-attachment-library";
 import { AttachmentMediaFilters } from "./attachment-media-filters";
@@ -35,16 +37,22 @@ import { AttachmentFolderFilter } from "./attachment-folder-filter";
 import { AttachmentFolderManager } from "./attachment-folder-manager";
 import { AttachmentMoveDialog } from "./attachment-move-dialog";
 
-/** @param capabilities - Quyền giao diện từ view. @returns Thư viện phương án B: lưới và panel, mobile có dialog chi tiết. */
+/**
+ * Thư viện tệp đính kèm: xem dạng lưới hoặc bảng danh sách toàn chiều ngang màn hình,
+ * lọc theo từ khóa, loại tệp, định dạng, thư mục, người tạo và phạm vi, hỗ trợ thao tác hàng loạt.
+ *
+ * @param capabilities - Quyền giao diện từ view.
+ * @returns Thư viện tệp.
+ */
 export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
   const t = useTranslations("system.attachment");
   const tChoice = useTranslations("common.choice");
+  const { viewMode, setViewMode } = useAttachmentViewMode();
   const state = useAttachmentLibrary(capabilities);
+  const usersQuery = useAdminSessionUsers();
   const {
     table,
     query,
-    showDetails,
-    setShowDetails,
     editingFile,
     setEditingFile,
     filtered,
@@ -71,7 +79,7 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
       />
 
       <Card className="space-y-3 rounded-xl p-4 shadow-2xs">
-        {/* Hàng 1: Tìm kiếm + Select Sắp xếp + Nút Toggle Chi tiết + Nút Làm mới */}
+        {/* Hàng 1: Tìm kiếm + Select Sắp xếp + Toggle View Mode + Nút Làm mới */}
         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
           <SearchInput
             {...table.search}
@@ -91,16 +99,7 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
                 ]}
               />
             </div>
-            <Button
-              variant="outline"
-              size="icon"
-              className={cn("size-10 rounded-xl", showDetails && "bg-muted text-foreground")}
-              aria-label={showDetails ? "Ẩn thông tin chi tiết" : "Hiện thông tin chi tiết"}
-              title={showDetails ? "Ẩn thông tin chi tiết" : "Hiện thông tin chi tiết"}
-              onClick={() => setShowDetails((prev) => !prev)}
-            >
-              <PanelRight className="size-4" />
-            </Button>
+            <AttachmentViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
             <Button
               variant="outline"
               size="icon"
@@ -115,7 +114,7 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
           </div>
         </div>
 
-        {/* Hàng 2: Bộ lọc (Loại tệp, Đuôi tệp, Thư mục, Quản lý thư mục, Phạm vi) + Xóa lọc */}
+        {/* Hàng 2: Bộ lọc (Loại tệp, Đuôi tệp, Thư mục, Quản lý thư mục, Người tạo, Phạm vi) + Xóa lọc */}
         <div className="border-border/50 flex flex-wrap items-center gap-2 border-t pt-2.5">
           <AttachmentMediaFilters
             kinds={state.kinds}
@@ -129,6 +128,26 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
             onChange={(values) => table.setFilterValues("folder", values)}
           />
           <AttachmentFolderManager capabilities={capabilities.folders} />
+
+          {/* Lọc theo người tải lên (người tạo) khi có quyền xem tất cả */}
+          {capabilities.canManageAll ? (
+            <FilterSelect
+              label={t("uploader")}
+              value={table.getFilterValues("createdBy")}
+              onValueChange={(values) => table.setFilterValues("createdBy", values)}
+              searchable
+              disabled={usersQuery.isPending}
+              options={(usersQuery.data ?? []).map((user) => ({
+                value: user.id,
+                label:
+                  [user.lastName, user.firstName].filter(Boolean).join(" ") ||
+                  user.username ||
+                  user.email,
+                description: [user.email, user.username].filter(Boolean).join(" · "),
+              }))}
+            />
+          ) : null}
+
           {capabilities.canManageAll ? (
             <FilterSelect
               label={t("scope")}
@@ -153,13 +172,24 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
           ) : null}
         </div>
 
-        {/* Hàng 3: Thanh thao tác hàng loạt (Bulk Bar) - chỉ hiện khi có file được chọn */}
+        {/* Hàng 3: Thanh thao tác hàng loạt (Bulk Bar) chuẩn đơn dòng sang trọng */}
         {(capabilities.canDelete || capabilities.canMove) && state.selected.length > 0 ? (
-          <div className="bg-primary/5 border-primary/20 animate-in fade-in-50 flex flex-wrap items-center justify-between gap-2.5 rounded-xl border p-2.5 duration-150 sm:px-4">
-            <div className="flex items-center gap-2">
-              <span className="bg-primary/15 text-primary inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold tabular-nums">
+          <div className="bg-primary/5 border-primary/20 animate-in fade-in-50 flex min-h-12 w-full flex-wrap items-center justify-between gap-3 rounded-xl border px-3.5 py-1.5 shadow-2xs duration-150 sm:flex-nowrap">
+            <div className="flex shrink-0 items-center gap-2">
+              <span className="bg-primary/10 text-primary border-primary/20 inline-flex h-8 items-center rounded-lg border px-2.5 text-xs font-semibold tabular-nums">
                 {t("selectedCount", { count: state.selected.length, total: state.items.length })}
               </span>
+              <div className="bg-border/60 h-4 w-px" aria-hidden />
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={state.locked}
+                onClick={state.clearSelection}
+                className="text-muted-foreground hover:text-foreground h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
+              >
+                <X className="size-3.5" />
+                <span>{t("clearSelection")}</span>
+              </Button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Button
@@ -167,18 +197,9 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
                 size="sm"
                 disabled={state.locked || state.selected.length === state.items.length}
                 onClick={state.selectAll}
-                className="h-9 rounded-lg px-3 text-xs"
+                className="h-8 rounded-lg px-3 text-xs font-medium"
               >
                 {tChoice("selectAll")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={state.locked}
-                onClick={state.clearSelection}
-                className="h-9 rounded-lg px-3 text-xs"
-              >
-                {t("clearSelection")}
               </Button>
               {capabilities.canMove ? (
                 <Button
@@ -186,7 +207,7 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
                   size="sm"
                   disabled={state.locked}
                   onClick={() => state.setPendingMove(state.selected)}
-                  className="h-9 gap-1.5 rounded-lg px-3 text-xs"
+                  className="h-8 gap-1.5 rounded-lg px-3 text-xs font-medium"
                 >
                   <FolderInput className="size-3.5" />
                   <span>{t("moveFiles")}</span>
@@ -198,7 +219,7 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
                   size="sm"
                   disabled={state.locked}
                   onClick={() => state.setPendingDelete(state.selected)}
-                  className="h-9 gap-1.5 rounded-lg px-3 text-xs font-medium"
+                  className="h-8 gap-1.5 rounded-lg px-3 text-xs font-medium"
                 >
                   <Trash2 className="size-3.5" />
                   <span>{t("deleteSelected", { count: state.selected.length })}</span>
@@ -211,64 +232,43 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
 
       {query.isPending ? (
         <div
-          className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5"
+          className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
           aria-label={t("loading")}
           aria-busy="true"
         >
-          {Array.from({ length: 10 }, (_, index) => (
+          {Array.from({ length: 12 }, (_, index) => (
             <Skeleton key={index} className="aspect-square rounded-xl" />
           ))}
         </div>
       ) : query.isError ? (
         <ErrorState onRetry={() => query.refetch()} />
       ) : state.items.length ? (
-        <div
-          className={cn(
-            "grid grid-cols-1 items-start gap-5",
-            showDetails && state.active ? "lg:grid-cols-[minmax(0,1fr)_340px]" : "",
-          )}
-        >
-          <div
-            className="flex min-w-0 flex-col justify-between space-y-8 sm:space-y-10"
-            aria-busy={query.isFetching}
-          >
-            <div className="min-h-[280px] sm:min-h-[340px]">
-              <AttachmentGrid
-                files={state.items}
-                activeId={state.active?.id}
-                selectedIds={state.selectedIds}
-                onInspect={handleInspect}
-                onToggle={capabilities.canDelete || capabilities.canMove ? state.toggle : undefined}
-                onViewDetails={(file) => {
-                  handleInspect(file);
-                  state.setDetailOpen(true);
-                }}
-                onEdit={(file) => setEditingFile(file)}
-                disabled={state.locked}
-              />
-            </div>
-            {query.data ? (
-              <Card className="mt-auto rounded-xl p-4 shadow-2xs">
-                <DataPagination
-                  pagination={query.data.pagination}
-                  onPageChange={table.onPageChange}
-                  onPageSizeChange={table.onPageSizeChange}
-                  disabled={state.locked}
-                />
-              </Card>
-            ) : null}
+        <div className="flex min-w-0 flex-col justify-between space-y-8 sm:space-y-10" aria-busy={query.isFetching}>
+          <div className="min-h-[280px] sm:min-h-[340px]">
+            <AttachmentGrid
+              files={state.items}
+              activeId={state.active?.id}
+              selectedIds={state.selectedIds}
+              viewMode={viewMode}
+              onInspect={handleInspect}
+              onToggle={capabilities.canDelete || capabilities.canMove ? state.toggle : undefined}
+              onViewDetails={(file) => {
+                handleInspect(file);
+                state.setDetailOpen(true);
+              }}
+              onEdit={(file) => setEditingFile(file)}
+              disabled={state.locked}
+            />
           </div>
-          {showDetails && state.active ? (
-            <aside className="animate-in fade-in-50 sticky top-20 hidden min-w-0 duration-150 lg:block">
-              <AttachmentDetails
-                file={state.active}
-                onDelete={deleteOne}
-                onMove={capabilities.canMove ? (file) => state.setPendingMove([file]) : undefined}
-                onClose={() => setShowDetails(false)}
-                onUpdated={(updated) => handleInspect(updated)}
+          {query.data ? (
+            <Card className="mt-auto rounded-xl p-4 shadow-2xs">
+              <DataPagination
+                pagination={query.data.pagination}
+                onPageChange={table.onPageChange}
+                onPageSizeChange={table.onPageSizeChange}
                 disabled={state.locked}
               />
-            </aside>
+            </Card>
           ) : null}
         </div>
       ) : (
@@ -290,11 +290,13 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
         </Card>
       )}
 
+      {/* Dialog xem & thao tác chi tiết tệp chuẩn */}
       <AttachmentDetailDialog
         file={state.active}
         open={state.detailOpen && Boolean(state.active)}
         onClose={() => state.setDetailOpen(false)}
         onDelete={deleteOne}
+        onMove={capabilities.canMove ? (file) => state.setPendingMove([file]) : undefined}
         onUpdated={(updated) => handleInspect(updated)}
         canEdit={Boolean(capabilities.canMove)}
         canDelete={capabilities.canDelete}
@@ -303,7 +305,7 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
 
       <Dialog
         open={state.uploadOpen}
-        onOpenChange={(open) => !state.uploadBusy && state.setUploadOpen(open)}
+        onOpenChange={(open) => !open && !state.uploadBusy && state.setUploadOpen(false)}
       >
         <DialogContent
           showCloseButton={false}

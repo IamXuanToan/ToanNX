@@ -2,10 +2,11 @@
 
 from typing import Any
 
-from django.db.models import QuerySet
+from django.db.models import Prefetch, QuerySet
 
 from app.core.repositories.core_repository import CoreRepository
 from app.system.models.user import User
+from app.system.models.user_social_account import UserSocialAccount
 
 
 class UserRepository(CoreRepository[User]):
@@ -14,12 +15,22 @@ class UserRepository(CoreRepository[User]):
     model = User
 
     def get_queryset(self) -> QuerySet[User]:
-        """Người dùng chưa xóa mềm, kèm ảnh đại diện (tránh N+1 khi serialize).
+        """Người dùng chưa xóa mềm, kèm ảnh đại diện và tài khoản mạng xã hội (tránh N+1).
 
         Returns:
             QuerySet.
         """
-        return super().get_queryset().select_related("avatar")
+        return (
+            super()
+            .get_queryset()
+            .select_related("avatar")
+            .prefetch_related(
+                Prefetch(
+                    "social_accounts",
+                    queryset=UserSocialAccount.objects.filter(deleted_at__isnull=True),
+                )
+            )
+        )
 
     def find_by_email(self, email: str) -> User | None:
         """Tìm người dùng (kể cả bị khóa) theo email đã chuẩn hóa.

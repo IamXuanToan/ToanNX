@@ -9,6 +9,12 @@ export const SYSTEM_ROUTES = {
   login: "/login",
   forgotPassword: "/forgot-password",
   resetPassword: "/reset-password",
+  verifyEmail: "/verify-email",
+  invitation: "/invitation",
+  authCallback: (provider: string) => ({
+    pathname: "/auth/callback/[provider]" as const,
+    params: { provider },
+  }),
   users: "/admin/users",
   userCreate: "/admin/users/new",
   userDetail: (id: string) => ({ pathname: "/admin/users/[id]" as const, params: { id } }),
@@ -18,6 +24,7 @@ export const SYSTEM_ROUTES = {
   roleDetail: (id: string) => ({ pathname: "/admin/roles/[id]" as const, params: { id } }),
   permissions: "/admin/permissions",
   library: "/admin/attachments",
+  settings: "/admin/settings",
   journalEntries: "/admin/journal",
   journalEntryDetail: (id: string) => ({
     pathname: "/admin/journal/[id]" as const,
@@ -30,6 +37,12 @@ export const SYSTEM_PATHNAMES = {
   "/login": { vi: "/dang-nhap", en: "/login" },
   "/forgot-password": { vi: "/quen-mat-khau", en: "/forgot-password" },
   "/reset-password": { vi: "/dat-lai-mat-khau", en: "/reset-password" },
+  "/verify-email": { vi: "/xac-minh-email", en: "/verify-email" },
+  "/invitation": { vi: "/loi-moi", en: "/invitation" },
+  "/auth/callback/[provider]": {
+    vi: "/auth/callback/[provider]",
+    en: "/auth/callback/[provider]",
+  },
   "/admin/users": { vi: "/quan-tri/nguoi-dung", en: "/admin/users" },
   "/admin/users/new": { vi: "/quan-tri/nguoi-dung/tao-moi", en: "/admin/users/new" },
   "/admin/users/[id]": { vi: "/quan-tri/nguoi-dung/[id]", en: "/admin/users/[id]" },
@@ -39,6 +52,7 @@ export const SYSTEM_PATHNAMES = {
   "/admin/roles/[id]": { vi: "/quan-tri/vai-tro/[id]", en: "/admin/roles/[id]" },
   "/admin/permissions": { vi: "/quan-tri/quyen", en: "/admin/permissions" },
   "/admin/attachments": { vi: "/quan-tri/thu-vien", en: "/admin/attachments" },
+  "/admin/settings": { vi: "/quan-tri/cai-dat", en: "/admin/settings" },
   "/admin/journal": { vi: "/quan-tri/nhat-ky", en: "/admin/journal" },
   "/admin/journal/[id]": { vi: "/quan-tri/nhat-ky/[id]", en: "/admin/journal/[id]" },
 } as const;

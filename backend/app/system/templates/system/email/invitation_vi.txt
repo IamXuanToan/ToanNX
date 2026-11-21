@@ -1,0 +1,14 @@
+LỜI MỜI THAM GIA HỆ THỐNG TOANNX
+
+Xin chào {{ user_display_name }},
+
+Bạn đã được quản trị viên mời tham gia vào hệ thống quản lý ToanNX với địa chỉ email: {{ user.email }}.
+
+Vui lòng truy cập liên kết sau để thiết lập mật khẩu và hoàn tất kích hoạt tài khoản của bạn:
+
+{{ invitation_url }}
+
+Liên kết này có hiệu lực trong {{ timeout_days }} ngày.
+
+---
+© {{ current_year }} ToanNX. Tất cả quyền được bảo lưu.

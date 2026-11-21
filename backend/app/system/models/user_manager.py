@@ -79,4 +79,6 @@ class UserManager(BaseUserManager["User"]):
         for flag in ("is_staff", "is_superuser", "is_active"):
             if extra_fields[flag] is not True:
                 raise ValueError(f"Superuser phải có {flag}=True.")
+        if not extra_fields.get("username"):
+            raise ValueError("Superuser bắt buộc phải có username.")
         return self.create_user(email, password, **extra_fields)

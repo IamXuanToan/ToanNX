@@ -3,7 +3,7 @@
   "statusReady": "Hệ thống sẵn sàng",
   "superuserBadge": "Toàn quyền",
   "staffBadge": "Quản trị viên",
-  "moduleUnit": "phân hệ",
+  "itemUnit": "mục",
   "systemOnline": "Tất cả dịch vụ hoạt động bình thường",
   "lastLogin": "Đăng nhập gần nhất: {time}",
   "empty": {

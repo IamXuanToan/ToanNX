@@ -19,7 +19,9 @@ export const userService = {
   /** @param id - Id. @param input - Dữ liệu form; mật khẩu rỗng = giữ nguyên. @returns Người dùng. */
   update(id: string, input: UpdateUserInput): Promise<User> {
     const { password, ...rest } = input;
-    return crud.update(id, password ? { ...rest, password } : rest);
+    const sanitized = { ...rest };
+    delete (sanitized as Record<string, unknown>).sendInvitation;
+    return crud.update(id, password ? { ...sanitized, password } : sanitized);
   },
 
   /** @param ids - Id. @param isActive - Khóa/mở. @returns Số bản ghi (tất cả hoặc không gì cả). */

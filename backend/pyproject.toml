@@ -1,7 +1,7 @@
 [project]
 name = "toannx-backend"
 version = "0.1.0"
-description = "TOANNX backend — Django + Django REST Framework"
+description = "ToanNX backend — Django + Django REST Framework"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -83,4 +83,4 @@ testpaths = ["app"]
 addopts = "-ra --strict-markers"
 
 [tool.vercel.scripts]
-build = 'DATABASE_URL="$DATABASE_URL_UNPOOLED" python manage.py migrate --noinput'
+build = 'DATABASE_URL="$DATABASE_URL" python manage.py migrate --noinput'

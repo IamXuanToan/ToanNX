@@ -1,4 +1,4 @@
-# Chuẩn hóa hệ thống TOANNX — BE + FE
+# Chuẩn hóa hệ thống ToanNX — BE + FE
 
 Ngày 15/11/2026 · bản 7. Thay cho `qr-shortlinks-custompages-plan.md` (bản 6) và file Q&A (đã gộp vào mục 13).
 Trạng thái: **ĐÃ THỰC HIỆN** (15/11/2026) trên `develop`. Chưa làm: sinh type FE từ OpenAPI, CI workflow, CSP,

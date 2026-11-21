@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { getUserDisplayName, getUserInitials } from "@/shares/components/common/user-avatar";
 
@@ -9,17 +10,46 @@ import { useLogout } from "../../hooks/use-logout";
 
 /**
  * Dữ liệu và hành động của menu người dùng.
+ * Hỗ trợ đồng bộ trạng thái mở modal Hồ sơ cá nhân với URL query param `?profile=open`.
  *
  * @returns Người dùng, tên hiển thị, chữ cái viết tắt đại diện, trạng thái mở hồ sơ cá nhân và hàm đăng xuất.
  */
 export function useUserMenu() {
   const { data } = useCurrentUser();
   const logout = useLogout();
-  const [profileOpen, setProfileOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  const isProfileInUrl =
+    searchParams.get("profile") === "open" || Boolean(searchParams.get("tab"));
+  const [profileOpen, setProfileOpenState] = useState(isProfileInUrl);
+
+  // Khi URL thay đổi có param profile=open hoặc tab, tự động mở dialog
+  useEffect(() => {
+    if (searchParams.get("profile") === "open" || searchParams.get("tab")) {
+      setProfileOpenState(true);
+    }
+  }, [searchParams]);
+
+  // Đồng bộ đóng/mở với URL query string
+  const setProfileOpen = useCallback((open: boolean) => {
+    setProfileOpenState(open);
+    if (typeof window === "undefined") return;
+
+    const url = new URL(window.location.href);
+    if (open) {
+      url.searchParams.set("profile", "open");
+    } else {
+      url.searchParams.delete("profile");
+      url.searchParams.delete("tab");
+    }
+    window.history.replaceState(null, "", `${url.pathname}${url.search}`);
+  }, []);
+
   const user = data?.user;
   const roles = data?.roles ?? [];
   const displayName = getUserDisplayName(user);
   const initials = getUserInitials(user);
+
   return {
     user,
     roles,

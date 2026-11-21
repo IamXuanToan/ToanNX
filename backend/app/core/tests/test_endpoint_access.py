@@ -40,6 +40,12 @@ PUBLIC_VIEWS = frozenset(
         "PasswordResetRequestView",
         "PasswordResetValidateTokenView",
         "PasswordResetConfirmView",
+        "VerifyEmailView",
+        "InvitationValidateView",
+        "AcceptInvitationView",
+        "SocialAuthUrlView",
+        "SocialLoginView",
+        "PublicSettingView",
     }
 )
 # View chỉ cần đăng nhập (dữ liệu của chính người dùng hoặc danh mục tĩnh).
@@ -47,8 +53,12 @@ LOGIN_ONLY_VIEWS = frozenset(
     {
         "LogoutAllView",
         "MeView",
+        "SendVerificationEmailView",
         "SessionView",
         "SessionObjectView",
+        "UserSocialAccountView",
+        "SocialLinkView",
+        "SocialUnlinkView",
         "QrBankView",
         "ReadingHistoryView",
         "ReadingHistoryObjectView",

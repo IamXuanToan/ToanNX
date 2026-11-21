@@ -108,6 +108,28 @@ class AuthService:
             self.user_service.record_login(user)
         return self._build_result(session, refresh_raw)
 
+    def create_session_for_user(self, request: HttpRequest, user: User) -> AuthResult:
+        """Mở phiên và phát token trực tiếp cho người dùng (ví dụ khi kích hoạt tài khoản qua lời mời).
+
+        Args:
+            request: HTTP request.
+            user: Người dùng đã kích hoạt thành công.
+
+        Returns:
+            AuthResult để đặt cookie và trả hồ sơ.
+        """
+        ip = get_client_ip(request)
+        with transaction.atomic():
+            session = self.auth_session_repository.open(
+                user=user,
+                expires_at=timezone.now() + timedelta(seconds=settings.AUTH_REFRESH_TOKEN_LIFETIME_SECONDS),
+                user_agent=request.META.get("HTTP_USER_AGENT", ""),
+                ip_address=ip,
+            )
+            refresh_raw = self.refresh_token_service.issue(session)
+            self.user_service.record_login(user)
+        return self._build_result(session, refresh_raw)
+
     def refresh(self, request: HttpRequest, raw_token: str) -> AuthResult:
         """Làm mới phiên (rate limit theo IP).
 

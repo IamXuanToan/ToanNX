@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 
 from app.core.filters.core_char_in_filter import CoreCharInFilter
 from app.core.filters.core_choice_in_filter import CoreChoiceInFilter
+from app.core.filters.core_uuid_in_filter import CoreUUIDInFilter
 from app.system.constants.media_types import CONTENT_TYPES_BY_KIND, MEDIA_KINDS, UNFILED_FOLDER
 from app.system.models.attachment import Attachment
 
@@ -28,6 +29,10 @@ class AttachmentFilter(django_filters.FilterSet):
         choices=(("MINE", "Của tôi"), ("OTHERS", "Của người khác")),
         method="filter_scope",
         help_text="MINE, OTHERS; không mở rộng phạm vi quyền của người dùng.",
+    )
+    created_by = CoreUUIDInFilter(
+        field_name="created_by_id",
+        help_text="UUID người tạo tệp; nhận nhiều giá trị phân tách dấu phẩy.",
     )
 
     def filter_kind(
@@ -65,4 +70,4 @@ class AttachmentFilter(django_filters.FilterSet):
 
     class Meta:
         model = Attachment
-        fields = ("content_type", "kind", "scope", "folder")
+        fields = ("content_type", "kind", "scope", "folder", "created_by")

@@ -12,14 +12,14 @@ function current(overrides: Partial<CurrentUser["user"]>, permissions: string[] 
       id: "1",
       email: "a@b.c",
       username: null,
-      firstName: "",
-      lastName: "",
       fullName: "",
       avatar: null,
       isActive: true,
       isStaff: false,
       isSuperuser: false,
       isNovel: false,
+      isVerified: false,
+      emailVerifiedAt: null,
       lastLogin: null,
       lastSeenAt: null,
       dateJoined: "",
@@ -37,6 +37,12 @@ describe("sanitizeNextPath", () => {
     expect(sanitizeNextPath("https://evil.com")).toBeNull();
     expect(sanitizeNextPath("/\\evil.com")).toBeNull();
     expect(sanitizeNextPath(null)).toBeNull();
+  });
+
+  it("chuẩn hóa và loại bỏ tiền tố locale bị lặp", () => {
+    expect(sanitizeNextPath("/vi/vi/quan-tri")).toBe("/vi/quan-tri");
+    expect(sanitizeNextPath("/en/en/admin")).toBe("/en/admin");
+    expect(sanitizeNextPath("/vi/vi/vi/quan-tri")).toBe("/vi/quan-tri");
   });
 });
 

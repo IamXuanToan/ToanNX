@@ -1,4 +1,4 @@
-# DESIGN.md — khu quản trị TOANNX
+# DESIGN.md — khu quản trị ToanNX
 
 Quyết định giao diện đã chốt cho `/admin`. Màn mới theo file này, không chọn lại.
 

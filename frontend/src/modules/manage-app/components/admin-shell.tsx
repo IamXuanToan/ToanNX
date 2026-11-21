@@ -100,7 +100,7 @@ function LauncherLayout({ children }: { children: ReactNode }) {
         aria-hidden
       />
       <header className={HEADER_CLASS}>
-        <Link href={MANAGE_APP_ROUTES.admin} className="flex h-10 items-center" aria-label="TOANNX">
+        <Link href={MANAGE_APP_ROUTES.admin} className="flex h-10 items-center" aria-label="ToanNX">
           <Logo />
         </Link>
         <div className="flex-1" />

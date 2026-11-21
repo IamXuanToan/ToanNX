@@ -25,7 +25,7 @@ class AttachmentDetailResponseSerializer(AttachmentSummaryResponseSerializer):
 
     def get_uploader_name(self, obj: Attachment) -> str:
         """Đọc người upload đã được repository select_related, không truy vấn bổ sung."""
-        return (obj.created_by.full_name or obj.created_by.email) if obj.created_by else ""
+        return obj.created_by.display_name if obj.created_by else ""
 
     class Meta(AttachmentSummaryResponseSerializer.Meta):
         fields = (

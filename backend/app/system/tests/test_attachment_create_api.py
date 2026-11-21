@@ -100,3 +100,27 @@ class TestAttachmentCreateApi(BaseApiTestCase):
         res = upload_file(api, "a.png", PNG_BYTES, "image/png")
         error = self.assert_error(res, 403, "PERMISSION_DENIED")
         assert error["details"]["permissions"] == [AttachmentPermission.FILE_CREATE.code]
+
+    def test_upload_exceeds_total_storage_quota_rejected(
+        self, superuser: Any, login: Any, settings: Any
+    ) -> None:
+        """Tải lên khi tổng dung lượng hệ thống vượt quota tối đa bị từ chối 400 kèm mã lỗi chuẩn."""
+        settings.ATTACHMENT_MAX_TOTAL_STORAGE_BYTES = 10
+        api = login(superuser)
+        res = upload_file(api, "quota.png", PNG_BYTES, "image/png")
+        error = self.assert_error(res, 400, "ATTACHMENT_STORAGE_QUOTA_EXCEEDED")
+        assert "file" in error["details"]
+
+    def test_upload_exceeds_r2_bucket_usage_rejected(
+        self, superuser: Any, login: Any, settings: Any, monkeypatch: Any
+    ) -> None:
+        """Khi Cloudflare R2 báo bucket usage vượt quota, upload bị từ chối 400."""
+        from app.core.storage.r2_usage_service import R2UsageService
+
+        settings.ATTACHMENT_MAX_TOTAL_STORAGE_BYTES = 1000
+        monkeypatch.setattr(R2UsageService, "get_bucket_usage_bytes", lambda self: 1001)
+
+        api = login(superuser)
+        res = upload_file(api, "quota_r2.png", PNG_BYTES, "image/png")
+        error = self.assert_error(res, 400, "ATTACHMENT_STORAGE_QUOTA_EXCEEDED")
+        assert "file" in error["details"]

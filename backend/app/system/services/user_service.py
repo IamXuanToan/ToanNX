@@ -7,6 +7,7 @@ Quy tắc bảo vệ:
 - Đổi mật khẩu / khóa tài khoản phát signal để phần xác thực thu hồi phiên.
 """
 
+import logging
 from typing import Any
 
 from django.db import transaction
@@ -21,9 +22,11 @@ from app.system.constants.account_error_code import AccountErrorCode
 from app.system.models.user import User
 from app.system.repositories.user_repository import UserRepository
 from app.system.services.attachment_service import AttachmentService
+from app.system.services.user_invitation_service import UserInvitationService
 from app.system.signals import user_credentials_changed
 from app.system.validators.password_validator import PasswordValidator
 
+logger = logging.getLogger("app.system.user_service")
 _PRIVILEGED_FLAGS = ("is_active", "is_staff", "is_superuser")
 
 
@@ -36,15 +39,18 @@ class UserService(CoreCrudService[User, UserRepository]):
         self,
         repository: UserRepository | None = None,
         attachment_service: AttachmentService | None = None,
+        user_invitation_service: UserInvitationService | None = None,
     ) -> None:
         """Khởi tạo service.
 
         Args:
             repository: Repository người dùng.
             attachment_service: Service attachment (kiểm tra ảnh đại diện).
+            user_invitation_service: Service gửi lời mời tài khoản.
         """
         super().__init__(repository)
         self.attachment_service = attachment_service or AttachmentService()
+        self.invitation_service = user_invitation_service or UserInvitationService()
 
     # ==================================================================
     # Đọc
@@ -112,22 +118,24 @@ class UserService(CoreCrudService[User, UserRepository]):
         self.repository.touch_last_seen(user, timezone.now())
 
     @transaction.atomic
-    def create(self, actor: User, data: dict[str, Any]) -> User:
+    def create(self, actor: User, data: dict[str, Any], request: Any = None) -> User:
         """Tạo người dùng (không có đăng ký công khai).
 
         Args:
             actor: Người thực hiện.
             data: Dữ liệu đã qua UserCreateValidateSerializer.
+            request: HttpRequest gốc (nếu có, để sinh link mời).
 
         Returns:
             Người dùng mới.
 
         Raises:
             AuthorizationError: Người không phải superuser tạo superuser.
-            ConflictError: Email đã tồn tại.
+            ConflictError: Email hoặc username đã tồn tại.
         """
         payload = dict(data)
-        password = payload.pop("password")
+        password = payload.pop("password", "") or ""
+        send_invitation = payload.pop("send_invitation", True)
         payload["email"] = payload["email"].strip().lower()
 
         if payload.get("is_superuser") and not actor.is_superuser:
@@ -135,12 +143,36 @@ class UserService(CoreCrudService[User, UserRepository]):
         if payload.get("is_superuser"):
             payload["is_staff"] = True
         if self.repository.exists(email=payload["email"]):
-            raise ConflictError("Email đã được sử dụng.", code=AccountErrorCode.ACCOUNT_EMAIL_EXISTS)
+            raise ConflictError(
+                "Email đã được sử dụng.",
+                code=AccountErrorCode.ACCOUNT_EMAIL_EXISTS,
+            )
+        username = payload.get("username")
+        if username and self.repository.exists(username=username):
+            raise ConflictError(
+                "Tên người dùng đã được sử dụng.",
+                code=AccountErrorCode.ACCOUNT_USERNAME_EXISTS,
+            )
         if payload.get("avatar_id"):
             self.attachment_service.get_image(payload["avatar_id"], actor=actor)
 
-        PasswordValidator.validate_strength(password, User(**payload))
-        return self.repository.create_user(password=password, actor=actor, **payload)
+        if password:
+            PasswordValidator.validate_strength(password, User(**payload))
+            return self.repository.create_user(password=password, actor=actor, **payload)
+
+        payload["is_verified"] = False
+        user = self.repository.create(actor=actor, **payload)
+        user.set_unusable_password()
+        user.save(update_fields=["password"])
+
+        if send_invitation and request is not None:
+            locale = getattr(request, "headers", {}).get("Accept-Language", "vi")[:2]
+            try:
+                self.invitation_service.send_invitation_email(request, user, locale=locale)
+            except Exception:
+                logger.exception("Không thể gửi email mời tham gia cho %s", user.email)
+
+        return user
 
     @transaction.atomic
     def update(self, actor: User, pk: Any, data: dict[str, Any]) -> User:

@@ -36,7 +36,7 @@ app/
     apps.py  module.py  urls.py
     permissions/<module>_permission.py  # danh mục quyền của module
     constants/<module>_error_code.py    # mã lỗi riêng (StrEnum); hằng số khác chỉ tạo khi có
-    tasks/                              # việc dọn dẹp khai trong ModuleDescriptor.cleanup_tasks
+    tasks/                              # việc dọn dẹp khai trong ModuleDescriptor.cleanup_tasks (chỉ gọi service)
     models/<model>.py                   # mỗi model 1 file; models/__init__.py import để Django nạp
     repositories/<model>_repository.py  # đọc + ghi (lớp DB duy nhất)
     services/<model>_service.py         # nghiệp vụ, mỗi model 1 service
@@ -44,7 +44,7 @@ app/
     serializers/validates/<resource>_<action>_validate_serializer.py   # input theo endpoint
     serializers/responses/<resource>_<kind>_response_serializer.py     # output theo endpoint
     views/<resource>_view_set.py        # CRUD: CoreModelViewSet (router)
-    views/<resource>_view.py            # tài nguyên con/hành động: XxxView + XxxObjectView (APIView)
+    views/<resource>_view.py            # tài nguyên con/hành động: XxxView + XxxObjectView (APIView, ngoại lệ 2 class)
     backends/  authentications/  schemas/  types/  utils/  exceptions/   # chỉ tạo khi có
     tests/                              # test của module (factories/, helpers/ nếu cần)
 conftest.py                             # fixture dùng chung cho pytest

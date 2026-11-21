@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-type InfoTranslate = (key: "emailInvalid" | "usernameRequired") => string;
+type InfoTranslate = (key: "emailInvalid" | "usernameRequired" | "fullNameRequired") => string;
 type PasswordTranslate = (key: "passwordMin" | "passwordMismatch" | "passwordRequired") => string;
 
 /**
- * Schema validate thông tin chung của người dùng (email, tên người dùng, họ và tên).
+ * Schema validate thông tin chung của người dùng (email, tên người dùng, họ và tên bắt buộc).
  *
  * @param t - Hàm dịch thông báo lỗi.
  * @returns Zod schema thông tin cá nhân.
@@ -13,8 +13,7 @@ export function createProfileInfoSchema(t: InfoTranslate) {
   return z.object({
     email: z.string().trim().email(t("emailInvalid")).max(254),
     username: z.string().trim().min(1, t("usernameRequired")).max(150),
-    firstName: z.string().trim().max(150),
-    lastName: z.string().trim().max(150),
+    fullName: z.string().trim().min(1, t("fullNameRequired")).max(255),
   });
 }
 

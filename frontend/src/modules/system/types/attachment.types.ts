@@ -31,6 +31,7 @@ export type AttachmentFilters = {
   scope?: readonly string[];
   contentType?: readonly string[];
   folder?: readonly string[];
+  createdBy?: readonly string[];
 };
 
 /** Các quyền giao diện do view quyết định. */

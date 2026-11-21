@@ -18,9 +18,9 @@ class TestUserUpdateApi(BaseApiTestCase):
 
     def test_update_user_success(self, superuser: User, user: User, login: Any) -> None:
         """Cập nhật thông tin người dùng thành công."""
-        res = login(superuser).patch(f"{URL}/{user.pk}", {"first_name": "Bình"}, format="json")
+        res = login(superuser).patch(f"{URL}/{user.pk}", {"full_name": "Bình"}, format="json")
         data = self.assert_success(res, 200)
-        assert data["first_name"] == "Bình"
+        assert data["full_name"] == "Bình"
         user.refresh_from_db()
         assert user.updated_by_id == superuser.pk
 
@@ -44,7 +44,7 @@ class TestUserUpdateApi(BaseApiTestCase):
     def test_staff_cannot_edit_superuser(self, staff_with: Any, superuser: User, login: Any) -> None:
         """Staff không được phép sửa tài khoản của superuser (403 ACCOUNT_SUPERUSER_PROTECTED)."""
         member = staff_with(A.USER_UPDATE)
-        res = login(member).patch(f"{URL}/{superuser.pk}", {"first_name": "hacked"}, format="json")
+        res = login(member).patch(f"{URL}/{superuser.pk}", {"full_name": "hacked"}, format="json")
         self.assert_forbidden(res, "ACCOUNT_SUPERUSER_PROTECTED")
 
     def test_last_superuser_cannot_be_deactivated(self, superuser: User, login: Any) -> None:
@@ -64,14 +64,19 @@ class TestUserUpdateApi(BaseApiTestCase):
         data = self.assert_success(res, 200)
         assert data["is_superuser"] is False
 
+    def test_update_rejects_empty_username(self, superuser: User, user: User, login: Any) -> None:
+        """PATCH không cho xóa tên người dùng thành rỗng."""
+        res = login(superuser).patch(f"{URL}/{user.pk}", {"username": " "}, format="json")
+        self.assert_error(res, 400, "VALIDATION_ERROR")
+
     def test_update_unauthenticated_rejected(self, user: User, client: Any) -> None:
         """Khách chưa đăng nhập bị 401."""
-        res = client.patch(f"{URL}/{user.pk}", {"first_name": "x"}, format="json")
+        res = client.patch(f"{URL}/{user.pk}", {"full_name": "x"}, format="json")
         self.assert_unauthorized(res)
 
     def test_update_forbidden_without_permission(self, user: User, login: Any) -> None:
         """Người dùng thường thiếu quyền system.user.update bị 403."""
         other = UserFactory()
         api = login(user)
-        res = api.patch(f"{URL}/{other.pk}", {"first_name": "x"}, format="json")
+        res = api.patch(f"{URL}/{other.pk}", {"full_name": "x"}, format="json")
         self.assert_forbidden(res)

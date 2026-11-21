@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "cn";
 import { LayoutGrid } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -14,14 +15,17 @@ import { useModuleLauncher } from "./hooks/use-module-launcher";
  * Màn chọn module khu vực quản trị: lời chào cá nhân, lưới thẻ nhóm module thu gọn và trạng thái hệ thống.
  * Mỗi thẻ đại diện cho một nhóm (`ModuleDescriptor.group`), bấm vào sẽ mở không gian làm việc của nhóm đó.
  *
- * @returns Giao diện trung tâm điều hướng quản trị.
+ * @returns Giao diện trung tâm điều hướng quản trị cân đối và hiện đại.
  */
 export function ModuleLauncher() {
   const t = useTranslations("manageApp");
   const { groups, user, displayName } = useModuleLauncher();
 
   return (
-    <section className="w-full max-w-4xl space-y-7" aria-labelledby="launcher-title">
+    <section
+      className={cn("w-full space-y-7", groups.length >= 3 ? "max-w-5xl" : "max-w-4xl")}
+      aria-labelledby="launcher-title"
+    >
       <LauncherHeader displayName={displayName} user={user} />
 
       {groups.length === 0 ? (
@@ -33,7 +37,13 @@ export function ModuleLauncher() {
           />
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2" data-testid="module-launcher">
+        <div
+          className={cn(
+            "grid grid-cols-1 gap-4.5 sm:grid-cols-2",
+            groups.length >= 3 && "lg:grid-cols-3",
+          )}
+          data-testid="module-launcher"
+        >
           {groups.map((group) => (
             <ModuleGroupCard key={group.code} group={group} />
           ))}

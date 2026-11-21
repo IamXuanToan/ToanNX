@@ -24,9 +24,8 @@ class UserUpdateValidateSerializer(CoreValidateSerializer):
         max_length=150,
         help_text="Tên người dùng bắt buộc và duy nhất.",
     )
-    first_name = serializers.CharField(required=False, allow_blank=True, max_length=150, help_text="Tên.")
-    last_name = serializers.CharField(
-        required=False, allow_blank=True, max_length=150, help_text="Họ (và tên đệm)."
+    full_name = serializers.CharField(
+        required=False, allow_blank=False, max_length=255, help_text="Họ và tên đầy đủ."
     )
     avatar_id = serializers.UUIDField(
         required=False,

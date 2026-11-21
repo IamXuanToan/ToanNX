@@ -34,7 +34,7 @@ export function PublicHeader() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link
           href={HOME_ROUTES.home}
-          aria-label="TOANNX"
+          aria-label="ToanNX"
           className={
             isHome
               ? "border-border/40 bg-background/60 hover:bg-background/80 flex items-center rounded-full border px-3.5 py-1.5 shadow-xs backdrop-blur-md transition-all"

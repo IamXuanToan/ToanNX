@@ -13,9 +13,8 @@ class MeUpdateValidateSerializer(CoreValidateSerializer):
         max_length=254,
         help_text="Email đăng nhập (lưu chữ thường, duy nhất).",
     )
-    first_name = serializers.CharField(required=False, allow_blank=True, max_length=150, help_text="Tên.")
-    last_name = serializers.CharField(
-        required=False, allow_blank=True, max_length=150, help_text="Họ (và tên đệm)."
+    full_name = serializers.CharField(
+        required=False, allow_blank=False, max_length=255, help_text="Họ và tên đầy đủ."
     )
     username = serializers.CharField(
         required=False,

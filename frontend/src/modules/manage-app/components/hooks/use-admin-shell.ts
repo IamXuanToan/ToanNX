@@ -2,7 +2,7 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { usePathname, useRouter } from "@/i18n/navigation";
@@ -32,6 +32,7 @@ const TABLET_QUERY = "(min-width: 768px) and (max-width: 1279px)";
  */
 export function useAdminShell() {
   const t = useTranslations("system.auth.session");
+  const tProfile = useTranslations("system.auth.profile");
   const message = useMessage();
   const tGroups = useTranslations("common.adminGroups");
   const queryClient = useQueryClient();
@@ -39,10 +40,12 @@ export function useAdminShell() {
   const pathname = usePathname();
   const current = useCurrentUser();
   const sessionExpired = useAuthStore((state) => state.sessionExpired);
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
   const resetSession = useAuthStore((state) => state.resetSession);
   const isTablet = useMediaQuery(TABLET_QUERY);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [prevTablet, setPrevTablet] = useState(isTablet);
+  const verificationToastShownRef = useRef(false);
 
   // Tablet: thu gọn sidebar thành icon; desktop: mở đầy đủ.
   if (prevTablet !== isTablet) {
@@ -53,8 +56,23 @@ export function useAdminShell() {
   const unauthenticated = isApiError(current.error) && current.error.status === 401;
 
   useEffect(() => {
+    if (!current.data?.user || current.data.user.isVerified || verificationToastShownRef.current) {
+      return;
+    }
+    verificationToastShownRef.current = true;
+    toast.warning(tProfile("emailUnverified"), {
+      description: tProfile("unverifiedReminder"),
+      duration: 8000,
+    });
+  }, [current.data?.user, tProfile]);
+
+  useEffect(() => {
+    // Đang trong tiến trình đăng xuất chủ động thì không hiển thị cảnh báo hết hạn phiên.
+    if (isLoggingOut) return;
     if (!sessionExpired && !unauthenticated) return;
-    if (sessionExpired) toast.warning(t("expired"));
+    if (sessionExpired) {
+      toast.warning(t("expired"), { id: "session-expired" });
+    }
     queryClient.clear();
     resetSession();
     // Refresh thất bại thì backend đã xóa cookie phiên → proxy không đẩy ngược về admin.
@@ -62,7 +80,7 @@ export function useAdminShell() {
       pathname: SYSTEM_ROUTES.login,
       query: { next: window.location.pathname + window.location.search },
     });
-  }, [sessionExpired, unauthenticated, queryClient, resetSession, router, t]);
+  }, [sessionExpired, unauthenticated, isLoggingOut, queryClient, resetSession, router, t]);
 
   const groups = useMemo<AdminGroup[]>(() => {
     const modulesByGroup = new Map<string, AdminModule[]>();

@@ -17,6 +17,8 @@ from django.utils import timezone
 from app.core.exceptions.authorization_error import AuthorizationError
 from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
+from app.core.storage.r2_usage_service import R2UsageService
+from app.system.constants.attachment_error_code import AttachmentErrorCode
 from app.system.models.attachment import Attachment
 from app.system.permissions.attachment_permission import AttachmentPermission
 from app.system.repositories.attachment_repository import AttachmentRepository
@@ -40,10 +42,27 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         self,
         repository: AttachmentRepository | None = None,
         folder_service: AttachmentFolderService | None = None,
+        r2_usage_service: R2UsageService | None = None,
     ) -> None:
-        """Khởi tạo phụ thuộc của kho file và thư mục logic."""
+        """Khởi tạo phụ thuộc của kho file, thư mục logic và service đo dung lượng R2."""
         super().__init__(repository)
         self.folder_service = folder_service or AttachmentFolderService()
+        self.r2_usage_service = r2_usage_service or R2UsageService()
+
+    def get_current_storage_usage_bytes(self) -> int:
+        """Lấy tổng dung lượng lưu trữ hiện tại.
+
+        Ưu tiên:
+        1. Gọi trực tiếp Cloudflare R2 Usage API nếu có cấu hình `CLOUDFLARE_API_TOKEN`.
+        2. Fallback về tổng dung lượng của các tệp vật lý chưa bị purged (purged_at IS NULL).
+
+        Returns:
+            Số bytes nguyên.
+        """
+        r2_usage = self.r2_usage_service.get_bucket_usage_bytes()
+        if r2_usage is not None:
+            return r2_usage
+        return self.repository.get_total_storage_size()
 
     def get_image(self, attachment_id: Any, *, actor: Any | None = None) -> Attachment:
         """Lấy file và bảo đảm là ảnh (dùng cho ảnh đại diện).
@@ -102,7 +121,22 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
                 raise ValidationError(problem, details={"file": [problem]})
 
         # ============================================================
-        # BƯỚC 2: Tính checksum rồi lưu vào storage + DB
+        # BƯỚC 2: Kiểm tra tổng dung lượng lưu trữ hệ thống (Storage Quota)
+        # ============================================================
+        file_size = upload.size or 0
+        current_total = self.get_current_storage_usage_bytes()
+        if current_total + file_size > settings.ATTACHMENT_MAX_TOTAL_STORAGE_BYTES:
+            max_gb = round(settings.ATTACHMENT_MAX_TOTAL_STORAGE_BYTES / (1024 * 1024 * 1024), 2)
+            raise ValidationError(
+                f"Dung lượng lưu trữ hệ thống đã vượt quá giới hạn cho phép (tối đa {max_gb} GB).",
+                code=AttachmentErrorCode.ATTACHMENT_STORAGE_QUOTA_EXCEEDED,
+                details={
+                    "file": [f"Dung lượng lưu trữ hệ thống đã vượt quá giới hạn cho phép ({max_gb} GB)."]
+                },
+            )
+
+        # ============================================================
+        # BƯỚC 3: Tính checksum rồi lưu vào storage + DB
         # ============================================================
         digest = hashlib.sha256()
         for chunk in upload.chunks(_CHUNK_SIZE):

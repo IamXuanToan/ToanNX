@@ -1,10 +1,10 @@
 # Giám sát lỗi với Sentry (Error Tracking & Performance)
 
-Hệ thống TOANNX tích hợp Sentry để theo dõi lỗi chưa xử lý (unhandled exceptions, lỗi HTTP 500) và hiệu năng ứng dụng ở cả Backend và Frontend theo mô hình tập trung.
+Hệ thống ToanNX tích hợp Sentry để theo dõi lỗi chưa xử lý (unhandled exceptions, lỗi HTTP 500) và hiệu năng ứng dụng ở cả Backend và Frontend theo mô hình tập trung.
 
 ---
 
-## 1. Cơ chế hoạt động trong TOANNX
+## 1. Cơ chế hoạt động trong ToanNX
 
 ### Tập trung tại Backend
 - **Chỉ nạp khi cần**: Backend khởi tạo Sentry trong [backend/app/core/logging/sentry.py](file:///d:/project/toannx/backend/app/core/logging/sentry.py) qua `init_sentry()`. Nếu biến `SENTRY_DSN` để trống, thư viện `sentry-sdk` hoàn toàn **không được import hay kích hoạt**, giúp local development và test suite chạy nhanh, không tốn tài nguyên mạng.

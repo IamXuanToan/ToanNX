@@ -8648,480 +8648,166 @@
       "docs_rules_frontend_tiptap_json_content",
       "system_context_qr_code_module"
     ],
-    "241": [
-      "githooks_commit_msg",
-      "githooks_commit_msg__entry"
-    ],
-    "242": [
-      "githooks_pre_push",
-      "githooks_pre_push__entry"
-    ],
+    "241": ["githooks_commit_msg", "githooks_commit_msg__entry"],
+    "242": ["githooks_pre_push", "githooks_pre_push__entry"],
     "243": [
       "scripts_check_all_invoke_step",
       "scripts_check_all_ps1_scripts_check_all"
     ],
-    "244": [
-      "agents_module_scaffold"
-    ],
-    "245": [
-      "backend_app_account_backends_init"
-    ],
-    "246": [
-      "backend_app_account_constants_init"
-    ],
-    "247": [
-      "backend_app_account_filters_init"
-    ],
-    "248": [
-      "backend_app_account_init"
-    ],
-    "249": [
-      "backend_app_account_management_commands_init"
-    ],
-    "250": [
-      "backend_app_account_management_init"
-    ],
-    "251": [
-      "backend_app_account_migrations_init"
-    ],
-    "252": [
-      "backend_app_account_permissions_init"
-    ],
-    "253": [
-      "backend_app_account_repositories_init"
-    ],
-    "254": [
-      "backend_app_account_serializers_init"
-    ],
-    "255": [
-      "backend_app_account_serializers_responses_init"
-    ],
-    "256": [
-      "backend_app_account_serializers_validates_init"
-    ],
-    "257": [
-      "backend_app_account_services_init"
-    ],
-    "258": [
-      "backend_app_account_tests_factories_init"
-    ],
-    "259": [
-      "backend_app_account_tests_init"
-    ],
-    "260": [
-      "backend_app_account_validators_init"
-    ],
-    "261": [
-      "backend_app_account_views_init"
-    ],
-    "262": [
-      "backend_app_attachment_constants_init"
-    ],
-    "263": [
-      "backend_app_attachment_filters_init"
-    ],
-    "264": [
-      "backend_app_attachment_init"
-    ],
-    "265": [
-      "backend_app_attachment_migrations_init"
-    ],
-    "266": [
-      "backend_app_attachment_permissions_init"
-    ],
-    "267": [
-      "backend_app_attachment_repositories_init"
-    ],
-    "268": [
-      "backend_app_attachment_serializers_init"
-    ],
-    "269": [
-      "backend_app_attachment_serializers_responses_init"
-    ],
-    "270": [
-      "backend_app_attachment_serializers_validates_init"
-    ],
-    "271": [
-      "backend_app_attachment_services_init"
-    ],
-    "272": [
-      "backend_app_attachment_tasks_init"
-    ],
-    "273": [
-      "backend_app_attachment_tests_init"
-    ],
-    "274": [
-      "backend_app_attachment_utils_init"
-    ],
-    "275": [
-      "backend_app_attachment_views_init"
-    ],
-    "276": [
-      "backend_app_authentication_authentications_init"
-    ],
-    "277": [
-      "backend_app_authentication_init"
-    ],
-    "278": [
-      "backend_app_authentication_migrations_init"
-    ],
-    "279": [
-      "backend_app_authentication_permissions_init"
-    ],
-    "280": [
-      "backend_app_authentication_repositories_init"
-    ],
-    "281": [
-      "backend_app_authentication_schemas_init"
-    ],
-    "282": [
-      "backend_app_authentication_serializers_init"
-    ],
-    "283": [
-      "backend_app_authentication_serializers_responses_init"
-    ],
-    "284": [
-      "backend_app_authentication_serializers_validates_init"
-    ],
-    "285": [
-      "backend_app_authentication_services_init"
-    ],
-    "286": [
-      "backend_app_authentication_tasks_init"
-    ],
-    "287": [
-      "backend_app_authentication_tests_init"
-    ],
-    "288": [
-      "backend_app_authentication_throttles_init"
-    ],
-    "289": [
-      "backend_app_authentication_types_init"
-    ],
-    "290": [
-      "backend_app_authentication_utils_init"
-    ],
-    "291": [
-      "backend_app_authentication_views_init"
-    ],
-    "292": [
-      "backend_app_core_constants_init"
-    ],
-    "293": [
-      "backend_app_core_context_init"
-    ],
-    "294": [
-      "backend_app_core_decorators_init"
-    ],
-    "295": [
-      "backend_app_core_exceptions_init"
-    ],
-    "296": [
-      "backend_app_core_init"
-    ],
-    "297": [
-      "backend_app_core_logging_init"
-    ],
-    "298": [
-      "backend_app_core_middleware_init"
-    ],
-    "299": [
-      "backend_app_core_models_init"
-    ],
-    "300": [
-      "backend_app_core_pagination_init"
-    ],
-    "301": [
-      "backend_app_core_permissions_init"
-    ],
-    "302": [
-      "backend_app_core_registry_init"
-    ],
-    "303": [
-      "backend_app_core_repositories_init"
-    ],
-    "304": [
-      "backend_app_core_responses_init"
-    ],
-    "305": [
-      "backend_app_core_schemas_init"
-    ],
-    "306": [
-      "backend_app_core_security_init"
-    ],
-    "307": [
-      "backend_app_core_serializers_init"
-    ],
-    "308": [
-      "backend_app_core_services_init"
-    ],
-    "309": [
-      "backend_app_core_tests_base_init"
-    ],
-    "310": [
-      "backend_app_core_tests_init"
-    ],
-    "311": [
-      "backend_app_core_tracking_init"
-    ],
-    "312": [
-      "backend_app_core_utils_init"
-    ],
-    "313": [
-      "backend_app_core_validators_init"
-    ],
-    "314": [
-      "backend_app_core_views_init"
-    ],
-    "315": [
-      "backend_app_custom_pages_constants_init"
-    ],
-    "316": [
-      "backend_app_custom_pages_migrations_init"
-    ],
-    "317": [
-      "backend_app_custom_pages_permissions_init"
-    ],
-    "318": [
-      "backend_app_custom_pages_tests_init"
-    ],
-    "319": [
-      "backend_app_custom_pages_views_init"
-    ],
-    "320": [
-      "backend_app_health_init"
-    ],
-    "321": [
-      "backend_app_health_management_commands_init"
-    ],
-    "322": [
-      "backend_app_health_management_init"
-    ],
-    "323": [
-      "backend_app_health_repositories_init"
-    ],
-    "324": [
-      "backend_app_health_serializers_init"
-    ],
-    "325": [
-      "backend_app_health_serializers_responses_init"
-    ],
-    "326": [
-      "backend_app_health_serializers_validates_init"
-    ],
-    "327": [
-      "backend_app_health_services_init"
-    ],
-    "328": [
-      "backend_app_health_tests_init"
-    ],
-    "329": [
-      "backend_app_health_views_init"
-    ],
-    "330": [
-      "backend_app_iam_backends_init"
-    ],
-    "331": [
-      "backend_app_iam_constants_init"
-    ],
-    "332": [
-      "backend_app_iam_decorators_init"
-    ],
-    "333": [
-      "backend_app_iam_filters_init"
-    ],
-    "334": [
-      "backend_app_iam_init"
-    ],
-    "335": [
-      "backend_app_iam_management_commands_init"
-    ],
-    "336": [
-      "backend_app_iam_management_init"
-    ],
-    "337": [
-      "backend_app_iam_migrations_init"
-    ],
-    "338": [
-      "backend_app_iam_permissions_init"
-    ],
-    "339": [
-      "backend_app_iam_repositories_init"
-    ],
-    "340": [
-      "backend_app_iam_serializers_init"
-    ],
-    "341": [
-      "backend_app_iam_serializers_responses_init"
-    ],
-    "342": [
-      "backend_app_iam_serializers_validates_init"
-    ],
-    "343": [
-      "backend_app_iam_services_init"
-    ],
-    "344": [
-      "backend_app_iam_tests_factories_init"
-    ],
-    "345": [
-      "backend_app_iam_tests_helpers_init"
-    ],
-    "346": [
-      "backend_app_iam_tests_init"
-    ],
-    "347": [
-      "backend_app_iam_types_init"
-    ],
-    "348": [
-      "backend_app_iam_views_init"
-    ],
-    "349": [
-      "backend_app_init"
-    ],
-    "350": [
-      "backend_app_journal_filters_init"
-    ],
-    "351": [
-      "backend_app_journal_init"
-    ],
-    "352": [
-      "backend_app_journal_migrations_init"
-    ],
-    "353": [
-      "backend_app_journal_permissions_init"
-    ],
-    "354": [
-      "backend_app_journal_recorders_init"
-    ],
-    "355": [
-      "backend_app_journal_repositories_init"
-    ],
-    "356": [
-      "backend_app_journal_serializers_init"
-    ],
-    "357": [
-      "backend_app_journal_serializers_responses_init"
-    ],
-    "358": [
-      "backend_app_journal_services_init"
-    ],
-    "359": [
-      "backend_app_journal_tasks_init"
-    ],
-    "360": [
-      "backend_app_journal_tests_init"
-    ],
-    "361": [
-      "backend_app_journal_views_init"
-    ],
-    "362": [
-      "backend_app_novel_init"
-    ],
-    "363": [
-      "backend_app_novel_migrations_init"
-    ],
-    "364": [
-      "backend_app_novel_permissions_init"
-    ],
-    "365": [
-      "backend_app_qr_codes_constants_init"
-    ],
-    "366": [
-      "backend_app_qr_codes_filters_init"
-    ],
-    "367": [
-      "backend_app_qr_codes_init"
-    ],
-    "368": [
-      "backend_app_qr_codes_migrations_init"
-    ],
-    "369": [
-      "backend_app_qr_codes_permissions_init"
-    ],
-    "370": [
-      "backend_app_qr_codes_repositories_init"
-    ],
-    "371": [
-      "backend_app_qr_codes_serializers_init"
-    ],
-    "372": [
-      "backend_app_qr_codes_serializers_responses_init"
-    ],
-    "373": [
-      "backend_app_qr_codes_serializers_validates_init"
-    ],
-    "374": [
-      "backend_app_qr_codes_services_init"
-    ],
-    "375": [
-      "backend_app_qr_codes_tests_init"
-    ],
-    "376": [
-      "backend_app_qr_codes_utils_init"
-    ],
-    "377": [
-      "backend_app_qr_codes_views_init"
-    ],
-    "378": [
-      "backend_app_short_links_constants_init"
-    ],
-    "379": [
-      "backend_app_short_links_migrations_init"
-    ],
-    "380": [
-      "backend_app_short_links_permissions_init"
-    ],
-    "381": [
-      "backend_app_short_links_tests_init"
-    ],
-    "382": [
-      "backend_requirements_python_runtime_dependencies"
-    ],
-    "383": [
-      "claude_graphify_workflow"
-    ],
-    "384": [
-      "docs_authentication_postgresql_rate_limit"
-    ],
-    "385": [
-      "docs_deployment_manual_migrations"
-    ],
-    "386": [
-      "docs_deployment_neon_postgresql"
-    ],
-    "387": [
-      "docs_i18n_localized_routes"
-    ],
-    "388": [
-      "docs_i18n_message_parity"
-    ],
-    "389": [
-      "docs_rules_backend_core_base_classes"
-    ],
-    "390": [
-      "docs_rules_backend_module_dependency_direction"
-    ],
-    "391": [
-      "docs_rules_common_completion_gates"
-    ],
-    "392": [
-      "docs_rules_common_security_priority"
-    ],
-    "393": [
-      "docs_rules_git_branch_workflow"
-    ],
-    "394": [
-      "docs_rules_git_commit_convention"
-    ],
-    "395": [
-      "docs_testing_frontend_e2e_tests"
-    ],
-    "396": [
-      "docs_testing_postgresql_backend_tests"
-    ],
-    "397": [
-      "pkg_toannx_backend"
-    ]
+    "244": ["agents_module_scaffold"],
+    "245": ["backend_app_account_backends_init"],
+    "246": ["backend_app_account_constants_init"],
+    "247": ["backend_app_account_filters_init"],
+    "248": ["backend_app_account_init"],
+    "249": ["backend_app_account_management_commands_init"],
+    "250": ["backend_app_account_management_init"],
+    "251": ["backend_app_account_migrations_init"],
+    "252": ["backend_app_account_permissions_init"],
+    "253": ["backend_app_account_repositories_init"],
+    "254": ["backend_app_account_serializers_init"],
+    "255": ["backend_app_account_serializers_responses_init"],
+    "256": ["backend_app_account_serializers_validates_init"],
+    "257": ["backend_app_account_services_init"],
+    "258": ["backend_app_account_tests_factories_init"],
+    "259": ["backend_app_account_tests_init"],
+    "260": ["backend_app_account_validators_init"],
+    "261": ["backend_app_account_views_init"],
+    "262": ["backend_app_attachment_constants_init"],
+    "263": ["backend_app_attachment_filters_init"],
+    "264": ["backend_app_attachment_init"],
+    "265": ["backend_app_attachment_migrations_init"],
+    "266": ["backend_app_attachment_permissions_init"],
+    "267": ["backend_app_attachment_repositories_init"],
+    "268": ["backend_app_attachment_serializers_init"],
+    "269": ["backend_app_attachment_serializers_responses_init"],
+    "270": ["backend_app_attachment_serializers_validates_init"],
+    "271": ["backend_app_attachment_services_init"],
+    "272": ["backend_app_attachment_tasks_init"],
+    "273": ["backend_app_attachment_tests_init"],
+    "274": ["backend_app_attachment_utils_init"],
+    "275": ["backend_app_attachment_views_init"],
+    "276": ["backend_app_authentication_authentications_init"],
+    "277": ["backend_app_authentication_init"],
+    "278": ["backend_app_authentication_migrations_init"],
+    "279": ["backend_app_authentication_permissions_init"],
+    "280": ["backend_app_authentication_repositories_init"],
+    "281": ["backend_app_authentication_schemas_init"],
+    "282": ["backend_app_authentication_serializers_init"],
+    "283": ["backend_app_authentication_serializers_responses_init"],
+    "284": ["backend_app_authentication_serializers_validates_init"],
+    "285": ["backend_app_authentication_services_init"],
+    "286": ["backend_app_authentication_tasks_init"],
+    "287": ["backend_app_authentication_tests_init"],
+    "288": ["backend_app_authentication_throttles_init"],
+    "289": ["backend_app_authentication_types_init"],
+    "290": ["backend_app_authentication_utils_init"],
+    "291": ["backend_app_authentication_views_init"],
+    "292": ["backend_app_core_constants_init"],
+    "293": ["backend_app_core_context_init"],
+    "294": ["backend_app_core_decorators_init"],
+    "295": ["backend_app_core_exceptions_init"],
+    "296": ["backend_app_core_init"],
+    "297": ["backend_app_core_logging_init"],
+    "298": ["backend_app_core_middleware_init"],
+    "299": ["backend_app_core_models_init"],
+    "300": ["backend_app_core_pagination_init"],
+    "301": ["backend_app_core_permissions_init"],
+    "302": ["backend_app_core_registry_init"],
+    "303": ["backend_app_core_repositories_init"],
+    "304": ["backend_app_core_responses_init"],
+    "305": ["backend_app_core_schemas_init"],
+    "306": ["backend_app_core_security_init"],
+    "307": ["backend_app_core_serializers_init"],
+    "308": ["backend_app_core_services_init"],
+    "309": ["backend_app_core_tests_base_init"],
+    "310": ["backend_app_core_tests_init"],
+    "311": ["backend_app_core_tracking_init"],
+    "312": ["backend_app_core_utils_init"],
+    "313": ["backend_app_core_validators_init"],
+    "314": ["backend_app_core_views_init"],
+    "315": ["backend_app_custom_pages_constants_init"],
+    "316": ["backend_app_custom_pages_migrations_init"],
+    "317": ["backend_app_custom_pages_permissions_init"],
+    "318": ["backend_app_custom_pages_tests_init"],
+    "319": ["backend_app_custom_pages_views_init"],
+    "320": ["backend_app_health_init"],
+    "321": ["backend_app_health_management_commands_init"],
+    "322": ["backend_app_health_management_init"],
+    "323": ["backend_app_health_repositories_init"],
+    "324": ["backend_app_health_serializers_init"],
+    "325": ["backend_app_health_serializers_responses_init"],
+    "326": ["backend_app_health_serializers_validates_init"],
+    "327": ["backend_app_health_services_init"],
+    "328": ["backend_app_health_tests_init"],
+    "329": ["backend_app_health_views_init"],
+    "330": ["backend_app_iam_backends_init"],
+    "331": ["backend_app_iam_constants_init"],
+    "332": ["backend_app_iam_decorators_init"],
+    "333": ["backend_app_iam_filters_init"],
+    "334": ["backend_app_iam_init"],
+    "335": ["backend_app_iam_management_commands_init"],
+    "336": ["backend_app_iam_management_init"],
+    "337": ["backend_app_iam_migrations_init"],
+    "338": ["backend_app_iam_permissions_init"],
+    "339": ["backend_app_iam_repositories_init"],
+    "340": ["backend_app_iam_serializers_init"],
+    "341": ["backend_app_iam_serializers_responses_init"],
+    "342": ["backend_app_iam_serializers_validates_init"],
+    "343": ["backend_app_iam_services_init"],
+    "344": ["backend_app_iam_tests_factories_init"],
+    "345": ["backend_app_iam_tests_helpers_init"],
+    "346": ["backend_app_iam_tests_init"],
+    "347": ["backend_app_iam_types_init"],
+    "348": ["backend_app_iam_views_init"],
+    "349": ["backend_app_init"],
+    "350": ["backend_app_journal_filters_init"],
+    "351": ["backend_app_journal_init"],
+    "352": ["backend_app_journal_migrations_init"],
+    "353": ["backend_app_journal_permissions_init"],
+    "354": ["backend_app_journal_recorders_init"],
+    "355": ["backend_app_journal_repositories_init"],
+    "356": ["backend_app_journal_serializers_init"],
+    "357": ["backend_app_journal_serializers_responses_init"],
+    "358": ["backend_app_journal_services_init"],
+    "359": ["backend_app_journal_tasks_init"],
+    "360": ["backend_app_journal_tests_init"],
+    "361": ["backend_app_journal_views_init"],
+    "362": ["backend_app_novel_init"],
+    "363": ["backend_app_novel_migrations_init"],
+    "364": ["backend_app_novel_permissions_init"],
+    "365": ["backend_app_qr_codes_constants_init"],
+    "366": ["backend_app_qr_codes_filters_init"],
+    "367": ["backend_app_qr_codes_init"],
+    "368": ["backend_app_qr_codes_migrations_init"],
+    "369": ["backend_app_qr_codes_permissions_init"],
+    "370": ["backend_app_qr_codes_repositories_init"],
+    "371": ["backend_app_qr_codes_serializers_init"],
+    "372": ["backend_app_qr_codes_serializers_responses_init"],
+    "373": ["backend_app_qr_codes_serializers_validates_init"],
+    "374": ["backend_app_qr_codes_services_init"],
+    "375": ["backend_app_qr_codes_tests_init"],
+    "376": ["backend_app_qr_codes_utils_init"],
+    "377": ["backend_app_qr_codes_views_init"],
+    "378": ["backend_app_short_links_constants_init"],
+    "379": ["backend_app_short_links_migrations_init"],
+    "380": ["backend_app_short_links_permissions_init"],
+    "381": ["backend_app_short_links_tests_init"],
+    "382": ["backend_requirements_python_runtime_dependencies"],
+    "383": ["claude_graphify_workflow"],
+    "384": ["docs_authentication_postgresql_rate_limit"],
+    "385": ["docs_deployment_manual_migrations"],
+    "386": ["docs_deployment_neon_postgresql"],
+    "387": ["docs_i18n_localized_routes"],
+    "388": ["docs_i18n_message_parity"],
+    "389": ["docs_rules_backend_core_base_classes"],
+    "390": ["docs_rules_backend_module_dependency_direction"],
+    "391": ["docs_rules_common_completion_gates"],
+    "392": ["docs_rules_common_security_priority"],
+    "393": ["docs_rules_git_branch_workflow"],
+    "394": ["docs_rules_git_commit_convention"],
+    "395": ["docs_testing_frontend_e2e_tests"],
+    "396": ["docs_testing_postgresql_backend_tests"],
+    "397": ["pkg_toannx_backend"]
   },
   "cohesion": {
     "0": 0.015912588488765773,
@@ -9579,10 +9265,7 @@
     {
       "source": "T\u1eadp trung t\u1ea1i Backend",
       "target": "_attach_request_id()",
-      "source_files": [
-        "docs/sentry.md",
-        "backend/app/core/logging/sentry.py"
-      ],
+      "source_files": ["docs/sentry.md", "backend/app/core/logging/sentry.py"],
       "confidence": "INFERRED",
       "relation": "references",
       "why": "inferred connection - not explicitly stated in source; crosses file types (code \u2194 doc); connects across different repos/directories"
@@ -9590,39 +9273,30 @@
     {
       "source": "T\u1eadp trung t\u1ea1i Backend",
       "target": "init_sentry()",
-      "source_files": [
-        "docs/sentry.md",
-        "backend/app/core/logging/sentry.py"
-      ],
+      "source_files": ["docs/sentry.md", "backend/app/core/logging/sentry.py"],
       "confidence": "INFERRED",
       "relation": "references",
       "why": "inferred connection - not explicitly stated in source; crosses file types (code \u2194 doc); connects across different repos/directories"
     },
     {
-      "source": "TOANNX Development Instructions",
+      "source": "ToanNX Development Instructions",
       "target": "Authentication Design",
-      "source_files": [
-        "AGENTS.md",
-        "docs/authentication.md"
-      ],
+      "source_files": ["AGENTS.md", "docs/authentication.md"],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "why": "connects across different repos/directories; peripheral node `Authentication Design` unexpectedly reaches hub `TOANNX Development Instructions`"
+      "why": "connects across different repos/directories; peripheral node `Authentication Design` unexpectedly reaches hub `ToanNX Development Instructions`"
     },
     {
-      "source": "TOANNX Development Instructions",
+      "source": "ToanNX Development Instructions",
       "target": "Internationalization Design",
-      "source_files": [
-        "AGENTS.md",
-        "docs/i18n.md"
-      ],
+      "source_files": ["AGENTS.md", "docs/i18n.md"],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "why": "connects across different repos/directories; peripheral node `Internationalization Design` unexpectedly reaches hub `TOANNX Development Instructions`"
+      "why": "connects across different repos/directories; peripheral node `Internationalization Design` unexpectedly reaches hub `ToanNX Development Instructions`"
     },
     {
-      "source": "TOANNX Development Instructions",
-      "target": "TOANNX system standardization plan (15 Nov 2026)",
+      "source": "ToanNX Development Instructions",
+      "target": "ToanNX system standardization plan (15 Nov 2026)",
       "source_files": [
         "AGENTS.md",
         "docs/plans/system-standardization-plan.md"

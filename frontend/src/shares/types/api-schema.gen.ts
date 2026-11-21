@@ -722,6 +722,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/system/auth/accept-invitation": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Kích hoạt tài khoản qua lời mời
+     * @description Thiết lập họ tên, tên người dùng, mật khẩu và tự động đăng nhập vào hệ thống.
+     */
+    post: operations["system_auth_accept_invitation_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/system/auth/admin-sessions": {
     parameters: {
       query?: never;
@@ -826,6 +846,26 @@ export interface paths {
      *         CSRF token (cũng nằm trong cookie `csrftoken`).
      */
     get: operations["system_auth_csrf_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/invitation": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Kiểm tra token lời mời
+     * @description Xác thực token lời mời tham gia và lấy thông tin người dùng được mời.
+     */
+    get: operations["system_auth_invitation_retrieve"];
     put?: never;
     post?: never;
     delete?: never;
@@ -1050,6 +1090,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/system/auth/send-verification-email": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Gửi lại email xác minh
+     * @description Gửi email chứa liên kết xác minh tài khoản cho người dùng hiện tại.
+     */
+    post: operations["system_auth_send_verification_email_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/system/auth/sessions": {
     parameters: {
       query?: never;
@@ -1096,6 +1156,158 @@ export interface paths {
      *         204 không body.
      */
     delete: operations["system_auth_sessions_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/social/{provider}/link": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Thực hiện liên kết OAuth.
+     *
+     *     Args:
+     *         request: Request.
+     *         provider: Tên nhà cung cấp (google, github...).
+     *         validated_data: Body chứa code và redirect_uri.
+     *
+     *     Returns:
+     *         Thông tin liên kết mới được thiết lập.
+     */
+    post: operations["system_auth_social_link_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/social/{provider}/login": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Đăng nhập qua OAuth.
+     *
+     *     Args:
+     *         request: Request.
+     *         provider: Tên nhà cung cấp (google, github...).
+     *         validated_data: Body chứa code và redirect_uri.
+     *
+     *     Returns:
+     *         Hồ sơ người dùng hiện tại + cookie phiên.
+     */
+    post: operations["system_auth_social_login_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/social/{provider}/unlink": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * @description Hủy liên kết nền tảng mạng xã hội.
+     *
+     *     Args:
+     *         request: Request.
+     *         provider: Tên nhà cung cấp (google, github...).
+     *
+     *     Returns:
+     *         Xác nhận hủy liên kết thành công.
+     */
+    delete: operations["system_auth_social_unlink_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/social/{provider}/url": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Lấy URL xác thực OAuth.
+     *
+     *     Args:
+     *         request: Request.
+     *         provider: Tên nhà cung cấp (google, github...).
+     *         validated_data: Query parameters đã validate.
+     *
+     *     Returns:
+     *         URL chuyển hướng xác thực OAuth.
+     */
+    get: operations["system_auth_social_url_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/social/accounts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Lấy danh sách trạng thái liên kết mạng xã hội.
+     *
+     *     Args:
+     *         request: Request.
+     *
+     *     Returns:
+     *         Danh sách các nền tảng kèm trạng thái kết nối.
+     */
+    get: operations["system_auth_social_accounts_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/auth/verify-email": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Xác minh email qua token
+     * @description Kiểm tra token xác minh và đánh dấu email người dùng đã được xác minh.
+     */
+    post: operations["system_auth_verify_email_create"];
+    delete?: never;
     options?: never;
     head?: never;
     patch?: never;
@@ -1451,6 +1663,85 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/system/settings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_settings_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_settings_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/settings/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_settings_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_settings_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["system_settings_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/settings/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["system_settings_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/settings/public": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Lấy danh sách cấu hình công khai cho frontend client.
+     *
+     *     Args:
+     *         request: Request HTTP.
+     *
+     *     Returns:
+     *         Dữ liệu cấu hình công khai.
+     */
+    get: operations["system_settings_public_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/system/users": {
     parameters: {
       query?: never;
@@ -1461,7 +1752,7 @@ export interface paths {
     /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
     get: operations["system_users_list"];
     put?: never;
-    /** @description Tạo bản ghi (201). */
+    /** @description Tạo người dùng mới (201). Hỗ trợ gửi email mời kích hoạt tài khoản. */
     post: operations["system_users_create"];
     delete?: never;
     options?: never;
@@ -2051,6 +2342,17 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** @description Body kích hoạt tài khoản và thiết lập mật khẩu lần đầu qua lời mời. */
+    AcceptInvitationValidateRequest: {
+      /** @description Token lời mời nhận được qua email. */
+      token: string;
+      /** @description Họ và tên đầy đủ của người dùng. */
+      full_name: string;
+      /** @description Tên người dùng mong muốn (tùy chọn). */
+      username?: string | null;
+      /** @description Mật khẩu mới (tối thiểu 10 ký tự, không quá phổ biến). */
+      password: string;
+    };
     /** @description Phiên kèm chủ sở hữu và trạng thái để hiển thị bảng quản trị. */
     AdminAuthSessionResponse: {
       /**
@@ -2157,10 +2459,8 @@ export interface components {
       email: string;
       /** @description Tên đăng nhập chủ phiên. */
       username: string | null;
-      /** @description Tên chủ phiên. */
-      first_name: string;
-      /** @description Họ chủ phiên. */
-      last_name: string;
+      /** @description Họ và tên chủ phiên. */
+      full_name: string;
     };
     /** @description Gom nhóm cùng transaction, không sửa byte hoặc URL của các file. */
     AttachmentBulkUpdateValidateRequest: {
@@ -2581,6 +2881,11 @@ export interface components {
      * @enum {string}
      */
     CustomPageStatusEnum: "DRAFT" | "PUBLISHED" | "UNPUBLISHED";
+    /** @description Body xác minh email chứa token. */
+    EmailVerificationValidateRequest: {
+      /** @description Token xác minh nhận được qua email. */
+      token: string;
+    };
     /** @description Thông tin một mục truyện yêu thích. */
     FavoriteResponse: {
       /**
@@ -2665,6 +2970,18 @@ export interface components {
       status: string;
       /** @description Đang chạy chế độ DEBUG hay không. */
       debug: boolean;
+    };
+    /** @description Thông tin lời mời tài khoản trả về cho client. */
+    InvitationDetailResponse: {
+      /**
+       * Format: email
+       * @description Email được mời tham gia.
+       */
+      email: string;
+      /** @description Họ và tên đã điền sẵn nếu có. */
+      full_name: string;
+      /** @description Tên người dùng đã điền sẵn nếu có. */
+      username: string | null;
     };
     /** @description Một model kế thừa JournalTracker. */
     JournalResourceResponse: {
@@ -3733,6 +4050,31 @@ export interface components {
         };
       };
     };
+    PaginatedSettingResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["SettingResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedShortLinkListResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -3917,10 +4259,8 @@ export interface components {
        * @description Email đăng nhập (lưu chữ thường, duy nhất).
        */
       email?: string;
-      /** @description Tên. */
-      first_name?: string;
-      /** @description Họ (và tên đệm). */
-      last_name?: string;
+      /** @description Họ và tên đầy đủ. */
+      full_name?: string;
       /** @description Tên người dùng. */
       username?: string;
       /**
@@ -4052,6 +4392,17 @@ export interface components {
       /** @description Bật/tắt vai trò (tắt thì không cấp quyền). */
       is_active?: boolean;
     };
+    /** @description Payload cập nhật cấu hình hệ thống (mọi field tùy chọn). */
+    PatchedSettingUpdateValidateRequest: {
+      /** @description Giá trị mới của cấu hình. */
+      value?: unknown;
+      /** @description Mô tả ý nghĩa của cấu hình. */
+      description?: string;
+      /** @description Nhóm phân loại cấu hình. */
+      category?: string;
+      /** @description Cờ công khai của cấu hình. */
+      is_public?: boolean;
+    };
     /** @description Các trường được phép sửa. */
     PatchedShortLinkUpdateValidateRequest: {
       /** @description Tên link. */
@@ -4100,10 +4451,8 @@ export interface components {
       password?: string;
       /** @description Tên người dùng bắt buộc và duy nhất. */
       username?: string;
-      /** @description Tên. */
-      first_name?: string;
-      /** @description Họ (và tên đệm). */
-      last_name?: string;
+      /** @description Họ và tên đầy đủ. */
+      full_name?: string;
       /**
        * Format: uuid
        * @description Id attachment ảnh đại diện (upload qua /attachments); null để gỡ ảnh.
@@ -4153,6 +4502,23 @@ export interface components {
        * @description Quyền này cho phép làm gì.
        */
       description?: string;
+    };
+    /** @description Thông tin các tham số cấu hình công khai cho client. */
+    PublicSettingResponse: {
+      /**
+       * @description Trạng thái cho phép đăng nhập qua Google.
+       * @default true
+       */
+      auth_google_enabled: boolean;
+      /**
+       * @description Trạng thái cho phép đăng nhập qua GitHub.
+       * @default true
+       */
+      auth_github_enabled: boolean;
+      /** @description Bản đồ key-value các cấu hình công khai khác. */
+      settings?: {
+        [key: string]: unknown;
+      };
     };
     /** @description Một ngân hàng nhận VietQR. */
     QrBankResponse: {
@@ -4445,7 +4811,7 @@ export interface components {
       description?: string;
       /**
        * Vai trò hệ thống
-       * @description Do hệ thống tạo (data migration); chỉ superuser được sửa.
+       * @description Do hệ thống tạo (RoleSeedService sau migrate); chỉ superuser được sửa.
        */
       is_system?: boolean;
       /**
@@ -4508,7 +4874,7 @@ export interface components {
       description?: string;
       /**
        * Vai trò hệ thống
-       * @description Do hệ thống tạo (data migration); chỉ superuser được sửa.
+       * @description Do hệ thống tạo (RoleSeedService sau migrate); chỉ superuser được sửa.
        */
       is_system?: boolean;
       /**
@@ -4575,7 +4941,7 @@ export interface components {
       name: string;
       /**
        * Vai trò hệ thống
-       * @description Do hệ thống tạo (data migration); chỉ superuser được sửa.
+       * @description Do hệ thống tạo (RoleSeedService sau migrate); chỉ superuser được sửa.
        */
       is_system?: boolean;
       /**
@@ -4622,6 +4988,74 @@ export interface components {
       ip_address?: string | null;
       /** @description True nếu là phiên của request hiện tại. */
       readonly is_current: boolean;
+    };
+    /** @description Payload tạo mới cấu hình hệ thống. */
+    SettingCreateValidateRequest: {
+      /** @description Khóa cấu hình định danh (chữ thường, gạch dưới). */
+      key: string;
+      /** @description Giá trị cấu hình (bất kỳ kiểu JSON hợp lệ: boolean, số, chuỗi, dict, list). */
+      value: unknown;
+      /**
+       * @description Mô tả ý nghĩa của cấu hình.
+       * @default
+       */
+      description: string;
+      /**
+       * @description Nhóm phân loại cấu hình (vd: general, auth, storage).
+       * @default general
+       */
+      category: string;
+      /**
+       * @description Cho phép client chưa đăng nhập đọc cấu hình này.
+       * @default false
+       */
+      is_public: boolean;
+    };
+    /** @description Thông tin chi tiết một tham số cấu hình hệ thống. */
+    SettingResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Khóa cấu hình
+       * @description Định danh duy nhất của cấu hình (vd: auth_google_enabled).
+       */
+      readonly key: string;
+      /**
+       * Giá trị cấu hình
+       * @description Nội dung giá trị cấu hình được lưu dưới định dạng JSON linh hoạt.
+       */
+      readonly value: unknown;
+      /**
+       * Mô tả
+       * @description Giải thích mục đích và tác động của cấu hình.
+       */
+      readonly description: string;
+      /**
+       * Nhóm cấu hình
+       * @description Phân loại cấu hình để hiển thị theo nhóm.
+       */
+      readonly category: string;
+      /**
+       * Công khai
+       * @description Bật để cho phép client chưa đăng nhập đọc giá trị này (vd: danh sách SSO khả dụng).
+       */
+      readonly is_public: boolean;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
     };
     /** @description Bật/tắt nhiều link cùng lúc. */
     ShortLinkBulkUpdateValidateRequest: {
@@ -4852,6 +5286,18 @@ export interface components {
       /** @description Mật khẩu do người tạo đặt; rỗng với link không khóa. */
       password: string;
     };
+    /** @description Validate body khi gửi mã ủy quyền (code) để đăng nhập hoặc liên kết. */
+    SocialAuthCodeValidateRequest: {
+      /** @description Mã ủy quyền nhận được từ nhà cung cấp OAuth. */
+      code: string;
+      /** @description Redirect URI đã dùng khi khởi tạo yêu cầu OAuth. */
+      redirect_uri: string;
+    };
+    /** @description Thông tin URL xác thực trả về cho client. */
+    SocialAuthUrlResponse: {
+      /** @description Đường dẫn đầy đủ chuyển hướng tới trang đăng nhập của nhà cung cấp. */
+      authorization_url: string;
+    };
     /** @description Thông tin tóm tắt thẻ. */
     TagSummaryResponse: {
       /**
@@ -4893,6 +5339,29 @@ export interface components {
       /** @description true = mở, false = khóa (thu hồi mọi phiên). */
       is_active: boolean;
     };
+    /** @description Thông tin tóm tắt tài khoản mạng xã hội đã liên kết của người dùng. */
+    UserConnectedSocialSummaryResponse: {
+      /**
+       * Format: uuid
+       * @description ID bản ghi liên kết.
+       */
+      id: string;
+      /** @description Nền tảng (google, github). */
+      provider: string;
+      /** @description ID định danh từ nền tảng. */
+      uid: string;
+      /** @description Email nhận được từ nền tảng. */
+      email: string;
+      /** @description Tên hiển thị trên nền tảng. */
+      display_name: string;
+      /** @description URL ảnh đại diện từ nền tảng. */
+      avatar_url?: string;
+      /**
+       * Format: date-time
+       * @description Thời điểm liên kết.
+       */
+      created_at: string;
+    };
     /** @description Dữ liệu tạo người dùng. `avatar_id` là id attachment ảnh đã upload. */
     UserCreateValidateRequest: {
       /**
@@ -4900,14 +5369,20 @@ export interface components {
        * @description Email đăng nhập (lưu chữ thường, duy nhất).
        */
       email: string;
-      /** @description Mật khẩu thô; tối thiểu 10 ký tự, không quá phổ biến, không toàn số. */
+      /**
+       * @description Mật khẩu thô; nếu để trống hệ thống sẽ gửi thư mời để người dùng tự thiết lập.
+       * @default
+       */
       password: string;
-      /** @description Tên người dùng bắt buộc và duy nhất. */
-      username: string;
-      /** @description Tên. */
-      first_name?: string;
-      /** @description Họ (và tên đệm). */
-      last_name?: string;
+      /** @description Tên người dùng tùy chọn và duy nhất nếu có. */
+      username?: string | null;
+      /**
+       * @description Tự động gửi email mời nếu tạo tài khoản không có mật khẩu.
+       * @default true
+       */
+      send_invitation: boolean;
+      /** @description Họ và tên đầy đủ. */
+      full_name: string;
       /**
        * Format: uuid
        * @description Id attachment ảnh đại diện (upload qua /attachments); null để gỡ ảnh.
@@ -4953,17 +5428,10 @@ export interface components {
        */
       username?: string | null;
       /**
-       * Tên
-       * @description Tên.
+       * Họ và tên
+       * @description Họ và tên đầy đủ.
        */
-      first_name?: string;
-      /**
-       * Họ
-       * @description Họ (và tên đệm).
-       */
-      last_name?: string;
-      /** @description Họ tên đầy đủ. */
-      readonly full_name: string;
+      full_name?: string;
       /** @description Ảnh đại diện còn tồn tại (id, url) hoặc null. */
       readonly avatar: components["schemas"]["AttachmentSummaryResponse"] | null;
       /**
@@ -4986,6 +5454,13 @@ export interface components {
        * @description Chỉ đánh dấu nhóm nghiệp vụ Novel; không tự cấp quyền nào.
        */
       is_novel?: boolean;
+      /**
+       * Đã xác minh email
+       * @description Đánh dấu email của người dùng đã được xác minh.
+       */
+      is_verified?: boolean;
+      /** @description Danh sách tài khoản mạng xã hội đang liên kết. */
+      readonly social_accounts: components["schemas"]["UserConnectedSocialSummaryResponse"][];
       /**
        * Lần cuối đăng nhập
        * Format: date-time
@@ -5035,17 +5510,10 @@ export interface components {
        */
       username?: string | null;
       /**
-       * Tên
-       * @description Tên.
+       * Họ và tên
+       * @description Họ và tên đầy đủ.
        */
-      first_name?: string;
-      /**
-       * Họ
-       * @description Họ (và tên đệm).
-       */
-      last_name?: string;
-      /** @description Họ tên đầy đủ. */
-      readonly full_name: string;
+      full_name?: string;
       /** @description Ảnh đại diện còn tồn tại (id, url) hoặc null. */
       readonly avatar: components["schemas"]["AttachmentSummaryResponse"] | null;
       /**
@@ -5068,6 +5536,13 @@ export interface components {
        * @description Chỉ đánh dấu nhóm nghiệp vụ Novel; không tự cấp quyền nào.
        */
       is_novel?: boolean;
+      /**
+       * Đã xác minh email
+       * @description Đánh dấu email của người dùng đã được xác minh.
+       */
+      is_verified?: boolean;
+      /** @description Danh sách tài khoản mạng xã hội đang liên kết. */
+      readonly social_accounts: components["schemas"]["UserConnectedSocialSummaryResponse"][];
       /**
        * Lần cuối đăng nhập
        * Format: date-time
@@ -5092,6 +5567,28 @@ export interface components {
     UserRoleSyncValidateRequest: {
       /** @description Toàn bộ id vai trò người dùng cần có sau khi lưu (rỗng = gỡ hết). */
       role_ids: string[];
+    };
+    /** @description Thông tin trạng thái liên kết của một nền tảng mạng xã hội. */
+    UserSocialAccountSummaryResponse: {
+      /** @description Tên nền tảng (google, github...). */
+      provider: string;
+      /** @description Hệ thống đã cấu hình Client ID / Secret chưa. */
+      is_configured: boolean;
+      /**
+       * @description Quản trị viên có đang bật phương thức này không.
+       * @default true
+       */
+      is_enabled: boolean;
+      /** @description Người dùng đã liên kết với nền tảng này chưa. */
+      is_connected: boolean;
+      /** @description Email đã liên kết. */
+      email: string;
+      /** @description Tên hiển thị trên nền tảng. */
+      display_name: string;
+      /** @description URL ảnh đại diện trên nền tảng. */
+      avatar_url: string;
+      /** @description Thời điểm liên kết (ISO 8601). */
+      connected_at: string | null;
     };
   };
   responses: never;
@@ -7157,6 +7654,42 @@ export interface operations {
       };
     };
   };
+  system_auth_accept_invitation_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AcceptInvitationValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CurrentUserResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   system_auth_admin_sessions_list: {
     parameters: {
       query?: {
@@ -7399,6 +7932,38 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["CsrfResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_invitation_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["InvitationDetailResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;
@@ -7707,6 +8272,38 @@ export interface operations {
       };
     };
   };
+  system_auth_send_verification_email_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PasswordResetDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   system_auth_sessions_list: {
     parameters: {
       query?: never;
@@ -7756,6 +8353,216 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  system_auth_social_link_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        provider: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SocialAuthCodeValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["UserSocialAccountSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_social_login_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        provider: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SocialAuthCodeValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CurrentUserResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_social_unlink_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        provider: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_auth_social_url_retrieve: {
+    parameters: {
+      query: {
+        /**
+         * @description Mục đích xác thực: đăng nhập (login) hoặc liên kết tài khoản (link).
+         *
+         *     * `login` - login
+         *     * `link` - link
+         */
+        action?: "login" | "link";
+        /** @description URL callback của frontend sau khi OAuth hoàn tất. */
+        redirect_uri: string;
+        /** @description Chuỗi state ngẫu nhiên chống tấn công CSRF OAuth. */
+        state: string;
+      };
+      header?: never;
+      path: {
+        provider: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SocialAuthUrlResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_social_accounts_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["UserSocialAccountSummaryResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_auth_verify_email_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmailVerificationValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PasswordResetDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
       };
     };
   };
@@ -7912,7 +8719,7 @@ export interface operations {
         page?: number;
         /** @description Number of results to return per page. */
         page_size?: number;
-        /** @description `<module>.<model>`, nhiều giá trị: `account.user,iam.role`. */
+        /** @description `<module>.<model>`, nhiều giá trị: `system.user,novel.novel`. */
         resource?: string[];
         /** @description A search term. */
         search?: string;
@@ -8452,6 +9259,224 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_settings_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedSettingResponseList"];
+        };
+      };
+    };
+  };
+  system_settings_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SettingCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SettingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_settings_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SettingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_settings_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_settings_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedSettingUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SettingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_settings_history_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  system_settings_public_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PublicSettingResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;

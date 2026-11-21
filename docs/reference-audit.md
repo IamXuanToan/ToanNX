@@ -9,7 +9,7 @@ Không có file LICENSE ở cả hai repo; cả hai là dự án của chủ rep
 
 ## 1. PMS — đã kiểm tra
 
-| Thành phần | File | Đánh giá | Quyết định cho TOANNX |
+| Thành phần | File | Đánh giá | Quyết định cho ToanNX |
 | --- | --- | --- | --- |
 | BaseModel | `core/models/base_model.py` | Gán audit ngầm trong `save()` từ context; **3 truy vấn `exists()` mỗi lần save** để kiểm tra user; `delete()` bị ghi đè thành soft delete cho mọi model; sửa mã unique khi xóa | **Refactor**: `CoreModel` chỉ khai báo field (UUID, timestamps, audit, `deleted_*`); audit do repository gán; soft delete là tùy chọn theo model |
 | Managers / SoftDeleteQuerySet | `core/models/manager/*` | Manager mặc định ẩn bản ghi xóa → dễ lọt dữ liệu ở join; `QuerySet.delete()` ngầm thành update | **Không dùng** cơ chế ẩn ngầm; có `CoreQuerySet.alive()` tường minh |

@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-import { emailField, passwordField } from "@/shares/lib/field-schemas";
+import { emailField } from "@/shares/lib/field-schemas";
+
+import type { CreateUserInput } from "../types/user.types";
 
 type Translate = (key: "emailInvalid" | "passwordMin" | "required" | "usernameFormat") => string;
 
@@ -32,13 +34,13 @@ function userFields(t: Translate) {
   return {
     email: emailField(t("emailInvalid")),
     username: usernameField(t),
-    firstName: z.string().trim().max(150),
-    lastName: z.string().trim().max(150),
+    fullName: z.string().trim().min(1, t("required")).max(255),
     avatar: avatarField,
     isActive: z.boolean(),
     isStaff: z.boolean(),
     isSuperuser: z.boolean(),
     isNovel: z.boolean(),
+    sendInvitation: z.boolean(),
   };
 }
 
@@ -46,13 +48,39 @@ function userFields(t: Translate) {
  * Schema tạo người dùng (thông báo theo ngôn ngữ).
  *
  * @param t - Hàm dịch `system.account.validation`.
+ * @param isUpdate - Cờ xác định form cập nhật hay tạo mới.
  * @returns Zod schema.
  */
-export function createUserSchema(t: Translate) {
-  return z.object({
-    ...userFields(t),
-    password: passwordField(PASSWORD_MIN_LENGTH, t("passwordMin")),
-  });
+export function createUserSchema(t: Translate, isUpdate = false) {
+  return z
+    .object({
+      ...userFields(t),
+      password: z.string(),
+    })
+    .superRefine((data, ctx) => {
+      if (!isUpdate && !data.sendInvitation) {
+        if (!data.username || !data.username.trim()) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("required"),
+            path: ["username"],
+          });
+        }
+        if (!data.password || data.password.length < PASSWORD_MIN_LENGTH) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("passwordMin"),
+            path: ["password"],
+          });
+        }
+      } else if (isUpdate && data.password && data.password.length < PASSWORD_MIN_LENGTH) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("passwordMin"),
+          path: ["password"],
+        });
+      }
+    });
 }
 
 /**
@@ -62,22 +90,18 @@ export function createUserSchema(t: Translate) {
  * @returns Zod schema.
  */
 export function updateUserSchema(t: Translate) {
-  return z.object({
-    ...userFields(t),
-    password: z.union([z.literal(""), passwordField(PASSWORD_MIN_LENGTH, t("passwordMin"))]),
-  });
+  return createUserSchema(t, true);
 }
 
 export type CreateUserFormValues = z.infer<ReturnType<typeof createUserSchema>>;
-export type UpdateUserFormValues = z.infer<ReturnType<typeof updateUserSchema>>;
+export type UpdateUserFormValues = CreateUserFormValues;
 
 /** Tên các ô của form người dùng (gắn lỗi theo field từ backend). */
 export const USER_FORM_FIELDS = [
   "email",
   "password",
   "username",
-  "firstName",
-  "lastName",
+  "fullName",
   "isActive",
   "isStaff",
   "isSuperuser",
@@ -93,6 +117,16 @@ export const USER_FORM_FIELDS = [
 export function toUserInput<V extends CreateUserFormValues | UpdateUserFormValues>({
   avatar,
   ...values
-}: V) {
-  return { ...values, avatarId: avatar?.id ?? null };
+}: V): CreateUserInput {
+  const result: CreateUserInput = {
+    ...values,
+    avatarId: avatar?.id ?? null,
+  };
+  if (!result.password) {
+    delete result.password;
+  }
+  if (!result.username) {
+    delete result.username;
+  }
+  return result;
 }

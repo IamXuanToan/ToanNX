@@ -1,0 +1,14 @@
+INVITATION TO JOIN TOANNX
+
+Hello {{ user_display_name }},
+
+You have been invited by an administrator to join the ToanNX platform with the email: {{ user.email }}.
+
+Please visit the following link to set your password and complete your account setup:
+
+{{ invitation_url }}
+
+This invitation link is valid for {{ timeout_days }} days.
+
+---
+© {{ current_year }} ToanNX. All rights reserved.

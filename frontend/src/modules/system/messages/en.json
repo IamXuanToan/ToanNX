@@ -23,6 +23,7 @@
       "columns": {
         "user": "User",
         "status": "Status",
+        "verification": "Verification",
         "lastLogin": "Last sign-in",
         "access": "Access",
         "lastSeen": "Last active"
@@ -32,6 +33,7 @@
         "password": "Password",
         "newPassword": "New password",
         "newPasswordHint": "Leave blank to keep it. Changing it signs the user out everywhere.",
+        "fullName": "Full name",
         "firstName": "First name",
         "lastName": "Last name",
         "isActive": "Active",
@@ -45,8 +47,20 @@
         "avatar": "Avatar",
         "isSuperuser": "Superuser",
         "isSuperuserHint": "Full access, skips permission checks. Only superusers can enable it.",
-        "dateJoined": "Joined"
+        "dateJoined": "Joined",
+        "sendInvitation": "Invite via email",
+        "sendInvitationHint": "Send an invitation email. The user will set up their full name, username, and password upon activation.",
+        "emailVerified": "Email Verification",
+        "emailVerifiedTrue": "Verified",
+        "emailVerifiedFalse": "Unverified",
+        "googleAccount": "Google Account",
+        "githubAccount": "GitHub Account",
+        "linked": "Connected",
+        "notLinked": "Not connected"
       },
+      "sendInvitationButton": "Send invitation",
+      "invitationEmailNoticeTitle": "Account invitation email",
+      "invitationEmailNoticeDesc": "The system will send an email with a secure link to this email address. The user will have 7 days to access and complete their account setup.",
       "staff": "Staff",
       "novel": "Novel",
       "actions": {
@@ -56,7 +70,9 @@
       "extensionFailed": "User saved but roles were not fully updated: {message}",
       "sections": {
         "access": "Access",
-        "activity": "Activity"
+        "activity": "Activity",
+        "socialAccounts": "Social Accounts",
+        "verification": "Verification Status"
       },
       "presence": {
         "label": "Presence",
@@ -67,6 +83,9 @@
   },
   "attachment": {
     "title": "Media library",
+    "viewModeGrid": "Large grid",
+    "viewModeCompact": "Small grid",
+    "viewModeList": "List view",
     "video": "Video",
     "format": "File extension",
     "folder": "Folder",
@@ -108,6 +127,7 @@
     "doubleClickToUse": "Double-click an image to use it immediately",
     "openLibrary": "Open library",
     "useImage": "Use this image",
+    "actions": "Actions",
     "selectedImage": "1 image selected",
     "noImage": "No image selected",
     "search": "Search by filename…",
@@ -188,7 +208,61 @@
       "submit": "Sign in",
       "submitting": "Signing in...",
       "identifier": "Email or username",
-      "forgotPasswordLink": "Forgot password?"
+      "forgotPasswordLink": "Forgot password?",
+      "orContinueWith": "Or continue with",
+      "loginWithGoogle": "Sign in with Google",
+      "loginWithGithub": "Sign in with GitHub",
+      "socialNotConfigured": "This platform is not configured on the system.",
+      "callbackTitle": "Authenticating...",
+      "callbackProcessing": "Processing authentication from provider...",
+      "callbackSuccess": "Authentication successful, redirecting...",
+      "callbackFailed": "Authentication failed",
+      "callbackBackToLogin": "Back to sign in",
+      "temporarilyDisabled": "Temporarily disabled",
+      "socialDisabledHint": "This sign-in provider is temporarily disabled by system configuration."
+    },
+    "chillPanel": {
+      "greetingMorning": "Good morning",
+      "greetingAfternoon": "Good afternoon",
+      "greetingEvening": "Good evening",
+      "greetingNight": "Peaceful night",
+      "subtitle": "Wishing you a productive and energetic day ahead.",
+      "locations": {
+        "danang": "Da Nang",
+        "danangDesc": "Peaceful vibes by My Khe Beach & Dragon Bridge",
+        "quangtri": "Quang Tri",
+        "quangtriDesc": "Warm and resilient beloved hometown"
+      },
+      "weather": {
+        "danangTemp": "27°C",
+        "danangStatus": "Mild sunshine & Ocean breeze",
+        "quangtriTemp": "25°C",
+        "quangtriStatus": "Clear skies & Cool breeze",
+        "humidity": "Humidity",
+        "wind": "Wind"
+      },
+      "infrastructure": {
+        "title": "System Infrastructure",
+        "statusOnline": "All Systems Operational",
+        "uptime": "99.98% Uptime",
+        "r2": "Cloudflare R2 Storage",
+        "r2Desc": "Ultra-fast object storage",
+        "db": "Neon Serverless DB",
+        "dbDesc": "Distributed PostgreSQL",
+        "oauth": "Google & GitHub OAuth 2.0",
+        "oauthDesc": "Secure authentication"
+      }
+    },
+    "brandHighlight": {
+      "badge": "ToanNX Cloud Platform",
+      "title": "Smart & Secure Management Platform",
+      "subtitle": "Comprehensive digital content management, granular IAM access control, and high-performance cloud storage.",
+      "feature1Title": "Granular IAM Access Control",
+      "feature1Desc": "Fine-grained resource permissions down to each individual action and role.",
+      "feature2Title": "Multi-Factor Authentication",
+      "feature2Desc": "Seamless and secure sign-in with password, Google OAuth, and GitHub.",
+      "feature3Title": "High-Performance Cloud Storage",
+      "feature3Desc": "Optimized attachment storage powered by Cloudflare R2 and modern image compression."
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -233,7 +307,49 @@
       "logoutAll": "Sign out of all devices"
     },
     "session": {
-      "expired": "Your session has expired, please sign in again."
+      "expired": "Your session has expired, please sign in again.",
+      "logoutSuccess": "Signed out successfully.",
+      "logoutAllSuccess": "Signed out of all devices."
+    },
+    "verifyEmail": {
+      "pageTitle": "Verify email",
+      "verifying": "Verifying your email address...",
+      "successTitle": "Email verified successfully!",
+      "successDescription": "Your email address has been confirmed. You now have full access to all features.",
+      "errorTitle": "Email verification failed",
+      "errorDescription": "The verification link is invalid or has expired (24 hours). Please sign in and request a new verification email.",
+      "invalidToken": "The verification link is missing a token or is invalid.",
+      "backToHome": "Back to home",
+      "backToLogin": "Back to sign in",
+      "retry": "Retry"
+    },
+    "invitation": {
+      "pageTitle": "Account Activation",
+      "pageDescription": "Complete your basic information and password to start using the system.",
+      "checkingToken": "Validating invitation link...",
+      "invalidTitle": "Invalid Invitation",
+      "tokenMissing": "Invitation token is missing from the link.",
+      "invitedEmail": "Invited email address",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "John Doe",
+      "username": "Username (Optional)",
+      "usernamePlaceholder": "johndoe",
+      "usernameHint": "Used to sign in instead of email. Letters, numbers, and @/./+/-/_ only.",
+      "password": "New password",
+      "passwordPlaceholder": "Minimum 10 characters",
+      "passwordHint": "At least 10 characters, combining letters, numbers, and symbols.",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Re-enter new password",
+      "submitButton": "Activate account & Sign in",
+      "activating": "Activating...",
+      "welcomeSuccess": "Welcome {name}! Your account has been activated successfully.",
+      "backToLogin": "Back to sign in",
+      "validation": {
+        "fullNameRequired": "Please enter your full name.",
+        "passwordMin": "Password must be at least 10 characters.",
+        "passwordMismatch": "Passwords do not match.",
+        "usernameFormat": "Username may only contain letters, numbers, and @/./+/-/_."
+      }
     },
     "sessions": {
       "title": "Sessions",
@@ -271,7 +387,8 @@
       "description": "Manage your personal account information, roles, and security.",
       "tabs": {
         "info": "Personal Info",
-        "security": "Security"
+        "security": "Security",
+        "social": "Connected Accounts"
       },
       "avatar": "Avatar",
       "avatarLibrary": "Choose from library",
@@ -287,15 +404,41 @@
       "roleUser": "User",
       "noRoles": "No specific roles assigned",
       "email": "Email address",
+      "emailVerified": "Verified",
+      "emailUnverified": "Unverified",
+      "unverifiedReminder": "Your email is not verified. Please open your profile to send a verification email and secure your account.",
+      "sendVerificationEmail": "Send verification email",
+      "resendVerification": "Resend",
+      "verificationSentSuccess": "Verification email sent, please check your inbox.",
       "emailPlaceholder": "name@example.com",
       "emailInvalid": "Invalid email address format.",
       "username": "Username",
       "usernamePlaceholder": "Enter username",
       "usernameRequired": "Username is required.",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "John Doe",
+      "fullNameRequired": "Full name is required.",
       "lastName": "Last name",
       "lastNamePlaceholder": "Doe",
       "firstName": "First name",
       "firstNamePlaceholder": "John",
+      "connectedAccounts": "Connected Social Accounts",
+      "connectedAccountsDesc": "Connect your Google or GitHub account for easier and secure sign-in.",
+      "connect": "Connect",
+      "connecting": "Redirecting...",
+      "disconnect": "Disconnect",
+      "disconnecting": "Disconnecting...",
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "notConfigured": "Not configured",
+      "temporarilyDisabled": "Disabled",
+      "disabledByAdminDesc": "Administrator has temporarily disabled this provider",
+      "close": "Close",
+      "disconnectConfirmTitle": "Disconnect {provider} account?",
+      "disconnectConfirmDescription": "Are you sure you want to disconnect {provider} ({account})? Once disconnected, you will not be able to sign in using this account.",
+      "disconnectConfirmAction": "Disconnect",
+      "socialUnlinkSuccess": "Account disconnected successfully.",
+      "socialLinkSuccess": "Account connected successfully.",
       "securityTitle": "Change account password",
       "securityDescription": "Changing your password will revoke active sessions on all other devices for security.",
       "newPassword": "New password",
@@ -452,6 +595,42 @@
       "removed": "Removed {count}",
       "noChanges": "No field changed.",
       "recordHistory": "Record history"
+    }
+  },
+  "settings": {
+    "title": "System Settings",
+    "description": "Manage system-wide configuration, toggle authentication providers, and operational parameters.",
+    "socialAuth": {
+      "title": "Social Authentication & OAuth",
+      "description": "Enable or temporarily disable third-party login providers. Changes take effect immediately.",
+      "googleTitle": "Google Sign-in",
+      "googleDesc": "Allow users to authenticate or link using their Google account.",
+      "githubTitle": "GitHub Sign-in",
+      "githubDesc": "Allow users to authenticate or link using their GitHub account.",
+      "updatedSuccess": "Setting updated successfully."
+    },
+    "table": {
+      "title": "Configuration Parameters",
+      "searchPlaceholder": "Search by key, description...",
+      "empty": "No configuration parameters found.",
+      "columns": {
+        "key": "Setting Key",
+        "value": "Value",
+        "category": "Category",
+        "isPublic": "Public",
+        "description": "Description",
+        "updatedAt": "Last Updated"
+      },
+      "publicBadge": "Public Client",
+      "privateBadge": "Internal Only",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "editValue": "Edit Value",
+      "editValueTitle": "Update Setting Value",
+      "editValueDesc": "Update value for setting key {key}. JSON/string/number/boolean supported.",
+      "valueLabel": "Value (JSON)",
+      "saveValue": "Save Setting",
+      "jsonInvalid": "Value must be valid JSON."
     }
   }
 }

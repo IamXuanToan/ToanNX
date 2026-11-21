@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Sum
 
 from app.core.repositories.core_repository import CoreRepository
 from app.system.models.attachment import Attachment
@@ -12,6 +12,29 @@ class AttachmentRepository(CoreRepository[Attachment]):
     """Truy cập dữ liệu Attachment."""
 
     model = Attachment
+
+    def get_total_alive_size(self) -> int:
+        """Tổng dung lượng (bytes) của các tệp chưa bị xóa mềm trong hệ thống.
+
+        Returns:
+            Số bytes nguyên.
+        """
+        return self.get_queryset().aggregate(total=Sum("size"))["total"] or 0
+
+    def get_total_storage_size(self) -> int:
+        """Tổng dung lượng (bytes) của các tệp vật lý chưa bị dọn khỏi storage (purged_at IS NULL).
+
+        Bao gồm cả các bản ghi đã xóa mềm nhưng chưa dọn dẹp vật lý trên R2/Storage.
+
+        Returns:
+            Số bytes nguyên.
+        """
+        return (
+            self.get_queryset_with_deleted()
+            .filter(purged_at__isnull=True)
+            .aggregate(total=Sum("size"))["total"]
+            or 0
+        )
 
     def purgeable_files(self, before: Any, limit: int) -> list[tuple[Any, str]]:
         """File của bản ghi đã xóa mềm trước mốc và chưa dọn.

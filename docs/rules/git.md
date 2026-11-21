@@ -1,5 +1,8 @@
 # Quy tắc Git
 
+> **AI agent:** không tự tạo nhánh, commit, push, merge hay xóa nhánh khi chưa được yêu cầu rõ; làm trên nhánh
+> hiện tại. Các quy tắc dưới đây áp dụng khi người dùng yêu cầu thao tác git (hoặc tự làm), và để gợi ý câu commit.
+
 ## Nhánh
 
 | Nhánh | Tạo từ | Merge vào | Dùng cho |
@@ -31,10 +34,10 @@ Viết mô tả bằng tiếng Anh, ở dạng mệnh lệnh, không viết hoa 
 | --- | --- | --- |
 | `feat` | Thêm hành vi hoặc API | `feat(utilities): add public redirects` |
 | `fix` | Sửa lỗi | `fix(utilities): protect page ownership` |
-| `ref` | Đổi cấu trúc, giữ nguyên hành vi | `ref(iam): move permission catalogs` |
+| `ref` | Đổi cấu trúc, giữ nguyên hành vi | `ref(system): move permission catalogs` |
 | `docs` | Chỉ sửa tài liệu | `docs(repo): define Git workflow` |
 | `test` | Chỉ thêm hoặc sửa test | `test(utilities): cover slug collisions` |
-| `perf` | Cải thiện hiệu năng | `perf(pages): prefetch visible blocks` |
+| `perf` | Cải thiện hiệu năng | `perf(utilities): prefetch visible blocks` |
 | `style` | Định dạng code, không đổi logic (ruff format, prettier) | `style(frontend): apply prettier` |
 | `build` | Dependency hoặc cách build | `build(frontend): update pnpm lockfile` |
 | `ci` | Pipeline kiểm tra, deploy | `ci(repo): run backend checks` |
@@ -56,7 +59,7 @@ Thay đổi phá vỡ hợp đồng (API, mã lỗi, biến môi trường) dùn
 `BREAKING CHANGE:` trong body. Ví dụ:
 
 ```text
-feat(account)!: rename user error codes
+feat(system)!: rename user error codes
 
 BREAKING CHANGE: IAM_EMAIL_EXISTS is now ACCOUNT_EMAIL_EXISTS.
 ```
@@ -77,8 +80,8 @@ Không dùng `--no-verify` để lách hook.
 
 ## Trước khi commit và push
 
-1. Chạy kiểm tra liên quan; trước khi báo hoàn thành, chạy `scripts/check-all.ps1` (hoặc `.sh`) và
-   `pnpm e2e` theo [rule chung](common.md).
+1. Chạy kiểm tra liên quan tới phần đã sửa theo [rule chung](common.md) mục 7; toàn bộ (`scripts/check-all.*`,
+   `pnpm e2e`) chỉ khi người dùng yêu cầu (CI vẫn chạy đủ).
 2. Stage đúng file của thay đổi. Xem `git diff --cached --stat` và `git diff --cached --check`.
 3. Không đưa secret, `.env`, database local, `media/`, dependency cài đặt, cache hoặc build output vào Git.
 4. Mỗi commit diễn đạt một thay đổi logic. Commit khởi tạo repository có thể chứa toàn bộ bản nền hiện tại.

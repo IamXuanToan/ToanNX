@@ -25,7 +25,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <main className="flex-1">{children}</main>
       {!isHome ? (
         <footer className="text-muted-foreground border-t py-6 text-center text-xs">
-          © {new Date().getFullYear()} TOANNX · toannx.com
+          © {new Date().getFullYear()} ToanNX · toannx.com
         </footer>
       ) : null}
     </div>

@@ -2,7 +2,17 @@
 
 import Image from "next/image";
 import { cn } from "cn";
-import { CloudUpload, Eye, Images, Loader2, RotateCw, Upload, X } from "lucide-react";
+import {
+  CloudUpload,
+  Eye,
+  FolderInput,
+  Images,
+  Loader2,
+  RotateCw,
+  Trash2,
+  Upload,
+  X,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
@@ -33,6 +43,8 @@ import { AttachmentFolderManager } from "./attachment-folder-manager";
 import { AttachmentDetailDialog } from "./attachment-detail-dialog";
 import { AttachmentGrid } from "./attachment-grid";
 import { AttachmentMoveDialog } from "./attachment-move-dialog";
+import { AttachmentViewModeToggle } from "./attachment-view-mode-toggle";
+import { useAttachmentViewMode } from "./hooks/use-attachment-view-mode";
 import { useAttachmentPicker } from "./hooks/use-attachment-picker";
 
 /**
@@ -57,6 +69,8 @@ export function AttachmentPicker({
   onClose: () => void;
 }) {
   const t = useTranslations("system.attachment");
+  const tChoice = useTranslations("common.choice");
+  const { viewMode, setViewMode } = useAttachmentViewMode();
   const state = useAttachmentPicker();
   const {
     query,
@@ -113,7 +127,7 @@ export function AttachmentPicker({
 
         {/* Toolbar & Filter Bar */}
         <div className="bg-muted/20 shrink-0 space-y-2.5 border-b px-4 py-2.5 sm:px-6 sm:py-3">
-          {/* Hàng 1: Tìm kiếm + Reload + Nút Tải lên */}
+          {/* Hàng 1: Tìm kiếm + Toggle View Mode + Reload + Nút Tải lên */}
           <div className="flex items-center gap-2">
             <SearchInput
               value={state.search}
@@ -121,6 +135,7 @@ export function AttachmentPicker({
               placeholder={t("search")}
               className="h-10 min-w-0 flex-1 rounded-xl"
             />
+            <AttachmentViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
             <Button
               type="button"
               variant="outline"
@@ -179,6 +194,74 @@ export function AttachmentPicker({
               </Button>
             ) : null}
           </div>
+
+          {/* Hàng 3: Thanh thao tác chọn nhiều (Bulk Bar: Chuyển thư mục & Xóa) */}
+          {(canDelete || canMove) && state.selectedIds.length > 0 ? (
+            <div className="bg-primary/5 border-primary/20 animate-in fade-in-50 flex min-h-12 w-full flex-wrap items-center justify-between gap-3 rounded-xl border px-3.5 py-1.5 shadow-2xs duration-150 sm:flex-nowrap">
+              <div className="flex shrink-0 items-center gap-2">
+                <span className="bg-primary/10 text-primary border-primary/20 inline-flex h-8 items-center rounded-lg border px-2.5 text-xs font-semibold tabular-nums">
+                  {t("selectedCount", {
+                    count: state.selectedIds.length,
+                    total: query.data?.items.length ?? 0,
+                  })}
+                </span>
+                <div className="bg-border/60 h-4 w-px" aria-hidden />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={state.clearSelection}
+                  className="text-muted-foreground hover:text-foreground h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
+                >
+                  <X className="size-3.5" />
+                  <span>{t("clearSelection")}</span>
+                </Button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={state.selectAll}
+                  disabled={state.selectedIds.length === (query.data?.items.length ?? 0)}
+                  className="h-8 rounded-lg px-3 text-xs font-medium"
+                >
+                  {tChoice("selectAll")}
+                </Button>
+                {canMove ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const selectedFiles =
+                        query.data?.items.filter((item) => state.selectedIds.includes(item.id)) ??
+                        [];
+                      state.setPendingMoveFiles(selectedFiles);
+                    }}
+                    className="h-8 gap-1.5 rounded-lg px-3 text-xs font-medium"
+                    data-testid="picker-bulk-move-button"
+                  >
+                    <FolderInput className="size-3.5" />
+                    <span>{t("moveFiles")}</span>
+                  </Button>
+                ) : null}
+                {canDelete ? (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => state.setPendingBulkDelete(true)}
+                    className="h-8 gap-1.5 rounded-lg px-3 text-xs font-medium"
+                    data-testid="picker-bulk-delete-button"
+                  >
+                    <Trash2 className="size-3.5" />
+                    <span>{t("deleteSelected", { count: state.selectedIds.length })}</span>
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
         </div>
 
         {/* Nội dung chính: Lưới ảnh toàn chiều rộng (Spacious & Clean) */}
@@ -242,11 +325,18 @@ export function AttachmentPicker({
                 <AttachmentGrid
                   files={query.data.items}
                   activeId={state.selected?.id}
+                  selectedIds={state.selectedIds}
+                  viewMode={viewMode}
                   onInspect={state.setSelected}
+                  onToggle={canDelete ? state.toggleSelect : undefined}
                   onConfirm={handleConfirmImage}
                   onViewDetails={(file) => setDetailFile(file)}
                   disabled={query.isPlaceholderData}
-                  className="grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+                  className={
+                    viewMode === "grid"
+                      ? "grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+                      : undefined
+                  }
                 />
               ) : (
                 <EmptyState
@@ -344,11 +434,11 @@ export function AttachmentPicker({
         </div>
       </DialogContent>
 
-      {state.pendingMove ? (
+      {state.pendingMoveFiles.length > 0 ? (
         <AttachmentMoveDialog
-          files={[state.pendingMove]}
+          files={state.pendingMoveFiles}
           canReadFolders={Boolean(folders?.canRead)}
-          onClose={() => state.setPendingMove(null)}
+          onClose={() => state.setPendingMoveFiles([])}
           onDone={state.handleMoveDone}
         />
       ) : null}
@@ -363,6 +453,16 @@ export function AttachmentPicker({
         isPending={state.isDeleting}
       />
 
+      <ConfirmDialog
+        open={state.pendingBulkDelete}
+        onOpenChange={(open) => !open && state.setPendingBulkDelete(false)}
+        title={t("deleteTitle", { count: state.selectedIds.length })}
+        description={t("deleteDescription")}
+        confirmLabel={t("deleteSelected", { count: state.selectedIds.length })}
+        onConfirm={state.confirmBulkDelete}
+        isPending={state.isDeleting}
+      />
+
       {/* Dialog Chi tiết tệp (Tách riêng, rộng rãi, hỗ trợ inline edit và nút Chọn ảnh) */}
       <AttachmentDetailDialog
         file={detailFile}
@@ -374,6 +474,7 @@ export function AttachmentPicker({
           handleConfirmImage(file);
         }}
         onDelete={canDelete ? (file) => state.setPendingDelete(file) : undefined}
+        onMove={canMove ? (file) => state.setPendingMoveFiles([file]) : undefined}
         onUpdated={(updated) => {
           state.setSelected(updated);
           setDetailFile(updated);

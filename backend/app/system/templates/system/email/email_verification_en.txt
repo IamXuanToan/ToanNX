@@ -1,0 +1,12 @@
+VERIFY YOUR EMAIL ADDRESS · TOANNX
+
+Hello {{ user_display_name }},
+
+Thank you for using ToanNX. Please verify your email address to enable all security features by visiting the following link:
+
+{{ verification_url }}
+
+This link expires in {{ timeout_hours }} hours. If you did not request this, you can safely ignore this email.
+
+---
+© {{ current_year }} ToanNX. All rights reserved.

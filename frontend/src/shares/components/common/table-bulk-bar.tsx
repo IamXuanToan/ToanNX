@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
 import { Button } from "@/shares/components/ui/button";
-import { Card } from "@/shares/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,25 +43,27 @@ export function TableBulkBar<T>({
     useTableBulkBar({ selectedRows, onClearSelection });
 
   return (
-    <Card
+    <div
       role="region"
       aria-label={t("selected", { count })}
       data-testid="table-bulk-bar"
-      className="flex min-h-10 flex-wrap items-center justify-between gap-2 rounded-xl p-2 py-1 shadow-2xs"
+      className="bg-card/95 border-border/80 text-foreground flex min-h-12 w-full flex-wrap items-center justify-between gap-3 rounded-xl border px-3.5 py-1.5 shadow-2xs backdrop-blur-xs transition-all sm:flex-nowrap"
     >
-      <div className="flex items-center gap-1">
-        <span className="bg-primary-light text-primary inline-flex h-8 items-center rounded-lg px-3 text-sm font-medium tabular-nums">
+      <div className="flex shrink-0 items-center gap-2">
+        <span className="bg-primary/10 text-primary border-primary/20 inline-flex h-8 items-center rounded-lg border px-2.5 text-xs font-semibold tabular-nums">
           {t("selected", { count })}
         </span>
+        <div className="bg-border/60 h-4 w-px" aria-hidden />
         <Button
           type="button"
           variant="ghost"
+          size="sm"
           onClick={onClearSelection}
           disabled={isProcessing}
-          className="text-muted-foreground hover:text-foreground h-9 rounded-lg px-3"
+          className="text-muted-foreground hover:text-foreground h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
         >
-          <X />
-          {t("clearSelection")}
+          <X className="size-3.5" />
+          <span>{t("clearSelection")}</span>
         </Button>
       </div>
       <div className="flex flex-wrap items-center gap-2">
@@ -73,19 +74,20 @@ export function TableBulkBar<T>({
               <Button
                 type="button"
                 variant="outline"
+                size="sm"
                 disabled={isProcessing}
-                className="h-9 rounded-lg"
+                className="h-8 gap-1.5 rounded-lg text-xs font-medium"
               >
-                <CheckCircle2 />
-                {t("changeStatus")}
-                <ChevronDown className="opacity-60" />
+                <CheckCircle2 className="size-3.5" />
+                <span>{t("changeStatus")}</span>
+                <ChevronDown className="size-3.5 opacity-60" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-44 rounded-xl p-1">
               {bulkStatus.options.map((option) => (
                 <DropdownMenuItem
                   key={option.value}
-                  className="h-10 rounded-lg px-3"
+                  className="h-9 rounded-lg px-3 text-xs"
                   onSelect={() => run(() => bulkStatus.onChange(selectedRows, option.value))}
                 >
                   {option.label}
@@ -98,27 +100,29 @@ export function TableBulkBar<T>({
           <Button
             key={action.key}
             type="button"
+            size="sm"
             variant={action.destructive ? "destructive" : "outline"}
             disabled={isProcessing}
             onClick={() =>
               action.confirm ? setPendingAction(action) : run(() => action.onClick(selectedRows))
             }
-            className="h-9 rounded-lg"
+            className="h-8 gap-1.5 rounded-lg text-xs font-medium"
           >
-            {action.icon ? <action.icon /> : null}
-            {action.label}
+            {action.icon ? <action.icon className="size-3.5" /> : null}
+            <span>{action.label}</span>
           </Button>
         ))}
         {onBulkDelete ? (
           <Button
             type="button"
             variant="destructive"
+            size="sm"
             disabled={isProcessing}
             onClick={() => setConfirmOpen(true)}
-            className="h-9 rounded-lg"
+            className="h-8 gap-1.5 rounded-lg text-xs font-medium"
           >
-            <Trash2 />
-            {t("bulkDelete", { count })}
+            <Trash2 className="size-3.5" />
+            <span>{t("bulkDelete", { count })}</span>
           </Button>
         ) : null}
       </div>
@@ -142,6 +146,6 @@ export function TableBulkBar<T>({
           onConfirm={() => run(() => onBulkDelete(selectedRows))}
         />
       ) : null}
-    </Card>
+    </div>
   );
 }

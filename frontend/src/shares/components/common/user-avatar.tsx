@@ -127,7 +127,7 @@ export function UserAvatar({
   return (
     <Avatar
       size={size}
-      className={cn("after:hidden", className)}
+      className={cn("ring-border/70 border-background border shadow-2xs ring-2", className)}
       data-slot="user-avatar"
       {...props}
     >

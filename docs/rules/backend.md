@@ -14,17 +14,37 @@ url → view (+ @require_permission, @validate_request | action_permissions) →
 | --- | --- | --- |
 | `urls.py` | Map path → view/router | Logic |
 | View | Khai báo quyền/validate, gọi **service**, serialize response, set cookie | Gọi repository/ORM, nghiệp vụ |
+| Điểm vào khác (task, command, signal, middleware, authentication, permission, recorder, decorator) | Đọc input, gọi **service** đã khai trong `__init__` (hàm thì tạo ở đầu hàm) | Gọi repository/ORM, nghiệp vụ, `@transaction.atomic` |
 | Service | Nghiệp vụ, transaction, kiểm tra quyền trên đối tượng, điều phối service khác | Gọi ORM trực tiếp (`Model.objects...`, `connection.cursor`) |
 | Repository | **Duy nhất** truy cập DB (đọc + ghi), audit | Quy tắc nghiệp vụ |
 | FilterSet (`filters/`) | Khai báo lọc theo field cho ViewSet (django-filter) | Nghiệp vụ, phân quyền |
 | Serializer validate | Kiểm tra contract input | Truy vấn DB, gọi service |
 | Serializer response | Chuyển object/dataclass → dict | Truy vấn DB, gọi service (dữ liệu phải được service/repository dựng sẵn, kể cả prefetch) |
 
+- **Mọi điểm vào đều chỉ gọi service**, không riêng view. Điểm vào gồm: view, task (`tasks/`, `cleanup_tasks`),
+  management command, signal receiver, recorder/adapter nối với core (`CORE_CHANGE_RECORDER`...), middleware,
+  authentication class/backend, permission class, decorator. Các lớp này **không** gọi repository hay ORM
+  (`XxxRepository()`, `Model.objects`), không chứa nghiệp vụ; nghiệp vụ và transaction nằm trong service.
+
+  ```python
+  # Sai: task gọi thẳng repository, tự giữ transaction và luật tính hạn
+  @transaction.atomic
+  def purge_expired_auth() -> int:
+      buckets = RateLimitBucketRepository().delete_expired(now)
+      return buckets + AuthSessionRepository().delete_expired_before(moment)
+
+  # Đúng: task là lớp vỏ, gọi đúng một method của service
+  def purge_expired_auth() -> int:
+      """Task dọn phiên và bucket hết hạn (khai trong `cleanup_tasks`)."""
+      return AuthCleanupService().purge_expired()
+  ```
+
+  Task/hàm không có `__init__` thì tạo service một lần ở đầu hàm rồi gọi; command/class khác tạo trong `__init__`.
 - Không có lớp selector: đọc và ghi đều qua repository.
 - Không gọi `Model.objects.filter(...).first()` ngoài repository; thêm method có tên vào repository
   (ví dụ `UserRepository.find_by_email`) và gọi qua service.
-- Module khác chỉ dùng **service công khai** của nhau (ví dụ `account.UserService` dùng `AttachmentService`), không
-  import repository của module khác.
+- Module khác chỉ dùng **service công khai** của nhau (ví dụ `utilities.QrCodeService` dùng `system.AttachmentService`),
+  không import repository của module khác.
 
 ## 2. Cấu trúc module
 
@@ -39,7 +59,7 @@ app/<module>/
   serializers/validates/<resource>_<action>_validate_serializer.py
   serializers/responses/<resource>_<kind>_response_serializer.py   # mỗi endpoint một response
   views/<resource>_view_set.py              # CRUD trên model
-  views/<resource>_view.py                  # XxxView (collection) + XxxObjectView (theo id)
+  views/<resource>_view.py                  # XxxView (collection) + XxxObjectView (theo id): ngoại lệ 2 class
   schemas/  types/  utils/  decorators/  constants/  exceptions/   # chỉ tạo khi có
   tests/                                    # test của module: mỗi endpoint đúng 1 file riêng biệt
     test_<resource>_list_api.py             # danh sách: phân trang, tìm kiếm, lọc, sắp xếp, 401, 403
@@ -80,7 +100,62 @@ MODULE = ModuleDescriptor(code="utilities", ..., permissions=(*ShortLinkPermissi
 - `app/core/tests/test_module_conventions.py` kiểm tra: mọi app trong `app/` dùng `CoreModuleConfig`,
   đã đăng ký đúng mã, và mọi view của module kế thừa `CoreApiView`/`CoreModelViewSet`.
 
+### 2.2 Mỗi class một file (bắt buộc, không ngoại lệ theo "tiện")
+
+Mỗi file `.py` chỉ khai báo **đúng một class cấp module**, tên file là snake_case của tên class.
+
+**Ngoại lệ (chỉ hai trường hợp):**
+
+1. File APIView `views/<resource>_view.py` được chứa **đúng 2 class** `XxxView` (collection) và `XxxObjectView`
+   (theo id) của cùng một tài nguyên. Không thêm class thứ ba (serializer, helper, view khác).
+2. File model `models/<model>.py` được chứa class model **và enum của chính model đó** (`TextChoices`/
+   `IntegerChoices` dùng cho field của model). Chỉ áp cho file model, không áp cho service, view, serializer...
+
+**Class lồng được chấp nhận ở mọi loại file** (không tính là class thứ hai): `class Meta`, `class Config`, enum
+lồng trong model (`class Status(models.TextChoices)` trong `ShortLink`), `Meta` của serializer/factory.
+
+Chọn chỗ đặt enum của field model theo thứ tự:
+
+| Trường hợp | Đặt ở đâu |
+| --- | --- |
+| Enum chỉ model đó dùng (mặc định) | **Lồng trong model**: `class ShortLink(CoreModel): class Status(models.TextChoices)`, gọi `ShortLink.Status.ACTIVE` |
+| Muốn tên enum đứng riêng để import ngắn | Khai cạnh model, cùng file `models/<model>.py` (ngoại lệ 2), không tách file `models/<enum>.py` riêng |
+| Nhiều model hoặc module khác cùng dùng | File riêng `constants/<enum>.py` |
+
+```python
+# models/auth_session.py
+class AuthSession(CoreModel):
+    class Status(models.TextChoices):
+        """Trạng thái phiên đăng nhập."""
+
+        ACTIVE = "ACTIVE", "Active"
+        REVOKED = "REVOKED", "Revoked"
+
+    status = models.CharField(max_length=16, choices=Status.choices, default=Status.ACTIVE)
+```
+
+Các trường hợp hay bị gộp và chỗ đặt đúng:
+
+| Đang gộp | Đặt đúng |
+| --- | --- |
+| Nhiều serializer trong một file (serializer chính + serializer con/lồng, delete/clear response...) | Mỗi serializer một file trong `serializers/validates/` hoặc `serializers/responses/`; serializer con dùng làm field cũng tách file riêng |
+| Serializer khai báo ngay trong file view | Chuyển vào `serializers/validates/` / `serializers/responses/` |
+| Enum của field model tách ra file riêng trong `models/` (`models/auth_session_status.py`, `models/role_auto_grant.py`) | Lồng vào model hoặc khai cạnh model trong `models/<model>.py` (bảng trên); `models/` chỉ chứa file model. Enum không gắn field model (`StrEnum` mã lỗi, hằng số) ở `constants/` |
+| Enum/hằng số khai trong service, view, serializer | `constants/<tên>.py` (ngoại lệ 2 chỉ dành cho file model) |
+| `@dataclass`/`TypedDict`/`NamedTuple`/`Protocol` khai báo trong service, validator, view | `types/<tên>.py` |
+| Exception tự định nghĩa trong file service | `exceptions/<tên>.py` |
+| Class giả/test double (`_View`, `FakeX`) trong file test | File riêng trong `tests/helpers/` (factory model vẫn ở `tests/factories/`) |
+
+- Mỗi file test có đúng một class `TestXxx` (nếu dùng class); test dạng hàm không bị ràng buộc này.
+- Hàm private (`_ten_ham`) được nằm cùng file với class khi chỉ file đó dùng; dùng chung từ hai file trở lên
+  thì chuyển vào `utils/<tên>.py`.
+- `app/core/tests/test_module_conventions.py` là nơi thêm kiểm tra tự động cho quy tắc này khi cần.
+
 ## 3. Core (`app/core`) — base duy nhất, module chỉ khai báo
+
+Danh sách đầy đủ lớp nền, decorator, filter, exception, tiện ích và phần dùng chung của `system`:
+[docs/common-catalog.md](../common-catalog.md) mục 1–3. Tra trước khi viết; thêm/đổi/xóa common thì cập nhật
+danh mục cùng lần ([common.md](common.md) mục 3.3).
 
 | Thành phần | Dùng khi |
 | --- | --- |
@@ -123,11 +198,19 @@ action/method mở ra đều có rule quyền.
 - Ghi đè `create`/`update`/`delete` khi có luật nghiệp vụ; dùng `get_for_write(actor, pk)` để khóa dòng + kiểm owner.
   `bulk_*` gọi lại `update`/`delete` nên luật tự áp cho thao tác hàng loạt.
 - Phụ thuộc tạo trong `__init__` và đặt tên theo lớp: `self.repository`, `self.<tên>_repository`, `self.<tên>_service`.
-  Cho phép truyền vào để test. Module khác chỉ gọi **service công khai** (ví dụ `AttachmentService.find_alive_images`).
+  Cho phép truyền vào để test. Không gọi `XxxService().method()` hay `XxxService.method()` (static/classmethod)
+  giữa các method; mọi service/repository được dùng phải có mặt trong `__init__`.
+- Method công khai của service là method thường (instance), không `@staticmethod`/`@classmethod`, để nơi gọi
+  luôn đi qua instance đã khai trong `__init__` và thay được khi test. Hàm thuần không cần trạng thái thì đặt
+  ở `utils/`. Module khác chỉ gọi **service công khai** (ví dụ `AttachmentService.find_alive_images`).
 - Sự kiện không phải đổi field (gán vai trò…) ghi bằng `instance.journal_event("<module>.<event>", data, actor.pk)`;
   thay đổi dạng danh sách trước/sau dùng `changes={"roles": (cũ, mới)}` để trang Journal hiện cũ → mới.
 - Đồng bộ một tập quan hệ (vai trò, quyền) làm **theo lô**: đọc hiện trạng một query, kiểm luật một lần cho cả
   nhóm, thêm bằng `bulk_create`, gỡ bằng một lệnh; số query không tăng theo số mục.
+- Tác dụng phụ ra ngoài DB (gửi email, ghi/xóa file storage, gọi API ngoài) trong transaction phải chạy bằng
+  `transaction.on_commit(...)`, để rollback thì không gửi/xóa nhầm.
+- Không gọi query trong vòng lặp; cần dữ liệu liên quan thì `select_related`/`prefetch_related` hoặc một
+  query theo lô ở repository.
 - Thao tác không cho phép → raise `BusinessRuleError`, không để im lặng. Đóng tường minh action router tự sinh mà
   tài nguyên không hỗ trợ bằng `DENY` trong `action_permissions`.
 
@@ -184,7 +267,21 @@ class UserRoleView(CoreApiView):
 
 - Method **bắt buộc** có `@require_permission` (thiếu là 403), trừ view ghi đè `permission_classes` theo bảng mục 3.
 - Rate limit riêng: `@rate_limit("<khóa>")`; method ghi không khai dùng `default.write`.
-- Service tạo trong `__init__` của view, gọi qua `self.<tên>_service`; không `XxxService().method()` trong method.
+- **Mọi** service view dùng (kể cả service chỉ set/xóa cookie như `AuthCookieService`) tạo trong `__init__` của
+  view, gọi qua `self.<tên>_service`. Trong method không có `XxxService().method()` hay `XxxService.method()`.
+
+  ```python
+  # Sai: AuthCookieService gọi thẳng bằng tên class trong post()
+  AuthCookieService.clear_cookies(response)
+
+  # Đúng
+  def __init__(self, **kwargs: Any) -> None:
+      super().__init__(**kwargs)
+      self.auth_session_service = AuthSessionService()
+      self.auth_cookie_service = AuthCookieService()
+  ...
+  self.auth_cookie_service.clear_cookies(response)
+  ```
 - Lấy người thực hiện bằng `self.get_actor(request)`. DELETE trả `Response(status=204)` không body.
 
 ### 5.3 `@require_permission` / `permission_rule`
@@ -264,17 +361,23 @@ class UserRoleView(CoreApiView):
 - Migration sinh bằng `makemigrations`; data migration tạo bằng `makemigrations <app> --empty --name ...`.
 - Đổi kiểu cột không tương thích (ví dụ varchar → FK uuid) phải `RemoveField` + `AddField`.
 - Không chạy migration khi cold start/request; chạy thủ công trước khi deploy.
+- Migration phải tương thích ngược với bản code đang chạy: thêm cột mới cho phép null/có default trước, đổi
+  code dùng cột mới, rồi mới xóa cột cũ ở lần sau (không đổi tên/xóa cột cùng lúc với code mới).
+- Migration đã chạy trên môi trường dùng chung thì không sửa nội dung; cần đổi thì thêm migration mới.
 
 ## 11. Lỗi, log, bảo mật
 
 - Raise `ValidationError`/`AuthorizationError`/`NotFoundError`/`ConflictError`/`BusinessRuleError`... kèm mã lỗi.
   Core chỉ giữ mã chung (`ErrorCode`); mã riêng nằm ở `app/<m>/constants/<m>_error_code.py` (StrEnum,
-  tiền tố theo module: `ACCOUNT_*`, `IAM_*`, `UTILITIES_*`…). `core/tests/test_error_codes.py` kiểm mã không trùng
-  và FE có bản dịch vi/en cho mọi mã.
-- Quy tắc kiểm tra riêng của module đặt trong module (`account/validators/password_validator.py`,
-  `iam/constants/role_code.py`); `CoreValidator` chỉ giữ định dạng dùng chung của core.
+  tiền tố theo module, mã cũ đã phát hành giữ nguyên: xem [common.md](common.md) mục 6). `core/tests/test_error_codes.py`
+  kiểm mã không trùng và FE có bản dịch vi/en cho mọi mã.
+- Quy tắc kiểm tra riêng của module đặt trong module (`system/validators/password_validator.py`,
+  `system/constants/role_code.py`); `CoreValidator` chỉ giữ định dạng dùng chung của core.
 - Lỗi không lường trước để exception handler log + trả `INTERNAL_ERROR`.
 - Request đổi trạng thái bằng cookie phải qua CSRF.
+- Tên cookie, header, khóa setting, biến môi trường, claim JWT, khóa cache không có tiền tố `toannx` ở mọi dạng
+  (`AUTH_ACCESS_COOKIE_NAME = "access_token"`, không `"toannx_access"`; không `TOANNX_*` trong `.env`)
+  ([common.md](common.md) mục 3).
 - Password chỉ qua `set_password`/validators của Django.
 
 ## 12. Test
@@ -304,6 +407,10 @@ class UserRoleView(CoreApiView):
 ## 13. Công cụ
 
 ```bash
-uv run ruff format . && uv run ruff check . && uv run mypy . && uv run pytest -q
+uv run ruff format <file> && uv run ruff check <file> && uv run mypy <file>        # file đã sửa
+uv run pytest app/<m>/tests/test_<x>.py                                            # test liên quan
+uv run ruff format . && uv run ruff check . && uv run mypy . && uv run pytest -q   # toàn bộ: chỉ khi được yêu cầu
 uv run python manage.py spectacular --validate --fail-on-warn --file schema.yaml
 ```
+
+Khi làm việc chỉ chạy phần liên quan tới chỗ sửa ([common.md](common.md) mục 7).

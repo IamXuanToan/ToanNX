@@ -1,4 +1,4 @@
-"""Cấu hình Django của TOANNX.
+"""Cấu hình Django của ToanNX.
 
 Một file cấu hình duy nhất; local và production chỉ khác nhau ở biến môi trường
 (DJANGO_DEBUG, DATABASE_URL, DJANGO_SECRET_KEY...). Không hardcode secrets.
@@ -107,6 +107,8 @@ CLOUDFLARE_R2_SECRET_ACCESS_KEY = env.str("CLOUDFLARE_R2_SECRET_ACCESS_KEY", def
 CLOUDFLARE_R2_BUCKET_NAME = env.str("CLOUDFLARE_R2_BUCKET_NAME", default="")
 CLOUDFLARE_R2_CUSTOM_DOMAIN = env.str("CLOUDFLARE_R2_CUSTOM_DOMAIN", default="")
 CLOUDFLARE_R2_ENDPOINT_URL = env.str("CLOUDFLARE_R2_ENDPOINT_URL", default="")
+# API Token Cloudflare (quyền: Account -> R2 Storage -> Read) để lấy dung lượng thực tế từ Cloudflare REST API v4
+CLOUDFLARE_API_TOKEN = env.str("CLOUDFLARE_API_TOKEN", default="")
 
 _configured_storage = env.str("FILE_STORAGE_BACKEND", default="")
 _use_r2 = bool(
@@ -133,6 +135,10 @@ STORAGES = {
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
 ATTACHMENT_MAX_SIZE_BYTES = env.int("ATTACHMENT_MAX_SIZE_BYTES", default=5 * 1024 * 1024)
+# Tổng dung lượng lưu trữ tối đa cho phép trên storage (R2/S3/local). Mặc định 9GB (gói miễn phí của Cloudflare R2 là 10GB).
+ATTACHMENT_MAX_TOTAL_STORAGE_BYTES = env.int(
+    "ATTACHMENT_MAX_TOTAL_STORAGE_BYTES", default=9 * 1024 * 1024 * 1024
+)
 # File của tệp đã xóa mềm và file mồ côi (ảnh QR cũ...) bị dọn khỏi storage sau số ngày này.
 ATTACHMENT_PURGE_DAYS = env.int("ATTACHMENT_PURGE_DAYS", default=30)
 ATTACHMENT_ALLOWED_CONTENT_TYPES = ALLOWED_CONTENT_TYPES
@@ -174,7 +180,7 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "app.core.schemas.core_auto_schema.CoreAutoSchema",
 }
 SPECTACULAR_SETTINGS = {
-    "TITLE": "TOANNX API",
+    "TITLE": "ToanNX API",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
@@ -212,9 +218,18 @@ AUTH_SESSION_HINT_COOKIE_NAME = "session_hint"
 # CSRF: double-submit cookie của Django + kiểm tra Origin
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SAMESITE = "Lax" if DEBUG else "None"
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:3001"])
+if DEBUG:
+    for _dev_origin in [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ]:
+        if _dev_origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(_dev_origin)
 
 CORS_ALLOWED_ORIGINS: list[str] = env.list("CORS_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_CREDENTIALS = True
@@ -232,6 +247,13 @@ RATE_LIMITS: dict[str, tuple[int, int, str]] = {
     "system.password_reset.request": (env.int("RL_AUTH_PASSWORD_RESET_REQUEST", default=5), 900, "ip"),
     "system.password_reset.validate": (env.int("RL_AUTH_PASSWORD_RESET_VALIDATE", default=30), 900, "ip"),
     "system.password_reset.confirm": (env.int("RL_AUTH_PASSWORD_RESET_CONFIRM", default=10), 900, "ip"),
+    "system.email_verification.send": (env.int("RL_EMAIL_VERIFICATION_SEND", default=5), 300, "user"),
+    "system.email_verification.verify": (env.int("RL_EMAIL_VERIFICATION_VERIFY", default=30), 900, "ip"),
+    "system.invitation.validate": (env.int("RL_INVITATION_VALIDATE", default=30), 900, "ip"),
+    "system.invitation.accept": (env.int("RL_INVITATION_ACCEPT", default=10), 900, "ip"),
+    "system.social.auth": (env.int("RL_SOCIAL_AUTH", default=30), 900, "ip"),
+    "system.social.link": (env.int("RL_SOCIAL_LINK", default=10), 900, "user"),
+    "system.social.unlink": (env.int("RL_SOCIAL_UNLINK", default=10), 900, "user"),
     "utilities.short_link.create": (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
     "utilities.short_link.unlock": (env.int("RL_SHORT_LINK_UNLOCK", default=10), 60, "ip"),
     "utilities.page.create": (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
@@ -304,6 +326,12 @@ PASSWORD_RESET_TIMEOUT = env.int("PASSWORD_RESET_TIMEOUT", default=15 * 60)
 FRONTEND_URL = env.str("FRONTEND_URL", default="")
 # Gửi email bất đồng bộ qua background worker thread (tránh block request web)
 EMAIL_ASYNC = env.bool("EMAIL_ASYNC", default=True)
+
+# Cấu hình đăng nhập & liên kết mạng xã hội qua OAuth (Google, GitHub...)
+GOOGLE_OAUTH_CLIENT_ID = env.str("GOOGLE_OAUTH_CLIENT_ID", default="")
+GOOGLE_OAUTH_CLIENT_SECRET = env.str("GOOGLE_OAUTH_CLIENT_SECRET", default="")
+GITHUB_OAUTH_CLIENT_ID = env.str("GITHUB_OAUTH_CLIENT_ID", default="")
+GITHUB_OAUTH_CLIENT_SECRET = env.str("GITHUB_OAUTH_CLIENT_SECRET", default="")
 
 # Backend luôn đứng sau proxy (Next.js rewrite / Vercel): lấy domain + scheme gốc của trình duyệt
 # từ X-Forwarded-* để dựng URL tuyệt đối (ví dụ URL file). Host vẫn phải nằm trong ALLOWED_HOSTS.

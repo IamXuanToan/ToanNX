@@ -138,7 +138,7 @@ export function AttachmentEditDialog({
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
-      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md">
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-xl">
         {open ? (
           <AttachmentEditForm key={file.id} file={file} onClose={onClose} onSuccess={onSuccess} />
         ) : null}

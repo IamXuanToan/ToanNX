@@ -62,7 +62,7 @@ describe("PublicHeader", () => {
     render(<PublicHeader />);
 
     // 1. Logo
-    expect(screen.getByLabelText("TOANNX")).toBeTruthy();
+    expect(screen.getByLabelText("ToanNX")).toBeTruthy();
 
     // 2. LanguageSwitcher
     expect(screen.getByTestId("language-switcher")).toBeTruthy();

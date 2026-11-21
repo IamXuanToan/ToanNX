@@ -11,5 +11,4 @@ class AdminSessionUserResponseSerializer(serializers.Serializer):
     username = serializers.CharField(
         source="user__username", allow_null=True, help_text="Tên đăng nhập chủ phiên."
     )
-    first_name = serializers.CharField(source="user__first_name", help_text="Tên chủ phiên.")
-    last_name = serializers.CharField(source="user__last_name", help_text="Họ chủ phiên.")
+    full_name = serializers.CharField(source="user__full_name", help_text="Họ và tên chủ phiên.")

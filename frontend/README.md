@@ -1,4 +1,4 @@
-# TOANNX frontend
+# ToanNX frontend
 
 Next.js 16 (App Router) + TypeScript strict + Tailwind 4 + shadcn/ui (Radix) + next-intl.
 

@@ -1,11 +1,11 @@
 {
   "common": {
     "seo": {
-      "title": "TOANNX",
+      "title": "ToanNX",
       "description": "ToanNX's personal website."
     },
     "home": {
-      "title": "TOANNX",
+      "title": "ToanNX",
       "description": "Peaceful & chill personal space of Xuan Toan.",
       "badge": "Chill Space",
       "greeting": "Hello, I am",
@@ -117,7 +117,8 @@
       "menu": "Menu",
       "sessions": "Sessions",
       "permissions": "Permissions",
-      "attachments": "Media library"
+      "attachments": "Media library",
+      "settings": "Settings"
     },
     "theme": {
       "toggle": "Change theme",
@@ -323,6 +324,7 @@
       "ATTACHMENT_FOLDER_NAME_EXISTS": "A folder with this name already exists under this parent.",
       "ATTACHMENT_FOLDER_OWNER_MISMATCH": "The file and folder must have the same owner.",
       "ATTACHMENT_FOLDER_CYCLE": "A folder cannot be moved into itself or a descendant.",
+      "ATTACHMENT_STORAGE_QUOTA_EXCEEDED": "System storage limit has been exceeded.",
       "UNKNOWN": "Something went wrong, please try again.",
       "NETWORK_ERROR": "Cannot reach the server. Check your connection and try again.",
       "TIMEOUT": "The server took too long to respond, please try again.",
@@ -357,6 +359,20 @@
       "ACCOUNT_SELF_MODIFICATION": "You cannot change your own status or access.",
       "ACCOUNT_PRIVILEGE_ESCALATION": "Only a superuser can grant or remove superuser access.",
       "ACCOUNT_SUPERUSER_PROTECTED": "Only a superuser can edit a superuser account.",
+      "ACCOUNT_EMAIL_ALREADY_VERIFIED": "This email address is already verified.",
+      "ACCOUNT_EMAIL_VERIFICATION_TOKEN_EXPIRED": "The email verification link has expired. Please request a new one.",
+      "ACCOUNT_EMAIL_VERIFICATION_TOKEN_INVALID": "The email verification link is invalid or has already been used.",
+      "ACCOUNT_INVITATION_TOKEN_EXPIRED": "The invitation link has expired. Please contact an administrator for a new invitation.",
+      "ACCOUNT_INVITATION_TOKEN_INVALID": "The invitation link is invalid or has already been used.",
+      "ACCOUNT_USERNAME_EXISTS": "This username is already taken. Please choose another one.",
+      "ACCOUNT_SOCIAL_NOT_LINKED": "This social account is not linked to any user. Please log in with your password first to link it in your Profile.",
+      "ACCOUNT_SOCIAL_ALREADY_LINKED": "This social account is already linked to another user.",
+      "ACCOUNT_SOCIAL_PROVIDER_EXISTS": "You have already linked an account from this provider.",
+      "ACCOUNT_SOCIAL_CANNOT_UNLINK_LAST": "Cannot unlink the only sign-in method when no password is set.",
+      "ACCOUNT_SOCIAL_INVALID_CODE": "Invalid or expired authorization code.",
+      "ACCOUNT_SOCIAL_PROVIDER_UNSUPPORTED": "This social provider is not supported.",
+      "ACCOUNT_SOCIAL_AUTH_FAILED": "Authentication with social provider failed. Please try again later.",
+      "ACCOUNT_SOCIAL_PROVIDER_DISABLED": "Sign-in with this provider is temporarily disabled by administrator.",
       "IAM_ROLE_CODE_EXISTS": "This role code already exists.",
       "IAM_ROLE_INACTIVE": "This role is disabled.",
       "IAM_SELF_MODIFICATION": "You cannot change your own privileges.",
@@ -431,7 +447,7 @@
     "global": {
       "badge": "500 · SYSTEM ERROR",
       "title": "System Error Occurred",
-      "documentTitle": "System Error · TOANNX",
+      "documentTitle": "System Error · ToanNX",
       "subtitle": "Critical issue in root layout",
       "description": "The system encountered an unexpected issue while rendering the root layout. Please retry or reload the page.",
       "retry": "Try again",

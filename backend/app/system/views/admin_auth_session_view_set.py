@@ -41,7 +41,7 @@ class AdminAuthSessionViewSet(CoreModelViewSet[AuthSession]):
     service_class = AdminAuthSessionService
     service: AdminAuthSessionService
     filterset_class = AdminAuthSessionFilter
-    search_fields = ("user__email", "user__first_name", "user__last_name", "user_agent", "ip_address")
+    search_fields = ("user__email", "user__username", "user__full_name", "user_agent", "ip_address")
     ordering_fields = ("created_at", "last_used_at", "expires_at", "user__email")
     ordering = ("-created_at", "pk")
     list_serializer_class = AdminAuthSessionResponseSerializer

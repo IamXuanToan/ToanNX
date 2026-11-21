@@ -1,5 +1,6 @@
 "use client";
 
+import { Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Controller, useWatch } from "react-hook-form";
@@ -20,11 +21,14 @@ import { PasswordInput } from "@/shares/components/common/password-input";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
+import { Label } from "@/shares/components/ui/label";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { Switch } from "@/shares/components/ui/switch";
 
 import { SYSTEM_ROUTES } from "../constants/routes";
 import type { User } from "../types/user.types";
 import { UserActivitySection } from "./user-activity-section";
+import { UserSocialAccountsSection } from "./user-social-accounts-section";
 import { useUserForm } from "./hooks/use-user-form";
 
 const FLAGS = ["isActive", "isStaff", "isSuperuser", "isNovel"] as const;
@@ -57,11 +61,12 @@ export function UserForm({
   const { errors } = form.formState;
   const disabled = !canEdit || isSubmitting;
   const flags = useWatch({ control: form.control, name: FLAGS });
-  const [firstName, lastName, email, username] = useWatch({
+  const sendInvitation = useWatch({ control: form.control, name: "sendInvitation" });
+  const [fullName, email, username] = useWatch({
     control: form.control,
-    name: ["firstName", "lastName", "email", "username"],
+    name: ["fullName", "email", "username"],
   });
-  const initials = getUserInitials({ firstName, lastName, email, username });
+  const initials = getUserInitials({ fullName, email, username });
 
   if (state.isLoadingSource) {
     return (
@@ -108,6 +113,7 @@ export function UserForm({
                 aria-label={t("sections.access")}
               />
             </FormSection>
+            {user ? <UserSocialAccountsSection user={user} /> : null}
             {user ? <UserActivitySection user={user} /> : null}
           </>
         }
@@ -139,33 +145,81 @@ export function UserForm({
               </div>
             )}
           />
+          {!user ? (
+            <div className="border-border/60 bg-muted/20 flex items-center justify-between rounded-xl border p-4">
+              <div className="space-y-0.5 pr-4">
+                <Label
+                  htmlFor="send-invitation-switch"
+                  className="text-foreground cursor-pointer text-sm font-semibold"
+                >
+                  {t("fields.sendInvitation")}
+                </Label>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  {t("fields.sendInvitationHint")}
+                </p>
+              </div>
+              <Controller
+                control={form.control}
+                name="sendInvitation"
+                render={({ field }) => (
+                  <Switch
+                    id="send-invitation-switch"
+                    checked={Boolean(field.value)}
+                    onCheckedChange={field.onChange}
+                    disabled={disabled}
+                  />
+                )}
+              />
+            </div>
+          ) : null}
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField control={form.control} name="email" label={t("fields.email")} required>
               {(field) => <EmailInput {...field} autoFocus={!user} disabled={disabled} />}
             </FormField>
-            <FormField control={form.control} name="username" label={t("fields.username")} required>
+            <FormField
+              control={form.control}
+              name="username"
+              label={t("fields.username")}
+              required={!user && !sendInvitation}
+            >
               {(field) => (
                 <Input {...field} autoComplete="off" maxLength={150} disabled={disabled} />
               )}
             </FormField>
-            <FormField control={form.control} name="lastName" label={t("fields.lastName")}>
-              {(field) => <Input {...field} autoComplete="family-name" disabled={disabled} />}
-            </FormField>
-            <FormField control={form.control} name="firstName" label={t("fields.firstName")}>
-              {(field) => <Input {...field} autoComplete="given-name" disabled={disabled} />}
-            </FormField>
+            <div className="sm:col-span-2">
+              <FormField
+                control={form.control}
+                name="fullName"
+                label={t("fields.fullName")}
+                required
+              >
+                {(field) => <Input {...field} autoComplete="name" disabled={disabled} />}
+              </FormField>
+            </div>
           </div>
-          <FormField
-            control={form.control}
-            name="password"
-            label={user ? t("fields.newPassword") : t("fields.password")}
-            required={!user}
-            description={user ? t("fields.newPasswordHint") : t("fields.passwordHint")}
-          >
-            {(field) => (
-              <PasswordInput {...field} autoComplete="new-password" disabled={disabled} />
-            )}
-          </FormField>
+          {sendInvitation && !user ? (
+            <div className="border-primary/20 bg-primary/5 rounded-xl border p-4 text-xs">
+              <div className="text-primary flex items-center gap-2 font-semibold">
+                <Mail className="size-4 shrink-0" />
+                <span>{t("invitationEmailNoticeTitle")}</span>
+              </div>
+              <p className="text-muted-foreground mt-1 leading-relaxed">
+                {t("invitationEmailNoticeDesc")}
+              </p>
+            </div>
+          ) : (
+            <FormField
+              control={form.control}
+              name="password"
+              label={user ? t("fields.newPassword") : t("fields.password")}
+              required={!user}
+              description={user ? t("fields.newPasswordHint") : t("fields.passwordHint")}
+            >
+              {(field) => (
+                <PasswordInput {...field} autoComplete="new-password" disabled={disabled} />
+              )}
+            </FormField>
+          )}
         </FormSection>
       </FormLayout>
       {/* Quan hệ (vai trò…) do module khác cắm vào: khối trải hết bề ngang dưới hai cột, vì danh sách có thể dài. */}
@@ -183,7 +237,11 @@ export function UserForm({
         </Button>
         {canEdit ? (
           <FormSubmitButton isSubmitting={isSubmitting} disabled={Boolean(user) && !state.isDirty}>
-            {user ? tCommon("save") : tCommon("create")}
+            {user
+              ? tCommon("save")
+              : sendInvitation
+                ? t("sendInvitationButton")
+                : tCommon("create")}
           </FormSubmitButton>
         ) : null}
       </FormActions>

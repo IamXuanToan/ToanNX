@@ -1,219 +1,850 @@
 <!doctype html>
 <html lang="vi">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TOANNX — Báo cáo Foundation</title>
-<style>
-  :root {
-    --bg: #fafafa; --fg: #18181b; --muted: #52525b; --card: #ffffff; --border: #e4e4e7;
-    --primary: #4040c0; --ok: #15803d; --ok-bg: #dcfce7; --info: #1d4ed8; --info-bg: #dbeafe;
-    --warn: #a16207; --warn-bg: #fef9c3; --bad: #b91c1c; --bad-bg: #fee2e2; --gray: #3f3f46; --gray-bg: #e4e4e7;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0b0b0e; --fg: #f4f4f5; --muted: #a1a1aa; --card: #16161a; --border: #2a2a31;
-      --primary: #9a9cf0; --ok: #86efac; --ok-bg: #14321f; --info: #93c5fd; --info-bg: #172554;
-      --warn: #fde047; --warn-bg: #3a300b; --bad: #fca5a5; --bad-bg: #3b1212; --gray: #d4d4d8; --gray-bg: #27272a;
-    }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 Inter, "Segoe UI", system-ui, sans-serif; }
-  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
-  header { display: flex; gap: 14px; align-items: center; margin-bottom: 8px; }
-  h1 { font-size: 26px; margin: 0; letter-spacing: -0.01em; }
-  h2 { font-size: 19px; margin: 40px 0 12px; padding-top: 8px; border-top: 1px solid var(--border); }
-  h3 { font-size: 15px; margin: 20px 0 8px; }
-  p, li { color: var(--fg); }
-  .muted { color: var(--muted); }
-  nav ol { columns: 2; padding-left: 20px; margin: 16px 0; }
-  @media (max-width: 640px) { nav ol { columns: 1; } }
-  a { color: var(--primary); }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-  .stat b { display: block; font-size: 24px; }
-  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  th { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
-  tr:last-child td { border-bottom: 0; }
-  code { font: 13px/1.4 ui-monospace, Consolas, monospace; background: var(--gray-bg); padding: 1px 5px; border-radius: 4px; }
-  pre { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; overflow-x: auto; font-size: 13px; }
-  .s { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
-  .TESTED { color: var(--ok); background: var(--ok-bg); }
-  .IMPLEMENTED { color: var(--info); background: var(--info-bg); }
-  .PARTIAL { color: var(--warn); background: var(--warn-bg); }
-  .BLOCKED { color: var(--bad); background: var(--bad-bg); }
-  .NOT { color: var(--gray); background: var(--gray-bg); }
-</style>
-</head>
-<body>
-<main>
-  <header>
-    <svg viewBox="0 0 32 32" width="40" height="40" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#4040c0"/><path d="M8 8h16v4.5h-5.75V24h-4.5V12.5H8z" fill="#fff"/><rect x="20.5" y="19.5" width="4.5" height="4.5" rx="1" fill="#fff"/></svg>
-    <div>
-      <h1>TOANNX — Báo cáo Foundation</h1>
-      <div class="muted">Ngày 13/11/2026 · Mọi kết quả kiểm thử dưới đây là kết quả chạy thật trên máy local (Windows 11, PostgreSQL 18).</div>
-    </div>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ToanNX — Báo cáo Foundation</title>
+    <style>
+      :root {
+        --bg: #fafafa;
+        --fg: #18181b;
+        --muted: #52525b;
+        --card: #ffffff;
+        --border: #e4e4e7;
+        --primary: #4040c0;
+        --ok: #15803d;
+        --ok-bg: #dcfce7;
+        --info: #1d4ed8;
+        --info-bg: #dbeafe;
+        --warn: #a16207;
+        --warn-bg: #fef9c3;
+        --bad: #b91c1c;
+        --bad-bg: #fee2e2;
+        --gray: #3f3f46;
+        --gray-bg: #e4e4e7;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b0b0e;
+          --fg: #f4f4f5;
+          --muted: #a1a1aa;
+          --card: #16161a;
+          --border: #2a2a31;
+          --primary: #9a9cf0;
+          --ok: #86efac;
+          --ok-bg: #14321f;
+          --info: #93c5fd;
+          --info-bg: #172554;
+          --warn: #fde047;
+          --warn-bg: #3a300b;
+          --bad: #fca5a5;
+          --bad-bg: #3b1212;
+          --gray: #d4d4d8;
+          --gray-bg: #27272a;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          15px/1.6 Inter,
+          "Segoe UI",
+          system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 32px 16px 64px;
+      }
+      header {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      h1 {
+        font-size: 26px;
+        margin: 0;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-size: 19px;
+        margin: 40px 0 12px;
+        padding-top: 8px;
+        border-top: 1px solid var(--border);
+      }
+      h3 {
+        font-size: 15px;
+        margin: 20px 0 8px;
+      }
+      p,
+      li {
+        color: var(--fg);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      nav ol {
+        columns: 2;
+        padding-left: 20px;
+        margin: 16px 0;
+      }
+      @media (max-width: 640px) {
+        nav ol {
+          columns: 1;
+        }
+      }
+      a {
+        color: var(--primary);
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+      .stat b {
+        display: block;
+        font-size: 24px;
+      }
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--card);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        font-weight: 600;
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      code {
+        font:
+          13px/1.4 ui-monospace,
+          Consolas,
+          monospace;
+        background: var(--gray-bg);
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+      pre {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        overflow-x: auto;
+        font-size: 13px;
+      }
+      .s {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .TESTED {
+        color: var(--ok);
+        background: var(--ok-bg);
+      }
+      .IMPLEMENTED {
+        color: var(--info);
+        background: var(--info-bg);
+      }
+      .PARTIAL {
+        color: var(--warn);
+        background: var(--warn-bg);
+      }
+      .BLOCKED {
+        color: var(--bad);
+        background: var(--bad-bg);
+      }
+      .NOT {
+        color: var(--gray);
+        background: var(--gray-bg);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <svg viewBox="0 0 32 32" width="40" height="40" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="#4040c0" />
+          <path d="M8 8h16v4.5h-5.75V24h-4.5V12.5H8z" fill="#fff" />
+          <rect x="20.5" y="19.5" width="4.5" height="4.5" rx="1" fill="#fff" />
+        </svg>
+        <div>
+          <h1>ToanNX — Báo cáo Foundation</h1>
+          <div class="muted">
+            Ngày 13/11/2026 · Mọi kết quả kiểm thử dưới đây là kết quả chạy thật
+            trên máy local (Windows 11, PostgreSQL 18).
+          </div>
+        </div>
+      </header>
 
-  <div class="grid" style="margin-top:20px">
-    <div class="card stat"><span class="muted">Backend tests (pytest, PostgreSQL)</span><b>89 / 89 pass</b></div>
-    <div class="card stat"><span class="muted">Frontend unit (Vitest)</span><b>11 / 11 pass</b></div>
-    <div class="card stat"><span class="muted">E2E (Playwright, desktop + mobile)</span><b>13 / 13 pass</b></div>
-    <div class="card stat"><span class="muted">Lint · Type · Build</span><b>Đều pass</b></div>
-  </div>
+      <div class="grid" style="margin-top: 20px">
+        <div class="card stat">
+          <span class="muted">Backend tests (pytest, PostgreSQL)</span
+          ><b>89 / 89 pass</b>
+        </div>
+        <div class="card stat">
+          <span class="muted">Frontend unit (Vitest)</span><b>11 / 11 pass</b>
+        </div>
+        <div class="card stat">
+          <span class="muted">E2E (Playwright, desktop + mobile)</span
+          ><b>13 / 13 pass</b>
+        </div>
+        <div class="card stat">
+          <span class="muted">Lint · Type · Build</span><b>Đều pass</b>
+        </div>
+      </div>
 
-  <p class="muted" style="margin-top:16px">Trạng thái:
-    <span class="s TESTED">TESTED</span> có kiểm thử tự động chạy pass ·
-    <span class="s IMPLEMENTED">IMPLEMENTED</span> đã làm, kiểm tra thủ công/chưa có test tự động ·
-    <span class="s PARTIAL">PARTIAL</span> làm một phần ·
-    <span class="s BLOCKED">BLOCKED</span> thiếu điều kiện bên ngoài ·
-    <span class="s NOT">NOT IMPLEMENTED</span> chưa làm.</p>
+      <p class="muted" style="margin-top: 16px">
+        Trạng thái: <span class="s TESTED">TESTED</span> có kiểm thử tự động
+        chạy pass · <span class="s IMPLEMENTED">IMPLEMENTED</span> đã làm, kiểm
+        tra thủ công/chưa có test tự động ·
+        <span class="s PARTIAL">PARTIAL</span> làm một phần ·
+        <span class="s BLOCKED">BLOCKED</span> thiếu điều kiện bên ngoài ·
+        <span class="s NOT">NOT IMPLEMENTED</span> chưa làm.
+      </p>
 
-  <nav><ol>
-    <li><a href="#overview">Tổng quan</a></li><li><a href="#stack">Công nghệ</a></li><li><a href="#arch">Kiến trúc</a></li>
-    <li><a href="#audit">Audit source tham khảo</a></li><li><a href="#backend">Backend core</a></li><li><a href="#frontend">Frontend core</a></li>
-    <li><a href="#auth">Xác thực</a></li><li><a href="#iam">IAM / RBAC</a></li><li><a href="#i18n">Đa ngôn ngữ</a></li>
-    <li><a href="#ui">UI/UX</a></li><li><a href="#db">Database</a></li><li><a href="#tests">Kiểm thử</a></li>
-    <li><a href="#deploy">Sẵn sàng triển khai</a></li><li><a href="#issues">Vấn đề đã biết</a></li><li><a href="#next">Bước tiếp theo</a></li>
-  </ol></nav>
+      <nav>
+        <ol>
+          <li><a href="#overview">Tổng quan</a></li>
+          <li><a href="#stack">Công nghệ</a></li>
+          <li><a href="#arch">Kiến trúc</a></li>
+          <li><a href="#audit">Audit source tham khảo</a></li>
+          <li><a href="#backend">Backend core</a></li>
+          <li><a href="#frontend">Frontend core</a></li>
+          <li><a href="#auth">Xác thực</a></li>
+          <li><a href="#iam">IAM / RBAC</a></li>
+          <li><a href="#i18n">Đa ngôn ngữ</a></li>
+          <li><a href="#ui">UI/UX</a></li>
+          <li><a href="#db">Database</a></li>
+          <li><a href="#tests">Kiểm thử</a></li>
+          <li><a href="#deploy">Sẵn sàng triển khai</a></li>
+          <li><a href="#issues">Vấn đề đã biết</a></li>
+          <li><a href="#next">Bước tiếp theo</a></li>
+        </ol>
+      </nav>
 
-  <h2 id="overview">1. Tổng quan</h2>
-  <p>Foundation cho website cá nhân toannx.com: backend Django REST (<code>backend/</code>) và frontend Next.js 16 (<code>frontend/</code>) chạy, build, test và deploy độc lập.
-  Đã có đăng nhập/đăng xuất/refresh xoay vòng, phân quyền RBAC, quản lý người dùng/vai trò/quyền, module registry, i18n vi/en, admin layout responsive và logo chữ T.
-  Chưa có module nghiệp vụ (Analytics, Links, Payment QR, Novel, CMS) theo đúng phạm vi.</p>
-  <div class="table-wrap"><table>
-    <tr><th>Tiêu chí hoàn thành</th><th>Trạng thái</th><th>Bằng chứng</th></tr>
-    <tr><td>Frontend chạy được</td><td><span class="s TESTED">TESTED</span></td><td><code>pnpm build</code> + <code>pnpm start</code>, E2E chạy trên server production local</td></tr>
-    <tr><td>Backend chạy được</td><td><span class="s TESTED">TESTED</span></td><td><code>runserver</code>, <code>/api/v1/health/ready</code> 200</td></tr>
-    <tr><td>PostgreSQL kết nối</td><td><span class="s TESTED">TESTED</span></td><td>DB <code>toannx</code> + <code>test_toannx</code> trên PostgreSQL 18 local</td></tr>
-    <tr><td>Migration thành công</td><td><span class="s TESTED">TESTED</span></td><td><code>migrate</code> sạch; <code>sync_iam</code> tạo 11 quyền, ADMIN/VIEWER</td></tr>
-    <tr><td>Tạo superuser</td><td><span class="s TESTED">TESTED</span></td><td><code>createsuperuser --noinput</code>, hash <code>argon2id</code></td></tr>
-    <tr><td>Login / Refresh / Logout / Logout all</td><td><span class="s TESTED">TESTED</span></td><td>pytest + E2E (gồm silent refresh)</td></tr>
-    <tr><td>Cookie an toàn, CSRF</td><td><span class="s TESTED">TESTED</span></td><td>Test cờ HttpOnly/SameSite/Path; CSRF bật thật (<code>enforce_csrf_checks</code>)</td></tr>
-    <tr><td>Protected routes</td><td><span class="s TESTED">TESTED</span></td><td>E2E redirect kèm <code>next</code>; cookie giả bị backend chặn</td></tr>
-    <tr><td>is_superuser / is_staff / is_novel</td><td><span class="s TESTED">TESTED</span></td><td>Test bypass, staff/non-staff; <code>is_novel</code> không cấp quyền (tài liệu hóa)</td></tr>
-    <tr><td>Gán vai trò, gán quyền, kiểm tra quyền</td><td><span class="s TESTED">TESTED</span></td><td><code>test_iam.py</code></td></tr>
-    <tr><td>Module registry</td><td><span class="s TESTED">TESTED</span></td><td><code>test_system.py</code></td></tr>
-    <tr><td>vi/en, URL bản địa hóa</td><td><span class="s TESTED">TESTED</span></td><td>E2E localization + test khóa message</td></tr>
-    <tr><td>Login form & dashboard responsive</td><td><span class="s TESTED">TESTED</span></td><td>E2E Pixel 7: không tràn ngang, sidebar drawer</td></tr>
-    <tr><td>Logo T tích hợp</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td>Login, sidebar, trang chủ, favicon <code>app/icon.svg</code>; kiểm tra bằng ảnh chụp</td></tr>
-    <tr><td>Lint / typecheck / build</td><td><span class="s TESTED">TESTED</span></td><td><code>scripts/check-all.ps1</code> và <code>.sh</code> đều EXIT=0</td></tr>
-    <tr><td>AGENTS.md, SYSTEM_CONTEXT.md, README.md, hướng dẫn deploy</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td>Thư mục gốc + <code>docs/</code></td></tr>
-    <tr><td>Deploy Vercel/Neon</td><td><span class="s BLOCKED">BLOCKED</span></td><td>READY, chưa DEPLOYED: không có credentials Vercel/Neon</td></tr>
-  </table></div>
+      <h2 id="overview">1. Tổng quan</h2>
+      <p>
+        Foundation cho website cá nhân toannx.com: backend Django REST
+        (<code>backend/</code>) và frontend Next.js 16 (<code>frontend/</code>)
+        chạy, build, test và deploy độc lập. Đã có đăng nhập/đăng xuất/refresh
+        xoay vòng, phân quyền RBAC, quản lý người dùng/vai trò/quyền, module
+        registry, i18n vi/en, admin layout responsive và logo chữ T. Chưa có
+        module nghiệp vụ (Analytics, Links, Payment QR, Novel, CMS) theo đúng
+        phạm vi.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Tiêu chí hoàn thành</th>
+            <th>Trạng thái</th>
+            <th>Bằng chứng</th>
+          </tr>
+          <tr>
+            <td>Frontend chạy được</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              <code>pnpm build</code> + <code>pnpm start</code>, E2E chạy trên
+              server production local
+            </td>
+          </tr>
+          <tr>
+            <td>Backend chạy được</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              <code>runserver</code>, <code>/api/v1/health/ready</code> 200
+            </td>
+          </tr>
+          <tr>
+            <td>PostgreSQL kết nối</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              DB <code>toannx</code> + <code>test_toannx</code> trên PostgreSQL
+              18 local
+            </td>
+          </tr>
+          <tr>
+            <td>Migration thành công</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              <code>migrate</code> sạch; <code>sync_iam</code> tạo 11 quyền,
+              ADMIN/VIEWER
+            </td>
+          </tr>
+          <tr>
+            <td>Tạo superuser</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              <code>createsuperuser --noinput</code>, hash <code>argon2id</code>
+            </td>
+          </tr>
+          <tr>
+            <td>Login / Refresh / Logout / Logout all</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>pytest + E2E (gồm silent refresh)</td>
+          </tr>
+          <tr>
+            <td>Cookie an toàn, CSRF</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              Test cờ HttpOnly/SameSite/Path; CSRF bật thật
+              (<code>enforce_csrf_checks</code>)
+            </td>
+          </tr>
+          <tr>
+            <td>Protected routes</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              E2E redirect kèm <code>next</code>; cookie giả bị backend chặn
+            </td>
+          </tr>
+          <tr>
+            <td>is_superuser / is_staff / is_novel</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              Test bypass, staff/non-staff; <code>is_novel</code> không cấp
+              quyền (tài liệu hóa)
+            </td>
+          </tr>
+          <tr>
+            <td>Gán vai trò, gán quyền, kiểm tra quyền</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td><code>test_iam.py</code></td>
+          </tr>
+          <tr>
+            <td>Module registry</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td><code>test_system.py</code></td>
+          </tr>
+          <tr>
+            <td>vi/en, URL bản địa hóa</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>E2E localization + test khóa message</td>
+          </tr>
+          <tr>
+            <td>Login form & dashboard responsive</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>E2E Pixel 7: không tràn ngang, sidebar drawer</td>
+          </tr>
+          <tr>
+            <td>Logo T tích hợp</td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td>
+              Login, sidebar, trang chủ, favicon <code>app/icon.svg</code>; kiểm
+              tra bằng ảnh chụp
+            </td>
+          </tr>
+          <tr>
+            <td>Lint / typecheck / build</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              <code>scripts/check-all.ps1</code> và <code>.sh</code> đều EXIT=0
+            </td>
+          </tr>
+          <tr>
+            <td>AGENTS.md, SYSTEM_CONTEXT.md, README.md, hướng dẫn deploy</td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td>Thư mục gốc + <code>docs/</code></td>
+          </tr>
+          <tr>
+            <td>Deploy Vercel/Neon</td>
+            <td><span class="s BLOCKED">BLOCKED</span></td>
+            <td>READY, chưa DEPLOYED: không có credentials Vercel/Neon</td>
+          </tr>
+        </table>
+      </div>
 
-  <h2 id="stack">2. Công nghệ (phiên bản thực tế đã cài)</h2>
-  <div class="table-wrap"><table>
-    <tr><th>Backend</th><th>Frontend</th></tr>
-    <tr><td>Python 3.13.0 · uv 0.13.7<br>Django 6.0.10 · DRF 3.18.3 · drf-spectacular 0.30<br>psycopg 3.3.9 · django-environ 0.14 · PyJWT 2.15.1 · argon2-cffi 25.1<br>django-cors-headers 4.9 · pytest 9.2 · pytest-django 4.14 · factory-boy 3.3<br>Ruff 0.17.5 · mypy 2.4.1 + django-stubs 6.1</td>
-        <td>Node 24.15 · pnpm 12.18<br>Next.js 16.4.6 · React 19.3 · TypeScript 5.9 (strict)<br>Tailwind 4.3 · shadcn 4.23 (radix-nova) · radix-ui 1.8 · lucide-react<br>TanStack Query 5.107 · Zustand 5.1 · React Hook Form 7.92 · Zod 4.6<br>next-intl 4.15 · next-themes 0.4 · Sonner 2 · Vitest 5.1 · Playwright 1.65</td></tr>
-  </table></div>
-  <p class="muted"><code>date-fns</code> đã bỏ vì không dùng (định dạng thời gian bằng <code>useFormatter</code> của next-intl). Không dùng Celery/Redis.</p>
+      <h2 id="stack">2. Công nghệ (phiên bản thực tế đã cài)</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Backend</th>
+            <th>Frontend</th>
+          </tr>
+          <tr>
+            <td>
+              Python 3.13.0 · uv 0.13.7<br />Django 6.0.10 · DRF 3.18.3 ·
+              drf-spectacular 0.30<br />psycopg 3.3.9 · django-environ 0.14 ·
+              PyJWT 2.15.1 · argon2-cffi 25.1<br />django-cors-headers 4.9 ·
+              pytest 9.2 · pytest-django 4.14 · factory-boy 3.3<br />Ruff 0.17.5
+              · mypy 2.4.1 + django-stubs 6.1
+            </td>
+            <td>
+              Node 24.15 · pnpm 12.18<br />Next.js 16.4.6 · React 19.3 ·
+              TypeScript 5.9 (strict)<br />Tailwind 4.3 · shadcn 4.23
+              (radix-nova) · radix-ui 1.8 · lucide-react<br />TanStack Query
+              5.107 · Zustand 5.1 · React Hook Form 7.92 · Zod 4.6<br />next-intl
+              4.15 · next-themes 0.4 · Sonner 2 · Vitest 5.1 · Playwright 1.65
+            </td>
+          </tr>
+        </table>
+      </div>
+      <p class="muted">
+        <code>date-fns</code> đã bỏ vì không dùng (định dạng thời gian bằng
+        <code>useFormatter</code> của next-intl). Không dùng Celery/Redis.
+      </p>
 
-  <h2 id="arch">3. Kiến trúc</h2>
-  <pre>Trình duyệt ──► toannx.com (Next.js)
+      <h2 id="arch">3. Kiến trúc</h2>
+      <pre>
+Trình duyệt ──► toannx.com (Next.js)
                  ├─ src/proxy.ts : next-intl + kiểm tra lạc quan cookie toannx_session
                  └─ rewrite /api/v1/* ──► api.toannx.com (Django) ──► Neon PostgreSQL</pre>
-  <p>Trình duyệt chỉ thấy một origin ⇒ cookie host-only, không cần CORS ở production. Chi tiết: <code>docs/architecture.md</code>.</p>
-  <div class="table-wrap"><table>
-    <tr><th>Quyết định</th><th>Lý do</th></tr>
-    <tr><td>Một file <code>config/settings.py</code>, khác biệt qua biến môi trường</td><td>Theo yêu cầu của bạn trong phiên làm việc (chuẩn Django, không làm rộng)</td></tr>
-    <tr><td>Scaffold bằng CLI: <code>uv init</code>, <code>django-admin startproject config .</code>, <code>startapp</code>, <code>create-next-app</code>, <code>shadcn init/add</code></td><td>Theo yêu cầu: không dựng tay</td></tr>
-    <tr><td>App Django bố cục phẳng (<code>models.py</code>, <code>services.py</code>, ...) thay vì mỗi class một file</td><td>Gần chuẩn Django, ít file rỗng; tầng View/Service/Repository/Selector vẫn tách rõ</td></tr>
-    <tr><td>Không gắn Django admin (<code>/admin</code> là admin của Next.js)</td><td>Giảm bề mặt tấn công; quyền đi qua IAM</td></tr>
-    <tr><td>Tắt <code>cacheComponents</code> (mặc định của create-next-app 16.4)</td><td>Admin render phía client; bật lại khi có trang public cần cache</td></tr>
-  </table></div>
+      <p>
+        Trình duyệt chỉ thấy một origin ⇒ cookie host-only, không cần CORS ở
+        production. Chi tiết: <code>docs/architecture.md</code>.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Quyết định</th>
+            <th>Lý do</th>
+          </tr>
+          <tr>
+            <td>
+              Một file <code>config/settings.py</code>, khác biệt qua biến môi
+              trường
+            </td>
+            <td>
+              Theo yêu cầu của bạn trong phiên làm việc (chuẩn Django, không làm
+              rộng)
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Scaffold bằng CLI: <code>uv init</code>,
+              <code>django-admin startproject config .</code>,
+              <code>startapp</code>, <code>create-next-app</code>,
+              <code>shadcn init/add</code>
+            </td>
+            <td>Theo yêu cầu: không dựng tay</td>
+          </tr>
+          <tr>
+            <td>
+              App Django bố cục phẳng (<code>models.py</code>,
+              <code>services.py</code>, ...) thay vì mỗi class một file
+            </td>
+            <td>
+              Gần chuẩn Django, ít file rỗng; tầng
+              View/Service/Repository/Selector vẫn tách rõ
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Không gắn Django admin (<code>/admin</code> là admin của Next.js)
+            </td>
+            <td>Giảm bề mặt tấn công; quyền đi qua IAM</td>
+          </tr>
+          <tr>
+            <td>
+              Tắt <code>cacheComponents</code> (mặc định của create-next-app
+              16.4)
+            </td>
+            <td>
+              Admin render phía client; bật lại khi có trang public cần cache
+            </td>
+          </tr>
+        </table>
+      </div>
 
-  <h2 id="audit">4. Audit source tham khảo</h2>
-  <p>Đã đọc trực tiếp <code>D:\projects\PMS\PMS-AZ-BE</code> và <code>D:\Medoly\frontend\src\shares\components</code> (chỉ đọc). Chi tiết: <code>docs/reference-audit.md</code>.</p>
-  <ul>
-    <li><b>PMS kế thừa ý tưởng:</b> ContextVar cho user, assertion test dùng chung, factory_boy, tách serializer request/response.</li>
-    <li><b>PMS sửa lại:</b> audit ngầm trong <code>save()</code> kèm 3 truy vấn mỗi lần lưu; ContextVar không bao giờ reset; <code>except Exception: pass</code> trong middleware; 10 lớp response trùng nhau; ErrorCode có khóa trùng và giá trị tuple; quyền dựa <code>user_permissions</code>; <code>MasterViewBase</code> với danh sách quyền rỗng = cho phép.</li>
-    <li><b>Medoly kế thừa:</b> PasswordInput, EmptyState, ErrorState, Pagination, LanguageSwitcher (đều chuẩn hóa về token theme; LanguageSwitcher sửa lỗi mất query/params). Primitive UI sinh lại bằng <code>shadcn add</code>.</li>
-    <li><b>Tiptap:</b> chưa tích hợp; đã ghi nhận cách tích hợp cho Novel/CMS.</li>
-  </ul>
+      <h2 id="audit">4. Audit source tham khảo</h2>
+      <p>
+        Đã đọc trực tiếp <code>D:\projects\PMS\PMS-AZ-BE</code> và
+        <code>D:\Medoly\frontend\src\shares\components</code> (chỉ đọc). Chi
+        tiết: <code>docs/reference-audit.md</code>.
+      </p>
+      <ul>
+        <li>
+          <b>PMS kế thừa ý tưởng:</b> ContextVar cho user, assertion test dùng
+          chung, factory_boy, tách serializer request/response.
+        </li>
+        <li>
+          <b>PMS sửa lại:</b> audit ngầm trong <code>save()</code> kèm 3 truy
+          vấn mỗi lần lưu; ContextVar không bao giờ reset;
+          <code>except Exception: pass</code> trong middleware; 10 lớp response
+          trùng nhau; ErrorCode có khóa trùng và giá trị tuple; quyền dựa
+          <code>user_permissions</code>; <code>MasterViewBase</code> với danh
+          sách quyền rỗng = cho phép.
+        </li>
+        <li>
+          <b>Medoly kế thừa:</b> PasswordInput, EmptyState, ErrorState,
+          Pagination, LanguageSwitcher (đều chuẩn hóa về token theme;
+          LanguageSwitcher sửa lỗi mất query/params). Primitive UI sinh lại bằng
+          <code>shadcn add</code>.
+        </li>
+        <li>
+          <b>Tiptap:</b> chưa tích hợp; đã ghi nhận cách tích hợp cho Novel/CMS.
+        </li>
+      </ul>
 
-  <h2 id="backend">5. Backend core</h2>
-  <div class="table-wrap"><table>
-    <tr><th>Thành phần</th><th>Trạng thái</th><th>Ghi chú</th></tr>
-    <tr><td>CoreModel (UUID, timestamps, audit FK <code>SET_NULL</code>, soft delete tùy chọn, <code>verbose_name</code>/<code>db_comment</code>)</td><td><span class="s TESTED">TESTED</span></td><td><code>app/core/models.py</code></td></tr>
-    <tr><td>CoreRepository[M] (audit, savepoint, IntegrityError → 409)</td><td><span class="s TESTED">TESTED</span></td><td>create/update/soft_delete/bulk_create/audit từ context</td></tr>
-    <tr><td>CoreSelector[M] (sắp xếp whitelist, phân trang)</td><td><span class="s TESTED">TESTED</span></td><td>Sắp xếp sai field → 400</td></tr>
-    <tr><td>CoreService base</td><td><span class="s NOT">NOT IMPLEMENTED</span></td><td>Cố ý: không có hành vi chung; service nhận dependency qua constructor</td></tr>
-    <tr><td>Response chuẩn + phân trang</td><td><span class="s TESTED">TESTED</span></td><td><code>BaseApiTestCase.assert_*</code></td></tr>
-    <tr><td>AppException + exception handler + JSON 404/500</td><td><span class="s TESTED">TESTED</span></td><td>Không lộ stack trace</td></tr>
-    <tr><td>CoreValidator, CoreRequestSerializer (từ chối field lạ)</td><td><span class="s TESTED">TESTED</span></td><td>Mật khẩu yếu → <code>IAM_PASSWORD_WEAK</code></td></tr>
-    <tr><td>RequestContext middleware + request_id trong log</td><td><span class="s TESTED">TESTED</span></td><td>Từ chối request_id có ký tự lạ</td></tr>
-    <tr><td>Module registry + System API</td><td><span class="s TESTED">TESTED</span></td><td>Core lock, phụ thuộc, chưa cài không bật được</td></tr>
-    <tr><td>Health liveness/readiness</td><td><span class="s TESTED">TESTED</span></td><td>—</td></tr>
-  </table></div>
+      <h2 id="backend">5. Backend core</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Thành phần</th>
+            <th>Trạng thái</th>
+            <th>Ghi chú</th>
+          </tr>
+          <tr>
+            <td>
+              CoreModel (UUID, timestamps, audit FK <code>SET_NULL</code>, soft
+              delete tùy chọn,
+              <code>verbose_name</code>/<code>db_comment</code>)
+            </td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td><code>app/core/models.py</code></td>
+          </tr>
+          <tr>
+            <td>CoreRepository[M] (audit, savepoint, IntegrityError → 409)</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>create/update/soft_delete/bulk_create/audit từ context</td>
+          </tr>
+          <tr>
+            <td>CoreSelector[M] (sắp xếp whitelist, phân trang)</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Sắp xếp sai field → 400</td>
+          </tr>
+          <tr>
+            <td>CoreService base</td>
+            <td><span class="s NOT">NOT IMPLEMENTED</span></td>
+            <td>
+              Cố ý: không có hành vi chung; service nhận dependency qua
+              constructor
+            </td>
+          </tr>
+          <tr>
+            <td>Response chuẩn + phân trang</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td><code>BaseApiTestCase.assert_*</code></td>
+          </tr>
+          <tr>
+            <td>AppException + exception handler + JSON 404/500</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Không lộ stack trace</td>
+          </tr>
+          <tr>
+            <td>CoreValidator, CoreRequestSerializer (từ chối field lạ)</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Mật khẩu yếu → <code>IAM_PASSWORD_WEAK</code></td>
+          </tr>
+          <tr>
+            <td>RequestContext middleware + request_id trong log</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Từ chối request_id có ký tự lạ</td>
+          </tr>
+          <tr>
+            <td>Module registry + System API</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Core lock, phụ thuộc, chưa cài không bật được</td>
+          </tr>
+          <tr>
+            <td>Health liveness/readiness</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>—</td>
+          </tr>
+        </table>
+      </div>
 
-  <h2 id="frontend">6. Frontend core</h2>
-  <div class="table-wrap"><table>
-    <tr><th>Thành phần</th><th>Trạng thái</th><th>Ghi chú</th></tr>
-    <tr><td>apiClient (base path, credentials, request id, timeout, lỗi chuẩn, CSRF, silent refresh single-flight, retry 1 lần)</td><td><span class="s TESTED">TESTED</span></td><td>E2E silent refresh; unit test chuyển đổi case</td></tr>
-    <tr><td>Chuyển camelCase ⇄ snake_case có giới hạn</td><td><span class="s TESTED">TESTED</span></td><td>Không đụng Date/Blob/FormData; khóa opaque</td></tr>
-    <tr><td>Phân tầng view → component(+hook) → hook → service → repository</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td>modules auth, iam, system, dashboard</td></tr>
-    <tr><td>React Query keys tập trung, xóa cache khi logout, invalidate khi đổi quyền</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td><code>shares/constants/query-keys.ts</code></td></tr>
-    <tr><td>Zustand store phiên</td><td><span class="s TESTED">TESTED</span></td><td>Dùng khi refresh thất bại</td></tr>
-    <tr><td>proxy.ts (kiểm tra lạc quan)</td><td><span class="s TESTED">TESTED</span></td><td>Backend vẫn là nơi quyết định</td></tr>
-  </table></div>
+      <h2 id="frontend">6. Frontend core</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Thành phần</th>
+            <th>Trạng thái</th>
+            <th>Ghi chú</th>
+          </tr>
+          <tr>
+            <td>
+              apiClient (base path, credentials, request id, timeout, lỗi chuẩn,
+              CSRF, silent refresh single-flight, retry 1 lần)
+            </td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>E2E silent refresh; unit test chuyển đổi case</td>
+          </tr>
+          <tr>
+            <td>Chuyển camelCase ⇄ snake_case có giới hạn</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Không đụng Date/Blob/FormData; khóa opaque</td>
+          </tr>
+          <tr>
+            <td>
+              Phân tầng view → component(+hook) → hook → service → repository
+            </td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td>modules auth, iam, system, dashboard</td>
+          </tr>
+          <tr>
+            <td>
+              React Query keys tập trung, xóa cache khi logout, invalidate khi
+              đổi quyền
+            </td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td><code>shares/constants/query-keys.ts</code></td>
+          </tr>
+          <tr>
+            <td>Zustand store phiên</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Dùng khi refresh thất bại</td>
+          </tr>
+          <tr>
+            <td>proxy.ts (kiểm tra lạc quan)</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Backend vẫn là nơi quyết định</td>
+          </tr>
+        </table>
+      </div>
 
-  <h2 id="auth">7. Xác thực</h2>
-  <div class="table-wrap"><table>
-    <tr><th>Hạng mục</th><th>Trạng thái</th><th>Ghi chú</th></tr>
-    <tr><td>Login email + mật khẩu, không có đăng ký</td><td><span class="s TESTED">TESTED</span></td><td><code>/register</code>, <code>/signup</code> → 404</td></tr>
-    <tr><td>Access JWT 10 phút gắn phiên; thu hồi có hiệu lực ngay</td><td><span class="s TESTED">TESTED</span></td><td>JWT sai chữ ký/hết hạn/không hợp lệ</td></tr>
-    <tr><td>Refresh xoay vòng, chỉ lưu HMAC, phát hiện reuse, refresh đồng thời</td><td><span class="s TESTED">TESTED</span></td><td>Test 2 thread: đúng 1 thành công, 1 nhận 409</td></tr>
-    <tr><td>Cookie HttpOnly/Secure(prod)/SameSite/Path, host-only</td><td><span class="s TESTED">TESTED</span></td><td>Xác minh cả qua rewrite của Next</td></tr>
-    <tr><td>CSRF (Django double-submit + Origin)</td><td><span class="s TESTED">TESTED</span></td><td>Login, refresh, logout, API ghi bằng cookie</td></tr>
-    <tr><td>Rate limit PostgreSQL (login, refresh)</td><td><span class="s TESTED">TESTED</span></td><td>429 + Retry-After</td></tr>
-    <tr><td>Quản lý phiên (list/revoke), logout-all</td><td><span class="s TESTED">TESTED</span></td><td>API; UI có “Đăng xuất mọi thiết bị”, chưa có trang danh sách phiên</td></tr>
-    <tr><td>Đổi mật khẩu / khóa tài khoản thu hồi phiên</td><td><span class="s TESTED">TESTED</span></td><td>Signal <code>user_credentials_changed</code></td></tr>
-  </table></div>
+      <h2 id="auth">7. Xác thực</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Hạng mục</th>
+            <th>Trạng thái</th>
+            <th>Ghi chú</th>
+          </tr>
+          <tr>
+            <td>Login email + mật khẩu, không có đăng ký</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td><code>/register</code>, <code>/signup</code> → 404</td>
+          </tr>
+          <tr>
+            <td>Access JWT 10 phút gắn phiên; thu hồi có hiệu lực ngay</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>JWT sai chữ ký/hết hạn/không hợp lệ</td>
+          </tr>
+          <tr>
+            <td>
+              Refresh xoay vòng, chỉ lưu HMAC, phát hiện reuse, refresh đồng
+              thời
+            </td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Test 2 thread: đúng 1 thành công, 1 nhận 409</td>
+          </tr>
+          <tr>
+            <td>Cookie HttpOnly/Secure(prod)/SameSite/Path, host-only</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Xác minh cả qua rewrite của Next</td>
+          </tr>
+          <tr>
+            <td>CSRF (Django double-submit + Origin)</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Login, refresh, logout, API ghi bằng cookie</td>
+          </tr>
+          <tr>
+            <td>Rate limit PostgreSQL (login, refresh)</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>429 + Retry-After</td>
+          </tr>
+          <tr>
+            <td>Quản lý phiên (list/revoke), logout-all</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              API; UI có “Đăng xuất mọi thiết bị”, chưa có trang danh sách phiên
+            </td>
+          </tr>
+          <tr>
+            <td>Đổi mật khẩu / khóa tài khoản thu hồi phiên</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Signal <code>user_credentials_changed</code></td>
+          </tr>
+        </table>
+      </div>
 
-  <h2 id="iam">8. IAM / RBAC</h2>
-  <div class="table-wrap"><table>
-    <tr><th>Hạng mục</th><th>Trạng thái</th><th>Ghi chú</th></tr>
-    <tr><td>Custom User trước migration đầu, <code>AUTH_USER_MODEL=iam.User</code></td><td><span class="s TESTED">TESTED</span></td><td>Không dùng PermissionsMixin; <code>has_perm</code> qua PermissionChecker</td></tr>
-    <tr><td>Role / Permission / UserRole / RolePermission, nhiều vai trò mỗi user</td><td><span class="s TESTED">TESTED</span></td><td>Gộp quyền, vai trò tắt không cấp quyền</td></tr>
-    <tr><td>PermissionChecker (default deny, cache theo request)</td><td><span class="s TESTED">TESTED</span></td><td>1 truy vấn cho nhiều lần kiểm tra</td></tr>
-    <tr><td>Chống leo thang, bảo vệ superuser cuối cùng, vai trò hệ thống</td><td><span class="s TESTED">TESTED</span></td><td>—</td></tr>
-    <tr><td>Toàn bộ IAM API theo yêu cầu</td><td><span class="s TESTED">TESTED</span></td><td>—</td></tr>
-    <tr><td>UI quản lý người dùng, vai trò, quyền, module</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td>Kiểm tra thủ công + ảnh chụp; chưa có E2E cho thao tác CRUD</td></tr>
-    <tr><td>Bật/tắt <code>is_superuser</code> trên UI</td><td><span class="s NOT">NOT IMPLEMENTED</span></td><td>API hỗ trợ (chỉ superuser); UI cố ý chưa hiển thị</td></tr>
-  </table></div>
+      <h2 id="iam">8. IAM / RBAC</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Hạng mục</th>
+            <th>Trạng thái</th>
+            <th>Ghi chú</th>
+          </tr>
+          <tr>
+            <td>
+              Custom User trước migration đầu,
+              <code>AUTH_USER_MODEL=iam.User</code>
+            </td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>
+              Không dùng PermissionsMixin; <code>has_perm</code> qua
+              PermissionChecker
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Role / Permission / UserRole / RolePermission, nhiều vai trò mỗi
+              user
+            </td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>Gộp quyền, vai trò tắt không cấp quyền</td>
+          </tr>
+          <tr>
+            <td>PermissionChecker (default deny, cache theo request)</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>1 truy vấn cho nhiều lần kiểm tra</td>
+          </tr>
+          <tr>
+            <td>
+              Chống leo thang, bảo vệ superuser cuối cùng, vai trò hệ thống
+            </td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Toàn bộ IAM API theo yêu cầu</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>UI quản lý người dùng, vai trò, quyền, module</td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td>Kiểm tra thủ công + ảnh chụp; chưa có E2E cho thao tác CRUD</td>
+          </tr>
+          <tr>
+            <td>Bật/tắt <code>is_superuser</code> trên UI</td>
+            <td><span class="s NOT">NOT IMPLEMENTED</span></td>
+            <td>API hỗ trợ (chỉ superuser); UI cố ý chưa hiển thị</td>
+          </tr>
+        </table>
+      </div>
 
-  <h2 id="i18n">9. Đa ngôn ngữ</h2>
-  <div class="table-wrap"><table>
-    <tr><th>Hạng mục</th><th>Trạng thái</th></tr>
-    <tr><td>vi (mặc định) / en, URL bản địa hóa (<code>/vi/quan-tri</code> ↔ <code>/en/admin</code>)</td><td><span class="s TESTED">TESTED</span></td></tr>
-    <tr><td>Message theo module, kiểm tra thiếu/thừa khóa, biến nội suy, xung đột namespace</td><td><span class="s TESTED">TESTED</span></td></tr>
-    <tr><td>Zod validation theo ngôn ngữ (factory)</td><td><span class="s TESTED">TESTED</span></td></tr>
-    <tr><td>Chuyển ngôn ngữ giữ route, query, phiên</td><td><span class="s TESTED">TESTED</span></td></tr>
-    <tr><td>Canonical, hreflang, robots.txt, sitemap, noindex admin</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td></tr>
-  </table></div>
+      <h2 id="i18n">9. Đa ngôn ngữ</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Hạng mục</th>
+            <th>Trạng thái</th>
+          </tr>
+          <tr>
+            <td>
+              vi (mặc định) / en, URL bản địa hóa (<code>/vi/quan-tri</code> ↔
+              <code>/en/admin</code>)
+            </td>
+            <td><span class="s TESTED">TESTED</span></td>
+          </tr>
+          <tr>
+            <td>
+              Message theo module, kiểm tra thiếu/thừa khóa, biến nội suy, xung
+              đột namespace
+            </td>
+            <td><span class="s TESTED">TESTED</span></td>
+          </tr>
+          <tr>
+            <td>Zod validation theo ngôn ngữ (factory)</td>
+            <td><span class="s TESTED">TESTED</span></td>
+          </tr>
+          <tr>
+            <td>Chuyển ngôn ngữ giữ route, query, phiên</td>
+            <td><span class="s TESTED">TESTED</span></td>
+          </tr>
+          <tr>
+            <td>Canonical, hreflang, robots.txt, sitemap, noindex admin</td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+          </tr>
+        </table>
+      </div>
 
-  <h2 id="ui">10. UI/UX</h2>
-  <div class="table-wrap"><table>
-    <tr><th>Hạng mục</th><th>Trạng thái</th><th>Ghi chú</th></tr>
-    <tr><td>Theme sáng/tối/hệ thống, token semantic (primary indigo)</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td>Không hardcode màu trong component</td></tr>
-    <tr><td>Admin layout: sidebar, header, breadcrumb, user menu, theme & language switcher</td><td><span class="s TESTED">TESTED</span></td><td>—</td></tr>
-    <tr><td>Desktop đầy đủ / mobile drawer</td><td><span class="s TESTED">TESTED</span></td><td>E2E Pixel 7</td></tr>
-    <tr><td>Tablet sidebar thu gọn icon (768–1279px)</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td>Chưa có E2E ở kích thước tablet</td></tr>
-    <tr><td>Dashboard (lời chào, người dùng, module đang bật, lối tắt; không số liệu giả)</td><td><span class="s TESTED">TESTED</span></td><td>—</td></tr>
-    <tr><td>Logo T: icon, ngang, monochrome, favicon (SVG)</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td><code>frontend/public/brand/</code>, <code>src/app/icon.svg</code></td></tr>
-    <tr><td>Trang chủ Magic Fantasy</td><td><span class="s NOT">NOT IMPLEMENTED</span></td><td>Ngoài phạm vi foundation</td></tr>
-  </table></div>
+      <h2 id="ui">10. UI/UX</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Hạng mục</th>
+            <th>Trạng thái</th>
+            <th>Ghi chú</th>
+          </tr>
+          <tr>
+            <td>Theme sáng/tối/hệ thống, token semantic (primary indigo)</td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td>Không hardcode màu trong component</td>
+          </tr>
+          <tr>
+            <td>
+              Admin layout: sidebar, header, breadcrumb, user menu, theme &
+              language switcher
+            </td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Desktop đầy đủ / mobile drawer</td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>E2E Pixel 7</td>
+          </tr>
+          <tr>
+            <td>Tablet sidebar thu gọn icon (768–1279px)</td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td>Chưa có E2E ở kích thước tablet</td>
+          </tr>
+          <tr>
+            <td>
+              Dashboard (lời chào, người dùng, module đang bật, lối tắt; không
+              số liệu giả)
+            </td>
+            <td><span class="s TESTED">TESTED</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Logo T: icon, ngang, monochrome, favicon (SVG)</td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td>
+              <code>frontend/public/brand/</code>, <code>src/app/icon.svg</code>
+            </td>
+          </tr>
+          <tr>
+            <td>Trang chủ Magic Fantasy</td>
+            <td><span class="s NOT">NOT IMPLEMENTED</span></td>
+            <td>Ngoài phạm vi foundation</td>
+          </tr>
+        </table>
+      </div>
 
-  <h2 id="db">11. Database</h2>
-  <p>PostgreSQL 18 local, DB <code>toannx</code>; test trên <code>test_toannx</code>. Bảng: <code>iam_user</code>, <code>iam_role</code>, <code>iam_permission</code>, <code>iam_user_role</code>, <code>iam_role_permission</code>, <code>auth_session</code>, <code>auth_refresh_token</code>, <code>auth_rate_limit_bucket</code>, <code>system_module</code>.
-  Ràng buộc: unique email/username/mã vai trò/mã quyền, unique (user, role), (role, permission), (key_hash, window_start). Bảng <code>auth_group</code>/<code>auth_permission</code> của Django tồn tại nhưng không dùng.</p>
+      <h2 id="db">11. Database</h2>
+      <p>
+        PostgreSQL 18 local, DB <code>toannx</code>; test trên
+        <code>test_toannx</code>. Bảng: <code>iam_user</code>,
+        <code>iam_role</code>, <code>iam_permission</code>,
+        <code>iam_user_role</code>, <code>iam_role_permission</code>,
+        <code>auth_session</code>, <code>auth_refresh_token</code>,
+        <code>auth_rate_limit_bucket</code>, <code>system_module</code>. Ràng
+        buộc: unique email/username/mã vai trò/mã quyền, unique (user, role),
+        (role, permission), (key_hash, window_start). Bảng
+        <code>auth_group</code>/<code>auth_permission</code> của Django tồn tại
+        nhưng không dùng.
+      </p>
 
-  <h2 id="tests">12. Kiểm thử (kết quả chạy thật)</h2>
-  <pre>scripts/check-all.ps1 / check-all.sh   → EXIT=0 (cả hai)
+      <h2 id="tests">12. Kiểm thử (kết quả chạy thật)</h2>
+      <pre>
+scripts/check-all.ps1 / check-all.sh   → EXIT=0 (cả hai)
   ruff format --check    76 files already formatted
   ruff check             All checks passed!
   mypy                   Success: no issues found in 67 source files
@@ -223,37 +854,131 @@
   vitest                 11 passed
   next build             Compiled successfully
 pnpm e2e (Playwright)    13 passed (desktop 11, mobile 2)</pre>
-  <p class="muted">Không có base class CRUD test (<code>base_create_api_test_case</code>...): cố ý chưa tạo vì chưa có endpoint CRUD lặp lại.</p>
+      <p class="muted">
+        Không có base class CRUD test
+        (<code>base_create_api_test_case</code>...): cố ý chưa tạo vì chưa có
+        endpoint CRUD lặp lại.
+      </p>
 
-  <h2 id="deploy">13. Sẵn sàng triển khai</h2>
-  <div class="table-wrap"><table>
-    <tr><th>Hạng mục</th><th>Trạng thái</th><th>Ghi chú</th></tr>
-    <tr><td>Cấu hình Vercel backend (<code>api/index.py</code>, <code>vercel.json</code>, <code>requirements.txt</code> từ <code>uv export</code>)</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td>READY; chưa chạy trên Vercel thật</td></tr>
-    <tr><td>Frontend Vercel (rewrite <code>BACKEND_ORIGIN</code>)</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td>Rewrite + cookie đã kiểm tra local</td></tr>
-    <tr><td>Quy trình migration an toàn, biến môi trường, Neon</td><td><span class="s IMPLEMENTED">IMPLEMENTED</span></td><td><code>docs/deployment.md</code></td></tr>
-    <tr><td>Deploy thật</td><td><span class="s BLOCKED">BLOCKED</span></td><td>Không có credentials Vercel/Neon</td></tr>
-  </table></div>
+      <h2 id="deploy">13. Sẵn sàng triển khai</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Hạng mục</th>
+            <th>Trạng thái</th>
+            <th>Ghi chú</th>
+          </tr>
+          <tr>
+            <td>
+              Cấu hình Vercel backend (<code>api/index.py</code>,
+              <code>vercel.json</code>, <code>requirements.txt</code> từ
+              <code>uv export</code>)
+            </td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td>READY; chưa chạy trên Vercel thật</td>
+          </tr>
+          <tr>
+            <td>Frontend Vercel (rewrite <code>BACKEND_ORIGIN</code>)</td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td>Rewrite + cookie đã kiểm tra local</td>
+          </tr>
+          <tr>
+            <td>Quy trình migration an toàn, biến môi trường, Neon</td>
+            <td><span class="s IMPLEMENTED">IMPLEMENTED</span></td>
+            <td><code>docs/deployment.md</code></td>
+          </tr>
+          <tr>
+            <td>Deploy thật</td>
+            <td><span class="s BLOCKED">BLOCKED</span></td>
+            <td>Không có credentials Vercel/Neon</td>
+          </tr>
+        </table>
+      </div>
 
-  <h2 id="issues">14. Vấn đề đã biết</h2>
-  <div class="table-wrap"><table>
-    <tr><th>Vấn đề</th><th>Mức độ</th><th>Ảnh hưởng / cách xử lý</th></tr>
-    <tr><td>Chưa xác minh Django trên Vercel Python Runtime</td><td>Trung bình</td><td>Cần một lần deploy thử; cấu hình theo entrypoint WSGI chuẩn</td></tr>
-    <tr><td>IP client sau 2 lớp proxy Vercel có thể là IP hạ tầng</td><td>Trung bình</td><td>Rate limit login vẫn khóa theo email+IP; xác minh <code>X-Forwarded-For</code> khi deploy</td></tr>
-    <tr><td>Chưa có job dọn phiên/token/rate-limit hết hạn</td><td>Thấp</td><td>Bảng tăng dần; thêm Vercel Cron gọi lệnh dọn ở phase sau</td></tr>
-    <tr><td>Cookie <code>toannx_session</code> cũ khi mất mạng lúc refresh có thể khiến trang đăng nhập chuyển lại admin</td><td>Thấp</td><td>Chỉ xảy ra khi backend không phản hồi; refresh lỗi 401 luôn xóa cookie</td></tr>
-    <tr><td>Bố cục file khác prompt gốc (phẳng theo app, không có <code>core/constants/api_endpoints.py</code>, <code>password_hasher.py</code>)</td><td>Thông tin</td><td>Theo yêu cầu “chuẩn Django, đừng làm rộng”; URL dùng tên route Django, hashing dùng Django</td></tr>
-    <tr><td>Tài khoản dev: <code>admin@toannx.com</code> và <code>e2e-admin@toannx.local</code> trong DB local</td><td>Thông tin</td><td>Chỉ DB dev; đổi mật khẩu trước khi dùng thật</td></tr>
-  </table></div>
+      <h2 id="issues">14. Vấn đề đã biết</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Vấn đề</th>
+            <th>Mức độ</th>
+            <th>Ảnh hưởng / cách xử lý</th>
+          </tr>
+          <tr>
+            <td>Chưa xác minh Django trên Vercel Python Runtime</td>
+            <td>Trung bình</td>
+            <td>Cần một lần deploy thử; cấu hình theo entrypoint WSGI chuẩn</td>
+          </tr>
+          <tr>
+            <td>IP client sau 2 lớp proxy Vercel có thể là IP hạ tầng</td>
+            <td>Trung bình</td>
+            <td>
+              Rate limit login vẫn khóa theo email+IP; xác minh
+              <code>X-Forwarded-For</code> khi deploy
+            </td>
+          </tr>
+          <tr>
+            <td>Chưa có job dọn phiên/token/rate-limit hết hạn</td>
+            <td>Thấp</td>
+            <td>Bảng tăng dần; thêm Vercel Cron gọi lệnh dọn ở phase sau</td>
+          </tr>
+          <tr>
+            <td>
+              Cookie <code>toannx_session</code> cũ khi mất mạng lúc refresh có
+              thể khiến trang đăng nhập chuyển lại admin
+            </td>
+            <td>Thấp</td>
+            <td>
+              Chỉ xảy ra khi backend không phản hồi; refresh lỗi 401 luôn xóa
+              cookie
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Bố cục file khác prompt gốc (phẳng theo app, không có
+              <code>core/constants/api_endpoints.py</code>,
+              <code>password_hasher.py</code>)
+            </td>
+            <td>Thông tin</td>
+            <td>
+              Theo yêu cầu “chuẩn Django, đừng làm rộng”; URL dùng tên route
+              Django, hashing dùng Django
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Tài khoản dev: <code>admin@toannx.com</code> và
+              <code>e2e-admin@toannx.local</code> trong DB local
+            </td>
+            <td>Thông tin</td>
+            <td>Chỉ DB dev; đổi mật khẩu trước khi dùng thật</td>
+          </tr>
+        </table>
+      </div>
 
-  <h2 id="next">15. Bước tiếp theo</h2>
-  <ol>
-    <li>Tạo project Vercel + Neon, cấu hình biến môi trường, migrate, deploy thử và xác minh cookie/CSRF/IP trên production.</li>
-    <li>Thêm Vercel Cron dọn <code>auth_session</code>, <code>auth_refresh_token</code>, <code>auth_rate_limit_bucket</code>.</li>
-    <li>Trang “Phiên đăng nhập của tôi” (API đã có) và trang đổi mật khẩu cá nhân.</li>
-    <li>E2E cho thao tác CRUD người dùng/vai trò và kích thước tablet.</li>
-    <li>CI (GitHub Actions) chạy <code>scripts/check-all.sh</code> với service PostgreSQL.</li>
-    <li>Module nghiệp vụ đầu tiên theo hướng dẫn “Thêm module mới” trong <code>AGENTS.md</code>.</li>
-  </ol>
-</main>
-</body>
+      <h2 id="next">15. Bước tiếp theo</h2>
+      <ol>
+        <li>
+          Tạo project Vercel + Neon, cấu hình biến môi trường, migrate, deploy
+          thử và xác minh cookie/CSRF/IP trên production.
+        </li>
+        <li>
+          Thêm Vercel Cron dọn <code>auth_session</code>,
+          <code>auth_refresh_token</code>, <code>auth_rate_limit_bucket</code>.
+        </li>
+        <li>
+          Trang “Phiên đăng nhập của tôi” (API đã có) và trang đổi mật khẩu cá
+          nhân.
+        </li>
+        <li>E2E cho thao tác CRUD người dùng/vai trò và kích thước tablet.</li>
+        <li>
+          CI (GitHub Actions) chạy <code>scripts/check-all.sh</code> với service
+          PostgreSQL.
+        </li>
+        <li>
+          Module nghiệp vụ đầu tiên theo hướng dẫn “Thêm module mới” trong
+          <code>AGENTS.md</code>.
+        </li>
+      </ol>
+    </main>
+  </body>
 </html>

@@ -1,11 +1,11 @@
 {
   "common": {
     "seo": {
-      "title": "TOANNX",
+      "title": "ToanNX",
       "description": "Website cá nhân của ToanNX."
     },
     "home": {
-      "title": "TOANNX",
+      "title": "ToanNX",
       "description": "Góc nhỏ bình yên & thư giãn của Xuân Toàn.",
       "badge": "Không gian chill",
       "greeting": "Xin chào, mình là",
@@ -117,7 +117,8 @@
       "menu": "Menu",
       "sessions": "Phiên",
       "permissions": "Quyền",
-      "attachments": "Thư viện"
+      "attachments": "Thư viện",
+      "settings": "Cài đặt"
     },
     "theme": {
       "toggle": "Đổi giao diện",
@@ -323,6 +324,7 @@
       "ATTACHMENT_FOLDER_NAME_EXISTS": "Tên thư mục đã tồn tại trong cùng thư mục cha.",
       "ATTACHMENT_FOLDER_OWNER_MISMATCH": "Tệp và thư mục phải thuộc cùng một người.",
       "ATTACHMENT_FOLDER_CYCLE": "Không thể chuyển thư mục vào chính nó hoặc thư mục con.",
+      "ATTACHMENT_STORAGE_QUOTA_EXCEEDED": "Dung lượng lưu trữ hệ thống đã vượt quá giới hạn cho phép.",
       "UNKNOWN": "Đã xảy ra lỗi, vui lòng thử lại.",
       "NETWORK_ERROR": "Không kết nối được máy chủ. Kiểm tra mạng và thử lại.",
       "TIMEOUT": "Máy chủ phản hồi quá lâu, vui lòng thử lại.",
@@ -357,6 +359,20 @@
       "ACCOUNT_SELF_MODIFICATION": "Bạn không thể tự thay đổi trạng thái hoặc quyền truy cập của chính mình.",
       "ACCOUNT_PRIVILEGE_ESCALATION": "Chỉ superuser mới được cấp hoặc gỡ quyền superuser.",
       "ACCOUNT_SUPERUSER_PROTECTED": "Chỉ superuser mới được sửa tài khoản superuser.",
+      "ACCOUNT_EMAIL_ALREADY_VERIFIED": "Email này đã được xác minh trước đó.",
+      "ACCOUNT_EMAIL_VERIFICATION_TOKEN_EXPIRED": "Liên kết xác minh email đã hết hạn. Vui lòng yêu cầu liên kết mới.",
+      "ACCOUNT_EMAIL_VERIFICATION_TOKEN_INVALID": "Liên kết xác minh email không hợp lệ hoặc đã được sử dụng.",
+      "ACCOUNT_INVITATION_TOKEN_EXPIRED": "Lời mời tham gia hệ thống đã hết hạn. Vui lòng liên hệ quản trị viên để nhận lời mời mới.",
+      "ACCOUNT_INVITATION_TOKEN_INVALID": "Lời mời tham gia không hợp lệ hoặc đã được sử dụng.",
+      "ACCOUNT_USERNAME_EXISTS": "Tên người dùng đã được sử dụng, vui lòng chọn tên khác.",
+      "ACCOUNT_SOCIAL_NOT_LINKED": "Tài khoản mạng xã hội này chưa được liên kết. Vui lòng đăng nhập bằng mật khẩu trước để liên kết trong Hồ sơ cá nhân.",
+      "ACCOUNT_SOCIAL_ALREADY_LINKED": "Tài khoản mạng xã hội này đã được liên kết với một người dùng khác trong hệ thống.",
+      "ACCOUNT_SOCIAL_PROVIDER_EXISTS": "Bạn đã liên kết tài khoản này rồi. Vui lòng hủy liên kết cũ trước nếu muốn đổi.",
+      "ACCOUNT_SOCIAL_CANNOT_UNLINK_LAST": "Không thể hủy liên kết phương thức đăng nhập duy nhất khi chưa thiết lập mật khẩu.",
+      "ACCOUNT_SOCIAL_INVALID_CODE": "Mã xác thực từ mạng xã hội không hợp lệ hoặc đã hết hạn.",
+      "ACCOUNT_SOCIAL_PROVIDER_UNSUPPORTED": "Nền tảng đăng nhập này không được hỗ trợ.",
+      "ACCOUNT_SOCIAL_AUTH_FAILED": "Không thể xác thực với nền tảng mạng xã hội. Vui lòng thử lại sau.",
+      "ACCOUNT_SOCIAL_PROVIDER_DISABLED": "Phương thức đăng nhập qua nền tảng này đang tạm thời bị quản trị viên tắt.",
       "IAM_ROLE_CODE_EXISTS": "Mã vai trò đã tồn tại.",
       "IAM_ROLE_INACTIVE": "Vai trò đang bị tắt.",
       "IAM_SELF_MODIFICATION": "Bạn không thể tự thay đổi quyền của chính mình.",
@@ -431,7 +447,7 @@
     "global": {
       "badge": "500 · LỖI HỆ THỐNG",
       "title": "Đã xảy ra lỗi hệ thống",
-      "documentTitle": "Lỗi hệ thống · TOANNX",
+      "documentTitle": "Lỗi hệ thống · ToanNX",
       "subtitle": "Sự cố nghiêm trọng ở tầng giao diện gốc",
       "description": "Hệ thống gặp sự cố ngoài ý muốn trong quá trình kết xuất layout gốc. Vui lòng thử lại hoặc tải lại trang.",
       "retry": "Thử lại",

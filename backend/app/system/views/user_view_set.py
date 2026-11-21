@@ -9,6 +9,11 @@ POST   /account/users/bulk-update · /account/users/bulk-delete
 GET    /account/users/{id}/history
 """
 
+from typing import Any
+
+from rest_framework.request import Request
+
+from app.core.responses.core_response import CoreResponse
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.system.filters.user_filter import UserFilter
 from app.system.models.user import User
@@ -37,7 +42,7 @@ class UserViewSet(CoreModelViewSet[User]):
 
     service_class = UserService
     filterset_class = UserFilter
-    search_fields = ("email", "username", "first_name", "last_name")
+    search_fields = ("email", "username", "full_name")
     ordering_fields = ("created_at", "email", "last_login", "last_seen_at", "is_active", "is_superuser")
     ordering = ("-created_at",)
     list_serializer_class = UserListResponseSerializer
@@ -58,3 +63,9 @@ class UserViewSet(CoreModelViewSet[User]):
         "bulk_delete": permission_rule(UserPermission.USER_DELETE),
         "history": permission_rule(UserPermission.USER_READ),
     }
+
+    def create(self, request: Request, *args: Any, **kwargs: Any) -> CoreResponse:
+        """Tạo người dùng mới (201). Hỗ trợ gửi email mời kích hoạt tài khoản."""
+        data = self._validate(self.create_serializer_class, request.data)
+        instance = self.service.create(self.get_actor(request), data, request=request._request)
+        return CoreResponse(self.serialize_detail(self.get_object_for_actor(instance.pk)), status=201)

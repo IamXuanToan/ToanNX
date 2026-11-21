@@ -26,7 +26,7 @@ class AuthSessionRepository(CoreRepository[AuthSession]):
         """Danh mục duy nhất người có phiên chưa xóa; không nạp hồ sơ tài khoản hoặc token."""
         return (
             self.get_queryset()
-            .values("user_id", "user__email", "user__username", "user__first_name", "user__last_name")
+            .values("user_id", "user__email", "user__username", "user__full_name")
             .order_by("-user__created_at", "-user_id")
             .distinct()
         )

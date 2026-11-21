@@ -37,7 +37,9 @@ src/modules/<m>/
   phân quyền backend), ví dụ: `author-permission.ts`, `chapter-permission.ts`, `novel-permission.ts`. Không
   gộp chung quyền của nhiều model vào một file constants.
 - **Mỗi hook một file trong `hooks/`**, đặt tên `hooks/use-<tên-hành-động>.ts` (ví dụ `use-client-novel.ts`,
-  `use-toggle-favorite.ts`, `use-import-novel.ts`). Tuyệt đối không gom nhiều hook vào một file `use-<m>.ts`.
+  `use-toggle-favorite.ts`, `use-import-novel.ts`). Tuyệt đối không gom nhiều hook vào một file `use-<m>.ts`
+  (`use-iam-queries.ts`, `use-iam-mutations.ts`, `use-admin-sessions.ts` là sai). Áp dụng cho **mọi** thư mục hook,
+  xem §2.1.
 - **Chuẩn hóa JSDoc docstring bắt buộc**:
   - Mọi file, exported component, custom hook, service object, service method, schema, helper và kiểu (types/interfaces)
     phải có JSDoc docstring rõ ràng bằng tiếng Việt.
@@ -65,7 +67,50 @@ src/modules/<m>/
 - Module không có BE tương ứng: `manage-app` (khung quản trị: `AdminShell`, sidebar, màn chọn module,
   `constants/admin-navigation.ts`) và `home` (trang công khai, header, trang 404).
 
+## 2.1 Một file một component / một hook / một class (bắt buộc)
+
+Áp dụng cho `modules/**`, `shares/**` và `app/**`. Tên file kebab-case trùng tên export duy nhất của file.
+
+**Component** (`.tsx`):
+
+- Mỗi file `.tsx` khai báo **đúng một component**, kể cả component con không export (`HeaderActions`,
+  `LauncherLayout`, `WorkspaceSkeleton` trong `admin-shell.tsx`; `Toggle`, `UrlPopover` trong `tiptap-toolbar.tsx`;
+  `AccountEmail` trong `user-menu.tsx` là sai).
+- Component con tách thành file riêng **cùng thư mục**, tên mang tiền tố của component cha để nằm cạnh nhau:
+  `admin-shell-header-actions.tsx`, `admin-shell-workspace-skeleton.tsx`, `tiptap-toolbar-url-popover.tsx`
+  (giống nhóm `table-*` của `DataTable` trong `common/`).
+- Hai component cùng chủ đề vẫn là hai file: `Logo` → `logo.tsx`, `LogoMark` → `logo-mark.tsx`.
+- File component chỉ export component đó và kiểu props của nó (`<Tên>Props`). Không export kèm hằng số
+  (`PAGE_SIZE_OPTIONS`, `DEFAULT_CURRENCY`), hàm tiện ích hay re-export helper: hằng số → `constants/`, hàm →
+  `lib/` (shares) hoặc `utils` của module, kiểu dùng chung → `types/` hoặc `<tên>.types.ts`.
+
+**Hook** (`.ts`):
+
+- Mỗi file `use-*.ts` khai báo **đúng một hook**, ở mọi nơi: `modules/<m>/hooks/`, `modules/<m>/components/hooks/`,
+  `shares/hooks/`, `shares/components/common/hooks/`. Hook nội bộ (không export) cũng tách file riêng.
+- **Không khai báo hook trong file `.tsx`** (kể cả hook private như `useGroupBreadcrumb` trong `admin-shell.tsx`,
+  `useClock` trong `clock-widget.tsx`, `useFormId` trong `form.tsx`): chuyển vào `components/hooks/use-<tên>.ts`.
+- File hook chỉ export hook đó (và kiểu tham số/kết quả của nó). Hằng số cấu hình (`READER_FONT_SIZES`,
+  `READER_THEMES` trong `use-reader-settings.ts`) → `constants/`.
+
+**Context** (không phải component, không phải hook nhưng hay bị gộp):
+
+- Tách ba file: `<tên>-context.ts` (`createContext` + kiểu giá trị), `<tên>-provider.tsx` (component Provider),
+  `hooks/use-<tên>.ts` (hook đọc context). Không đặt `createContext` trong file hook hay file component khác.
+
+**Class** (`ApiError`, class tiện ích...): mỗi class một file, tên kebab-case (`api-error.ts`).
+
+**Ngoại lệ duy nhất:**
+
+- `shares/components/ui/*`: giữ nguyên đầu ra của `shadcn add` (component ghép như `Select*`, `Sidebar*` nằm
+  chung file theo thư viện). Không tự thêm component/hook mới vào các file này.
+- File đặc biệt của Next (`page.tsx`, `layout.tsx`, `not-found.tsx`...) được export kèm `generateMetadata`,
+  `metadata`, `dynamic`... theo quy ước của Next.
+
 ## 3. `shares/` dùng chung
+
+Danh sách đầy đủ component/hook/lib/kiểu đang có: [docs/common-catalog.md](../common-catalog.md) mục 4–5. Tra
+trước khi viết; thêm/đổi/xóa common thì cập nhật danh mục cùng lần ([common.md](common.md) mục 3.3).
 
 `shares/` chỉ chứa thứ **không thuộc module nào** và **không import module**:
 
@@ -91,13 +136,13 @@ common/
 
 - Không tạo mỗi component một thư mục con riêng lẻ; mọi component đặt trực tiếp trong `common/`, hook của component nằm trong `common/hooks/`.
 - Import theo đường dẫn đầy đủ tới file (tận gốc, không magic/barrel): `@/shares/components/common/page-header`, `@/shares/components/common/hooks/use-data-table`.
-- Class dùng chung của control nằm ở `common/form-control.styles.ts`.
+- Chuỗi class Tailwind dùng chung của control nằm ở `common/form-control.styles.ts` (hằng số, không phải component).
 
 | Nhóm | Component |
 | --- | --- |
 | Trang, trạng thái | `page-header`, `empty-state`, `loading-state`, `status-badge`, `confirm-dialog` |
-| Bảng | `data-table` (gồm `components/`: toolbar, bulk bar, header cell, row actions, status switch), `data-pagination`, `filter-select` |
-| Form | `form` (+ `hooks/use-form-extension`), `form-field`, `form-control`, `form-page`, `form-layout` (+ `components/form-section`, `form-actions`) |
+| Bảng | `data-table` (+ các file con cùng cấp: `table-toolbar`, `table-bulk-bar`, `table-header-cell`, `table-row-actions`, `table-status-switch`, `table-column-resizer`), `data-pagination`, `filter-select` |
+| Form | `form` (+ `hooks/use-form-extension`), `form-field`, `form-control`, `form-page`, `form-layout`, `form-section`, `form-actions`, `form-submit-button` |
 | Ô nhập | `email-input`, `password-input`, `code-input`, `slug-input`, `number-input`, `money-input`, `color-input`, `tags-input`, `search-input` |
 | Chọn | `select-field`, `multi-select`, `checkbox-field`, `radio-group-field`, `switch-field`, **`choice-list`**, **`choice-groups`** |
 | Ngày giờ | `date-picker`, `time-picker`, `date-time-picker`, `month-select` |
@@ -190,7 +235,7 @@ CommonDataTable của LoveMe, chạy trên `@tanstack/react-table`). Không dự
 | Cột Trạng thái | Bật/tắt (khoá/mở, kích hoạt) là **chỉ một công tắc**, không kèm chữ "Hoạt động" bên cạnh; nhãn trạng thái ở tooltip + `aria-label`. Không có quyền thì chỉ badge | `TableStatusSwitch` (`onCheckedChange` chỉ truyền khi có quyền); bật/tắt không đặt trong cột Thao tác |
 | Ghim cột | Menu tiêu đề: Ghim trái / Ghim phải / Bỏ ghim, sticky theo bề rộng thực | `enablePinning`; cấu hình lưu riêng theo `tableId`, an toàn SSR, có dự phòng khi storage bị chặn |
 | Đổi độ rộng | Kéo mép tiêu đề (cột ghim phải kéo mép trái) hoặc dùng phím ←/→ (Shift để chỉnh nhanh), Home/End giới hạn; nhấp đúp trả độ rộng tự nhiên. Menu Cột hiển thị có Khôi phục độ rộng cột | Mặc định bật cho cột dữ liệu; `enableResizing`, `minWidth`, `maxWidth`; lưu riêng theo `tableId`. Cột chọn, `#`, Thao tác giữ kích thước tự động; card mobile không nhận độ rộng desktop |
-| Hàng loạt | Thanh thay chỗ toolbar khi có dòng chọn, **nền trắng có viền như toolbar** (không tô cả dải màu, chỉ chip "Đã chọn n" mang màu nhấn), Bỏ chọn, **Đổi trạng thái**, thao tác riêng, **Xoá (n)** có xác nhận; xong thì bỏ chọn | `bulkStatus` (`options`, `onChange`), `bulkActions` (`destructive`, `confirm` để hỏi xác nhận), `onBulkDelete` |
+| Hàng loạt | Thanh thao tác hàng loạt (`TableBulkBar`) thay chỗ toolbar khi có dòng chọn, **thiết kế trên 1 dòng duy nhất** (`min-h-12 w-full flex items-center justify-between gap-3 rounded-xl border px-3.5 py-1.5`), tuyệt đối không dùng container flex-col hoặc bọc trong thẻ `Card` gây tách 2 tầng và căn giữa; bên trái là badge "Đã chọn n" mang màu nhấn + vạch chia + nút Bỏ chọn, bên phải là cụm nút hành động (Đổi trạng thái, thao tác tuỳ biến, Xoá có xác nhận); xong thì bỏ chọn | `bulkStatus` (`options`, `onChange`), `bulkActions` (`destructive`, `confirm` để hỏi xác nhận), `onBulkDelete` |
 | Trạng thái | Khung chờ, làm mờ khi tải lại, lỗi + thử lại, rỗng (`EmptyState`: cao tối thiểu 320px, icon trong hai vòng nền nhạt, tiêu đề, mô tả, một lối ra), rỗng do tìm kiếm + **Xoá tìm kiếm** | `isLoading`, `isFetching`, `error`, `empty` |
 | Phân trang | "1–20 trong 132", số dòng mỗi trang (10/20/50/100), "Trang x/y", ‹, ô nhập trang (Enter), › | `pagination` (`value`, `onPageChange`, `onPageSizeChange`) |
 | Mobile | Dưới `md` mỗi dòng là một card: checkbox góc trái, cột `mobile: "title"` ở đầu, thao tác góc phải, cột còn lại là hàng "nhãn — giá trị" | `mobile: "title"` (đúng một cột) / `"hidden"` |
@@ -209,6 +254,15 @@ CommonDataTable của LoveMe, chạy trên `@tanstack/react-table`). Không dự
 `useState` cho từ khóa/trang/sắp xếp. State đồng bộ lên URL (`search`, `page`, `pageSize`, `ordering`; giá trị
 mặc định không ghi) nên tải lại hay gửi link vẫn giữ nguyên. Đổi từ khóa, sắp xếp, số dòng thì về trang 1.
 
+```ts
+export function useUserTable() {
+  const table = useTableState({ ordering: "-created_at" }); // filters { search, ordering, page, pageSize }
+  const query = useUsers(table.filters); // useQuery với placeholderData: keepPreviousData
+  const remove = useDeleteUser();
+  return { query, table, remove: (user: User) => remove.mutateAsync(user.id) /* … */ };
+}
+```
+
 - Ô tìm giữ bản đang gõ riêng, **chỉ áp dụng khi nhấn Enter** (bỏ qua Enter trong IME). Không debounce,
   không tìm theo từng ký tự. Nút xóa áp dụng ngay từ khóa rỗng.
 - Bộ lọc riêng khai trong `useTableState({ filterKeys: [...] })`; đọc/ghi bằng `getFilterValues(key)` /
@@ -226,6 +280,23 @@ mặc định không ghi) nên tải lại hay gửi link vẫn giữ nguyên. �
 - Với khung chứa linh hoạt theo tỷ lệ (aspect-square, avatar, preview), container cha đặt `relative`, thẻ `<Image />` sử dụng `fill`, `className="object-cover"` (hoặc `object-contain`), và khai báo prop `sizes` phù hợp (ví dụ `sizes="80px"` hoặc `sizes="(max-width: 768px) 100vw, 33vw"`).
 - Khi ảnh là chuỗi data URI (`data:image/...`) hoặc blob URL cục bộ từ browser: thêm prop `unoptimized`.
 
+**SVG: đặt file trong `public/`, nơi dùng gọi theo đường dẫn, không khai trực tiếp.**
+- Mọi SVG (icon thương hiệu Google/GitHub, minh họa trạng thái rỗng/lỗi, hình nền...) lưu thành file
+  `frontend/public/<nhóm>/<tên>.svg` (kebab-case): `public/icons/google.svg`, `public/icons/github.svg`,
+  `public/illustrations/empty-inbox.svg`. Logo vẫn theo mục Logo (PNG trong `public/brand/`).
+- **Cấm** viết `<svg>...</svg>` hay `<path d="...">` trong `.tsx`, cấm component bọc SVG nội tuyến kiểu
+  `GoogleIcon`, cấm chuỗi SVG/data URI `data:image/svg+xml` trong code hay CSS.
+- Hiển thị bằng `<Image src="/icons/google.svg" alt="" width={20} height={20} />` từ `next/image`: `src` kết thúc
+  `.svg` thì Next tự bỏ qua tối ưu (`unoptimized`). **Không** bật `images.dangerouslyAllowSVG`.
+- Đường dẫn khai **một lần** thành hằng: SVG dùng chung ở `shares/lib/asset-paths.ts`
+  (`ICON_PATHS.google = "/icons/google.svg"`), SVG của riêng một module ở `modules/<m>/constants/asset-paths.ts`.
+  Nơi dùng import hằng, không gõ lại chuỗi `"/icons/..."`.
+- Icon đơn sắc cần đổi màu theo chữ/theme: dùng `lucide-react` trước; lucide không có thì file SVG trong `public/`
+  hiển thị qua CSS mask (`bg-current` + `mask-image: url(/icons/x.svg)`), vẫn không vẽ SVG nội tuyến.
+- File SVG phải sạch: chỉ hình vẽ, không `<script>`, không `on*=`, không link ngoài; đã tối ưu (bỏ metadata của
+  trình vẽ) trước khi thêm vào `public/`.
+- Thêm SVG dùng chung thì ghi vào [docs/common-catalog.md](../common-catalog.md) mục 4.10 (rule chung mục 3.3).
+
 **Sử dụng triệt để primitives của Shadcn UI.**
 - Mọi thành phần tương tác và cấu trúc giao diện cơ bản (`Button`, `Checkbox`, `RadioGroup`, `Label`, `Input`, `Textarea`, `Dialog`, `Card`, `Tooltip`, `Badge`, `Avatar`, `Switch`, `Sheet`, `Popover`, `Select`, `Table`, `Tabs`, `Separator`...) **bắt buộc dùng component trong `@/shares/components/ui/*`**.
 - Khi cần một component primitive mà thư mục `@/shares/components/ui/` chưa có: **bắt buộc chạy lệnh `pnpm dlx shadcn@latest add <tên-component>`** để cài đặt chuẩn từ thư viện shadcn, không tự viết component thủ công để thay thế.
@@ -235,21 +306,6 @@ mặc định không ghi) nên tải lại hay gửi link vẫn giữ nguyên. �
 
 **Quy chuẩn Tên tệp trong Thư viện (Attachment).**
 - Trường `original_name` của tệp (mặc định lấy theo tên file người dùng tải lên) **bắt buộc phải cho phép chỉnh sửa/đổi tên được** (Rename) cả ở tầng Backend (API PATCH nhận `original_name`) và Frontend (nút đổi tên nhanh trên card lưới và trong panel chi tiết), kèm thuộc tính `alt_text` cho hình ảnh để phục vụ SEO và accessibility.
-- Nhóm Hệ thống có một module `system`, menu theo thứ tự: Người dùng, Phiên, Vai trò, Quyền, Thư viện,
-  Nhật ký (`modules/system/navigation.ts`). Bảng Phiên có
-  chọn dòng, `#`, mã phiên, **Thu hồi** trong cột Thao tác và thu hồi hàng loạt (hỏi xác nhận). Danh mục
-  Quyền chỉ đọc; có tìm/lọc nhiều module; không có link chi tiết hay nút CRUD.
-- Người dùng có cột **Hoạt động gần nhất** (`lastSeenAt`, chấm xanh "Đang trực tuyến" khi trong 5 phút —
-  `isOnline` ở `shares/lib/presence.ts`) và **Đăng nhập gần nhất** (`lastLogin`); trang chi tiết có card Hoạt động.
-
-```ts
-export function useUserTable() {
-  const table = useTableState({ ordering: "-created_at" }); // filters { search, ordering, page, pageSize }
-  const query = useUsers(table.filters); // useQuery với placeholderData: keepPreviousData
-  const remove = useDeleteUser();
-  return { query, table, remove: (user: User) => remove.mutateAsync(user.id) /* … */ };
-}
-```
 
 **Tạo/sửa bản ghi là trang riêng, không popup.** Tạo mới ở `/<resource>/new` (vi: `/tao-moi`), sửa ở
 `/<resource>/[id]`; nút "Tạo …" trên trang danh sách là `Link` sang trang đó. Tạo xong chuyển tới trang
@@ -323,13 +379,13 @@ danh sách, áp dụng cho bộ chọn quan hệ, quyền, multi-select, bộ l�
   khoảng trắng).
 - Mục là `ChoiceItem` (`value`, `label`, `code` mono, `description`, `badge`, `disabled`); mục đã chọn tô
   nền nhấn nhạt, bấm cả dòng/card để đổi, control nằm bên phải.
-- Module chỉ **đổi dữ liệu sang `ChoiceItem`/`ChoiceGroup`** bằng hook của module (IAM:
-  `usePermissionChoiceGroups`, `useRoleChoiceItems` trong `iam/hooks/use-permission-choice-groups.ts`) rồi
+- Module chỉ **đổi dữ liệu sang `ChoiceItem`/`ChoiceGroup`** bằng hook của module (System:
+  `system/hooks/use-permission-choice-groups.ts`, `system/hooks/use-role-choice-items.ts`, mỗi hook một file) rồi
   render component chung. Trang Quyền (chỉ xem), form vai trò (chọn quyền), form người dùng (chọn vai
   trò) đều theo bảng trên; thêm loại dữ liệu mới thì viết hook đổi dữ liệu, không dựng UI riêng.
 
 **Câu chữ.** Không viết câu giới thiệu, chính sách hay khẩu hiệu dưới tiêu đề, kiểu "Dành cho tài khoản do
-quản trị viên cấp.", "TOANNX không mở đăng ký công khai.", "Tài khoản chỉ do quản trị viên tạo.",
+quản trị viên cấp.", "ToanNX không mở đăng ký công khai.", "Tài khoản chỉ do quản trị viên tạo.",
 "Chọn một module để bắt đầu làm việc.". `PageHeader` mặc định chỉ có tiêu đề (+ nút); `description` chỉ khi
 là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt ở field khi nói **hậu quả của thao tác**
 ("Đổi mật khẩu sẽ đăng xuất mọi phiên của người dùng.") hoặc định dạng cần nhập.
@@ -341,8 +397,29 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 - Điều hướng: `Link`/`useRouter`/`redirect` từ `@/i18n/navigation` (không dùng `next/link`).
 - Mọi text qua next-intl; message theo module; thêm khóa phải thêm đủ vi + en.
 - Schema Zod là factory nhận hàm dịch (`createLoginSchema(t)`).
-- Màu dùng token semantic (`bg-primary`, `text-muted-foreground`, `bg-canvas`); không hardcode màu.
+- Màu dùng token semantic (`bg-primary`, `text-muted-foreground`, `bg-canvas`); không hardcode màu (xem §4.0).
 - `PermissionGate`/`usePermission` chỉ để ẩn/hiện; backend luôn enforce.
+- URL file/ảnh/icon từ API là URL tuyệt đối: dùng trực tiếp trong `<Image src={url}>` (§3.2), không nối domain/basePath.
+- Module FE theo đúng module BE (`system`, `novel`, `utilities`), trừ `manage-app` và `home` chỉ có ở FE. Module nền không import module phụ thuộc nó;
+  page ghép giao diện nhiều module qua prop slot (ví dụ `UserDetailView aside={<UserRolesCard />}`,
+  `history={<RecordHistoryView … />}`, `editorPlugins={<QrCodeTiptapPlugin />}`).
+- Tạo/sửa nhanh tài nguyên liên quan ngay trong form khác dùng `FormDialog` bọc đúng form của tài nguyên đó
+  (ví dụ tạo đường dẫn trang trong form trang); không viết form thứ hai.
+- `tests/unit/module-registry.test.ts` kiểm mỗi module đã ghép đủ routing, messages, `global.d.ts`, navigation và
+  không import ngang module ngoài slot cho phép.
+- Cookie, key localStorage/sessionStorage, query key, tên event và **tên hằng giữ các key đó** không có tiền tố
+  `toannx` ở mọi dạng (`toannx_`, `toannx-`, `toannx:`, `TOANNX_`). Key storage đặt `<module>_<việc>`
+  (`novel_reader_settings`), khai bằng hằng `UPPER_SNAKE` cuối `_KEY` ([common.md](common.md) mục 3).
+- Không barrel `index.ts`; thứ tự import: React/Next → thư viện → `@/shares` → module khác → tương đối.
+- JSDoc theo §2 (mọi file, export, hook, service, kiểu).
+- **Server Component là mặc định**; chỉ thêm `"use client"` ở component thật sự cần state, effect, sự kiện hay API
+  trình duyệt, và đặt càng sâu càng tốt (không đánh dấu cả View/layout chỉ vì một nút).
+- Không dùng `useEffect` để tính dữ liệu suy ra từ props/state (tính thẳng khi render) hay để gọi API (dùng React
+  Query). `useEffect` chỉ để đồng bộ với hệ bên ngoài (DOM, storage, subscription) và luôn dọn dẹp.
+- `key` của danh sách là id ổn định, không dùng index khi danh sách có thể đổi thứ tự/thêm/xóa.
+- Nút chỉ có icon phải có `aria-label` (qua i18n) và tooltip; ảnh có `alt`; mọi thao tác dùng được bằng bàn phím.
+- Không dùng `style={{…}}` inline cho giao diện tĩnh; chỉ cho giá trị động không có class tương ứng (độ rộng cột kéo).
+- Biến môi trường chỉ đọc qua module cấu hình (`env` ở `shares/config`), không gọi `process.env` rải rác.
 
 ### 4.0 Thương hiệu: màu, logo, favicon (bắt buộc)
 
@@ -372,17 +449,6 @@ component. Vai trò từng màu (đã đo tương phản WCAG AA):
 (Next.js tự gắn thẻ `<link>`). Đổi logo = thay `logo.png` rồi chạy lại script. Giao diện chỉ hiển thị logo qua
 `LogoMark`/`Logo` (`shares/components/layout/logo.tsx`, dùng `next/image`), không tự đặt `<Image src="/brand/…">`
 hay vẽ SVG logo riêng.
-- URL file/ảnh/icon từ API là URL tuyệt đối: dùng trực tiếp (`<img src={url}>`), không nối domain/basePath.
-- Module FE theo đúng module BE (`system`, `novel`, `utilities`), trừ `manage-app` và `home` chỉ có ở FE. Module nền không import module phụ thuộc nó;
-  page ghép giao diện nhiều module qua prop slot (ví dụ `UserDetailView aside={<UserRolesCard />}`,
-  `history={<RecordHistoryView … />}`, `editorPlugins={<QrCodeTiptapPlugin />}`).
-- Tạo/sửa nhanh tài nguyên liên quan ngay trong form khác dùng `FormDialog` bọc đúng form của tài nguyên đó
-  (ví dụ tạo đường dẫn trang trong form trang); không viết form thứ hai.
-- `tests/unit/module-registry.test.ts` kiểm mỗi module đã ghép đủ routing, messages, `global.d.ts`, navigation và
-  không import ngang module ngoài slot cho phép.
-- Key kỹ thuật (cookie, storage, query key...) không mang tên dự án ([common.md](common.md) mục 3).
-- Không barrel `index.ts`; thứ tự import: React/Next → thư viện → `@/shares` → module khác → tương đối.
-- Exported function/hook/component có JSDoc tiếng Việt.
 
 ## 4.1 Khung quản trị
 
@@ -393,12 +459,21 @@ hay vẽ SVG logo riêng.
   gộp lại, lọc theo quyền trong `/system/auth/me`.
 - Trong một nhóm: sidebar của nhóm (đầu là bộ chuyển nhóm, thân chia mục theo module, chân là tài khoản),
   nội dung bên phải. Breadcrumb trên header chỉ ghi các cấp cha; tên trang là `<h1>` trong `PageHeader`.
-- Nhóm hiển thị khai ở `ADMIN_GROUPS`; tên/mô tả ở `common.adminGroups.<group>`, tên module ở
-  `common.adminModules.<module>`.
+- Nhóm hiển thị khai ở `ADMIN_GROUPS`; tên/mô tả nhóm ở `common.adminGroups.<group>`; tên/mô tả module do
+  `navigation.ts` của module khai bằng `nameKey`/`descriptionKey` trong namespace của chính module
+  (`system.module.name`).
 - Trang đọc danh sách nhóm qua `useAdminGroups()` (context do khung cung cấp), không import `navigation.ts`
   của module khác.
 - Giao diện theo [DESIGN.md](../../DESIGN.md) (bộ mặt Clean): header và đầu sidebar `h-16`, mục menu
   `h-10 rounded-xl`, đang chọn `bg-primary-light text-primary`.
+
+### Màn của module System
+
+- Menu theo thứ tự: Người dùng, Phiên, Vai trò, Quyền, Thư viện, Nhật ký (`modules/system/navigation.ts`).
+- Bảng Phiên có chọn dòng, `#`, mã phiên, **Thu hồi** trong cột Thao tác và thu hồi hàng loạt (hỏi xác nhận).
+- Danh mục Quyền chỉ đọc; có tìm/lọc nhiều module; không có link chi tiết hay nút CRUD.
+- Người dùng có cột **Hoạt động gần nhất** (`lastSeenAt`, chấm xanh "Đang trực tuyến" khi trong 5 phút —
+  `isOnline` ở `shares/lib/presence.ts`) và **Đăng nhập gần nhất** (`lastLogin`); trang chi tiết có card Hoạt động.
 
 ## 5. Auth & API
 
@@ -409,8 +484,12 @@ hay vẽ SVG logo riêng.
 ## 6. Test
 
 ```bash
-pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build && pnpm e2e
+pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build && pnpm e2e   # toàn bộ: chỉ khi được yêu cầu
+pnpm exec eslint <file> && pnpm exec prettier --check <file>                                # file đã sửa
+pnpm typecheck && pnpm test tests/unit/<file>.test.ts && pnpm e2e tests/e2e/<luồng>.spec.ts   # phần liên quan
 ```
+
+- Khi làm việc chỉ chạy phần liên quan tới chỗ sửa ([common.md](common.md) mục 7).
 
 - Unit (Vitest): `tests/unit`. E2E (Playwright): `tests/e2e`, chạy trên server thật với database riêng
   `toannx_e2e` (BE 8001, FE 3001 build vào `.next-e2e`), không đụng dữ liệu dev.

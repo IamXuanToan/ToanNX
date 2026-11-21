@@ -22,7 +22,7 @@ class TestUserCreateApi(BaseApiTestCase):
             "username": "new_member",
             "email": "New@Toannx.test",
             "password": "V3ry-Str0ng-Pass",
-            "first_name": "An",
+            "full_name": "An",
         }
         res = login(superuser).post(URL, payload, format="json")
         data = self.assert_success(res, 201)
@@ -33,15 +33,38 @@ class TestUserCreateApi(BaseApiTestCase):
         assert created.created_by_id == superuser.pk
         assert identify_hasher(created.password)
 
+    def test_create_user_min_data(self, superuser: User, login: Any) -> None:
+        """Tạo người dùng với dữ liệu tối thiểu (không cần username)."""
+        payload = {
+            "email": "min_user@toannx.test",
+            "password": "V3ry-Str0ng-Pass",
+            "full_name": "Min User",
+        }
+        res = login(superuser).post(URL, payload, format="json")
+        data = self.assert_success(res, 201)
+        assert data["email"] == "min_user@toannx.test"
+        assert data["full_name"] == "Min User"
+        assert data["username"] is None
+
     def test_create_duplicate_email_conflict(self, superuser: User, user: User, login: Any) -> None:
         """Tạo email trùng nhau (không phân biệt hoa thường) bị 409 ACCOUNT_EMAIL_EXISTS."""
-        payload = {"username": "new_member2", "email": user.email.upper(), "password": "V3ry-Str0ng-Pass"}
+        payload = {
+            "username": "new_member2",
+            "email": user.email.upper(),
+            "password": "V3ry-Str0ng-Pass",
+            "full_name": "Nguyen Van A",
+        }
         res = login(superuser).post(URL, payload, format="json")
         self.assert_error(res, 409, "ACCOUNT_EMAIL_EXISTS")
 
     def test_create_weak_password_rejected(self, superuser: User, login: Any) -> None:
         """Mật khẩu yếu bị từ chối 400 ACCOUNT_PASSWORD_WEAK."""
-        payload = {"username": "weak_member", "email": "weak@toannx.test", "password": "123"}
+        payload = {
+            "username": "weak_member",
+            "email": "weak@toannx.test",
+            "password": "123",
+            "full_name": "Nguyen Van B",
+        }
         res = login(superuser).post(URL, payload, format="json")
         self.assert_error(res, 400, "ACCOUNT_PASSWORD_WEAK")
 
@@ -63,6 +86,7 @@ class TestUserCreateApi(BaseApiTestCase):
             "username": "su_hack",
             "email": "su@toannx.test",
             "password": "V3ry-Str0ng-Pass",
+            "full_name": "Su Hack",
             "is_superuser": True,
         }
         res = login(member).post(URL, payload, format="json")

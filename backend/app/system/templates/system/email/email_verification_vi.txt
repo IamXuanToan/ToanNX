@@ -1,0 +1,12 @@
+XÁC MINH ĐỊA CHỈ EMAIL · TOANNX
+
+Xin chào {{ user_display_name }},
+
+Cảm ơn bạn đã sử dụng hệ thống ToanNX. Vui lòng xác minh địa chỉ email này để bảo vệ tài khoản của bạn bằng cách truy cập liên kết sau:
+
+{{ verification_url }}
+
+Liên kết này có hiệu lực trong {{ timeout_hours }} giờ. Nếu bạn không yêu cầu hành động này, bạn có thể yên tâm bỏ qua email này.
+
+---
+© {{ current_year }} ToanNX. Tất cả quyền được bảo lưu.

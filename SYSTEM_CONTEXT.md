@@ -1,4 +1,4 @@
-# SYSTEM_CONTEXT — TOANNX
+# SYSTEM_CONTEXT — ToanNX
 
 Tài liệu ngắn để người/agent mới nắm hệ thống trong 5 phút. Chi tiết nằm trong `docs/`.
 
@@ -19,7 +19,7 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 | --- | --- |
 | Settings Django | Một file `backend/config/settings.py`; khác biệt môi trường chỉ qua biến môi trường (`DJANGO_DEBUG`...). |
 | Scaffold | Tạo bằng CLI chính thức: `uv init`, `django-admin startproject config .`, `manage.py startapp`, `create-next-app`, `shadcn init/add`. |
-| Bố cục backend | Mỗi class một file: `models/`, `repositories/` (lớp DB duy nhất), `services/` theo model; `serializers/validates` + `serializers/responses` theo endpoint; `views/` theo resource (`XxxView` + `XxxObjectView`, kiểu PMS). |
+| Bố cục backend | Mỗi class một file: `models/`, `repositories/` (lớp DB duy nhất), `services/` theo model; `serializers/validates` + `serializers/responses` theo endpoint; `views/` theo resource (`XxxView` + `XxxObjectView` chung một file, ngoại lệ duy nhất của luật một class một file, kiểu PMS). Frontend: mỗi component một file, mỗi hook một file (xem `docs/rules/frontend.md` §2.1). |
 | Nguồn sự thật về quyền | Bảng IAM (`system_role`, `system_permission`, `system_user_role`, `system_role_permission`). User **không** dùng `PermissionsMixin`/groups của Django. |
 | Token | Access JWT HS256 10 phút gắn `sid` (phiên); refresh token ngẫu nhiên 384-bit, chỉ lưu HMAC-SHA256, xoay vòng mỗi lần dùng, phát hiện tái sử dụng. |
 | Thu hồi | Mỗi request kiểm tra phiên còn hiệu lực → logout/logout-all/khóa tài khoản/đổi mật khẩu có hiệu lực ngay. |
@@ -65,7 +65,7 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
   `system.journal_entry.read`, `utilities.short_link.{read,create,update,delete,manage_all}`,
   `utilities.qr_code.{read,create,update,delete,manage_all}`, `utilities.page_path.{read,create,update,delete}` và
   `utilities.page.{read,create,update,delete,manage_all}`.
-  Catalog quyền của từng module đặt tại `app/<module>/permissions/<module>_permission.py`.
+  Catalog quyền đặt theo model: `app/<module>/permissions/<model>_permission.py` (mỗi model một file).
 - Base chuẩn: BE chỉ có `CoreApiView`, `CoreModelViewSet`, `CoreCrudService`, `CoreRepository`; khác thì ghi đè
   thuộc tính trong view/service (xem `AGENTS.md`). Danh sách chỉ phân trang khi gửi `page`/`page_size`.
 - Lịch sử thay đổi: model kế thừa `JournalTracker` tự ghi Journal khi CRUD (cùng transaction); trang Journal lọc

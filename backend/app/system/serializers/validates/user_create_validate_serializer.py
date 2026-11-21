@@ -11,17 +11,28 @@ class UserCreateValidateSerializer(CoreValidateSerializer):
     email = serializers.EmailField(max_length=254, help_text="Email đăng nhập (lưu chữ thường, duy nhất).")
     password = serializers.CharField(
         write_only=True,
+        required=False,
+        allow_blank=True,
+        default="",
         max_length=128,
         trim_whitespace=False,
-        help_text="Mật khẩu thô; tối thiểu 10 ký tự, không quá phổ biến, không toàn số.",
+        help_text="Mật khẩu thô; nếu để trống hệ thống sẽ gửi thư mời để người dùng tự thiết lập.",
     )
     username = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        allow_null=True,
+        default=None,
         max_length=150,
-        help_text="Tên người dùng bắt buộc và duy nhất.",
+        help_text="Tên người dùng tùy chọn và duy nhất nếu có.",
     )
-    first_name = serializers.CharField(required=False, allow_blank=True, max_length=150, help_text="Tên.")
-    last_name = serializers.CharField(
-        required=False, allow_blank=True, max_length=150, help_text="Họ (và tên đệm)."
+    send_invitation = serializers.BooleanField(
+        required=False,
+        default=True,
+        help_text="Tự động gửi email mời nếu tạo tài khoản không có mật khẩu.",
+    )
+    full_name = serializers.CharField(
+        required=True, allow_blank=False, max_length=255, help_text="Họ và tên đầy đủ."
     )
     avatar_id = serializers.UUIDField(
         required=False,
@@ -42,3 +53,10 @@ class UserCreateValidateSerializer(CoreValidateSerializer):
     is_novel = serializers.BooleanField(
         required=False, default=False, help_text="Đánh dấu nhóm nghiệp vụ Novel (không tự cấp quyền)."
     )
+
+    def validate_username(self, value: str | None) -> str | None:
+        """Chuẩn hóa tên người dùng: rỗng hoặc toàn khoảng trắng chuyển thành None."""
+        if value is None:
+            return None
+        trimmed = value.strip()
+        return trimmed if trimmed else None

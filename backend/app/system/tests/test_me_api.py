@@ -86,20 +86,17 @@ class TestMe(BaseApiTestCase):
             api.patch(
                 ME,
                 {
-                    "first_name": "Toàn",
-                    "last_name": "Nguyễn",
+                    "full_name": "Nguyễn Toàn",
                     "username": "toannx_new",
                     "password": "StrongPassword!123",
                 },
                 format="json",
             )
         )
-        assert res["user"]["first_name"] == "Toàn"
-        assert res["user"]["last_name"] == "Nguyễn"
+        assert res["user"]["full_name"] == "Nguyễn Toàn"
         assert res["user"]["username"] == "toannx_new"
         user.refresh_from_db()
-        assert user.first_name == "Toàn"
-        assert user.last_name == "Nguyễn"
+        assert user.full_name == "Nguyễn Toàn"
         assert user.username == "toannx_new"
         assert user.check_password("StrongPassword!123")
 

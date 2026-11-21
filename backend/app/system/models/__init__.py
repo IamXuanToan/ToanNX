@@ -9,8 +9,10 @@ from app.system.models.rate_limit_bucket import RateLimitBucket
 from app.system.models.refresh_token import RefreshToken
 from app.system.models.role import Role
 from app.system.models.role_permission import RolePermission
+from app.system.models.setting import Setting
 from app.system.models.user import User
 from app.system.models.user_role import UserRole
+from app.system.models.user_social_account import UserSocialAccount
 
 __all__ = [
     "Attachment",
@@ -22,6 +24,8 @@ __all__ = [
     "RefreshToken",
     "Role",
     "RolePermission",
+    "Setting",
     "User",
     "UserRole",
+    "UserSocialAccount",
 ]

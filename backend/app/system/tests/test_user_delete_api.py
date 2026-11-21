@@ -78,8 +78,7 @@ class TestUserDeleteApi(BaseApiTestCase):
             "email": "reuse@toannx.local",
             "username": "reuse_user",
             "password": "Reuse-Strong-Passw0rd!",
-            "first_name": "A",
-            "last_name": "B",
+            "full_name": "A B",
         }
         service = UserService()
         first = service.create(actor, dict(data))

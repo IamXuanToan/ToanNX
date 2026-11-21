@@ -1,11 +1,21 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ProfileDialog } from "@/modules/system/components/profile-dialog";
 import type { AuthRole, AuthUser } from "@/modules/system/types/auth.types";
 
 const mockUpdateAsync = vi.fn().mockResolvedValue({});
+
+vi.mock("@/modules/system/services/auth.service", () => ({
+  authService: {
+    listSocialAccounts: vi.fn().mockResolvedValue([]),
+    unlinkSocialAccount: vi.fn().mockResolvedValue(undefined),
+    getSocialAuthUrl: vi.fn().mockResolvedValue({ authorizationUrl: "https://example.com" }),
+    sendVerificationEmail: vi.fn().mockResolvedValue({ detail: "ok" }),
+  },
+}));
 
 vi.mock("@/modules/system/hooks/use-update-profile", () => ({
   useUpdateProfile: () => ({
@@ -72,20 +82,27 @@ const mockUser: AuthUser = {
   id: "11111111-1111-1111-1111-111111111111",
   email: "nxtoan2k4@gmail.com",
   username: "toannx",
-  firstName: "Toàn",
-  lastName: "Nguyễn Xuân",
   fullName: "Nguyễn Xuân Toàn",
   avatar: { id: "a1", url: "https://example.com/avatar.png" },
   isActive: true,
   isStaff: true,
   isSuperuser: true,
   isNovel: false,
+  isVerified: true,
+  emailVerifiedAt: "2026-01-01T12:00:00Z",
   lastLogin: "2026-01-01T12:00:00Z",
   lastSeenAt: "2026-01-01T12:00:00Z",
   dateJoined: "2026-01-01T00:00:00Z",
 };
 
 const mockRoles: AuthRole[] = [{ id: "r1", code: "role_editor", name: "Biên tập viên" }];
+
+function renderWithClient(ui: React.ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+}
 
 describe("ProfileDialog", () => {
   afterEach(() => {
@@ -94,7 +111,7 @@ describe("ProfileDialog", () => {
   });
 
   it("hiển thị đầy đủ thông tin: họ tên, email, username, vai trò, lần login cuối và avatar", () => {
-    render(
+    renderWithClient(
       <ProfileDialog
         user={mockUser}
         roles={mockRoles}
@@ -113,8 +130,7 @@ describe("ProfileDialog", () => {
     // Inputs form tab thông tin
     expect(screen.getByDisplayValue("nxtoan2k4@gmail.com")).toBeTruthy();
     expect(screen.getByDisplayValue("toannx")).toBeTruthy();
-    expect(screen.getByDisplayValue("Nguyễn Xuân")).toBeTruthy();
-    expect(screen.getByDisplayValue("Toàn")).toBeTruthy();
+    expect(screen.getByDisplayValue("Nguyễn Xuân Toàn")).toBeTruthy();
 
     // Nút mở thư viện ảnh và gỡ ảnh
     expect(screen.getByTestId("profile-open-library-button")).toBeTruthy();
@@ -122,10 +138,12 @@ describe("ProfileDialog", () => {
   });
 
   it("gửi thông tin cập nhật khi nhấn Lưu thông tin ở Tab thông tin", async () => {
-    render(<ProfileDialog user={mockUser} roles={mockRoles} open={true} onOpenChange={vi.fn()} />);
+    renderWithClient(
+      <ProfileDialog user={mockUser} roles={mockRoles} open={true} onOpenChange={vi.fn()} />,
+    );
 
-    const lastNameInput = screen.getByTestId("profile-lastname-input");
-    fireEvent.change(lastNameInput, { target: { value: "Nguyễn" } });
+    const fullNameInput = screen.getByTestId("profile-fullname-input");
+    fireEvent.change(fullNameInput, { target: { value: "Nguyễn Văn Toàn" } });
 
     const submitBtn = screen.getByTestId("profile-save-info-button");
     fireEvent.click(submitBtn);
@@ -134,14 +152,15 @@ describe("ProfileDialog", () => {
       expect(mockUpdateAsync).toHaveBeenCalledWith({
         email: "nxtoan2k4@gmail.com",
         username: "toannx",
-        firstName: "Toàn",
-        lastName: "Nguyễn",
+        fullName: "Nguyễn Văn Toàn",
       });
     });
   });
 
   it("chuyển sang Tab đổi mật khẩu và bắt lỗi khi xác nhận mật khẩu không khớp", async () => {
-    render(<ProfileDialog user={mockUser} roles={mockRoles} open={true} onOpenChange={vi.fn()} />);
+    renderWithClient(
+      <ProfileDialog user={mockUser} roles={mockRoles} open={true} onOpenChange={vi.fn()} />,
+    );
 
     // Click tab Đổi mật khẩu
     const securityTab = screen.getByRole("tab", { name: /Bảo mật/i });
@@ -165,7 +184,9 @@ describe("ProfileDialog", () => {
   });
 
   it("kích hoạt gỡ ảnh đại diện khi bấm nút Gỡ ảnh", async () => {
-    render(<ProfileDialog user={mockUser} roles={mockRoles} open={true} onOpenChange={vi.fn()} />);
+    renderWithClient(
+      <ProfileDialog user={mockUser} roles={mockRoles} open={true} onOpenChange={vi.fn()} />,
+    );
 
     const removeBtn = screen.getByTestId("profile-remove-avatar-button");
     fireEvent.click(removeBtn);
@@ -176,7 +197,7 @@ describe("ProfileDialog", () => {
   });
 
   it("mở thư viện ảnh và cập nhật avatar khi chọn file từ thư viện", async () => {
-    render(
+    renderWithClient(
       <ProfileDialog
         user={mockUser}
         roles={mockRoles}

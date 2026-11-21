@@ -23,6 +23,7 @@
       "columns": {
         "user": "Người dùng",
         "status": "Trạng thái",
+        "verification": "Xác thực",
         "lastLogin": "Đăng nhập gần nhất",
         "access": "Quyền truy cập",
         "lastSeen": "Hoạt động gần nhất"
@@ -32,6 +33,7 @@
         "password": "Mật khẩu",
         "newPassword": "Mật khẩu mới",
         "newPasswordHint": "Để trống nếu không đổi. Đổi mật khẩu sẽ đăng xuất mọi phiên của người dùng.",
+        "fullName": "Họ và tên",
         "firstName": "Tên",
         "lastName": "Họ",
         "isActive": "Đang hoạt động",
@@ -45,8 +47,20 @@
         "avatar": "Ảnh đại diện",
         "isSuperuser": "Siêu quản trị",
         "isSuperuserHint": "Toàn quyền, bỏ qua kiểm tra quyền. Chỉ superuser bật được.",
-        "dateJoined": "Ngày tham gia"
+        "dateJoined": "Ngày tham gia",
+        "sendInvitation": "Mời qua email",
+        "sendInvitationHint": "Gửi email mời kích hoạt tài khoản. Người dùng sẽ tự thiết lập họ tên, tên người dùng và mật khẩu lần đầu.",
+        "emailVerified": "Xác minh Email",
+        "emailVerifiedTrue": "Đã xác minh",
+        "emailVerifiedFalse": "Chưa xác minh",
+        "googleAccount": "Tài khoản Google",
+        "githubAccount": "Tài khoản GitHub",
+        "linked": "Đã liên kết",
+        "notLinked": "Chưa liên kết"
       },
+      "sendInvitationButton": "Gửi lời mời",
+      "invitationEmailNoticeTitle": "Thư mời kích hoạt tài khoản",
+      "invitationEmailNoticeDesc": "Hệ thống sẽ gửi email chứa liên kết an toàn tới địa chỉ email trên. Người dùng có 7 ngày để truy cập và tự thiết lập thông tin đăng nhập.",
       "staff": "Quản trị",
       "novel": "Novel",
       "actions": {
@@ -56,7 +70,9 @@
       "extensionFailed": "Đã lưu người dùng nhưng chưa cập nhật xong vai trò: {message}",
       "sections": {
         "access": "Truy cập",
-        "activity": "Hoạt động"
+        "activity": "Hoạt động",
+        "socialAccounts": "Tài khoản mạng xã hội",
+        "verification": "Trạng thái xác thực"
       },
       "presence": {
         "label": "Trạng thái",
@@ -67,6 +83,9 @@
   },
   "attachment": {
     "title": "Thư viện",
+    "viewModeGrid": "Lưới lớn",
+    "viewModeCompact": "Lưới nhỏ",
+    "viewModeList": "Danh sách",
     "video": "Video",
     "format": "Đuôi tệp",
     "folder": "Thư mục",
@@ -108,6 +127,7 @@
     "doubleClickToUse": "Nhấp đúp vào ảnh để chọn ngay",
     "openLibrary": "Mở Thư viện",
     "useImage": "Dùng ảnh này",
+    "actions": "Thao tác",
     "selectedImage": "Đã chọn 1 ảnh",
     "noImage": "Chưa chọn ảnh",
     "search": "Tìm theo tên tệp…",
@@ -188,7 +208,61 @@
       "submit": "Đăng nhập",
       "submitting": "Đang đăng nhập...",
       "identifier": "Email hoặc tên người dùng",
-      "forgotPasswordLink": "Quên mật khẩu?"
+      "forgotPasswordLink": "Quên mật khẩu?",
+      "orContinueWith": "Hoặc tiếp tục với",
+      "loginWithGoogle": "Đăng nhập với Google",
+      "loginWithGithub": "Đăng nhập với GitHub",
+      "socialNotConfigured": "Nền tảng chưa được cấu hình trên hệ thống.",
+      "callbackTitle": "Đang xác thực tài khoản...",
+      "callbackProcessing": "Đang xử lý thông tin xác thực từ nhà cung cấp...",
+      "callbackSuccess": "Đăng nhập thành công, đang chuyển hướng...",
+      "callbackFailed": "Xác thực không thành công",
+      "callbackBackToLogin": "Quay lại trang đăng nhập",
+      "temporarilyDisabled": "Tạm ngưng",
+      "socialDisabledHint": "Phương thức đăng nhập này hiện đang tạm ngưng bảo trì theo cấu hình hệ thống."
+    },
+    "chillPanel": {
+      "greetingMorning": "Chào buổi sáng",
+      "greetingAfternoon": "Chào buổi chiều",
+      "greetingEvening": "Chào buổi tối",
+      "greetingNight": "Đêm khuya an lành",
+      "subtitle": "Chúc bạn một ngày làm việc tràn đầy năng lượng và hiệu quả.",
+      "locations": {
+        "danang": "Đà Nẵng",
+        "danangDesc": "Bình yên bên biển Mỹ Khê & Cầu Rồng",
+        "quangtri": "Quảng Trị",
+        "quangtriDesc": "Miền đất quê hương kiên cường & yêu thương"
+      },
+      "weather": {
+        "danangTemp": "27°C",
+        "danangStatus": "Nắng nhẹ & Gió biển",
+        "quangtriTemp": "25°C",
+        "quangtriStatus": "Trời quang & Mát mẻ",
+        "humidity": "Độ ẩm",
+        "wind": "Gió"
+      },
+      "infrastructure": {
+        "title": "Hạ tầng hệ thống",
+        "statusOnline": "Hoạt động bình thường",
+        "uptime": "99.98% Uptime",
+        "r2": "Cloudflare R2 Storage",
+        "r2Desc": "Lưu trữ tệp tốc độ cao",
+        "db": "Neon Serverless DB",
+        "dbDesc": "PostgreSQL phân tán",
+        "oauth": "Google & GitHub OAuth 2.0",
+        "oauthDesc": "Xác thực bảo mật cao"
+      }
+    },
+    "brandHighlight": {
+      "badge": "ToanNX Cloud Platform",
+      "title": "Nền tảng quản trị thông minh & an toàn",
+      "subtitle": "Giải pháp toàn diện quản lý nội dung số, phân quyền IAM đa cấp và tối ưu hóa hiệu năng lưu trữ.",
+      "feature1Title": "Phân quyền IAM chuyên sâu",
+      "feature1Desc": "Kiểm soát truy cập tài nguyên chính xác đến từng thao tác của từng vai trò.",
+      "feature2Title": "Bảo mật & Đa phương thức",
+      "feature2Desc": "Tích hợp đăng nhập mật khẩu, Google OAuth và GitHub linh hoạt, an toàn.",
+      "feature3Title": "Lưu trữ đám mây tốc độ cao",
+      "feature3Desc": "Tối ưu hóa tệp đính kèm với Cloudflare R2 và nén ảnh hiện đại."
     },
     "forgotPassword": {
       "title": "Quên mật khẩu",
@@ -233,7 +307,49 @@
       "logoutAll": "Đăng xuất mọi thiết bị"
     },
     "session": {
-      "expired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
+      "expired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.",
+      "logoutSuccess": "Đăng xuất thành công.",
+      "logoutAllSuccess": "Đã đăng xuất khỏi mọi thiết bị."
+    },
+    "verifyEmail": {
+      "pageTitle": "Xác minh email",
+      "verifying": "Đang tiến hành xác minh email của bạn...",
+      "successTitle": "Xác minh email thành công!",
+      "successDescription": "Email của bạn đã được xác nhận. Bây giờ bạn có thể sử dụng đầy đủ các tính năng của hệ thống.",
+      "errorTitle": "Xác minh email thất bại",
+      "errorDescription": "Liên kết xác minh không hợp lệ hoặc đã hết hạn (24 giờ). Vui lòng đăng nhập và yêu cầu gửi lại email xác minh mới.",
+      "invalidToken": "Liên kết xác minh thiếu token hoặc không hợp lệ.",
+      "backToHome": "Về trang chủ",
+      "backToLogin": "Về đăng nhập",
+      "retry": "Thử lại"
+    },
+    "invitation": {
+      "pageTitle": "Kích hoạt tài khoản",
+      "pageDescription": "Hoàn thiện thông tin cơ bản và mật khẩu để bắt đầu sử dụng hệ thống.",
+      "checkingToken": "Đang kiểm tra lời mời tham gia...",
+      "invalidTitle": "Lời mời không hợp lệ",
+      "tokenMissing": "Thiếu token lời mời tham gia trong liên kết.",
+      "invitedEmail": "Email được mời tham gia",
+      "fullName": "Họ và tên",
+      "fullNamePlaceholder": "Nguyễn Văn A",
+      "username": "Tên người dùng (Tùy chọn)",
+      "usernamePlaceholder": "toannx",
+      "usernameHint": "Dùng để đăng nhập thay thế cho email. Chỉ chữ cái, số và @/./+/-/_.",
+      "password": "Mật khẩu mới",
+      "passwordPlaceholder": "Tối thiểu 10 ký tự",
+      "passwordHint": "Tối thiểu 10 ký tự, kết hợp chữ cái, số và ký tự đặc biệt.",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
+      "submitButton": "Kích hoạt tài khoản & Đăng nhập",
+      "activating": "Đang kích hoạt...",
+      "welcomeSuccess": "Chào mừng {name}! Tài khoản của bạn đã được kích hoạt thành công.",
+      "backToLogin": "Về đăng nhập",
+      "validation": {
+        "fullNameRequired": "Vui lòng nhập họ và tên của bạn.",
+        "passwordMin": "Mật khẩu phải có ít nhất 10 ký tự.",
+        "passwordMismatch": "Mật khẩu xác nhận không khớp.",
+        "usernameFormat": "Tên người dùng chỉ được chứa chữ cái, số và @/./+/-/_."
+      }
     },
     "sessions": {
       "title": "Phiên",
@@ -271,7 +387,8 @@
       "description": "Quản lý thông tin tài khoản, quyền truy cập và bảo mật của bạn.",
       "tabs": {
         "info": "Thông tin cá nhân",
-        "security": "Bảo mật"
+        "security": "Bảo mật",
+        "social": "Tài khoản liên kết"
       },
       "avatar": "Ảnh đại diện",
       "avatarLibrary": "Thư viện ảnh",
@@ -287,15 +404,41 @@
       "roleUser": "Người dùng",
       "noRoles": "Chưa gán vai trò riêng",
       "email": "Email đăng nhập",
+      "emailVerified": "Đã xác minh",
+      "emailUnverified": "Chưa xác minh",
+      "unverifiedReminder": "Email của bạn chưa được xác minh. Vui lòng mở hồ sơ để gửi email xác minh và bảo vệ tài khoản.",
+      "sendVerificationEmail": "Gửi email xác minh",
+      "resendVerification": "Gửi lại",
+      "verificationSentSuccess": "Đã gửi email xác minh, vui lòng kiểm tra hộp thư của bạn.",
       "emailPlaceholder": "name@example.com",
       "emailInvalid": "Email chưa đúng định dạng.",
       "username": "Tên người dùng",
       "usernamePlaceholder": "Nhập tên người dùng",
       "usernameRequired": "Vui lòng nhập tên người dùng.",
+      "fullName": "Họ và tên",
+      "fullNamePlaceholder": "Nguyễn Văn An",
+      "fullNameRequired": "Vui lòng nhập họ và tên.",
       "lastName": "Họ và tên đệm",
       "lastNamePlaceholder": "Nguyễn Văn",
       "firstName": "Tên",
       "firstNamePlaceholder": "An",
+      "connectedAccounts": "Tài khoản liên kết",
+      "connectedAccountsDesc": "Liên kết tài khoản Google và GitHub để đăng nhập tiện lợi hơn.",
+      "connect": "Liên kết",
+      "connecting": "Đang chuyển hướng...",
+      "disconnect": "Hủy liên kết",
+      "disconnecting": "Đang hủy...",
+      "connected": "Đã liên kết",
+      "notConnected": "Chưa liên kết",
+      "notConfigured": "Chưa cấu hình",
+      "temporarilyDisabled": "Tạm ngưng",
+      "disabledByAdminDesc": "Quản trị viên đang tạm tắt phương thức này",
+      "close": "Đóng",
+      "disconnectConfirmTitle": "Hủy liên kết tài khoản {provider}?",
+      "disconnectConfirmDescription": "Bạn có chắc chắn muốn hủy liên kết tài khoản {provider} ({account})? Sau khi hủy, bạn sẽ không thể đăng nhập bằng tài khoản này.",
+      "disconnectConfirmAction": "Hủy liên kết",
+      "socialUnlinkSuccess": "Đã hủy liên kết tài khoản thành công.",
+      "socialLinkSuccess": "Liên kết tài khoản thành công.",
       "securityTitle": "Thay đổi mật khẩu đăng nhập",
       "securityDescription": "Khi đổi mật khẩu thành công, toàn bộ phiên đăng nhập trên các thiết bị khác sẽ được tự động thu hồi vì lý do an toàn.",
       "newPassword": "Mật khẩu mới",
@@ -452,6 +595,42 @@
       "removed": "Bỏ {count}",
       "noChanges": "Không có trường nào thay đổi.",
       "recordHistory": "Lịch sử của bản ghi"
+    }
+  },
+  "settings": {
+    "title": "Cài đặt hệ thống",
+    "description": "Quản lý cấu hình toàn hệ thống, bật tắt phương thức đăng nhập và các tham số vận hành.",
+    "socialAuth": {
+      "title": "Đăng nhập mạng xã hội & OAuth",
+      "description": "Bật hoặc tạm khóa các phương thức đăng nhập bên ngoài. Cấu hình có hiệu lực tức thì.",
+      "googleTitle": "Đăng nhập Google",
+      "googleDesc": "Cho phép người dùng đăng nhập hoặc liên kết bằng tài khoản Google.",
+      "githubTitle": "Đăng nhập GitHub",
+      "githubDesc": "Cho phép người dùng đăng nhập hoặc liên kết bằng tài khoản GitHub.",
+      "updatedSuccess": "Đã cập nhật cấu hình thành công."
+    },
+    "table": {
+      "title": "Danh sách tham số cấu hình",
+      "searchPlaceholder": "Tìm theo khóa cấu hình, mô tả...",
+      "empty": "Chưa có tham số cấu hình nào.",
+      "columns": {
+        "key": "Khóa cấu hình",
+        "value": "Giá trị",
+        "category": "Nhóm",
+        "isPublic": "Công khai",
+        "description": "Mô tả",
+        "updatedAt": "Cập nhật gần nhất"
+      },
+      "publicBadge": "Client công khai",
+      "privateBadge": "Nội bộ hệ thống",
+      "enabled": "Bật",
+      "disabled": "Tắt",
+      "editValue": "Sửa giá trị",
+      "editValueTitle": "Cập nhật giá trị cấu hình",
+      "editValueDesc": "Chỉnh sửa giá trị cho khóa {key}. Định dạng giá trị JSON/chuỗi/số/boolean.",
+      "valueLabel": "Giá trị (JSON)",
+      "saveValue": "Lưu cấu hình",
+      "jsonInvalid": "Giá trị phải là JSON hợp lệ."
     }
   }
 }

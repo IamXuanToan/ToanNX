@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { UserMenu } from "@/modules/system/components/user-menu";
@@ -12,14 +13,14 @@ const mockUser: AuthUser = {
   id: "11111111-1111-1111-1111-111111111111",
   email: "nxtoan2k4@gmail.com",
   username: "toannx",
-  firstName: "Toàn",
-  lastName: "Nguyễn Xuân",
   fullName: "Nguyễn Xuân Toàn",
   avatar: null,
   isActive: true,
   isStaff: true,
   isSuperuser: true,
   isNovel: false,
+  isVerified: true,
+  emailVerifiedAt: null,
   lastLogin: null,
   lastSeenAt: null,
   dateJoined: "2026-01-01T00:00:00Z",
@@ -93,7 +94,12 @@ describe("UserMenu", () => {
   });
 
   it("mở menu khi bấm avatar và mở dialog hồ sơ cá nhân khi chọn", () => {
-    render(<UserMenu variant="header" />);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={queryClient}>
+        <UserMenu variant="header" />
+      </QueryClientProvider>,
+    );
 
     // Click mở menu
     const trigger = screen.getByTestId("user-menu");

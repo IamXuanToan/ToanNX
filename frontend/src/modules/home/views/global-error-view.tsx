@@ -10,10 +10,10 @@ import { useReportClientError } from "../hooks/use-report-client-error";
 
 const GLOBAL_MESSAGES = {
   vi: {
-    documentTitle: "Lỗi hệ thống · TOANNX",
+    documentTitle: "Lỗi hệ thống · ToanNX",
     badge: "500 · LỖI HỆ THỐNG",
     title: "Đã xảy ra lỗi hệ thống",
-    subtitle: "Something went wrong on our end.",
+    subtitle: "Đã có sự cố xảy ra từ phía chúng tôi.",
     description:
       "Sự cố nghiêm trọng đã xảy ra ở tầng giao diện gốc. Vui lòng thử lại hoặc tải lại trang.",
     retry: "Thử lại",
@@ -21,7 +21,7 @@ const GLOBAL_MESSAGES = {
     digest: "Mã sự cố (Digest):",
   },
   en: {
-    documentTitle: "System Error · TOANNX",
+    documentTitle: "System Error · ToanNX",
     badge: "500 · SYSTEM ERROR",
     title: "System Error Occurred",
     subtitle: "Something went wrong on our end.",

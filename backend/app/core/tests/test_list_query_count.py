@@ -20,6 +20,7 @@ from django.utils import timezone
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.system.models.auth_session import AuthSession
 from app.system.models.permission import Permission
+from app.system.models.setting import Setting
 from app.system.services.attachment_folder_service import AttachmentFolderService
 from app.system.services.attachment_service import AttachmentService
 from app.system.tests.factories.role_factory import RoleFactory
@@ -40,7 +41,8 @@ def _short_links(owner: Any, count: int) -> None:
 
 
 def _pages(owner: Any, count: int) -> None:
-    service, path = PageService(), PagePath.objects.get(segment="p")
+    path, _ = PagePath.objects.get_or_create(segment="p", defaults={"name": "Trang"})
+    service = PageService()
     for _ in range(count):
         service.create(owner, {"path_id": path.pk, "title": "Trang"})
 
@@ -172,6 +174,12 @@ CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/novel/authors", _authors),
     ("/api/v1/novel/genres", _genres),
     ("/api/v1/novel/tags", _tags),
+    (
+        "/api/v1/system/settings",
+        lambda owner, n: [
+            Setting.objects.create(key=f"setting_{uuid.uuid4().hex[:6]}", value=True) for _ in range(n)
+        ],
+    ),
 ]
 
 

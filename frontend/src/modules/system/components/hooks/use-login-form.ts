@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useRouter } from "@/i18n/navigation";
@@ -12,7 +12,7 @@ import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 
 import { useLogin } from "../../hooks/use-login";
 import { createLoginSchema, type LoginFormValues } from "../../schemas/login.schema";
-import { sanitizeNextPath } from "../../services/auth.service";
+import { authService, sanitizeNextPath } from "../../services/auth.service";
 
 /**
  * State và xử lý submit của form đăng nhập.
@@ -28,11 +28,35 @@ export function useLoginForm(redirectTo: AppPathname) {
   const errorMessage = useApiErrorMessage();
   const schema = useMemo(() => createLoginSchema(t), [t]);
 
+  const [socialLoading, setSocialLoading] = useState<string | null>(null);
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(schema),
     defaultValues: { identifier: "", password: "" },
     mode: "onTouched",
   });
+
+  const handleSocialLogin = async (provider: string) => {
+    if (socialLoading) return;
+    setSocialLoading(provider);
+    try {
+      const state = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      sessionStorage.setItem("oauth_state", state);
+      sessionStorage.setItem("oauth_mode", "login");
+      const next = searchParams.get("redirect") || searchParams.get("next");
+      if (next) {
+        sessionStorage.setItem("oauth_next", next);
+      } else {
+        sessionStorage.removeItem("oauth_next");
+      }
+      const redirectUri = `${window.location.origin}/auth/callback/${provider}`;
+      const res = await authService.getSocialAuthUrl(provider, state, redirectUri);
+      window.location.href = res.authorizationUrl;
+    } catch (error) {
+      form.setError("root", { message: errorMessage(error) });
+      setSocialLoading(null);
+    }
+  };
 
   const onSubmit = form.handleSubmit(async (values) => {
     try {
@@ -55,5 +79,7 @@ export function useLoginForm(redirectTo: AppPathname) {
     onSubmit,
     isSubmitting: login.isPending,
     rootError: form.formState.errors.root?.message,
+    socialLoading,
+    handleSocialLogin,
   };
 }

@@ -38,19 +38,13 @@ class User(JournalTracker, AbstractBaseUser, CoreModel):
         db_comment="Tên người dùng (tùy chọn)",
         help_text="Tên người dùng tùy chọn, duy nhất nếu có.",
     )
-    first_name = models.CharField(
-        max_length=150,
+    full_name = models.CharField(
+        max_length=255,
         blank=True,
-        verbose_name="Tên",
-        db_comment="Tên",
-        help_text="Tên.",
-    )
-    last_name = models.CharField(
-        max_length=150,
-        blank=True,
-        verbose_name="Họ",
-        db_comment="Họ",
-        help_text="Họ (và tên đệm).",
+        default="",
+        verbose_name="Họ và tên",
+        db_comment="Họ và tên đầy đủ",
+        help_text="Họ và tên đầy đủ.",
     )
     avatar = models.ForeignKey(
         "system.Attachment",
@@ -86,6 +80,19 @@ class User(JournalTracker, AbstractBaseUser, CoreModel):
         help_text="Chỉ đánh dấu nhóm nghiệp vụ Novel; không tự cấp quyền nào.",
         db_comment="Đánh dấu nhóm nghiệp vụ Novel",
     )
+    is_verified = models.BooleanField(
+        default=False,
+        verbose_name="Đã xác minh email",
+        help_text="Đánh dấu email của người dùng đã được xác minh.",
+        db_comment="Đã xác minh email hay chưa",
+    )
+    email_verified_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Thời điểm xác minh email",
+        help_text="Thời điểm người dùng xác minh email thành công.",
+        db_comment="Thời điểm xác minh email",
+    )
     last_seen_at = models.DateTimeField(
         null=True,
         blank=True,
@@ -104,7 +111,7 @@ class User(JournalTracker, AbstractBaseUser, CoreModel):
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
-    REQUIRED_FIELDS: ClassVar[list[str]] = []
+    REQUIRED_FIELDS: ClassVar[list[str]] = ["username"]
 
     class Meta:
         db_table = "system_user"
@@ -112,8 +119,8 @@ class User(JournalTracker, AbstractBaseUser, CoreModel):
         verbose_name_plural = "Người dùng"
 
     def __str__(self) -> str:
-        """Biểu diễn bằng email."""
-        return self.email
+        """Biểu diễn bằng display_name."""
+        return self.display_name
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         """Chuẩn hóa email về chữ thường trước khi lưu (unique không phân biệt hoa thường)."""
@@ -123,9 +130,13 @@ class User(JournalTracker, AbstractBaseUser, CoreModel):
         super().save(*args, **kwargs)
 
     @property
-    def full_name(self) -> str:
-        """Họ tên đầy đủ."""
-        return f"{self.last_name} {self.first_name}".strip()
+    def display_name(self) -> str:
+        """Tên hiển thị: fullname (username) nếu có cả hai, hoặc fullname / username / email."""
+        name = self.full_name.strip()
+        uname = (self.username or "").strip()
+        if name and uname:
+            return f"{name} ({uname})"
+        return name or uname or self.email
 
     def has_perm(self, perm: str, obj: Any = None) -> bool:
         """Tương thích Django: hỏi lần lượt các authentication backend có `has_perm`.

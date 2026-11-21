@@ -89,6 +89,32 @@ class TestAttachmentListApi(BaseApiTestCase):
         items_all, meta_all = self.assert_paginated(api_managed.get(URL, {"page": 1}))
         assert meta_all["total"] == 2
 
+    def test_list_filter_created_by(self, user: Any, superuser: Any, login: Any) -> None:
+        """Lọc danh sách file theo created_by (người tạo)."""
+        grant(
+            user,
+            AttachmentPermission.FILE_READ,
+            AttachmentPermission.FILE_CREATE,
+            AttachmentPermission.FILE_MANAGE_ALL,
+        )
+        api_user = login(user)
+        own = self.assert_success(upload_file(api_user, "own.png", PNG_BYTES, "image/png"), 201)
+
+        api_super = login(superuser)
+        foreign = self.assert_success(upload_file(api_super, "foreign.png", PNG_BYTES, "image/png"), 201)
+
+        # Lọc theo chính user
+        items, meta = self.assert_paginated(api_user.get(URL, {"page": 1, "created_by": str(user.pk)}))
+        assert meta["total"] == 1
+        assert items[0]["id"] == own["id"]
+
+        # Lọc theo superuser
+        items_super, meta_super = self.assert_paginated(
+            api_user.get(URL, {"page": 1, "created_by": str(superuser.pk)})
+        )
+        assert meta_super["total"] == 1
+        assert items_super[0]["id"] == foreign["id"]
+
     def test_list_unauthenticated_rejected(self, client: Any) -> None:
         """Khách chưa đăng nhập bị 401."""
         res = client.get(URL)

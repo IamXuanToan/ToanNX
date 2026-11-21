@@ -20,6 +20,7 @@ export const accountKeys = {
 export const authKeys = {
   all: [SCOPE, "auth"] as const,
   me: () => [...authKeys.all, "me"] as const,
+  socialAccounts: () => [...authKeys.all, "social-accounts"] as const,
   adminSessions: (filters?: object) =>
     [...authKeys.all, "admin-sessions", ...(filters ? [filters] : [])] as const,
   adminSessionUsers: () => [...authKeys.all, "admin-session-users"] as const,
@@ -51,4 +52,14 @@ export const journalKeys = {
   resources: () => [...journalEntries.all, "resources"] as const,
   /** Lịch sử của một bản ghi theo path `…/{id}/history` của tài nguyên đó. */
   record: (path: string) => [...journalEntries.all, "record", path] as const,
+};
+
+const settings = createResourceKeys(SCOPE, "settings");
+
+/** Query key của cấu hình hệ thống. */
+export const settingKeys = {
+  all: settings.all,
+  settings: (filters: object) => settings.list(filters),
+  setting: (id: string) => settings.detail(id),
+  public: () => [SCOPE, "settings", "public"] as const,
 };

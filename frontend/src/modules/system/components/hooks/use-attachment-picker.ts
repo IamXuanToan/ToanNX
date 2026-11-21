@@ -24,13 +24,15 @@ export function useAttachmentPicker() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Attachment | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [pendingBulkDelete, setPendingBulkDelete] = useState(false);
   const [kinds, setKinds] = useState<string[]>(["IMAGE"]);
   const [formats, setFormats] = useState<string[]>([]);
   const [folders, setFolders] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgressName, setUploadProgressName] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null);
-  const [pendingMove, setPendingMove] = useState<Attachment | null>(null);
+  const [pendingMoveFiles, setPendingMoveFiles] = useState<Attachment[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [detailFile, setDetailFile] = useState<Attachment | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -103,6 +105,7 @@ export function useAttachmentPicker() {
         if (selected?.id === deletingId) {
           setSelected(null);
         }
+        setSelectedIds((current) => current.filter((id) => id !== deletingId));
         if (page > 1 && query.data?.items.length === 1) {
           setPage(page - 1);
         }
@@ -111,17 +114,58 @@ export function useAttachmentPicker() {
     });
   };
 
+  const toggleSelect = (id: string, isChecked: boolean) => {
+    setSelectedIds((current) =>
+      isChecked ? [...current, id] : current.filter((item) => item !== id),
+    );
+  };
+
+  const selectAll = () => {
+    const pageIds = query.data?.items.map((file) => file.id) ?? [];
+    setSelectedIds(pageIds);
+  };
+
+  const clearSelection = () => {
+    setSelectedIds([]);
+  };
+
+  const confirmBulkDelete = () => {
+    if (!selectedIds.length || deleteMutation.isPending) return;
+    deleteMutation.mutate(selectedIds, {
+      onSuccess: () => {
+        const deletedSet = new Set(selectedIds);
+        if (selected && deletedSet.has(selected.id)) {
+          setSelected(null);
+        }
+        setSelectedIds([]);
+        setPendingBulkDelete(false);
+        void query.refetch();
+      },
+    });
+  };
+
   const handleMoveDone = () => {
-    setPendingMove(null);
+    setPendingMoveFiles([]);
+    setSelectedIds([]);
     void query.refetch();
   };
 
   return {
     search,
     page,
-    setPage,
+    setPage: (newPage: number) => {
+      setPage(newPage);
+      setSelectedIds([]);
+    },
     selected,
     setSelected,
+    selectedIds,
+    toggleSelect,
+    selectAll,
+    clearSelection,
+    pendingBulkDelete,
+    setPendingBulkDelete,
+    confirmBulkDelete,
     query,
     kinds,
     formats,
@@ -133,24 +177,27 @@ export function useAttachmentPicker() {
     setPendingDelete,
     isDeleting: deleteMutation.isPending,
     confirmDelete,
-    pendingMove,
-    setPendingMove,
+    pendingMoveFiles,
+    setPendingMoveFiles,
     handleMoveDone,
     changeKinds: (values: string[]) => {
       setKinds(values);
       setFormats((current) => normalizeMediaFormats(values, current));
       setPage(1);
       setSelected(null);
+      setSelectedIds([]);
     },
     changeFormats: (values: string[]) => {
       setFormats(values);
       setPage(1);
       setSelected(null);
+      setSelectedIds([]);
     },
     changeFolders: (values: string[]) => {
       setFolders(values);
       setPage(1);
       setSelected(null);
+      setSelectedIds([]);
     },
     clearFilters: () => {
       setSearch("");
@@ -159,11 +206,13 @@ export function useAttachmentPicker() {
       setFolders([]);
       setPage(1);
       setSelected(null);
+      setSelectedIds([]);
     },
     applySearch: (value: string) => {
       setSearch(value);
       setPage(1);
       setSelected(null);
+      setSelectedIds([]);
     },
     isDragging,
     setIsDragging,

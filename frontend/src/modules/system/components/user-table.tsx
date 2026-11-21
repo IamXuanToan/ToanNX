@@ -1,6 +1,8 @@
 "use client";
 
 import { cn } from "cn";
+import Image from "next/image";
+import { CheckCircle2 } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
@@ -9,6 +11,7 @@ import { TableStatusSwitch } from "@/shares/components/common/table-status-switc
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
+import { ICON_PATHS } from "@/shares/lib/asset-paths";
 import { Badge } from "@/shares/components/ui/badge";
 import { isOnline } from "@/shares/lib/presence";
 
@@ -49,19 +52,104 @@ export function UserTable({
       sortKey: "email",
       mobile: "title",
       className: "md:w-full",
-      cell: (user) => (
-        <div className="min-w-0">
-          <Link
-            href={SYSTEM_ROUTES.userDetail(user.id)}
-            className="hover:text-primary block truncate font-medium underline-offset-4 hover:underline"
-          >
-            {user.fullName || user.email}
-          </Link>
-          {user.fullName ? (
-            <p className="text-muted-foreground truncate text-xs">{user.email}</p>
-          ) : null}
-        </div>
-      ),
+      cell: (user) => {
+        const google = user.socialAccounts?.find((s) => s.provider === "google");
+        const github = user.socialAccounts?.find((s) => s.provider === "github");
+
+        return (
+          <div className="min-w-0">
+            <Link
+              href={SYSTEM_ROUTES.userDetail(user.id)}
+              className="hover:text-primary block truncate font-medium underline-offset-4 hover:underline"
+            >
+              {user.fullName || user.email}
+            </Link>
+            <div className="flex items-center gap-1.5">
+              {user.fullName ? (
+                <p className="text-muted-foreground truncate text-xs">{user.email}</p>
+              ) : null}
+              {user.isVerified ? (
+                <span
+                  title={t("fields.emailVerifiedTrue")}
+                  className="inline-flex text-emerald-600 dark:text-emerald-400"
+                >
+                  <CheckCircle2 className="size-3 shrink-0" />
+                </span>
+              ) : null}
+              {google ? (
+                <span
+                  title={`Google: ${google.email || google.displayName}`}
+                  className="inline-flex"
+                >
+                  <Image src={ICON_PATHS.google} alt="Google" width={12} height={12} />
+                </span>
+              ) : null}
+              {github ? (
+                <span
+                  title={`GitHub: ${github.email || github.displayName}`}
+                  className="inline-flex"
+                >
+                  <Image
+                    src={ICON_PATHS.github}
+                    alt="GitHub"
+                    width={12}
+                    height={12}
+                    className="dark:invert"
+                  />
+                </span>
+              ) : null}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "verification",
+      header: t("columns.verification"),
+      cell: (user) => {
+        const google = user.socialAccounts?.find((s) => s.provider === "google");
+        const github = user.socialAccounts?.find((s) => s.provider === "github");
+
+        return (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {user.isVerified ? (
+              <Badge
+                variant="outline"
+                className="gap-1 border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0 text-[10px] text-emerald-700 dark:text-emerald-400"
+                title={t("fields.emailVerifiedTrue")}
+              >
+                <CheckCircle2 className="size-2.5" />
+                <span>Email</span>
+              </Badge>
+            ) : null}
+            {google ? (
+              <span
+                className="bg-muted/50 border-border/60 inline-flex size-5 items-center justify-center rounded-md border"
+                title={`Google: ${google.email || google.displayName}`}
+              >
+                <Image src={ICON_PATHS.google} alt="Google" width={14} height={14} />
+              </span>
+            ) : null}
+            {github ? (
+              <span
+                className="bg-muted/50 border-border/60 inline-flex size-5 items-center justify-center rounded-md border"
+                title={`GitHub: ${github.email || github.displayName}`}
+              >
+                <Image
+                  src={ICON_PATHS.github}
+                  alt="GitHub"
+                  width={14}
+                  height={14}
+                  className="dark:invert"
+                />
+              </span>
+            ) : null}
+            {!user.isVerified && !google && !github ? (
+              <span className="text-muted-foreground text-xs">—</span>
+            ) : null}
+          </div>
+        );
+      },
     },
     {
       id: "access",

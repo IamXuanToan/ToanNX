@@ -30,6 +30,17 @@ function localizedPath(
  */
 export default function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
+
+  // Tự động chuẩn hóa và chuyển hướng nếu URL bị lặp tiền tố locale (ví dụ: /vi/vi/quan-tri -> /vi/quan-tri)
+  if (/^\/(?:vi|en)\/(?:vi|en)(?:\/|$)/.test(pathname)) {
+    let cleanPath = pathname;
+    while (/^\/(vi|en)\/(?:vi|en)(\/.*|$)/.test(cleanPath)) {
+      cleanPath = cleanPath.replace(/^\/(vi|en)\/(?:vi|en)(\/.*|$)/, "/$1$2");
+    }
+    const fixedUrl = new URL(cleanPath + search, request.url);
+    return NextResponse.redirect(fixedUrl, 308);
+  }
+
   const locale = routing.locales.find(
     (item) => pathname === `/${item}` || pathname.startsWith(`/${item}/`),
   );

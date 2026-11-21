@@ -1,4 +1,4 @@
-# TOANNX backend
+# ToanNX backend
 
 Django 6 + DRF, PostgreSQL. Một file cấu hình `config/settings.py` (biến môi trường).
 

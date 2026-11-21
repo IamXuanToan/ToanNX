@@ -3,7 +3,7 @@
   "statusReady": "System operational",
   "superuserBadge": "Superuser",
   "staffBadge": "Staff",
-  "moduleUnit": "modules",
+  "itemUnit": "items",
   "systemOnline": "All systems operational",
   "lastLogin": "Last login: {time}",
   "empty": {

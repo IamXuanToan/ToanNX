@@ -1,13 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { getUserDisplayName, getUserInitials } from "@/shares/components/common/user-avatar";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
+import { toast } from "sonner";
 
+import { authKeys } from "../../constants/query-keys";
 import { useUpdateProfile } from "../../hooks/use-update-profile";
 import {
   createProfileInfoSchema,
@@ -15,6 +19,7 @@ import {
   type ProfileInfoFormValues,
   type ProfilePasswordFormValues,
 } from "../../schemas/profile.schema";
+import { authService } from "../../services/auth.service";
 import type { AuthRole, AuthUser } from "../../types/auth.types";
 
 /**
@@ -37,11 +42,113 @@ export function useProfileDialog({
   open: boolean;
 }) {
   const t = useTranslations("system.auth.profile");
-  const [activeTab, setActiveTab] = useState<"info" | "security">("info");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams?.get("tab");
+  const validTab =
+    tabParam === "security" || tabParam === "social" || tabParam === "info" ? tabParam : "info";
+  const [prevParam, setPrevParam] = useState(validTab);
+  const [selectedTab, setSelectedTab] = useState<"info" | "security" | "social">(validTab);
+
+  if (prevParam !== validTab) {
+    setPrevParam(validTab);
+    setSelectedTab(validTab);
+  }
+
+  const activeTab = selectedTab;
+
+  const setActiveTab = (tab: "info" | "security" | "social") => {
+    setSelectedTab(tab);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("profile", "open");
+      url.searchParams.set("tab", tab);
+      window.history.replaceState(null, "", `${url.pathname}${url.search}`);
+    }
+  };
   const [libraryOpen, setLibraryOpen] = useState(false);
 
+  const queryClient = useQueryClient();
   const updateProfile = useUpdateProfile();
   const errorMessage = useApiErrorMessage();
+
+  const [verificationCooldown, setVerificationCooldown] = useState(0);
+  const [isSendingVerification, setIsSendingVerification] = useState(false);
+
+  const [unlinkProvider, setUnlinkProvider] = useState<string | null>(null);
+  const [isUnlinking, setIsUnlinking] = useState(false);
+  const [connectingProvider, setConnectingProvider] = useState<string | null>(null);
+
+  const {
+    data: socialAccounts = [],
+    isLoading: isLoadingSocials,
+    refetch: refetchSocials,
+  } = useQuery({
+    queryKey: authKeys.socialAccounts(),
+    queryFn: () => authService.listSocialAccounts(),
+    enabled: open,
+  });
+
+  const handleRequestUnlink = (provider: string) => {
+    setUnlinkProvider(provider);
+  };
+
+  const handleCancelUnlink = () => {
+    setUnlinkProvider(null);
+  };
+
+  const handleConfirmUnlink = async () => {
+    if (!unlinkProvider) return;
+    setIsUnlinking(true);
+    try {
+      await authService.unlinkSocialAccount(unlinkProvider);
+      toast.success(t("socialUnlinkSuccess"));
+      void refetchSocials();
+      void queryClient.invalidateQueries({ queryKey: authKeys.me() });
+    } catch (error) {
+      toast.error(errorMessage(error));
+    } finally {
+      setIsUnlinking(false);
+      setUnlinkProvider(null);
+    }
+  };
+
+  const handleLink = async (provider: string) => {
+    if (connectingProvider) return;
+    setConnectingProvider(provider);
+    try {
+      const state = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      sessionStorage.setItem("oauth_state", state);
+      sessionStorage.setItem("oauth_mode", "link");
+      const redirectUri = `${window.location.origin}/auth/callback/${provider}`;
+      const res = await authService.getSocialAuthUrl(provider, state, redirectUri);
+      window.location.href = res.authorizationUrl;
+    } catch (error) {
+      toast.error(errorMessage(error));
+      setConnectingProvider(null);
+    }
+  };
+
+  useEffect(() => {
+    if (verificationCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setVerificationCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [verificationCooldown]);
+
+  const handleSendVerificationEmail = async () => {
+    if (isSendingVerification || verificationCooldown > 0) return;
+    setIsSendingVerification(true);
+    try {
+      await authService.sendVerificationEmail();
+      setVerificationCooldown(60);
+      toast.success(t("verificationSentSuccess"));
+    } catch (error) {
+      toast.error(errorMessage(error));
+    } finally {
+      setIsSendingVerification(false);
+    }
+  };
 
   const infoSchema = useMemo(
     () =>
@@ -64,8 +171,7 @@ export function useProfileDialog({
     defaultValues: {
       email: user?.email ?? "",
       username: user?.username ?? "",
-      firstName: user?.firstName ?? "",
-      lastName: user?.lastName ?? "",
+      fullName: user?.fullName ?? "",
     },
     mode: "onTouched",
   });
@@ -85,8 +191,7 @@ export function useProfileDialog({
       infoForm.reset({
         email: user.email ?? "",
         username: user.username ?? "",
-        firstName: user.firstName ?? "",
-        lastName: user.lastName ?? "",
+        fullName: user.fullName ?? "",
       });
       passwordForm.reset({
         password: "",
@@ -103,8 +208,7 @@ export function useProfileDialog({
       await updateProfile.mutateAsync({
         email: values.email.trim(),
         username: values.username.trim(),
-        firstName: values.firstName.trim(),
-        lastName: values.lastName.trim(),
+        fullName: values.fullName.trim(),
       });
     } catch (error) {
       infoForm.setError("root", { message: errorMessage(error) });
@@ -157,5 +261,17 @@ export function useProfileDialog({
     handleSelectAvatar,
     handleRemoveAvatar,
     isSaving,
+    verificationCooldown,
+    isSendingVerification,
+    handleSendVerificationEmail,
+    socialAccounts,
+    isLoadingSocials,
+    unlinkProvider,
+    isUnlinking,
+    connectingProvider,
+    handleRequestUnlink,
+    handleConfirmUnlink,
+    handleCancelUnlink,
+    handleLink,
   };
 }

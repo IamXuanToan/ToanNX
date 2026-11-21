@@ -1,10 +1,13 @@
 "use client";
 
 import {
+  AlertCircle,
   Calendar,
+  CheckCircle2,
   Clock,
   Images,
   KeyRound,
+  Link2,
   Loader2,
   Shield,
   ShieldAlert,
@@ -14,17 +17,21 @@ import {
 } from "lucide-react";
 import { useFormatter, useNow } from "next-intl";
 
+import Image from "next/image";
+import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
 import { EmailInput } from "@/shares/components/common/email-input";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
 import { PasswordInput } from "@/shares/components/common/password-input";
 import { UserAvatar } from "@/shares/components/common/user-avatar";
+import { ICON_PATHS } from "@/shares/lib/asset-paths";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/shares/components/ui/dialog";
@@ -83,6 +90,17 @@ export function ProfileDialog({
     handleSelectAvatar,
     handleRemoveAvatar,
     isSaving,
+    verificationCooldown,
+    isSendingVerification,
+    handleSendVerificationEmail,
+    socialAccounts,
+    unlinkProvider,
+    isUnlinking,
+    connectingProvider,
+    handleRequestUnlink,
+    handleConfirmUnlink,
+    handleCancelUnlink,
+    handleLink,
   } = useProfileDialog({
     user,
     roles,
@@ -92,10 +110,31 @@ export function ProfileDialog({
   const infoErrors = infoForm.formState.errors;
   const passwordErrors = passwordForm.formState.errors;
 
+  const allRoles: {
+    key: string;
+    label: string;
+    variant: "default" | "secondary" | "outline" | "ghost";
+  }[] = [];
+  if (user?.isSuperuser) {
+    allRoles.push({ key: "superuser", label: t("roleSuperuser"), variant: "default" });
+  }
+  if (user?.isStaff && !user.isSuperuser) {
+    allRoles.push({ key: "staff", label: t("roleStaff"), variant: "secondary" });
+  }
+  if (user?.isNovel) {
+    allRoles.push({ key: "novel", label: t("roleNovel"), variant: "outline" });
+  }
+  for (const role of roles) {
+    allRoles.push({ key: role.id, label: role.name, variant: "outline" });
+  }
+  if (!user?.isSuperuser && !user?.isStaff && roles.length === 0) {
+    allRoles.push({ key: "user", label: t("roleUser"), variant: "ghost" });
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="gap-0 overflow-hidden p-0 sm:max-w-2xl md:max-w-3xl lg:max-w-4xl"
+        className="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl md:max-w-3xl lg:max-w-4xl"
         data-testid="profile-dialog"
       >
         <DialogHeader className="border-border/60 border-b px-6 py-4">
@@ -168,43 +207,73 @@ export function ProfileDialog({
                     {displayName || user?.username}
                   </h3>
                   <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
+                  <div className="mt-2 flex flex-col items-center gap-1.5">
+                    {user?.isVerified ? (
+                      <Badge
+                        variant="outline"
+                        className="gap-1 border-emerald-500/30 bg-emerald-500/10 text-[11px] font-medium text-emerald-700 dark:text-emerald-400"
+                      >
+                        <CheckCircle2 className="size-3" aria-hidden />
+                        <span>{t("emailVerified")}</span>
+                      </Badge>
+                    ) : (
+                      <div className="flex flex-col items-center gap-1.5">
+                        <Badge
+                          variant="outline"
+                          className="gap-1 border-amber-500/30 bg-amber-500/10 text-[11px] font-medium text-amber-700 dark:text-amber-400"
+                        >
+                          <AlertCircle className="size-3" aria-hidden />
+                          <span>{t("emailUnverified")}</span>
+                        </Badge>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="xs"
+                          className="h-7 text-[11px] font-medium"
+                          onClick={() => void handleSendVerificationEmail()}
+                          disabled={isSendingVerification || verificationCooldown > 0}
+                        >
+                          {isSendingVerification ? (
+                            <Loader2 className="mr-1 size-3 animate-spin" />
+                          ) : null}
+                          {verificationCooldown > 0
+                            ? `${t("resendVerification")} (${verificationCooldown}s)`
+                            : t("sendVerificationEmail")}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* Thông tin vai trò (Roles) */}
-              <div className="border-border/60 bg-background/60 space-y-2 rounded-xl border p-3">
-                <div className="text-foreground flex items-center gap-1.5 text-xs font-semibold">
-                  <Shield className="text-primary size-3.5" aria-hidden />
-                  <span>{t("roles")}</span>
-                </div>
-                <div className="flex flex-wrap gap-1.5 pt-0.5">
-                  {user?.isSuperuser ? (
-                    <Badge variant="default" className="text-[11px] font-semibold">
-                      {t("roleSuperuser")}
-                    </Badge>
-                  ) : null}
-                  {user?.isStaff && !user.isSuperuser ? (
-                    <Badge variant="secondary" className="text-[11px] font-semibold">
-                      {t("roleStaff")}
-                    </Badge>
-                  ) : null}
-                  {user?.isNovel ? (
-                    <Badge variant="outline" className="text-[11px]">
-                      {t("roleNovel")}
-                    </Badge>
-                  ) : null}
-                  {roles.map((role) => (
-                    <Badge key={role.id} variant="outline" className="text-[11px]">
-                      {role.name}
-                    </Badge>
-                  ))}
-                  {!user?.isSuperuser && !user?.isStaff && roles.length === 0 ? (
-                    <Badge variant="ghost" className="text-muted-foreground text-[11px]">
-                      {t("roleUser")}
+              {allRoles.length <= 1 ? (
+                <div className="border-border/60 bg-background/60 flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5">
+                  <div className="text-foreground flex items-center gap-1.5 text-xs font-semibold">
+                    <Shield className="text-primary size-3.5 shrink-0" aria-hidden />
+                    <span>{t("roles")}</span>
+                  </div>
+                  {allRoles.length === 1 ? (
+                    <Badge variant={allRoles[0].variant} className="text-[11px] font-semibold">
+                      {allRoles[0].label}
                     </Badge>
                   ) : null}
                 </div>
-              </div>
+              ) : (
+                <div className="border-border/60 bg-background/60 space-y-2 rounded-xl border p-3">
+                  <div className="text-foreground flex items-center gap-1.5 text-xs font-semibold">
+                    <Shield className="text-primary size-3.5 shrink-0" aria-hidden />
+                    <span>{t("roles")}</span>
+                  </div>
+                  <div className="flex max-h-28 flex-wrap gap-1.5 overflow-y-auto pt-0.5 pr-1">
+                    {allRoles.map((role) => (
+                      <Badge key={role.key} variant={role.variant} className="text-[11px]">
+                        {role.label}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Thông tin hoạt động đăng nhập & thời gian */}
@@ -248,10 +317,10 @@ export function ProfileDialog({
           <div className="flex flex-col justify-between p-5 sm:p-6">
             <Tabs
               value={activeTab}
-              onValueChange={(val) => setActiveTab(val as "info" | "security")}
+              onValueChange={(val) => setActiveTab(val as "info" | "security" | "social")}
               className="w-full"
             >
-              <TabsList>
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="info">
                   <User className="size-4" aria-hidden />
                   <span>{t("tabs.info")}</span>
@@ -260,11 +329,15 @@ export function ProfileDialog({
                   <KeyRound className="size-4" aria-hidden />
                   <span>{t("tabs.security")}</span>
                 </TabsTrigger>
+                <TabsTrigger value="social">
+                  <Link2 className="size-4" aria-hidden />
+                  <span>{t("tabs.social")}</span>
+                </TabsTrigger>
               </TabsList>
 
               {/* TAB 1: THÔNG TIN CÁ NHÂN */}
               <TabsContent value="info">
-                <Form onSubmit={onSaveInfo} className="space-y-4">
+                <Form id="profile-info-form" onSubmit={onSaveInfo} className="space-y-4">
                   {infoErrors.root?.message ? (
                     <div
                       role="alert"
@@ -307,62 +380,28 @@ export function ProfileDialog({
                   </FormField>
 
                   {/* Họ và tên */}
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <FormField control={infoForm.control} name="lastName" label={t("lastName")}>
-                      {(field) => (
-                        <Input
-                          {...field}
-                          placeholder={t("lastNamePlaceholder")}
-                          disabled={isSaving}
-                          autoComplete="family-name"
-                          data-testid="profile-lastname-input"
-                        />
-                      )}
-                    </FormField>
-
-                    <FormField control={infoForm.control} name="firstName" label={t("firstName")}>
-                      {(field) => (
-                        <Input
-                          {...field}
-                          placeholder={t("firstNamePlaceholder")}
-                          disabled={isSaving}
-                          autoComplete="given-name"
-                          data-testid="profile-firstname-input"
-                        />
-                      )}
-                    </FormField>
-                  </div>
-
-                  <div className="border-border/50 flex justify-end gap-2 border-t pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => onOpenChange(false)}
-                      disabled={isSaving}
-                    >
-                      {t("cancel")}
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={isSaving}
-                      data-testid="profile-save-info-button"
-                    >
-                      {isSaving ? (
-                        <>
-                          <Loader2 className="size-4 animate-spin" aria-hidden />
-                          <span>{t("saving")}</span>
-                        </>
-                      ) : (
-                        <span>{t("saveInfo")}</span>
-                      )}
-                    </Button>
-                  </div>
+                  <FormField
+                    control={infoForm.control}
+                    name="fullName"
+                    label={t("fullName")}
+                    required
+                  >
+                    {(field) => (
+                      <Input
+                        {...field}
+                        placeholder={t("fullNamePlaceholder")}
+                        disabled={isSaving}
+                        autoComplete="name"
+                        data-testid="profile-fullname-input"
+                      />
+                    )}
+                  </FormField>
                 </Form>
               </TabsContent>
 
               {/* TAB 2: ĐỔI MẬT KHẨU (THIẾT KẾ RIÊNG BIỆT) */}
               <TabsContent value="security">
-                <Form onSubmit={onSavePassword} className="space-y-4">
+                <Form id="profile-password-form" onSubmit={onSavePassword} className="space-y-4">
                   {passwordErrors.root?.message ? (
                     <div
                       role="alert"
@@ -416,37 +455,287 @@ export function ProfileDialog({
                       />
                     )}
                   </FormField>
-
-                  <div className="border-border/50 flex justify-end gap-2 border-t pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => onOpenChange(false)}
-                      disabled={isSaving}
-                    >
-                      {t("cancel")}
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={isSaving}
-                      data-testid="profile-save-password-button"
-                    >
-                      {isSaving ? (
-                        <>
-                          <Loader2 className="size-4 animate-spin" aria-hidden />
-                          <span>{t("saving")}</span>
-                        </>
-                      ) : (
-                        <span>{t("savePassword")}</span>
-                      )}
-                    </Button>
-                  </div>
                 </Form>
+              </TabsContent>
+
+              {/* TAB 3: TÀI KHOẢN LIÊN KẾT */}
+              <TabsContent value="social">
+                <div className="space-y-4">
+                  <div className="border-border/60 bg-muted/20 rounded-xl border p-3.5">
+                    <p className="text-foreground text-xs font-semibold">
+                      {t("connectedAccounts")}
+                    </p>
+                    <p className="text-muted-foreground mt-0.5 text-xs">
+                      {t("connectedAccountsDesc")}
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    {/* Google */}
+                    {(() => {
+                      const account = socialAccounts.find((item) => item.provider === "google");
+                      const isConnected = account?.isConnected ?? false;
+                      const isConfigured = account?.isConfigured ?? false;
+                      const isEnabled = (account as { isEnabled?: boolean })?.isEnabled ?? true;
+                      const isConnecting = connectingProvider === "google";
+
+                      return (
+                        <div className="border-border/60 bg-background flex items-center justify-between gap-3 rounded-xl border p-3.5">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div className="bg-muted/40 border-border/50 flex size-9 shrink-0 items-center justify-center rounded-lg border">
+                              <Image src={ICON_PATHS.google} alt="Google" width={20} height={20} />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-foreground text-sm font-semibold">
+                                  Google
+                                </span>
+                                {isConnected ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="border-emerald-500/30 bg-emerald-500/10 text-[10px] font-medium text-emerald-700 dark:text-emerald-400"
+                                  >
+                                    {t("connected")}
+                                  </Badge>
+                                ) : !isEnabled ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="border-amber-500/30 bg-amber-500/10 text-[10px] font-medium text-amber-700 dark:text-amber-400"
+                                  >
+                                    {t("temporarilyDisabled") || "Tạm ngưng"}
+                                  </Badge>
+                                ) : isConfigured ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="text-muted-foreground text-[10px]"
+                                  >
+                                    {t("notConnected")}
+                                  </Badge>
+                                ) : (
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-muted-foreground text-[10px]"
+                                  >
+                                    {t("notConfigured")}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-muted-foreground truncate text-xs">
+                                {isConnected
+                                  ? account?.email || account?.displayName || t("connected")
+                                  : !isEnabled
+                                    ? t("disabledByAdminDesc") ||
+                                      "Quản trị viên đang tạm tắt phương thức này"
+                                    : isConfigured
+                                      ? "Accounts Google (OAuth 2.0)"
+                                      : t("notConfigured")}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="shrink-0">
+                            {isConnected ? (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="xs"
+                                className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30 h-8 text-xs"
+                                onClick={() => handleRequestUnlink("google")}
+                                disabled={isUnlinking}
+                              >
+                                {t("disconnect")}
+                              </Button>
+                            ) : (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="xs"
+                                className="h-8 text-xs font-medium"
+                                onClick={() => void handleLink("google")}
+                                disabled={!isConfigured || isConnecting || !isEnabled}
+                              >
+                                {isConnecting ? (
+                                  <Loader2 className="mr-1 size-3 animate-spin" />
+                                ) : null}
+                                {isConnecting ? t("connecting") : t("connect")}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* GitHub */}
+                    {(() => {
+                      const account = socialAccounts.find((item) => item.provider === "github");
+                      const isConnected = account?.isConnected ?? false;
+                      const isConfigured = account?.isConfigured ?? false;
+                      const isEnabled = (account as { isEnabled?: boolean })?.isEnabled ?? true;
+                      const isConnecting = connectingProvider === "github";
+
+                      return (
+                        <div className="border-border/60 bg-background flex items-center justify-between gap-3 rounded-xl border p-3.5">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div className="bg-muted/40 border-border/50 flex size-9 shrink-0 items-center justify-center rounded-lg border">
+                              <Image
+                                src={ICON_PATHS.github}
+                                alt="GitHub"
+                                width={20}
+                                height={20}
+                                className="dark:invert"
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-foreground text-sm font-semibold">
+                                  GitHub
+                                </span>
+                                {isConnected ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="border-emerald-500/30 bg-emerald-500/10 text-[10px] font-medium text-emerald-700 dark:text-emerald-400"
+                                  >
+                                    {t("connected")}
+                                  </Badge>
+                                ) : !isEnabled ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="border-amber-500/30 bg-amber-500/10 text-[10px] font-medium text-amber-700 dark:text-amber-400"
+                                  >
+                                    {t("temporarilyDisabled") || "Tạm ngưng"}
+                                  </Badge>
+                                ) : isConfigured ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="text-muted-foreground text-[10px]"
+                                  >
+                                    {t("notConnected")}
+                                  </Badge>
+                                ) : (
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-muted-foreground text-[10px]"
+                                  >
+                                    {t("notConfigured")}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-muted-foreground truncate text-xs">
+                                {isConnected
+                                  ? account?.email || account?.displayName || t("connected")
+                                  : !isEnabled
+                                    ? t("disabledByAdminDesc") ||
+                                      "Quản trị viên đang tạm tắt phương thức này"
+                                    : isConfigured
+                                      ? "GitHub OAuth App"
+                                      : t("notConfigured")}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="shrink-0">
+                            {isConnected ? (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="xs"
+                                className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30 h-8 text-xs"
+                                onClick={() => handleRequestUnlink("github")}
+                                disabled={isUnlinking}
+                              >
+                                {t("disconnect")}
+                              </Button>
+                            ) : (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="xs"
+                                className="h-8 text-xs font-medium"
+                                onClick={() => void handleLink("github")}
+                                disabled={!isConfigured || isConnecting || !isEnabled}
+                              >
+                                {isConnecting ? (
+                                  <Loader2 className="mr-1 size-3 animate-spin" />
+                                ) : null}
+                                {isConnecting ? t("connecting") : t("connect")}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
               </TabsContent>
             </Tabs>
           </div>
         </div>
+
+        {/* Footer cố định ở đáy Dialog */}
+        <DialogFooter className="border-border/60 bg-background/95 flex shrink-0 items-center justify-end gap-2.5 border-t px-6 py-3.5 backdrop-blur-xs">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSaving}
+          >
+            {activeTab === "social" ? t("close") || "Đóng" : t("cancel")}
+          </Button>
+          {activeTab === "info" ? (
+            <Button
+              form="profile-info-form"
+              type="submit"
+              disabled={isSaving}
+              data-testid="profile-save-info-button"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" aria-hidden />
+                  <span>{t("saving")}</span>
+                </>
+              ) : (
+                <span>{t("saveInfo")}</span>
+              )}
+            </Button>
+          ) : null}
+          {activeTab === "security" ? (
+            <Button
+              form="profile-password-form"
+              type="submit"
+              disabled={isSaving}
+              data-testid="profile-save-password-button"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" aria-hidden />
+                  <span>{t("saving")}</span>
+                </>
+              ) : (
+                <span>{t("savePassword")}</span>
+              )}
+            </Button>
+          ) : null}
+        </DialogFooter>
       </DialogContent>
+
+      <ConfirmDialog
+        open={Boolean(unlinkProvider)}
+        onOpenChange={(next) => !next && handleCancelUnlink()}
+        title={t("disconnectConfirmTitle", {
+          provider: unlinkProvider ? (unlinkProvider === "google" ? "Google" : "GitHub") : "",
+        })}
+        description={t("disconnectConfirmDescription", {
+          provider: unlinkProvider ? (unlinkProvider === "google" ? "Google" : "GitHub") : "",
+          account:
+            socialAccounts.find((item) => item.provider === unlinkProvider)?.email ||
+            socialAccounts.find((item) => item.provider === unlinkProvider)?.displayName ||
+            "",
+        })}
+        confirmLabel={t("disconnectConfirmAction")}
+        onConfirm={() => void handleConfirmUnlink()}
+        isPending={isUnlinking}
+        destructive
+      />
 
       {libraryOpen && renderAttachmentPicker
         ? renderAttachmentPicker({

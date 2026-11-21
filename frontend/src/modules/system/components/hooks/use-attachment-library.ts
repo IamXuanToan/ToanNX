@@ -14,7 +14,7 @@ import { MEDIA_KINDS, normalizeMediaFormats } from "../../constants/media-types"
 export function useAttachmentLibrary(capabilities: AttachmentCapabilities) {
   const table = useTableState({
     ordering: "-created_at",
-    filterKeys: ["kind", "scope", "contentType", "folder"] as const,
+    filterKeys: ["kind", "scope", "contentType", "folder", "createdBy"] as const,
   });
   const kinds = pickAllowedValues(table.getFilterValues("kind"), MEDIA_KINDS) ?? [];
   const formats = normalizeMediaFormats(kinds, table.getFilterValues("contentType"));
@@ -23,6 +23,7 @@ export function useAttachmentLibrary(capabilities: AttachmentCapabilities) {
     kind: kinds,
     contentType: formats,
     folder: table.getFilterValues("folder"),
+    createdBy: table.getFilterValues("createdBy"),
     scope: capabilities.canManageAll
       ? pickAllowedValues(table.getFilterValues("scope"), ["MINE", "OTHERS"])
       : undefined,
@@ -31,7 +32,6 @@ export function useAttachmentLibrary(capabilities: AttachmentCapabilities) {
   const wide = useMediaQuery("(min-width: 1024px)");
   const [activeId, setActiveId] = useState<string>();
   const [detailOpen, setDetailOpen] = useState(false);
-  const [showDetails, setShowDetails] = useState(true);
   const [editingFile, setEditingFile] = useState<Attachment | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadBusy, setUploadBusy] = useState(false);
@@ -87,19 +87,13 @@ export function useAttachmentLibrary(capabilities: AttachmentCapabilities) {
     locked,
     isDeleting: remove.isPending,
     confirmDelete,
-    showDetails,
-    setShowDetails,
     editingFile,
     setEditingFile,
     filtered: Boolean(table.keyword) || table.hasFilters,
     deleteOne: capabilities.canDelete ? (file: Attachment) => setPendingDelete([file]) : undefined,
     inspect: (file: Attachment) => {
       setActiveId(file.id);
-      if (!wide) {
-        setDetailOpen(true);
-      } else {
-        setShowDetails(true);
-      }
+      setDetailOpen(true);
     },
     toggle: (id: string, checked: boolean) =>
       setSelection({

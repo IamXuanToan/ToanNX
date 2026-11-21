@@ -23,19 +23,19 @@ import {
   updateUserSchema,
   USER_FORM_FIELDS,
 } from "../../schemas/user.schema";
-import type { User } from "../../types/user.types";
+import type { CreateUserInput, User } from "../../types/user.types";
 
 const EMPTY: CreateUserFormValues = {
   email: "",
   password: "",
   username: "",
-  firstName: "",
-  lastName: "",
+  fullName: "",
   avatar: null,
   isActive: true,
   isStaff: false,
   isSuperuser: false,
   isNovel: false,
+  sendInvitation: false,
 };
 
 /** Giá trị form từ một người dùng có sẵn (sửa, hoặc nguồn khi sao chép). */
@@ -45,8 +45,7 @@ function fromUser(user: User, { copy }: { copy: boolean }): CreateUserFormValues
     // Sao chép: email, tên người dùng phải duy nhất nên để trống.
     email: copy ? "" : user.email,
     username: copy ? "" : (user.username ?? ""),
-    firstName: user.firstName,
-    lastName: user.lastName,
+    fullName: user.fullName ?? "",
     avatar: user.avatar ? { id: user.avatar.id, url: user.avatar.url, name: "" } : null,
     isActive: user.isActive,
     isStaff: user.isStaff,
@@ -94,10 +93,16 @@ export function useUserForm({ user, copyFrom }: { user?: User; copyFrom?: string
 
   const onSubmit = form.handleSubmit(async (formValues) => {
     const { isSuperuser, ...input } = toUserInput(formValues);
-    const body = canSetSuperuser ? { ...input, isSuperuser } : input;
+    const body: CreateUserInput = canSetSuperuser ? { ...input, isSuperuser } : input;
     let saved: User;
     try {
-      saved = user ? await update.mutateAsync(body) : await create.mutateAsync(body);
+      if (user) {
+        const updateBody = { ...body };
+        delete (updateBody as Record<string, unknown>).sendInvitation;
+        saved = await update.mutateAsync(updateBody);
+      } else {
+        saved = await create.mutateAsync(body);
+      }
     } catch (error) {
       const fields = isApiError(error) ? error.fieldErrors() : {};
       let hasFieldError = false;

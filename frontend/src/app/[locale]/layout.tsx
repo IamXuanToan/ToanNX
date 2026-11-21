@@ -23,10 +23,10 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const t = await getTranslations({ locale: locale as AppLocale, namespace: "common.seo" });
   return {
     metadataBase: new URL(env.siteUrl),
-    title: { default: t("title"), template: `%s · TOANNX` },
+    title: { default: t("title"), template: `%s · ToanNX` },
     description: t("description"),
-    applicationName: "TOANNX",
-    openGraph: { siteName: "TOANNX", locale, type: "website" },
+    applicationName: "ToanNX",
+    openGraph: { siteName: "ToanNX", locale, type: "website" },
   };
 }
 

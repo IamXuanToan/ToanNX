@@ -1,6 +1,19 @@
 "use client";
 
-import { Check, Copy, ExternalLink, Loader2, Pencil, Trash2, X } from "lucide-react";
+import {
+  Calendar,
+  Check,
+  Copy,
+  ExternalLink,
+  FileText,
+  Folder,
+  FolderInput,
+  Loader2,
+  Pencil,
+  Trash2,
+  User,
+  X,
+} from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 
 import { Button } from "@/shares/components/ui/button";
@@ -9,13 +22,13 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/shares/components/ui/dialog";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { Textarea } from "@/shares/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
 
 import { formatAttachmentSize } from "../services/attachment.service";
 import type { Attachment } from "../types/attachment.types";
@@ -30,6 +43,7 @@ function AttachmentDetailContent({
   onClose,
   onSelect,
   onDelete,
+  onMove,
   onUpdated,
   canEdit,
   canDelete,
@@ -39,6 +53,7 @@ function AttachmentDetailContent({
   onClose: () => void;
   onSelect?: (file: Attachment) => void;
   onDelete?: (file: Attachment) => void;
+  onMove?: (file: Attachment) => void;
   onUpdated?: (updated: Attachment) => void;
   canEdit: boolean;
   canDelete: boolean;
@@ -81,32 +96,21 @@ function AttachmentDetailContent({
       </DialogHeader>
 
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
-          {/* Cột trái: Khung xem ảnh lớn tỉ lệ chuẩn */}
-          <div className="lg:col-span-7">
-            <div className="bg-muted/20 border-border/60 relative flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl border p-2 sm:h-96 lg:h-[460px]">
+        <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
+          {/* Cột trái: Khung xem ảnh lớn tỉ lệ chuẩn, sạch sẽ không bị che khuất */}
+          <div>
+            <div className="bg-muted/30 dark:bg-muted/15 border-border/70 relative flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl border p-2 sm:h-96 md:h-[420px] lg:h-[460px]">
               <AttachmentPreview
                 key={currentFile.id}
                 file={currentFile}
                 contain
                 className="size-full"
               />
-              <Button
-                asChild
-                variant="secondary"
-                size="icon"
-                className="bg-background/80 hover:bg-background absolute top-3 right-3 size-8 rounded-lg shadow-xs backdrop-blur-xs transition-opacity"
-                title={t("openFile")}
-              >
-                <a href={currentFile.url} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="size-4" />
-                </a>
-              </Button>
             </div>
           </div>
 
           {/* Cột phải: Thông tin hoặc Chế độ Sửa trực tiếp */}
-          <div className="flex flex-col justify-between space-y-4 lg:col-span-5">
+          <div className="flex flex-col justify-between space-y-4">
             {isEditing ? (
               /* CHẾ ĐỘ SỬA TRỰC TIẾP (INLINE EDIT - KHÔNG MỞ MODAL ĐÈ) */
               <form
@@ -142,7 +146,7 @@ function AttachmentDetailContent({
                     disabled={isSaving}
                     maxLength={255}
                     placeholder={t("fileName")}
-                    className="h-9 rounded-xl text-xs"
+                    className="h-10 rounded-xl text-sm"
                     aria-invalid={Boolean(nameError)}
                   />
                   {nameError ? <p className="text-destructive text-xs">{nameError}</p> : null}
@@ -165,7 +169,7 @@ function AttachmentDetailContent({
                     maxLength={255}
                     rows={3}
                     placeholder={t("altTextPlaceholder")}
-                    className="resize-none rounded-xl text-xs leading-relaxed"
+                    className="resize-none rounded-xl text-sm leading-relaxed"
                   />
                   <p className="text-muted-foreground text-[10px] leading-tight">
                     {t("altTextHint")}
@@ -179,7 +183,7 @@ function AttachmentDetailContent({
                     size="sm"
                     disabled={isSaving}
                     onClick={handleCancelEdit}
-                    className="h-9 rounded-xl px-3 text-xs"
+                    className="h-10 rounded-xl px-4 text-xs font-medium"
                   >
                     {t("cancel")}
                   </Button>
@@ -187,7 +191,7 @@ function AttachmentDetailContent({
                     type="submit"
                     size="sm"
                     disabled={isSaving}
-                    className="h-9 rounded-xl px-4 text-xs font-medium shadow-xs"
+                    className="h-10 rounded-xl px-4 text-xs font-medium shadow-xs"
                   >
                     {isSaving ? <Loader2 className="mr-1.5 size-3.5 animate-spin" /> : null}
                     {isSaving ? t("saving") : t("saveChanges")}
@@ -197,211 +201,219 @@ function AttachmentDetailContent({
             ) : (
               /* CHẾ ĐỘ XEM CHI TIẾT TIÊU CHUẨN */
               <div className="animate-in fade-in-50 space-y-4 duration-150">
-                {/* Tên tệp gốc & Nút sửa/chép */}
-                <div>
-                  <div className="text-muted-foreground flex items-center justify-between pb-1 text-xs">
-                    <span className="font-medium">{t("name")}</span>
-                    <div className="flex items-center gap-1">
-                      {canEdit ? (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleStartEdit}
-                          disabled={disabled}
-                          className="text-muted-foreground hover:text-foreground h-6 gap-1 px-1.5 text-[11px]"
-                          title={t("editFile")}
-                        >
-                          <Pencil className="size-3" />
-                          <span>{t("edit")}</span>
-                        </Button>
-                      ) : null}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleCopyName}
-                        className="text-muted-foreground hover:text-foreground h-6 gap-1 px-1.5 text-[11px]"
-                        title={t("copyName")}
+                {/* Khu vực 1: Tên tệp & Thanh công cụ thao tác nhanh */}
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <span className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase">
+                      {t("name")}
+                    </span>
+                    <div className="bg-muted/20 border-border/50 rounded-xl border p-3">
+                      <p
+                        className="text-foreground text-sm font-semibold leading-relaxed break-all select-all sm:text-base"
+                        title={currentFile.originalName}
                       >
-                        {copiedName ? (
-                          <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
-                        ) : (
-                          <Copy className="size-3" />
-                        )}
-                        <span>{copiedName ? t("copiedName") : t("copyName")}</span>
-                      </Button>
+                        {currentFile.originalName}
+                      </p>
                     </div>
                   </div>
-                  <p
-                    className="text-foreground line-clamp-3 text-xs leading-relaxed font-semibold break-all sm:text-sm"
-                    title={currentFile.originalName}
-                  >
-                    {currentFile.originalName}
-                  </p>
+
+                  {/* Thanh công cụ thao tác tệp tập trung: Sửa, Sao chép link, Mở tab mới, Chuyển thư mục */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    {canEdit ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleStartEdit}
+                        disabled={disabled}
+                        className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
+                        title={t("editFile")}
+                      >
+                        <Pencil className="size-3.5" />
+                        <span>{t("edit")}</span>
+                      </Button>
+                    ) : null}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCopyUrl}
+                      className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
+                      title={t("copyUrl")}
+                    >
+                      {copiedUrl ? (
+                        <Check className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                      ) : (
+                        <Copy className="size-3.5" />
+                      )}
+                      <span>{copiedUrl ? t("copied") : t("copyUrl")}</span>
+                    </Button>
+
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
+                      title={t("openFile")}
+                    >
+                      <a href={currentFile.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="size-3.5" />
+                        <span>{t("openFile")}</span>
+                      </a>
+                    </Button>
+
+                    {onMove ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          onClose();
+                          onMove(currentFile);
+                        }}
+                        className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
+                        title={t("moveFiles")}
+                      >
+                        <FolderInput className="size-3.5" />
+                        <span>{t("moveFiles")}</span>
+                      </Button>
+                    ) : null}
+                  </div>
                 </div>
 
-                {/* Thẻ bảng thông số */}
-                <Card className="bg-muted/30 border-border/50 text-xs shadow-none">
-                  <CardContent className="space-y-2.5 p-3.5">
-                    <div className="grid grid-cols-2 gap-2.5">
-                      <div>
-                        <span className="text-muted-foreground text-[11px]">{t("type")}</span>
-                        <p className="text-foreground mt-0.5 font-semibold uppercase">
-                          {currentFile.contentType.split("/")[1]?.toUpperCase() ||
-                            currentFile.contentType}
+                {/* Khu vực 2: Thẻ bảng thông số Key-Value */}
+                <Card className="bg-muted/20 border-border/50 text-xs shadow-none">
+                  <CardContent className="space-y-3.5 p-4">
+                    {/* Định dạng • Dung lượng gộp thành tag gọn gàng */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="bg-primary/10 text-primary inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold uppercase">
+                        {currentFile.contentType.split("/")[1]?.toUpperCase() ||
+                          currentFile.contentType}
+                      </span>
+                      <span className="text-muted-foreground text-xs font-semibold">•</span>
+                      <span className="bg-muted text-foreground inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium tabular-nums">
+                        {formatAttachmentSize(currentFile.size)}
+                      </span>
+                    </div>
+
+                    {/* Thư mục */}
+                    <div className="border-border/40 flex items-start gap-2.5 border-t pt-3">
+                      <Folder className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <span className="text-muted-foreground block text-[11px]">
+                          {t("folder")}
+                        </span>
+                        <p className="text-foreground mt-0.5 text-xs font-medium break-words">
+                          {currentFile.folderName || t("unfiled")}
                         </p>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground text-[11px]">{t("size")}</span>
-                        <p className="text-foreground mt-0.5 font-semibold tabular-nums">
-                          {formatAttachmentSize(currentFile.size)}
+                    </div>
+
+                    {/* Người tải lên */}
+                    <div className="border-border/40 flex items-start gap-2.5 border-t pt-3">
+                      <User className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <span className="text-muted-foreground block text-[11px]">
+                          {t("uploader")}
+                        </span>
+                        <p className="text-foreground mt-0.5 text-xs font-medium break-words">
+                          {currentFile.uploaderName || "—"}
                         </p>
                       </div>
                     </div>
 
-                    <div className="border-border/40 grid grid-cols-2 gap-2.5 border-t pt-2.5">
-                      <div>
-                        <span className="text-muted-foreground text-[11px]">{t("folder")}</span>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <p className="text-foreground mt-0.5 cursor-default truncate font-medium">
-                              {currentFile.folderName || t("unfiled")}
-                            </p>
-                          </TooltipTrigger>
-                          <TooltipContent
-                            side="top"
-                            className="max-w-xs text-xs font-normal break-all"
-                          >
-                            {currentFile.folderName || t("unfiled")}
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground text-[11px]">{t("uploader")}</span>
-                        {currentFile.uploaderName ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <p className="text-foreground mt-0.5 cursor-default truncate font-medium">
-                                {currentFile.uploaderName}
-                              </p>
-                            </TooltipTrigger>
-                            <TooltipContent
-                              side="top"
-                              className="max-w-xs text-xs font-normal break-all"
-                            >
-                              {currentFile.uploaderName}
-                            </TooltipContent>
-                          </Tooltip>
-                        ) : (
-                          <p className="text-foreground mt-0.5 truncate font-medium">—</p>
-                        )}
+                    {/* Văn bản thay thế (alt text) */}
+                    <div className="border-border/40 flex items-start gap-2.5 border-t pt-3">
+                      <FileText className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <span className="text-muted-foreground block text-[11px]">
+                          {t("altText")}
+                        </span>
+                        <p className="text-foreground mt-0.5 text-xs leading-relaxed font-medium break-words">
+                          {currentFile.altText ? (
+                            currentFile.altText
+                          ) : (
+                            <span className="text-muted-foreground font-normal italic">
+                              {t("noAltText")}
+                            </span>
+                          )}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="border-border/40 border-t pt-2.5">
-                      <span className="text-muted-foreground text-[11px]">{t("altText")}</span>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <p className="text-foreground mt-0.5 line-clamp-2 cursor-default text-xs font-medium">
-                            {currentFile.altText ? (
-                              currentFile.altText
-                            ) : (
-                              <span className="text-muted-foreground font-normal italic">
-                                {t("noAltText")}
-                              </span>
-                            )}
-                          </p>
-                        </TooltipTrigger>
-                        <TooltipContent
-                          side="top"
-                          className="max-w-xs text-xs font-normal break-all"
-                        >
-                          {currentFile.altText || t("noAltText")}
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-
-                    <div className="border-border/40 border-t pt-2.5">
-                      <span className="text-muted-foreground text-[11px]">{t("uploadedAt")}</span>
-                      <p className="text-foreground mt-0.5 font-medium tabular-nums">
-                        {format.dateTime(new Date(currentFile.createdAt), {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
-                      </p>
+                    {/* Thời gian tải lên */}
+                    <div className="border-border/40 flex items-start gap-2.5 border-t pt-3">
+                      <Calendar className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <span className="text-muted-foreground block text-[11px]">
+                          {t("uploadedAt")}
+                        </span>
+                        <p className="text-foreground mt-0.5 text-xs font-medium tabular-nums">
+                          {format.dateTime(new Date(currentFile.createdAt), {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })}
+                        </p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* Hàng nút hành động nhanh */}
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCopyUrl}
-                    className="h-9 rounded-xl px-2.5 text-xs font-medium"
-                  >
-                    {copiedUrl ? (
-                      <Check className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                    ) : (
-                      <Copy className="size-3.5" />
-                    )}
-                    <span className="truncate">{copiedUrl ? t("copied") : t("copyUrl")}</span>
-                  </Button>
-
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="h-9 rounded-xl px-2.5 text-xs font-medium"
-                  >
-                    <a href={currentFile.url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="size-3.5" />
-                      <span className="truncate">{t("openFile")}</span>
-                    </a>
-                  </Button>
-
-                  {canDelete && onDelete ? (
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      disabled={disabled}
-                      onClick={() => {
-                        onClose();
-                        onDelete(currentFile);
-                      }}
-                      className="col-span-2 h-9 rounded-xl px-2.5 text-xs font-medium"
-                    >
-                      <Trash2 className="size-3.5" />
-                      <span className="truncate">{t("deleteFile")}</span>
-                    </Button>
-                  ) : null}
-                </div>
-
-                {/* Nút chọn ảnh ngay trong dialog (dành cho bộ chọn ảnh) */}
-                {onSelect && currentFile.contentType.startsWith("image/") ? (
-                  <Button
-                    type="button"
-                    variant="default"
-                    size="default"
-                    onClick={() => {
-                      onSelect(currentFile);
-                      onClose();
-                    }}
-                    className="mt-2 h-10 w-full gap-2 rounded-xl font-medium shadow-xs"
-                  >
-                    <Check className="size-4" />
-                    <span>{t("useImage")}</span>
-                  </Button>
-                ) : null}
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Footer cố định ở đáy modal: Phân tách rõ ràng giữa Xóa và Đóng/Chọn ảnh */}
+      <DialogFooter className="border-border/60 bg-muted/20 m-0 flex shrink-0 flex-row items-center justify-between gap-2.5 rounded-b-2xl border-t px-5 py-3 sm:px-6 sm:py-3.5">
+        <div>
+          {canDelete && onDelete ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={disabled}
+              onClick={() => {
+                onClose();
+                onDelete(currentFile);
+              }}
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive h-9 gap-1.5 rounded-xl px-3.5 text-xs font-medium"
+            >
+              <Trash2 className="size-3.5 shrink-0" />
+              <span className="whitespace-nowrap">{t("deleteFile")}</span>
+            </Button>
+          ) : null}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onClose}
+            className="h-9 rounded-xl px-4 text-xs font-medium"
+          >
+            <span className="whitespace-nowrap">{t("close")}</span>
+          </Button>
+
+          {onSelect && currentFile.contentType.startsWith("image/") ? (
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              onClick={() => {
+                onSelect(currentFile);
+                onClose();
+              }}
+              className="h-9 gap-1.5 rounded-xl px-4 text-xs font-medium shadow-xs"
+            >
+              <Check className="size-3.5" />
+              <span className="whitespace-nowrap">{t("useImage")}</span>
+            </Button>
+          ) : null}
+        </div>
+      </DialogFooter>
     </>
   );
 }
@@ -418,6 +430,7 @@ export function AttachmentDetailDialog({
   onClose,
   onSelect,
   onDelete,
+  onMove,
   onUpdated,
   canEdit = true,
   canDelete = false,
@@ -428,6 +441,7 @@ export function AttachmentDetailDialog({
   onClose: () => void;
   onSelect?: (file: Attachment) => void;
   onDelete?: (file: Attachment) => void;
+  onMove?: (file: Attachment) => void;
   onUpdated?: (updated: Attachment) => void;
   canEdit?: boolean;
   canDelete?: boolean;
@@ -437,7 +451,7 @@ export function AttachmentDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
-      <DialogContent className="flex max-h-[92dvh] w-[calc(100vw-2rem)] max-w-4xl flex-col gap-0 overflow-hidden rounded-2xl p-0 sm:max-h-[88dvh]">
+      <DialogContent className="flex max-h-[92dvh] w-[calc(100vw-2rem)] flex-col gap-0 overflow-hidden rounded-2xl p-0 sm:max-h-[88dvh] sm:max-w-3xl md:max-w-4xl lg:max-w-5xl">
         {open ? (
           <AttachmentDetailContent
             key={file.id}
@@ -445,6 +459,7 @@ export function AttachmentDetailDialog({
             onClose={onClose}
             onSelect={onSelect}
             onDelete={onDelete}
+            onMove={onMove}
             onUpdated={onUpdated}
             canEdit={canEdit}
             canDelete={canDelete}
