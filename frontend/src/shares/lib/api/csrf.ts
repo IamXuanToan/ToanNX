@@ -7,15 +7,22 @@ export const CSRF_COOKIE_NAME = "csrftoken";
 /** Header gửi CSRF token (khớp `CSRF_HEADER_NAME` của Django). */
 export const CSRF_HEADER_NAME = "X-CSRFToken";
 
+/** Lưu CSRF token trong bộ nhớ khi cross-origin (document.cookie không đọc được cookie của subdomain API). */
+let inMemoryCsrfToken: string | null = null;
+
 /**
- * Đọc CSRF token từ cookie.
+ * Đọc CSRF token từ cookie hoặc bộ nhớ.
  *
  * @returns Token hoặc null nếu chưa có.
  */
 export function readCsrfToken(): string | null {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie.split("; ").find((item) => item.startsWith(`${CSRF_COOKIE_NAME}=`));
-  return match ? decodeURIComponent(match.slice(CSRF_COOKIE_NAME.length + 1)) : null;
+  if (typeof document !== "undefined") {
+    const match = document.cookie
+      .split("; ")
+      .find((item) => item.startsWith(`${CSRF_COOKIE_NAME}=`));
+    if (match) return decodeURIComponent(match.slice(CSRF_COOKIE_NAME.length + 1));
+  }
+  return inMemoryCsrfToken;
 }
 
 let pending: Promise<string | null> | null = null;
@@ -29,8 +36,20 @@ let pending: Promise<string | null> | null = null;
 export async function ensureCsrfToken(force = false): Promise<string | null> {
   const existing = readCsrfToken();
   if (existing && !force) return existing;
-  pending ??= fetch(`${env.apiBasePath}${SESSION_API_PATHS.csrf}`, { credentials: "same-origin" })
-    .then(() => readCsrfToken())
+  pending ??= fetch(`${env.apiBaseUrl}${SESSION_API_PATHS.csrf}`, { credentials: "include" })
+    .then(async (res) => {
+      if (res.ok) {
+        const payload = (await res.json().catch(() => null)) as {
+          data?: { csrf_token?: string; csrfToken?: string };
+        } | null;
+        const token = payload?.data?.csrf_token ?? payload?.data?.csrfToken;
+        if (token) {
+          inMemoryCsrfToken = token;
+          return token;
+        }
+      }
+      return readCsrfToken();
+    })
     .finally(() => {
       pending = null;
     });

@@ -2,8 +2,8 @@
 
 import { keysToCamel } from "./case-conversion";
 
-/** Origin của Django (chỉ dùng phía server, không lộ ra bundle client). */
-const BACKEND_ORIGIN = (process.env.BACKEND_ORIGIN ?? "http://localhost:8000").replace(/\/$/, "");
+/** Origin của Django API (chỉ dùng phía server, lấy từ NEXT_PUBLIC_API_URL). */
+const API_ORIGIN = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 const API_BASE = "/api/v1";
 const FORWARDED_HEADERS = [
   "cookie",
@@ -35,7 +35,7 @@ export function backendFetch(
   if (!headers.has("x-forwarded-host") && source.get("host"))
     headers.set("x-forwarded-host", source.get("host")!);
   headers.set("accept", "application/json");
-  return fetch(`${BACKEND_ORIGIN}${API_BASE}${path}`, { cache: "no-store", ...init, headers });
+  return fetch(`${API_ORIGIN}${API_BASE}${path}`, { cache: "no-store", ...init, headers });
 }
 
 /**

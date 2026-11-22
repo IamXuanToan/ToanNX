@@ -27,9 +27,9 @@ export function useFileAccess(id: string): FileAccessStatus {
 
   useEffect(() => {
     let cancelled = false;
-    const contentUrl = `${env.apiBasePath}${SYSTEM_API_ENDPOINTS.attachmentContent(id)}`;
+    const contentUrl = `${env.apiBaseUrl}${SYSTEM_API_ENDPOINTS.attachmentContent(id)}`;
     const probe = () =>
-      fetch(contentUrl, { method: "GET", credentials: "same-origin", redirect: "manual" });
+      fetch(contentUrl, { method: "GET", credentials: "include", redirect: "manual" });
 
     void (async () => {
       try {

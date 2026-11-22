@@ -5,7 +5,7 @@ import { E2E_ADMIN } from "./tests/e2e/helpers";
 /** Cổng riêng của E2E: không dùng nhầm server dev đang chạy ở 3001/8001. */
 const BACKEND_PORT = 8002;
 const FRONTEND_PORT = 3002;
-const BACKEND_ORIGIN = `http://localhost:${BACKEND_PORT}`;
+const BACKEND_URL = `http://localhost:${BACKEND_PORT}`;
 
 /**
  * E2E chạy trên frontend (bản build production) + backend Django thật với **database riêng** `toannx_e2e`
@@ -30,7 +30,7 @@ export default defineConfig({
     {
       command: `uv run python manage.py prepare_e2e && uv run python manage.py runserver ${BACKEND_PORT} --noreload`,
       cwd: "../backend",
-      url: `${BACKEND_ORIGIN}/api/v1/system/health`,
+      url: `${BACKEND_URL}/api/v1/system/health`,
       env: {
         DB_NAME: process.env.E2E_DB_NAME ?? "toannx_e2e",
         DJANGO_DEBUG: "True",
@@ -44,9 +44,13 @@ export default defineConfig({
     },
     {
       command: `pnpm build && pnpm start -p ${FRONTEND_PORT}`,
-      url: `http://localhost:${FRONTEND_PORT}/api/v1/system/health`,
+      url: `http://localhost:${FRONTEND_PORT}/vi/dang-nhap`,
       // `next build` cần NODE_ENV chuẩn; môi trường của test runner có thể khác.
-      env: { NODE_ENV: "production", NEXT_DIST_DIR: ".next-e2e", BACKEND_ORIGIN },
+      env: {
+        NODE_ENV: "production",
+        NEXT_DIST_DIR: ".next-e2e",
+        NEXT_PUBLIC_API_URL: BACKEND_URL,
+      },
       reuseExistingServer: !process.env.CI,
       timeout: 300_000,
     },

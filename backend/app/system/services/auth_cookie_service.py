@@ -3,7 +3,8 @@
 - Access token: HttpOnly, path `/api`, sống bằng thời hạn access token.
 - Refresh token: HttpOnly, SameSite=Strict, path `/api/v1/system/auth` (chỉ gửi tới endpoint auth).
 - Session hint: HttpOnly, path `/`, giá trị "1"; chỉ để Next.js proxy kiểm tra lạc quan.
-Cookie host-only (không đặt Domain) vì frontend gọi API cùng origin qua rewrite.
+Cookie access và refresh là host-only của api.toannx.com (không đặt Domain).
+Session hint đặt Domain khi cấu hình `AUTH_COOKIE_DOMAIN` để subdomain frontend toannx.com đọc được.
 """
 
 from django.conf import settings
@@ -53,6 +54,7 @@ class AuthCookieService:
             "1",
             max_age=session_max_age,
             path="/",
+            domain=settings.AUTH_COOKIE_DOMAIN or None,
             secure=secure,
             httponly=True,
             samesite="Lax",
@@ -70,4 +72,9 @@ class AuthCookieService:
         response.delete_cookie(
             settings.AUTH_REFRESH_COOKIE_NAME, path=settings.AUTH_REFRESH_COOKIE_PATH, samesite="Strict"
         )
-        response.delete_cookie(settings.AUTH_SESSION_HINT_COOKIE_NAME, path="/", samesite="Lax")
+        response.delete_cookie(
+            settings.AUTH_SESSION_HINT_COOKIE_NAME,
+            path="/",
+            domain=settings.AUTH_COOKIE_DOMAIN or None,
+            samesite="Lax",
+        )

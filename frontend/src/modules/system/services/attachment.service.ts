@@ -29,14 +29,14 @@ export const attachmentService = {
   bulkDelete: crud.bulkDelete,
 
   /**
-   * URL đọc nội dung file cùng origin (`…/content?stream=1`, backend stream qua Next rewrite). Dùng khi cần bytes
+   * URL đọc nội dung file (`…/content?stream=1`, gọi trực tiếp Django backend). Dùng khi cần bytes
    * bằng `fetch`/canvas (trình sửa ảnh): URL storage R2 khác origin, không có CORS thì trình duyệt chặn.
    *
    * @param id - Id file.
-   * @returns Đường dẫn tương đối `/api/v1/system/attachments/{id}/content?stream=1`.
+   * @returns Đường dẫn đầy đủ `https://api.toannx.com/api/v1/system/attachments/{id}/content?stream=1`.
    */
   contentStreamUrl(id: string): string {
-    return `${env.apiBasePath}${SYSTEM_API_ENDPOINTS.attachmentContent(id)}?stream=1`;
+    return `${env.apiBaseUrl}${SYSTEM_API_ENDPOINTS.attachmentContent(id)}?stream=1`;
   },
   /** @param input - File, nhóm logic và chế độ xem (không gửi thì backend tự chọn). @returns File đã kiểm tra và lưu. */
   async upload({ file, folderId, visibility }: AttachmentUploadInput): Promise<Attachment> {

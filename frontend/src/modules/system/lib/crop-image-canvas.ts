@@ -17,7 +17,7 @@ const IMAGE_LOAD_ERROR = "Không thể tải hình ảnh để xử lý";
 async function loadSafeImage(
   url: string,
 ): Promise<{ image: HTMLImageElement; cleanup: () => void }> {
-  const response = await fetch(url, { credentials: "same-origin" });
+  const response = await fetch(url, { credentials: "include" });
   if (!response.ok) throw new Error(IMAGE_LOAD_ERROR);
   const blobUrl = URL.createObjectURL(await response.blob());
   try {
