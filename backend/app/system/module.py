@@ -3,6 +3,7 @@
 from app.core.registry.callback_definition import CallbackDefinition
 from app.core.registry.module_descriptor import ModuleDescriptor
 from app.core.registry.notification_event_definition import NotificationEventDefinition
+from app.core.registry.webhook_definition import WebhookDefinition
 from app.system.constants.system_notification_event import SystemNotificationEvent as E
 from app.system.permissions.announcement_permission import AnnouncementPermission
 from app.system.permissions.attachment_folder_permission import AttachmentFolderPermission
@@ -104,6 +105,17 @@ MODULE = ModuleDescriptor(
             kind="technical",
         ),
         NotificationEventDefinition(
+            E.DATABASE_QUOTA_WARNING,
+            "Dung lượng database sắp đầy",
+            "Database vượt ngưỡng cảnh báo của DATABASE_MAX_BYTES (Neon free 1 GB).",
+            scope="SYSTEM",
+            audience="SUBSCRIBERS",
+            permission="system.notification_delivery.manage_all",
+            default_level="WARNING",
+            default_channels=("IN_APP", "EMAIL"),
+            kind="technical",
+        ),
+        NotificationEventDefinition(
             E.STORAGE_QUOTA_WARNING,
             "Dung lượng lưu trữ sắp đầy",
             "Dung lượng R2 vượt ngưỡng cảnh báo.",
@@ -113,6 +125,29 @@ MODULE = ModuleDescriptor(
             default_level="WARNING",
             default_channels=("IN_APP", "EMAIL"),
             kind="technical",
+        ),
+    ),
+    webhooks=(
+        WebhookDefinition(
+            code="system.notification_dispatch",
+            name="Gửi thông báo đang chờ (QStash + cron)",
+            provider="Upstash QStash / cron-job.org",
+            path="/system/notifications/dispatch",
+            description=(
+                "Request nghiệp vụ chỉ ghi outbox thông báo; endpoint này gửi push/email/Telegram ở "
+                "lượt function riêng. QStash gọi ngay sau khi có thông báo (và hẹn trễ cho lần thử lại); "
+                "cron ngoài là lưới an toàn, không có việc thì trả về ngay mà không chạm DB."
+            ),
+            auth=(
+                "QStash: header Upstash-Signature (JWT HS256, QSTASH_CURRENT/NEXT_SIGNING_KEY). "
+                "Cron: Authorization: Bearer <CRON_SECRET>. Sai cả hai → 404."
+            ),
+            setup=(
+                "Vercel → project backend → Storage → Upstash QStash: integration tạo QSTASH_URL, "
+                "QSTASH_TOKEN, QSTASH_CURRENT_SIGNING_KEY, QSTASH_NEXT_SIGNING_KEY. "
+                "Không cần tạo schedule trên QStash.",
+                "cron-job.org: POST URL ở trên mỗi 10 phút, header Authorization: Bearer <CRON_SECRET>.",
+            ),
         ),
     ),
     callbacks=(
@@ -149,5 +184,6 @@ MODULE = ModuleDescriptor(
         "app.system.tasks.purge_deleted_files.purge_deleted_files",
         "app.system.tasks.dispatch_notifications.dispatch_notifications",
         "app.system.tasks.purge_notifications.purge_notifications",
+        "app.system.tasks.check_database_size.check_database_size",
     ),
 )

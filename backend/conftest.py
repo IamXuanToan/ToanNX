@@ -8,6 +8,8 @@ import pytest
 from django.conf import settings as django_settings
 from rest_framework.test import APIClient
 
+from app.core.cache.cache_service import CacheService
+from app.core.tests.helpers.fake_redis import FakeRedis
 from app.system.models.currency import Currency
 from app.system.models.permission import Permission
 from app.system.models.setting import Setting
@@ -36,7 +38,7 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 
 @pytest.fixture(autouse=True)
 def _no_external_services(settings: Any) -> None:
-    """Không gọi dịch vụ ngoài trong test (R2 Usage API, R2, Firebase) dù `.env` có khóa thật.
+    """Không gọi dịch vụ ngoài trong test (R2 Usage API, R2, Firebase, Upstash) dù `.env` có khóa thật.
 
     Cloudflare R2 dùng gói miễn phí giới hạn lượt gọi; test cần thì tự đặt lại setting trong test đó.
     """
@@ -46,6 +48,12 @@ def _no_external_services(settings: Any) -> None:
     settings.CLOUDFLARE_R2_PRIVATE_BUCKET_NAME = ""
     settings.FIREBASE_PROJECT_ID = ""
     settings.FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 = ""
+    # Upstash: không dùng Redis/QStash thật (gói free giới hạn lệnh/tin); test cần thì dùng `fake_redis`.
+    settings.REDIS_URL = ""
+    settings.QSTASH_TOKEN = ""
+    settings.QSTASH_CURRENT_SIGNING_KEY = ""
+    settings.QSTASH_NEXT_SIGNING_KEY = ""
+    CacheService.use_client(None)
 
 
 @pytest.fixture(autouse=True)
@@ -137,6 +145,15 @@ def _seed_initial_data(request: pytest.FixtureRequest) -> None:
 def _sync_email(settings: Any) -> None:
     """Gửi email đồng bộ trong test để kiểm tra mail.outbox tức thì."""
     settings.EMAIL_ASYNC = False
+
+
+@pytest.fixture
+def fake_redis(settings: Any) -> FakeRedis:
+    """Bật `CacheService` với Redis giả trong bộ nhớ (đếm được số lệnh)."""
+    fake = FakeRedis()
+    settings.REDIS_URL = "redis://fake"
+    CacheService.use_client(fake, "redis://fake")
+    return fake
 
 
 @pytest.fixture

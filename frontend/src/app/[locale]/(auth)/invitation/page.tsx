@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import { HOME_ROUTES } from "@/modules/home/constants/routes";
-import { InvitationView } from "@/modules/system/views/invitation-view";
+import { InvitationView } from "@/modules/system/views/auth/invitation-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({

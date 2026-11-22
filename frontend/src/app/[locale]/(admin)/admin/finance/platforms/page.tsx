@@ -1,4 +1,4 @@
-import { PlatformListView } from "@/modules/finance/views/platform-list-view";
+import { PlatformListView } from "@/modules/finance/views/platform/platform-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "finance.nav.platforms" });

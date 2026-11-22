@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { AttachmentImageEditor } from "@/modules/system/components/attachment-image-editor";
+import { AttachmentImageEditor } from "@/modules/system/components/attachment/attachment-image-editor";
 import type { Attachment } from "@/modules/system/types/attachment.types";
 
 beforeAll(() => {

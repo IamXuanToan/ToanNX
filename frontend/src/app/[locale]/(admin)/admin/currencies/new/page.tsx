@@ -1,4 +1,4 @@
-import { CurrencyCreateView } from "@/modules/system/views/currency-create-view";
+import { CurrencyCreateView } from "@/modules/system/views/currency/currency-create-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "system.currencies.title" });

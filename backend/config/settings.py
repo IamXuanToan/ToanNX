@@ -69,6 +69,8 @@ _DEFAULT_DB_CONFIG = env.db_url("DATABASE_URL")
 _DEFAULT_DB_CONFIG.setdefault("OPTIONS", {})
 _DEFAULT_DB_CONFIG["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=0)
 _DEFAULT_DB_CONFIG["CONN_HEALTH_CHECKS"] = True
+# Chờ kết nối tối đa N giây (Neon đang ngủ cần vài giây để thức; không chờ vô hạn khi mạng lỗi).
+_DEFAULT_DB_CONFIG["OPTIONS"].setdefault("connect_timeout", env.int("DB_CONNECT_TIMEOUT", default=10))
 _DEFAULT_DB_CONFIG["TEST"] = {"NAME": "test_toannx"}
 if "DB_NAME" in env:
     _DEFAULT_DB_CONFIG["NAME"] = env.str("DB_NAME")
@@ -160,6 +162,8 @@ STORAGES = {
 ATTACHMENT_MAX_SIZE_BYTES = env.int("ATTACHMENT_MAX_SIZE_BYTES", default=5 * 1024 * 1024)
 # Tổng dung lượng lưu trữ tối đa cho phép trên storage (R2/S3/local).
 # Mặc định 9GB (gói miễn phí của Cloudflare R2 là 10GB).
+# Hạn mức dung lượng database (Neon free: 1 GB/project). Cron dọn dẹp cảnh báo khi dùng từ 80%; 0 = tắt.
+DATABASE_MAX_BYTES = env.int("DATABASE_MAX_BYTES", default=1024 * 1024 * 1024)
 ATTACHMENT_MAX_TOTAL_STORAGE_BYTES = env.int(
     "ATTACHMENT_MAX_TOTAL_STORAGE_BYTES", default=9 * 1024 * 1024 * 1024
 )
@@ -310,8 +314,17 @@ if SEPAY_ENV not in ("sandbox", "production"):
 # Firebase Cloud Messaging (thông báo trình duyệt); thiếu một trong hai thì kênh PUSH bị ẩn.
 FIREBASE_PROJECT_ID = env.str("FIREBASE_PROJECT_ID", default="")
 FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 = env.str("FIREBASE_SERVICE_ACCOUNT_JSON_BASE64", default="")
-# Ngân sách (giây) gửi thông báo ngay sau commit trong một request; phần còn lại cron gửi.
-NOTIFICATION_DISPATCH_BUDGET_SECONDS = env.float("NOTIFICATION_DISPATCH_BUDGET_SECONDS", default=5.0)
+# Request không gửi thông báo ra ngoài: chỉ ghi outbox rồi "đá" QStash gọi lại endpoint dispatch
+# (lượt function riêng). Thiếu QSTASH_TOKEN thì chỉ còn cron ngoài gửi
+# (xem docs/guides/notification-setup.md).
+QSTASH_URL = env.str("QSTASH_URL", default="") or "https://qstash.upstash.io"
+QSTASH_TOKEN = env.str("QSTASH_TOKEN", default="")
+QSTASH_CURRENT_SIGNING_KEY = env.str("QSTASH_CURRENT_SIGNING_KEY", default="")
+QSTASH_NEXT_SIGNING_KEY = env.str("QSTASH_NEXT_SIGNING_KEY", default="")
+
+# Redis (Upstash) chỉ để tăng tốc: cache công khai, bộ đếm rate limit, cờ outbox. Trống = không dùng
+# (rate limit về PostgreSQL, không cache). Redis lỗi cũng tự về dự phòng, không trả 500.
+REDIS_URL = env.str("REDIS_URL", default="")
 
 # Tiện ích → Trang tùy chỉnh: giới hạn nội dung Tiptap và đoạn đường dẫn giữa dành riêng (một chỗ duy nhất).
 CUSTOM_PAGE_CONTENT_MAX_BYTES = env.int("CUSTOM_PAGE_CONTENT_MAX_BYTES", default=256 * 1024)
@@ -360,13 +373,14 @@ EMAIL_HOST_USER = env.str("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=False)
-EMAIL_TIMEOUT = env.int("EMAIL_TIMEOUT", default=10)
+EMAIL_TIMEOUT = env.int("EMAIL_TIMEOUT", default=5)
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="no-reply@toannx.com")
 PASSWORD_RESET_TIMEOUT = env.int("PASSWORD_RESET_TIMEOUT", default=15 * 60)
 # Mặc định lấy origin động từ request; FRONTEND_URL chỉ là fallback khi không có request
 FRONTEND_URL = env.str("FRONTEND_URL", default="")
-# Gửi email bất đồng bộ qua background worker thread (tránh block request web)
-EMAIL_ASYNC = env.bool("EMAIL_ASYNC", default=True)
+# Gửi email theo mẫu (quên mật khẩu, xác minh, lời mời) ở luồng nền. Mặc định False: trên Vercel luồng nền
+# có thể bị dừng khi response trả xong làm mất thư; chỉ bật khi chạy server lâu dài.
+EMAIL_ASYNC = env.bool("EMAIL_ASYNC", default=False)
 
 # Cấu hình đăng nhập & liên kết mạng xã hội qua OAuth (Google, GitHub...)
 GOOGLE_OAUTH_CLIENT_ID = env.str("GOOGLE_OAUTH_CLIENT_ID", default="")

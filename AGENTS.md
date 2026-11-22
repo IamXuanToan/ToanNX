@@ -27,6 +27,12 @@ Mẫu prompt giao việc cho agent: [prompt.md](prompt.md).
   chứa `XxxView` + `XxxObjectView`; file model chứa model + enum của chính model đó; `shares/components/ui/*` của
   shadcn; export đặc biệt của Next trong `page.tsx`/`layout.tsx`. Class lồng trong class cha (`Meta`, enum trong
   model) được chấp nhận ở toàn hệ thống. Chi tiết: rule backend §2.2, rule frontend §2.1.
+- **Component và view chia theo model**: `components/<nhóm>/<tên>.tsx` + `components/<nhóm>/hooks/use-<tên>.ts`,
+  `views/<nhóm>/<tên>-view.tsx`; `<nhóm>` = model BE (trùng `services/<nhóm>.service.ts`), màn không gắn model thì
+  theo chức năng (`auth`, `current-user`, `reader`, `dashboard`, `shell`...). Không có file ở gốc
+  `components/`/`views/`, không có `components/hooks/` cấp gốc, không có `views/hooks/`, không có nhóm
+  `shared`/`common` (dùng chung → nhóm dùng nhiều nhất; toàn app → `shares/`). View chỉ gọi `usePermission`,
+  `useTranslations`, `useEditMode` (rule frontend §2, `tests/unit/module-structure.test.ts`).
 - **Đúng lớp ở mọi điểm vào**: view, task, command, signal, middleware, authentication, permission, recorder chỉ gọi
   service, không gọi repository/ORM. Service/repository được dùng phải khai trong `__init__` (`self.<tên>_service`),
   không gọi `XxxService().method()`/`XxxService.method()` trong method (rule backend §1, §4, §5.2).
@@ -73,8 +79,13 @@ Mẫu prompt giao việc cho agent: [prompt.md](prompt.md).
   `docs/modules/<module>/README.md`; đổi cách một chức năng chạy → `docs/features/<chức-năng>.md`; module mới thêm
   thư mục `docs/modules/<module>/` (rule chung mục 4).
 - **Thông báo chỉ qua `NotificationService.notify`**: sự kiện khai `scope`/`audience`/`permission` trong
-  `ModuleDescriptor.notification_events`; sự kiện `OWNER` phải truyền `recipient`; không tự gửi email/Telegram/push
-  (rule backend mục 9).
+  `ModuleDescriptor.notification_events`; sự kiện `OWNER` phải truyền `recipient`; không tự gửi email/Telegram/push.
+  Request không bao giờ gọi FCM/SMTP/Telegram: `notify` chỉ ghi outbox rồi đá QStash sau commit (cron là lưới an
+  toàn); mọi lời gọi dịch vụ ngoài đều có timeout (rule backend mục 9).
+- **Ngân sách gói free**: Redis (`CacheService`) chỉ để tăng tốc (PostgreSQL vẫn là nguồn gốc, Redis lỗi → dự phòng,
+  không 500); chỉ cache dữ liệu công khai; lượt khách và cron không chạm Neon khi cache/mốc còn hiệu lực. Xem
+  [docs/architecture/infrastructure.md](docs/architecture/infrastructure.md) trước khi thêm việc tốn
+  DB/Redis/R2/function (rule backend mục 9).
 - **URL quản trị có tiền tố module**: `/quan-tri/<module-vi>/...` (en `/admin/<module-en>/...`), ví dụ
   `/quan-tri/he-thong/nguoi-dung`, `/quan-tri/truyen/tac-gia`; chỉ sửa `<M>_PATHNAMES`, pathname nội bộ và thư mục
   `app/` giữ nguyên; sửa URL trong E2E/tài liệu cùng lần (rule frontend mục 1).
@@ -155,7 +166,9 @@ Frontend:
    `createResourceKeys`; `constants/routes.ts` (`LINKS_ROUTES`, `LINKS_PATHNAMES`).
 2. Service một file một model BE: `{ ...createCrudService<...>(LINKS_API_ENDPOINTS.links), /* method riêng */ }`.
    Hook: `useListQuery`, `useQuery`, `useResourceMutation` (toast + invalidate chuẩn) — không tự viết handler.
-   Mỗi hook một file `hooks/use-<tên>.ts`; mỗi component một file, hook của component ở `components/hooks/`.
+   Mỗi hook một file `hooks/use-<tên>.ts`; mỗi component một file trong `components/<model>/`
+   (`components/link/link-table.tsx`), hook của component ở `components/<model>/hooks/`; view ở `views/<model>/`.
+   Chi tiết bản ghi: component `<model>-profile.tsx` tự tải dữ liệu, View chỉ kiểm quyền và ghép.
 3. Bảng `DataTable` + `useTableState`, cột Thao tác luôn Xem/Sửa/Xóa (`onView`/`onEdit`/`onDelete` + `can`);
    trang chi tiết chỉ xem mặc định (`useEditMode` + `EditModeProvider`); một form cho tạo/sửa/xem (`FormPage` + `FormLayout` + `FormSection` +
    `FormActions`); tạo/sửa nhanh tài nguyên liên quan bằng `FormDialog` chứa đúng form đó. Soạn thảo dùng

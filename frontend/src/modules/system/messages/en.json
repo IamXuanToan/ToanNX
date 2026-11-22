@@ -850,7 +850,8 @@
       "newDevice": "Sign-in from a new device",
       "passwordChanged": "Your password was changed",
       "deliveryFailed": "A notification failed to send",
-      "storageQuota": "Storage {percent}% used"
+      "storageQuota": "Storage {percent}% used",
+      "databaseQuota": "Database {percent}% used ({megabytes} MB)"
     }
   },
   "webhooks": {

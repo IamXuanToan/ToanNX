@@ -1,4 +1,4 @@
-import { NotificationDeliveryView } from "@/modules/system/views/notification-delivery-view";
+import { NotificationDeliveryView } from "@/modules/system/views/notification-delivery/notification-delivery-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({

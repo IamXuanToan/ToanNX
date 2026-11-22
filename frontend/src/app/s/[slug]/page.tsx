@@ -3,8 +3,8 @@ import { headers } from "next/headers";
 
 import { UTILITIES_API_ENDPOINTS } from "@/modules/utilities/constants/api-endpoints";
 import type { PublicShortLink } from "@/modules/utilities/types/short-link.types";
-import { LinkUnavailableView } from "@/modules/utilities/views/link-unavailable-view";
-import { ShortLinkLandingView } from "@/modules/utilities/views/short-link-landing-view";
+import { LinkUnavailableView } from "@/modules/utilities/views/short-link/link-unavailable-view";
+import { ShortLinkLandingView } from "@/modules/utilities/views/short-link/short-link-landing-view";
 import { serverApiGet } from "@/shares/lib/api/server-api";
 
 export const dynamic = "force-dynamic";

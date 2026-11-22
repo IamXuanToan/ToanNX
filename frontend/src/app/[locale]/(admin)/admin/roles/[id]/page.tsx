@@ -1,6 +1,6 @@
 import { SYSTEM_API_ENDPOINTS } from "@/modules/system/constants/api-endpoints";
-import { RoleDetailView } from "@/modules/system/views/role-detail-view";
-import { RecordHistoryView } from "@/modules/system/views/record-history-view";
+import { RoleDetailView } from "@/modules/system/views/role/role-detail-view";
+import { RecordHistoryView } from "@/modules/system/views/journal-entry/record-history-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "common.nav.roles" });

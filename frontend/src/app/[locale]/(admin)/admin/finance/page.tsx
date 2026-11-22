@@ -1,4 +1,4 @@
-import { FinanceDashboardView } from "@/modules/finance/views/finance-dashboard-view";
+import { FinanceDashboardView } from "@/modules/finance/views/dashboard/finance-dashboard-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "finance.nav.dashboard" });

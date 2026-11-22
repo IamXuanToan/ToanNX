@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { AttachmentDetailDialog } from "@/modules/system/components/attachment-detail-dialog";
+import { AttachmentDetailDialog } from "@/modules/system/components/attachment/attachment-detail-dialog";
 import type { Attachment } from "@/modules/system/types/attachment.types";
 
 const mockUpdateAsync = vi.fn().mockResolvedValue({});

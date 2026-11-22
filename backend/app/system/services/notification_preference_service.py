@@ -148,15 +148,19 @@ class NotificationPreferenceService:
         rows: dict[Any, list[NotificationPreference]] = defaultdict(list)
         for row in self.repository.for_users(user_ids, event.code):
             rows[row.user_id].append(row)
-        default_chats: dict[Any, list[Any]] = defaultdict(list)
-        if Channel.TELEGRAM in event.default_channels:
-            for chat in self.telegram_chat_repository.filter(
-                owner_id__in=user_ids, status=TelegramChat.Status.ACTIVE, is_active=True
-            ):
-                default_chats[chat.owner_id].append(chat.pk)
+        # Chỉ chat đã xác minh của bot còn bật: bot hỏng token đã bị tắt thì không tạo bản gửi vô ích.
+        active_chats: dict[Any, list[Any]] = defaultdict(list)
+        for chat in self.telegram_chat_repository.filter(
+            owner_id__in=user_ids, status=TelegramChat.Status.ACTIVE, is_active=True, bot__is_active=True
+        ):
+            active_chats[chat.owner_id].append(chat.pk)
         result: dict[Any, ResolvedChannels] = {}
         for user in users:
-            resolved = self._merge(event, rows.get(user.pk, []), default_chats.get(user.pk, []))
+            chats = active_chats.get(user.pk, [])
+            default_chats = chats if Channel.TELEGRAM in event.default_channels else []
+            resolved = self._merge(event, rows.get(user.pk, []), default_chats)
+            allowed = {str(chat_id) for chat_id in chats}
+            resolved.chat_ids = [chat_id for chat_id in resolved.chat_ids if str(chat_id) in allowed]
             if level == NotificationLevel.ERROR:
                 resolved.in_app = True
             if not user.email:
@@ -200,6 +204,6 @@ class NotificationPreferenceService:
     def _verified_chats(self, user_id: Any) -> list[TelegramChat]:
         return list(
             self.telegram_chat_repository.filter(
-                owner_id=user_id, status=TelegramChat.Status.ACTIVE, is_active=True
+                owner_id=user_id, status=TelegramChat.Status.ACTIVE, is_active=True, bot__is_active=True
             )
         )

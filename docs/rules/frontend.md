@@ -6,7 +6,7 @@ trước khi dùng API mới (middleware → `src/proxy.ts`, error boundary dùn
 ## 1. Luồng xử lý (bắt buộc)
 
 ```
-app/[locale]/.../page.tsx → modules/<m>/views → components/<c>.tsx (+ components/hooks/use-<c>.ts)
+app/[locale]/.../page.tsx → modules/<m>/views/<nhóm>/ → components/<nhóm>/<c>.tsx (+ components/<nhóm>/hooks/use-<c>.ts)
   → modules/<m>/hooks (React Query) → modules/<m>/services → shares/lib/api/api-client.ts
 ```
 
@@ -15,7 +15,7 @@ FE **không có lớp repository**: service của module gọi `apiClient` trự
 | Lớp                               | Được làm                                                                                                                                                                    | Không được làm                                                                                                                                                                             |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `page.tsx`, `layout.tsx` (`app/`) | `export const generateMetadata = createPageMetadata(...)`, `await params` (khi cần), `<Suspense>`, render **đúng View/Layout của module** (ghép slot giữa module bằng prop) | Hook, state, gọi API, điều kiện, JSX bố cục/giao diện, component đặt trong `app/` (`_components`), gọi `setRequestLocale` (Next.js 16 dùng `next/root-params` trong `src/i18n/request.ts`) |
-| View (`modules/<m>/views`)        | Ghép component của module, kiểm quyền (`usePermission`, `PermissionGate`) rồi truyền cờ quyền xuống                                                                         | Gọi query/mutation, state, xử lý lỗi/loading, tính toán dữ liệu                                                                                                                            |
+| View (`modules/<m>/views/<nhóm>`) | Ghép component của module, kiểm quyền (`usePermission`, `PermissionGate`, `useEditMode`) rồi truyền cờ quyền xuống; chỉ gọi `usePermission`/`useTranslations`/`useEditMode` | Gọi query/mutation, state, `useRouter`/`useEffect`, xử lý lỗi/loading, tính toán dữ liệu, hook riêng (`views/hooks/`)                                                                       |
 | Component                         | Nhận props, gọi hook riêng, render (kể cả loading/lỗi)                                                                                                                      | `fetch`, gọi service, state phức tạp trong file `.tsx`                                                                                                                                     |
 | Hook của component                | State, sự kiện, form, ghép query/mutation                                                                                                                                   | Gọi `apiClient`/service trực tiếp                                                                                                                                                          |
 | Hook module (`hooks/`)            | `useQuery`/`useMutation`, invalidate cache                                                                                                                                  | JSX                                                                                                                                                                                        |
@@ -27,12 +27,29 @@ UI primitive thuần (Button, Separator...) không cần hook riêng.
 
 ```
 src/modules/<m>/
-  views/  components/*.tsx  components/hooks/use-*.ts  hooks/use-<tên>.ts
+  views/<nhóm>/<tên>-view.tsx
+  components/<nhóm>/<tên>.tsx  components/<nhóm>/hooks/use-<tên>.ts
+  hooks/use-<tên>.ts
   permissions/<model>-permission.ts  services/<model>.service.ts
   constants/{routes,api-endpoints,query-keys}.ts
   schemas/  types/  messages/{vi,en}.json  navigation.ts
 ```
 
+- **Component và view chia theo model** (`tests/unit/module-structure.test.ts` kiểm):
+  - Component nằm trong `components/<nhóm>/`, hook của nó trong `components/<nhóm>/hooks/`. Không có file ở gốc
+    `components/`, không có `components/hooks/` cấp gốc. Chỉ một cấp nhóm, không tạo thư mục cho từng component.
+  - `<nhóm>` là **model BE** (trùng tên `services/<nhóm>.service.ts`): `system/components/user/user-table.tsx`,
+    `novel/components/author/author-form.tsx`. Màn không gắn model thì nhóm theo **chức năng**: `auth`
+    (đăng nhập, quên mật khẩu, callback OAuth), `current-user` (hồ sơ, menu người dùng), `reader` (trình đọc
+    truyện), `dashboard` (tài chính), `errors`/`landing`/`layout` (home), `shell`/`sidebar`/`launcher` (manage-app).
+  - **Không có nhóm `shared`/`common` trong module**: component dùng chung nhiều model đặt ở nhóm dùng nó nhiều
+    nhất (`finance/components/income/money-text.tsx`); dùng chung toàn app thì đưa lên `shares/`.
+  - View nằm trong `views/<nhóm>/`, cùng tên nhóm với component (`system/views/user/user-list-view.tsx`).
+    **Không có `views/hooks/`**: View chỉ gọi `usePermission`, `useTranslations`, `useEditMode`; query, state,
+    `useRouter`, `useEffect`, gọi API nằm trong component + hook (chi tiết bản ghi: component `<model>-profile.tsx`
+    như `UserProfile`; chuyển trang sau khi tạo: trong hook form).
+  - Tên file giữ tiền tố model; import đường dẫn đầy đủ tới file, không barrel `index.ts`. Module mới tạo thẳng
+    theo cấu trúc này.
 - **Mỗi model một file quyền trong `permissions/`**, đặt tên `permissions/<model>-permission.ts` (khớp với
   phân quyền backend), ví dụ: `author-permission.ts`, `chapter-permission.ts`, `novel-permission.ts`. Không
   gộp chung quyền của nhiều model vào một file constants.
@@ -97,10 +114,11 @@ component, không khai hook, không `createContext`.
 
 **Hook** (`.ts`):
 
-- Mỗi file `use-*.ts` khai báo **đúng một hook**, ở mọi nơi: `modules/<m>/hooks/`, `modules/<m>/components/hooks/`,
-  `shares/hooks/`, `shares/components/common/hooks/`. Hook nội bộ (không export) cũng tách file riêng.
+- Mỗi file `use-*.ts` khai báo **đúng một hook**, ở mọi nơi: `modules/<m>/hooks/`,
+  `modules/<m>/components/<nhóm>/hooks/`, `shares/hooks/`, `shares/components/common/hooks/`. Không đặt hook trong
+  `views/`. Hook nội bộ (không export) cũng tách file riêng.
 - **Không khai báo hook trong file `.tsx`** (kể cả hook private như `useGroupBreadcrumb` trong `admin-shell.tsx`,
-  `useClock` trong `clock-widget.tsx`, `useFormId` trong `form.tsx`): chuyển vào `components/hooks/use-<tên>.ts`.
+  `useClock` trong `clock-widget.tsx`, `useFormId` trong `form.tsx`): chuyển vào `components/<nhóm>/hooks/use-<tên>.ts`.
 - File hook chỉ export hook đó (và kiểu tham số/kết quả của nó). Hằng số cấu hình (`READER_FONT_SIZES`,
   `READER_THEMES` trong `use-reader-settings.ts`) → `constants/`.
 
@@ -511,7 +529,7 @@ hay vẽ SVG logo riêng.
 
 ## 4.1 Khung quản trị
 
-- Khung nằm ở `modules/manage-app/components/admin-shell`; `app/[locale]/(admin)/admin/layout.tsx` chỉ render nó.
+- Khung nằm ở `modules/manage-app/components/shell/admin-shell`; `app/[locale]/(admin)/admin/layout.tsx` chỉ render nó.
 - `/admin` (`/vi/quan-tri`) là **màn chọn module**: mỗi thẻ là một nhóm. Danh sách **khai tĩnh ở FE**, không
   có API hay bảng cấu hình module: mỗi module khai `group`, `icon` (component lucide), `items` trong
   `navigation.ts`; `ADMIN_MODULE_NAVIGATION` + `ADMIN_GROUPS` (`modules/manage-app/constants/admin-navigation.ts`)
@@ -584,7 +602,7 @@ pnpm typecheck && pnpm test tests/unit/<file>.test.ts && pnpm e2e tests/e2e/<lu�
 Mọi trang lỗi toàn cục phải tuân thủ layout tiêu chuẩn, giao diện trang nhã chuẩn Shadcn UI + Tailwind CSS, đầy đủ i18n và điều hướng thoát an toàn:
 
 - **Lỗi 404 (Not Found)**:
-  - Khai báo tại `app/[locale]/not-found.tsx` (sử dụng `NotFoundView` từ `@/modules/home/views/not-found-view`) và `app/not-found.tsx` cấp gốc (cho đường dẫn không mang tiền tố locale).
+  - Khai báo tại `app/[locale]/not-found.tsx` (sử dụng `NotFoundView` từ `@/modules/home/views/errors/not-found-view`) và `app/not-found.tsx` cấp gốc (cho đường dẫn không mang tiền tố locale).
   - Giao diện gồm: Logo hệ thống, Badge `404 · KHÔNG TÌM THẤY`, số `404` lớn phong cách mờ, icon minh họa `FileQuestion`, tiêu đề và mô tả thân thiện.
   - Cung cấp 2 lối điều hướng chính: nút **Về trang chủ** (`Home`) và nút **Quay lại trang trước** (`ArrowLeft`, `history.back()`), kèm các liên kết nhanh (Trang chủ, Thư viện, Đăng nhập).
 - **Lỗi 403 (Forbidden - Truy cập bị từ chối)**:
@@ -593,13 +611,13 @@ Mọi trang lỗi toàn cục phải tuân thủ layout tiêu chuẩn, giao di�
   - Giao diện gồm: Badge `403 · TỪ CHỐI`, icon cảnh báo `ShieldAlert` (màu `destructive`), giải thích nguyên nhân rõ ràng.
   - Cung cấp nút **Về trang chủ**, **Quay lại**, và nút chuyển đổi **Đăng nhập tài khoản khác**.
 - **Lỗi 500 (Server Error / Runtime Crash)**:
-  - Khai báo tại `app/[locale]/error.tsx` (sử dụng `AppErrorView` từ `@/modules/home/views/app-error-view`).
+  - Khai báo tại `app/[locale]/error.tsx` (sử dụng `AppErrorView` từ `@/modules/home/views/errors/app-error-view`).
   - Giao diện gồm: Badge `500 · LỖI MÁY CHỦ`, icon `ServerCrash`, thông điệp an toàn không lộ lỗ hổng bảo mật.
   - Cung cấp nút **Thử lại ngay** (`retry()`) và nút **Về trang chủ**.
   - Hiển thị khối mã **Digest sự cố** kèm nút Sao chép để người dùng gửi cho bộ phận kỹ thuật; hiển thị chi tiết thông điệp kỹ thuật trong môi trường development.
   - Tự động báo cáo lỗi client về backend qua `useReportClientError(error)`.
 - **Lỗi Global Error (Root Layout Crash)**:
-  - Khai báo tại `app/global-error.tsx` (sử dụng `GlobalErrorView` từ `@/modules/home/views/global-error-view`).
+  - Khai báo tại `app/global-error.tsx` (sử dụng `GlobalErrorView` từ `@/modules/home/views/errors/global-error-view`).
   - Tự dựng cấu trúc `<html>`/`<body>` độc lập, hỗ trợ dark mode tự nhiên, trình bày song ngữ (Việt - Anh), cung cấp nút **Thử lại** và **Tải lại trang**.
 
 ### 7.2 Khối báo lỗi trong trang (In-page Error States)

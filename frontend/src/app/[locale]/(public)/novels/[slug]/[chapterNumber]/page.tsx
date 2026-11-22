@@ -1,4 +1,4 @@
-import { NovelReaderView } from "@/modules/novel/views/novel-reader-view";
+import { NovelReaderView } from "@/modules/novel/views/reader/novel-reader-view";
 
 type PageProps = {
   params: Promise<{ slug: string; chapterNumber: string }>;

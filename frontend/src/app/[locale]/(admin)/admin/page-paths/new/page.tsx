@@ -1,4 +1,4 @@
-import { PagePathCreateView } from "@/modules/utilities/views/page-path-create-view";
+import { PagePathCreateView } from "@/modules/utilities/views/page-path/page-path-create-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "utilities.customPages.paths.create" });

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import { HOME_ROUTES } from "@/modules/home/constants/routes";
-import { VerifyEmailView } from "@/modules/system/views/verify-email-view";
+import { VerifyEmailView } from "@/modules/system/views/auth/verify-email-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({

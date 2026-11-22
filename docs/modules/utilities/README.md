@@ -28,6 +28,11 @@ Mỗi màn có danh sách, tạo mới, chi tiết (chỉ xem, `?mode=edit` đ�
 
 - `/s/{slug}`: chuyển hướng link rút gọn (link khóa thì hỏi mật khẩu, hết hạn thì trang báo không còn).
 - `/<đường dẫn>/<slug>`: trang tùy chỉnh, render bằng `TiptapContent`. Ảnh trong trang phải là file công khai.
+- Cache Redis (`constants/public_cache.py`, namespace `utilities:public`): link công khai và trang **đã xuất bản**
+  được cache 10 phút (slug không tồn tại: 60 giây), nên lượt khách lặp lại không chạm Neon. `ShortLinkService`,
+  `PageService`, `PagePathService`, `QrCodeService` khai `public_cache_namespace`: mọi ghi tăng version sau commit
+  nên cache cũ hết hiệu lực ngay. Link có mật khẩu chỉ cache cờ "có khóa" (không mã băm, không URL đích); mở khóa
+  luôn kiểm ở DB. Bản nháp không bao giờ cache. Không có `REDIS_URL` thì đọc DB như cũ.
 
 ## Sự kiện, webhook, callback
 

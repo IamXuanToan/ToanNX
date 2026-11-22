@@ -850,7 +850,8 @@
       "newDevice": "Đăng nhập từ thiết bị mới",
       "passwordChanged": "Mật khẩu vừa được đổi",
       "deliveryFailed": "Có thông báo gửi thất bại",
-      "storageQuota": "Dung lượng lưu trữ đã dùng {percent}%"
+      "storageQuota": "Dung lượng lưu trữ đã dùng {percent}%",
+      "databaseQuota": "Database đã dùng {percent}% ({megabytes} MB)"
     }
   },
   "webhooks": {

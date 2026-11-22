@@ -3,7 +3,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LoginForm } from "@/modules/system/components/login-form";
+import { LoginForm } from "@/modules/system/components/auth/login-form";
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({

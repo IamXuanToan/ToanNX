@@ -1,6 +1,6 @@
-import { RecordHistoryView } from "@/modules/system/views/record-history-view";
+import { RecordHistoryView } from "@/modules/system/views/journal-entry/record-history-view";
 import { UTILITIES_API_ENDPOINTS } from "@/modules/utilities/constants/api-endpoints";
-import { PageDetailView } from "@/modules/utilities/views/page-detail-view";
+import { PageDetailView } from "@/modules/utilities/views/page/page-detail-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "utilities.nav.pages" });

@@ -2,7 +2,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { SocialAuthCallbackView } from "@/modules/system/views/social-auth-callback-view";
+import { SocialAuthCallbackView } from "@/modules/system/views/auth/social-auth-callback-view";
 
 // Mock router & navigation
 vi.mock("@/i18n/navigation", () => ({

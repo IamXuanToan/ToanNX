@@ -1,12 +1,15 @@
 """Test POST /auth/login."""
 
 from typing import Any
+from unittest.mock import patch
 
 import pytest
 from django.conf import settings
 from rest_framework.test import APIClient
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
+from app.system.models.auth_session import AuthSession
+from app.system.models.notification_delivery import NotificationDelivery
 from app.system.models.refresh_token import RefreshToken
 from app.system.services.refresh_token_service import RefreshTokenService
 from app.system.tests.factories.user_factory import DEFAULT_PASSWORD, UserFactory
@@ -83,3 +86,33 @@ class TestLogin(BaseApiTestCase):
     def test_no_register_endpoint(self, client: APIClient) -> None:
         for path in ("/api/v1/system/auth/register", "/api/v1/system/auth/signup"):
             self.assert_error(client.post(path, {}, format="json"), 404, "NOT_FOUND")
+
+
+def test_login_never_calls_providers_and_kicks_once(
+    client: APIClient, settings: Any, django_capture_on_commit_callbacks: Any
+) -> None:
+    """Login chỉ ghi outbox; gửi FCM/SMTP/Telegram ở lượt dispatch (QStash/cron), không trong request."""
+    settings.FIREBASE_PROJECT_ID = "p"
+    settings.FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 = "e30="
+    member = UserFactory()
+    AuthSession.objects.create(
+        user=member, expires_at="2999-01-01T00:00:00Z", user_agent="cu", ip_address="10.9.9.9"
+    )
+    member.push_devices.create(fcm_token="tok")
+    with (
+        patch("app.system.services.notification_dispatcher.NotificationDispatcher.send") as send,
+        patch("app.system.services.notification_kick_service.NotificationKickService.kick") as kick,
+        django_capture_on_commit_callbacks(execute=True),
+    ):
+        response = client.post(
+            LOGIN,
+            {"identifier": member.email, "password": DEFAULT_PASSWORD},
+            format="json",
+            HTTP_USER_AGENT="moi",
+        )
+    assert response.status_code == 200
+    assert not send.called
+    assert kick.call_count == 1  # login + thiết bị mới: một lần đá cho cả request
+    channels = set(NotificationDelivery.objects.values_list("channel", flat=True))
+    assert {"PUSH", "EMAIL"} <= channels
+    assert set(NotificationDelivery.objects.values_list("status", flat=True)) == {"PENDING"}

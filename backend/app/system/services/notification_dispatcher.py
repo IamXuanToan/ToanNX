@@ -3,7 +3,8 @@ gửi trùng. Không phụ thuộc `NotificationService` (tránh vòng lặp): c
 
 import html
 import logging
-from datetime import timedelta
+import time
+from datetime import datetime, timedelta
 from typing import Any
 
 from django.db import transaction
@@ -77,12 +78,27 @@ class NotificationDispatcher:
             delivery = self.repository.lock_pending(pk)
             if delivery is None:
                 return None
+            started = time.perf_counter()
             status, error_code, message_id, permanent = self._attempt(delivery)
+            # Chỉ id, kênh, trạng thái, mã lỗi, thời gian: không log email, chat id, token.
+            logger.info(
+                "notification.send delivery=%s channel=%s status=%s error=%s elapsed=%.0fms",
+                delivery.pk,
+                delivery.channel,
+                status,
+                error_code or "-",
+                (time.perf_counter() - started) * 1000,
+            )
             return self._record(delivery, status, error_code, message_id, permanent)
 
     def due_ids(self, limit: int) -> list[Any]:
         """Id bản đến hạn gửi."""
         return self.repository.due_ids(timezone.now(), NOTIFICATION_MAX_ATTEMPTS, limit)
+
+    def next_due_at(self) -> datetime | None:
+        """Mốc sớm nhất còn bản cần gửi (None = hết việc)."""
+        value: datetime | None = self.repository.next_due_at(timezone.now(), NOTIFICATION_MAX_ATTEMPTS)
+        return value
 
     def _attempt(self, delivery: NotificationDelivery) -> Outcome:
         notification = delivery.notification

@@ -4,9 +4,9 @@ from app.system.services.notification_service import NotificationService
 
 
 def dispatch_notifications() -> int:
-    """Gửi các bản outbox đến hạn.
+    """Gửi các bản outbox đến hạn (cron dọn dẹp hằng ngày: luôn kiểm DB, không tin mốc trong Redis).
 
     Returns:
         Số bản gửi thành công.
     """
-    return NotificationService().dispatch_pending()
+    return NotificationService().dispatch_pending(force=True)

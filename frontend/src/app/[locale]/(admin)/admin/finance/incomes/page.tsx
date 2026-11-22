@@ -1,4 +1,4 @@
-import { IncomeListView } from "@/modules/finance/views/income-list-view";
+import { IncomeListView } from "@/modules/finance/views/income/income-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "finance.nav.incomes" });

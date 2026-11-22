@@ -2,7 +2,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { UserSocialAccountsSection } from "@/modules/system/components/user-social-accounts-section";
+import { UserSocialAccountsSection } from "@/modules/system/components/user/user-social-accounts-section";
 import type { User } from "@/modules/system/types/user.types";
 
 vi.mock("next-intl", () => ({

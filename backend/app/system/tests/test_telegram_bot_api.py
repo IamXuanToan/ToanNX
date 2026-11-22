@@ -100,3 +100,29 @@ def test_delivery_uses_owner_bot_and_skips_when_bot_deleted(superuser: Any, logi
     api.delete("/api/v1/system/telegram/bot")
     NotificationService().dispatch_pending()
     assert not NotificationDelivery.objects.filter(status="PENDING").exists()
+
+
+def test_undecryptable_token_disables_bot_once(superuser: Any, login: Any) -> None:
+    """Token mã hóa bằng khóa cũ (đổi DJANGO_SECRET_KEY): bot bị tắt, thông báo sau không thử Telegram nữa."""
+    api = login(superuser)
+    _save_bot(api)
+    bot = TelegramBot.objects.get()
+    chat = TelegramChat.objects.create(owner=superuser, bot=bot, chat_id="99", status="active")
+    NotificationPreference.objects.create(
+        user=superuser, event_code="system.auth.login", channel="TELEGRAM", telegram_chat=chat
+    )
+    TelegramBot.objects.filter(pk=bot.pk).update(token_encrypted="gAAAA-khoa-cu")
+    with patch(f"{CLIENT}.send_message") as send:
+        NotificationService().notify(
+            "system.auth.login", recipient=superuser, dedup_key="a", payload=NotificationPayload(title="t")
+        )
+        NotificationService().dispatch_pending()
+        assert not send.called
+    bot.refresh_from_db()
+    assert not bot.is_active and bot.last_error_code == NotificationErrorCode.TELEGRAM_BOT_TOKEN_INVALID
+    assert NotificationDelivery.objects.get(channel="TELEGRAM").status == "FAILED"
+    # Lần sau: không tạo bản gửi Telegram cho bot đã tắt (không lỗi lặp, không cảnh báo lặp).
+    NotificationService().notify(
+        "system.auth.login", recipient=superuser, dedup_key="b", payload=NotificationPayload(title="t")
+    )
+    assert NotificationDelivery.objects.filter(channel="TELEGRAM").count() == 1

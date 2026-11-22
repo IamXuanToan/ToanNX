@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { AttachmentVideoPlayer } from "@/modules/system/components/attachment-video-player";
+import { AttachmentVideoPlayer } from "@/modules/system/components/attachment/attachment-video-player";
 import {
   MEDIA_PLAYER_MUTED_KEY,
   MEDIA_PLAYER_VOLUME_KEY,

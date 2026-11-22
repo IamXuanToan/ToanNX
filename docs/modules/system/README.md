@@ -60,13 +60,30 @@ file riêng tư `/tep/{id}`.
 ## Sự kiện thông báo
 
 `system.auth.login`, `system.auth.new_device`, `system.auth.password_changed`, `system.announcement.published`,
-`system.notification.delivery_failed`, `system.storage.quota_warning` (hằng ở `constants/system_notification_event.py`).
+`system.notification.delivery_failed`, `system.storage.quota_warning`, `system.database.quota_warning` (cron dọn dẹp
+đo `pg_database_size`, cảnh báo từ 80% của `DATABASE_MAX_BYTES`) (hằng ở `constants/system_notification_event.py`).
 
 ## Webhook / Callback
 
 - Callback: `system.google_oauth`, `system.github_oauth` (đăng nhập Google/GitHub), xem
   [../../guides/oauth.md](../../guides/oauth.md).
-- Không nhận webhook.
+- Webhook `system.notification_dispatch` — `POST /api/v1/system/notifications/dispatch`: Upstash QStash gọi sau
+  khi có thông báo (chữ ký `Upstash-Signature`, luôn gửi) và cron-job.org gọi mỗi 10 phút (`Bearer CRON_SECRET`;
+  mốc trong Redis chưa tới thì trả `sent=0`, không chạm DB). Xem
+  [../../guides/notification-setup.md](../../guides/notification-setup.md).
+
+## Gửi thông báo
+
+- `notify` chỉ ghi `Notification` + `NotificationDelivery(PENDING)`; **request không gọi FCM/SMTP/Telegram**. Sau
+  commit đá `NotificationKickService` một lần cho cả request (mốc Redis `notification:next_due` + tin QStash).
+- Lỗi tạm → `next_attempt_at` theo lùi dần 1/5/15/60/240 phút và hẹn QStash gọi lại đúng lúc đó.
+- Token bot Telegram không giải mã được hoặc Telegram trả 401/404 → bot bị tắt (`is_active=False`,
+  `last_error_code=TELEGRAM_BOT_TOKEN_INVALID`), một bản `FAILED` + cảnh báo; thông báo sau không tạo bản gửi
+  Telegram nữa tới khi lưu lại token.
+- Email theo mẫu (quên mật khẩu, xác minh, lời mời) gửi đồng bộ (`EMAIL_ASYNC=False`, `EMAIL_TIMEOUT=5`).
+- Login ghi log `auth.login steps rate_limit=.. authenticate=.. session=.. notify=.. commit_kick=.. profile=..
+  total=..` kèm `request_id`; dispatcher ghi `notification.send delivery=.. channel=.. status=.. elapsed=..`.
+- Rate limit đếm bằng Redis khi có `REDIS_URL` (không ghi bảng `system_rate_limit_bucket`), lỗi thì về PostgreSQL.
 
 ## Chức năng liên quan
 

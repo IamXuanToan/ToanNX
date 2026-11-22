@@ -2,7 +2,7 @@
 
 import "./globals.css";
 
-import { GlobalErrorView } from "@/modules/home/views/global-error-view";
+import { GlobalErrorView } from "@/modules/home/views/errors/global-error-view";
 
 /**
  * Error boundary của layout gốc (thay toàn bộ tài liệu khi kích hoạt).

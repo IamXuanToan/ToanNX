@@ -1,0 +1,32 @@
+/**
+ * Trang tạo thể loại mới (`/admin/genres/new`).
+ */
+
+"use client";
+
+import { useTranslations } from "next-intl";
+
+import { usePermission } from "@/modules/system/hooks/use-permission";
+import { FormPage } from "@/shares/components/common/form-page";
+import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
+
+import { GenreForm } from "../../components/genre/genre-form";
+import { GENRE_PERMISSIONS } from "../../permissions/genre-permission";
+
+/**
+ * Giao diện tạo thể loại mới.
+ *
+ * @returns Khối giao diện form tạo thể loại.
+ */
+export function GenreCreateView() {
+  const t = useTranslations("novel.genres");
+  const canCreate = usePermission(GENRE_PERMISSIONS.create);
+
+  if (!canCreate) return <ForbiddenView />;
+
+  return (
+    <FormPage title={t("createTitle")}>
+      <GenreForm />
+    </FormPage>
+  );
+}

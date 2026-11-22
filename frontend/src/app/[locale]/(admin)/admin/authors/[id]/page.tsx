@@ -1,6 +1,6 @@
-import { RecordHistoryView } from "@/modules/system/views/record-history-view";
+import { RecordHistoryView } from "@/modules/system/views/journal-entry/record-history-view";
 import { NOVEL_API_ENDPOINTS } from "@/modules/novel/constants/api-endpoints";
-import { AuthorDetailView } from "@/modules/novel/views/author-detail-view";
+import { AuthorDetailView } from "@/modules/novel/views/author/author-detail-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "novel.nav.authors" });

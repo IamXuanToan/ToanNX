@@ -1,8 +1,8 @@
 """Điểm vào DUY NHẤT để phát thông báo: `notify(...)`.
 
-Trong transaction nghiệp vụ chỉ ghi DB (savepoint riêng, lỗi chỉ ghi log, không ném ra nơi gọi);
-sau commit gửi
-ngay trong ngân sách thời gian (`NOTIFICATION_DISPATCH_BUDGET_SECONDS`), phần còn lại cron gửi và thử lại.
+Trong transaction nghiệp vụ chỉ ghi DB (savepoint riêng, lỗi chỉ ghi log, không ném ra nơi gọi). **Request
+không bao giờ gọi FCM/SMTP/Telegram**: sau commit chỉ "đá" `NotificationKickService` (QStash gọi lại endpoint
+dispatch ở lượt function riêng); cron ngoài là lưới an toàn và không chạm DB khi không có việc.
 Module khác chỉ gọi `notify`, không tự gửi email/Telegram/push và không đọc model thông báo.
 """
 
@@ -12,7 +12,6 @@ from collections import defaultdict
 from datetime import timedelta
 from typing import Any
 
-from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
 from django.db.models import QuerySet
@@ -40,6 +39,7 @@ from app.system.repositories.notification_repository import NotificationReposito
 from app.system.repositories.push_device_repository import PushDeviceRepository
 from app.system.repositories.user_repository import UserRepository
 from app.system.services.notification_dispatcher import NotificationDispatcher
+from app.system.services.notification_kick_service import NotificationKickService
 from app.system.services.notification_preference_service import NotificationPreferenceService
 from app.system.services.push_device_service import PushDeviceService
 from app.system.types.notification_payload import NotificationPayload
@@ -60,6 +60,7 @@ class NotificationService:
         preference_service: NotificationPreferenceService | None = None,
         dispatcher: NotificationDispatcher | None = None,
         registry: ModuleRegistry | None = None,
+        kick_service: NotificationKickService | None = None,
     ) -> None:
         """Khởi tạo phụ thuộc."""
         self.repository = repository or NotificationRepository()
@@ -70,6 +71,8 @@ class NotificationService:
         self.dispatcher = dispatcher or NotificationDispatcher()
         self.registry = registry or module_registry
         self.push_device_service = PushDeviceService(self.push_device_repository)
+        self.kick_service = kick_service or NotificationKickService()
+        self._kick_scheduled = False
 
     # ================================================================== phát
     def notify(
@@ -81,7 +84,7 @@ class NotificationService:
         recipient: Any | None = None,
         recipients: list[Any] | None = None,
     ) -> int:
-        """Tạo thông báo cho người nhận của sự kiện và hẹn gửi sau commit.
+        """Tạo thông báo cho người nhận của sự kiện; sau commit đá việc gửi (không gửi trong request).
 
         Args:
             event_code: Mã sự kiện đã khai trong `ModuleDescriptor.notification_events`.
@@ -109,7 +112,7 @@ class NotificationService:
             logger.exception("notification.notify_failed %s", event_code)
             return 0
         if delivery_ids:
-            transaction.on_commit(lambda: self.dispatch_ids(delivery_ids))
+            self._schedule_kick()
         return created
 
     def revoke(self, event_code: str, dedup_key: str) -> int:
@@ -117,10 +120,9 @@ class NotificationService:
         return self.repository.hard_delete_where(event_code=event_code, dedup_key=dedup_key)
 
     # ================================================================== gửi
-    def dispatch_ids(self, ids: list[Any], budget_seconds: float | None = None) -> int:
-        """Gửi các bản vừa tạo trong ngân sách thời gian; hết giờ thì để cron gửi nốt."""
-        budget = settings.NOTIFICATION_DISPATCH_BUDGET_SECONDS if budget_seconds is None else budget_seconds
-        deadline = time.monotonic() + budget
+    def dispatch_ids(self, ids: list[Any], budget_seconds: float) -> int:
+        """Gửi lần lượt trong ngân sách thời gian; hết giờ thì để lượt sau gửi nốt."""
+        deadline = time.monotonic() + budget_seconds
         sent = 0
         for pk in ids:
             if time.monotonic() >= deadline:
@@ -128,11 +130,23 @@ class NotificationService:
             sent += self._send_and_alert(pk)
         return sent
 
-    def dispatch_pending(self) -> int:
-        """Cron: gửi các bản đến hạn (tối đa một lô, trong ngân sách cron)."""
-        return self.dispatch_ids(
+    def dispatch_pending(self, *, force: bool = False) -> int:
+        """Gửi các bản đến hạn (tối đa một lô, trong ngân sách cron).
+
+        Args:
+            force: Bỏ qua mốc trong Redis (lượt QStash gọi lại, cron dọn dẹp hằng ngày).
+
+        Returns:
+            Số bản gửi thành công; 0 và **không query DB** khi mốc trong Redis chưa tới.
+        """
+        if not force and not self.kick_service.has_due_work():
+            return 0
+        marker = self.kick_service.read_marker()
+        sent = self.dispatch_ids(
             self.dispatcher.due_ids(NOTIFICATION_CRON_BATCH), NOTIFICATION_CRON_BUDGET_SECONDS
         )
+        self.kick_service.remember_next_due(self.dispatcher.next_due_at(), marker)
+        return sent
 
     def retry(self, delivery: NotificationDelivery) -> NotificationDelivery | None:
         """Nút Gửi lại: đưa về PENDING, cho thêm một lần thử."""
@@ -192,6 +206,18 @@ class NotificationService:
         return removed
 
     # ================================================================== nội bộ
+    def _schedule_kick(self) -> None:
+        """Đá việc gửi một lần sau commit, dù request tạo nhiều thông báo."""
+        if self._kick_scheduled:
+            return
+        self._kick_scheduled = True
+
+        def run() -> None:
+            self._kick_scheduled = False
+            self.kick_service.kick()
+
+        transaction.on_commit(run)
+
     def _own(self, actor: Any, pk: Any) -> Notification:
         notification = self.repository.find_by_id(pk)
         if notification is None or notification.recipient_id != actor.pk:
@@ -292,6 +318,10 @@ class NotificationService:
             return 0
         if delivery is None:
             return 0
+        if delivery.status == NotificationDelivery.Status.PENDING and delivery.next_attempt_at is not None:
+            # Lỗi tạm: hẹn QStash gọi lại đúng lúc thử lại theo lùi dần.
+            delay = (delivery.next_attempt_at - timezone.now()).total_seconds()
+            self.kick_service.kick(int(max(0, delay)) + 1)
         if delivery.status == NotificationDelivery.Status.FAILED and (
             delivery.notification.event_code != SystemNotificationEvent.DELIVERY_FAILED
         ):

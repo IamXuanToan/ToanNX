@@ -1,4 +1,4 @@
-import { HomeView } from "@/modules/home/views/home-view";
+import { HomeView } from "@/modules/home/views/landing/home-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ alternates: "/" });

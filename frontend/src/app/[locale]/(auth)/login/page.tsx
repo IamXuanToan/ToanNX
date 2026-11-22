@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { LoginView } from "@/modules/system/views/login-view";
+import { LoginView } from "@/modules/system/views/auth/login-view";
 import { HOME_ROUTES } from "@/modules/home/constants/routes";
 import { MANAGE_APP_ROUTES } from "@/modules/manage-app/constants/routes";
 import { createPageMetadata } from "@/shares/lib/seo";

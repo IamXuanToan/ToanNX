@@ -20,6 +20,10 @@ class CookieJwtAuthentication(BaseAuthentication):
     - Kiểm tra token + phiên ủy quyền cho AuthSessionService.
     """
 
+    def __init__(self) -> None:
+        """Khởi tạo service (rule backend §5.2: tạo ở `__init__`, không tạo trong method)."""
+        self.auth_session_service = AuthSessionService()
+
     def authenticate(self, request: Request) -> tuple[Any, AuthSession] | None:
         """Xác thực request.
 
@@ -41,7 +45,7 @@ class CookieJwtAuthentication(BaseAuthentication):
         if not token:
             return None
 
-        session = AuthSessionService().authenticate_access_token(token)
+        session = self.auth_session_service.authenticate_access_token(token)
         if via_cookie:
             enforce_csrf(request._request)
         set_current_user(session.user)

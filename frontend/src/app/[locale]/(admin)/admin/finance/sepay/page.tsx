@@ -1,4 +1,4 @@
-import { SepayView } from "@/modules/finance/views/sepay-view";
+import { SepayView } from "@/modules/finance/views/sepay-connection/sepay-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "finance.nav.sepay" });

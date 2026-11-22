@@ -1,4 +1,4 @@
-import { TagListView } from "@/modules/novel/views/tag-list-view";
+import { TagListView } from "@/modules/novel/views/tag/tag-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "novel.nav.tags" });

@@ -1,4 +1,4 @@
-import { NovelCreateView } from "@/modules/novel/views/novel-create-view";
+import { NovelCreateView } from "@/modules/novel/views/novel/novel-create-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "novel.nav.novels" });

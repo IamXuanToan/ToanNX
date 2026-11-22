@@ -1,4 +1,4 @@
-import { RoleCreateView } from "@/modules/system/views/role-create-view";
+import { RoleCreateView } from "@/modules/system/views/role/role-create-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "system.iam.roles.create" });

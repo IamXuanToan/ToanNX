@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { ForgotPasswordView } from "@/modules/system/views/forgot-password-view";
+import { ForgotPasswordView } from "@/modules/system/views/auth/forgot-password-view";
 import { HOME_ROUTES } from "@/modules/home/constants/routes";
 import { createPageMetadata } from "@/shares/lib/seo";
 

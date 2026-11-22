@@ -25,6 +25,12 @@ Note `src/proxy.ts` replaces middleware.
   file holding `XxxView` + `XxxObjectView`, a model file holding the model + its own field enums, shadcn
   `shares/components/ui/*`, Next special-file exports. Nested classes inside a parent class (`Meta`, enum inside the
   model) are allowed system-wide. Details: rule backend §2.2, rule frontend §2.1.
+- **Components and views are grouped by model**: `components/<group>/<name>.tsx` + `components/<group>/hooks/
+  use-<name>.ts`, `views/<group>/<name>-view.tsx`; `<group>` = BE model (same name as `services/<group>.service.ts`),
+  or a feature (`auth`, `current-user`, `reader`, `dashboard`, `shell`...) for screens without a model. No files at
+  the root of `components/`/`views/`, no root `components/hooks/`, no `views/hooks/`, no `shared`/`common` group
+  (shared component → the group that uses it most; app-wide → `shares/`). Views only call `usePermission`,
+  `useTranslations`, `useEditMode` (rule frontend §2, `tests/unit/module-structure.test.ts`).
 - **Right layer at every entry point**: views, tasks, commands, signals, middleware, authentication, permission
   classes and recorders call services only, never repositories/ORM. Services/repositories a class uses are created in
   `__init__` (`self.<name>_service`); no `XxxService().method()`/`XxxService.method()` inside methods (rule backend §1, §4, §5.2).
@@ -74,7 +80,12 @@ Note `src/proxy.ts` replaces middleware.
   `docs/modules/<module>/` (rule common §4).
 - **Notifications only through `NotificationService.notify`**: events declare `scope`/`audience`/`permission` in
   `ModuleDescriptor.notification_events`; `OWNER` events must pass `recipient`; never send email/Telegram/push
-  directly (rule backend §9).
+  directly. A request never calls FCM/SMTP/Telegram: `notify` only writes the outbox and kicks QStash after commit
+  (cron is the safety net); every external call has a timeout (rule backend §9).
+- **Free-tier budget**: Redis (`CacheService`) only speeds things up (PostgreSQL stays the source, Redis down →
+  fallback, never 500); cache public data only; visitor requests and cron must not touch Neon while cache/marker is
+  valid. Check [docs/architecture/infrastructure.md](docs/architecture/infrastructure.md) before adding work that
+  costs DB/Redis/R2/function calls (rule backend §9).
 - **Admin URLs carry the module prefix**: `/quan-tri/<module-vi>/...` (en `/admin/<module-en>/...`), e.g.
   `/quan-tri/he-thong/nguoi-dung`, `/quan-tri/truyen/tac-gia`; change only `<M>_PATHNAMES` (internal pathnames and
   `app/` folders stay), and update URLs in E2E specs and docs in the same change (rule frontend §1).
@@ -196,7 +207,8 @@ rotating refresh token stored as HMAC; every request checks the session is still
   params and render a module View/Layout — no hooks, state or UI markup. Views only compose components and check
   permissions (`usePermission`/`PermissionGate`); data fetching, loading and error states live in components + hooks.
 - Feature code lives in `src/modules/<module>/{views,components,hooks,services,constants,schemas,types,messages}`
-  plus `navigation.ts`. Each module owns `constants/{routes,api-endpoints,query-keys}.ts` (`<M>_ROUTES`,
+  plus `navigation.ts`; `components/` and `views/` are split into one folder per model (`components/user/`,
+  `views/user/`). Each module owns `constants/{routes,api-endpoints,query-keys}.ts` (`<M>_ROUTES`,
   `<M>_PATHNAMES`, `<M>_API_ENDPOINTS`, `<m>Keys`); nothing of that lives in `shares/`. The only shared API paths are
   `shares/lib/api/session-paths.ts`, used by `apiClient` itself for CSRF/refresh.
 - UI standards (rule frontend §3.1): every control is 40px (`h-10`, `rounded-xl`); every select is `SelectField`

@@ -5,11 +5,13 @@ from typing import Any
 import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
+from app.core.tests.helpers.fake_redis import FakeRedis
 from app.system.tests.factories.user_factory import UserFactory
 from app.system.tests.helpers.permission_helper import grant
 from app.utilities.models.page import Page
 from app.utilities.models.short_link import ShortLink
 from app.utilities.permissions.page_permission import PagePermission as P
+from app.utilities.services.page_service import PageService
 from app.utilities.services.short_link_service import ShortLinkService
 from app.utilities.tests.helpers.page_test_helper import (
     get_seeded_path,
@@ -133,3 +135,40 @@ class TestPagePublicApi(BaseApiTestCase):
         """Segment hoặc slug không tồn tại trả về 404 NOT_FOUND."""
         res = client.get(f"{BASE_URL}/nonexistent/not-found")
         self.assert_error(res, 404, "NOT_FOUND")
+
+
+class TestPagePublicCache(BaseApiTestCase):
+    """Có Redis: trang đã xuất bản lần sau không chạm DB; bản nháp không cache; sửa trang làm mới ngay."""
+
+    def _page(self, owner: Any, status: str = Page.Status.PUBLISHED) -> Page:
+        return Page.objects.create(
+            owner=owner,
+            path=get_seeded_path("p"),
+            title="Giới thiệu",
+            slug="gioi-thieu",
+            status=status,
+            content=make_doc(make_paragraph("Xin chào")),
+        )
+
+    def test_published_page_served_from_cache(
+        self, user: Any, client: Any, fake_redis: FakeRedis, django_assert_num_queries: Any
+    ) -> None:
+        page = self._page(user)
+        client.get(f"{BASE_URL}/p/{page.slug}")
+        with django_assert_num_queries(0):
+            res = client.get(f"{BASE_URL}/p/{page.slug}")
+        assert self.assert_success(res, 200)["title"] == "Giới thiệu"
+
+    def test_draft_is_never_cached(self, user: Any, client: Any, fake_redis: FakeRedis) -> None:
+        page = self._page(user, Page.Status.DRAFT)
+        assert client.get(f"{BASE_URL}/p/{page.slug}").status_code == 404
+        assert not any(":page:" in key for key in fake_redis.data)
+
+    def test_update_invalidates_cache(
+        self, user: Any, client: Any, fake_redis: FakeRedis, django_capture_on_commit_callbacks: Any
+    ) -> None:
+        page = self._page(user)
+        client.get(f"{BASE_URL}/p/{page.slug}")
+        with django_capture_on_commit_callbacks(execute=True):
+            PageService().update(user, page.pk, {"title": "Đã sửa"})
+        assert self.assert_success(client.get(f"{BASE_URL}/p/{page.slug}"), 200)["title"] == "Đã sửa"

@@ -141,7 +141,14 @@ Chi tiết: `docs/features/permission-scope.md`, `docs/features/permission-ui.md
 ### 2.5 Frontend (Next.js 16)
 
 - Luồng: `page → View → component (+ hook riêng) → hook module (React Query) → service → apiClient`.
-- `page.tsx`/`layout.tsx` chỉ khai metadata và render View của module. View chỉ ghép component và kiểm quyền.
+- `page.tsx`/`layout.tsx` chỉ khai metadata và render View của module. View chỉ ghép component và kiểm quyền
+  (chỉ gọi `usePermission`, `useTranslations`, `useEditMode`; không query, state, `useRouter`, `useEffect`).
+- **Chia theo model**: component đặt ở `modules/<m>/components/<model>/<tên>.tsx`, hook của nó ở
+  `components/<model>/hooks/use-<tên>.ts`, view ở `views/<model>/<tên>-view.tsx`. `<model>` trùng tên file service
+  (`user`, `role`, `short-link`...); màn không gắn model thì theo chức năng (`auth`, `current-user`, `reader`,
+  `dashboard`, `shell`...). Không đặt file ở gốc `components/`/`views/`, không tạo `components/hooks/` cấp gốc, không
+  tạo `views/hooks/`, không tạo nhóm `shared`/`common` (dùng chung → nhóm dùng nhiều nhất; toàn app → `shares/`).
+  Chi tiết bản ghi: component `<model>-profile.tsx` tự tải dữ liệu; chuyển trang sau khi tạo nằm trong hook form.
 - Service mỗi model BE một file. Route, API endpoint, query key do từng module tự khai trong `constants/`.
 - `shares/` không import module. UI dùng component chung có sẵn (`DataTable`, `SelectField`, `FilterSelect`,
   `FormPage`...). Control cao 40px. Form tạo/sửa/chi tiết dùng chung một component, không dùng dialog.
@@ -292,6 +299,8 @@ Backend:
 Frontend:
 
 - [ ] Một component/hook/class một file; không hook trong `.tsx`; context tách `-context.ts`/`-provider.tsx`/`use-*.ts`.
+- [ ] File mới nằm đúng `components/<model>/` (+ `hooks/`) và `views/<model>/`; không `views/hooks/`, không nhóm
+      `shared`/`common`; `tests/unit/module-structure.test.ts` đạt.
 - [ ] Đúng lớp: page chỉ metadata + View; View không fetch; component không gọi service/apiClient trực tiếp.
 - [ ] Dùng component chung (`DataTable`, `SelectField`, `FilterSelect`, `FormPage`...), control `h-10`, `<Image>`, chuỗi qua i18n.
 - [ ] Primitive lấy từ `@/shares/components/ui/*` (thiếu thì `pnpm dlx shadcn@latest add`); không `<button>`/`<input>`/

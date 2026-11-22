@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { SocialAuthCallbackView } from "@/modules/system/views/social-auth-callback-view";
+import { SocialAuthCallbackView } from "@/modules/system/views/auth/social-auth-callback-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({

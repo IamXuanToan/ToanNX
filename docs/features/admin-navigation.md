@@ -44,6 +44,6 @@ module hết mục thì mất khỏi sidebar và màn chọn; trang mở khi ch�
 ## File chính
 
 - `frontend/src/modules/manage-app/constants/admin-navigation.ts` (`groupNavSections`)
-- `frontend/src/modules/manage-app/components/module-sidebar.tsx`, `sidebar-module-group.tsx`,
+- `frontend/src/modules/manage-app/components/sidebar/module-sidebar.tsx`, `sidebar-module-group.tsx`,
   `sidebar-nav-section.tsx`
 - `frontend/src/shares/types/navigation.types.ts`

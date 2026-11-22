@@ -110,6 +110,14 @@ class TelegramBotService:
             ) from exc
 
     def mark_token_invalid(self, bot: TelegramBot) -> None:
-        """Ghi lỗi token để màn Hồ sơ báo cần nhập lại."""
-        logger.warning("Token bot Telegram %s không dùng được", bot.pk)
-        self.repository.update(bot, last_error_code=NotificationErrorCode.TELEGRAM_BOT_TOKEN_INVALID)
+        """Tắt bot và ghi lỗi token để màn Hồ sơ báo cần nhập lại.
+
+        Tắt bot để các thông báo sau không thử (và không lỗi, không sinh cảnh báo) lặp lại mỗi lần; lưu token
+        mới (`save`) bật lại bot. Token giải mã lỗi thường do `DJANGO_SECRET_KEY` đã đổi.
+        """
+        if not bot.is_active and bot.last_error_code == NotificationErrorCode.TELEGRAM_BOT_TOKEN_INVALID:
+            return
+        logger.warning("Token bot Telegram %s không dùng được, đã tắt bot", bot.pk)
+        self.repository.update(
+            bot, is_active=False, last_error_code=NotificationErrorCode.TELEGRAM_BOT_TOKEN_INVALID
+        )
