@@ -35,13 +35,12 @@ def _is_trusted_proxy(addr: IPAddress) -> bool:
 def get_client_ip(request: HttpRequest) -> str:
     """Lấy IP thực tế của client từ request.
 
-    Áp dụng thuật toán duyệt ngược từ phải sang trái (right-to-left) trên chuỗi
-    `X-Forwarded-For` để loại bỏ các hop proxy tin cậy (Cloudflare và mạng nội bộ).
-    IP công khai đầu tiên tính từ phải qua trái không thuộc danh sách proxy tin cậy
-    chính là IP thực của client, bảo đảm chống 100% IP spoofing.
-
-    Nếu toàn bộ chuỗi đều là proxy tin cậy hoặc không có `X-Forwarded-For`, hàm
-    sẽ sử dụng `CF-Connecting-IP` (nếu hợp lệ) hoặc fallback về `REMOTE_ADDR`.
+    1. Ưu tiên `CF-Connecting-IP` do Cloudflare gắn: Cloudflare luôn ghi đè header
+       này bằng IP kết nối TCP thực tế ở rìa ngoài cùng, chống giả mạo IP và không
+       bị ảnh hưởng bởi các hop trung gian như Vercel Frontend Serverless rewrite.
+    2. Nếu không có `CF-Connecting-IP`: áp dụng thuật toán duyệt ngược từ phải sang
+       trái trên chuỗi `X-Forwarded-For` để loại bỏ các hop proxy tin cậy.
+    3. Nếu toàn bộ chuỗi đều là proxy tin cậy hoặc rỗng, fallback về `REMOTE_ADDR`.
 
     Args:
         request: HTTP request.
@@ -49,6 +48,17 @@ def get_client_ip(request: HttpRequest) -> str:
     Returns:
         Chuỗi IP client (chuẩn hóa IPv4 hoặc IPv6, hoặc rỗng nếu không xác định).
     """
+    # 1. Ưu tiên CF-Connecting-IP từ Cloudflare (rìa mạng ngoài cùng)
+    cf_connecting_ip = str(request.META.get("HTTP_CF_CONNECTING_IP", "")).strip()
+    if cf_connecting_ip:
+        try:
+            cf_addr = ipaddress.ip_address(cf_connecting_ip)
+            if not cf_addr.is_private and not cf_addr.is_loopback:
+                return str(cf_addr)
+        except ValueError:
+            pass
+
+    # 2. Duyệt ngược X-Forwarded-For loại trừ proxy tin cậy
     forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
     raw_ips: list[str] = []
     if forwarded:
@@ -61,17 +71,7 @@ def get_client_ip(request: HttpRequest) -> str:
             if not _is_trusted_proxy(addr):
                 return str(addr)
 
-    # Nếu có header CF-Connecting-IP từ Cloudflare
-    cf_connecting_ip = str(request.META.get("HTTP_CF_CONNECTING_IP", "")).strip()
-    if cf_connecting_ip:
-        try:
-            cf_addr = ipaddress.ip_address(cf_connecting_ip)
-            if not _is_trusted_proxy(cf_addr):
-                return str(cf_addr)
-        except ValueError:
-            pass
-
-    # Nếu chuỗi X-Forwarded-For toàn IP private (môi trường thử nghiệm / mạng nội bộ)
+    # 3. Nếu chuỗi X-Forwarded-For toàn IP private (môi trường thử nghiệm / mạng nội bộ)
     if raw_ips:
         for raw_ip in raw_ips:
             try:

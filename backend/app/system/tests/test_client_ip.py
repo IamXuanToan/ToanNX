@@ -20,8 +20,21 @@ def test_client_ip_empty_request() -> None:
     assert get_client_ip(request) == ""
 
 
+def test_client_ip_prefers_cf_connecting_ip_over_intermediate_proxies() -> None:
+    """Ưu tiên CF-Connecting-IP từ Cloudflare, bỏ qua IP trung gian của Vercel/AWS."""
+    factory = RequestFactory()
+    # 43.199.206.243 là IP Vercel Frontend trên AWS; 1.52.1.221 là IP thật của người dùng
+    request = factory.get(
+        "/",
+        HTTP_CF_CONNECTING_IP="1.52.1.221",
+        HTTP_X_FORWARDED_FOR="1.52.1.221, 162.159.98.210, 43.199.206.243",
+        REMOTE_ADDR="127.0.0.1",
+    )
+    assert get_client_ip(request) == "1.52.1.221"
+
+
 def test_client_ip_single_cloudflare_proxy() -> None:
-    """Request qua 1 lớp proxy Cloudflare: loại bỏ IP Cloudflare và lấy IP client thật."""
+    """Request qua 1 lớp proxy Cloudflare (không có CF-Connecting-IP): lấy IP client thật."""
     factory = RequestFactory()
     request = factory.get(
         "/",
@@ -55,17 +68,6 @@ def test_client_ip_anti_spoofing_ignores_fake_ips() -> None:
         REMOTE_ADDR="127.0.0.1",
     )
     assert get_client_ip(request) == "14.232.208.5"
-
-
-def test_client_ip_cf_connecting_ip_fallback() -> None:
-    """Có header CF-Connecting-IP khi X-Forwarded-For không có public IP hợp lệ."""
-    factory = RequestFactory()
-    request = factory.get(
-        "/",
-        HTTP_CF_CONNECTING_IP="118.70.180.22",
-        REMOTE_ADDR="127.0.0.1",
-    )
-    assert get_client_ip(request) == "118.70.180.22"
 
 
 def test_client_ip_ipv6_support() -> None:

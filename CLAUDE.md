@@ -247,7 +247,7 @@ rotating refresh token stored as HMAC; every request checks the session is still
 
 **Agents never create branches, commit, push, merge or delete branches unless explicitly asked** — work on the
 current branch and only suggest a commit message when asked. When the user does ask: branches from `develop` as `feat|fix|ref|docs|test|chore/...-<short-name>` (lowercase ASCII). Commits:
-`<type>(<scope>): <imperative english, lowercase, no period, ≤72 chars>`, types include `ref` (refactor); scopes are
+`<type>(<scope>): <imperative english, lowercase, no period, ≤100 chars>`, types include `ref` (refactor); scopes are
 module names with hyphens (`utilities`, `manage-app`) or `core`/`shares`/`i18n`/`backend`/`frontend`/`repo`.
 Hooks in `.githooks` enforce this (`git config core.hooksPath .githooks`). See [docs/rules/git.md](docs/rules/git.md).
 
