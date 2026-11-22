@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import environ
+from corsheaders.defaults import default_headers
 
 from app.system.constants.media_types import ALLOWED_CONTENT_TYPES
 
@@ -278,6 +279,10 @@ CORS_ALLOWED_ORIGIN_REGEXES: list[str] = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_EXPOSE_HEADERS = ["Content-Disposition", "X-Request-ID"]
+CORS_ALLOW_HEADERS: list[str] = [
+    *default_headers,
+    "x-request-id",
+]
 
 # Rate limit đăng nhập lưu trên PostgreSQL (Vercel không giữ bộ nhớ giữa các invocation)
 RATE_LIMIT_ENABLED = env.bool("RATE_LIMIT_ENABLED", default=True)
