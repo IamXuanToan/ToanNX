@@ -19,7 +19,9 @@ class TestChapterDetailApi(BaseApiTestCase):
 
     def test_detail_success_full_data(self, user: Any, login: Any) -> None:
         """Lấy chi tiết chương thành công với đầy đủ dữ liệu."""
-        chapter = ChapterFactory(chapter_number=1, title="Chương 1", content="Nội dung chi tiết...")
+        chapter = ChapterFactory(
+            novel__owner=user, chapter_number=1, title="Chương 1", content="Nội dung chi tiết..."
+        )
         grant(user, ChapterPermission.READ)
         api = login(user)
 

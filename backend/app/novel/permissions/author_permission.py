@@ -27,3 +27,6 @@ class AuthorPermission(PermissionCatalog):
         name="Xóa tác giả",
         description="Xóa tác giả.",
     )
+
+    # Quyền của vai trò thành viên: thao tác bản ghi do mình tạo.
+    MEMBER = (READ,)

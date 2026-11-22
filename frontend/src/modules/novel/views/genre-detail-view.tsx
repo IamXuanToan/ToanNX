@@ -13,6 +13,9 @@ import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
+import { EditModeProvider } from "@/shares/components/common/edit-mode-provider";
+import { useEditMode } from "@/shares/hooks/use-edit-mode";
+
 import { GenreForm } from "../components/genre-form";
 import { NOVEL_ROUTES } from "../constants/routes";
 import { useGenre } from "../hooks/use-genre";
@@ -28,6 +31,7 @@ export function GenreDetailView({ id, history }: { id: string; history?: ReactNo
   const t = useTranslations("novel.genres");
   const canRead = usePermission(GENRE_PERMISSIONS.read);
   const canUpdate = usePermission(GENRE_PERMISSIONS.update);
+  const isEditing = useEditMode(canUpdate);
 
   const query = useGenre(id, canRead);
 
@@ -45,9 +49,11 @@ export function GenreDetailView({ id, history }: { id: string; history?: ReactNo
   }
 
   return (
-    <FormPage title={query.data.name || t("editTitle")}>
-      <GenreForm genre={query.data} disabled={!canUpdate} />
-      {history ? <div className="mt-6">{history}</div> : null}
-    </FormPage>
+    <EditModeProvider canEdit={canUpdate}>
+      <FormPage title={query.data.name || t("editTitle")}>
+        <GenreForm genre={query.data} disabled={!isEditing} />
+        {history ? <div className="mt-6">{history}</div> : null}
+      </FormPage>
+    </EditModeProvider>
   );
 }

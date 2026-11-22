@@ -5,7 +5,7 @@ import type { ComponentProps } from "react";
 
 import { Button } from "@/shares/components/ui/button";
 
-import { useFormId } from "./form";
+import { useFormId } from "./hooks/use-form-id";
 
 /**
  * Nút gửi form chuẩn: luôn gắn `form=<id của Form>` nên bấm được cả khi nằm ngoài thẻ `<form>`

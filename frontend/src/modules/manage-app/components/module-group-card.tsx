@@ -9,6 +9,9 @@ import { Card } from "@/shares/components/ui/card";
 import { useMessage } from "@/shares/hooks/use-message";
 import type { AdminGroup } from "@/shares/types/navigation.types";
 
+import { MAX_VISIBLE_GROUP_ITEMS } from "../constants/launcher";
+import { ModuleGroupCardMoreItems } from "./module-group-card-more-items";
+
 /**
  * Thẻ đại diện cho một nhóm module quản trị (Hệ thống, Tiện ích, Novel) theo ngôn ngữ Clean.
  * Thiết kế tinh tế với tiêu đề, mô tả, số lượng mục quản lý và danh sách tính năng con trực thuộc dạng chip thanh mảnh có icon.
@@ -21,6 +24,9 @@ export function ModuleGroupCard({ group }: { group: AdminGroup }) {
   const t = useTranslations("manageApp");
   const message = useMessage();
   const items = group.modules.flatMap((module) => module.items);
+  const visibleItems = items.slice(0, MAX_VISIBLE_GROUP_ITEMS);
+  const remainingCount = items.length - visibleItems.length;
+  const hasMore = remainingCount > 0;
 
   return (
     <Card className="group border-border/80 hover:border-primary/50 relative h-full overflow-hidden rounded-2xl p-0 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
@@ -66,19 +72,29 @@ export function ModuleGroupCard({ group }: { group: AdminGroup }) {
           </span>
         </div>
 
-        {/* Danh sách tính năng con trực thuộc dạng chip thanh mảnh có icon */}
+        {/* Danh sách tính năng con: hiển thị tối đa mục chính và badge +X xem thêm khi hover */}
         <div className="border-border/60 mt-4 border-t pt-3.5">
-          <div className="flex flex-wrap gap-1.5">
-            {items.map((item) => (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {visibleItems.map((item) => (
               <Badge
                 key={item.href}
                 variant="outline"
-                className="bg-muted/40 border-border/60 text-foreground/80 group-hover:border-border group-hover:bg-muted/70 group-hover:text-foreground inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors"
+                className="bg-muted/40 border-border/60 text-foreground/80 group-hover:border-border group-hover:bg-muted/70 group-hover:text-foreground inline-flex items-center gap-1.5 rounded-lg px-2 py-0.5 text-xs font-medium transition-colors"
               >
                 <item.icon className="text-primary size-3.5 shrink-0" aria-hidden />
-                <span>{message(item.labelKey)}</span>
+                <span className="inline-block max-w-[68px] truncate sm:max-w-[74px]">
+                  {message(item.labelKey)}
+                </span>
               </Badge>
             ))}
+
+            {hasMore && (
+              <ModuleGroupCardMoreItems
+                group={group}
+                items={items}
+                remainingCount={remainingCount}
+              />
+            )}
           </div>
         </div>
       </Link>

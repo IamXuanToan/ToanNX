@@ -8,5 +8,6 @@ export const ATTACHMENT_PERMISSIONS = {
   create: "system.attachment.create",
   delete: "system.attachment.delete",
   manageAll: "system.attachment.manage_all",
+  readPrivate: "system.attachment.read_private",
   update: "system.attachment.update",
 } as const;

@@ -126,8 +126,10 @@ export function QrCodeTable({
             }
           : undefined
       }
-      onEdit={canUpdate ? state.edit : undefined}
-      onDelete={canDelete ? state.remove : undefined}
+      onView={state.view}
+      onEdit={state.edit}
+      onDelete={state.remove}
+      can={{ update: canUpdate, delete: canDelete }}
       onBulkDelete={canDelete ? state.bulkDelete : undefined}
       aria-label={t("title")}
     />

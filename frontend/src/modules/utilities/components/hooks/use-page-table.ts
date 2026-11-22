@@ -2,6 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { useBulkDeletePages } from "../../hooks/use-bulk-delete-pages";
@@ -37,7 +38,8 @@ export function usePageTable() {
     table,
     query,
     paths,
-    edit: (page: Page) => router.push(UTILITIES_ROUTES.pageDetail(page.id)),
+    view: (page: Page) => router.push(UTILITIES_ROUTES.pageDetail(page.id)),
+    edit: (page: Page) => router.push(withEditMode(UTILITIES_ROUTES.pageDetail(page.id))),
     duplicate: async (page: Page) => {
       const copy = await duplicate.mutateAsync(page.id);
       router.push(UTILITIES_ROUTES.pageDetail(copy.id));

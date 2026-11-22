@@ -30,6 +30,10 @@ class AttachmentFilter(django_filters.FilterSet):
         method="filter_scope",
         help_text="MINE, OTHERS; không mở rộng phạm vi quyền của người dùng.",
     )
+    visibility = CoreChoiceInFilter(
+        choices=Attachment.Visibility.choices,
+        help_text="Chế độ xem: public, private; nhận nhiều giá trị.",
+    )
     created_by = CoreUUIDInFilter(
         field_name="created_by_id",
         help_text="UUID người tạo tệp; nhận nhiều giá trị phân tách dấu phẩy.",
@@ -70,4 +74,4 @@ class AttachmentFilter(django_filters.FilterSet):
 
     class Meta:
         model = Attachment
-        fields = ("content_type", "kind", "scope", "folder", "created_by")
+        fields = ("content_type", "kind", "scope", "folder", "visibility", "created_by")

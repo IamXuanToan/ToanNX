@@ -36,6 +36,7 @@ class SettingViewSet(CoreModelViewSet[Setting]):
     create_serializer_class = SettingCreateValidateSerializer
     update_serializer_class = SettingUpdateValidateSerializer
     history_enabled = True
+    bulk_delete_enabled = True
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
     action_permissions = {
         "list": permission_rule(SettingPermission.SETTING_READ),
@@ -43,5 +44,6 @@ class SettingViewSet(CoreModelViewSet[Setting]):
         "create": permission_rule(SettingPermission.SETTING_CREATE),
         "partial_update": permission_rule(SettingPermission.SETTING_UPDATE),
         "destroy": permission_rule(SettingPermission.SETTING_DELETE),
+        "bulk_delete": permission_rule(SettingPermission.SETTING_DELETE),
         "history": permission_rule(SettingPermission.SETTING_READ),
     }

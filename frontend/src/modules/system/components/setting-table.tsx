@@ -1,12 +1,10 @@
 "use client";
 
 import { useFormatter, useTranslations } from "next-intl";
-import { Edit2 } from "lucide-react";
 
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { Badge } from "@/shares/components/ui/badge";
-import { Button } from "@/shares/components/ui/button";
 
 import type { SystemSetting } from "../types/setting.types";
 import { useSettingTable } from "./hooks/use-setting-table";
@@ -14,20 +12,22 @@ import { SettingEditDialog } from "./setting-edit-dialog";
 
 interface SettingTableProps {
   canUpdate: boolean;
+  canDelete: boolean;
 }
 
 /**
  * Bảng hiển thị danh sách cấu hình hệ thống:
- * Tìm kiếm theo từ khóa, lọc phân loại, hiển thị key-value và thao tác chỉnh sửa.
+ * Tìm kiếm theo từ khóa, lọc phân loại, hiển thị key-value; cột Thao tác Xem / Sửa / Xóa (xóa = quay về giá
+ * trị mặc định trong code) và xóa hàng loạt.
  *
- * @param props - Quyền cập nhật cấu hình.
+ * @param props - Quyền sửa, quyền xóa cấu hình.
  * @returns Bảng cấu hình hệ thống.
  */
-export function SettingTable({ canUpdate }: SettingTableProps) {
+export function SettingTable({ canUpdate, canDelete }: SettingTableProps) {
   const t = useTranslations("system.settings.table");
   const format = useFormatter();
-  const { query, table, selectedSetting, isEditDialogOpen, openEditDialog, closeEditDialog } =
-    useSettingTable();
+  const state = useSettingTable();
+  const { query, table, selectedSetting, isEditDialogOpen, isReadOnly, closeEditDialog } = state;
 
   const columns: DataTableColumn<SystemSetting>[] = [
     {
@@ -57,8 +57,8 @@ export function SettingTable({ canUpdate }: SettingTableProps) {
               variant="outline"
               className={
                 val
-                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[11px] font-semibold"
-                  : "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400 text-[11px] font-semibold"
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400"
+                  : "border-amber-500/30 bg-amber-500/10 text-[11px] font-semibold text-amber-700 dark:text-amber-400"
               }
             >
               {val ? t("enabled") : t("disabled")}
@@ -113,24 +113,6 @@ export function SettingTable({ canUpdate }: SettingTableProps) {
         </span>
       ),
     },
-    {
-      id: "actions",
-      header: "",
-      className: "w-12 text-right",
-      cell: (setting) =>
-        canUpdate ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => openEditDialog(setting)}
-            title={t("editValue")}
-          >
-            <Edit2 className="size-3.5" />
-            <span className="sr-only">{t("editValue")}</span>
-          </Button>
-        ) : null,
-    },
   ];
 
   return (
@@ -149,6 +131,11 @@ export function SettingTable({ canUpdate }: SettingTableProps) {
         error={query.isError ? { onRetry: () => query.refetch() } : null}
         empty={{ title: t("empty") }}
         onReload={() => query.refetch()}
+        onView={state.view}
+        onEdit={state.edit}
+        onDelete={state.remove}
+        can={{ update: canUpdate, delete: canDelete }}
+        onBulkDelete={canDelete ? state.bulkDelete : undefined}
         pagination={
           query.data
             ? {
@@ -163,6 +150,7 @@ export function SettingTable({ canUpdate }: SettingTableProps) {
       <SettingEditDialog
         setting={selectedSetting}
         open={isEditDialogOpen}
+        readOnly={isReadOnly || !canUpdate}
         onOpenChange={(open) => {
           if (!open) closeEditDialog();
         }}

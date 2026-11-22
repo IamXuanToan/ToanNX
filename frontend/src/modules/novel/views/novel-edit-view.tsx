@@ -13,6 +13,9 @@ import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
+import { EditModeProvider } from "@/shares/components/common/edit-mode-provider";
+import { useEditMode } from "@/shares/hooks/use-edit-mode";
+
 import { NovelForm } from "../components/novel-form";
 import { NOVEL_ROUTES } from "../constants/routes";
 import { useNovel } from "../hooks/use-novel";
@@ -28,6 +31,7 @@ export function NovelEditView({ id, history }: { id: string; history?: ReactNode
   const t = useTranslations("novel.admin");
   const canRead = usePermission(NOVEL_PERMISSIONS.read);
   const canUpdate = usePermission(NOVEL_PERMISSIONS.update);
+  const isEditing = useEditMode(canUpdate);
 
   const query = useNovel(id, canRead);
 
@@ -45,9 +49,11 @@ export function NovelEditView({ id, history }: { id: string; history?: ReactNode
   }
 
   return (
-    <FormPage title={query.data.title || t("editTitle")}>
-      <NovelForm novel={query.data} disabled={!canUpdate} />
-      {history ? <div className="mt-6">{history}</div> : null}
-    </FormPage>
+    <EditModeProvider canEdit={canUpdate}>
+      <FormPage title={query.data.title || t("editTitle")}>
+        <NovelForm novel={query.data} disabled={!isEditing} />
+        {history ? <div className="mt-6">{history}</div> : null}
+      </FormPage>
+    </EditModeProvider>
   );
 }

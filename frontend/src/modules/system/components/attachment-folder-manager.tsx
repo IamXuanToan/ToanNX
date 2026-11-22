@@ -43,11 +43,13 @@ export function AttachmentFolderManager({
       <Button
         type="button"
         variant="outline"
+        size="sm"
         disabled={disabled}
         onClick={() => state.setOpen(true)}
+        className="h-9 shrink-0 gap-1.5 rounded-xl px-3 text-xs font-medium"
       >
-        <FolderCog />
-        {t("manageFolders")}
+        <FolderCog className="size-3.5" />
+        <span>{t("manageFolders")}</span>
       </Button>
       <Dialog open={state.open} onOpenChange={(open) => !state.busy && state.setOpen(open)}>
         <DialogContent className="max-h-[90dvh] w-[calc(100vw-2rem)] grid-cols-[minmax(0,1fr)] overflow-y-auto sm:max-w-2xl">

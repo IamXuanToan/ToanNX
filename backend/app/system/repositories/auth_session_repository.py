@@ -69,6 +69,26 @@ class AuthSessionRepository(CoreRepository[AuthSession]):
         """
         return list(self.active().filter(user=user).order_by(*self.default_ordering))
 
+    def has_recent_device(
+        self, user_id: Any, user_agent: str, ip_address: str | None, since: datetime, exclude_id: Any
+    ) -> bool:
+        """Đã có phiên cùng trình duyệt + IP từ mốc `since` (không tính phiên `exclude_id`)."""
+        return (
+            self.get_queryset()
+            .filter(
+                user_id=user_id,
+                user_agent=user_agent[:200],
+                ip_address=ip_address or None,
+                created_at__gte=since,
+            )
+            .exclude(pk=exclude_id)
+            .exists()
+        )
+
+    def has_any_before(self, user_id: Any, exclude_id: Any) -> bool:
+        """Người dùng đã từng đăng nhập trước phiên này."""
+        return self.get_queryset().filter(user_id=user_id).exclude(pk=exclude_id).exists()
+
     def open(
         self, *, user: Any, expires_at: datetime, user_agent: str, ip_address: str | None
     ) -> AuthSession:

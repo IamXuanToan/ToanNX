@@ -43,15 +43,3 @@ class ReadingHistoryResponseSerializer(serializers.ModelSerializer[ReadingHistor
             "chapter_title",
             "last_read_at",
         )
-
-
-class ReadingHistoryDeleteResponseSerializer(serializers.Serializer[dict[str, object]]):
-    """Kết quả xóa một mục lịch sử đọc."""
-
-    deleted = serializers.BooleanField(help_text="Đã xóa thành công.")
-
-
-class ReadingHistoryClearResponseSerializer(serializers.Serializer[dict[str, object]]):
-    """Kết quả xóa toàn bộ lịch sử đọc."""
-
-    deleted_count = serializers.IntegerField(help_text="Số mục đã xóa.")

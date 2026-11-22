@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { getUserDisplayName, getUserInitials } from "@/shares/components/common/user-avatar";
@@ -19,20 +19,13 @@ export function useUserMenu() {
   const logout = useLogout();
   const searchParams = useSearchParams();
 
-  const isProfileInUrl =
-    searchParams.get("profile") === "open" || Boolean(searchParams.get("tab"));
-  const [profileOpen, setProfileOpenState] = useState(isProfileInUrl);
-
-  // Khi URL thay đổi có param profile=open hoặc tab, tự động mở dialog
-  useEffect(() => {
-    if (searchParams.get("profile") === "open" || searchParams.get("tab")) {
-      setProfileOpenState(true);
-    }
-  }, [searchParams]);
+  const isProfileInUrl = searchParams.get("profile") === "open" || Boolean(searchParams.get("tab"));
+  const [profileOpenManual, setProfileOpenManual] = useState<boolean | null>(null);
+  const profileOpen = profileOpenManual ?? isProfileInUrl;
 
   // Đồng bộ đóng/mở với URL query string
   const setProfileOpen = useCallback((open: boolean) => {
-    setProfileOpenState(open);
+    setProfileOpenManual(open);
     if (typeof window === "undefined") return;
 
     const url = new URL(window.location.href);

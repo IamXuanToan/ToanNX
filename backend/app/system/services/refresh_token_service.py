@@ -48,8 +48,7 @@ class RefreshTokenService:
         self.repository = repository or RefreshTokenRepository()
         self.auth_session_repository = auth_session_repository or AuthSessionRepository()
 
-    @staticmethod
-    def hash_token(raw: str) -> str:
+    def hash_token(self, raw: str) -> str:
         """Băm refresh token bằng HMAC-SHA256 với SECRET_KEY.
 
         Args:

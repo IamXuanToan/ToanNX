@@ -98,23 +98,29 @@ export const NOVEL_PATHNAMES = {
   },
 
   // Quản trị
-  "/admin/novels": { vi: "/quan-tri/truyen", en: "/admin/novels" },
-  "/admin/novels/new": { vi: "/quan-tri/truyen/them-moi", en: "/admin/novels/new" },
-  "/admin/novels/[id]": { vi: "/quan-tri/truyen/[id]", en: "/admin/novels/[id]" },
+  "/admin/novels": { vi: "/quan-tri/truyen/tac-pham", en: "/admin/novel/novels" },
+  "/admin/novels/new": { vi: "/quan-tri/truyen/tac-pham/them-moi", en: "/admin/novel/novels/new" },
+  "/admin/novels/[id]": { vi: "/quan-tri/truyen/tac-pham/[id]", en: "/admin/novel/novels/[id]" },
 
-  "/admin/authors": { vi: "/quan-tri/tac-gia", en: "/admin/authors" },
-  "/admin/authors/new": { vi: "/quan-tri/tac-gia/them-moi", en: "/admin/authors/new" },
-  "/admin/authors/[id]": { vi: "/quan-tri/tac-gia/[id]", en: "/admin/authors/[id]" },
+  "/admin/authors": { vi: "/quan-tri/truyen/tac-gia", en: "/admin/novel/authors" },
+  "/admin/authors/new": { vi: "/quan-tri/truyen/tac-gia/them-moi", en: "/admin/novel/authors/new" },
+  "/admin/authors/[id]": { vi: "/quan-tri/truyen/tac-gia/[id]", en: "/admin/novel/authors/[id]" },
 
-  "/admin/genres": { vi: "/quan-tri/the-loai", en: "/admin/genres" },
-  "/admin/genres/new": { vi: "/quan-tri/the-loai/them-moi", en: "/admin/genres/new" },
-  "/admin/genres/[id]": { vi: "/quan-tri/the-loai/[id]", en: "/admin/genres/[id]" },
+  "/admin/genres": { vi: "/quan-tri/truyen/the-loai", en: "/admin/novel/genres" },
+  "/admin/genres/new": { vi: "/quan-tri/truyen/the-loai/them-moi", en: "/admin/novel/genres/new" },
+  "/admin/genres/[id]": { vi: "/quan-tri/truyen/the-loai/[id]", en: "/admin/novel/genres/[id]" },
 
-  "/admin/tags": { vi: "/quan-tri/the", en: "/admin/tags" },
-  "/admin/tags/new": { vi: "/quan-tri/the/them-moi", en: "/admin/tags/new" },
-  "/admin/tags/[id]": { vi: "/quan-tri/the/[id]", en: "/admin/tags/[id]" },
+  "/admin/tags": { vi: "/quan-tri/truyen/the", en: "/admin/novel/tags" },
+  "/admin/tags/new": { vi: "/quan-tri/truyen/the/them-moi", en: "/admin/novel/tags/new" },
+  "/admin/tags/[id]": { vi: "/quan-tri/truyen/the/[id]", en: "/admin/novel/tags/[id]" },
 
-  "/admin/chapters": { vi: "/quan-tri/chuong-truyen", en: "/admin/chapters" },
-  "/admin/chapters/new": { vi: "/quan-tri/chuong-truyen/them-moi", en: "/admin/chapters/new" },
-  "/admin/chapters/[id]": { vi: "/quan-tri/chuong-truyen/[id]", en: "/admin/chapters/[id]" },
+  "/admin/chapters": { vi: "/quan-tri/truyen/chuong-truyen", en: "/admin/novel/chapters" },
+  "/admin/chapters/new": {
+    vi: "/quan-tri/truyen/chuong-truyen/them-moi",
+    en: "/admin/novel/chapters/new",
+  },
+  "/admin/chapters/[id]": {
+    vi: "/quan-tri/truyen/chuong-truyen/[id]",
+    en: "/admin/novel/chapters/[id]",
+  },
 } as const;

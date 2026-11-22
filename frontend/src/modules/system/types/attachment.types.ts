@@ -1,8 +1,13 @@
 import type { FolderCapabilities } from "./attachment-folder.types";
 
+/** Chế độ xem: công khai (ai có link đều xem) hoặc riêng tư (chỉ người upload/superuser/quyền xem riêng tư). */
+export type AttachmentVisibility = "public" | "private";
+
 export type Attachment = {
   id: string;
+  /** Công khai: URL trực tiếp. Riêng tư: URL API có kiểm quyền (dùng `<Image unoptimized />`). */
   url: string;
+  visibility: AttachmentVisibility;
   originalName: string;
   altText: string;
   contentType: string;
@@ -32,6 +37,7 @@ export type AttachmentFilters = {
   contentType?: readonly string[];
   folder?: readonly string[];
   createdBy?: readonly string[];
+  visibility?: readonly AttachmentVisibility[];
 };
 
 /** Các quyền giao diện do view quyết định. */
@@ -45,4 +51,9 @@ export type AttachmentCapabilities = {
 };
 
 /** Dữ liệu upload tùy chọn thư mục, giữ tương thích với upload trực tiếp từ ô ảnh. */
-export type AttachmentUploadInput = { file: File; folderId?: string | null };
+export type AttachmentUploadInput = {
+  file: File;
+  folderId?: string | null;
+  /** Không gửi: backend tự chọn (CSV/XLSX/XML riêng tư, loại khác công khai). */
+  visibility?: AttachmentVisibility;
+};

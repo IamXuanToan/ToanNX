@@ -1,6 +1,6 @@
 """Test POST /api/v1/system/auth/social/<provider>/login."""
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from django.conf import settings
@@ -85,6 +85,20 @@ class TestSocialLoginApi(BaseApiTestCase):
                 format="json",
             )
             self.assert_unauthorized(response, "AUTH_USER_INACTIVE")
+
+    @override_settings(GOOGLE_OAUTH_CLIENT_ID="mock-id", GOOGLE_OAUTH_CLIENT_SECRET="mock-secret")
+    def test_provider_rejects_code_returns_422(self, client: APIClient) -> None:
+        """Google từ chối mã xác thực → 422 có mã lỗi riêng, không phải 500."""
+        with patch(
+            "app.system.services.google_oauth_service.requests.post",
+            return_value=MagicMock(status_code=400),
+        ):
+            response = client.post(
+                "/api/v1/system/auth/social/google/login",
+                {"code": "bad-code", "redirect_uri": "http://localhost:3001/auth/callback/google"},
+                format="json",
+            )
+        self.assert_error(response, 422, "ACCOUNT_SOCIAL_INVALID_CODE")
 
     def test_validation_error(self, client: APIClient) -> None:
         response = client.post(

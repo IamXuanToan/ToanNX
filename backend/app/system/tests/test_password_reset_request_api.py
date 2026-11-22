@@ -46,8 +46,9 @@ class TestPasswordResetRequestApi(BaseApiTestCase):
         assert len(mail.outbox) == 1
         assert custom_origin in mail.outbox[0].body
 
-    def test_frontend_origin_resolution(self) -> None:
+    def test_frontend_origin_resolution(self, settings: Any) -> None:
         """Hàm get_frontend_origin tự động giải quyết các header khác nhau."""
+        settings.FRONTEND_URL = "http://localhost:3000"
         factory = RequestFactory()
         req_origin = factory.post(URL, HTTP_ORIGIN="https://dashboard.site.vn")
         assert get_frontend_origin(req_origin) == "https://dashboard.site.vn"
@@ -81,6 +82,6 @@ class TestPasswordResetRequestApi(BaseApiTestCase):
         from app.system.services.email_service import EmailService
 
         mail.outbox.clear()
-        EmailService.send_password_reset_email(user, "https://toannx.com/test", async_send=True)
+        EmailService().send_password_reset_email(user, "https://toannx.com/test", async_send=True)
         time.sleep(0.3)
         assert len(mail.outbox) == 1

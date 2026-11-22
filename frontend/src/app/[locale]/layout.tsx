@@ -7,6 +7,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 import { type AppLocale, routing } from "@/i18n/routing";
+import { AppAnalytics } from "@/shares/components/analytics/app-analytics";
 import { AppProviders } from "@/shares/components/providers/app-providers";
 import { env } from "@/shares/config/env";
 
@@ -46,6 +47,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <NextIntlClientProvider>
           <AppProviders>{children}</AppProviders>
         </NextIntlClientProvider>
+        <AppAnalytics />
       </body>
     </html>
   );

@@ -21,6 +21,7 @@ import { SETTING_PERMISSIONS } from "../permissions/setting-permission";
 export function SystemSettingsView() {
   const t = useTranslations("system.settings");
   const canUpdate = usePermission(SETTING_PERMISSIONS.settingUpdate);
+  const canDelete = usePermission(SETTING_PERMISSIONS.settingDelete);
 
   return (
     <PermissionGate permission={SETTING_PERMISSIONS.settingRead} fallback={<ForbiddenView />}>
@@ -31,7 +32,7 @@ export function SystemSettingsView() {
         <SettingSocialAuthCard canUpdate={canUpdate} />
 
         {/* Bảng danh sách chi tiết các tham số cấu hình */}
-        <SettingTable canUpdate={canUpdate} />
+        <SettingTable canUpdate={canUpdate} canDelete={canDelete} />
       </div>
     </PermissionGate>
   );

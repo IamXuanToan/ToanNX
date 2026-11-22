@@ -18,7 +18,9 @@ class TestChapterUpdateApi(BaseApiTestCase):
 
     def test_update_success_full_data(self, user: Any, login: Any) -> None:
         """Cập nhật toàn bộ các trường của chương thành công."""
-        chapter = ChapterFactory(chapter_number=1, title="Tiêu đề cũ", content="Nội dung cũ")
+        chapter = ChapterFactory(
+            novel__owner=user, chapter_number=1, title="Tiêu đề cũ", content="Nội dung cũ"
+        )
         grant(user, ChapterPermission.UPDATE)
         api = login(user)
 
@@ -38,7 +40,7 @@ class TestChapterUpdateApi(BaseApiTestCase):
 
     def test_update_success_partial_min_data(self, user: Any, login: Any) -> None:
         """Cập nhật từng phần (chỉ sửa title) thành công."""
-        chapter = ChapterFactory(title="Cũ")
+        chapter = ChapterFactory(novel__owner=user, title="Cũ")
         grant(user, ChapterPermission.UPDATE)
         api = login(user)
 
@@ -48,7 +50,7 @@ class TestChapterUpdateApi(BaseApiTestCase):
 
     def test_update_validation_duplicate_chapter_number(self, user: Any, login: Any) -> None:
         """Báo lỗi khi cập nhật trùng chapter_number của chương khác trong cùng truyện."""
-        novel = ChapterFactory(chapter_number=1).novel
+        novel = ChapterFactory(novel__owner=user, chapter_number=1).novel
         ch2 = ChapterFactory(novel=novel, chapter_number=2)
 
         grant(user, ChapterPermission.UPDATE)

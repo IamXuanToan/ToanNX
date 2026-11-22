@@ -1,9 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
 import { useTableState } from "@/shares/hooks/use-table-state";
 
+import { settingKeys } from "../../constants/query-keys";
+import { useDeleteSetting } from "../../hooks/use-delete-setting";
 import { useSettings } from "../../hooks/use-settings";
+import { settingService } from "../../services/setting.service";
 import type { SystemSetting } from "../../types/setting.types";
 
 /**
@@ -28,9 +32,17 @@ export function useSettingTable() {
 
   const [selectedSetting, setSelectedSetting] = useState<SystemSetting | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(true);
+  const remove = useDeleteSetting();
+  const bulk = useBulkActions<SystemSetting>({
+    service: settingService,
+    invalidate: [settingKeys.all, settingKeys.public()],
+  });
 
-  const openEditDialog = (setting: SystemSetting) => {
+  /** Mở dialog giá trị: `readOnly` = Xem (không lưu được), ngược lại = Sửa. */
+  const openDialog = (setting: SystemSetting, readOnly: boolean) => {
     setSelectedSetting(setting);
+    setIsReadOnly(readOnly);
     setIsEditDialogOpen(true);
   };
 
@@ -44,7 +56,11 @@ export function useSettingTable() {
     table,
     selectedSetting,
     isEditDialogOpen,
-    openEditDialog,
+    isReadOnly,
+    view: (setting: SystemSetting) => openDialog(setting, true),
+    edit: (setting: SystemSetting) => openDialog(setting, false),
+    remove: (setting: SystemSetting) => remove.mutateAsync(setting.id),
+    bulkDelete: bulk.bulkDelete,
     closeEditDialog,
   };
 }

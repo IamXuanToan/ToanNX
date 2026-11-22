@@ -4,9 +4,12 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
+import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
+import { novelKeys } from "../../constants/query-keys";
+import { chapterService } from "../../services/chapter.service";
 import { NOVEL_ROUTES } from "../../constants/routes";
-import { useBulkDeleteChapters } from "../../hooks/use-bulk-delete-chapters";
 import { useChapters } from "../../hooks/use-chapters";
 import { useDeleteChapter } from "../../hooks/use-delete-chapter";
 import type { ChapterListItem } from "../../types/chapter.types";
@@ -25,13 +28,20 @@ export function useChapterTable({ novelId }: { novelId?: string } = {}) {
     ...(novelId ? { novel: novelId } : {}),
   });
   const remove = useDeleteChapter();
-  const bulkDelete = useBulkDeleteChapters();
 
+  const bulk = useBulkActions<ChapterListItem>({
+    service: chapterService,
+    invalidate: [novelKeys.chapter.all, novelKeys.novel.all],
+  });
   return {
+    bulkDelete: bulk.bulkDelete,
+    bulkSetPublished: (rows: ChapterListItem[], value: boolean) =>
+      bulk.bulkUpdate(rows, { isPublished: value }),
     table,
     query,
-    edit: (chapter: ChapterListItem) => router.push(NOVEL_ROUTES.adminChapterDetail(chapter.id)),
+    view: (chapter: ChapterListItem) => router.push(NOVEL_ROUTES.adminChapterDetail(chapter.id)),
+    edit: (chapter: ChapterListItem) =>
+      router.push(withEditMode(NOVEL_ROUTES.adminChapterDetail(chapter.id))),
     remove: (chapter: ChapterListItem) => remove.mutateAsync(chapter.id),
-    bulkDelete: (chapters: ChapterListItem[]) => bulkDelete.mutateAsync(chapters.map((c) => c.id)),
   };
 }

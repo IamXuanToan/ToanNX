@@ -42,7 +42,7 @@ export function UserTable({
   const tStatus = useTranslations("common.status");
   const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
-  const { query, table, isSelf, edit, copy, setActive, remove, bulkSetActive, bulkDelete } =
+  const { query, table, isSelf, view, edit, copy, setActive, remove, bulkSetActive, bulkDelete } =
     useUserTable();
 
   const columns: DataTableColumn<User>[] = [
@@ -273,9 +273,11 @@ export function UserTable({
             }
           : undefined
       }
-      onEdit={canUpdate ? edit : undefined}
-      onCopy={canCreate ? copy : undefined}
-      onDelete={canDelete ? remove : undefined}
+      onView={view}
+      onEdit={edit}
+      onCopy={copy}
+      onDelete={remove}
+      can={{ update: canUpdate, create: canCreate, delete: canDelete }}
       canDeleteRow={(user) => !isSelf(user)}
       canSelectRow={(user) => !isSelf(user)}
       bulkStatus={

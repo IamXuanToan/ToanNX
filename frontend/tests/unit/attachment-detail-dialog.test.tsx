@@ -1,11 +1,19 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { AttachmentDetailDialog } from "@/modules/system/components/attachment-detail-dialog";
 import type { Attachment } from "@/modules/system/types/attachment.types";
 
 const mockUpdateAsync = vi.fn().mockResolvedValue({});
+const mockVisibilityAsync = vi.fn();
+
+vi.mock("@/modules/system/hooks/use-set-attachment-visibility", () => ({
+  useSetAttachmentVisibility: () => ({
+    mutateAsync: mockVisibilityAsync,
+    isPending: false,
+  }),
+}));
 
 vi.mock("@/modules/system/hooks/use-update-attachment", () => ({
   useUpdateAttachment: () => ({
@@ -14,7 +22,12 @@ vi.mock("@/modules/system/hooks/use-update-attachment", () => ({
   }),
 }));
 
+vi.mock("@/i18n/navigation", () => ({
+  getPathname: ({ href }: { href: { params: { id: string } } }) => `/vi/tep/${href.params.id}`,
+}));
+
 vi.mock("next-intl", () => ({
+  useLocale: () => "vi",
   useTranslations: () => (key: string) => {
     const map: Record<string, string> = {
       details: "Thông tin tệp",
@@ -41,6 +54,13 @@ vi.mock("next-intl", () => ({
       altTextHint: "Giúp tối ưu SEO và hỗ trợ người khiếm thị đọc nội dung tốt hơn.",
       saveChanges: "Lưu thay đổi",
       saving: "Đang lưu...",
+      visibility: "Chế độ xem",
+      visibilityPublic: "Công khai",
+      visibilityPrivate: "Riêng tư",
+      makePrivate: "Chuyển sang riêng tư",
+      makePublic: "Chuyển sang công khai",
+      makePrivateTitle: "Chuyển tệp sang riêng tư?",
+      makePrivateDescription: "Link công khai cũ sẽ không mở được nữa.",
     };
     return map[key] ?? key;
   },
@@ -53,6 +73,7 @@ const mockFile: Attachment = {
   id: "att-123",
   originalName: "attachments_2026_11_photo.jpg",
   url: "https://r2.example.com/photo.jpg",
+  visibility: "public",
   contentType: "image/jpeg",
   size: 387921,
   folderId: null,
@@ -140,5 +161,50 @@ describe("AttachmentDetailDialog", () => {
 
     fireEvent.click(useImageBtn);
     expect(handleSelect).toHaveBeenCalledWith(mockFile);
+  });
+
+  it("chuyển tệp sang riêng tư sau khi xác nhận và hiển thị chế độ mới", async () => {
+    const onUpdated = vi.fn();
+    const privateFile: Attachment = {
+      ...mockFile,
+      visibility: "private",
+      url: "https://toannx.com/api/v1/system/attachments/att-123/content",
+    };
+    mockVisibilityAsync.mockResolvedValueOnce(privateFile);
+    render(
+      <AttachmentDetailDialog
+        file={mockFile}
+        open={true}
+        onClose={vi.fn()}
+        canEdit={true}
+        onUpdated={onUpdated}
+      />,
+    );
+
+    expect(screen.getByText("Công khai")).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Chuyển sang riêng tư" }));
+    expect(screen.getByText("Chuyển tệp sang riêng tư?")).toBeDefined();
+    const confirmButtons = screen.getAllByRole("button", { name: "Chuyển sang riêng tư" });
+    fireEvent.click(confirmButtons[confirmButtons.length - 1]);
+
+    await waitFor(() =>
+      expect(mockVisibilityAsync).toHaveBeenCalledWith({ id: "att-123", visibility: "private" }),
+    );
+    await waitFor(() => expect(onUpdated).toHaveBeenCalledWith(privateFile));
+    expect(screen.getByText("Riêng tư")).toBeDefined();
+  });
+
+  it("không hiện nút chọn khi tệp không thuộc loại nơi dùng nhận", () => {
+    render(
+      <AttachmentDetailDialog
+        file={mockFile}
+        open={true}
+        onClose={vi.fn()}
+        onSelect={vi.fn()}
+        isSelectable={(file) => file.contentType === "application/pdf"}
+        selectLabel="Dùng tệp này"
+      />,
+    );
+    expect(screen.queryByRole("button", { name: "Dùng tệp này" })).toBeNull();
   });
 });

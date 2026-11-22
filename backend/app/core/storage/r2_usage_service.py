@@ -76,9 +76,9 @@ class R2UsageService:
             "User-Agent": "ToanNX-Backend/1.0",
         }
 
-        request = urllib.request.Request(url, headers=headers, method="GET")  # noqa: S310
+        request = urllib.request.Request(url, headers=headers, method="GET")  # noqa: S310 - URL cố định https://api.cloudflare.com, không nhận scheme từ input
         try:
-            with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:  # noqa: S310
+            with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:  # noqa: S310 - cùng URL https cố định ở trên
                 if response.status != 200:
                     logger.warning(
                         "Cloudflare R2 usage API trả về status %s: %s",

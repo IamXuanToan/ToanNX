@@ -63,3 +63,34 @@ export const settingKeys = {
   setting: (id: string) => settings.detail(id),
   public: () => [SCOPE, "settings", "public"] as const,
 };
+
+/** Query key phần Thông báo (chuông, tùy chọn, thiết bị, Telegram, nhật ký gửi, thông báo hệ thống). */
+export const notificationKeys = {
+  all: [SCOPE, "notifications"] as const,
+  bell: (scope: string) => [SCOPE, "notifications", "bell", scope] as const,
+  unreadCount: () => [SCOPE, "notifications", "unread-count"] as const,
+  preferences: () => [SCOPE, "notifications", "preferences"] as const,
+  devices: () => [SCOPE, "notifications", "devices"] as const,
+  telegramBot: () => [SCOPE, "notifications", "telegram-bot"] as const,
+  chats: () => [SCOPE, "notifications", "chats"] as const,
+  deliveries: createResourceKeys(SCOPE, "notification-deliveries"),
+  announcements: createResourceKeys(SCOPE, "announcements"),
+};
+
+/** Query key tiền tệ và tỷ giá. */
+export const currencyKeys = {
+  currencies: createResourceKeys(SCOPE, "currencies"),
+  rates: createResourceKeys(SCOPE, "exchange-rates"),
+  resolve: (currencyId: string, date: string) =>
+    [SCOPE, "exchange-rates", "resolve", currencyId, date] as const,
+};
+
+/** Query key danh mục webhook. */
+export const webhookKeys = {
+  all: [SCOPE, "webhooks"] as const,
+};
+
+/** Query key danh mục callback. */
+export const callbackKeys = {
+  all: [SCOPE, "callbacks"] as const,
+};

@@ -2,7 +2,7 @@
 
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useState } from "react";
 
 import { Toaster } from "@/shares/components/ui/sonner";
 import { TooltipProvider } from "@/shares/components/ui/tooltip";
@@ -16,23 +16,6 @@ import { createQueryClient } from "@/shares/lib/query-client";
  */
 export function AppProviders({ children }: { children: ReactNode }) {
   const [queryClient] = useState(createQueryClient);
-
-  useEffect(() => {
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      const reason = event.reason as unknown;
-      if (
-        (reason instanceof Error && reason.name === "AbortError") ||
-        (typeof reason === "object" &&
-          reason !== null &&
-          "name" in reason &&
-          (reason as { name: unknown }).name === "AbortError")
-      ) {
-        event.preventDefault();
-      }
-    };
-    window.addEventListener("unhandledrejection", handleUnhandledRejection);
-    return () => window.removeEventListener("unhandledrejection", handleUnhandledRejection);
-  }, []);
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>

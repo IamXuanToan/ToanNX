@@ -25,3 +25,6 @@ class PagePathPermission(PermissionCatalog):
         name="Xóa đường dẫn giữa",
         description="Xóa đường dẫn giữa không còn trang nào.",
     )
+
+    # Quyền của vai trò thành viên: thao tác bản ghi do mình tạo.
+    MEMBER = (PATH_READ,)

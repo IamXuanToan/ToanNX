@@ -15,6 +15,8 @@ import type { SystemSetting } from "../types/setting.types";
 
 interface SettingEditFormProps {
   setting: SystemSetting;
+  /** Chỉ xem: ô giá trị khóa, không có nút Lưu, nút trái là Quay lại. */
+  readOnly?: boolean;
   onCancel: () => void;
   onSuccess: () => void;
 }
@@ -25,8 +27,14 @@ interface SettingEditFormProps {
  * @param props - Cấu hình hệ thống và callback đóng/thành công.
  * @returns Form chỉnh sửa giá trị.
  */
-export function SettingEditForm({ setting, onCancel, onSuccess }: SettingEditFormProps) {
+export function SettingEditForm({
+  setting,
+  readOnly = false,
+  onCancel,
+  onSuccess,
+}: SettingEditFormProps) {
   const t = useTranslations("system.settings.table");
+  const tActions = useTranslations("common.actions");
   const updateSetting = useUpdateSetting(setting.id);
 
   const [valueText, setValueText] = useState(() => JSON.stringify(setting.value, null, 2));
@@ -70,6 +78,7 @@ export function SettingEditForm({ setting, onCancel, onSuccess }: SettingEditFor
               setErrorText(null);
             }}
             rows={8}
+            readOnly={readOnly}
             className="font-mono text-xs"
             placeholder='true / "value" / 100 / {"key": "val"}'
           />
@@ -84,12 +93,14 @@ export function SettingEditForm({ setting, onCancel, onSuccess }: SettingEditFor
           onClick={onCancel}
           disabled={updateSetting.isPending}
         >
-          Hủy
+          {readOnly ? tActions("back") : tActions("cancel")}
         </Button>
-        <Button type="submit" disabled={updateSetting.isPending}>
-          {updateSetting.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-          {t("saveValue")}
-        </Button>
+        {readOnly ? null : (
+          <Button type="submit" disabled={updateSetting.isPending}>
+            {updateSetting.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
+            {t("saveValue")}
+          </Button>
+        )}
       </DialogFooter>
     </form>
   );

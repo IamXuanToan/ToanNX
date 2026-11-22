@@ -37,25 +37,36 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 
 - Vai trò mẫu (`RoleSeedService`, khai ở `system/constants/predefined_roles.py`): `ADMIN` là vai trò hệ thống duy
   nhất (`auto_grant=all`), tạo sau mỗi `migrate` (post_migrate), không dùng data migration; `seed_roles` tạo thêm
-  mỗi module hai vai trò `<MÃ_MODULE>_MANAGER` (mọi quyền của module) và `<MÃ_MODULE>_VIEWER` (chỉ quyền `read`).
+  mỗi module ba vai trò `<MÃ_MODULE>_MANAGER` (mọi quyền của module), `<MÃ_MODULE>_VIEWER` (chỉ quyền `read`) và
+  `<MÃ_MODULE>_MEMBER` (bản ghi do mình tạo, quyền từ `MEMBER` của từng class quyền, gom ở `member_permissions` bắt buộc khai).
   Không khai vai trò nghiệp vụ tự đặt; quản trị viên tự tạo khi cần.
 - Module **System** (`system`, BE `app/system`, FE `modules/system`, API `/api/v1/system/...`, bảng `system_*`)
   gộp phần nền: tài khoản (`AUTH_USER_MODEL = system.User`), IAM (vai trò/quyền), đăng nhập/phiên, thư viện
-  file, lịch sử thay đổi (Journal) và health. Module nghiệp vụ (`novel`, `utilities`) chỉ phụ thuộc `system`.
+  file, lịch sử thay đổi (Journal) và health. Module nghiệp vụ (`novel`, `utilities`, `finance`) chỉ phụ thuộc `system`.
 - File (kể cả ảnh đại diện) lưu qua Thư viện của module `system`; `User.avatar` là FK tới `Attachment`.
   SVG chỉ nhận khi an toàn (không script/sự kiện/liên kết ngoài, không DTD).
-- Thư viện ở Hệ thống → Thư viện (`/vi/quan-tri/thu-vien`): mặc định API chỉ trả file do actor upload;
+- Thư viện ở Hệ thống → Thư viện (`/vi/quan-tri/he-thong/thu-vien`): mặc định API chỉ trả file do actor upload;
   quyền `system.attachment.manage_all` mở phạm vi sang mọi người, vẫn cần quyền action tương ứng.
   Người thường có quyền IAM cũng dùng được API; menu quản trị giữ yêu cầu staff.
-  Mọi upload tệp chỉ thực hiện ở trang Thư viện. Avatar, logo QR và editor chọn ảnh đã có trong
-  Thư viện; bộ chọn không có tab upload. Xóa mềm sau xác nhận, nơi đang dùng không còn hiện ảnh;
-  URL file vẫn truy cập trực tiếp được và file vật lý giữ lại theo chính sách dọn storage.
+  Upload ở trang Thư viện hoặc ngay trong bộ chọn dùng chung `AttachmentPicker` (kéo thả khi nơi dùng
+  cho `canUpload`); nơi dùng chỉ khai props (loại file, chế độ xem), không tự viết bộ upload. Xóa mềm
+  sau xác nhận, nơi đang dùng không còn hiện ảnh; file vật lý giữ lại theo chính sách dọn storage.
+- File có chế độ xem `public` (mặc định) hoặc `private`. File công khai: URL trực tiếp của storage, ai có
+  link đều xem. File riêng tư nằm ở kho riêng (`STORAGES["private"]`: bucket R2
+  `CLOUDFLARE_R2_PRIVATE_BUCKET_NAME` không bật public access; local là `PRIVATE_MEDIA_ROOT`), `url` là
+  `/api/v1/system/attachments/{id}/content` — chỉ người upload, superuser hoặc
+  `system.attachment.read_private` mở được (302 tới link ký 5 phút; không quyền và không tồn tại cùng 404).
+  Link chia sẻ của file riêng tư là trang `/vi/tep/{id}`. Chuyển chế độ: `POST /attachments/{id}/visibility`
+  (chép sang kho kia, cập nhật, xóa bản cũ sau commit). Ảnh đại diện, logo QR, ảnh trong trang công khai
+  phải là ảnh công khai (bộ chọn mặc định chỉ liệt kê file công khai). CSV/XLSX/XML (chứng từ) mặc định
+  riêng tư và luôn tải về, không hiển thị trong trình duyệt.
   Thư mục logic nhiều cấp dùng `parent` và danh sách tổ tiên; đổi tên/chuyển nhánh không đổi
   đường dẫn `attachments/YYYY/MM/<uuid>.<ext>`. Lọc thư mục bao gồm file trong toàn bộ nhánh.
   Xóa thư mục có hai lựa chọn: giữ file về Chưa phân loại hoặc xóa mềm cả file trong nhánh
   (cần thêm `system.attachment.delete`). Quyền `system.attachment_folder.{read,create,update,delete}`
   độc lập với file; `system.attachment.update` cho chuyển file giữa các thư mục cùng chủ sở hữu.
-  Hỗ trợ ảnh PNG/JPEG/WebP/GIF/SVG an toàn, video MP4/MOV/WebM và PDF; xác định bằng chữ ký,
+  Hỗ trợ ảnh PNG/JPEG/WebP/GIF/SVG an toàn, video MP4/MOV/WebM, PDF, XLSX, CSV (UTF-8) và XML (không
+  DTD/entity); xác định bằng nội dung,
   giới hạn dung lượng vẫn theo cấu hình hiện tại. Dialog avatar có lọc loại/đuôi và chỉ xác nhận ảnh.
 - URL file trả về là **URL tuyệt đối** theo domain của request (`X-Forwarded-Host/Proto` sau proxy);
   frontend dùng trực tiếp, không nối domain.
@@ -73,7 +84,7 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 - Journal có trang chi tiết từng thay đổi: field nào, giá trị cũ → mới (danh sách tô phần thêm/bỏ, JSON dàn
   trang), request id để đối chiếu log.
 - File vật lý: tệp đã xóa mềm và file mồ côi bị dọn sau `ATTACHMENT_PURGE_DAYS` ngày (giữ dòng dữ liệu).
-- Báo lỗi: Sentry ở BE khi có `SENTRY_DSN`; lỗi trình duyệt gửi về BE.
+- Báo lỗi: Ghi log ở BE; lỗi trình duyệt gửi về BE.
 - Soạn thảo dùng Tiptap JSON (`TiptapEditor` / `TiptapContent`); không lưu HTML tùy ý.
 - Module **Tiện ích** (`utilities`, BE `app/utilities`, FE `modules/utilities`, API `/api/v1/utilities/...`) gộp
   link rút gọn, mã QR và trang tùy chỉnh (bảng `utilities_*`). Mã QR: URL/văn bản/VietQR, PNG lưu ở Attachment. Payload chuyển khoản dùng `napas-qr-python` (gồm CRC); ảnh PNG/SVG dùng `segno`. Logo tùy chọn lấy từ ảnh raster trong
@@ -83,7 +94,31 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 - Link rút gọn `/s/{slug}` mở trang trung gian HTTP 200: chờ người xem bấm hoặc tự mở đích sau 1–60 giây.
   Có thể đặt mật khẩu và thời điểm hết hạn; link hết hạn hiện trang thông báo. Slug tự sinh là UUID.
   Mật khẩu được băm, không trả mã băm hay URL đích của link khóa ở API công khai.
-- Nhóm Hệ thống ở FE có một module `system` với menu: Người dùng, Phiên, Vai trò, Quyền, Thư viện, Nhật ký.
+- Module **Tài chính** (`finance`, BE `app/finance`, FE `modules/finance`, API `/api/v1/finance/...`, bảng
+  `finance_*`, nhóm quản trị "Tài chính"; thiết kế: `docs/plans/finance-refactor-plan.md`). Chỉ theo dõi **thu nhập
+  (tiền vào)** của từng người: model `Platform` + `PlatformTaxRate` (lịch sử % khấu trừ theo `effective_from`),
+  `ClassificationRule` (regex → nền tảng, thư viện `regex` có timeout), `Income` (nhập tay hoặc SePay; chụp lại
+  `tax_rate`/`tax_amount`, sửa được; T = round(N × r / (100 − r)), G = N + T; ngoại tệ quy về VNĐ theo tỷ giá
+  `system`), `Invoice` (hóa đơn/chứng từ, file riêng tư, gắn nhiều khoản thu). Báo cáo năm/tháng giờ VN: tổng, đã
+  khấu trừ (kèm tiền thuế), chưa khấu trừ — **không tính thuế phải nộp**. Không có tài khoản ngân hàng, kênh, loại
+  dòng tiền. SePay theo từng người (`SepayConnection`: token mã hóa bằng `SecretCipher`, webhook
+  `POST /api/v1/finance/sepay/webhook/{public_id}`, secret dẫn xuất `salted_hmac`, HMAC-SHA256 trên
+  `{timestamp}.{body}` ±300 giây; trả đúng `{"success": true}`). Lấy thủ công có màn xem trước tích chọn
+  (NEW/EXISTS/CHANGED), không ghi đè khoản đã có nếu không chọn. Webhook không có tiền tệ: luôn VNĐ; không đọc được
+  số tiền → `amount_status` cần xem lại.
+- Tiền tệ và tỷ giá ở `system` (`Currency` seed VND gốc + USD; `ExchangeRate` nhập tay hoặc Vietcombank, quy về VNĐ).
+- Thông báo dùng chung (module `system`, thiết kế `docs/plans/notification-system-plan.md`): module khai sự kiện
+  trong `ModuleDescriptor.notification_events` (`scope` PERSONAL/SYSTEM, `audience` OWNER/SUBSCRIBERS,
+  `permission`, mức INFO/WARNING/ERROR) và gọi `NotificationService.notify(...)`; model `Notification` (chuông 2 tab
+  Cá nhân / Hệ thống) + outbox `NotificationDelivery` theo kênh (Trình duyệt qua FCM, Email, Telegram); gửi ngay
+  sau commit trong ngân sách thời gian, phần còn lại và thử lại (tối đa 5 lần) do cron-job.org gọi
+  `POST /api/v1/system/notifications/dispatch` (`CRON_SECRET`). Không WebSocket: realtime nhờ FCM + polling 60 giây.
+  Bot Telegram của từng người (token mã hóa, cấu hình ở Hồ sơ → Thông báo). Nhật ký gửi:
+  `/vi/quan-tri/he-thong/nhat-ky-thong-bao`.
+- Nhóm Hệ thống ở FE có một module `system` với menu: Người dùng, Phiên, Vai trò, Quyền, Thư viện, Cài đặt,
+  Nhật ký thông báo, Gửi thông báo, Tiền tệ, Tỷ giá, Webhook (webhook các module khai, URL theo domain backend), Callback (URL OAuth Google/GitHub theo
+  domain FE), Nhật ký. URL quản trị có tiền tố module: `/quan-tri/he-thong/...`, `/quan-tri/tien-ich/...`,
+  `/quan-tri/truyen/...`, `/quan-tri/tai-chinh/...`.
   Quyền là danh mục chỉ đọc nhóm theo module. Tìm kiếm chỉ áp dụng khi Enter; bộ lọc, sắp xếp và
   phân trang đồng bộ URL. Người dùng lọc vai trò/trạng thái; Vai trò lọc trạng thái/loại/chính sách tự cấp.
   Phiên lọc nhiều người dùng kết hợp trạng thái; danh mục chủ phiên phân trang qua

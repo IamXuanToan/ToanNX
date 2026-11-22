@@ -61,7 +61,7 @@ test.describe("Quản trị Hệ thống", () => {
         .getByTestId("module-launcher")
         .getByRole("link", { name: /Hệ thống/ })
         .click();
-      await expect(staffPage).toHaveURL(/\/quan-tri\/phien$/);
+      await expect(staffPage).toHaveURL(/\/quan-tri\/he-thong\/phien$/);
       await expect(staffPage.getByText("Phiên hiện tại", { exact: true })).toBeVisible();
       await expect(staffPage.getByTestId("sidebar-module-account").getByRole("link")).toHaveCount(
         1,
@@ -104,7 +104,7 @@ test.describe("Quản trị Hệ thống", () => {
       await staffPage.getByRole("button", { name: "Xoá lọc", exact: true }).click();
       await staffPage.keyboard.press("Escape");
       await expect(staffPage).not.toHaveURL(/user=/);
-      await staffPage.goto("/vi/quan-tri/quyen");
+      await staffPage.goto("/vi/quan-tri/he-thong/quyen");
       await expect(staffPage.getByTestId("forbidden")).toBeVisible();
     } finally {
       await context.close();
@@ -115,7 +115,7 @@ test.describe("Quản trị Hệ thống", () => {
 
   test("gõ chưa Enter không gọi tìm kiếm; bộ lọc và URL giữ nhau khi tải lại", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     await expect(page.getByRole("table").getByRole("link").first()).toBeVisible();
     const searches: string[] = [];
     page.on("request", (request) => {
@@ -164,7 +164,7 @@ test.describe("Quản trị Hệ thống", () => {
     );
     try {
       await apiPost(page.request, `/api/v1/system/users/${user.id}/roles`, { role_id: role.id });
-      await page.goto("/vi/quan-tri/nguoi-dung");
+      await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
       await page.getByRole("button", { name: "Vai trò", exact: true }).click();
       await page.getByRole("option", { name: new RegExp(role.name) }).click();
       await page.keyboard.press("Escape");
@@ -192,7 +192,7 @@ test.describe("Quản trị Hệ thống", () => {
 
   test("vai trò có bộ lọc loại, trạng thái và chính sách tự cấp quyền", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/vai-tro");
+    await page.goto("/vi/quan-tri/he-thong/vai-tro");
     await page.getByRole("button", { name: "Loại vai trò", exact: true }).click();
     await page.getByRole("option", { name: "Hệ thống", exact: true }).click();
     await page.keyboard.press("Escape");
@@ -222,7 +222,7 @@ test.describe("Quản trị Hệ thống", () => {
 
   test("danh mục quyền chỉ đọc, nhóm theo module và tìm khi Enter", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/quyen");
+    await page.goto("/vi/quan-tri/he-thong/quyen");
     await expect(page.getByRole("heading", { name: "Quyền", exact: true })).toBeVisible();
     // Mỗi module một mục accordion, mặc định mở.
     const systemModule = page
@@ -271,7 +271,7 @@ test.describe("Quản trị Hệ thống", () => {
         password: "E2e-Temp-Passw0rd!",
       });
       expect((await target.request.get("/api/v1/system/auth/me")).status()).toBe(200);
-      await page.goto("/vi/quan-tri/phien");
+      await page.goto("/vi/quan-tri/he-thong/phien");
       await expect(page.getByText("Phiên hiện tại", { exact: true })).toBeVisible();
       await page.getByRole("searchbox").fill(user.email);
       await page.getByRole("searchbox").press("Enter");
@@ -323,7 +323,7 @@ test.describe("Quản trị Hệ thống", () => {
           password: "E2e-Temp-Passw0rd!",
         });
       }
-      await page.goto("/vi/quan-tri/phien");
+      await page.goto("/vi/quan-tri/he-thong/phien");
       await page.getByRole("searchbox").fill(user.email);
       await page.getByRole("searchbox").press("Enter");
       const rows = page.getByRole("table").getByRole("row").filter({ hasText: user.email });

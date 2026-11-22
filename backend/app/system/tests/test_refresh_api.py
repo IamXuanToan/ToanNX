@@ -33,7 +33,7 @@ class TestRefresh(BaseApiTestCase):
         self.assert_success(api.post(REFRESH))
         new = refresh_cookie(api)
         assert new and new != old
-        old_record = RefreshToken.objects.get(token_hash=RefreshTokenService.hash_token(old))
+        old_record = RefreshToken.objects.get(token_hash=RefreshTokenService().hash_token(old))
         assert old_record.rotated_at is not None
         assert old_record.replaced_by is not None
 
@@ -76,7 +76,7 @@ class TestRefresh(BaseApiTestCase):
         assert AuthSession.objects.get(user=user).revoked_at is None
 
 
-@pytest.mark.django_db(transaction=True)
+@pytest.mark.django_db(transaction=True, serialized_rollback=True)
 def test_concurrent_refresh_only_one_rotation() -> None:
     """Hai request refresh đồng thời cùng token: đúng một thành công, một nhận 409."""
     user = UserFactory()

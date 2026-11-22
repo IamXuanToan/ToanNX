@@ -1,4 +1,4 @@
-"""Kiểm thử service khởi tạo vai trò mẫu: `ADMIN` và cặp quản lý/chỉ xem cho mỗi module."""
+"""Kiểm thử service khởi tạo vai trò mẫu: `ADMIN` và quản lý/chỉ xem/thành viên cho mỗi module."""
 
 import pytest
 
@@ -12,7 +12,7 @@ pytestmark = pytest.mark.django_db
 
 
 def _module_codes() -> list[str]:
-    """Mã các module có khai quyền (mỗi module sinh hai vai trò)."""
+    """Mã các module có khai quyền (mỗi module sinh ba vai trò)."""
     return [module.code for module in module_registry.all() if module.permissions]
 
 
@@ -24,13 +24,13 @@ def _codes(role: Role) -> set[str]:
 class TestRoleSeedService:
     """Kiểm tra vai trò mẫu dựng theo module registry."""
 
-    def test_predefined_roles_are_admin_plus_two_per_module(self) -> None:
-        """Danh sách mẫu chỉ gồm ADMIN và `<MODULE>_MANAGER`/`<MODULE>_VIEWER`, không có vai trò tự đặt."""
+    def test_predefined_roles_are_admin_plus_three_per_module(self) -> None:
+        """Danh sách mẫu chỉ gồm ADMIN và `<MODULE>_MANAGER`/`_VIEWER`/`_MEMBER`, không có vai trò tự đặt."""
         codes = [spec.code for spec in RoleSeedService().predefined_roles()]
 
         expected = ["ADMIN"]
         for module in _module_codes():
-            expected += [f"{module.upper()}_MANAGER", f"{module.upper()}_VIEWER"]
+            expected += [f"{module.upper()}_MANAGER", f"{module.upper()}_VIEWER", f"{module.upper()}_MEMBER"]
         assert codes == expected
         assert {"SYSTEM_MANAGER", "SYSTEM_VIEWER", "NOVEL_MANAGER", "UTILITIES_VIEWER"} <= set(codes)
 
@@ -44,10 +44,13 @@ class TestRoleSeedService:
         assert not Role.objects.alive().filter(code__endswith="_MANAGER").exists()
 
     def test_seed_creates_module_roles_with_module_permissions(self) -> None:
-        """`seed()` tạo vai trò theo module: quản lý có mọi quyền của module, chỉ xem có quyền `read`."""
+        """`seed()` tạo vai trò theo module.
+
+        Quản lý có mọi quyền, chỉ xem có quyền `read`, thành viên theo `member_permissions`.
+        """
         result = RoleSeedService().seed()
 
-        assert result["roles_created"] == 2 * len(_module_codes())
+        assert result["roles_created"] == 3 * len(_module_codes())
         for module in _module_codes():
             module_codes = set(
                 Permission.objects.filter(is_active=True, code__startswith=f"{module}.").values_list(
@@ -60,6 +63,11 @@ class TestRoleSeedService:
             assert manager.is_system is False and manager.auto_grant == RoleAutoGrant.NONE
             assert _codes(manager) == module_codes
             assert _codes(viewer) == {code for code in module_codes if code.endswith(".read")}
+            member = Role.objects.alive().get(code=f"{module.upper()}_MEMBER")
+            descriptor = module_registry.get(module)
+            assert descriptor is not None
+            assert _codes(member) == {p.code for p in descriptor.member_permissions}
+            assert not any(code.endswith(".manage_all") for code in _codes(member))
 
     def test_seed_system_only_keeps_admin_only(self) -> None:
         """`seed(system_only=True)` (chạy sau migrate) không tạo vai trò theo module."""

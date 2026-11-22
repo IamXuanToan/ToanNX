@@ -9,8 +9,10 @@ from app.core.decorators.validate_request import validate_request
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
-from app.novel.serializers.responses.reading_history_response_serializer import (
+from app.novel.serializers.responses.reading_history_clear_response_serializer import (
     ReadingHistoryClearResponseSerializer,
+)
+from app.novel.serializers.responses.reading_history_response_serializer import (
     ReadingHistoryResponseSerializer,
 )
 from app.novel.serializers.validates.reading_history_record_validate_serializer import (

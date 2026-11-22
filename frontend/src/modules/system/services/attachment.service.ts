@@ -7,6 +7,7 @@ import type {
   Attachment,
   AttachmentFilters,
   AttachmentUploadInput,
+  AttachmentVisibility,
   UpdateAttachmentInput,
 } from "../types/attachment.types";
 
@@ -26,12 +27,24 @@ export const attachmentService = {
   history: crud.history,
   /** Xóa mềm nhiều file trong cùng transaction. @returns Số file đã xóa. */
   bulkDelete: crud.bulkDelete,
-  /** @param file - File từ thiết bị. @param folderId - Nhóm logic đích nếu có. @returns File đã kiểm tra và lưu. */
-  async upload(file: File, folderId?: string | null): Promise<Attachment> {
+
+  /**
+   * URL đọc nội dung file cùng origin (`…/content?stream=1`, backend stream qua Next rewrite). Dùng khi cần bytes
+   * bằng `fetch`/canvas (trình sửa ảnh): URL storage R2 khác origin, không có CORS thì trình duyệt chặn.
+   *
+   * @param id - Id file.
+   * @returns Đường dẫn tương đối `/api/v1/system/attachments/{id}/content?stream=1`.
+   */
+  contentStreamUrl(id: string): string {
+    return `${env.apiBasePath}${SYSTEM_API_ENDPOINTS.attachmentContent(id)}?stream=1`;
+  },
+  /** @param input - File, nhóm logic và chế độ xem (không gửi thì backend tự chọn). @returns File đã kiểm tra và lưu. */
+  async upload({ file, folderId, visibility }: AttachmentUploadInput): Promise<Attachment> {
     const body = new FormData();
     body.append("file", file);
     // FormData đi nguyên trạng, không qua bộ chuyển camelCase của apiClient.
     if (folderId) body.append("folder_id", folderId);
+    if (visibility) body.append("visibility", visibility);
     return (
       await apiClient.post<Attachment>(SYSTEM_API_ENDPOINTS.attachments, body, {
         timeoutMs: env.uploadTimeoutMs,
@@ -41,6 +54,14 @@ export const attachmentService = {
   /** @param ids - File trong phạm vi quyền. @param folderId - Nhóm đích hoặc null. @returns Số file chuyển nhóm; URL giữ nguyên. */
   move(ids: string[], folderId: string | null): Promise<number> {
     return crud.bulkUpdate(ids, { folderId });
+  },
+  /** @param id - File trong phạm vi quyền. @param visibility - Chế độ mới. @returns File sau khi chuyển kho (giữ id). */
+  async setVisibility(id: string, visibility: AttachmentVisibility): Promise<Attachment> {
+    return (
+      await apiClient.post<Attachment>(SYSTEM_API_ENDPOINTS.attachmentVisibility(id), {
+        visibility,
+      })
+    ).data;
   },
 };
 

@@ -4,6 +4,617 @@
  */
 
 export interface paths {
+  "/api/v1/finance/incomes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["finance_incomes_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["finance_incomes_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/incomes/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["finance_incomes_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["finance_incomes_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["finance_incomes_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/finance/incomes/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["finance_incomes_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/incomes/{id}/refresh-rate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Giao dịch sau khi cập nhật. */
+    post: operations["finance_incomes_refresh_rate_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/incomes/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["finance_incomes_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/incomes/export": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description File `thu-nhap.csv`. */
+    get: operations["finance_incomes_export_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/incomes/recalculate-tax": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Số giao dịch đã tính lại. */
+    post: operations["finance_incomes_recalculate_tax_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/incomes/reclassify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Số giao dịch đổi nền tảng. */
+    post: operations["finance_incomes_reclassify_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/invoices": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["finance_invoices_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["finance_invoices_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/invoices/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["finance_invoices_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["finance_invoices_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["finance_invoices_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/finance/invoices/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["finance_invoices_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/invoices/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["finance_invoices_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/platforms": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["finance_platforms_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["finance_platforms_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/platforms/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["finance_platforms_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["finance_platforms_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["finance_platforms_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/finance/platforms/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["finance_platforms_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/platforms/{id}/tax-rate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Mốc áp dụng. */
+    get: operations["finance_platforms_tax_rate_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/platforms/{id}/tax-rates": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Mới nhất trước. */
+    get: operations["finance_platforms_tax_rates_list"];
+    put?: never;
+    /** @description Thêm mốc; trả giao dịch bị ảnh hưởng. */
+    post: operations["finance_platforms_tax_rates_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/platforms/{id}/tax-rates/{rate_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** @description Xóa mốc. */
+    delete: operations["finance_platforms_tax_rates_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Sửa mốc. */
+    patch: operations["finance_platforms_tax_rates_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/finance/platforms/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["finance_platforms_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/platforms/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["finance_platforms_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/platforms/seed-defaults": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Số nền tảng mới tạo. */
+    post: operations["finance_platforms_seed_defaults_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/reports/monthly": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Số liệu VNĐ. */
+    get: operations["finance_reports_monthly_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/reports/summary": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Số liệu VNĐ. */
+    get: operations["finance_reports_summary_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/rules": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["finance_rules_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["finance_rules_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/rules/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["finance_rules_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["finance_rules_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["finance_rules_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/finance/rules/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["finance_rules_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/rules/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["finance_rules_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/rules/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["finance_rules_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/rules/test": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Kết quả thử. */
+    post: operations["finance_rules_test_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/sepay/connection": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Trạng thái. */
+    get: operations["finance_sepay_connection_retrieve"];
+    /** @description Lưu token (kiểm trước) / bật tắt. */
+    put: operations["finance_sepay_connection_update"];
+    post?: never;
+    /** @description Xóa kết nối. */
+    delete: operations["finance_sepay_connection_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/sepay/connection/rotate-secret": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Trạng thái với secret mới. */
+    post: operations["finance_sepay_connection_rotate_secret_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/sepay/connection/test": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Số tài khoản liên kết. */
+    post: operations["finance_sepay_connection_test_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/sepay/import": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Số tạo/cập nhật/bỏ qua. */
+    post: operations["finance_sepay_import_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/sepay/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Danh sách dòng. */
+    post: operations["finance_sepay_preview_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/finance/sepay/webhook/{public_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Kiểm chữ ký rồi ghi tiền vào. */
+    post: operations["finance_sepay_webhook_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/novel/authors": {
     parameters: {
       query?: never;
@@ -106,6 +717,23 @@ export interface paths {
     put?: never;
     /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
     post: operations["novel_chapters_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/novel/chapters/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["novel_chapters_bulk_update_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -580,6 +1208,59 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/system/announcements": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_announcements_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_announcements_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/announcements/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_announcements_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_announcements_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/announcements/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_announcements_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/system/attachments": {
     parameters: {
       query?: never;
@@ -617,6 +1298,32 @@ export interface paths {
     patch: operations["system_attachments_partial_update"];
     trace?: never;
   };
+  "/api/v1/system/attachments/{id}/content": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * @description Mở nội dung file.
+     *
+     *     Args:
+     *         request: Request.
+     *         pk: Id file.
+     *
+     *     Returns:
+     *         Redirect hoặc nội dung file.
+     */
+    get: operations["system_attachments_content_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/system/attachments/{id}/history": {
     parameters: {
       query?: never;
@@ -628,6 +1335,23 @@ export interface paths {
     get: operations["system_attachments_history_list"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/attachments/{id}/visibility": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Đổi chế độ xem và trả thông tin file mới. */
+    post: operations["system_attachments_visibility_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1313,6 +2037,216 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/system/callbacks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách callback. */
+    get: operations["system_callbacks_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/currencies": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_currencies_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_currencies_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/currencies/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_currencies_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_currencies_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["system_currencies_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/currencies/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["system_currencies_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/currencies/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_currencies_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/currencies/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_currencies_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/exchange-rates": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_exchange_rates_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_exchange_rates_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/exchange-rates/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_exchange_rates_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_exchange_rates_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["system_exchange_rates_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/exchange-rates/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["system_exchange_rates_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/exchange-rates/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_exchange_rates_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/exchange-rates/fetch": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Dòng tỷ giá sau khi lấy. */
+    post: operations["system_exchange_rates_fetch_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/exchange-rates/resolve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Tỷ giá + ngày thật của tỷ giá. */
+    get: operations["system_exchange_rates_resolve_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/system/health": {
     parameters: {
       query?: never;
@@ -1427,7 +2361,8 @@ export interface paths {
     /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
     get: operations["system_journal_entries_list"];
     put?: never;
-    post?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_journal_entries_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1445,6 +2380,24 @@ export interface paths {
     get: operations["system_journal_entries_retrieve"];
     put?: never;
     post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_journal_entries_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/journal-entries/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_journal_entries_bulk_delete_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1468,6 +2421,236 @@ export interface paths {
      *         Danh sách tài nguyên.
      */
     get: operations["system_journal_resources_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notification-deliveries": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_notification_deliveries_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_notification_deliveries_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notification-deliveries/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_notification_deliveries_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_notification_deliveries_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notification-deliveries/{id}/retry": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Kết quả sau khi gửi lại. */
+    post: operations["system_notification_deliveries_retry_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notification-deliveries/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_notification_deliveries_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notifications": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Thông báo mới nhất trước; không gửi `page` thì trả trang đầu. */
+    get: operations["system_notifications_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notifications/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** @description Xóa cứng thông báo của chính mình. */
+    delete: operations["system_notifications_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notifications/{id}/read": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Thông báo sau khi đánh dấu. */
+    post: operations["system_notifications_read_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notifications/devices": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Thiết bị đang dùng. */
+    get: operations["system_notifications_devices_list"];
+    put?: never;
+    /** @description Upsert theo token. */
+    post: operations["system_notifications_devices_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notifications/devices/{token}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** @description Xóa cứng thiết bị. */
+    delete: operations["system_notifications_devices_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notifications/dispatch": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Gửi một lô bản đến hạn.
+     *
+     *     Raises:
+     *         NotFoundError: Chưa cấu hình hoặc sai bí mật (không lộ endpoint tồn tại).
+     */
+    post: operations["system_notifications_dispatch_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notifications/preferences": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Kênh dùng được + ma trận hiện tại. */
+    get: operations["system_notifications_preferences_retrieve"];
+    /** @description Đồng bộ rồi trả ma trận mới. */
+    put: operations["system_notifications_preferences_update"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notifications/read-all": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Đánh dấu rồi trả số chưa đọc. */
+    post: operations["system_notifications_read_all_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/notifications/unread-count": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description `{personal, system}`. */
+    get: operations["system_notifications_unread_count_retrieve"];
     put?: never;
     post?: never;
     delete?: never;
@@ -1717,6 +2900,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/system/settings/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_settings_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/system/settings/public": {
     parameters: {
       query?: never;
@@ -1736,6 +2936,112 @@ export interface paths {
     get: operations["system_settings_public_retrieve"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/telegram-chats": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_telegram_chats_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/telegram-chats/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_telegram_chats_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_telegram_chats_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["system_telegram_chats_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/telegram-chats/{id}/{action}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description `verify` hoặc `test`. */
+    post: operations["system_telegram_chats_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/telegram-chats/register": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Mã + link. */
+    post: operations["system_telegram_chats_register_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/telegram/bot": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Bot của mình (null nếu chưa có). */
+    get: operations["system_telegram_bot_retrieve"];
+    /** @description Kiểm token bằng getMe rồi lưu mã hóa. */
+    put: operations["system_telegram_bot_update"];
+    post?: never;
+    /** @description Xóa bot và các nơi nhận của bot. */
+    delete: operations["system_telegram_bot_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/telegram/bot/check": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Kết quả kiểm tra. */
+    post: operations["system_telegram_bot_check_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1905,6 +3211,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/system/webhooks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách webhook. */
+    get: operations["system_webhooks_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/utilities/page-paths": {
     parameters: {
       query?: never;
@@ -1953,6 +3276,40 @@ export interface paths {
     get: operations["utilities_page_paths_history_list"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/page-paths/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["utilities_page_paths_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/page-paths/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["utilities_page_paths_bulk_update_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2462,6 +3819,12 @@ export interface components {
       /** @description Họ và tên chủ phiên. */
       full_name: string;
     };
+    /**
+     * @description * `OK` - Đã có số tiền
+     *     * `UNKNOWN` - Không rõ số tiền
+     * @enum {string}
+     */
+    AmountStatusEnum: "OK" | "UNKNOWN";
     /** @description Gom nhóm cùng transaction, không sửa byte hoặc URL của các file. */
     AttachmentBulkUpdateValidateRequest: {
       /** @description Id các bản ghi cần thao tác (tối đa 100). */
@@ -2480,8 +3843,15 @@ export interface components {
        * @description Định danh UUID do hệ thống sinh, không đổi.
        */
       readonly id: string;
-      /** @description URL tuyệt đối truy cập file (domain theo request hoặc của object storage). */
+      /** @description URL tuyệt đối mở file. Công khai: URL trực tiếp của storage. Riêng tư: URL API `/attachments/{id}/content` (cần đăng nhập và quyền; không có URL trực tiếp). */
       readonly url: string;
+      /**
+       * @description public: ai có link đều xem; private: chỉ người upload, superuser, quyền xem riêng tư.
+       *
+       *     * `public` - Công khai
+       *     * `private` - Riêng tư
+       */
+      readonly visibility: components["schemas"]["VisibilityEnum"];
       /**
        * Tên file gốc
        * @description Tên file khi người dùng upload (chỉ để hiển thị).
@@ -2580,7 +3950,7 @@ export interface components {
        */
       parent_id?: string | null;
     };
-    /** @description Id và URL truy cập file. */
+    /** @description Id, chế độ xem và URL truy cập file. */
     AttachmentSummaryResponse: {
       /**
        * Mã định danh
@@ -2588,8 +3958,15 @@ export interface components {
        * @description Định danh UUID do hệ thống sinh, không đổi.
        */
       readonly id: string;
-      /** @description URL tuyệt đối truy cập file (domain theo request hoặc của object storage). */
+      /** @description URL tuyệt đối mở file. Công khai: URL trực tiếp của storage. Riêng tư: URL API `/attachments/{id}/content` (cần đăng nhập và quyền; không có URL trực tiếp). */
       readonly url: string;
+      /**
+       * @description public: ai có link đều xem; private: chỉ người upload, superuser, quyền xem riêng tư.
+       *
+       *     * `public` - Công khai
+       *     * `private` - Riêng tư
+       */
+      readonly visibility: components["schemas"]["VisibilityEnum"];
     };
     /** @description Một file, tối đa `ATTACHMENT_MAX_SIZE_BYTES`. Định dạng được service kiểm tra bằng chữ ký file. */
     AttachmentUploadValidateRequest: {
@@ -2604,10 +3981,27 @@ export interface components {
        */
       alt_text: string;
       /**
+       * @description public/private; không gửi thì CSV, XLSX, XML là private, loại khác là public.
+       *
+       *     * `public` - Công khai
+       *     * `private` - Riêng tư
+       */
+      visibility?: components["schemas"]["VisibilityEnum"];
+      /**
        * Format: binary
-       * @description File upload: PNG, JPEG, WEBP, GIF, SVG an toàn, PDF, MP4, MOV hoặc WEBM.
+       * @description File upload: PNG, JPEG, WEBP, GIF, SVG an toàn, PDF, XLSX, CSV, XML, MP4, MOV hoặc WEBM.
        */
       file: string;
+    };
+    /** @description Chế độ xem mới của file. */
+    AttachmentVisibilityValidateRequest: {
+      /**
+       * @description public: chuyển sang kho công khai; private: chuyển sang kho riêng tư.
+       *
+       *     * `public` - Công khai
+       *     * `private` - Riêng tư
+       */
+      visibility: components["schemas"]["VisibilityEnum"];
     };
     /** @description Thông tin tóm tắt của tác giả. */
     AuthorSummaryResponse: {
@@ -2656,6 +4050,42 @@ export interface components {
      * @enum {string}
      */
     AutoGrantEnum: "none" | "all" | "read_only";
+    /** @description Một URL callback của hệ thống. */
+    CallbackResponse: {
+      /** @description Mã `<module>.<tên>`. */
+      code: string;
+      /** @description Mã module. */
+      module: string;
+      /** @description Tên. */
+      name: string;
+      /** @description Bên chuyển hướng về. */
+      provider: string;
+      /** @description Đường dẫn trên FE. */
+      path: string;
+      /** @description URL đầy đủ theo origin FE đang dùng. */
+      url: string;
+      /** @description Dùng để làm gì. */
+      description: string;
+      /** @description Các bước khai phía bên thứ ba. */
+      setup: string[];
+      /** @description Đã cấu hình client id/secret tương ứng. */
+      configured: boolean;
+    };
+    /**
+     * @description * `IN_APP` - Trong ứng dụng
+     *     * `PUSH` - Trình duyệt
+     *     * `EMAIL` - Email
+     *     * `TELEGRAM` - Telegram
+     * @enum {string}
+     */
+    ChannelEnum: "IN_APP" | "PUSH" | "EMAIL" | "TELEGRAM";
+    /** @description Cập nhật cờ `is_published` của nhiều bản ghi cùng lúc. */
+    ChapterBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      /** @description Xuất bản / ẩn chương. */
+      is_published: boolean;
+    };
     /** @description Input tạo chương truyện mới. */
     ChapterCreateValidateRequest: {
       /**
@@ -2798,6 +4228,84 @@ export interface components {
        */
       readonly updated_at: string;
     };
+    /** @description Cập nhật cờ `is_active` của nhiều bản ghi cùng lúc. */
+    ClassificationRuleBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      /** @description Bật/tắt quy tắc. */
+      is_active: boolean;
+    };
+    /** @description Quy tắc. */
+    ClassificationRuleResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tên
+       * @description Tên quy tắc.
+       */
+      readonly name: string;
+      /**
+       * Nền tảng
+       * Format: uuid
+       * @description Nền tảng gán khi khớp.
+       */
+      readonly platform_id: string;
+      /** @description Nền tảng. */
+      readonly platform_name: string;
+      /**
+       * Regex
+       * @description So trên nội dung đã bỏ dấu, viết hoa.
+       */
+      readonly pattern: string;
+      /**
+       * Ưu tiên
+       * @description Lớn thắng.
+       */
+      readonly priority: number;
+      /**
+       * Đang bật
+       * @description Tắt để bỏ qua.
+       */
+      readonly is_active: boolean;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Tên, nền tảng, regex, ưu tiên. */
+    ClassificationRuleValidateRequest: {
+      /** @description Tên. */
+      name: string;
+      /**
+       * Format: uuid
+       * @description Nền tảng.
+       */
+      platform_id: string;
+      /** @description Regex. */
+      pattern: string;
+      /**
+       * @description Ưu tiên (lớn thắng).
+       * @default 100
+       */
+      priority: number;
+      /**
+       * @description Đang bật.
+       * @default true
+       */
+      is_active: boolean;
+    };
     /** @description Kết quả từng task dọn dữ liệu. */
     CleanupResponse: {
       /** @description `{đường dẫn task: số bản ghi đã xóa}`; -1 là task lỗi. */
@@ -2860,10 +4368,128 @@ export interface components {
       /** @description Request id của thao tác (đối chiếu log). */
       request_id: string;
     };
+    /** @description Một thay đổi của bản ghi; nguồn dữ liệu là recorder cấu hình ở `CORE_CHANGE_RECORDER`. */
+    CoreJournalEntryResponseRequest: {
+      /**
+       * Format: uuid
+       * @description Id mục lịch sử.
+       */
+      id: string;
+      /**
+       * Format: date-time
+       * @description Thời điểm thay đổi.
+       */
+      created_at: string;
+      /** @description CREATE, UPDATE, DELETE hoặc EVENT. */
+      action: string;
+      /** @description Mã sự kiện khi action = EVENT. */
+      event: string;
+      /** @description `<module>.<model>`, ví dụ `utilities.shortlink`. */
+      resource: string;
+      /** @description Id bản ghi. */
+      object_id: string;
+      /** @description Tên bản ghi lúc thay đổi. */
+      object_label: string;
+      /**
+       * Format: uuid
+       * @description Người thực hiện (null = hệ thống).
+       */
+      actor_id: string | null;
+      /** @description Email người thực hiện lúc thay đổi. */
+      actor_label: string;
+      /** @description `{field: [cũ, mới]}`; field ẩn là `***`. */
+      changes: unknown;
+      /** @description Request id của thao tác (đối chiếu log). */
+      request_id: string;
+    };
     /** @description CSRF token (cũng nằm trong cookie `csrftoken`). */
     CsrfResponse: {
       /** @description Token gửi lại qua header `X-CSRFToken` cho request thay đổi trạng thái. */
       csrf_token: string;
+    };
+    /** @description Cập nhật cờ `is_active` của nhiều bản ghi cùng lúc. */
+    CurrencyBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      /** @description Bật/tắt tiền tệ (tiền tệ gốc không tắt được). */
+      is_active: boolean;
+    };
+    /** @description Tiền tệ. */
+    CurrencyResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Mã
+       * @description ISO 4217, ví dụ VND, USD.
+       */
+      readonly code: string;
+      /**
+       * Tên
+       * @description Tên tiền tệ.
+       */
+      readonly name: string;
+      /**
+       * Ký hiệu
+       * @description Ví dụ ₫, $.
+       */
+      readonly symbol: string;
+      /**
+       * Số lẻ
+       * @description Số chữ số thập phân của số tiền gốc (0–4).
+       */
+      readonly decimal_places: number;
+      /**
+       * Tiền tệ gốc
+       * @description Tiền tệ quy đổi về (VND).
+       */
+      readonly is_base: boolean;
+      /**
+       * Đang dùng
+       * @description Tắt để ẩn khỏi chọn mới.
+       */
+      readonly is_active: boolean;
+      /**
+       * Thứ tự
+       * @description Thứ tự hiển thị.
+       */
+      readonly position: number;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Mã ISO 4217 3 chữ in hoa. */
+    CurrencyValidateRequest: {
+      /** @description Mã ISO 4217, ví dụ USD. */
+      code: string;
+      /** @description Tên. */
+      name: string;
+      /** @description Ký hiệu. */
+      symbol: string;
+      /** @description Số lẻ. */
+      decimal_places: number;
+      /**
+       * @description Đang dùng.
+       * @default true
+       */
+      is_active: boolean;
+      /**
+       * @description Thứ tự.
+       * @default 0
+       */
+      position: number;
     };
     /** @description Serialize `CurrentUserProfile` (service đã dựng sẵn dữ liệu). */
     CurrentUserResponse: {
@@ -2881,10 +4507,136 @@ export interface components {
      * @enum {string}
      */
     CustomPageStatusEnum: "DRAFT" | "PUBLISHED" | "UNPUBLISHED";
+    /**
+     * @description * `WITHHOLDING_CERTIFICATE` - Chứng từ khấu trừ thuế
+     *     * `INVOICE` - Hóa đơn / invoice
+     *     * `STATEMENT` - Sao kê / bảng thanh toán
+     *     * `CONTRACT` - Hợp đồng
+     *     * `OTHER` - Khác
+     * @enum {string}
+     */
+    DocTypeEnum: "WITHHOLDING_CERTIFICATE" | "INVOICE" | "STATEMENT" | "CONTRACT" | "OTHER";
     /** @description Body xác minh email chứa token. */
     EmailVerificationValidateRequest: {
       /** @description Token xác minh nhận được qua email. */
       token: string;
+    };
+    /** @description Tiền tệ + ngày. */
+    ExchangeRateFetchValidateRequest: {
+      /**
+       * Format: uuid
+       * @description Ngoại tệ.
+       */
+      currency_id: string;
+      /**
+       * Format: date
+       * @description Ngày.
+       */
+      date: string;
+    };
+    /** @description `rate_date` có thể sớm hơn ngày hỏi (lùi qua ngày nghỉ). */
+    ExchangeRateResolveResponse: {
+      /**
+       * Format: decimal
+       * @description Số VNĐ cho 1 đơn vị.
+       */
+      rate: string;
+      /**
+       * Format: date
+       * @description Ngày của tỷ giá đã dùng.
+       */
+      rate_date: string;
+      /** @description BASE / VIETCOMBANK_TRANSFER_BUY / MANUAL. */
+      rate_source: string;
+    };
+    /** @description Tỷ giá (dòng API chỉ đọc). */
+    ExchangeRateResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tiền tệ
+       * Format: uuid
+       * @description Ngoại tệ (không có dòng cho tiền tệ gốc).
+       */
+      readonly currency_id: string;
+      /** @description Mã tiền tệ. */
+      readonly currency_code: string;
+      /**
+       * Ngày
+       * Format: date
+       * @description Ngày công bố.
+       */
+      readonly rate_date: string;
+      /**
+       * Tỷ giá
+       * Format: decimal
+       * @description Số VNĐ cho 1 đơn vị.
+       */
+      readonly rate: string;
+      /**
+       * Nguồn
+       * @description Nguồn tỷ giá.
+       *
+       *     * `VIETCOMBANK_TRANSFER_BUY` - Vietcombank · mua chuyển khoản
+       *     * `MANUAL` - Nhập tay
+       */
+      readonly source: components["schemas"]["ExchangeRateResponseSourceEnum"];
+      /**
+       * Lấy lúc
+       * Format: date-time
+       * @description Thời điểm lấy từ API.
+       */
+      readonly fetched_at: string | null;
+      /**
+       * Ghi chú
+       * @description Ghi chú.
+       */
+      readonly note: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /**
+     * @description * `VIETCOMBANK_TRANSFER_BUY` - Vietcombank · mua chuyển khoản
+     *     * `MANUAL` - Nhập tay
+     * @enum {string}
+     */
+    ExchangeRateResponseSourceEnum: "VIETCOMBANK_TRANSFER_BUY" | "MANUAL";
+    /** @description Tỷ giá MANUAL (số VNĐ cho 1 đơn vị ngoại tệ). */
+    ExchangeRateValidateRequest: {
+      /**
+       * Format: uuid
+       * @description Ngoại tệ.
+       */
+      currency_id: string;
+      /**
+       * Format: date
+       * @description Ngày.
+       */
+      rate_date: string;
+      /**
+       * Format: decimal
+       * @description Tỷ giá.
+       */
+      rate: string;
+      /**
+       * @description Ghi chú (ví dụ nguồn NHNN).
+       * @default
+       */
+      note: string;
     };
     /** @description Thông tin một mục truyện yêu thích. */
     FavoriteResponse: {
@@ -2931,6 +4683,20 @@ export interface components {
        */
       novel_id: string;
     };
+    /**
+     * @description * `API` - Tự động (Vietcombank)
+     *     * `MANUAL` - Nhập tay
+     * @enum {string}
+     */
+    FinanceManualRateSourceEnum: "API" | "MANUAL";
+    /**
+     * @description * `BASE` - Tiền tệ gốc (VNĐ)
+     *     * `API` - Tự động (Vietcombank)
+     *     * `MANUAL` - Nhập tay
+     *     * `BANK_ACTUAL` - Theo số ngân hàng đã trả
+     * @enum {string}
+     */
+    FinanceRateSourceEnum: "BASE" | "API" | "MANUAL" | "BANK_ACTUAL";
     /** @description Thông tin tóm tắt thể loại. */
     GenreSummaryResponse: {
       /**
@@ -2971,6 +4737,283 @@ export interface components {
       /** @description Đang chạy chế độ DEBUG hay không. */
       debug: boolean;
     };
+    /** @description Số giao dịch đã đổi. */
+    IncomeBulkResultResponse: {
+      /** @description Số giao dịch đã đổi. */
+      changed: number;
+    };
+    /** @description `reset_manual` = bỏ thuế tay rồi tính lại. */
+    IncomeRecalculateTaxValidateRequest: {
+      /** @description Giao dịch. */
+      ids: string[];
+      /**
+       * @description Bỏ thuế nhập tay.
+       * @default false
+       */
+      reset_manual: boolean;
+    };
+    /** @description Trống = mọi giao dịch chưa nhận diện. */
+    IncomeReclassifyValidateRequest: {
+      /** @description Giao dịch. */
+      ids?: string[];
+    };
+    /** @description Số gốc + quy đổi + khấu trừ đã chụp; không trả payload SePay ở danh sách. */
+    IncomeResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Nguồn
+       * @description MANUAL / SEPAY.
+       *
+       *     * `MANUAL` - Nhập tay
+       *     * `SEPAY` - SePay
+       */
+      readonly source: components["schemas"]["IncomeResponseSourceEnum"];
+      /**
+       * Nhận lúc
+       * Format: date-time
+       * @description Thời điểm tiền vào (UTC).
+       */
+      readonly received_at: string;
+      /**
+       * Ngày nhận
+       * Format: date
+       * @description Ngày giờ Việt Nam của received_at.
+       */
+      readonly received_date: string;
+      /**
+       * Nội dung
+       * @description Nội dung chuyển khoản / mô tả.
+       */
+      readonly content: string;
+      /**
+       * Ghi chú
+       * @description Ghi chú tham khảo.
+       */
+      readonly note: string;
+      /**
+       * Tiền tệ
+       * Format: uuid
+       * @description Tiền tệ của số gốc.
+       */
+      readonly currency_id: string;
+      /** @description Mã tiền tệ. */
+      readonly currency_code: string;
+      /** @description Ký hiệu. */
+      readonly currency_symbol: string;
+      /** @description Số lẻ. */
+      readonly currency_decimal_places: number;
+      /**
+       * Số gốc
+       * Format: decimal
+       * @description Số tiền theo tiền tệ; null khi không rõ.
+       */
+      readonly original_amount: string | null;
+      /**
+       * Tỷ giá
+       * Format: decimal
+       * @description VNĐ cho 1 đơn vị.
+       */
+      readonly exchange_rate: string;
+      /**
+       * Nguồn tỷ giá
+       * @description BASE / API / MANUAL / BANK_ACTUAL.
+       *
+       *     * `BASE` - Tiền tệ gốc (VNĐ)
+       *     * `API` - Tự động (Vietcombank)
+       *     * `MANUAL` - Nhập tay
+       *     * `BANK_ACTUAL` - Theo số ngân hàng đã trả
+       */
+      readonly rate_source: components["schemas"]["FinanceRateSourceEnum"];
+      /**
+       * Ngày tỷ giá
+       * Format: date
+       * @description Ngày của tỷ giá đã dùng.
+       */
+      readonly rate_date: string | null;
+      /**
+       * Thực nhận (VNĐ)
+       * Format: decimal
+       * @description VNĐ thực nhận; null khi không rõ.
+       */
+      readonly amount: string | null;
+      /**
+       * Trạng thái số tiền
+       * @description OK / UNKNOWN.
+       *
+       *     * `OK` - Đã có số tiền
+       *     * `UNKNOWN` - Không rõ số tiền
+       */
+      readonly amount_status: components["schemas"]["AmountStatusEnum"];
+      /**
+       * Nền tảng
+       * Format: uuid
+       * @description Null = chưa nhận diện.
+       */
+      readonly platform_id: string | null;
+      /** @description Nền tảng. */
+      readonly platform_name: string;
+      /**
+       * Quy tắc khớp
+       * Format: uuid
+       * @description Quy tắc đã nhận diện.
+       */
+      readonly matched_rule_id: string | null;
+      /** @description Quy tắc khớp. */
+      readonly matched_rule_name: string;
+      /**
+       * Khóa nền tảng
+       * @description Người dùng tự chọn; nhận diện lại không đổi.
+       */
+      readonly is_platform_locked: boolean;
+      /**
+       * Đã khấu trừ
+       * @description Đã bị khấu trừ thuế (chụp).
+       */
+      readonly tax_withheld: boolean;
+      /**
+       * % khấu trừ
+       * Format: decimal
+       * @description % đã bị khấu trừ (chụp).
+       */
+      readonly tax_rate: string;
+      /**
+       * Tiền thuế bị khấu trừ
+       * Format: decimal
+       * @description VNĐ.
+       */
+      readonly tax_amount: string | null;
+      /**
+       * Trước khấu trừ
+       * Format: decimal
+       * @description amount + tax_amount.
+       */
+      readonly gross_amount: string | null;
+      /**
+       * Thuế nhập tay
+       * @description Không tự tính lại.
+       */
+      readonly is_tax_manual: boolean;
+      /**
+       * Trạng thái thuế
+       * @description Trạng thái khấu trừ.
+       *
+       *     * `WITHHELD` - Đã khấu trừ
+       *     * `NOT_WITHHELD` - Không khấu trừ
+       *     * `NO_RATE` - Chưa cấu hình thuế
+       *     * `UNCLASSIFIED` - Chưa nhận diện
+       *     * `PENDING` - Chờ số tiền
+       */
+      readonly tax_status: components["schemas"]["TaxStatusEnum"];
+      /**
+       * Mã giao dịch
+       * @description Mã tham chiếu ngân hàng.
+       */
+      readonly reference_code: string;
+      /**
+       * Ngân hàng
+       * @description Hiển thị.
+       */
+      readonly bank_name: string;
+      /**
+       * 4 số cuối TK
+       * @description Hiển thị.
+       */
+      readonly account_last4: string;
+      /** @description Hóa đơn/chứng từ gắn. */
+      readonly invoice_ids: string[];
+      /** @description Cần xử lý. */
+      readonly needs_review: boolean;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /**
+     * @description * `MANUAL` - Nhập tay
+     *     * `SEPAY` - SePay
+     * @enum {string}
+     */
+    IncomeResponseSourceEnum: "MANUAL" | "SEPAY";
+    /** @description Số gốc theo tiền tệ; ngoại tệ thì tỷ giá tự động (API) hoặc nhập tay. Thuế tay tùy chọn. */
+    IncomeValidateRequest: {
+      /**
+       * Format: date-time
+       * @description Thời điểm nhận.
+       */
+      received_at: string;
+      /**
+       * Format: uuid
+       * @description Nền tảng (trống = tự nhận diện).
+       */
+      platform_id?: string | null;
+      /**
+       * Format: uuid
+       * @description Tiền tệ.
+       */
+      currency_id: string;
+      /**
+       * Format: decimal
+       * @description Số tiền gốc.
+       */
+      original_amount: string;
+      /**
+       * @description API / MANUAL.
+       *
+       *     * `API` - Tự động (Vietcombank)
+       *     * `MANUAL` - Nhập tay
+       * @default API
+       */
+      rate_source: components["schemas"]["FinanceManualRateSourceEnum"];
+      /**
+       * Format: decimal
+       * @description Tỷ giá (MANUAL).
+       */
+      exchange_rate?: string | null;
+      /**
+       * @description Nội dung.
+       * @default
+       */
+      content: string;
+      /**
+       * @description Ghi chú tham khảo.
+       * @default
+       */
+      note: string;
+      /**
+       * @description Tự nhập khấu trừ.
+       * @default false
+       */
+      is_tax_manual: boolean;
+      /**
+       * @description Đã khấu trừ (thuế tay).
+       * @default false
+       */
+      tax_withheld: boolean;
+      /**
+       * Format: decimal
+       * @description % (thuế tay).
+       * @default 0.00
+       */
+      tax_rate: string;
+      /**
+       * Format: decimal
+       * @description Tiền thuế bị khấu trừ (thuế tay).
+       */
+      tax_amount?: string | null;
+    };
     /** @description Thông tin lời mời tài khoản trả về cho client. */
     InvitationDetailResponse: {
       /**
@@ -2982,6 +5025,232 @@ export interface components {
       full_name: string;
       /** @description Tên người dùng đã điền sẵn nếu có. */
       username: string | null;
+    };
+    /** @description Chứng từ + file + giao dịch gắn + đối chiếu (tính từ dữ liệu đã prefetch, không kết luận đúng/sai). */
+    InvoiceResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Loại
+       * @description Loại chứng từ.
+       *
+       *     * `WITHHOLDING_CERTIFICATE` - Chứng từ khấu trừ thuế
+       *     * `INVOICE` - Hóa đơn / invoice
+       *     * `STATEMENT` - Sao kê / bảng thanh toán
+       *     * `CONTRACT` - Hợp đồng
+       *     * `OTHER` - Khác
+       */
+      readonly doc_type: components["schemas"]["DocTypeEnum"];
+      /**
+       * Số
+       * @description Số hóa đơn/chứng từ.
+       */
+      readonly number: string;
+      /**
+       * Bên phát hành
+       * @description Bên phát hành.
+       */
+      readonly issuer: string;
+      /**
+       * MST bên phát hành
+       * @description Mã số thuế.
+       */
+      readonly issuer_tax_code: string;
+      /**
+       * Ngày lập
+       * Format: date
+       * @description Ngày lập.
+       */
+      readonly issued_on: string;
+      /**
+       * Kỳ từ
+       * Format: date
+       * @description Kỳ thu nhập từ.
+       */
+      readonly period_from: string | null;
+      /**
+       * Kỳ đến
+       * Format: date
+       * @description Kỳ thu nhập đến.
+       */
+      readonly period_to: string | null;
+      /**
+       * Nền tảng
+       * Format: uuid
+       * @description Nền tảng.
+       */
+      readonly platform_id: string | null;
+      /** @description Nền tảng. */
+      readonly platform_name: string;
+      /**
+       * Tiền tệ
+       * Format: uuid
+       * @description Tiền tệ trên chứng từ.
+       */
+      readonly currency_id: string;
+      /** @description Mã tiền tệ. */
+      readonly currency_code: string;
+      /** @description Ký hiệu. */
+      readonly currency_symbol: string;
+      /** @description Số lẻ. */
+      readonly currency_decimal_places: number;
+      /**
+       * Tổng tiền
+       * Format: decimal
+       * @description Theo tiền tệ chứng từ.
+       */
+      readonly original_amount: string;
+      /**
+       * Tiền thuế
+       * Format: decimal
+       * @description Thuế đã khấu trừ ghi trên chứng từ.
+       */
+      readonly original_tax_amount: string | null;
+      /**
+       * Tỷ giá
+       * Format: decimal
+       * @description VNĐ cho 1 đơn vị.
+       */
+      readonly exchange_rate: string;
+      /**
+       * Nguồn tỷ giá
+       * @description BASE / API / MANUAL.
+       *
+       *     * `BASE` - Tiền tệ gốc (VNĐ)
+       *     * `API` - Tự động (Vietcombank)
+       *     * `MANUAL` - Nhập tay
+       *     * `BANK_ACTUAL` - Theo số ngân hàng đã trả
+       */
+      readonly rate_source: components["schemas"]["FinanceRateSourceEnum"];
+      /**
+       * Ngày tỷ giá
+       * Format: date
+       * @description Ngày tỷ giá.
+       */
+      readonly rate_date: string | null;
+      /**
+       * Tổng tiền (VNĐ)
+       * Format: decimal
+       * @description Quy VNĐ.
+       */
+      readonly amount: string;
+      /**
+       * Tiền thuế (VNĐ)
+       * Format: decimal
+       * @description Quy VNĐ.
+       */
+      readonly tax_amount: string | null;
+      /** @description File chứng từ. */
+      readonly attachments: components["schemas"]["AttachmentDetailResponse"][];
+      /** @description Giao dịch gắn. */
+      readonly income_ids: string[];
+      /** @description Tổng của giao dịch gắn và chênh lệch. */
+      readonly reconciliation: {
+        [key: string]: unknown;
+      };
+      /**
+       * Ghi chú
+       * @description Ghi chú.
+       */
+      readonly note: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description File bắt buộc; giao dịch gắn tùy chọn. */
+    InvoiceValidateRequest: {
+      /**
+       * @description Loại.
+       *
+       *     * `WITHHOLDING_CERTIFICATE` - Chứng từ khấu trừ thuế
+       *     * `INVOICE` - Hóa đơn / invoice
+       *     * `STATEMENT` - Sao kê / bảng thanh toán
+       *     * `CONTRACT` - Hợp đồng
+       *     * `OTHER` - Khác
+       */
+      doc_type: components["schemas"]["DocTypeEnum"];
+      /**
+       * @description Số.
+       * @default
+       */
+      number: string;
+      /** @description Bên phát hành. */
+      issuer: string;
+      /**
+       * @description MST.
+       * @default
+       */
+      issuer_tax_code: string;
+      /**
+       * Format: date
+       * @description Ngày lập.
+       */
+      issued_on: string;
+      /**
+       * Format: date
+       * @description Kỳ từ.
+       */
+      period_from?: string | null;
+      /**
+       * Format: date
+       * @description Kỳ đến.
+       */
+      period_to?: string | null;
+      /**
+       * Format: uuid
+       * @description Nền tảng.
+       */
+      platform_id?: string | null;
+      /**
+       * Format: uuid
+       * @description Tiền tệ.
+       */
+      currency_id: string;
+      /**
+       * Format: decimal
+       * @description Tổng tiền.
+       */
+      original_amount: string;
+      /**
+       * Format: decimal
+       * @description Tiền thuế.
+       */
+      original_tax_amount?: string | null;
+      /**
+       * @description API / MANUAL.
+       *
+       *     * `API` - Tự động (Vietcombank)
+       *     * `MANUAL` - Nhập tay
+       * @default API
+       */
+      rate_source: components["schemas"]["FinanceManualRateSourceEnum"];
+      /**
+       * Format: decimal
+       * @description Tỷ giá (MANUAL).
+       */
+      exchange_rate?: string | null;
+      /** @description File (≥ 1). */
+      attachment_ids: string[];
+      /** @description Giao dịch gắn. */
+      income_ids?: string[];
+      /**
+       * @description Ghi chú.
+       * @default
+       */
+      note: string;
     };
     /** @description Một model kế thừa JournalTracker. */
     JournalResourceResponse: {
@@ -2998,6 +5267,19 @@ export interface components {
         [key: string]: string;
       };
     };
+    /**
+     * @description * `group` - Nhóm
+     *     * `private` - Chat riêng với bot
+     * @enum {string}
+     */
+    KindEnum: "group" | "private";
+    /**
+     * @description * `INFO` - Thông tin
+     *     * `WARNING` - Cảnh báo
+     *     * `ERROR` - Lỗi
+     * @enum {string}
+     */
+    LevelEnum: "INFO" | "WARNING" | "ERROR";
     /** @description Tài khoản (email hoặc tên người dùng) + mật khẩu. */
     LoginValidateRequest: {
       /** @description Email (không phân biệt hoa thường) hoặc tên người dùng. */
@@ -3009,6 +5291,251 @@ export interface components {
     LogoutAllResponse: {
       /** @description Số phiên đã bị thu hồi. */
       revoked_sessions: number;
+    };
+    /** @description Lần gửi + tóm tắt thông báo; đích email/Telegram/thiết bị được rút gọn. */
+    NotificationDeliveryResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /** @description Sự kiện. */
+      readonly event_code: string;
+      /** @description Tiêu đề. */
+      readonly title: string;
+      /** @description Mức. */
+      readonly level: string;
+      /**
+       * Format: uuid
+       * @description Người nhận.
+       */
+      readonly recipient_id: string;
+      /** @description Tên người nhận. */
+      readonly recipient_name: string;
+      /**
+       * Kênh
+       * @description PUSH / EMAIL / TELEGRAM.
+       *
+       *     * `IN_APP` - Trong ứng dụng
+       *     * `PUSH` - Trình duyệt
+       *     * `EMAIL` - Email
+       *     * `TELEGRAM` - Telegram
+       */
+      readonly channel: components["schemas"]["ChannelEnum"];
+      /**
+       * Đích
+       * @description Id PushDevice, id TelegramChat hoặc email.
+       */
+      readonly target: string;
+      /**
+       * Trạng thái
+       * @description PENDING / SENT / FAILED / SKIPPED.
+       *
+       *     * `PENDING` - Chờ gửi
+       *     * `SENT` - Đã gửi
+       *     * `FAILED` - Thất bại
+       *     * `SKIPPED` - Bỏ qua
+       */
+      readonly status: components["schemas"]["NotificationDeliveryResponseStatusEnum"];
+      /**
+       * Số lần thử
+       * @description Số lần đã thử.
+       */
+      readonly attempts: number;
+      /**
+       * Thử lại lúc
+       * Format: date-time
+       * @description Lần thử kế tiếp.
+       */
+      readonly next_attempt_at: string | null;
+      /**
+       * Lỗi gần nhất
+       * @description Mã lỗi gần nhất.
+       */
+      readonly last_error_code: string;
+      /**
+       * Gửi lúc
+       * Format: date-time
+       * @description Thời điểm gửi thành công.
+       */
+      readonly sent_at: string | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+    };
+    /**
+     * @description * `PENDING` - Chờ gửi
+     *     * `SENT` - Đã gửi
+     *     * `FAILED` - Thất bại
+     *     * `SKIPPED` - Bỏ qua
+     * @enum {string}
+     */
+    NotificationDeliveryResponseStatusEnum: "PENDING" | "SENT" | "FAILED" | "SKIPPED";
+    /** @description Số bản gửi thành công. */
+    NotificationDispatchResponse: {
+      /** @description Số bản gửi thành công. */
+      sent: number;
+    };
+    /** @description Định nghĩa sự kiện (từ `ModuleDescriptor.notification_events`). */
+    NotificationEventResponse: {
+      /** @description Mã sự kiện. */
+      code: string;
+      /** @description Module. */
+      module: string;
+      /** @description Tên. */
+      name: string;
+      /** @description Khi nào phát. */
+      description: string;
+      /** @description PERSONAL / SYSTEM. */
+      scope: string;
+      /** @description Mức mặc định. */
+      default_level: string;
+      /** @description Kênh bật sẵn. */
+      default_channels: string[];
+      /** @description business / technical. */
+      kind: string;
+    };
+    /** @description Một sự kiện với các kênh đang bật. */
+    NotificationPreferenceItemResponse: {
+      /** @description Sự kiện. */
+      event: components["schemas"]["NotificationEventResponse"];
+      /** @description Hiện trong chuông. */
+      in_app: boolean;
+      /** @description Thông báo trình duyệt. */
+      push: boolean;
+      /** @description Email. */
+      email: boolean;
+      /** @description Chat Telegram nhận. */
+      telegram_chat_ids: string[];
+      /** @description Sự kiện lỗi: luôn hiện trong chuông. */
+      in_app_locked: boolean;
+    };
+    /** @description Kênh bật cho một sự kiện. */
+    NotificationPreferenceItemValidateRequest: {
+      /** @description Mã sự kiện. */
+      event_code: string;
+      /** @description Hiện trong chuông. */
+      in_app: boolean;
+      /**
+       * @description Thông báo trình duyệt.
+       * @default false
+       */
+      push: boolean;
+      /**
+       * @description Email.
+       * @default false
+       */
+      email: boolean;
+      /** @description Chat Telegram nhận. */
+      telegram_chat_ids?: string[];
+    };
+    /** @description Kênh dùng được + ma trận. */
+    NotificationPreferenceResponse: {
+      /** @description Kênh actor dùng được. */
+      channels: string[];
+      /** @description Sự kiện × kênh. */
+      items: components["schemas"]["NotificationPreferenceItemResponse"][];
+    };
+    /** @description Các sự kiện cần đồng bộ (sự kiện không gửi thì giữ nguyên). */
+    NotificationPreferenceValidateRequest: {
+      /** @description Sự kiện × kênh. */
+      items: components["schemas"]["NotificationPreferenceItemValidateRequest"][];
+    };
+    /** @description Theo tab (bỏ trống = mọi tab). */
+    NotificationReadAllValidateRequest: {
+      /**
+       * @description Tab.
+       *
+       *     * `PERSONAL` - Cá nhân
+       *     * `SYSTEM` - Hệ thống
+       */
+      scope?: components["schemas"]["ScopeEnum"];
+    };
+    /** @description Một thông báo; FE dịch `message_key` + `params`, thiếu khóa thì dùng `title`/`body`. */
+    NotificationResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Phạm vi
+       * @description PERSONAL = tab Cá nhân, SYSTEM = tab Hệ thống.
+       *
+       *     * `PERSONAL` - Cá nhân
+       *     * `SYSTEM` - Hệ thống
+       */
+      readonly scope: components["schemas"]["ScopeEnum"];
+      /**
+       * Mức
+       * @description INFO / WARNING / ERROR.
+       *
+       *     * `INFO` - Thông tin
+       *     * `WARNING` - Cảnh báo
+       *     * `ERROR` - Lỗi
+       */
+      readonly level: components["schemas"]["LevelEnum"];
+      /**
+       * Sự kiện
+       * @description Mã sự kiện.
+       */
+      readonly event_code: string;
+      /** @description Module phát. */
+      readonly module: string;
+      /**
+       * Tiêu đề
+       * @description Tiêu đề dựng sẵn (dùng cho push/email/Telegram và làm dự phòng i18n).
+       */
+      readonly title: string;
+      /**
+       * Nội dung
+       * @description Nội dung ngắn.
+       */
+      readonly body: string;
+      /**
+       * Khóa i18n
+       * @description Khóa thông điệp FE dịch theo ngôn ngữ đang chọn.
+       */
+      readonly message_key: string;
+      /**
+       * Tham số
+       * @description Tham số cho khóa i18n.
+       */
+      readonly params: unknown;
+      /**
+       * Đường dẫn
+       * @description Đường dẫn FE nội bộ (bắt đầu bằng /).
+       */
+      readonly link: string;
+      /**
+       * Dữ liệu
+       * @description Dữ liệu phụ.
+       */
+      readonly data: unknown;
+      /**
+       * Đã đọc lúc
+       * Format: date-time
+       * @description NULL = chưa đọc.
+       */
+      readonly read_at: string | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+    };
+    /** @description Số chưa đọc tab Cá nhân và Hệ thống. */
+    NotificationUnreadCountResponse: {
+      /** @description Chưa đọc tab Cá nhân. */
+      personal: number;
+      /** @description Chưa đọc tab Hệ thống. */
+      system: number;
     };
     /** @description Cập nhật trạng thái hoặc xuất bản nhiều truyện cùng lúc. */
     NovelBulkUpdateValidateRequest: {
@@ -3582,6 +6109,13 @@ export interface components {
       /** @description Họ tên đầy đủ. */
       full_name: string;
     };
+    /** @description Cập nhật cờ `is_active` của nhiều bản ghi cùng lúc. */
+    PagePathBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      /** @description Bật/tắt đường dẫn giữa. */
+      is_active: boolean;
+    };
     /** @description Segment (1–32), tên, mô tả, bật, thứ tự. */
     PagePathCreateValidateRequest: {
       /** @description Đoạn URL giữa, ví dụ `qr`. */
@@ -3850,6 +6384,31 @@ export interface components {
         };
       };
     };
+    PaginatedClassificationRuleResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["ClassificationRuleResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedCoreJournalEntryResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -3875,10 +6434,135 @@ export interface components {
         };
       };
     };
+    PaginatedCurrencyResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["CurrencyResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedExchangeRateResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["ExchangeRateResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedGenreSummaryResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
       data: components["schemas"]["GenreSummaryResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedIncomeResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["IncomeResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedInvoiceResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["InvoiceResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedNotificationDeliveryResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["NotificationDeliveryResponse"][];
       meta: {
         /** @description Id request (khớp header X-Request-ID). */
         request_id: string;
@@ -4000,6 +6684,31 @@ export interface components {
         };
       };
     };
+    PaginatedPlatformResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["PlatformResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedQrCodeListResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -4100,10 +6809,60 @@ export interface components {
         };
       };
     };
+    PaginatedSystemAnnouncementResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["SystemAnnouncementResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedTagSummaryResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
       data: components["schemas"]["TagSummaryResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedTelegramChatResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["TelegramChatResponse"][];
       meta: {
         /** @description Id request (khớp header X-Request-ID). */
         request_id: string;
@@ -4243,6 +7002,47 @@ export interface components {
       /** @description Cho phép xuất bản chương. */
       is_published?: boolean;
     };
+    /** @description Mọi field tùy chọn. */
+    PatchedClassificationRuleUpdateValidateRequest: {
+      /** @description Tên. */
+      name?: string;
+      /**
+       * Format: uuid
+       * @description Nền tảng.
+       */
+      platform_id?: string;
+      /** @description Regex. */
+      pattern?: string;
+      /** @description Ưu tiên. */
+      priority?: number;
+      /** @description Đang bật. */
+      is_active?: boolean;
+    };
+    /** @description Mọi field tùy chọn; tiền tệ gốc chỉ đổi tên/ký hiệu/thứ tự (service kiểm). */
+    PatchedCurrencyUpdateValidateRequest: {
+      /** @description Mã ISO 4217. */
+      code?: string;
+      /** @description Tên. */
+      name?: string;
+      /** @description Ký hiệu. */
+      symbol?: string;
+      /** @description Số lẻ. */
+      decimal_places?: number;
+      /** @description Đang dùng. */
+      is_active?: boolean;
+      /** @description Thứ tự. */
+      position?: number;
+    };
+    /** @description Chỉ đổi số và ghi chú. */
+    PatchedExchangeRateUpdateValidateRequest: {
+      /**
+       * Format: decimal
+       * @description Tỷ giá.
+       */
+      rate?: string;
+      /** @description Ghi chú. */
+      note?: string;
+    };
     /** @description Input cập nhật thể loại. */
     PatchedGenreUpdateValidateRequest: {
       /** @description Tên thể loại. */
@@ -4251,6 +7051,131 @@ export interface components {
       slug?: string;
       /** @description Mô tả. */
       description?: string;
+    };
+    /** @description Mọi field tùy chọn; giao dịch SePay đã có số tiền thì VNĐ bị khóa (service kiểm). */
+    PatchedIncomeUpdateValidateRequest: {
+      /**
+       * Format: date-time
+       * @description Thời điểm nhận.
+       */
+      received_at?: string;
+      /**
+       * Format: uuid
+       * @description Nền tảng (null = bỏ chọn).
+       */
+      platform_id?: string | null;
+      /**
+       * Format: uuid
+       * @description Tiền tệ.
+       */
+      currency_id?: string;
+      /**
+       * Format: decimal
+       * @description Số tiền gốc.
+       */
+      original_amount?: string;
+      /**
+       * @description API / MANUAL.
+       *
+       *     * `API` - Tự động (Vietcombank)
+       *     * `MANUAL` - Nhập tay
+       */
+      rate_source?: components["schemas"]["FinanceManualRateSourceEnum"];
+      /**
+       * Format: decimal
+       * @description Tỷ giá.
+       */
+      exchange_rate?: string | null;
+      /** @description Nội dung. */
+      content?: string;
+      /** @description Ghi chú. */
+      note?: string;
+      /** @description Tự nhập khấu trừ. */
+      is_tax_manual?: boolean;
+      /** @description Đã khấu trừ. */
+      tax_withheld?: boolean;
+      /**
+       * Format: decimal
+       * @description %.
+       */
+      tax_rate?: string;
+      /**
+       * Format: decimal
+       * @description Tiền thuế.
+       */
+      tax_amount?: string | null;
+    };
+    /** @description Mọi field tùy chọn; gửi `attachment_ids`/`income_ids` thì đồng bộ lại. */
+    PatchedInvoiceUpdateValidateRequest: {
+      /**
+       * @description Loại.
+       *
+       *     * `WITHHOLDING_CERTIFICATE` - Chứng từ khấu trừ thuế
+       *     * `INVOICE` - Hóa đơn / invoice
+       *     * `STATEMENT` - Sao kê / bảng thanh toán
+       *     * `CONTRACT` - Hợp đồng
+       *     * `OTHER` - Khác
+       */
+      doc_type?: components["schemas"]["DocTypeEnum"];
+      /** @description Số. */
+      number?: string;
+      /** @description Bên phát hành. */
+      issuer?: string;
+      /** @description MST. */
+      issuer_tax_code?: string;
+      /**
+       * Format: date
+       * @description Ngày lập.
+       */
+      issued_on?: string;
+      /**
+       * Format: date
+       * @description Kỳ từ.
+       */
+      period_from?: string | null;
+      /**
+       * Format: date
+       * @description Kỳ đến.
+       */
+      period_to?: string | null;
+      /**
+       * Format: uuid
+       * @description Nền tảng.
+       */
+      platform_id?: string | null;
+      /**
+       * Format: uuid
+       * @description Tiền tệ.
+       */
+      currency_id?: string;
+      /**
+       * Format: decimal
+       * @description Tổng tiền.
+       */
+      original_amount?: string;
+      /**
+       * Format: decimal
+       * @description Tiền thuế.
+       */
+      original_tax_amount?: string | null;
+      /**
+       * @description API / MANUAL.
+       *
+       *     * `API` - Tự động (Vietcombank)
+       *     * `MANUAL` - Nhập tay
+       */
+      rate_source?: components["schemas"]["FinanceManualRateSourceEnum"];
+      /**
+       * Format: decimal
+       * @description Tỷ giá.
+       */
+      exchange_rate?: string | null;
+      /** @description File. */
+      attachment_ids?: string[];
+      /** @description Giao dịch gắn. */
+      income_ids?: string[];
+      /** @description Ghi chú. */
+      note?: string;
     };
     /** @description Dữ liệu cập nhật hồ sơ cá nhân của người dùng hiện tại. */
     PatchedMeUpdateValidateRequest: {
@@ -4361,6 +7286,39 @@ export interface components {
       /** @description Phiên bản nội dung đang sửa; lệch → 409. */
       content_version?: number;
     };
+    /** @description Mọi field tùy chọn. */
+    PatchedPlatformTaxRateUpdateValidateRequest: {
+      /**
+       * Format: date
+       * @description Áp dụng từ ngày.
+       */
+      effective_from?: string;
+      /** @description Khấu trừ. */
+      tax_withheld?: boolean;
+      /**
+       * Format: decimal
+       * @description %.
+       */
+      rate?: string;
+      /** @description Ghi chú. */
+      note?: string;
+    };
+    /** @description Mọi field tùy chọn. */
+    PatchedPlatformUpdateValidateRequest: {
+      /** @description Tên. */
+      name?: string;
+      /** @description Mã ngắn. */
+      code?: string;
+      /**
+       * Format: uuid
+       * @description Tiền tệ mặc định.
+       */
+      default_currency_id?: string;
+      /** @description Đang dùng. */
+      is_active?: boolean;
+      /** @description Ghi chú. */
+      note?: string;
+    };
     /** @description Mọi trường tùy chọn; service gộp với bản ghi hiện tại rồi kiểm theo loại. */
     PatchedQrCodeUpdateValidateRequest: {
       /** @description Tên mã QR. */
@@ -4440,6 +7398,11 @@ export interface components {
       /** @description Slug định danh. */
       slug?: string;
     };
+    /** @description Bật/tắt. */
+    PatchedTelegramChatUpdateValidateRequest: {
+      /** @description Đang bật. */
+      is_active?: boolean;
+    };
     /** @description Dữ liệu cập nhật người dùng (mọi field tùy chọn). `avatar_id: null` để gỡ ảnh. */
     PatchedUserUpdateValidateRequest: {
       /**
@@ -4503,6 +7466,170 @@ export interface components {
        */
       description?: string;
     };
+    /** @description Cập nhật cờ `is_active` của nhiều bản ghi cùng lúc. */
+    PlatformBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      /** @description Bật/tắt nền tảng. */
+      is_active: boolean;
+    };
+    /** @description Nền tảng + khấu trừ đang áp dụng hôm nay (từ lịch sử đã prefetch). */
+    PlatformResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tên
+       * @description Tên nền tảng.
+       */
+      readonly name: string;
+      /**
+       * Mã
+       * @description Mã ngắn, duy nhất theo người dùng.
+       */
+      readonly code: string;
+      /**
+       * Tiền tệ mặc định
+       * Format: uuid
+       * @description Điền sẵn khi nhập tay.
+       */
+      readonly default_currency_id: string;
+      /** @description Mã tiền tệ. */
+      readonly default_currency_code: string;
+      /**
+       * Đang dùng
+       * @description Tắt để ẩn khỏi chọn mới.
+       */
+      readonly is_active: boolean;
+      /**
+       * Ghi chú
+       * @description Ghi chú.
+       */
+      readonly note: string;
+      /** @description Mốc áp dụng hôm nay hoặc null. */
+      readonly current_tax: {
+        [key: string]: unknown;
+      } | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Số nền tảng mới tạo. */
+    PlatformSeedResponse: {
+      /** @description Số nền tảng mới tạo. */
+      created: number;
+    };
+    /** @description Mốc + giao dịch có % đang chụp khác lịch sử mới (FE hỏi có tính lại không). */
+    PlatformTaxRateMutationResponse: {
+      /** @description Mốc (null khi xóa). */
+      entry: components["schemas"]["PlatformTaxRateResponse"] | null;
+      /** @description Giao dịch bị ảnh hưởng. */
+      affected_income_ids: string[];
+    };
+    /** @description Mốc khấu trừ. */
+    PlatformTaxRateResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Nền tảng
+       * Format: uuid
+       * @description Nền tảng.
+       */
+      readonly platform_id: string;
+      /**
+       * Áp dụng từ
+       * Format: date
+       * @description Ngày bắt đầu (giờ Việt Nam).
+       */
+      readonly effective_from: string;
+      /**
+       * Đã khấu trừ thuế
+       * @description Nền tảng khấu trừ thuế trước khi trả.
+       */
+      readonly tax_withheld: boolean;
+      /**
+       * Tỷ lệ (%)
+       * Format: decimal
+       * @description 0 < rate < 100 khi khấu trừ.
+       */
+      readonly rate: string;
+      /**
+       * Ghi chú
+       * @description Ghi chú.
+       */
+      readonly note: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Từ ngày, có khấu trừ không, bao nhiêu % (service kiểm 0 < rate < 100). */
+    PlatformTaxRateValidateRequest: {
+      /**
+       * Format: date
+       * @description Áp dụng từ ngày (giờ VN).
+       */
+      effective_from: string;
+      /** @description Nền tảng khấu trừ trước khi trả. */
+      tax_withheld: boolean;
+      /**
+       * Format: decimal
+       * @description %.
+       * @default 0.00
+       */
+      rate: string;
+      /**
+       * @description Ghi chú.
+       * @default
+       */
+      note: string;
+    };
+    /** @description Tên, mã, tiền tệ mặc định. */
+    PlatformValidateRequest: {
+      /** @description Tên. */
+      name: string;
+      /** @description Mã ngắn. */
+      code: string;
+      /**
+       * Format: uuid
+       * @description Tiền tệ mặc định.
+       */
+      default_currency_id: string;
+      /**
+       * @description Đang dùng.
+       * @default true
+       */
+      is_active: boolean;
+      /**
+       * @description Ghi chú.
+       * @default
+       */
+      note: string;
+    };
     /** @description Thông tin các tham số cấu hình công khai cho client. */
     PublicSettingResponse: {
       /**
@@ -4519,6 +7646,47 @@ export interface components {
       settings?: {
         [key: string]: unknown;
       };
+    };
+    /** @description Không trả token đầy đủ. */
+    PushDeviceResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tên
+       * @description Ví dụ Chrome · Windows.
+       */
+      readonly label: string;
+      /**
+       * Đang dùng
+       * @description Tắt khi token hết hạn.
+       */
+      readonly is_active: boolean;
+      /**
+       * Thấy lần cuối
+       * Format: date-time
+       * @description Lần cuối FE đăng ký lại.
+       */
+      readonly last_seen_at: string | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+    };
+    /** @description Token FCM lấy từ `getToken` của Firebase. */
+    PushDeviceValidateRequest: {
+      /** @description Token FCM. */
+      fcm_token: string;
+      /**
+       * @description Tên thiết bị.
+       * @default
+       */
+      device_label: string;
     };
     /** @description Một ngân hàng nhận VietQR. */
     QrBankResponse: {
@@ -4762,6 +7930,173 @@ export interface components {
        */
       readonly last_read_at: string;
     };
+    /** @description Tổng số gốc và tổng VNĐ của một tiền tệ. */
+    ReportCurrencyResponse: {
+      /** @description Mã tiền tệ. */
+      currency: string;
+      /** @description Ký hiệu. */
+      symbol: string;
+      /** @description Số lẻ. */
+      decimal_places: number;
+      /** @description Số giao dịch. */
+      count: number;
+      /**
+       * Format: decimal
+       * @description Tổng số gốc.
+       */
+      original: string;
+      /**
+       * Format: decimal
+       * @description Tổng VNĐ.
+       */
+      total: string;
+    };
+    /** @description Tháng 1–12. */
+    ReportMonthResponse: {
+      /** @description Số giao dịch. */
+      count: number;
+      /**
+       * Format: decimal
+       * @description Tổng thu nhập (VNĐ).
+       */
+      total: string;
+      /**
+       * Format: decimal
+       * @description Thu nhập đã khấu trừ thuế.
+       */
+      withheld: string;
+      /**
+       * Format: decimal
+       * @description Tiền thuế đã bị khấu trừ.
+       */
+      tax: string;
+      /**
+       * Format: decimal
+       * @description Thu nhập chưa khấu trừ (gồm chưa nhận diện).
+       */
+      not_withheld: string;
+      /**
+       * Format: decimal
+       * @description Trong đó chưa nhận diện.
+       */
+      unclassified: string;
+      /** @description Tháng. */
+      month: number;
+    };
+    /** @description 12 tháng năm chọn, 12 tháng năm trước, theo nền tảng. */
+    ReportMonthlyResponse: {
+      /** @description Năm. */
+      year: number;
+      /** @description Năm chọn. */
+      months: components["schemas"]["ReportMonthResponse"][];
+      /** @description Năm trước. */
+      previous_months: components["schemas"]["ReportMonthResponse"][];
+      /** @description Theo nền tảng từng tháng. */
+      by_platform: components["schemas"]["ReportPlatformMonthResponse"][];
+    };
+    /** @description Thu nhập một nền tảng trong một tháng (dashboard). */
+    ReportPlatformMonthResponse: {
+      /** @description Tháng. */
+      month: number;
+      /** @description Nền tảng (rỗng = chưa nhận diện). */
+      platform: string;
+      /**
+       * Format: decimal
+       * @description VNĐ.
+       */
+      total: string;
+    };
+    /** @description Nền tảng (rỗng = chưa nhận diện), có/không khấu trừ, %. */
+    ReportPlatformResponse: {
+      /** @description Số giao dịch. */
+      count: number;
+      /**
+       * Format: decimal
+       * @description Tổng thu nhập (VNĐ).
+       */
+      total: string;
+      /**
+       * Format: decimal
+       * @description Thu nhập đã khấu trừ thuế.
+       */
+      withheld: string;
+      /**
+       * Format: decimal
+       * @description Tiền thuế đã bị khấu trừ.
+       */
+      tax: string;
+      /**
+       * Format: decimal
+       * @description Thu nhập chưa khấu trừ (gồm chưa nhận diện).
+       */
+      not_withheld: string;
+      /**
+       * Format: decimal
+       * @description Trong đó chưa nhận diện.
+       */
+      unclassified: string;
+      /**
+       * Format: uuid
+       * @description Nền tảng.
+       */
+      platform_id: string | null;
+      /** @description Tên nền tảng. */
+      platform: string;
+      /** @description Khấu trừ. */
+      tax_withheld: boolean;
+      /**
+       * Format: decimal
+       * @description %.
+       */
+      tax_rate: string;
+    };
+    /** @description Thẻ tổng, theo nền tảng, theo tháng (khi xem cả năm), theo tiền tệ. */
+    ReportSummaryResponse: {
+      /** @description Năm. */
+      year: number;
+      /** @description Tháng (null = cả năm). */
+      month: number | null;
+      /** @description Tổng. */
+      totals: components["schemas"]["ReportSummaryTotalsResponse"];
+      /** @description Theo nền tảng + %. */
+      by_platform: components["schemas"]["ReportPlatformResponse"][];
+      /** @description Theo tháng. */
+      by_month: components["schemas"]["ReportMonthResponse"][];
+      /** @description Theo tiền tệ. */
+      by_currency: components["schemas"]["ReportCurrencyResponse"][];
+    };
+    /** @description Tổng kỳ + số giao dịch cần xử lý. */
+    ReportSummaryTotalsResponse: {
+      /** @description Số giao dịch. */
+      count: number;
+      /**
+       * Format: decimal
+       * @description Tổng thu nhập (VNĐ).
+       */
+      total: string;
+      /**
+       * Format: decimal
+       * @description Thu nhập đã khấu trừ thuế.
+       */
+      withheld: string;
+      /**
+       * Format: decimal
+       * @description Tiền thuế đã bị khấu trừ.
+       */
+      tax: string;
+      /**
+       * Format: decimal
+       * @description Thu nhập chưa khấu trừ (gồm chưa nhận diện).
+       */
+      not_withheld: string;
+      /**
+       * Format: decimal
+       * @description Trong đó chưa nhận diện.
+       */
+      unclassified: string;
+      /** @description Giao dịch cần xử lý trong kỳ. */
+      needs_review: number;
+    };
     /** @description Bật/tắt nhiều vai trò cùng lúc. */
     RoleBulkUpdateValidateRequest: {
       /** @description Id các bản ghi cần thao tác (tối đa 100). */
@@ -4949,6 +8284,175 @@ export interface components {
        * @description Vai trò tắt không cấp quyền.
        */
       is_active?: boolean;
+    };
+    /** @description Nội dung chuẩn hóa, quy tắc khớp (nếu chạy mọi quy tắc), đoạn khớp. */
+    RuleTestResponse: {
+      /** @description Nội dung đã bỏ dấu, viết hoa. */
+      normalized: string;
+      /**
+       * Format: uuid
+       * @description Quy tắc khớp.
+       */
+      rule_id?: string | null;
+      /** @description Tên quy tắc. */
+      rule_name?: string | null;
+      /** @description Nền tảng. */
+      platform_name?: string | null;
+      /** @description Đoạn khớp. */
+      matched_text: string | null;
+    };
+    /** @description Có `pattern` thì chỉ thử regex đó; không có thì chạy mọi quy tắc của mình. */
+    RuleTestValidateRequest: {
+      /** @description Nội dung chuyển khoản. */
+      content: string;
+      /** @description Regex muốn thử. */
+      pattern?: string;
+    };
+    /**
+     * @description * `PERSONAL` - Cá nhân
+     *     * `SYSTEM` - Hệ thống
+     * @enum {string}
+     */
+    ScopeEnum: "PERSONAL" | "SYSTEM";
+    /** @description Token chỉ ghi (kiểm bằng `/v2/bank-accounts` trước khi lưu); bật/tắt. */
+    SepayConnectionValidateRequest: {
+      /** @description Token API SePay. */
+      token?: string;
+      /** @description Đang bật. */
+      is_active?: boolean;
+    };
+    /** @description Số tạo mới / cập nhật / bỏ qua. */
+    SepayImportResponse: {
+      /** @description Tạo mới. */
+      created: number;
+      /** @description Cập nhật (dòng CHANGED đã chọn). */
+      updated: number;
+      /** @description Bỏ qua. */
+      skipped: number;
+    };
+    /** @description Cùng khoảng ngày lúc xem trước + id SePay đã tích. */
+    SepayImportValidateRequest: {
+      /**
+       * Format: date
+       * @description Từ ngày.
+       */
+      date_from: string;
+      /**
+       * Format: date
+       * @description Đến ngày.
+       */
+      date_to: string;
+      /** @description Id SePay đã chọn. */
+      ids: string[];
+    };
+    /** @description NEW / EXISTS / CHANGED / INVALID + nền tảng, khấu trừ dự kiến, bản đang lưu. */
+    SepayPreviewRowResponse: {
+      /** @description Id SePay. */
+      sepay_id: string;
+      /** @description NEW / EXISTS / CHANGED / INVALID. */
+      status: string;
+      /**
+       * Format: date-time
+       * @description Thời điểm.
+       */
+      received_at: string;
+      /**
+       * Format: decimal
+       * @description VNĐ.
+       */
+      amount: string | null;
+      /** @description Nội dung. */
+      content: string;
+      /** @description Mã giao dịch. */
+      reference_code: string;
+      /**
+       * Format: uuid
+       * @description Nền tảng dự kiến.
+       */
+      platform_id: string | null;
+      /** @description Tên nền tảng. */
+      platform_name: string;
+      /**
+       * Format: decimal
+       * @description % dự kiến.
+       */
+      tax_rate: string | null;
+      /**
+       * Format: decimal
+       * @description Thuế dự kiến.
+       */
+      tax_amount: string | null;
+      /**
+       * Format: uuid
+       * @description Giao dịch đang lưu.
+       */
+      income_id: string | null;
+      /**
+       * Format: decimal
+       * @description Số tiền đang lưu.
+       */
+      existing_amount: string | null;
+      /**
+       * Format: date-time
+       * @description Thời điểm đang lưu.
+       */
+      existing_received_at: string | null;
+      /** @description Nội dung đang lưu. */
+      existing_content: string;
+    };
+    /** @description Tối đa 92 ngày (service kiểm). */
+    SepayRangeValidateRequest: {
+      /**
+       * Format: date
+       * @description Từ ngày.
+       */
+      date_from: string;
+      /**
+       * Format: date
+       * @description Đến ngày.
+       */
+      date_to: string;
+    };
+    /** @description Không bao giờ trả token, chỉ 4 ký tự cuối; secret webhook là của chính người xem. */
+    SepayStatusResponse: {
+      /** @description Đã lưu token API. */
+      connected: boolean;
+      /** @description sandbox / production. */
+      readonly environment: string;
+      /**
+       * @description Đang bật.
+       * @default false
+       */
+      is_active: boolean;
+      /**
+       * @description 4 ký tự cuối token.
+       * @default
+       */
+      token_last4: string;
+      /** @description URL webhook riêng. */
+      webhook_url: string;
+      /** @description Secret dán vào SePay. */
+      webhook_secret: string;
+      /**
+       * Format: date-time
+       * @description Webhook lần cuối.
+       */
+      last_webhook_at?: string;
+      /**
+       * Format: date-time
+       * @description Lấy thủ công lần cuối.
+       */
+      last_sync_at?: string;
+      /**
+       * @description Lỗi gần nhất.
+       * @default
+       */
+      last_error: string;
+    };
+    /** @description Số tài khoản ngân hàng liên kết. */
+    SepayTestResponse: {
+      /** @description Số tài khoản liên kết. */
+      bank_account_count: number;
     };
     /** @description Phiên đăng nhập; `is_current` dựa vào context `current_session_id`. */
     SessionListResponse: {
@@ -5298,6 +8802,110 @@ export interface components {
       /** @description Đường dẫn đầy đủ chuyển hướng tới trang đăng nhập của nhà cung cấp. */
       authorization_url: string;
     };
+    /** @description Thông báo hệ thống đã gửi. */
+    SystemAnnouncementResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tiêu đề
+       * @description Tiêu đề.
+       */
+      readonly title: string;
+      /**
+       * Nội dung
+       * @description Nội dung.
+       */
+      readonly body: string;
+      /**
+       * Mức
+       * @description Mức.
+       *
+       *     * `INFO` - Thông tin
+       *     * `WARNING` - Cảnh báo
+       *     * `ERROR` - Lỗi
+       */
+      readonly level: components["schemas"]["LevelEnum"];
+      /**
+       * Đường dẫn
+       * @description Đường dẫn FE nội bộ.
+       */
+      readonly link: string;
+      /**
+       * Đối tượng
+       * @description ALL / ROLES.
+       *
+       *     * `ALL` - Mọi người
+       *     * `ROLES` - Theo vai trò
+       */
+      readonly target: components["schemas"]["TargetEnum"];
+      /** @description Vai trò nhận. */
+      readonly role_ids: string[];
+      /**
+       * Hết hạn
+       * Format: date-time
+       * @description Quá hạn thì ẩn.
+       */
+      readonly expires_at: string | null;
+      /**
+       * Gửi lúc
+       * Format: date-time
+       * @description Thời điểm gửi.
+       */
+      readonly sent_at: string | null;
+      /**
+       * Số người nhận
+       * @description Số người nhận.
+       */
+      readonly recipient_count: number;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+    };
+    /** @description Tiêu đề, nội dung, mức, đường dẫn nội bộ, đối tượng. */
+    SystemAnnouncementValidateRequest: {
+      /** @description Tiêu đề. */
+      title: string;
+      /**
+       * @description Nội dung.
+       * @default
+       */
+      body: string;
+      /**
+       * @description Mức.
+       *
+       *     * `INFO` - Thông tin
+       *     * `WARNING` - Cảnh báo
+       *     * `ERROR` - Lỗi
+       * @default INFO
+       */
+      level: components["schemas"]["LevelEnum"];
+      /**
+       * @description Đường dẫn FE (bắt đầu bằng /).
+       * @default
+       */
+      link: string;
+      /**
+       * @description ALL / ROLES.
+       *
+       *     * `ALL` - Mọi người
+       *     * `ROLES` - Theo vai trò
+       */
+      target: components["schemas"]["TargetEnum"];
+      /** @description Vai trò nhận. */
+      role_ids?: string[];
+      /**
+       * Format: date-time
+       * @description Hết hạn.
+       */
+      expires_at?: string | null;
+    };
     /** @description Thông tin tóm tắt thẻ. */
     TagSummaryResponse: {
       /**
@@ -5323,6 +8931,175 @@ export interface components {
       name: string;
       /** @description Slug định danh. */
       slug?: string;
+    };
+    /**
+     * @description * `ALL` - Mọi người
+     *     * `ROLES` - Theo vai trò
+     * @enum {string}
+     */
+    TargetEnum: "ALL" | "ROLES";
+    /**
+     * @description * `WITHHELD` - Đã khấu trừ
+     *     * `NOT_WITHHELD` - Không khấu trừ
+     *     * `NO_RATE` - Chưa cấu hình thuế
+     *     * `UNCLASSIFIED` - Chưa nhận diện
+     *     * `PENDING` - Chờ số tiền
+     * @enum {string}
+     */
+    TaxStatusEnum: "WITHHELD" | "NOT_WITHHELD" | "NO_RATE" | "UNCLASSIFIED" | "PENDING";
+    /** @description Bot + có đang đặt webhook (getUpdates không dùng được). */
+    TelegramBotCheckResponse: {
+      /** @description Bot. */
+      bot: components["schemas"]["TelegramBotResponse"];
+      /** @description Bot đang đặt webhook ở nơi khác. */
+      has_webhook: boolean;
+    };
+    /** @description Bot của chính người dùng. */
+    TelegramBotResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /** @description @username của bot. */
+      readonly username: string;
+      /**
+       * Tên
+       * @description Tên bot.
+       */
+      readonly display_name: string;
+      /**
+       * 4 ký tự cuối
+       * @description Để nhận ra token.
+       */
+      readonly token_last4: string;
+      /**
+       * Đang bật
+       * @description Tắt để ngừng gửi.
+       */
+      readonly is_active: boolean;
+      /**
+       * Kiểm tra lần cuối
+       * Format: date-time
+       * @description Lần cuối getMe.
+       */
+      readonly last_checked_at: string | null;
+      /**
+       * Lỗi gần nhất
+       * @description Mã lỗi gần nhất.
+       */
+      readonly last_error_code: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Token tạo ở @BotFather (chỉ ghi, không bao giờ trả lại). */
+    TelegramBotValidateRequest: {
+      /** @description Token bot. */
+      token: string;
+    };
+    /** @description Nơi nhận (không trả mã đăng ký sau khi xác minh). */
+    TelegramChatResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /** @description Id chat Telegram (có sau khi xác minh). */
+      readonly chat_id: string | null;
+      /**
+       * Tên
+       * @description Tên nhóm.
+       */
+      readonly title: string;
+      /**
+       * Loại
+       * @description group/supergroup/private.
+       */
+      readonly chat_type: string;
+      /**
+       * Trạng thái
+       * @description Trạng thái.
+       *
+       *     * `pending` - Chờ thêm bot
+       *     * `active` - Hoạt động
+       *     * `unreachable` - Không gửi được
+       *     * `removed` - Bot đã bị xóa
+       */
+      readonly status: components["schemas"]["TelegramChatResponseStatusEnum"];
+      /**
+       * Đang bật
+       * @description Tắt để ngừng gửi.
+       */
+      readonly is_active: boolean;
+      /**
+       * Mã hết hạn
+       * Format: date-time
+       * @description Hạn mã đăng ký.
+       */
+      readonly registration_expires_at: string | null;
+      /**
+       * Xác minh lần cuối
+       * Format: date-time
+       * @description Lần cuối xác minh.
+       */
+      readonly last_verified_at: string | null;
+      /**
+       * Lỗi gần nhất
+       * @description Mã lỗi gần nhất.
+       */
+      readonly last_error_code: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /**
+     * @description * `pending` - Chờ thêm bot
+     *     * `active` - Hoạt động
+     *     * `unreachable` - Không gửi được
+     *     * `removed` - Bot đã bị xóa
+     * @enum {string}
+     */
+    TelegramChatResponseStatusEnum: "pending" | "active" | "unreachable" | "removed";
+    /** @description Mã + link thêm bot vào nhóm (`startgroup`). */
+    TelegramRegistrationResponse: {
+      /** @description Bản chờ xác minh. */
+      chat: components["schemas"]["TelegramChatResponse"];
+      /** @description Mã đăng ký (hạn 10 phút). */
+      code: string;
+      /** @description Link https://t.me/<bot>?startgroup=<mã>. */
+      link: string;
+    };
+    /** @description Loại nơi nhận. */
+    TelegramRegistrationValidateRequest: {
+      /**
+       * @description group / private.
+       *
+       *     * `group` - Nhóm
+       *     * `private` - Chat riêng với bot
+       * @default group
+       */
+      kind: components["schemas"]["KindEnum"];
     };
     /**
      * @description * `blank` - blank
@@ -5590,6 +9367,35 @@ export interface components {
       /** @description Thời điểm liên kết (ISO 8601). */
       connected_at: string | null;
     };
+    /**
+     * @description * `public` - Công khai
+     *     * `private` - Riêng tư
+     * @enum {string}
+     */
+    VisibilityEnum: "public" | "private";
+    /** @description Một webhook của hệ thống. */
+    WebhookResponse: {
+      /** @description Mã `<module>.<tên>`. */
+      code: string;
+      /** @description Mã module. */
+      module: string;
+      /** @description Tên. */
+      name: string;
+      /** @description Bên gọi webhook. */
+      provider: string;
+      /** @description HTTP method. */
+      method: string;
+      /** @description Đường dẫn trên backend. */
+      path: string;
+      /** @description URL đầy đủ theo domain backend đang chạy. */
+      url: string;
+      /** @description Webhook nhận gì, xử lý thế nào. */
+      description: string;
+      /** @description Cách xác thực. */
+      auth: string;
+      /** @description Các bước cấu hình bên thứ ba. */
+      setup: string[];
+    };
   };
   responses: never;
   parameters: never;
@@ -5599,6 +9405,1850 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+  finance_incomes_list: {
+    parameters: {
+      query?: {
+        /** @description VNĐ thực nhận (kiểm trùng). */
+        amount?: number;
+        /**
+         * @description Trạng thái số tiền.
+         *
+         *     * `OK` - Đã có số tiền
+         *     * `UNKNOWN` - Không rõ số tiền
+         */
+        amount_status?: ("OK" | "UNKNOWN")[];
+        /** @description Tiền tệ; nhiều giá trị. */
+        currency?: string[];
+        /** @description Ngày (kiểm trùng khi nhập tay). */
+        date?: string;
+        /** @description Có chứng từ. */
+        has_invoice?: unknown;
+        /**
+         * @description Thuế nhập tay.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_tax_manual?: ("false" | "true")[];
+        /** @description Tháng. */
+        month?: number;
+        /** @description Cần xử lý. */
+        needs_review?: unknown;
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description Nền tảng; nhiều giá trị. */
+        platform?: string[];
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Nguồn; nhiều giá trị.
+         *
+         *     * `MANUAL` - Nhập tay
+         *     * `SEPAY` - SePay
+         */
+        source?: ("MANUAL" | "SEPAY")[];
+        /** @description % khấu trừ. */
+        tax_rate?: number;
+        /**
+         * @description Trạng thái thuế; nhiều giá trị.
+         *
+         *     * `WITHHELD` - Đã khấu trừ
+         *     * `NOT_WITHHELD` - Không khấu trừ
+         *     * `NO_RATE` - Chưa cấu hình thuế
+         *     * `UNCLASSIFIED` - Chưa nhận diện
+         *     * `PENDING` - Chờ số tiền
+         */
+        tax_status?: ("NOT_WITHHELD" | "NO_RATE" | "PENDING" | "UNCLASSIFIED" | "WITHHELD")[];
+        /**
+         * @description Đã khấu trừ.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        tax_withheld?: ("false" | "true")[];
+        /** @description Năm. */
+        year?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedIncomeResponseList"];
+        };
+      };
+    };
+  };
+  finance_incomes_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["IncomeValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["IncomeResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_incomes_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["IncomeResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_incomes_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  finance_incomes_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedIncomeUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["IncomeResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_incomes_history_list: {
+    parameters: {
+      query?: {
+        /** @description VNĐ thực nhận (kiểm trùng). */
+        amount?: number;
+        /**
+         * @description Trạng thái số tiền.
+         *
+         *     * `OK` - Đã có số tiền
+         *     * `UNKNOWN` - Không rõ số tiền
+         */
+        amount_status?: ("OK" | "UNKNOWN")[];
+        /** @description Tiền tệ; nhiều giá trị. */
+        currency?: string[];
+        /** @description Ngày (kiểm trùng khi nhập tay). */
+        date?: string;
+        /** @description Có chứng từ. */
+        has_invoice?: unknown;
+        /**
+         * @description Thuế nhập tay.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_tax_manual?: ("false" | "true")[];
+        /** @description Tháng. */
+        month?: number;
+        /** @description Cần xử lý. */
+        needs_review?: unknown;
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description Nền tảng; nhiều giá trị. */
+        platform?: string[];
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Nguồn; nhiều giá trị.
+         *
+         *     * `MANUAL` - Nhập tay
+         *     * `SEPAY` - SePay
+         */
+        source?: ("MANUAL" | "SEPAY")[];
+        /** @description % khấu trừ. */
+        tax_rate?: number;
+        /**
+         * @description Trạng thái thuế; nhiều giá trị.
+         *
+         *     * `WITHHELD` - Đã khấu trừ
+         *     * `NOT_WITHHELD` - Không khấu trừ
+         *     * `NO_RATE` - Chưa cấu hình thuế
+         *     * `UNCLASSIFIED` - Chưa nhận diện
+         *     * `PENDING` - Chờ số tiền
+         */
+        tax_status?: ("NOT_WITHHELD" | "NO_RATE" | "PENDING" | "UNCLASSIFIED" | "WITHHELD")[];
+        /**
+         * @description Đã khấu trừ.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        tax_withheld?: ("false" | "true")[];
+        /** @description Năm. */
+        year?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  finance_incomes_refresh_rate_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["IncomeResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_incomes_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_incomes_export_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description CSV */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            /** Format: binary */
+            data: string;
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_incomes_recalculate_tax_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["IncomeRecalculateTaxValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["IncomeBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_incomes_reclassify_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["IncomeReclassifyValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["IncomeBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_invoices_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Loại; nhiều giá trị.
+         *
+         *     * `WITHHOLDING_CERTIFICATE` - Chứng từ khấu trừ thuế
+         *     * `INVOICE` - Hóa đơn / invoice
+         *     * `STATEMENT` - Sao kê / bảng thanh toán
+         *     * `CONTRACT` - Hợp đồng
+         *     * `OTHER` - Khác
+         */
+        doc_type?: ("CONTRACT" | "INVOICE" | "OTHER" | "STATEMENT" | "WITHHOLDING_CERTIFICATE")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description Nền tảng; nhiều giá trị. */
+        platform?: string[];
+        /** @description A search term. */
+        search?: string;
+        /** @description Năm. */
+        year?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedInvoiceResponseList"];
+        };
+      };
+    };
+  };
+  finance_invoices_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InvoiceValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["InvoiceResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_invoices_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["InvoiceResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_invoices_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  finance_invoices_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedInvoiceUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["InvoiceResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_invoices_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Loại; nhiều giá trị.
+         *
+         *     * `WITHHOLDING_CERTIFICATE` - Chứng từ khấu trừ thuế
+         *     * `INVOICE` - Hóa đơn / invoice
+         *     * `STATEMENT` - Sao kê / bảng thanh toán
+         *     * `CONTRACT` - Hợp đồng
+         *     * `OTHER` - Khác
+         */
+        doc_type?: ("CONTRACT" | "INVOICE" | "OTHER" | "STATEMENT" | "WITHHOLDING_CERTIFICATE")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description Nền tảng; nhiều giá trị. */
+        platform?: string[];
+        /** @description A search term. */
+        search?: string;
+        /** @description Năm. */
+        year?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  finance_invoices_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_platforms_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Đang dùng.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedPlatformResponseList"];
+        };
+      };
+    };
+  };
+  finance_platforms_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PlatformValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PlatformResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_platforms_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PlatformResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_platforms_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  finance_platforms_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedPlatformUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PlatformResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_platforms_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Đang dùng.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  finance_platforms_tax_rate_retrieve: {
+    parameters: {
+      query: {
+        /** @description Ngày. */
+        date: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PlatformTaxRateResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_platforms_tax_rates_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PlatformTaxRateResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_platforms_tax_rates_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PlatformTaxRateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PlatformTaxRateMutationResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_platforms_tax_rates_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        rate_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  finance_platforms_tax_rates_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        rate_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedPlatformTaxRateUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PlatformTaxRateMutationResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_platforms_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_platforms_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PlatformBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_platforms_seed_defaults_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PlatformSeedResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_reports_monthly_retrieve: {
+    parameters: {
+      query: {
+        /** @description Năm. */
+        year: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReportMonthlyResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_reports_summary_retrieve: {
+    parameters: {
+      query: {
+        /** @description Tháng. */
+        month?: number | null;
+        /** @description Năm. */
+        year: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReportSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_rules_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Đang bật.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description Nền tảng; nhiều giá trị. */
+        platform?: string[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedClassificationRuleResponseList"];
+        };
+      };
+    };
+  };
+  finance_rules_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ClassificationRuleValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ClassificationRuleResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_rules_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ClassificationRuleResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_rules_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  finance_rules_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedClassificationRuleUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ClassificationRuleResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_rules_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Đang bật.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description Nền tảng; nhiều giá trị. */
+        platform?: string[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  finance_rules_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_rules_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ClassificationRuleBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_rules_test_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RuleTestValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["RuleTestResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_sepay_connection_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SepayStatusResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_sepay_connection_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["SepayConnectionValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SepayStatusResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_sepay_connection_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  finance_sepay_connection_rotate_secret_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SepayStatusResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_sepay_connection_test_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SepayTestResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_sepay_import_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SepayImportValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SepayImportResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_sepay_preview_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SepayRangeValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SepayPreviewRowResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  finance_sepay_webhook_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        public_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description {"success": true} */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Body hỏng hoặc thiếu id. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Kết nối không có/tắt hoặc sai chữ ký. */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description DB lỗi, SePay gửi lại. */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   novel_authors_list: {
     parameters: {
       query?: {
@@ -5968,6 +11618,42 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  novel_chapters_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChapterBulkUpdateValidateRequest"];
       };
     };
     responses: {
@@ -7153,11 +12839,167 @@ export interface operations {
       };
     };
   };
+  system_announcements_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedSystemAnnouncementResponseList"];
+        };
+      };
+    };
+  };
+  system_announcements_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SystemAnnouncementValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SystemAnnouncementResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_announcements_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SystemAnnouncementResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_announcements_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_announcements_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   system_attachments_list: {
     parameters: {
       query?: {
         /** @description MIME type; nhận nhiều giá trị phân tách dấu phẩy. */
         content_type?: string[];
+        /** @description UUID người tạo tệp; nhận nhiều giá trị phân tách dấu phẩy. */
+        created_by?: string[];
         /** @description Id thư mục hoặc UNFILED; nhận nhiều giá trị phân tách dấu phẩy. */
         folder?: string[];
         /**
@@ -7183,6 +13025,13 @@ export interface operations {
         scope?: ("MINE" | "OTHERS")[];
         /** @description A search term. */
         search?: string;
+        /**
+         * @description Chế độ xem: public, private; nhận nhiều giá trị.
+         *
+         *     * `public` - Công khai
+         *     * `private` - Riêng tư
+         */
+        visibility?: ("private" | "public")[];
       };
       header?: never;
       path?: never;
@@ -7330,11 +13179,63 @@ export interface operations {
       };
     };
   };
+  system_attachments_content_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Nội dung file (kho riêng tư trên filesystem). */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            /** Format: binary */
+            data: string;
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+      /** @description Chuyển tới link ký hạn ngắn hoặc URL công khai. */
+      302: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không tồn tại hoặc không có quyền. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   system_attachments_history_list: {
     parameters: {
       query?: {
         /** @description MIME type; nhận nhiều giá trị phân tách dấu phẩy. */
         content_type?: string[];
+        /** @description UUID người tạo tệp; nhận nhiều giá trị phân tách dấu phẩy. */
+        created_by?: string[];
         /** @description Id thư mục hoặc UNFILED; nhận nhiều giá trị phân tách dấu phẩy. */
         folder?: string[];
         /**
@@ -7360,6 +13261,13 @@ export interface operations {
         scope?: ("MINE" | "OTHERS")[];
         /** @description A search term. */
         search?: string;
+        /**
+         * @description Chế độ xem: public, private; nhận nhiều giá trị.
+         *
+         *     * `public` - Công khai
+         *     * `private` - Riêng tư
+         */
+        visibility?: ("private" | "public")[];
       };
       header?: never;
       path: {
@@ -7375,6 +13283,44 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  system_attachments_visibility_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AttachmentVisibilityValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AttachmentDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
         };
       };
     };
@@ -8566,6 +14512,628 @@ export interface operations {
       };
     };
   };
+  system_callbacks_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CallbackResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_currencies_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Đang dùng; nhiều giá trị.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCurrencyResponseList"];
+        };
+      };
+    };
+  };
+  system_currencies_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CurrencyValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CurrencyResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_currencies_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CurrencyResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_currencies_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_currencies_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedCurrencyUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CurrencyResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_currencies_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Đang dùng; nhiều giá trị.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  system_currencies_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_currencies_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CurrencyBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_exchange_rates_list: {
+    parameters: {
+      query?: {
+        /** @description Tiền tệ; nhiều giá trị. */
+        currency?: string[];
+        /** @description Từ ngày. */
+        date_from?: string;
+        /** @description Đến ngày. */
+        date_to?: string;
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /** @description Nguồn; nhiều giá trị. */
+        source?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedExchangeRateResponseList"];
+        };
+      };
+    };
+  };
+  system_exchange_rates_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ExchangeRateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ExchangeRateResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_exchange_rates_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ExchangeRateResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_exchange_rates_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_exchange_rates_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedExchangeRateUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ExchangeRateResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_exchange_rates_history_list: {
+    parameters: {
+      query?: {
+        /** @description Tiền tệ; nhiều giá trị. */
+        currency?: string[];
+        /** @description Từ ngày. */
+        date_from?: string;
+        /** @description Đến ngày. */
+        date_to?: string;
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /** @description Nguồn; nhiều giá trị. */
+        source?: string[];
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  system_exchange_rates_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_exchange_rates_fetch_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ExchangeRateFetchValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ExchangeRateResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_exchange_rates_resolve_retrieve: {
+    parameters: {
+      query: {
+        /** @description Tiền tệ. */
+        currency_id: string;
+        /** @description Ngày nhận tiền. */
+        date: string;
+        /**
+         * @description Nguồn.
+         *
+         *     * `VIETCOMBANK_TRANSFER_BUY` - Vietcombank · mua chuyển khoản
+         *     * `MANUAL` - Nhập tay
+         */
+        rate_source?: "VIETCOMBANK_TRANSFER_BUY" | "MANUAL";
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ExchangeRateResolveResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   system_health_retrieve: {
     parameters: {
       query?: never;
@@ -8740,6 +15308,42 @@ export interface operations {
       };
     };
   };
+  system_journal_entries_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreJournalEntryResponseRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreJournalEntryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   system_journal_entries_retrieve: {
     parameters: {
       query?: never;
@@ -8774,6 +15378,62 @@ export interface operations {
       };
     };
   };
+  system_journal_entries_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_journal_entries_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   system_journal_resources_list: {
     parameters: {
       query?: never;
@@ -8792,6 +15452,552 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["JournalResourceResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notification_deliveries_list: {
+    parameters: {
+      query?: {
+        /** @description Kênh; nhiều giá trị. */
+        channel?: string[];
+        /** @description Sự kiện; nhiều giá trị. */
+        event_code?: string[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /** @description Trạng thái; nhiều giá trị. */
+        status?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedNotificationDeliveryResponseList"];
+        };
+      };
+    };
+  };
+  system_notification_deliveries_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NotificationDeliveryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notification_deliveries_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NotificationDeliveryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notification_deliveries_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_notification_deliveries_retry_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NotificationDeliveryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notification_deliveries_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notifications_list: {
+    parameters: {
+      query?: {
+        /** @description Trang. */
+        page?: number;
+        /** @description Số dòng mỗi trang. */
+        page_size?: number;
+        /**
+         * @description Tab.
+         *
+         *     * `PERSONAL` - Cá nhân
+         *     * `SYSTEM` - Hệ thống
+         */
+        scope?: "PERSONAL" | "SYSTEM";
+        /** @description Chỉ chưa đọc. */
+        unread?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NotificationResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notifications_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_notifications_read_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NotificationResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notifications_devices_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PushDeviceResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notifications_devices_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PushDeviceValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PushDeviceResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notifications_devices_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        token: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_notifications_dispatch_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NotificationDispatchResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notifications_preferences_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NotificationPreferenceResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notifications_preferences_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["NotificationPreferenceValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NotificationPreferenceResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notifications_read_all_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["NotificationReadAllValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NotificationUnreadCountResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_notifications_unread_count_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["NotificationUnreadCountResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;
@@ -9459,6 +16665,42 @@ export interface operations {
       };
     };
   };
+  system_settings_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   system_settings_public_retrieve: {
     parameters: {
       query?: never;
@@ -9477,6 +16719,315 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["PublicSettingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_telegram_chats_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedTelegramChatResponseList"];
+        };
+      };
+    };
+  };
+  system_telegram_chats_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TelegramChatResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_telegram_chats_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_telegram_chats_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedTelegramChatUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TelegramChatResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_telegram_chats_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        action: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TelegramChatResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_telegram_chats_register_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["TelegramRegistrationValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TelegramRegistrationResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_telegram_bot_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TelegramBotResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_telegram_bot_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TelegramBotValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TelegramBotResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_telegram_bot_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_telegram_bot_check_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TelegramBotCheckResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;
@@ -9956,6 +17507,38 @@ export interface operations {
       };
     };
   };
+  system_webhooks_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WebhookResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   utilities_page_paths_list: {
     parameters: {
       query?: {
@@ -10152,6 +17735,78 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  utilities_page_paths_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_page_paths_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PagePathBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
         };
       };
     };

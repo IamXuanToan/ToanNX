@@ -16,6 +16,7 @@ import type { DataTableColumn } from "@/shares/components/common/data-table.type
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { Badge } from "@/shares/components/ui/badge";
 
+import { createBooleanBulkStatus } from "@/shares/lib/bulk-status";
 import { NOVEL_ROUTES } from "../constants/routes";
 import type { Novel, NovelStatus } from "../types/novel.types";
 import { useNovelTable } from "./hooks/use-novel-table";
@@ -41,6 +42,7 @@ export function NovelTable({
   canDelete?: boolean;
 }) {
   const t = useTranslations("novel");
+  const tPublish = useTranslations("novel.novelForm.fields");
   const format = useFormatter();
   const state = useNovelTable();
   const { table, query } = state;
@@ -167,8 +169,18 @@ export function NovelTable({
             }
           : undefined
       }
-      onEdit={canUpdate ? state.edit : undefined}
-      onDelete={canDelete ? state.remove : undefined}
+      onView={state.view}
+      onEdit={state.edit}
+      onDelete={state.remove}
+      can={{ update: canUpdate, delete: canDelete }}
+      bulkStatus={
+        canUpdate
+          ? createBooleanBulkStatus(
+              { on: tPublish("published"), off: tPublish("draft") },
+              state.bulkSetPublished,
+            )
+          : undefined
+      }
       onBulkDelete={canDelete ? state.bulkDelete : undefined}
       aria-label={t("admin.title")}
     />

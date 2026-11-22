@@ -10,13 +10,13 @@ from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
 from app.novel.permissions.novel_permission import NovelPermission as P
-from app.novel.serializers.responses.novel_import_response_serializer import (
+from app.novel.serializers.responses.novel_import_result_response_serializer import (
     NovelImportResultResponseSerializer,
+)
+from app.novel.serializers.responses.novel_import_template_response_serializer import (
     NovelImportTemplateResponseSerializer,
 )
-from app.novel.serializers.validates.novel_import_validate_serializer import (
-    NovelImportValidateSerializer,
-)
+from app.novel.serializers.validates.novel_import_validate_serializer import NovelImportValidateSerializer
 from app.novel.services.novel_import_service import NovelImportService
 from app.system.decorators.require_permission import require_permission
 

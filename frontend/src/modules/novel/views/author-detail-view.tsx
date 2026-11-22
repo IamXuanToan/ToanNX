@@ -13,6 +13,9 @@ import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
+import { EditModeProvider } from "@/shares/components/common/edit-mode-provider";
+import { useEditMode } from "@/shares/hooks/use-edit-mode";
+
 import { AuthorForm } from "../components/author-form";
 import { NOVEL_ROUTES } from "../constants/routes";
 import { useAuthor } from "../hooks/use-author";
@@ -28,6 +31,7 @@ export function AuthorDetailView({ id, history }: { id: string; history?: ReactN
   const t = useTranslations("novel.authors");
   const canRead = usePermission(AUTHOR_PERMISSIONS.read);
   const canUpdate = usePermission(AUTHOR_PERMISSIONS.update);
+  const isEditing = useEditMode(canUpdate);
 
   const query = useAuthor(id, canRead);
 
@@ -45,9 +49,11 @@ export function AuthorDetailView({ id, history }: { id: string; history?: ReactN
   }
 
   return (
-    <FormPage title={query.data.name || t("editTitle")}>
-      <AuthorForm author={query.data} disabled={!canUpdate} />
-      {history ? <div className="mt-6">{history}</div> : null}
-    </FormPage>
+    <EditModeProvider canEdit={canUpdate}>
+      <FormPage title={query.data.name || t("editTitle")}>
+        <AuthorForm author={query.data} disabled={!isEditing} />
+        {history ? <div className="mt-6">{history}</div> : null}
+      </FormPage>
+    </EditModeProvider>
   );
 }

@@ -1,23 +1,10 @@
 "use client";
 
-import {
-  CloudFog,
-  CloudLightning,
-  CloudRain,
-  CloudSun,
-  Droplets,
-  Gauge,
-  Moon,
-  RotateCw,
-  Sun,
-  Wind,
-  Zap,
-} from "lucide-react";
+import { Droplets, Gauge, RotateCw, Wind, Zap } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
-import type { WeatherEffectType } from "./weather-canvas";
 
 import {
   calculateAstronomicalMoonPhase,
@@ -26,35 +13,9 @@ import {
   type WeatherData,
 } from "../store/weather-store";
 import { useWeatherWidget, type WeatherInfo } from "./hooks/use-weather-widget";
+import { WeatherIcon } from "./weather-icon";
 
 export type { LocationKey, WeatherData, WeatherInfo };
-
-function WeatherIcon({
-  conditionKey,
-  isDay,
-}: {
-  conditionKey: WeatherData["conditionKey"];
-  isDay: boolean;
-}) {
-  if (!isDay) {
-    return <Moon className="size-10 text-indigo-400 drop-shadow-md sm:size-12" />;
-  }
-  if (conditionKey === "storm") {
-    return (
-      <CloudLightning className="size-10 animate-pulse text-amber-500 drop-shadow-md sm:size-12" />
-    );
-  }
-  if (conditionKey === "rain") {
-    return <CloudRain className="size-10 text-sky-500 drop-shadow-md sm:size-12" />;
-  }
-  if (conditionKey === "fog") {
-    return <CloudFog className="size-10 text-slate-400 drop-shadow-md sm:size-12" />;
-  }
-  if (conditionKey === "cloudy") {
-    return <CloudSun className="size-10 text-amber-500 drop-shadow-md sm:size-12" />;
-  }
-  return <Sun className="size-10 text-amber-500 drop-shadow-md sm:size-12" />;
-}
 
 interface WeatherWidgetProps {
   onWeatherChange: (info: WeatherInfo) => void;
@@ -92,10 +53,10 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
 
   return (
     <div
-      className={`flex w-full max-w-xl flex-col rounded-3xl border p-5 shadow-xl backdrop-blur-md transition-all duration-700 sm:p-6 ${
+      className={`flex w-full flex-col justify-between rounded-2xl border p-4 shadow-lg backdrop-blur-xl transition-all duration-700 sm:p-5 ${
         isDay
-          ? "border-white/40 bg-white/30 text-slate-800 shadow-[0_8px_32px_rgba(0,0,0,0.06)]"
-          : "border-white/10 bg-black/30 text-slate-100 shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
+          ? "border-white/50 bg-white/40 text-slate-800 shadow-black/5"
+          : "border-white/10 bg-black/40 text-slate-100 shadow-black/20"
       }`}
     >
       {/* 1. Bộ chọn địa điểm: Đà Nẵng | Quảng Trị */}
@@ -226,14 +187,17 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
         </div>
       </div>
 
-      {/* 3. Dải thông số khí tượng tinh giản (Độ ẩm, Gió, Mây) */}
+      {/* 3. Dải thông số khí tượng tinh giản (Độ ẩm, Gió, Áp suất) */}
       <div
-        className={`flex items-center justify-between border-t pt-3 text-xs ${
+        className={`flex items-center justify-between border-t pt-3 text-[11px] sm:text-xs ${
           isDay ? "border-slate-900/10 text-slate-600" : "border-white/10 text-slate-300"
         }`}
       >
-        <div className="flex items-center gap-1.5" title={t("weather.humidity")}>
-          <Droplets className="size-3.5 text-sky-500" />
+        <div
+          className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
+          title={t("weather.humidity")}
+        >
+          <Droplets className="size-3 text-sky-500 sm:size-3.5" />
           <span>
             {t("weather.humidity")}:{" "}
             <strong className={isDay ? "text-slate-900" : "text-white"}>
@@ -248,10 +212,10 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
           size="sm"
           onClick={toggleWind}
           title={t("weather.windBoostTooltip")}
-          className="flex h-auto items-center gap-1.5 p-0 font-normal transition-colors hover:bg-transparent hover:opacity-80"
+          className="flex h-auto shrink-0 items-center gap-1 p-0 text-[11px] font-normal whitespace-nowrap transition-colors hover:bg-transparent hover:opacity-80 sm:gap-1.5 sm:text-xs"
         >
           <Wind
-            className={`size-3.5 ${
+            className={`size-3 sm:size-3.5 ${
               windMultiplier > 1 ? "animate-pulse text-amber-500" : "text-teal-500"
             }`}
           />
@@ -263,8 +227,11 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
           </span>
         </Button>
 
-        <div className="flex items-center gap-1.5" title={t("weather.pressure")}>
-          <Gauge className="size-3.5 text-indigo-400" />
+        <div
+          className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
+          title={t("weather.pressure")}
+        >
+          <Gauge className="size-3 text-indigo-400 sm:size-3.5" />
           <span>
             {t("weather.pressure")}:{" "}
             <strong className={isDay ? "text-slate-900" : "text-white"}>
@@ -274,20 +241,20 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
         </div>
       </div>
 
-      {/* 4. Điều chỉnh độ mưa khi có mưa rơi */}
+      {/* 4. Điều chỉnh độ mưa khi có mưa rơi (chỉ hiển thị trên desktop/tablet md trở lên khi có canvas hiệu ứng) */}
       {isRainActive ? (
         <div
-          className={`mt-2.5 flex items-center justify-between gap-2 rounded-xl border p-1.5 text-xs ${
+          className={`mt-2.5 hidden w-full items-center justify-between gap-2 rounded-xl border p-1.5 text-xs md:flex ${
             isDay
               ? "border-sky-500/30 bg-sky-50/70 text-sky-950"
               : "border-sky-500/20 bg-sky-950/30 text-sky-200"
           }`}
         >
-          <div className="flex items-center gap-1 text-[11px] font-medium">
+          <div className="flex shrink-0 items-center gap-1 text-[11px] font-medium">
             <Zap className="size-3 text-sky-500" />
             <span>{t("weather.rainLabel")}:</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1">
             {(["light", "medium", "heavy"] as const).map((lvl) => (
               <Button
                 key={lvl}
@@ -295,7 +262,7 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
                 variant="ghost"
                 size="sm"
                 onClick={() => setRainIntensity(lvl)}
-                className={`h-auto rounded-md px-2 py-0.5 text-[10px] font-semibold transition-all ${
+                className={`h-auto shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold transition-all ${
                   rainIntensity === lvl
                     ? "bg-sky-500 text-white shadow-sm hover:bg-sky-500 hover:text-white"
                     : isDay
@@ -310,32 +277,24 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
         </div>
       ) : null}
 
-      {/* 5. Tùy chọn hiệu ứng thời tiết gọn gàng trên 1 dòng */}
+      {/* 5. Tùy chọn hiệu ứng thời tiết gọn gàng trên 1 dòng (chỉ hiển thị trên desktop/tablet md trở lên khi có canvas hiệu ứng) */}
       <div
-        className={`mt-2.5 flex items-center justify-between gap-1 border-t pt-2.5 ${
+        className={`mt-2.5 hidden w-full grid-cols-6 items-center gap-1 border-t pt-2.5 md:grid ${
           isDay ? "border-slate-900/10" : "border-white/10"
         }`}
       >
-        {(
-          [
-            { key: "auto" },
-            { key: "rain" },
-            { key: "storm", icon: Zap },
-            { key: "sunny" },
-            { key: "fog", icon: CloudFog },
-            { key: "night", icon: Moon },
-          ] as { key: WeatherEffectType; icon?: typeof Zap }[]
-        ).map((item) => {
-          const Icon = item.icon;
+        {(["auto", "rain", "storm", "sunny", "fog", "night"] as const).map((effectKey) => {
+          const label = t(`weather.effects.${effectKey}` as Parameters<typeof t>[0]);
           return (
             <Button
-              key={item.key}
+              key={effectKey}
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => setSelectedEffect(item.key)}
-              className={`flex h-auto flex-1 items-center justify-center gap-1 rounded-lg py-1 text-[11px] font-medium transition-all ${
-                selectedEffect === item.key
+              onClick={() => setSelectedEffect(effectKey)}
+              title={label}
+              className={`flex h-auto w-full min-w-0 items-center justify-center rounded-lg px-1 py-1 text-[11px] font-medium transition-all sm:text-xs ${
+                selectedEffect === effectKey
                   ? isDay
                     ? "bg-slate-900 text-white shadow-sm hover:bg-slate-900 hover:text-white"
                     : "bg-white/20 text-white shadow-sm hover:bg-white/20 hover:text-white"
@@ -344,8 +303,7 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
                     : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              {Icon ? <Icon className="size-3" /> : null}
-              <span>{t(`weather.effects.${item.key}` as Parameters<typeof t>[0])}</span>
+              <span className="truncate">{label}</span>
             </Button>
           );
         })}

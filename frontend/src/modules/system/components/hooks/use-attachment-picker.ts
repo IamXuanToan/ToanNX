@@ -9,13 +9,31 @@ import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { useAttachments } from "../../hooks/use-attachments";
 import { useDeleteAttachments } from "../../hooks/use-delete-attachments";
 import { useUploadAttachment } from "../../hooks/use-upload-attachment";
-import type { Attachment } from "../../types/attachment.types";
-import { UNFILED_FOLDER, normalizeMediaFormats } from "../../constants/media-types";
+import type { Attachment, AttachmentVisibility } from "../../types/attachment.types";
+import {
+  type MediaKind,
+  UNFILED_FOLDER,
+  isAcceptedKind,
+  normalizeMediaFormats,
+} from "../../constants/media-types";
 
 const PICKER_PAGE_SIZE = 12;
 
-/** @returns State chọn ảnh trong Thư viện, hỗ trợ tải lên trực tiếp và chọn ngay tệp vừa tải. */
-export function useAttachmentPicker() {
+/**
+ * @param options - Loại file nhận, chế độ xem của file tải lên mới và bộ lọc chế độ xem của danh sách.
+ * @returns State chọn file trong Thư viện, hỗ trợ tải lên trực tiếp và chọn ngay tệp vừa tải.
+ */
+export function useAttachmentPicker({
+  accept,
+  visibility,
+  lockVisibility,
+  visibilityFilter,
+}: {
+  accept: readonly MediaKind[];
+  visibility: AttachmentVisibility;
+  lockVisibility: boolean;
+  visibilityFilter?: AttachmentVisibility;
+}) {
   const t = useTranslations("system.attachment");
   const errorMessage = useApiErrorMessage();
   const uploadMutation = useUploadAttachment();
@@ -26,7 +44,10 @@ export function useAttachmentPicker() {
   const [selected, setSelected] = useState<Attachment | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [pendingBulkDelete, setPendingBulkDelete] = useState(false);
-  const [kinds, setKinds] = useState<string[]>(["IMAGE"]);
+  const [kinds, setKinds] = useState<string[]>([...accept]);
+  const [chosenVisibility, setUploadVisibility] = useState<AttachmentVisibility>(visibility);
+  // Nơi dùng khóa chế độ thì luôn theo props; danh sách có lọc thì file mới phải cùng chế độ để hiện ra.
+  const uploadVisibility = lockVisibility ? visibility : (visibilityFilter ?? chosenVisibility);
   const [formats, setFormats] = useState<string[]>([]);
   const [folders, setFolders] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -46,6 +67,7 @@ export function useAttachmentPicker() {
     contentType: formats,
     folder: folders,
     scope: ["MINE"],
+    visibility: visibilityFilter ? [visibilityFilter] : undefined,
   });
 
   // Bỏ lựa chọn đã bị xóa qua quản lý thư mục hoặc không còn trong trang hiện tại.
@@ -71,14 +93,13 @@ export function useAttachmentPicker() {
       const uploaded = await uploadMutation.mutateAsync({
         file,
         folderId: activeFolder,
+        visibility: uploadVisibility,
       });
 
-      if (
-        kinds.length === 1 &&
-        kinds[0] === "IMAGE" &&
-        !uploaded.contentType.startsWith("image/")
-      ) {
-        toast.error(t("imageOnly"));
+      if (!isAcceptedKind(uploaded.contentType, accept)) {
+        toast.error(
+          accept.length === 1 && accept[0] === "IMAGE" ? t("imageOnly") : t("fileNotAccepted"),
+        );
         return null;
       }
 
@@ -201,7 +222,7 @@ export function useAttachmentPicker() {
     },
     clearFilters: () => {
       setSearch("");
-      setKinds(["IMAGE"]);
+      setKinds([...accept]);
       setFormats([]);
       setFolders([]);
       setPage(1);
@@ -221,7 +242,14 @@ export function useAttachmentPicker() {
     fileInputRef,
     triggerFileInput: () => fileInputRef.current?.click(),
     hasActiveFilters: Boolean(
-      search || formats.length || folders.length || kinds.length !== 1 || kinds[0] !== "IMAGE",
+      search ||
+      formats.length ||
+      folders.length ||
+      kinds.length !== accept.length ||
+      kinds.some((kind) => !accept.includes(kind as MediaKind)),
     ),
+    uploadVisibility,
+    setUploadVisibility,
+    isAccepted: (file: Attachment) => isAcceptedKind(file.contentType, accept),
   };
 }

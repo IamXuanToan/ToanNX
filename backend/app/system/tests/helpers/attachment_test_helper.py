@@ -1,5 +1,7 @@
 """Helper functions and sample data for attachment tests."""
 
+import io
+import zipfile
 from typing import Any
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -26,9 +28,32 @@ UNSAFE_SVGS = {
 }
 
 
-def upload_file(api: Any, name: str, content: bytes, content_type: str, folder_id: str | None = None) -> Any:
+CSV_BYTES = b"ngay,so_tien,noi_dung\n2026-11-21,2450000,SHOPEE AFFILIATE\n"
+XML_BYTES = b'<?xml version="1.0" encoding="UTF-8"?><HDon><TTChung><SHDon>123</SHDon></TTChung></HDon>'
+XML_WITH_DTD = b'<?xml version="1.0"?><!DOCTYPE x [<!ENTITY a "b">]><x>&a;</x>'
+
+
+def build_xlsx_bytes() -> bytes:
+    """XLSX tối thiểu (zip có `[Content_Types].xml` và `xl/workbook.xml`)."""
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr("[Content_Types].xml", "<Types/>")
+        archive.writestr("xl/workbook.xml", "<workbook/>")
+    return buffer.getvalue()
+
+
+def upload_file(
+    api: Any,
+    name: str,
+    content: bytes,
+    content_type: str,
+    folder_id: str | None = None,
+    visibility: str | None = None,
+) -> Any:
     """Upload helper gửi multipart/form-data lên /api/v1/system/attachments."""
     payload: dict[str, Any] = {"file": SimpleUploadedFile(name, content, content_type)}
     if folder_id:
         payload["folder_id"] = folder_id
+    if visibility:
+        payload["visibility"] = visibility
     return api.post("/api/v1/system/attachments", payload, format="multipart")

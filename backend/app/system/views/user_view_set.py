@@ -41,6 +41,7 @@ class UserViewSet(CoreModelViewSet[User]):
     """CRUD người dùng (xóa là xóa mềm)."""
 
     service_class = UserService
+    service: UserService
     filterset_class = UserFilter
     search_fields = ("email", "username", "full_name")
     ordering_fields = ("created_at", "email", "last_login", "last_seen_at", "is_active", "is_superuser")

@@ -27,7 +27,6 @@ import {
   Video,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
 
 import { Button } from "@/shares/components/ui/button";
 import {
@@ -37,96 +36,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shares/components/ui/dropdown-menu";
-import { FieldError } from "@/shares/components/ui/field";
-import { Input } from "@/shares/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shares/components/ui/popover";
 import { Separator } from "@/shares/components/ui/separator";
 
 import { SelectField } from "./select-field";
 import { useTiptapToolbar } from "./hooks/use-tiptap-toolbar";
-import { useUrlPopover } from "./hooks/use-url-popover";
 import type { TiptapEditorProps } from "./tiptap-editor.types";
-
-type ToggleProps = {
-  label: string;
-  active?: boolean;
-  disabled?: boolean;
-  onClick: () => void;
-  children: ReactNode;
-};
-
-function Toggle({ label, active, disabled, onClick, children }: ToggleProps) {
-  return (
-    <Button
-      type="button"
-      size="icon"
-      variant={active ? "secondary" : "ghost"}
-      aria-label={label}
-      title={label}
-      aria-pressed={active}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      {children}
-    </Button>
-  );
-}
-
-/** Ô nhập URL trong popover (liên kết, ảnh URL ngoài, video). */
-function UrlPopover({
-  label,
-  icon,
-  disabled,
-  initial = "",
-  onApply,
-  error,
-  onOpen,
-}: {
-  label: string;
-  icon: ReactNode;
-  disabled?: boolean;
-  initial?: string;
-  onApply: (value: string) => boolean;
-  error: string;
-  onOpen: () => void;
-}) {
-  const t = useTranslations("common.editor");
-  const { open, value, setValue, handleOpenChange, handleSubmit } = useUrlPopover({
-    initial,
-    onApply,
-    onOpen,
-  });
-
-  return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          size="icon"
-          variant="ghost"
-          aria-label={label}
-          title={label}
-          disabled={disabled}
-        >
-          {icon}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80 space-y-2 rounded-xl">
-        <form className="flex gap-2" onSubmit={handleSubmit}>
-          <Input
-            aria-label={label}
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            placeholder="https://"
-            autoFocus
-          />
-          <Button type="submit">{t("apply")}</Button>
-        </form>
-        <FieldError>{error}</FieldError>
-      </PopoverContent>
-    </Popover>
-  );
-}
+import { TiptapToggle } from "./tiptap-toggle";
+import { UrlPopover } from "./url-popover";
 
 /**
  * Thanh công cụ chuẩn của `TiptapEditor`: hoàn tác, kiểu đoạn, định dạng chữ, căn lề, danh sách,
@@ -167,20 +83,20 @@ export function TiptapToolbar({
       aria-label={label}
       className="bg-card flex flex-wrap items-center gap-1 border-b p-1"
     >
-      <Toggle
+      <TiptapToggle
         label={t("undo")}
         disabled={off || !active?.canUndo}
         onClick={() => chain()?.undo().run()}
       >
         <Undo2 />
-      </Toggle>
-      <Toggle
+      </TiptapToggle>
+      <TiptapToggle
         label={t("redo")}
         disabled={off || !active?.canRedo}
         onClick={() => chain()?.redo().run()}
       >
         <Redo2 />
-      </Toggle>
+      </TiptapToggle>
       <Separator orientation="vertical" className="mx-1 h-6" />
       <SelectField
         aria-label={t("blockType")}
@@ -196,55 +112,55 @@ export function TiptapToolbar({
         ]}
       />
       <Separator orientation="vertical" className="mx-1 h-6" />
-      <Toggle
+      <TiptapToggle
         label={t("bold")}
         active={active?.bold}
         disabled={off}
         onClick={() => chain()?.toggleBold().run()}
       >
         <Bold />
-      </Toggle>
-      <Toggle
+      </TiptapToggle>
+      <TiptapToggle
         label={t("italic")}
         active={active?.italic}
         disabled={off}
         onClick={() => chain()?.toggleItalic().run()}
       >
         <Italic />
-      </Toggle>
-      <Toggle
+      </TiptapToggle>
+      <TiptapToggle
         label={t("underline")}
         active={active?.underline}
         disabled={off}
         onClick={() => chain()?.toggleUnderline().run()}
       >
         <Underline />
-      </Toggle>
-      <Toggle
+      </TiptapToggle>
+      <TiptapToggle
         label={t("strike")}
         active={active?.strike}
         disabled={off}
         onClick={() => chain()?.toggleStrike().run()}
       >
         <Strikethrough />
-      </Toggle>
-      <Toggle
+      </TiptapToggle>
+      <TiptapToggle
         label={t("code")}
         active={active?.code}
         disabled={off}
         onClick={() => chain()?.toggleCode().run()}
       >
         <Code />
-      </Toggle>
-      <Toggle
+      </TiptapToggle>
+      <TiptapToggle
         label={t("highlight")}
         active={active?.highlight}
         disabled={off}
         onClick={() => chain()?.toggleHighlight({ color: "#fef08a" }).run()}
       >
         <Highlighter />
-      </Toggle>
-      <Toggle
+      </TiptapToggle>
+      <TiptapToggle
         label={t("align")}
         disabled={off}
         onClick={() =>
@@ -254,40 +170,40 @@ export function TiptapToolbar({
         }
       >
         <AlignIcon />
-      </Toggle>
+      </TiptapToggle>
       <Separator orientation="vertical" className="mx-1 h-6" />
-      <Toggle
+      <TiptapToggle
         label={t("bulletList")}
         active={active?.bulletList}
         disabled={off}
         onClick={() => chain()?.toggleBulletList().run()}
       >
         <List />
-      </Toggle>
-      <Toggle
+      </TiptapToggle>
+      <TiptapToggle
         label={t("orderedList")}
         active={active?.orderedList}
         disabled={off}
         onClick={() => chain()?.toggleOrderedList().run()}
       >
         <ListOrdered />
-      </Toggle>
-      <Toggle
+      </TiptapToggle>
+      <TiptapToggle
         label={t("taskList")}
         active={active?.taskList}
         disabled={off}
         onClick={() => chain()?.toggleTaskList().run()}
       >
         <ListChecks />
-      </Toggle>
-      <Toggle
+      </TiptapToggle>
+      <TiptapToggle
         label={t("quote")}
         active={active?.blockquote}
         disabled={off}
         onClick={() => chain()?.toggleBlockquote().run()}
       >
         <Quote />
-      </Toggle>
+      </TiptapToggle>
       <Separator orientation="vertical" className="mx-1 h-6" />
       <UrlPopover
         label={t("link")}
@@ -299,13 +215,13 @@ export function TiptapToolbar({
         onApply={(value) => toolbar.setLink(value, t("invalidUrl"))}
       />
       {onSelectImage ? (
-        <Toggle
+        <TiptapToggle
           label={t("image")}
           disabled={off || toolbar.pending}
           onClick={() => void toolbar.selectImage(t("imageFailed"))}
         >
           <ImagePlus />
-        </Toggle>
+        </TiptapToggle>
       ) : null}
       <UrlPopover
         label={t("imageUrl")}

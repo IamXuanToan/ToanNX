@@ -26,3 +26,6 @@ class PagePermission(PermissionCatalog):
         name="Quản lý mọi trang",
         description="Đọc và thao tác trang của mọi người dùng khi có quyền action tương ứng.",
     )
+
+    # Quyền của vai trò thành viên: thao tác bản ghi do mình tạo.
+    MEMBER = (READ, CREATE, UPDATE, DELETE)

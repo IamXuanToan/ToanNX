@@ -13,6 +13,9 @@ import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
+import { EditModeProvider } from "@/shares/components/common/edit-mode-provider";
+import { useEditMode } from "@/shares/hooks/use-edit-mode";
+
 import { ChapterForm } from "../components/chapter-form";
 import { NOVEL_ROUTES } from "../constants/routes";
 import { useChapter } from "../hooks/use-chapter";
@@ -28,6 +31,7 @@ export function ChapterDetailView({ id, history }: { id: string; history?: React
   const t = useTranslations("novel.chapters");
   const canRead = usePermission(CHAPTER_PERMISSIONS.read);
   const canUpdate = usePermission(CHAPTER_PERMISSIONS.update);
+  const isEditing = useEditMode(canUpdate);
 
   const query = useChapter(id, canRead);
 
@@ -45,9 +49,11 @@ export function ChapterDetailView({ id, history }: { id: string; history?: React
   }
 
   return (
-    <FormPage title={query.data.title || t("editTitle")}>
-      <ChapterForm chapter={query.data} disabled={!canUpdate} />
-      {history ? <div className="mt-6">{history}</div> : null}
-    </FormPage>
+    <EditModeProvider canEdit={canUpdate}>
+      <FormPage title={query.data.title || t("editTitle")}>
+        <ChapterForm chapter={query.data} disabled={!isEditing} />
+        {history ? <div className="mt-6">{history}</div> : null}
+      </FormPage>
+    </EditModeProvider>
   );
 }

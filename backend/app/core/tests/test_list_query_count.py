@@ -157,7 +157,124 @@ def _tags(owner: Any, count: int) -> None:
         service.create(owner, {"name": f"The {uid}", "slug": f"tag-{uid}"})
 
 
+def _finance(model: str) -> Callable[[Any, int], None]:
+    """Bản ghi Tài chính đủ quan hệ để lộ N+1 (nền tảng, tiền tệ, mốc thuế, file, giao dịch)."""
+
+    def make(owner: Any, count: int) -> None:
+        from decimal import Decimal
+
+        from app.finance.models.classification_rule import ClassificationRule
+        from app.finance.models.income import Income
+        from app.finance.models.invoice import Invoice
+        from app.finance.models.platform import Platform
+        from app.finance.models.platform_tax_rate import PlatformTaxRate
+        from app.system.models.currency import Currency
+
+        vnd = Currency.objects.get(code="VND")
+        now = timezone.now()
+        for _ in range(count):
+            uid = uuid.uuid4().hex[:8]
+            platform = Platform.objects.create(owner=owner, name=uid, code=uid, default_currency=vnd)
+            PlatformTaxRate.objects.create(
+                platform=platform, effective_from=now.date(), tax_withheld=True, rate=5
+            )
+            if model == "rules":
+                ClassificationRule.objects.create(owner=owner, name=uid, platform=platform, pattern=uid)
+            income = Income.objects.create(
+                owner=owner,
+                source="MANUAL",
+                received_at=now,
+                received_date=now.date(),
+                currency=vnd,
+                original_amount=Decimal(1),
+                amount=Decimal(1),
+                platform=platform,
+            )
+            if model == "invoices":
+                attachment = AttachmentService().create_generated(owner, segno_png(), f"{uid}.png")
+                invoice = Invoice.objects.create(
+                    owner=owner,
+                    doc_type="INVOICE",
+                    issuer=uid,
+                    issued_on=now.date(),
+                    currency=vnd,
+                    original_amount=Decimal(1),
+                    amount=Decimal(1),
+                    platform=platform,
+                )
+                invoice.attachments.add(attachment)
+                invoice.incomes.add(income)
+
+    return make
+
+
+def _system(model: str) -> Callable[[Any, int], None]:
+    """Thông báo, tiền tệ, tỷ giá, thông báo hệ thống."""
+
+    def make(owner: Any, count: int) -> None:
+        from datetime import date
+        from decimal import Decimal
+
+        from app.system.models.currency import Currency
+        from app.system.models.exchange_rate import ExchangeRate
+        from app.system.models.notification import Notification
+        from app.system.models.notification_delivery import NotificationDelivery
+        from app.system.models.system_announcement import SystemAnnouncement
+        from app.system.models.telegram_bot import TelegramBot
+        from app.system.models.telegram_chat import TelegramChat
+
+        usd = Currency.objects.get(code="USD")
+        bot, _ = TelegramBot.objects.get_or_create(
+            owner=owner, defaults={"token_encrypted": "x", "token_last4": "1234"}
+        )
+        for index in range(count):
+            uid = uuid.uuid4().hex
+            if model == "chats":
+                TelegramChat.objects.create(
+                    owner=owner, bot=bot, chat_id=uid[:12], title="g", status="active"
+                )
+            elif model == "deliveries":
+                notification = Notification.objects.create(
+                    recipient=owner, event_code="system.auth.login", module="system", title="t", dedup_key=uid
+                )
+                NotificationDelivery.objects.create(
+                    notification=notification, channel="EMAIL", target=owner.email
+                )
+            elif model == "currencies":
+                Currency.objects.create(
+                    code=uid[:3].upper().replace("0", "A"), name=uid, symbol="x", position=index + 10
+                )
+            elif model == "rates":
+                ExchangeRate.objects.create(
+                    currency=usd,
+                    rate_date=date(2020, 1, 1) + timedelta(days=ExchangeRate.objects.count()),
+                    rate=Decimal(25000),
+                    source="MANUAL",
+                    note=uid,
+                )
+            elif model == "announcements":
+                SystemAnnouncement.objects.create(title=uid)
+
+    return make
+
+
+def segno_png() -> bytes:
+    """PNG nhỏ hợp lệ."""
+    buffer = io.BytesIO()
+    segno.make("qc").save(buffer, kind="png")
+    return buffer.getvalue()
+
+
 CASES: list[tuple[str, Callable[[Any, int], None]]] = [
+    ("/api/v1/finance/platforms", _finance("platforms")),
+    ("/api/v1/finance/rules", _finance("rules")),
+    ("/api/v1/finance/incomes", _finance("incomes")),
+    ("/api/v1/finance/invoices", _finance("invoices")),
+    ("/api/v1/system/telegram-chats", _system("chats")),
+    ("/api/v1/system/notification-deliveries", _system("deliveries")),
+    ("/api/v1/system/currencies", _system("currencies")),
+    ("/api/v1/system/exchange-rates", _system("rates")),
+    ("/api/v1/system/announcements", _system("announcements")),
     ("/api/v1/system/users", lambda owner, n: UserFactory.create_batch(n)),
     ("/api/v1/system/roles", lambda owner, n: RoleFactory.create_batch(n)),
     ("/api/v1/utilities/short-links", _short_links),

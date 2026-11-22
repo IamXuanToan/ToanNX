@@ -2,6 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
 import { SYSTEM_ROUTES } from "../../constants/routes";
 import {
@@ -39,7 +40,8 @@ export function useRoleTable() {
   return {
     query,
     table,
-    edit: (role: Role) => router.push(SYSTEM_ROUTES.roleDetail(role.id)),
+    view: (role: Role) => router.push(SYSTEM_ROUTES.roleDetail(role.id)),
+    edit: (role: Role) => router.push(withEditMode(SYSTEM_ROUTES.roleDetail(role.id))),
     copy: (role: Role) =>
       router.push({ pathname: SYSTEM_ROUTES.roleCreate, query: { copyFrom: role.id } }),
     setActive: (role: Role, isActive: boolean) =>

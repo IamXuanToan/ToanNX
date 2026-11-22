@@ -28,3 +28,6 @@ class QrCodePermission(PermissionCatalog):
         name="Quản lý mọi mã QR",
         description="Đọc và thao tác mã QR của mọi người dùng khi có quyền action tương ứng.",
     )
+
+    # Quyền của vai trò thành viên: thao tác bản ghi do mình tạo.
+    MEMBER = (READ, CREATE, UPDATE, DELETE)

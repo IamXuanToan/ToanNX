@@ -48,7 +48,7 @@ class SendVerificationEmailView(CoreApiView):
         locale = request.headers.get("Accept-Language", "vi")[:2]
         message = self.verification_service.send_verification_email(
             request._request,
-            request.user,
+            self.get_actor(request),
             locale=locale,
         )
         return CoreResponse({"message": message})

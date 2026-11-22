@@ -199,25 +199,97 @@
     "saving": "Saving…",
     "fileUpdated": "File details updated.",
     "copyName": "Copy name",
-    "copiedName": "Copied"
+    "copiedName": "Copied",
+    "visibility": "Visibility",
+    "visibilityPublic": "Public",
+    "visibilityPrivate": "Private",
+    "privateToggle": "Private",
+    "privateToggleHint": "Only you, administrators and people granted access can open the file.",
+    "privateLocked": "Files uploaded here are always private.",
+    "privateBadge": "Private file",
+    "makePrivate": "Make private",
+    "makePublic": "Make public",
+    "makePrivateTitle": "Make this file private?",
+    "makePrivateDescription": "The old public link will stop working. Copies cached by browsers or the CDN may still show for a while.",
+    "makePublicTitle": "Make this file public?",
+    "makePublicDescription": "Anyone with the link can view this file, even without signing in.",
+    "madePrivate": "File is now private",
+    "madePublic": "File is now public",
+    "pickerTitleFile": "Choose a file from the Library",
+    "pickerUploadHintFile": "Pick a file from the library or upload a new one from your device.",
+    "useFile": "Use this file",
+    "useFiles": "Use {count} files",
+    "noFile": "No file selected",
+    "dropFileHere": "Drop files here to upload",
+    "fileNotAccepted": "The file was uploaded but is not a type accepted here.",
+    "imageEditorTitle": "Image Editor",
+    "editImage": "Edit image",
+    "crop": "Crop",
+    "cropShape": "Crop shape",
+    "cropShapeFree": "Free",
+    "cropShapeSquare": "Square (1:1)",
+    "cropShapeRound": "Round",
+    "cropShape4_3": "4:3",
+    "cropShape16_9": "16:9",
+    "zoom": "Zoom",
+    "rotate90": "Rotate 90°",
+    "watermark": "Watermark",
+    "watermarkEnable": "Enable watermark",
+    "watermarkHint": "Add copyright text on image.",
+    "watermarkText": "Watermark text",
+    "watermarkPlaceholder": "Enter watermark text…",
+    "watermarkPosition": "Watermark position",
+    "watermarkPosBottomRight": "Bottom right",
+    "watermarkPosBottomLeft": "Bottom left",
+    "watermarkPosTopRight": "Top right",
+    "watermarkPosTopLeft": "Top left",
+    "watermarkPosCenter": "Center",
+    "watermarkOpacity": "Opacity",
+    "watermarkColor": "Text color",
+    "saveAsNew": "Save as new",
+    "imageEditSaved": "New image saved to library.",
+    "imageEditFailed": "Failed to process image.",
+    "cropShapeOriginal": "Original",
+    "watermarkFontSize": "Font size",
+    "watermarkFontSizeValue": "{percent}% of width",
+    "watermarkColorWhite": "White",
+    "watermarkColorBlack": "Black",
+    "watermarkColorPicker": "Pick text color"
   },
   "auth": {
     "login": {
       "title": "Sign in",
+      "subtitle": "Welcome back to your ToanNX management dashboard",
       "password": "Password",
       "submit": "Sign in",
       "submitting": "Signing in...",
       "identifier": "Email or username",
+      "identifierPlaceholder": "Enter email or username",
+      "passwordPlaceholder": "Enter password",
       "forgotPasswordLink": "Forgot password?",
       "orContinueWith": "Or continue with",
       "loginWithGoogle": "Sign in with Google",
       "loginWithGithub": "Sign in with GitHub",
       "socialNotConfigured": "This platform is not configured on the system.",
-      "callbackTitle": "Authenticating...",
-      "callbackProcessing": "Processing authentication from provider...",
-      "callbackSuccess": "Authentication successful, redirecting...",
+      "callbackTitle": "Authenticating",
+      "callbackProcessing": "Connecting and verifying with {provider}...",
+      "callbackProcessingWait": "Please keep this browser window open for a moment...",
+      "callbackSuccessTitle": "Sign in successful",
+      "callbackSuccessDesc": "Your secure session has been established.",
+      "callbackLinkSuccessTitle": "Account linked successfully",
+      "callbackLinkSuccessDesc": "Your {provider} account has been linked to your profile.",
+      "callbackRedirecting": "Redirecting to your workspace...",
+      "callbackRedirectNow": "Redirect now",
+      "callbackFailedTitle": "Authentication failed",
+      "callbackFailedDesc": "Unable to complete authentication with the provider.",
       "callbackFailed": "Authentication failed",
+      "callbackNotLinkedTitle": "Account not linked",
+      "callbackNotLinkedDesc": "This {provider} account is not linked to any user in the system.",
+      "callbackNotLinkedGuidance": "For security reasons, please sign in with your password first, then go to Profile > Social Accounts to link it.",
       "callbackBackToLogin": "Back to sign in",
+      "callbackLoginWithPassword": "Sign in with password",
+      "callbackBackHome": "Back to home",
+      "callbackCsrfFailed": "Security state mismatch or expired session (CSRF Protection). Please try again.",
       "temporarilyDisabled": "Temporarily disabled",
       "socialDisabledHint": "This sign-in provider is temporarily disabled by system configuration."
     },
@@ -388,7 +460,8 @@
       "tabs": {
         "info": "Personal Info",
         "security": "Security",
-        "social": "Connected Accounts"
+        "social": "Connected Accounts",
+        "notifications": "Notifications"
       },
       "avatar": "Avatar",
       "avatarLibrary": "Choose from library",
@@ -573,7 +646,6 @@
       "system_permissions_changed": "updated permissions",
       "system_roles_changed": "updated roles"
     },
-    "viewDetail": "View details",
     "moreFields": "+{count} more fields",
     "fields": {
       "permissions": "Permissions",
@@ -632,5 +704,229 @@
       "saveValue": "Save Setting",
       "jsonInvalid": "Value must be valid JSON."
     }
+  },
+  "fileAccess": {
+    "title": "Can't open this file",
+    "description": "You don't have permission to view this file, or it doesn't exist.",
+    "backHome": "Back to home",
+    "signInOther": "Sign in with another account"
+  },
+  "notifications": {
+    "nav": "Notification log",
+    "bell": {
+      "title": "Notifications",
+      "personal": "Personal",
+      "system": "System",
+      "markAll": "Mark all read",
+      "settings": "Notification settings",
+      "empty": "No notifications yet.",
+      "more": "Load more",
+      "unread": "Unread",
+      "hide": "Hide",
+      "pushPrompt": "Get notified even when the tab is closed?",
+      "pushEnable": "Enable"
+    },
+    "settings": {
+      "hint": "Choose where and which events to receive. Error alerts always show in the app."
+    },
+    "push": {
+      "title": "Browser notifications",
+      "enable": "Enable on this browser",
+      "hint": "Shows a popup even when the tab is closed.",
+      "granted": "Enabled on this browser.",
+      "denied": "The browser blocks notifications; allow them in site settings.",
+      "unsupported": "Not supported by this browser or Firebase is not configured."
+    },
+    "telegramBot": {
+      "title": "Your Telegram bot",
+      "placeholder": "Paste bot token...",
+      "save": "Save and verify",
+      "check": "Check",
+      "change": "Change token",
+      "remove": "Remove bot",
+      "checkOk": "The bot works.",
+      "hasWebhook": "The bot has a webhook elsewhere; remove it to use it here.",
+      "steps": {
+        "1": "Open Telegram, chat with @BotFather, send /newbot.",
+        "2": "Choose a name and a username ending in bot.",
+        "3": "Copy the token BotFather sends and paste it here."
+      },
+      "errors": {
+        "TELEGRAM_BOT_TOKEN_INVALID": "The token no longer works, enter it again.",
+        "TELEGRAM_BOT_HAS_WEBHOOK": "The bot has a webhook elsewhere."
+      }
+    },
+    "telegramChats": {
+      "title": "Telegram destinations",
+      "empty": "No destinations yet.",
+      "addGroup": "Add group",
+      "addPrivate": "Private chat with bot",
+      "pendingHint": "Open Telegram with the button below (code {code}, valid 10 minutes), then press Verify.",
+      "openTelegram": "Open Telegram",
+      "verify": "Verify",
+      "test": "Send test",
+      "status": {
+        "pending": "Pending",
+        "active": "Active",
+        "unreachable": "Unreachable",
+        "removed": "Bot removed"
+      },
+      "remove": "Delete"
+    },
+    "preferences": {
+      "event": "Event",
+      "inApp": "In app",
+      "push": "Browser",
+      "email": "Email",
+      "telegram": "Telegram",
+      "save": "Save preferences"
+    },
+    "deliveries": {
+      "title": "Notification log",
+      "searchPlaceholder": "Search title, target...",
+      "empty": "No deliveries yet.",
+      "retry": "Retry",
+      "columns": {
+        "createdAt": "Time",
+        "title": "Notification",
+        "recipient": "Recipient",
+        "channel": "Channel",
+        "status": "Status",
+        "attempts": "Attempts"
+      },
+      "channel": {
+        "PUSH": "Browser",
+        "EMAIL": "Email",
+        "TELEGRAM": "Telegram",
+        "IN_APP": "In app"
+      },
+      "status": {
+        "PENDING": "Pending",
+        "SENT": "Sent",
+        "FAILED": "Failed",
+        "SKIPPED": "Skipped"
+      }
+    },
+    "announcements": {
+      "nav": "Announcements",
+      "title": "System announcements",
+      "create": "Send announcement",
+      "send": "Send",
+      "searchPlaceholder": "Search title...",
+      "empty": "No announcements yet.",
+      "sections": {
+        "content": "Content",
+        "target": "Audience"
+      },
+      "fields": {
+        "title": "Title",
+        "body": "Body",
+        "level": "Level",
+        "link": "Link",
+        "linkHint": "An in-site path starting with /.",
+        "target": "Send to",
+        "roles": "Roles",
+        "expiresAt": "Expires at",
+        "recipients": "Recipients",
+        "sentAt": "Sent at"
+      },
+      "level": {
+        "INFO": "Info",
+        "WARNING": "Warning",
+        "ERROR": "Error"
+      },
+      "target": {
+        "ALL": "Everyone",
+        "ROLES": "By role"
+      },
+      "validation": {
+        "required": "Required.",
+        "link": "Must start with /.",
+        "roles": "Choose at least one role."
+      }
+    },
+    "events": {
+      "login": "New sign-in",
+      "newDevice": "Sign-in from a new device",
+      "passwordChanged": "Your password was changed",
+      "deliveryFailed": "A notification failed to send",
+      "storageQuota": "Storage {percent}% used"
+    }
+  },
+  "webhooks": {
+    "nav": "Webhooks",
+    "title": "System webhooks",
+    "empty": "No webhooks yet.",
+    "copy": "Copy URL",
+    "copied": "Copied",
+    "auth": "Authentication",
+    "setup": "Third-party setup"
+  },
+  "callbacks": {
+    "nav": "Callbacks",
+    "title": "Callback URLs",
+    "empty": "No callbacks yet.",
+    "copy": "Copy URL",
+    "copied": "Copied",
+    "setup": "Third-party setup",
+    "configured": "Configured",
+    "notConfigured": "Client id not configured",
+    "originHint": "URLs follow the domain you opened this page on; add the URL of each other domain you use."
+  },
+  "currencies": {
+    "nav": "Currencies",
+    "title": "Currencies",
+    "create": "Add currency",
+    "searchPlaceholder": "Search code, name...",
+    "empty": "No currencies.",
+    "base": "Base currency",
+    "sections": {
+      "info": "Details"
+    },
+    "fields": {
+      "code": "Code (ISO 4217)",
+      "name": "Name",
+      "symbol": "Symbol",
+      "decimalPlaces": "Decimal places",
+      "position": "Order",
+      "isActive": "Active"
+    },
+    "validation": {
+      "required": "Required.",
+      "code": "3 upper-case letters, e.g. USD."
+    }
+  },
+  "exchangeRates": {
+    "nav": "Exchange rates",
+    "title": "Exchange rates",
+    "create": "Add manual rate",
+    "empty": "No rates yet.",
+    "sections": {
+      "info": "Details"
+    },
+    "fields": {
+      "currency": "Currency",
+      "rateDate": "Date",
+      "rate": "Rate (VND)",
+      "source": "Source",
+      "note": "Note",
+      "noteHint": "E.g. SBV central rate on …"
+    },
+    "source": {
+      "VIETCOMBANK_TRANSFER_BUY": "Vietcombank · transfer buy",
+      "MANUAL": "Manual"
+    },
+    "validation": {
+      "required": "Required.",
+      "positive": "Enter a valid number."
+    }
+  },
+  "navSections": {
+    "access": "Accounts & access",
+    "library": "Library",
+    "notifications": "Notifications",
+    "catalogs": "Catalogs",
+    "integrations": "Integrations",
+    "operations": "Operations"
   }
 }

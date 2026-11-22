@@ -8,6 +8,7 @@ import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 
+import { createBooleanBulkStatus } from "@/shares/lib/bulk-status";
 import { UTILITIES_ROUTES } from "../constants/routes";
 import type { PagePath } from "../types/page-path.types";
 import { usePagePathTable } from "./hooks/use-page-path-table";
@@ -114,8 +115,19 @@ export function PagePathTable({
             }
           : undefined
       }
-      onEdit={canUpdate ? state.edit : undefined}
-      onDelete={canDelete ? state.remove : undefined}
+      onView={state.view}
+      onEdit={state.edit}
+      onDelete={state.remove}
+      can={{ update: canUpdate, delete: canDelete }}
+      onBulkDelete={canDelete ? state.bulkDelete : undefined}
+      bulkStatus={
+        canUpdate
+          ? createBooleanBulkStatus(
+              { on: tStatus("active"), off: tStatus("inactive") },
+              state.bulkSetActive,
+            )
+          : undefined
+      }
       canDeleteRow={(path) => path.pageCount === 0}
       aria-label={t("title")}
     />

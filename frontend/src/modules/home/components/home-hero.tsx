@@ -62,8 +62,8 @@ export function HomeHero() {
         />
       </div>
 
-      {/* 2. Nội dung trung tâm: Lời chào, Đồng hồ và Thời tiết (nhấc lên để không che hoạt cảnh chân trang) */}
-      <div className="relative z-10 mx-auto my-auto flex w-full max-w-4xl -translate-y-6 flex-col items-center px-4 pt-16 pb-20 sm:-translate-y-10 sm:px-6 sm:pt-18 sm:pb-28 md:-translate-y-12">
+      {/* 2. Nội dung trung tâm: Lời chào, Đồng hồ và Thời tiết */}
+      <div className="relative z-10 mx-auto my-auto flex w-full max-w-4xl flex-col items-center px-4 pt-24 pb-16 sm:px-6 sm:pt-20 sm:pb-24 md:-translate-y-8 md:pt-16 md:pb-28 lg:-translate-y-10">
         {/* Lời chào nhẹ nhàng */}
         <div className="text-center">
           <p
@@ -84,8 +84,8 @@ export function HomeHero() {
           </h1>
         </div>
 
-        {/* Cụm Widget trong suốt nhìn xuyên thấu: Đồng hồ và Thời tiết */}
-        <div className="mt-8 grid w-full grid-cols-1 items-stretch gap-4 sm:grid-cols-2">
+        {/* Cụm Widget trong suốt nhìn xuyên thấu: Đồng hồ và Thời tiết (1 cột ở mobile, 2 cột từ tablet/desktop md) */}
+        <div className="mt-6 grid w-full grid-cols-1 items-stretch gap-4 sm:mt-8 md:grid-cols-2">
           {/* Widget Đồng hồ múi giờ GMT+7 */}
           <ClockWidget isDay={isDay && !isStorm} />
 
@@ -94,7 +94,7 @@ export function HomeHero() {
         </div>
 
         {/* Thanh âm thư giãn trong suốt (Lofi / Mưa / Dông bão / Sóng biển) */}
-        <div className="mt-6 w-full max-w-xl">
+        <div className="mt-4 w-full max-w-xl sm:mt-5">
           <ChillAudio
             isDay={isDay && !isStorm}
             suggestedTrack={weatherState.suggestedTrack}

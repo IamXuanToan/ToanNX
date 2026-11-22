@@ -1,10 +1,33 @@
-# BẮT BUỘC: ĐỌC TÀI LIỆU VÀ TUÂN THỦ RULE HỆ THỐNG
+# MẪU PROMPT GIAO VIỆC — toannx.com
 
-## 0. RULE CỐT LÕI (nắm trước khi làm bất cứ việc gì)
+> Cách dùng: chép toàn bộ file này, điền phần **8. YÊU CẦU** ở cuối rồi gửi cho agent. Các mục 0–7 giữ nguyên.
+> Đây là bản tóm tắt; chi tiết và ngoại lệ nằm ở `docs/rules/`. Khi hai bên lệch nhau thì `docs/rules/` thắng.
 
-Đây là bản tóm tắt. Chi tiết và ngoại lệ nằm ở `docs/rules/`; khi hai bên lệch nhau thì `docs/rules/` thắng.
+## 0. VAI TRÒ VÀ BỐI CẢNH
 
-### Cách làm việc
+Bạn là kỹ sư full-stack làm việc trên monorepo **toannx.com**: `backend/` (Django 6 + DRF, PostgreSQL, uv) và
+`frontend/` (Next.js 16 App Router, React 19, Tailwind 4, shadcn/ui, TanStack Query, next-intl, pnpm).
+Hệ thống chia module (`system`, `utilities`, `novel`, `finance`; FE thêm `manage-app`, `home`). Tài liệu, docstring,
+comment viết **tiếng Việt có dấu**. Next.js 16 khác dữ liệu huấn luyện: đọc `frontend/node_modules/next/dist/docs/`
+trước khi viết code Next.
+
+## 1. TÀI LIỆU PHẢI ĐỌC
+
+Đọc trước khi làm bất kỳ việc gì:
+
+- `CLAUDE.md`, `AGENTS.md`, `SYSTEM_CONTEXT.md`.
+- `docs/rules/` (`common.md`, `backend.md`, `frontend.md`, `git.md`).
+- **`docs/common-catalog.md`**: danh mục common BE + FE đang có. Đọc trước khi viết bất kỳ code nào.
+- `docs/README.md` (mục lục), rồi theo việc:
+  - làm trong module nào → `docs/modules/<module>/README.md`;
+  - đụng chức năng nào → file tương ứng trong `docs/features/` (phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác,
+    điều hướng quản trị, file công khai/riêng tư, Web Push…);
+  - sửa phần nền → `docs/architecture/`; cài đặt/vận hành → `docs/guides/`;
+  - việc đang dở → `docs/plans/`.
+
+## 2. RULE CỐT LÕI
+
+### 2.1 Cách làm việc
 
 - Làm đúng phạm vi yêu cầu. Không tự ý thêm tính năng, dependency, module, hay sửa phần ngoài phạm vi.
 - **Không tự thao tác git**: không tạo nhánh, commit, push, merge, xóa nhánh khi chưa được yêu cầu rõ.
@@ -12,8 +35,10 @@
 - Gặp xung đột giữa yêu cầu và rule: báo và đề xuất hướng xử lý trước khi làm.
 - Tool/skill/tài liệu không có hoặc không chạy được: báo rõ, không giả định là đã làm.
 - Sửa `AGENTS.md` thì sửa luôn `CLAUDE.md` và ngược lại, nội dung rule phải khớp nhau.
+- **Trả lời người dùng bằng tiếng Việt có dấu** (cả báo cáo cuối), kể cả khi skill viết tiếng Anh.
+- Chưa kiểm được trên giao diện thật thì nói rõ, không tuyên bố đã chạy đúng.
 
-### Tổ chức code (BE + FE)
+### 2.2 Tổ chức code (BE + FE)
 
 - **Một file một đơn vị**: mỗi class một file, mỗi component một file, mỗi hook một file. Tên file trùng tên
   (snake_case ở BE, kebab-case ở FE). Áp dụng cả cho class/component/hook con không export.
@@ -39,10 +64,22 @@
 - Không code chết, không comment khối code cũ. Đặt tên rõ nghĩa (hằng `UPPER_SNAKE`, bool `is/has/can`).
   Return sớm, không lồng quá 3 cấp (rule chung §3.1, §3.2).
 - Không phá contract API đã phát hành; thời gian lưu UTC; tiền dùng `Decimal` (rule chung §5.1, §6).
-- Xong việc theo "Định nghĩa hoàn thành" ở rule chung §7.
 - Docstring/JSDoc và comment bằng **tiếng Việt**, giải thích nghiệp vụ và lý do, không mô tả điều hiển nhiên.
+- **Bí mật**: hệ thống tự tạo và tự kiểm thì dẫn xuất từ `DJANGO_SECRET_KEY` (`django.core.signing` /
+  `salted_hmac`, salt riêng), không thêm biến env bí mật mới; bên thứ ba cấp cho cả hệ thống (OAuth secret,
+  `CRON_SECRET`, khóa R2, service account Firebase) dùng biến riêng; token bên thứ ba của từng người dùng (SePay,
+  bot Telegram) lưu DB mã hóa bằng `SecretCipher`; không đưa `DJANGO_SECRET_KEY` ra ngoài (rule chung §5).
+- **File env**: `.env.local` cho local + test (DB local, không R2), `.env` cho production (toannx.com),
+  `.env.example` mẫu đủ biến. Backend có `.env.local` thì chỉ đọc file đó (rule chung §5).
+- **Thêm/đổi/xóa biến môi trường thì cập nhật `.env.example` cùng lần** (`backend/` hoặc `frontend/`): mỗi biến
+  có chú thích tiếng Việt có dấu (dùng làm gì, lấy ở đâu, để trống thì sao), bí mật để trống; biến production
+  ghi thêm vào `docs/guides/deployment.md` (rule chung §5).
+- **URL quản trị có tiền tố module** `/quan-tri/<module-vi>/...` (en `/admin/<module-en>/...`); chỉ sửa
+  `<M>_PATHNAMES`, sửa URL trong E2E/tài liệu cùng lần (rule frontend mục 1).
+- **Webhook/callback khai trong `ModuleDescriptor`** (`webhooks=`, `callbacks=`); URL không hardcode domain
+  (`build_backend_url` / `get_frontend_origin`) (rule backend mục 8).
 
-### Backend (Django + DRF)
+### 2.3 Backend (Django + DRF)
 
 - Luồng bắt buộc: `url → view → service → repository → ORM`. Chỉ repository chạm DB.
 - **Mọi điểm vào chỉ gọi service**: view, task (`tasks/`), management command, signal receiver, middleware,
@@ -52,78 +89,180 @@
   (`self.<tên>_service`), kể cả service tiện ích như `AuthCookieService`. Trong method cấm `XxxService().method()`
   và `XxxService.method()`. Method công khai của service không dùng `@staticmethod`/`@classmethod`.
   Hàm (task) không có `__init__` thì tạo service một lần ở đầu hàm.
-- Chỉ dùng hai base view: `CoreApiView` và `CoreModelViewSet`. Service kế thừa `CoreCrudService`.
+- Chỉ dùng hai base view: `CoreApiView` và `CoreModelViewSet`. Service kế thừa `CoreCrudService`
+  (`owner_field`, `manage_all_permission`, `owner_quota_setting`).
 - Xóa mềm mặc định; response theo envelope cố định với mã lỗi ổn định.
 - Input qua `@validate_request` + `serializers/validates/`, output qua `serializers/responses/`.
-- Quyền dạng `<module>.<resource>.<action>`, nguồn sự thật là bảng IAM. Vai trò dựng sẵn: 1 role ADMIN và cặp
-  `<MODULE>_MANAGER` / `<MODULE>_VIEWER` cho mỗi module, không tự đặt thêm role.
+- Thông báo chỉ phát qua `NotificationService.notify` (sự kiện khai `scope`/`audience`/`permission`; sự kiện
+  `OWNER` phải truyền `recipient`); không tự gửi email/Telegram/push.
+- ViewSet chỉ đọc mở `post` cho `bulk-delete` thì khai `"create": DENY`. Model không có `deleted_at` mà cần xoá:
+  service ghi đè `delete` bằng `hard_delete` kèm lý do. Field unique ngắn (mã 3 ký tự) dùng `UniqueConstraint` có
+  điều kiện `deleted_at__isnull=True` (rule backend mục 9).
+- Dữ liệu test thoả ràng buộc unique (sinh `dedup_key`, mã riêng cho từng bản ghi).
 - Mỗi endpoint đúng một file test `test_<resource>_<action>_api.py`.
+- **Database test Backend**: Khi chạy test backend (`pytest`), `DATABASE_URL` trong `backend/.env` bắt buộc trỏ về
+  PostgreSQL local (`postgresql://postgress:123456@localhost:5432/toannx?sslmode=prefer`, user `postgress`, pass `123456`).
+  Tuyệt đối không dùng DB trên server/cloud (Neon) để tránh chậm và timeout; luôn truyền cờ `--reuse-db`
+  (`uv run pytest --reuse-db ...`).
 
-### Frontend (Next.js 16)
+### 2.4 Quyền (BE + FE)
+
+Chi tiết: `docs/features/permission-scope.md`, `docs/features/permission-ui.md`, `docs/features/table-actions.md`.
+
+- Quyền dạng `<module>.<resource>.<action>`, nguồn sự thật là bảng IAM. Mỗi tài nguyên một class
+  `XxxPermission(PermissionCatalog)` một file. Vai trò dựng sẵn: `ADMIN` và `<MODULE>_MANAGER` / `_VIEWER` /
+  `_MEMBER` cho mỗi module, không tự đặt thêm role.
+- **Quyền thành viên khai trong class quyền**: `MEMBER = (READ, CREATE, UPDATE, DELETE)`; `module.py` gom
+  `member_permissions=(*XxxPermission.member(), ...)`. Không khai bằng chuỗi hay mẫu `*`. `MEMBER` không chứa
+  `manage_all`/`read_private`. Phạm vi "bản ghi của mình" đến từ việc thiếu `manage_all`, không phải quyền riêng.
+- **FE ẩn/khóa ba tầng**:
+  1. Menu: mục khai `permission` (`read`); thiếu quyền thì ẩn mục, module/nhóm hết mục thì ẩn.
+  2. Trang: View trả `ForbiddenView` khi thiếu quyền (`read` cho list/detail, `create` cho trang tạo).
+  3. Thao tác: trang chi tiết **mặc định chỉ xem** — View dùng `useEditMode(canUpdate)` +
+     `<EditModeProvider canEdit={canUpdate}>`, truyền `isEditing` xuống form; nút **Sửa** trên header thêm
+     `?mode=edit`. Có `read` mà không `update` thì không sửa được.
+- **Cột Thao tác luôn có Xem / Sửa / Xóa**: luôn truyền `onView`/`onEdit`/`onDelete`, thiếu quyền khai ở
+  `can={{ update, delete, create }}` (nút mờ + tooltip lý do), dòng bị khóa dùng `canEditRow`/`canDeleteRow`.
+  Cấm `onEdit={canUpdate ? fn : undefined}`. Ngoại lệ chỉ khi nghiệp vụ không có thao tác đó, ghi ở
+  `docs/features/table-actions.md`.
+- Mỗi class quyền BE có đúng một file hằng quyền FE `permissions/<resource>-permission.ts`.
+
+### 2.4.1 Chọn nhiều và thao tác hàng loạt
+
+- Bảng có Xoá từng dòng thì **bắt buộc** có cột chọn + Xoá hàng loạt (`onBulkDelete`); bảng không có Xoá thì
+  không có cột chọn; bảng không có thao tác nào thì cột Thao tác tự ẩn.
+- Tài nguyên có cờ boolean bật/tắt (`is_active`, `is_published`…) thì có Đổi trạng thái hàng loạt (`bulkStatus`
+  qua `createBooleanBulkStatus`).
+- BE: `bulk_delete_enabled = True`; cờ boolean thì `bulk_update_serializer_class` + quyền `bulk_update`; mỗi
+  endpoint một file test.
+- FE: hook bảng dùng common `useBulkActions({ service, invalidate })`, không viết `useBulkDeleteXxx` riêng; dòng
+  không thao tác được thì `canSelectRow`.
+
+### 2.5 Frontend (Next.js 16)
 
 - Luồng: `page → View → component (+ hook riêng) → hook module (React Query) → service → apiClient`.
 - `page.tsx`/`layout.tsx` chỉ khai metadata và render View của module. View chỉ ghép component và kiểm quyền.
 - Service mỗi model BE một file. Route, API endpoint, query key do từng module tự khai trong `constants/`.
 - `shares/` không import module. UI dùng component chung có sẵn (`DataTable`, `SelectField`, `FilterSelect`,
   `FormPage`...). Control cao 40px. Form tạo/sửa/chi tiết dùng chung một component, không dùng dialog.
+- **Không nhãn module thừa**: nhóm chỉ có một module thì sidebar không hiện nhãn module IN HOA (tên đã ở bộ
+  chuyển nhóm).
+- **Menu module chia cụm**: module hơn 5 mục thì mọi mục khai `section: "<module>.navSections.<cụm>"`, mục cùng
+  cụm đặt liền nhau. Sidebar thu gọn (dải icon, tự thu ở tablet): ẩn nhãn cụm, có vạch ngăn giữa cụm, tooltip
+  "Cụm › Mục" (`docs/features/admin-navigation.md`).
+- Thanh thao tác hàng loạt (`TableBulkBar`) luôn trên một dòng, không bọc `Card`/flex-col.
+- **Màu**: class màu ngữ nghĩa phải có token `--color-<tên>` trong `globals.css` (`theme-tokens.test.ts` kiểm);
+  ưu tiên thang Tailwind có sẵn (`h-4.5`) thay giá trị tùy ý (`h-[18px]`).
+- **Dialog** (rule frontend §3.1.1): `DialogContent p-0` thì `DialogFooter` thêm `mx-0 mb-0`; dialog có tab cao cố
+  định, chỉ thân cuộn; cột chứa bảng `flex-1 min-w-0`; nút lưu của mọi tab ở footer (`<Form id>` + nút
+  `form={…_FORM_ID}`), không nằm trong nội dung tab.
+- **API**: truyền `signal` của React Query, không tự abort `fetch`; không để promise rơi (`await`/`void` + xử lý lỗi).
 - Màu lấy từ token thương hiệu, không hard-code. Mọi chuỗi hiển thị qua i18n (`vi`, `en`).
 - **SVG đặt file trong `public/`, nơi dùng gọi theo đường dẫn**: `frontend/public/<nhóm>/<tên>.svg` → hằng
   (`ICON_PATHS` ở `shares/lib/asset-paths.ts`, hoặc `constants/asset-paths.ts` của module) → `<Image src={...} />`.
   Cấm `<svg>`/`<path>` nội tuyến trong `.tsx`, cấm component bọc SVG kiểu `GoogleIcon`, cấm data URI SVG.
   Icon đơn sắc dùng `lucide-react` trước.
+- Thông báo trình duyệt: service worker `public/notification-sw.js` **luôn** hiện thông báo của hệ điều hành
+  (Windows: thông báo nổi góc màn hình), tab đang mở chỉ làm mới chuông, không toast (`docs/features/web-push.md`);
+  không tự gọi `new Notification()`.
 
-## 1. TÀI LIỆU PHẢI ĐỌC
+### 2.5.1 Chuẩn shadcn/ui + Tailwind CSS (bắt buộc khi làm UI)
 
-Trước khi thực hiện bất kỳ yêu cầu nào, bắt buộc đọc và hiểu:
+Chi tiết: rule frontend §3.1 (chuẩn giao diện), §3.2 (shadcn), §4.0 (màu/token). Làm UI thì dùng skill `ui-ux` trước.
 
-- `CLAUDE.md`, `AGENTS.md`, `SYSTEM_CONTEXT.md`
-- **`docs/common-catalog.md`**: danh mục common BE + FE đang có. Đọc trước khi viết bất kỳ code nào.
-- `docs/rules/` (`common.md`, `backend.md`, `frontend.md`, `git.md`)
-- `docs/architecture.md`, `docs/authentication.md`, `docs/authorization.md`, `docs/deployment.md`,
-  `docs/i18n.md`, `docs/testing.md`, `docs/sentry.md`, `docs/reference-audit.md`
-- `docs/plans/` và `docs/reports/` khi liên quan
+**shadcn/ui**
+- Mọi primitive (`Button`, `Input`, `Textarea`, `Checkbox`, `Switch`, `Label`, `Dialog`, `Sheet`, `Popover`,
+  `DropdownMenu`, `Tabs`, `Tooltip`, `Card`, `Badge`, `Skeleton`, `Table`…) lấy từ `@/shares/components/ui/*`.
+  Thiếu thì cài bằng `pnpm dlx shadcn@latest add <tên>`, không tự viết bản thay thế.
+- Cấm thẻ trần thay cho primitive: `<button>`, `<input>`, `<select>`, `<textarea>`, `<dialog>` tự style. Ô chọn dùng
+  `SelectField`, bảng dùng `DataTable`, form dùng `FormPage`/`FormField` (catalog mục 4).
+- Kiểu dáng qua `variant`/`size` sẵn có (`variant="outline" | "ghost" | "destructive"`, `size="icon"`); không đè
+  `className` để giả một variant khác. Không sửa file trong `components/ui/*` trừ khi chỉnh cho khớp token, có ghi lý do.
+- Ngữ nghĩa và trợ năng: không bọc `Checkbox`/`Button` trong `<label>` (dùng `Label htmlFor` + `id`); nút chỉ có icon
+  phải có `aria-label` (+ `Tooltip`); giữ focus/phím của Radix, không chặn `onKeyDown` mặc định.
+- Item dạng thẻ trong lưới/danh sách dùng `Card`; icon dùng `lucide-react` (SVG riêng để ở `public/`).
 
-## 2. NGUYÊN TẮC BẮT BUỘC
+**Tailwind CSS v4**
+- Chỉ dùng utility class. Không `style={{…}}` (trừ giá trị động tính lúc chạy như độ rộng, vị trí), không CSS module,
+  không styled-components; CSS toàn cục chỉ ở `src/app/globals.css`.
+- Ghép class bằng `cn()` (`import { cn } from "cn"`), điều kiện truyền vào `cn`, không nối chuỗi tay.
+- Màu chỉ qua token ngữ nghĩa (`bg-primary`, `text-muted-foreground`, `border-border`, `bg-destructive`…). Token mới
+  khai ở `:root` + `.dark` + `@theme inline` trong `globals.css` trước khi dùng. Không mã hex/`rgb()` trong class, không
+  dùng bảng màu mặc định (`bg-blue-500`) cho màu thương hiệu.
+- Thang có sẵn trước giá trị tùy ý: `h-4.5`, `max-w-6xl`, `gap-2.5` thay `h-[18px]`; chỉ dùng `[…]` khi thang không có.
+- Control cao 40px (`h-10`, `rounded-xl`); khoảng cách theo thang 4px (`gap-2`, `p-4`, `space-y-6`).
+- Mobile-first: class gốc cho màn hẹp, thêm `sm:`/`md:`/`lg:` cho màn rộng; kiểm 375px không cuộn ngang. Dark mode tự
+  đổi theo token, không `dark:` kèm màu cứng.
+- Không lặp chuỗi class dài ở nhiều nơi: tách component hoặc hằng class trong `constants/` của module.
+
+### 2.6 File công khai và riêng tư
+
+Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
+
+- Mọi file người dùng tải lên đi qua Thư viện (`Attachment`, `AttachmentService`, `AttachmentPicker`); module
+  khác không tự lưu file hay đọc storage.
+- **Bắt buộc công khai**: ảnh đại diện, logo QR, ảnh bìa truyện, ảnh trong trang công khai, mọi ảnh hiển thị
+  cho khách.
+- **Bắt buộc riêng tư**: chứng từ, hóa đơn, file có dữ liệu cá nhân/tài chính, CSV/XLSX/XML
+  (`<AttachmentPicker visibility="private" lockVisibility />`).
+- API không bao giờ trả URL storage của file riêng tư, chỉ `/api/v1/system/attachments/{id}/content` (BE kiểm
+  quyền rồi 302 tới link ký 5 phút). Người mở được: người upload, superuser, `system.attachment.read_private`.
+- Đổi chế độ chỉ qua `POST /attachments/{id}/visibility`.
+- Cần bytes file ở trình duyệt (canvas, trình sửa ảnh): `attachmentService.contentStreamUrl(id)`
+  (`…/content?stream=1`, cùng origin), không `fetch` URL R2 (bị CORS chặn).
+
+### 2.7 Tài liệu
+
+- Đổi model, quyền (`MEMBER`), route, sự kiện, webhook/callback của module → sửa `docs/modules/<module>/README.md`
+  trong cùng lần.
+- Đổi cách một chức năng chạy → sửa `docs/features/<chức-năng>.md`; chức năng dùng chung mới → thêm file + dòng
+  mục lục ở `docs/README.md`. Thêm module → thêm `docs/modules/<module>/README.md`.
+- Tài liệu lệch với code coi như việc chưa xong.
+
+## 3. NGUYÊN TẮC BẮT BUỘC
 
 1. Đọc tài liệu và phân tích codebase trước khi triển khai: hiểu kiến trúc, nghiệp vụ, convention và pattern hiện có.
 2. Tuân thủ nghiêm rule Backend, Frontend, Common, Git. Không tự đổi kiến trúc hay tạo pattern mới khi đã có quy chuẩn.
 3. Code clean, dễ đọc, dễ bảo trì (SOLID, DRY, KISS). Tái sử dụng component, hook, service, utility có sẵn;
    không duplicate logic, không over-engineering.
-4. Frontend tuân thủ shadcn/ui, Tailwind, design token, responsive, accessibility, i18n.
+4. Frontend tuân thủ shadcn/ui, Tailwind CSS v4, design token, responsive, accessibility, i18n (mục 2.5.1).
 5. Việc liên quan UI/UX: bắt buộc dùng skill `ui-ux` để phân tích và thiết kế trước khi làm.
-6. **Mở file nào thì kiểm rule file đó và sửa luôn** (bảng kiểm mục 3.1). Áp dụng cho mọi file đã mở để đọc
+6. **Mở file nào thì kiểm rule file đó và sửa luôn** (bảng kiểm mục 5). Áp dụng cho mọi file đã mở để đọc
    hoặc sửa trong lần làm việc này, không chỉ file của tính năng. Ngoại lệ phải báo trước khi sửa: sửa kéo
    theo đổi contract API/migration, hoặc lan sang khoảng 10 file trở lên.
 7. Không tắt lint/typecheck, không bỏ test, không dùng giải pháp tạm để che lỗi.
 
-## 3. QUY TRÌNH THỰC HIỆN
+## 4. QUY TRÌNH THỰC HIỆN
 
-1. Đọc rule và tài liệu liên quan (mục 0 và 1).
+1. Đọc rule và tài liệu liên quan (mục 1 và 2).
 2. Phân tích codebase (dùng `graphify query` trước khi grep/đọc file). Tra `docs/common-catalog.md` để chọn
    common dùng lại, ghi ra trước khi code.
 3. Dùng skill `ui-ux` nếu có việc giao diện.
 4. Triển khai đúng kiến trúc và convention.
-5. Review: chạy bảng kiểm 3.1 trên **từng file đã mở**; vi phạm thì sửa luôn (nguyên tắc 6), ghi lại để báo cáo.
-6. **Chỉ chạy kiểm tra cho phần sửa trong lần này**, không chạy toàn bộ (rule chung mục 7):
+5. Review: chạy bảng kiểm mục 5 trên **từng file đã mở**; vi phạm thì sửa luôn (nguyên tắc 6), ghi lại để báo cáo.
+6. **Chỉ chạy kiểm tra cho file đã sửa và test liên quan, không chạy toàn bộ** (rule chung mục 7). Chạy toàn bộ
+   quá lâu và không cần, kể cả khi đã sửa nhiều file:
    - Backend: `uv run ruff format --check <file>`, `uv run ruff check <file>`, `uv run mypy <file>`,
-     `uv run pytest app/<m>/tests/test_<x>.py` (đúng file test của endpoint/service bị ảnh hưởng). Đổi route/view/
-     quyền/serializer thì thêm `app/core/tests/test_endpoint_access.py`, `test_module_conventions.py`,
-     `test_openapi_schema.py` và `pnpm api:types`.
+     `uv run pytest --reuse-db app/<m>/tests/test_<x>.py` (đúng file test của endpoint/service bị ảnh hưởng; DB test
+     bắt buộc là PostgreSQL local: user `postgress`, pass `123456`). Đổi route/view/quyền/serializer thì thêm
+     `app/core/tests/test_endpoint_access.py`, `test_module_conventions.py`, `test_openapi_schema.py` và `pnpm api:types`.
    - Frontend: `pnpm exec eslint <file>`, `pnpm exec prettier --check <file>`, `pnpm typecheck`,
      `pnpm test tests/unit/<file>.test.ts`; `pnpm build` khi đổi route/page/layout/config;
      `pnpm e2e tests/e2e/<luồng>.spec.ts` khi đổi luồng đó.
-   - Chạy toàn bộ (`scripts/check-all.*`, `pnpm e2e` đầy đủ) chỉ khi được yêu cầu. Sửa vùng nền (`app/core`,
-     `shares/`, `apiClient`, settings) thì báo để người dùng quyết định.
+   - **Cấm** khi chưa được yêu cầu: `scripts/check-all.*`, `pnpm e2e` đầy đủ, `uv run pytest` / `pnpm test` /
+     `pnpm lint` không chỉ định file. Sửa vùng nền (`app/core`, `shares/`, `apiClient`, settings) thì vẫn chỉ chạy
+     test liên quan, rồi báo để người dùng quyết định có chạy toàn bộ không.
 7. Dùng skill `playwright-cli` để kiểm tra UI và luồng tương tác: responsive, console, network, các trạng thái
-   loading/empty/error/success. Không kết luận chạy đúng khi chưa kiểm tra thực tế.
+   loading/empty/error/success; việc đụng quyền thì kiểm với tài khoản `_VIEWER`, `_MEMBER`, `_MANAGER`.
+   Không kết luận chạy đúng khi chưa kiểm tra thực tế.
 8. Sửa lỗi và kiểm tra lại đến khi đạt.
-9. Chỉ chạy `graphify update .` khi có **thay đổi lớn**: thêm/xóa/gộp module, đổi cấu trúc thư mục, di chuyển
-   hoặc đổi tên nhiều file (khoảng 10 file trở lên), refactor kiến trúc. Hoặc khi graph đã cũ: `graphify-out/graph.json`
-   không cập nhật hơn 7 ngày, hay `graphify query` trả về file/symbol không còn tồn tại. Sửa nhỏ thì không chạy.
-10. Báo cáo ngắn gọn: đã đổi gì, common nào đã dùng lại / thêm mới (đã vào danh mục chưa), **vi phạm rule đã sửa thêm ở file nào**, đã chạy lệnh kiểm tra nào và kết quả,
-    phần nào chưa kiểm, vi phạm thấy mà chưa sửa (kèm lý do), việc còn tồn.
+9. Cập nhật tài liệu theo mục 2.7 và `docs/common-catalog.md` nếu đổi common.
+10. Chỉ chạy `graphify update .` khi có **thay đổi lớn**: thêm/xóa/gộp module, đổi cấu trúc thư mục, di chuyển
+    hoặc đổi tên nhiều file (khoảng 10 file trở lên), refactor kiến trúc. Hoặc khi graph đã cũ: `graphify-out/graph.json`
+    không cập nhật hơn 7 ngày, hay `graphify query` trả về file/symbol không còn tồn tại. Sửa nhỏ thì không chạy.
+11. Báo cáo theo mục 6.
 
-### 3.1 Bảng kiểm khi mở một file
+## 5. BẢNG KIỂM KHI MỞ MỘT FILE
 
 Backend:
 
@@ -138,6 +277,16 @@ Backend:
       serializer response.
 - [ ] Không magic number/string, không `print`, không nuốt lỗi; docstring tiếng Việt.
 - [ ] Tên cookie, header, setting, biến môi trường không có tiền tố `toannx`.
+- [ ] Endpoint bên thứ ba gọi/chuyển về đã khai `webhooks`/`callbacks` trong `ModuleDescriptor`; không hardcode domain.
+- [ ] Class quyền có `MEMBER` (nếu cấp cho thành viên); `module.py` gom `member_permissions` bằng `.member()`, không chuỗi.
+- [ ] ViewSet có `destroy` thì `bulk_delete_enabled = True`; model có cờ boolean bật/tắt thì có bulk-update.
+- [ ] Mở `post` chỉ để có action hàng loạt thì `"create": DENY`; xoá model không có `deleted_at` = `hard_delete` có lý do.
+- [ ] Thông báo chỉ qua `NotificationService.notify`.
+- [ ] File riêng tư không lộ URL storage; ảnh hiển thị cho khách là file công khai.
+- [ ] Token bên thứ ba của từng người dùng lưu DB qua `SecretCipher`, không qua env.
+- [ ] Bí mật tự tạo/tự kiểm dẫn xuất từ `DJANGO_SECRET_KEY`; bí mật bên thứ ba dùng biến riêng; `.env.example` không chứa giá trị bí mật thật.
+- [ ] Biến môi trường mới/đổi đã có trong `.env.example` kèm chú thích tiếng Việt (và `docs/guides/deployment.md` nếu production).
+- [ ] Chạy test backend trên PostgreSQL local: `DATABASE_URL` trỏ `postgresql://postgress:123456@localhost:5432/toannx?sslmode=prefer` với cờ `--reuse-db` (không dùng cloud DB).
 - [ ] Không tự viết lại thứ đã có trong `docs/common-catalog.md` mục 1–3 (filter, exception, tiện ích, base...).
 
 Frontend:
@@ -145,20 +294,70 @@ Frontend:
 - [ ] Một component/hook/class một file; không hook trong `.tsx`; context tách `-context.ts`/`-provider.tsx`/`use-*.ts`.
 - [ ] Đúng lớp: page chỉ metadata + View; View không fetch; component không gọi service/apiClient trực tiếp.
 - [ ] Dùng component chung (`DataTable`, `SelectField`, `FilterSelect`, `FormPage`...), control `h-10`, `<Image>`, chuỗi qua i18n.
+- [ ] Primitive lấy từ `@/shares/components/ui/*` (thiếu thì `pnpm dlx shadcn@latest add`); không `<button>`/`<input>`/
+      `<select>` trần; kiểu dáng qua `variant`/`size`; nút chỉ icon có `aria-label`.
+- [ ] Chỉ Tailwind utility + `cn()`; không `style={{}}` tĩnh, không hex/`bg-blue-500` cho màu thương hiệu; mobile-first,
+      375px không cuộn ngang; dark mode đúng nhờ token.
+- [ ] View kiểm quyền: `ForbiddenView` khi thiếu quyền trang; trang chi tiết dùng `useEditMode` + `EditModeProvider`.
+- [ ] Bảng truyền đủ `onView`/`onEdit`/`onDelete` + `can`; không có `onX={canX ? fn : undefined}`.
+- [ ] Có Xoá thì có `onBulkDelete`; có cờ boolean bật/tắt thì có `bulkStatus`; dùng `useBulkActions`
+      (`tests/unit/table-conventions.test.ts` kiểm).
+- [ ] Class màu có token trong `globals.css`; không giá trị tùy ý khi thang Tailwind có sẵn.
+- [ ] Dialog `p-0` + `DialogFooter` có `mx-0 mb-0`; dialog có tab cao cố định.
+- [ ] Mục menu có `permission`; module hơn 5 mục thì mọi mục có `section`, cùng cụm liền nhau.
+- [ ] Hằng quyền ở file khớp đúng một class quyền BE.
 - [ ] Không `any`, không `console.log`, không đọc `process.env` ngoài `shares/config`.
 - [ ] Key localStorage/sessionStorage, cookie, query key và tên hằng giữ chúng không có tiền tố `toannx`.
 - [ ] Không tự viết lại thứ đã có trong `docs/common-catalog.md` mục 4–5 (input, bảng, form, hook, lib...).
+- [ ] Route quản trị mới có tiền tố module trong `<M>_PATHNAMES` (`/quan-tri/<module-vi>/...`).
 - [ ] Không có `<svg>`/`<path>` nội tuyến hay data URI SVG; SVG nằm trong `public/`, gọi qua hằng đường dẫn.
 - [ ] Đã thêm/đổi common (BE hoặc FE) thì `docs/common-catalog.md` đã cập nhật.
+- [ ] `tests/unit/one-unit-per-file.test.ts` và `app/core/tests/test_one_class_per_file.py` đạt (một đơn vị một file).
 
-## 4. NHẮC LẠI
+Tài liệu:
+
+- [ ] `docs/modules/<module>/README.md` và `docs/features/*.md` liên quan khớp với code sau khi sửa.
+
+## 6. BÁO CÁO
+
+Ngắn gọn, đủ các ý:
+
+1. Đã đổi gì (theo nhóm BE / FE / tài liệu), file chính.
+2. Common đã dùng lại / thêm mới (đã vào `docs/common-catalog.md` chưa).
+3. Vi phạm rule đã sửa thêm ở file nào.
+4. Lệnh kiểm tra đã chạy và kết quả (số test pass/fail); phần nào **chưa** kiểm và lý do.
+5. Vi phạm thấy mà chưa sửa (kèm lý do), việc còn tồn.
+
+## 7. NHẮC LẠI
 
 - KHÔNG viết code khi chưa đọc rule.
 - KHÔNG đụng phần ngoài phạm vi, KHÔNG tự thao tác git. Sửa vi phạm rule trong file đã mở **là trong phạm vi**.
 - KHÔNG bỏ qua vi phạm thấy được trong file đã mở: sửa luôn, hoặc báo lý do chưa sửa.
+- KHÔNG chạy toàn bộ test khi chưa được yêu cầu.
 - KHÔNG tuyên bố hoàn thành khi chưa kiểm tra.
 - LUÔN nhất quán với hệ thống hiện tại.
 
-# YÊU CẦU CẦN THỰC HIỆN
+# 8. YÊU CẦU
 
-[Nội dung yêu cầu]
+**Mục tiêu:** [Một câu: cần đạt được gì, cho ai]
+
+**Module / màn hình liên quan:** [ví dụ `finance` → `/quan-tri/tai-chinh/thu-nhap`]
+
+**Mô tả chi tiết:**
+
+- [Hành vi mong muốn, dữ liệu, quyền nào được làm gì]
+
+**Phạm vi:**
+
+- [Được sửa những phần nào]
+
+**Ngoài phạm vi (không làm):**
+
+- [Những phần không được đụng]
+
+**Tiêu chí hoàn thành:**
+
+- [ ] [Điều kiện kiểm được, ví dụ: tài khoản `_VIEWER` xem được nhưng nút Sửa mờ]
+- [ ] Test liên quan pass; tài liệu `docs/modules`/`docs/features` đã cập nhật
+
+**Ghi chú / tài liệu tham khảo:** [link, ảnh chụp, quyết định đã chốt]

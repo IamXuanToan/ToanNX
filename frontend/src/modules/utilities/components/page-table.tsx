@@ -143,9 +143,11 @@ export function PageTable({
             }
           : undefined
       }
-      onEdit={canUpdate ? state.edit : undefined}
-      onCopy={canCreate ? (page) => void state.duplicate(page) : undefined}
-      onDelete={canDelete ? state.remove : undefined}
+      onView={state.view}
+      onEdit={state.edit}
+      onCopy={(page) => void state.duplicate(page)}
+      onDelete={state.remove}
+      can={{ update: canUpdate, create: canCreate, delete: canDelete }}
       rowActions={[
         {
           key: "view",

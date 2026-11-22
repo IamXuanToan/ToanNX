@@ -4,15 +4,20 @@ from collections.abc import Generator
 from typing import Any
 
 import pytest
+from django.core.files.storage import storages
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.system.models.attachment import Attachment
 from app.system.permissions.attachment_permission import AttachmentPermission
 from app.system.tests.helpers.attachment_test_helper import (
+    CSV_BYTES,
     PNG_BYTES,
     SAFE_SVG,
     UNSAFE_SVGS,
+    XML_BYTES,
+    XML_WITH_DTD,
+    build_xlsx_bytes,
     upload_file,
 )
 
@@ -124,3 +129,66 @@ class TestAttachmentCreateApi(BaseApiTestCase):
         res = upload_file(api, "quota_r2.png", PNG_BYTES, "image/png")
         error = self.assert_error(res, 400, "ATTACHMENT_STORAGE_QUOTA_EXCEEDED")
         assert "file" in error["details"]
+
+
+class TestAttachmentCreatePrivateAndDataFiles:
+    """Upload riêng tư và loại chứng từ dữ liệu (XLSX, CSV, XML)."""
+
+    @pytest.mark.parametrize(
+        ("name", "content", "expected"),
+        [
+            (
+                "bang-ke.xlsx",
+                build_xlsx_bytes(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ),
+            ("sao-ke.csv", CSV_BYTES, "text/csv"),
+            ("hoa-don.xml", XML_BYTES, "application/xml"),
+        ],
+    )
+    def test_data_files_default_private(
+        self, name: str, content: bytes, expected: str, superuser: Any, login: Any
+    ) -> None:
+        """XLSX/CSV/XML nhận diện từ nội dung, mặc định riêng tư, URL là API có kiểm quyền."""
+        res = upload_file(login(superuser), name, content, "application/octet-stream")
+        data = BaseApiTestCase.assert_success(res, 201)
+        assert data["content_type"] == expected
+        assert data["visibility"] == "private"
+        assert data["url"] == f"http://testserver/api/v1/system/attachments/{data['id']}/content"
+
+    @pytest.mark.parametrize(
+        ("name", "content"),
+        [
+            ("entity.xml", XML_WITH_DTD),
+            ("broken.xml", b"<?xml version='1.0'?><a><b></a>"),
+            ("nul.csv", b"a,b\n\x00\x01"),
+            ("latin.csv", "đ".encode("cp1258")),
+            ("fake.xlsx", b"PK\x03\x04not-a-zip"),
+        ],
+    )
+    def test_unsafe_or_broken_data_files_rejected(
+        self, name: str, content: bytes, superuser: Any, login: Any
+    ) -> None:
+        """XML có DTD/entity, XML hỏng, CSV không phải UTF-8 hoặc có NUL, zip giả đều bị từ chối."""
+        res = upload_file(login(superuser), name, content, "text/plain")
+        BaseApiTestCase.assert_error(res, 400, "VALIDATION_ERROR")
+
+    def test_private_image_stored_outside_public_media(
+        self, superuser: Any, login: Any, settings: Any
+    ) -> None:
+        """Ảnh chọn riêng tư nằm ở kho riêng tư, không có trong MEDIA_ROOT công khai."""
+        res = upload_file(login(superuser), "cccd.png", PNG_BYTES, "image/png", visibility="private")
+        data = BaseApiTestCase.assert_success(res, 201)
+        attachment = Attachment.objects.get(pk=data["id"])
+        assert data["visibility"] == "private"
+        assert storages["private"].exists(attachment.file.name)
+        assert not storages["default"].exists(attachment.file.name)
+
+    def test_private_upload_rejected_when_private_storage_missing(
+        self, superuser: Any, login: Any, settings: Any
+    ) -> None:
+        """Dùng R2 mà chưa có bucket riêng tư → từ chối, không lưu lặng lẽ vào chỗ khác."""
+        settings.PRIVATE_STORAGE_ENABLED = False
+        res = upload_file(login(superuser), "cccd.png", PNG_BYTES, "image/png", visibility="private")
+        BaseApiTestCase.assert_error(res, 400, "ATTACHMENT_PRIVATE_STORAGE_NOT_CONFIGURED")
+        assert not Attachment.objects.exists()

@@ -25,16 +25,16 @@ class PasswordResetService:
 
     def __init__(
         self,
-        email_service: type[EmailService] | None = None,
+        email_service: EmailService | None = None,
         user_service: UserService | None = None,
     ) -> None:
         """Khởi tạo service.
 
         Args:
-            email_service: Lớp service email (cho phép mock khi test).
+            email_service: Service gửi email (cho phép mock khi test).
             user_service: Service quản lý tài khoản người dùng.
         """
-        self.email_service = email_service or EmailService
+        self.email_service = email_service or EmailService()
         self.user_service = user_service or UserService()
 
     def build_reset_url(self, request: HttpRequest, uidb64: str, token: str, locale: str = "vi") -> str:

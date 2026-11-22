@@ -8,4 +8,13 @@ export const env = {
   apiTimeoutMs: 15_000,
   /** Thời gian chờ của upload file (file tới 5 MB trên mạng chậm). */
   uploadTimeoutMs: 60_000,
+  /** Cấu hình web Firebase (công khai); thiếu `firebaseProjectId` thì tắt thông báo trình duyệt. */
+  firebaseApiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? "",
+  firebaseProjectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "",
+  firebaseMessagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? "",
+  firebaseAppId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? "",
+  firebaseVapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY ?? "",
+  /** Mã định danh website Umami Analytics (công khai). Để trống nếu không dùng. */
+  umamiWebsiteId:
+    process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID ?? "90bcae66-8550-4461-a6fb-6b00f4b4dd7c",
 } as const;

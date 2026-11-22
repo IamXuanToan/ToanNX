@@ -42,7 +42,7 @@ class TestR2UsageService(SimpleTestCase):
             "messages": [],
             "result": {
                 "payloadSize": "104857600",  # 100 MB
-                "metadataSize": "1024",       # 1 KB
+                "metadataSize": "1024",  # 1 KB
                 "objectCount": "50",
             },
         }

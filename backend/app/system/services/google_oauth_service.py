@@ -58,22 +58,22 @@ class GoogleOAuthService(OAuthProviderService):
             token_resp = requests.post(self.TOKEN_URL, data=token_data, timeout=10)
         except requests.RequestException as exc:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
                 "Không thể kết nối tới máy chủ Google để xác thực.",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
             ) from exc
 
         if token_resp.status_code != 200:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_INVALID_CODE,
                 "Mã xác thực Google không hợp lệ hoặc đã hết hạn.",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_INVALID_CODE,
             )
 
         token_json = token_resp.json()
         access_token = token_json.get("access_token")
         if not access_token:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
                 "Không nhận được access token từ Google.",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
             )
 
         try:
@@ -84,22 +84,22 @@ class GoogleOAuthService(OAuthProviderService):
             )
         except requests.RequestException as exc:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
                 "Không thể lấy thông tin người dùng từ Google.",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
             ) from exc
 
         if user_resp.status_code != 200:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
                 "Lỗi khi truy xuất thông tin từ tài khoản Google.",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
             )
 
         user_json = user_resp.json()
         sub = str(user_json.get("sub", ""))
         if not sub:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
                 "Dữ liệu người dùng Google không hợp lệ (thiếu sub).",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
             )
 
         return OAuthUserInfo(

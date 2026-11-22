@@ -1,0 +1,23 @@
+/** Endpoint API của module Tài chính (tương đối với `env.apiBasePath`, khớp `/api/v1/finance/...`). */
+export const FINANCE_API_ENDPOINTS = {
+  platforms: "/finance/platforms",
+  platformSeed: "/finance/platforms/seed-defaults",
+  platformTaxRates: (id: string) => `/finance/platforms/${id}/tax-rates`,
+  platformTaxRate: (id: string, rateId: string) => `/finance/platforms/${id}/tax-rates/${rateId}`,
+  platformTaxRateResolve: (id: string) => `/finance/platforms/${id}/tax-rate`,
+  rules: "/finance/rules",
+  ruleTest: "/finance/rules/test",
+  incomes: "/finance/incomes",
+  incomeExport: "/finance/incomes/export",
+  incomeReclassify: "/finance/incomes/reclassify",
+  incomeRecalculateTax: "/finance/incomes/recalculate-tax",
+  incomeRefreshRate: (id: string) => `/finance/incomes/${id}/refresh-rate`,
+  invoices: "/finance/invoices",
+  reportSummary: "/finance/reports/summary",
+  reportMonthly: "/finance/reports/monthly",
+  sepayConnection: "/finance/sepay/connection",
+  sepayConnectionTest: "/finance/sepay/connection/test",
+  sepaySecretRotate: "/finance/sepay/connection/rotate-secret",
+  sepayPreview: "/finance/sepay/preview",
+  sepayImport: "/finance/sepay/import",
+} as const;

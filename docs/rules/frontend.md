@@ -12,14 +12,14 @@ app/[locale]/.../page.tsx → modules/<m>/views → components/<c>.tsx (+ compon
 
 FE **không có lớp repository**: service của module gọi `apiClient` trực tiếp.
 
-| Lớp | Được làm | Không được làm |
-| --- | --- | --- |
+| Lớp                               | Được làm                                                                                                                                                                    | Không được làm                                                                                                                                                                             |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `page.tsx`, `layout.tsx` (`app/`) | `export const generateMetadata = createPageMetadata(...)`, `await params` (khi cần), `<Suspense>`, render **đúng View/Layout của module** (ghép slot giữa module bằng prop) | Hook, state, gọi API, điều kiện, JSX bố cục/giao diện, component đặt trong `app/` (`_components`), gọi `setRequestLocale` (Next.js 16 dùng `next/root-params` trong `src/i18n/request.ts`) |
-| View (`modules/<m>/views`) | Ghép component của module, kiểm quyền (`usePermission`, `PermissionGate`) rồi truyền cờ quyền xuống | Gọi query/mutation, state, xử lý lỗi/loading, tính toán dữ liệu |
-| Component | Nhận props, gọi hook riêng, render (kể cả loading/lỗi) | `fetch`, gọi service, state phức tạp trong file `.tsx` |
-| Hook của component | State, sự kiện, form, ghép query/mutation | Gọi `apiClient`/service trực tiếp |
-| Hook module (`hooks/`) | `useQuery`/`useMutation`, invalidate cache | JSX |
-| Service (`services/`) | Gọi `apiClient`, chuẩn hóa dữ liệu gửi/nhận, quy tắc FE thuần (hàm không hook) | JSX, React hook, UI state |
+| View (`modules/<m>/views`)        | Ghép component của module, kiểm quyền (`usePermission`, `PermissionGate`) rồi truyền cờ quyền xuống                                                                         | Gọi query/mutation, state, xử lý lỗi/loading, tính toán dữ liệu                                                                                                                            |
+| Component                         | Nhận props, gọi hook riêng, render (kể cả loading/lỗi)                                                                                                                      | `fetch`, gọi service, state phức tạp trong file `.tsx`                                                                                                                                     |
+| Hook của component                | State, sự kiện, form, ghép query/mutation                                                                                                                                   | Gọi `apiClient`/service trực tiếp                                                                                                                                                          |
+| Hook module (`hooks/`)            | `useQuery`/`useMutation`, invalidate cache                                                                                                                                  | JSX                                                                                                                                                                                        |
+| Service (`services/`)             | Gọi `apiClient`, chuẩn hóa dữ liệu gửi/nhận, quy tắc FE thuần (hàm không hook)                                                                                              | JSX, React hook, UI state                                                                                                                                                                  |
 
 UI primitive thuần (Button, Separator...) không cần hook riêng.
 
@@ -49,7 +49,7 @@ src/modules/<m>/
   `user_role_service.py`. Không gộp cả module vào một `<m>.service.ts`. Method theo hành động
   (`list`, `get`, `create`, `update`, `assign`, `revoke`), không lặp tên model (`roleService.list`, không `listRoles`).
   CRUD chuẩn lấy từ `createCrudService<List, Detail, Create, Update>(endpoint)` (`list/listAll/get/create/update/
-  delete/bulkUpdate/bulkDelete/history`, cùng tên với action BE), service chỉ viết thêm method riêng.
+delete/bulkUpdate/bulkDelete/history`, cùng tên với action BE), service chỉ viết thêm method riêng.
 - Hook module: danh sách `useListQuery`, chi tiết `useQuery`, ghi `useResourceMutation` (toast theo khóa message,
   invalidate `lists`/`detail` chuẩn, lỗi dịch theo mã). Không tự viết `onSuccess`/`onError` lặp lại.
 - Quan hệ chọn bằng checkbox (vai trò, quyền) lưu bằng **một** request thay toàn bộ (`PUT` + danh sách id), BE xử lý
@@ -58,6 +58,14 @@ src/modules/<m>/
 - **Mỗi module tự khai** trong `constants/` (không khai chung ở `shares/`):
   - `routes.ts`: `<M>_ROUTES` (đường dẫn nội bộ, có hàm cho route động) và `<M>_PATHNAMES`
     (URL theo ngôn ngữ). `src/i18n/routing.ts` chỉ gộp các `<M>_PATHNAMES`.
+  - **URL quản trị luôn có tiền tố module**: `/quan-tri/<module-vi>/<tài nguyên>` và `/admin/<module-en>/<tài nguyên>`
+    (`/quan-tri/he-thong/nguoi-dung`, `/quan-tri/tien-ich/ma-qr`, `/quan-tri/truyen/tac-gia`,
+    `/quan-tri/tai-chinh/giao-dich`; en `/admin/system/users`...). Chỉ màn chọn module là `/quan-tri`. Tiền tố
+    hiện có: `he-thong`/`system`, `tien-ich`/`utilities`, `truyen`/`novel`, `tai-chinh`/`finance`; module mới
+    chọn một tiền tố riêng. Đổi URL chỉ sửa `<M>_PATHNAMES` (pathname nội bộ và thư mục `app/` giữ nguyên), rồi
+    sửa URL trong E2E và tài liệu cùng lần.
+  - Sidebar đánh dấu mục có href khớp **dài nhất** (`findActiveNavHref`), nên mục gốc của module (Tổng quan) không
+    sáng cùng mục con.
   - `api-endpoints.ts`: `<M>_API_ENDPOINTS`, path tương đối với `env.apiBasePath`.
   - `query-keys.ts`: `<m>Keys` dựng bằng `createResourceKeys` (`all`, `lists`, `list(params)`, `detail(id)`,
     `history(id)`), thêm key riêng nếu cần.
@@ -68,6 +76,9 @@ src/modules/<m>/
   `constants/admin-navigation.ts`) và `home` (trang công khai, header, trang 404).
 
 ## 2.1 Một file một component / một hook / một class (bắt buộc)
+
+`tests/unit/one-unit-per-file.test.ts` kiểm mọi `.tsx` (trừ `components/ui`, `page.tsx`, `layout.tsx`): tối đa một
+component, không khai hook, không `createContext`.
 
 Áp dụng cho `modules/**`, `shares/**` và `app/**`. Tên file kebab-case trùng tên export duy nhất của file.
 
@@ -114,16 +125,16 @@ trước khi viết; thêm/đổi/xóa common thì cập nhật danh mục cùng
 
 `shares/` chỉ chứa thứ **không thuộc module nào** và **không import module**:
 
-| Thư mục | Nội dung |
-| --- | --- |
-| `components/ui` | Primitive shadcn (thêm bằng `pnpm dlx shadcn@latest add <name>`) |
-| `components/common` | Khối giao diện dùng lại đặt trực tiếp ở gốc `common/`, hook trong `common/hooks/` |
-| `components/errors` | `ErrorState`, `QueryErrorState` (lỗi tải bản ghi: 404 → không tìm thấy + về danh sách), `ForbiddenView` |
-| `components/layout` | `Logo`, `LanguageSwitcher`, `ThemeSwitcher` (không chứa route của module) |
-| `components/providers` | Provider gốc của app |
-| `lib/api` | `apiClient`, `ApiError`, chuyển case, CSRF, `session-paths` |
-| `lib/seo.ts` | `buildAlternates`, `createPageMetadata` |
-| `hooks/`, `config/`, `types/` | Hook, cấu hình, kiểu dùng chung |
+| Thư mục                       | Nội dung                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `components/ui`               | Primitive shadcn (thêm bằng `pnpm dlx shadcn@latest add <name>`)                                        |
+| `components/common`           | Khối giao diện dùng lại đặt trực tiếp ở gốc `common/`, hook trong `common/hooks/`                       |
+| `components/errors`           | `ErrorState`, `QueryErrorState` (lỗi tải bản ghi: 404 → không tìm thấy + về danh sách), `ForbiddenView` |
+| `components/layout`           | `Logo`, `LanguageSwitcher`, `ThemeSwitcher` (không chứa route của module)                               |
+| `components/providers`        | Provider gốc của app                                                                                    |
+| `lib/api`                     | `apiClient`, `ApiError`, chuyển case, CSRF, `session-paths`                                             |
+| `lib/seo.ts`                  | `buildAlternates`, `createPageMetadata`                                                                 |
+| `hooks/`, `config/`, `types/` | Hook, cấu hình, kiểu dùng chung                                                                         |
 
 **Cấu trúc `components/common`** (giống `components/` của module):
 
@@ -138,15 +149,15 @@ common/
 - Import theo đường dẫn đầy đủ tới file (tận gốc, không magic/barrel): `@/shares/components/common/page-header`, `@/shares/components/common/hooks/use-data-table`.
 - Chuỗi class Tailwind dùng chung của control nằm ở `common/form-control.styles.ts` (hằng số, không phải component).
 
-| Nhóm | Component |
-| --- | --- |
-| Trang, trạng thái | `page-header`, `empty-state`, `loading-state`, `status-badge`, `confirm-dialog` |
-| Bảng | `data-table` (+ các file con cùng cấp: `table-toolbar`, `table-bulk-bar`, `table-header-cell`, `table-row-actions`, `table-status-switch`, `table-column-resizer`), `data-pagination`, `filter-select` |
-| Form | `form` (+ `hooks/use-form-extension`), `form-field`, `form-control`, `form-page`, `form-layout`, `form-section`, `form-actions`, `form-submit-button` |
-| Ô nhập | `email-input`, `password-input`, `code-input`, `slug-input`, `number-input`, `money-input`, `color-input`, `tags-input`, `search-input` |
-| Chọn | `select-field`, `multi-select`, `checkbox-field`, `radio-group-field`, `switch-field`, **`choice-list`**, **`choice-groups`** |
-| Ngày giờ | `date-picker`, `time-picker`, `date-time-picker`, `month-select` |
-| Khác | `image-upload`, `tiptap-editor`, `tiptap-content`, `form-dialog`, `activity-timeline` |
+| Nhóm              | Component                                                                                                                                                                                              |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Trang, trạng thái | `page-header`, `empty-state`, `loading-state`, `status-badge`, `confirm-dialog`                                                                                                                        |
+| Bảng              | `data-table` (+ các file con cùng cấp: `table-toolbar`, `table-bulk-bar`, `table-header-cell`, `table-row-actions`, `table-status-switch`, `table-column-resizer`), `data-pagination`, `filter-select` |
+| Form              | `form` (+ `hooks/use-form-extension`), `form-field`, `form-control`, `form-page`, `form-layout`, `form-section`, `form-actions`, `form-submit-button`                                                  |
+| Ô nhập            | `email-input`, `password-input`, `code-input`, `slug-input`, `number-input`, `money-input`, `color-input`, `tags-input`, `search-input`                                                                |
+| Chọn              | `select-field`, `multi-select`, `checkbox-field`, `radio-group-field`, `switch-field`, **`choice-list`**, **`choice-groups`**                                                                          |
+| Ngày giờ          | `date-picker`, `time-picker`, `date-time-picker`, `month-select`                                                                                                                                       |
+| Khác              | `image-upload`, `tiptap-editor`, `tiptap-content`, `form-dialog`, `activity-timeline`                                                                                                                  |
 
 - Có khối dùng chung thì dùng, không dựng lại trong module: đầu trang dùng `PageHeader`, bảng dùng `DataTable`,
   ô tìm dùng `SearchInput`, ô chọn dùng `SelectField`, bộ lọc dùng `FilterSelect`, rỗng dùng `EmptyState`,
@@ -225,25 +236,45 @@ tự nối mảng trong `query` thành chuỗi đó.
 **Bảng.** Mọi danh sách dạng bảng dùng `DataTable` (`shares/components/common/data-table`, khuôn theo
 CommonDataTable của LoveMe, chạy trên `@tanstack/react-table`). Không dựng `<table>` riêng trong module.
 
-| Phần | Có sẵn trong `DataTable` | Module truyền gì |
-| --- | --- | --- |
-| Toolbar | Ô tìm (trái), bộ lọc, control thêm, nút **Tải lại**, menu **Cột hiển thị** (nhớ theo `tableId`) | `search`, `filters`, `onClearFilters`, `toolbar`, `onReload` |
-| Cột chọn | Checkbox mỗi dòng + checkbox tiêu đề (chọn cả trang, trạng thái một phần) | Tự hiện khi có thao tác hàng loạt; `canSelectRow` để chặn dòng (chính mình, bản ghi hệ thống) |
-| Cột `#` | Số thứ tự theo trang | `showIndex={false}` để tắt |
-| Sắp xếp | Tiêu đề cột bấm xoay vòng tăng → giảm → bỏ, `aria-sort` | `sortKey` (trường `ordering` của BE) trên cột, `ordering` + `onOrderingChange` |
-| Cột Thao tác | Sửa, Sao chép, Xoá (hỏi xác nhận), rồi thao tác riêng của bảng (nút chỉ icon + tooltip, ví dụ **Thu hồi** phiên); Thêm nằm trên toolbar. Xem chi tiết bằng link ở tên bản ghi | `onEdit`, `onCopy`, `onDelete` + `canDeleteRow`; `rowActions` (`key`, `label`, `icon`, `onClick`, `hidden`, `destructive`) |
-| Cột Trạng thái | Bật/tắt (khoá/mở, kích hoạt) là **chỉ một công tắc**, không kèm chữ "Hoạt động" bên cạnh; nhãn trạng thái ở tooltip + `aria-label`. Không có quyền thì chỉ badge | `TableStatusSwitch` (`onCheckedChange` chỉ truyền khi có quyền); bật/tắt không đặt trong cột Thao tác |
-| Ghim cột | Menu tiêu đề: Ghim trái / Ghim phải / Bỏ ghim, sticky theo bề rộng thực | `enablePinning`; cấu hình lưu riêng theo `tableId`, an toàn SSR, có dự phòng khi storage bị chặn |
-| Đổi độ rộng | Kéo mép tiêu đề (cột ghim phải kéo mép trái) hoặc dùng phím ←/→ (Shift để chỉnh nhanh), Home/End giới hạn; nhấp đúp trả độ rộng tự nhiên. Menu Cột hiển thị có Khôi phục độ rộng cột | Mặc định bật cho cột dữ liệu; `enableResizing`, `minWidth`, `maxWidth`; lưu riêng theo `tableId`. Cột chọn, `#`, Thao tác giữ kích thước tự động; card mobile không nhận độ rộng desktop |
-| Hàng loạt | Thanh thao tác hàng loạt (`TableBulkBar`) thay chỗ toolbar khi có dòng chọn, **thiết kế trên 1 dòng duy nhất** (`min-h-12 w-full flex items-center justify-between gap-3 rounded-xl border px-3.5 py-1.5`), tuyệt đối không dùng container flex-col hoặc bọc trong thẻ `Card` gây tách 2 tầng và căn giữa; bên trái là badge "Đã chọn n" mang màu nhấn + vạch chia + nút Bỏ chọn, bên phải là cụm nút hành động (Đổi trạng thái, thao tác tuỳ biến, Xoá có xác nhận); xong thì bỏ chọn | `bulkStatus` (`options`, `onChange`), `bulkActions` (`destructive`, `confirm` để hỏi xác nhận), `onBulkDelete` |
-| Trạng thái | Khung chờ, làm mờ khi tải lại, lỗi + thử lại, rỗng (`EmptyState`: cao tối thiểu 320px, icon trong hai vòng nền nhạt, tiêu đề, mô tả, một lối ra), rỗng do tìm kiếm + **Xoá tìm kiếm** | `isLoading`, `isFetching`, `error`, `empty` |
-| Phân trang | "1–20 trong 132", số dòng mỗi trang (10/20/50/100), "Trang x/y", ‹, ô nhập trang (Enter), › | `pagination` (`value`, `onPageChange`, `onPageSizeChange`) |
-| Mobile | Dưới `md` mỗi dòng là một card: checkbox góc trái, cột `mobile: "title"` ở đầu, thao tác góc phải, cột còn lại là hàng "nhãn — giá trị" | `mobile: "title"` (đúng một cột) / `"hidden"` |
+| Phần           | Có sẵn trong `DataTable`                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Module truyền gì                                                                                                                                                                         |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Toolbar        | Ô tìm (trái), bộ lọc, control thêm, nút **Tải lại**, menu **Cột hiển thị** (nhớ theo `tableId`)                                                                                                                                                                                                                                                                                                                                                                                        | `search`, `filters`, `onClearFilters`, `toolbar`, `onReload`                                                                                                                             |
+| Cột chọn       | Checkbox mỗi dòng + checkbox tiêu đề (chọn cả trang, trạng thái một phần)                                                                                                                                                                                                                                                                                                                                                                                                              | Tự hiện khi có thao tác hàng loạt; `canSelectRow` để chặn dòng (chính mình, bản ghi hệ thống)                                                                                            |
+| Cột `#`        | Số thứ tự theo trang                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | `showIndex={false}` để tắt                                                                                                                                                               |
+| Sắp xếp        | Tiêu đề cột bấm xoay vòng tăng → giảm → bỏ, `aria-sort`                                                                                                                                                                                                                                                                                                                                                                                                                                | `sortKey` (trường `ordering` của BE) trên cột, `ordering` + `onOrderingChange`                                                                                                           |
+| Cột Thao tác   | **Luôn hiện** Xem → Sửa → (Sao chép) → Xoá (hỏi xác nhận), rồi thao tác riêng (nút chỉ icon + tooltip, ví dụ **Thu hồi** phiên). Thiếu quyền/dòng bị khoá thì nút mờ + tooltip lý do, **không ẩn**. Nháy đúp dòng = Xem. Thêm nằm trên toolbar                                                                                                                                                                                                                                         | `onView`, `onEdit`, `onCopy`, `onDelete` (luôn truyền), `can` (`update`/`create`/`delete`), `canEditRow`, `canDeleteRow`; `rowActions`                                                   |
+| Cột Trạng thái | Bật/tắt (khoá/mở, kích hoạt) là **chỉ một công tắc**, không kèm chữ "Hoạt động" bên cạnh; nhãn trạng thái ở tooltip + `aria-label`. Không có quyền thì chỉ badge                                                                                                                                                                                                                                                                                                                       | `TableStatusSwitch` (`onCheckedChange` chỉ truyền khi có quyền); bật/tắt không đặt trong cột Thao tác                                                                                    |
+| Ghim cột       | Menu tiêu đề: Ghim trái / Ghim phải / Bỏ ghim, sticky theo bề rộng thực                                                                                                                                                                                                                                                                                                                                                                                                                | `enablePinning`; cấu hình lưu riêng theo `tableId`, an toàn SSR, có dự phòng khi storage bị chặn                                                                                         |
+| Đổi độ rộng    | Kéo mép tiêu đề (cột ghim phải kéo mép trái) hoặc dùng phím ←/→ (Shift để chỉnh nhanh), Home/End giới hạn; nhấp đúp trả độ rộng tự nhiên. Menu Cột hiển thị có Khôi phục độ rộng cột                                                                                                                                                                                                                                                                                                   | Mặc định bật cho cột dữ liệu; `enableResizing`, `minWidth`, `maxWidth`; lưu riêng theo `tableId`. Cột chọn, `#`, Thao tác giữ kích thước tự động; card mobile không nhận độ rộng desktop |
+| Hàng loạt      | Thanh thao tác hàng loạt (`TableBulkBar`) thay chỗ toolbar khi có dòng chọn, **thiết kế trên 1 dòng duy nhất** (`min-h-12 w-full flex items-center justify-between gap-3 rounded-xl border px-3.5 py-1.5`), tuyệt đối không dùng container flex-col hoặc bọc trong thẻ `Card` gây tách 2 tầng và căn giữa; bên trái là badge "Đã chọn n" mang màu nhấn + vạch chia + nút Bỏ chọn, bên phải là cụm nút hành động (Đổi trạng thái, thao tác tuỳ biến, Xoá có xác nhận); xong thì bỏ chọn | `bulkStatus` (`options`, `onChange`), `bulkActions` (`destructive`, `confirm` để hỏi xác nhận), `onBulkDelete`                                                                           |
+| Trạng thái     | Khung chờ, làm mờ khi tải lại, lỗi + thử lại, rỗng (`EmptyState`: cao tối thiểu 320px, icon trong hai vòng nền nhạt, tiêu đề, mô tả, một lối ra), rỗng do tìm kiếm + **Xoá tìm kiếm**                                                                                                                                                                                                                                                                                                  | `isLoading`, `isFetching`, `error`, `empty`                                                                                                                                              |
+| Phân trang     | "1–20 trong 132", số dòng mỗi trang (10/20/50/100), "Trang x/y", ‹, ô nhập trang (Enter), ›                                                                                                                                                                                                                                                                                                                                                                                            | `pagination` (`value`, `onPageChange`, `onPageSizeChange`)                                                                                                                               |
+| Mobile         | Dưới `md` mỗi dòng là một card: checkbox góc trái, cột `mobile: "title"` ở đầu, thao tác góc phải, cột còn lại là hàng "nhãn — giá trị"                                                                                                                                                                                                                                                                                                                                                | `mobile: "title"` (đúng một cột) / `"hidden"`                                                                                                                                            |
 
 - Cột khai bằng `DataTableColumn<T>[]`: `header` (chuỗi), `cell`, `sortKey`, `align: "end"` cho cột số,
   `hideBelow` cho cột phụ ở khung vừa, `enableHiding: false` cho cột luôn hiện. Giá trị trống ghi `—`.
-- Quyền quyết định thao tác nào có: **view** kiểm quyền (`usePermission`) rồi truyền `canUpdate`/`canDelete`
-  xuống component bảng; component chỉ truyền callback sửa/xóa/sao chép/đổi trạng thái khi có quyền.
+- **Thao tác hàng loạt bắt buộc**: bảng có Xoá từng dòng thì phải có `onBulkDelete` (cột chọn dòng tự hiện);
+  bảng không có Xoá thì không có cột chọn. Tài nguyên có cờ boolean bật/tắt (đang dùng/tắt, xuất bản/ẩn) thì có
+  `bulkStatus` dựng bằng `createBooleanBulkStatus` (`shares/lib/bulk-status.ts`). Hook bảng gọi common
+  `useBulkActions({ service, invalidate })` (`shares/hooks/use-bulk-actions.ts`) lấy `bulkDelete` /
+  `bulkUpdate`, không viết `useBulkDeleteXxx` riêng. Dòng không thao tác được (bản ghi hệ thống, tỷ giá lấy từ
+  API) chặn bằng `canSelectRow`. `tests/unit/table-conventions.test.ts` kiểm Xoá ↔ Xoá hàng loạt, công tắc
+  trạng thái ↔ `bulkStatus`. Bảng không có thao tác nào thì `DataTable` tự ẩn cột Thao tác.
+- **Cột Thao tác luôn có Xem / Sửa / Xoá** với tài nguyên có trang chi tiết; không bao giờ ẩn nút vì thiếu quyền.
+  View kiểm quyền (`usePermission`) rồi truyền `canUpdate`/`canDelete`/`canCreate` xuống component bảng; component
+  luôn truyền `onView`/`onEdit`/`onDelete` và khai quyền ở `can={{ update, delete, create }}` (cấm
+  `onEdit={canUpdate ? fn : undefined}`). Hook bảng: `view` → `<M>_ROUTES.xxxDetail(id)`, `edit` →
+  `withEditMode(<M>_ROUTES.xxxDetail(id))`. Ngoại lệ chỉ khi nghiệp vụ không có thao tác đó, phải ghi vào bảng
+  ngoại lệ của [features/table-actions.md](../features/table-actions.md): `session-table` (Thu hồi, Xoá),
+  `announcement-table` (Xoá), `exchange-rate-table` (Xoá, chưa có trang sửa), nhật ký thay đổi (Xem), thư viện
+  file (lưới riêng). Switch trạng thái và thao tác hàng loạt vẫn chỉ truyền khi có quyền.
+- **Ẩn/khóa theo quyền ba tầng** ([features/permission-ui.md](../features/permission-ui.md)): menu ẩn mục thiếu
+  quyền `read` (module/nhóm hết mục thì ẩn); View trả `ForbiddenView` khi thiếu quyền trang (`read` cho list/detail,
+  `create` cho trang tạo); trang chi tiết **mặc định chỉ xem**: View dùng `useEditMode(canUpdate)` +
+  `<EditModeProvider canEdit={canUpdate}>`, truyền `isEditing` (không phải `canUpdate`) xuống form; `FormPage` tự
+  hiện nút **Sửa** (`?mode=edit`). Quyền phụ chỉ dùng khi sửa cũng `&& isEditing`.
+- Hằng quyền FE: mỗi class quyền BE đúng một file `permissions/<resource>-permission.ts` (khớp tên file BE),
+  không gộp nhiều tài nguyên.
 - Mutation xoá / hàng loạt nằm ở hook module (`useDeleteUser`, `useBulkSetUsersActive`, `useBulkDeleteUsers`):
   toast theo số bản ghi, invalidate cache, lỗi thì toast thông báo đã dịch. Backend chạy cả lô trong một
   transaction nên lỗi một dòng thì không dòng nào đổi.
@@ -259,7 +290,11 @@ export function useUserTable() {
   const table = useTableState({ ordering: "-created_at" }); // filters { search, ordering, page, pageSize }
   const query = useUsers(table.filters); // useQuery với placeholderData: keepPreviousData
   const remove = useDeleteUser();
-  return { query, table, remove: (user: User) => remove.mutateAsync(user.id) /* … */ };
+  return {
+    query,
+    table,
+    remove: (user: User) => remove.mutateAsync(user.id) /* … */,
+  };
 }
 ```
 
@@ -271,9 +306,21 @@ export function useUserTable() {
   Truyền `onClearFilters={table.hasFilters ? table.clearFilters : undefined}` cho bảng.
 - Danh sách dùng làm danh mục/ô chọn phải tải đủ các trang API, không chỉ lấy trang đầu hoặc cắt ở 100.
 
+## 3.1.1 Dialog (bắt buộc)
+
+- `DialogContent` đặt `p-0` (header/footer có viền riêng) thì `DialogFooter` phải thêm `mx-0 mb-0`: footer của
+  shadcn có lề âm `-mx-4 -mb-4` dành cho `p-4`, để nguyên là footer lệch ra ngoài, nút bị cắt.
+- Dialog có **tab** hoặc nội dung dài: chiều cao **cố định** (`h-[min(85vh,760px)]`), header + thanh tab + footer
+  đứng yên, chỉ thân cuộn (`min-h-0 flex-1 overflow-y-auto`): đổi tab không nhảy kích thước.
+- Hai cột trong dialog/trang: cột có nội dung rộng (bảng) dùng `flex-1 min-w-0` (hoặc `minmax(0,1fr)`) để bảng
+  cuộn ngang trong khung, không đẩy cả khối tràn ra ngoài; dưới `md` xếp chồng.
+- **Nút lưu của mọi tab nằm ở footer dialog**, không nằm trong nội dung tab: nội dung bọc `<Form id={…_FORM_ID}>`
+  (id khai ở `constants/`), nút footer `type="submit" form={…_FORM_ID}`, chỉ hiện ở tab đang mở và khi có quyền sửa.
+
 ## 3.2 Chuẩn hình ảnh (Next.js Image) và Shadcn UI (bắt buộc)
 
 **Tối ưu hình ảnh với `next/image`.**
+
 - Mọi hình ảnh hiển thị trong project **bắt buộc sử dụng component `<Image />` từ `next/image`** để tự động tối ưu hóa định dạng hiện đại (WebP, AVIF), responsive srcset, lazy loading và chống layout shift (CLS).
 - **Tuyệt đối không dùng thẻ `<img>` trần** hoặc viết chú thích tắt cảnh báo eslint `// eslint-disable-next-line @next/next/no-img-element`.
 - Cấu hình domains/remotePatterns tập trung tại `frontend/next.config.ts` (hỗ trợ `media.toannx.com`, Cloudflare R2 `**.r2.dev`, và `localhost`/`127.0.0.1`).
@@ -281,6 +328,7 @@ export function useUserTable() {
 - Khi ảnh là chuỗi data URI (`data:image/...`) hoặc blob URL cục bộ từ browser: thêm prop `unoptimized`.
 
 **SVG: đặt file trong `public/`, nơi dùng gọi theo đường dẫn, không khai trực tiếp.**
+
 - Mọi SVG (icon thương hiệu Google/GitHub, minh họa trạng thái rỗng/lỗi, hình nền...) lưu thành file
   `frontend/public/<nhóm>/<tên>.svg` (kebab-case): `public/icons/google.svg`, `public/icons/github.svg`,
   `public/illustrations/empty-inbox.svg`. Logo vẫn theo mục Logo (PNG trong `public/brand/`).
@@ -298,6 +346,7 @@ export function useUserTable() {
 - Thêm SVG dùng chung thì ghi vào [docs/common-catalog.md](../common-catalog.md) mục 4.10 (rule chung mục 3.3).
 
 **Sử dụng triệt để primitives của Shadcn UI.**
+
 - Mọi thành phần tương tác và cấu trúc giao diện cơ bản (`Button`, `Checkbox`, `RadioGroup`, `Label`, `Input`, `Textarea`, `Dialog`, `Card`, `Tooltip`, `Badge`, `Avatar`, `Switch`, `Sheet`, `Popover`, `Select`, `Table`, `Tabs`, `Separator`...) **bắt buộc dùng component trong `@/shares/components/ui/*`**.
 - Khi cần một component primitive mà thư mục `@/shares/components/ui/` chưa có: **bắt buộc chạy lệnh `pnpm dlx shadcn@latest add <tên-component>`** để cài đặt chuẩn từ thư viện shadcn, không tự viết component thủ công để thay thế.
 - **Nghiêm cấm lồng lộn thẻ HTML sai ngữ nghĩa**: Tuyệt đối không bọc `<Checkbox />` hay `<Button />` (vốn là thẻ `<button>` của Radix) bên trong thẻ `<label>` để tự vẽ giả lập checkbox/nút bấm (vi phạm chuẩn HTML, gây lặp sự kiện click và phá vỡ trợ năng).
@@ -305,6 +354,7 @@ export function useUserTable() {
 - Các item dạng card trong lưới (như media file, thẻ danh sách) phải sử dụng component `Card` của shadcn để đồng nhất border, background và shadow theo design system.
 
 **Quy chuẩn Tên tệp trong Thư viện (Attachment).**
+
 - Trường `original_name` của tệp (mặc định lấy theo tên file người dùng tải lên) **bắt buộc phải cho phép chỉnh sửa/đổi tên được** (Rename) cả ở tầng Backend (API PATCH nhận `original_name`) và Frontend (nút đổi tên nhanh trên card lưới và trong panel chi tiết), kèm thuộc tính `alt_text` cho hình ảnh để phục vụ SEO và accessibility.
 
 **Tạo/sửa bản ghi là trang riêng, không popup.** Tạo mới ở `/<resource>/new` (vi: `/tao-moi`), sửa ở
@@ -358,6 +408,7 @@ chi tiết, sửa) **không** có nút ← vì nút **Hủy** đã là lối v�
 
 **Mọi giao diện chọn nhiều phải có hai nút Chọn tất cả / Bỏ chọn tất cả** đặt cạnh nhau ở đầu
 danh sách, áp dụng cho bộ chọn quan hệ, quyền, multi-select, bộ lọc và chọn dòng trong bảng.
+
 - Chọn tất cả chỉ chọn các mục được phép thao tác; không chọn mục bị khóa hoặc thiếu quyền.
 - Bỏ chọn tất cả gỡ các lựa chọn được phép thay đổi; giữ nguyên mục bị khóa.
 - Phạm vi phải rõ ràng: bảng phân trang dùng "Chọn tất cả trong trang"; danh sách đang lọc thì
@@ -367,10 +418,10 @@ danh sách, áp dụng cho bộ chọn quan hệ, quyền, multi-select, bộ l�
   các mục có thể chọn, khóa Bỏ chọn tất cả khi không có lựa chọn nào được phép gỡ.
 - Nhãn nút phải qua i18n, đủ vi + en; hành vi chọn/bỏ chọn lưu theo cùng cơ chế của từng màn.
 
-| Dữ liệu | Component | Cấu hình |
-| --- | --- | --- |
-| Danh sách phẳng, ít mục, đọc từ trên xuống (vai trò của người dùng, cờ truy cập, trạng thái) | `ChoiceList` (`common/choice-list`) | `layout="list"`; `control="checkbox"` để chọn nhiều, `"switch"` cho cờ bật/tắt, `"none"` chỉ xem |
-| Nhiều mục chia nhóm (quyền theo module) | `ChoiceGroups` (`common/choice-groups`) | accordion mỗi nhóm (mặc định mở, Mở/Thu gọn tất cả), đầu nhóm "đã chọn/tổng", Chọn cả nhóm; mục là `ChoiceList layout="grid"` (card nhỏ 1/2/3 cột) |
+| Dữ liệu                                                                                      | Component                               | Cấu hình                                                                                                                                           |
+| -------------------------------------------------------------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Danh sách phẳng, ít mục, đọc từ trên xuống (vai trò của người dùng, cờ truy cập, trạng thái) | `ChoiceList` (`common/choice-list`)     | `layout="list"`; `control="checkbox"` để chọn nhiều, `"switch"` cho cờ bật/tắt, `"none"` chỉ xem                                                   |
+| Nhiều mục chia nhóm (quyền theo module)                                                      | `ChoiceGroups` (`common/choice-groups`) | accordion mỗi nhóm (mặc định mở, Mở/Thu gọn tất cả), đầu nhóm "đã chọn/tổng", Chọn cả nhóm; mục là `ChoiceList layout="grid"` (card nhỏ 1/2/3 cột) |
 
 - Danh sách từ 8 mục trở lên tự có ô tìm (lọc ngay, bỏ dấu, theo nhãn/mã/mô tả) — `ChoiceList searchable`,
   ngưỡng `CHOICE_SEARCHABLE_THRESHOLD`, như `SelectField`/`FilterSelect`.
@@ -427,18 +478,26 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 khai ở cả `:root` và `.dark`; không viết cứng mã màu hay class màu Tailwind (`violet-600`, `sky-500`…) trong
 component. Vai trò từng màu (đã đo tương phản WCAG AA):
 
-| Token | Light | Dark | Dùng cho |
-| --- | --- | --- | --- |
-| `--primary` | `#3D812E` (chữ trắng 4.8:1) | `oklch(0.72 0.15 135)` + chữ `--primary-foreground` tối | Nút chính, link, mục đang chọn, sidebar đang chọn |
-| `--primary-hover` | `#206A2D` (6.6:1) | `oklch(0.78 0.15 135)` | Hover/nhấn của nút chính (`hover:bg-primary-hover`) |
-| `--ring` | `#569533` | `oklch(0.62 0.14 136)` | Vòng focus, điểm nhấn trang trí (vầng sáng, chấm) |
-| `--primary-light` | `oklch(0.98 0.018 138)` | primary 16% | Nền badge/ô chọn; chữ trên đó dùng `text-primary` (≥ 4.5:1) |
-| `--chart-1…5` | dải xanh lá từ ba màu trên | bản sáng | Biểu đồ một sắc |
+| Token             | Light                       | Dark                                                    | Dùng cho                                                    |
+| ----------------- | --------------------------- | ------------------------------------------------------- | ----------------------------------------------------------- |
+| `--primary`       | `#3D812E` (chữ trắng 4.8:1) | `oklch(0.72 0.15 135)` + chữ `--primary-foreground` tối | Nút chính, link, mục đang chọn, sidebar đang chọn           |
+| `--primary-hover` | `#206A2D` (6.6:1)           | `oklch(0.78 0.15 135)`                                  | Hover/nhấn của nút chính (`hover:bg-primary-hover`)         |
+| `--ring`          | `#569533`                   | `oklch(0.62 0.14 136)`                                  | Vòng focus, điểm nhấn trang trí (vầng sáng, chấm)           |
+| `--primary-light` | `oklch(0.98 0.018 138)`     | primary 16%                                             | Nền badge/ô chọn; chữ trên đó dùng `text-primary` (≥ 4.5:1) |
+| `--chart-1…5`     | dải xanh lá từ ba màu trên  | bản sáng                                                | Biểu đồ một sắc                                             |
 
 - `#569533` chỉ đạt 3.7:1 với chữ trắng: **không** dùng làm nền nút có chữ, chỉ làm focus/trang trí.
 - Nền trung tính (`--canvas`, `--item-hover`, `--surface-hover`) pha nhẹ sắc xanh (hue 140), không pha sắc khác.
 - `--success` là xanh ngọc (hue 175) để khác nút chính; số liệu không tô màu nhấn (tránh bị đọc là "tốt").
   `--destructive` giữ đỏ, `--warning` giữ hổ phách.
+- Chữ trên nền đỏ đặc (badge số thông báo) dùng `text-destructive-foreground` (token `--destructive-foreground`:
+  luôn trắng).
+- **Class màu ngữ nghĩa phải có token** `--color-<tên>` trong `@theme` của `globals.css` (`text-info` không có
+  `--color-info` → Tailwind không sinh CSS, chữ ăn màu cha). Màu mới thì thêm token ở `:root` + `.dark` +
+  `@theme` trước khi dùng. `tests/unit/theme-tokens.test.ts` kiểm.
+- **Ưu tiên thang có sẵn** thay giá trị tùy ý: `h-4.5`, `min-w-4.5`, `max-w-6xl` thay `h-[18px]`… Chỉ dùng
+  `[...]` khi thang không có (ví dụ `h-[min(85vh,760px)]`). Đổi `globals.css` mà trang chưa đổi màu: dev server
+  (Turbopack) còn giữ CSS cũ, khởi động lại `pnpm dev`.
 - Ở dark mode màu nhấn chỉ làm nền; đường mảnh (viền focus, gạch chân) dùng `--ring` hoặc giảm độ đục.
 - Email HTML (backend `templates/system/email`) không đọc được CSS biến: dùng đúng mã hex của bảng trên
   (nút `#3D812E`, link `#206A2D`).
@@ -458,7 +517,14 @@ hay vẽ SVG logo riêng.
   `navigation.ts`; `ADMIN_MODULE_NAVIGATION` + `ADMIN_GROUPS` (`modules/manage-app/constants/admin-navigation.ts`)
   gộp lại, lọc theo quyền trong `/system/auth/me`.
 - Trong một nhóm: sidebar của nhóm (đầu là bộ chuyển nhóm, thân chia mục theo module, chân là tài khoản),
-  nội dung bên phải. Breadcrumb trên header chỉ ghi các cấp cha; tên trang là `<h1>` trong `PageHeader`.
+  nội dung bên phải.
+- **Không nhãn module thừa**: nhóm chỉ có một module (mọi nhóm hiện tại) thì sidebar **không** hiện nhãn module
+  IN HOA (tên đã ở bộ chuyển nhóm); chỉ nhóm có từ hai module trở lên mới có nhãn module bấm thu gọn.
+- **Cụm menu**: trong module, mục khai `section: "<module>.navSections.<code>"`; mục cùng cụm đặt liền nhau.
+  Module **nhiều hơn 5 mục** bắt buộc chia cụm cho mọi mục (`tests/unit/admin-navigation.test.ts` kiểm). Cụm gom
+  theo nghiệp vụ (tài khoản & phân quyền, danh mục, tích hợp, vận hành…), mục đầu tiên của module là trang hay
+  dùng nhất. Sidebar thu gọn (dải icon, tự thu ở tablet): nhãn cụm ẩn, giữa các cụm có vạch ngăn, tooltip
+  "Cụm › Mục". Đổi cụm thì cập nhật bảng cụm ở [features/admin-navigation.md](../features/admin-navigation.md). Breadcrumb trên header chỉ ghi các cấp cha; tên trang là `<h1>` trong `PageHeader`.
 - Nhóm hiển thị khai ở `ADMIN_GROUPS`; tên/mô tả nhóm ở `common.adminGroups.<group>`; tên/mô tả module do
   `navigation.ts` của module khai bằng `nameKey`/`descriptionKey` trong namespace của chính module
   (`system.module.name`).
@@ -480,6 +546,15 @@ hay vẽ SVG logo riêng.
 - Gọi API cùng origin `/api/v1/*` (Next rewrite sang Django); cookie HttpOnly, không lưu token ở JS.
 - `apiClient` tự gắn CSRF, request id, chuyển case, silent refresh single-flight; không tự viết lại.
 - Logout/đổi quyền: xóa/invalidate cache React Query.
+- **Hủy request**: truyền `signal` của React Query cho `apiClient`; không tự `AbortController.abort()` lên `fetch`
+  trong module. `apiClient` không abort `fetch` khi bên ngoài hủy (abort làm lý do hủy lọt vào promise không ai
+  bắt → Next dev báo "Runtime AbortError" / "Runtime Error: cancelled"); chỉ trả `ApiError` `REQUEST_CANCELLED`.
+  Mọi promise tự tạo (`mutateAsync` gọi từ handler…) phải có `await`/`void` + xử lý lỗi, không để rơi.
+- **Đọc bytes file** (canvas, `fetch` rồi xử lý): dùng `attachmentService.contentStreamUrl(id)` (cùng origin, backend
+  stream), không `fetch` URL storage R2 (khác origin, bị CORS chặn) ([features/attachment-visibility.md](../features/attachment-visibility.md)).
+- **Thông báo trình duyệt**: service worker `public/notification-sw.js` luôn hiện thông báo của hệ điều hành
+  (Windows: góc màn hình), tab chỉ làm mới chuông. Sửa SW thì trình duyệt chạy bản cũ tới khi DevTools →
+  Application → Service workers → Update ([features/web-push.md](../features/web-push.md)).
 
 ## 6. Test
 
@@ -496,11 +571,12 @@ pnpm typecheck && pnpm test tests/unit/<file>.test.ts && pnpm e2e tests/e2e/<lu�
 - Kiểu dữ liệu: `pnpm api:types` sinh `shares/types/api-schema.gen.ts` từ OpenAPI (không sửa tay; CI đỏ nếu
   cũ). `ApiModel<"…Response">` là kiểu FE nhận được (đã camelCase). Kiểu viết tay phải có đúng tập field
   của response, kiểm trong `tests/unit/api-contract.test.ts` lúc `pnpm typecheck`.
-- Lỗi ở error boundary được gửi về `/api/v1/system/health/client-errors` (log + Sentry khi bật).
+- Lỗi ở error boundary được gửi về `/api/v1/system/health/client-errors` để ghi log mức ERROR ở BE.
 
 ## 7. Chuẩn hóa hệ thống xử lý lỗi (Error System)
 
 ### 7.1 Bộ trang lỗi toàn trang (Full-page Error Routes)
+
 Mọi trang lỗi toàn cục phải tuân thủ layout tiêu chuẩn, giao diện trang nhã chuẩn Shadcn UI + Tailwind CSS, đầy đủ i18n và điều hướng thoát an toàn:
 
 - **Lỗi 404 (Not Found)**:
@@ -523,6 +599,7 @@ Mọi trang lỗi toàn cục phải tuân thủ layout tiêu chuẩn, giao di�
   - Tự dựng cấu trúc `<html>`/`<body>` độc lập, hỗ trợ dark mode tự nhiên, trình bày song ngữ (Việt - Anh), cung cấp nút **Thử lại** và **Tải lại trang**.
 
 ### 7.2 Khối báo lỗi trong trang (In-page Error States)
+
 - **`ErrorState` (`shares/components/errors/error-state.tsx`)**: Dùng cho widget, section, bảng dữ liệu khi truy vấn thất bại. Sử dụng `Card` của Shadcn UI với token `destructive`, icon `AlertCircle` và nút **Thử lại**.
 - **`QueryErrorState` (`shares/components/errors/query-error-state.tsx`)**: Phân loại tự động theo mã lỗi của `ApiError`:
   - `404 Not Found`: Hiển thị `SearchX` "Không tìm thấy bản ghi" + nút **Quay về danh sách** (tắt nút thử lại vô ích).

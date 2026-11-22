@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-import { useMediaQuery } from "@/shares/hooks/use-media-query";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
 
 import { useAttachments } from "../../hooks/use-attachments";
@@ -29,7 +28,6 @@ export function useAttachmentLibrary(capabilities: AttachmentCapabilities) {
       : undefined,
   });
   const items = query.data?.items ?? [];
-  const wide = useMediaQuery("(min-width: 1024px)");
   const [activeId, setActiveId] = useState<string>();
   const [detailOpen, setDetailOpen] = useState(false);
   const [editingFile, setEditingFile] = useState<Attachment | null>(null);

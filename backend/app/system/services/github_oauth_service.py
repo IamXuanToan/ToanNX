@@ -60,21 +60,21 @@ class GitHubOAuthService(OAuthProviderService):
             )
         except requests.RequestException as exc:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
                 "Không thể kết nối tới máy chủ GitHub để xác thực.",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
             ) from exc
 
         if token_resp.status_code != 200:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_INVALID_CODE,
                 "Mã xác thực GitHub không hợp lệ hoặc đã hết hạn.",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_INVALID_CODE,
             )
 
         token_json = token_resp.json()
         access_token = token_json.get("access_token")
         if not access_token:
             error_desc = token_json.get("error_description", "Không nhận được access token từ GitHub.")
-            raise BusinessRuleError(AccountErrorCode.ACCOUNT_SOCIAL_INVALID_CODE, error_desc)
+            raise BusinessRuleError(error_desc, code=AccountErrorCode.ACCOUNT_SOCIAL_INVALID_CODE)
 
         headers = {
             "Authorization": f"Bearer {access_token}",
@@ -85,22 +85,22 @@ class GitHubOAuthService(OAuthProviderService):
             user_resp = requests.get(self.USERINFO_URL, headers=headers, timeout=10)
         except requests.RequestException as exc:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
                 "Không thể lấy thông tin người dùng từ GitHub.",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
             ) from exc
 
         if user_resp.status_code != 200:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
                 "Lỗi khi truy xuất thông tin từ tài khoản GitHub.",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
             )
 
         user_json = user_resp.json()
         github_id = str(user_json.get("id", ""))
         if not github_id:
             raise BusinessRuleError(
-                AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
                 "Dữ liệu người dùng GitHub không hợp lệ (thiếu id).",
+                code=AccountErrorCode.ACCOUNT_SOCIAL_AUTH_FAILED,
             )
 
         # Lấy email chính (primary verified email)

@@ -2,6 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { useBulkDeleteQrCodes } from "../../hooks/use-bulk-delete-qr-codes";
@@ -26,7 +27,8 @@ export function useQrCodeTable() {
   return {
     table,
     query,
-    edit: (code: QrCode) => router.push(UTILITIES_ROUTES.qrCodeDetail(code.id)),
+    view: (code: QrCode) => router.push(UTILITIES_ROUTES.qrCodeDetail(code.id)),
+    edit: (code: QrCode) => router.push(withEditMode(UTILITIES_ROUTES.qrCodeDetail(code.id))),
     remove: (code: QrCode) => remove.mutateAsync(code.id),
     bulkDelete: (codes: QrCode[]) => bulkDelete.mutateAsync(codes.map((code) => code.id)),
   };

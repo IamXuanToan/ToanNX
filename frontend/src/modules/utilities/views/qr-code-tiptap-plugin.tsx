@@ -2,18 +2,8 @@
 
 import { usePermission } from "@/modules/system/hooks/use-permission";
 
-import { QrCodePicker } from "../components/qr-code-picker";
 import { QR_CODE_PERMISSIONS } from "../permissions/qr-code-permission";
-import { useQrCodeInsert } from "./hooks/use-qr-code-insert";
-
-/** Mục "Mã QR" trong menu Chèn (chỉ đăng ký khi có quyền xem mã QR). */
-function QrCodeInsert() {
-  const { isOpen, close, handlePick } = useQrCodeInsert();
-
-  return (
-    <QrCodePicker open={isOpen} onOpenChange={(open) => !open && close()} onPick={handlePick} />
-  );
-}
+import { QrCodeInsert } from "../components/qr-code-insert";
 
 /**
  * Plugin editor mã QR: `PageForm` ghép vào editor trang tùy chỉnh; chèn mã QR là chèn

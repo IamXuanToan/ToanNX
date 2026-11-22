@@ -27,13 +27,23 @@ def attachment_upload_path(instance: Any, filename: str) -> str:
 
 
 class Attachment(JournalTracker, CoreModel):
-    """File lưu trên storage mặc định (local khi dev; object storage khi production).
+    """File lưu trên storage (local khi dev; object storage khi production).
+
+    `visibility` quyết định kho: `public` ở `STORAGES["default"]` (URL trực tiếp), `private` ở
+    `STORAGES["private"]` (chỉ mở qua `GET /attachments/{id}/content`). `file.name` là đường dẫn trong kho đó;
+    luôn đọc/ghi file qua `AttachmentStorageService`, không dùng `file.storage` trực tiếp.
 
     Người upload là `created_by`. Xóa mềm; file vật lý được `purge_deleted_files` dọn sau
     `ATTACHMENT_PURGE_DAYS` ngày (giữ dòng dữ liệu, đánh dấu `purged_at`).
     """
 
-    journal_fields = ("original_name", "alt_text", "folder")
+    journal_fields = ("original_name", "alt_text", "folder", "visibility")
+
+    class Visibility(models.TextChoices):
+        """Chế độ xem file."""
+
+        PUBLIC = "public", "Công khai"
+        PRIVATE = "private", "Riêng tư"
 
     folder = models.ForeignKey(
         "system.AttachmentFolder",
@@ -84,6 +94,15 @@ class Attachment(JournalTracker, CoreModel):
         db_comment="SHA-256 nội dung file",
         help_text="SHA-256 của nội dung file, dùng phát hiện trùng lặp/toàn vẹn.",
     )
+    visibility = models.CharField(
+        max_length=16,
+        choices=Visibility.choices,
+        default=Visibility.PUBLIC,
+        db_index=True,
+        verbose_name="Chế độ xem",
+        db_comment="public: ai có link đều xem; private: nằm ở kho riêng tư, chỉ mở qua API có kiểm quyền",
+        help_text="Công khai hoặc riêng tư; quyết định file nằm ở kho nào.",
+    )
     purged_at = models.DateTimeField(
         null=True,
         blank=True,
@@ -100,6 +119,11 @@ class Attachment(JournalTracker, CoreModel):
     def __str__(self) -> str:
         """Biểu diễn bằng tên gốc."""
         return self.original_name
+
+    @property
+    def is_private(self) -> bool:
+        """File ở chế độ riêng tư."""
+        return self.visibility == self.Visibility.PRIVATE
 
     @property
     def is_image(self) -> bool:

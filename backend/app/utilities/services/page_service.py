@@ -97,8 +97,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
             "content": self._resolve(page, public=True),
         }
 
-    @staticmethod
-    def public_url(page: Page) -> str:
+    def public_url(self, page: Page) -> str:
         """URL công khai tuyệt đối `/<segment>/<slug>`."""
         return build_absolute_url(f"/{page.path.segment}/{page.slug}")
 
@@ -289,10 +288,9 @@ class PageService(CoreCrudService[Page, PageRepository]):
 
     @staticmethod
     def _image_url(attachment: Attachment | None) -> str | None:
-        """URL ảnh còn tồn tại; không lộ id attachment."""
-        return (
-            build_absolute_url(attachment.file.url) if attachment and attachment.deleted_at is None else None
-        )
+        """URL ảnh công khai còn tồn tại; không lộ id attachment, bỏ ảnh riêng tư khỏi trang công khai."""
+        usable = attachment is not None and attachment.deleted_at is None and not attachment.is_private
+        return build_absolute_url(attachment.file.url) if usable and attachment is not None else None
 
 
 def _transform(node: dict[str, Any], visit: Any) -> dict[str, Any] | None:

@@ -58,6 +58,15 @@ class AdminAuthSessionViewSet(CoreModelViewSet[AuthSession]):
         "bulk_delete": permission_rule(SessionPermission.SESSION_DELETE),
     }
 
+    def __init__(self, **kwargs: Any) -> None:
+        """Khởi tạo phụ thuộc: service cookie phiên đăng nhập.
+
+        Args:
+            **kwargs: Tham số của view gốc.
+        """
+        super().__init__(**kwargs)
+        self.auth_cookie_service = AuthCookieService()
+
     def get_serializer_context(self) -> dict[str, Any]:
         """Đánh dấu phiên của request hiện tại, không lấy từ dữ liệu client."""
         return {
@@ -69,7 +78,7 @@ class AdminAuthSessionViewSet(CoreModelViewSet[AuthSession]):
         """Thu hồi phiên và xóa cookie khi quản trị viên thu hồi chính phiên đang dùng."""
         response = super().destroy(request, *args, **kwargs)
         if str(getattr(request.auth, "pk", "")) == str(kwargs["pk"]):
-            AuthCookieService.clear_cookies(response)
+            self.auth_cookie_service.clear_cookies(response)
         return response
 
     @extend_schema(request=CoreBulkIdsValidateSerializer, responses=CoreBulkResultResponseSerializer)
@@ -81,7 +90,7 @@ class AdminAuthSessionViewSet(CoreModelViewSet[AuthSession]):
         response = CoreResponse(CoreBulkResultResponseSerializer({"count": count}).data)
         current = str(getattr(request.auth, "pk", ""))
         if current and current in {str(pk) for pk in ids}:
-            AuthCookieService.clear_cookies(response)
+            self.auth_cookie_service.clear_cookies(response)
         return response
 
     @extend_schema(responses=AdminSessionUserResponseSerializer(many=True))

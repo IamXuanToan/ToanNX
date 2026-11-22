@@ -6,6 +6,10 @@ from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
 from app.core.registry.core_module_config import CoreModuleConfig
+from app.core.registry.module_registry import module_registry
+
+# Lý do đổi thông tin đăng nhập ứng với đổi/đặt lại mật khẩu (phát thông báo cho chủ tài khoản).
+PASSWORD_REASONS = ("password_changed", "password_reset")
 
 
 def _seed_after_migrate(sender: AppConfig, **kwargs: Any) -> None:
@@ -22,6 +26,17 @@ def _revoke_sessions_on_credentials_change(sender: Any, user: Any, reason: str, 
     )
 
     AuthSessionService().revoke_all(user, reason)
+
+
+def _notify_on_password_change(sender: Any, user: Any, reason: str, **kwargs: Any) -> None:
+    """Đổi/đặt lại mật khẩu → thông báo cho chủ tài khoản."""
+    if reason not in PASSWORD_REASONS:
+        return
+    from app.system.services.login_notification_service import (  # noqa: PLC0415
+        LoginNotificationService,
+    )
+
+    LoginNotificationService().notify_password_changed(user)
 
 
 class SystemConfig(CoreModuleConfig):
@@ -49,3 +64,6 @@ class SystemConfig(CoreModuleConfig):
         user_credentials_changed.connect(
             _revoke_sessions_on_credentials_change, dispatch_uid="auth_revoke_on_credentials_change"
         )
+        user_credentials_changed.connect(_notify_on_password_change, dispatch_uid="notify_on_password_change")
+        # Quyền khai trong sự kiện thông báo phải tồn tại (kiểm khi mọi module đã đăng ký).
+        module_registry.validate_notification_permissions()

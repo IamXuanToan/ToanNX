@@ -8,17 +8,25 @@ test.describe("Trang quản trị", () => {
   }) => {
     await loginViaUi(page);
     const launcher = page.getByTestId("module-launcher");
-    await expect(launcher.getByRole("link")).toHaveCount(2);
+    // Một thẻ mỗi nhóm có module: Hệ thống, Tiện ích, Tiểu thuyết, Tài chính.
+    await expect(launcher.getByRole("link")).toHaveCount(4);
+    await expect(launcher.getByRole("link", { name: /Tài chính/ })).toContainText(
+      "Giao dịch, thu nhập, thuế và chứng từ.",
+    );
     const systemCard = launcher.getByRole("link", { name: /Hệ thống/ });
     await expect(systemCard).toContainText("Tài khoản người dùng và phân quyền.");
     const utilitiesCard = launcher.getByRole("link", { name: /Tiện ích/ });
     await expect(utilitiesCard).toContainText("Liên kết rút gọn, mã QR và trang.");
     await expect(utilitiesCard).toContainText("Link rút gọn");
     await expect(utilitiesCard).toContainText("Mã QR");
-    await expect(utilitiesCard).toContainText("Trang");
+    await expect(utilitiesCard).toContainText("+2");
+
+    // Rê chuột vào badge +2 để kiểm tra hiển thị đầy đủ các mục còn lại
+    await utilitiesCard.getByText("+2").hover();
+    await expect(page.getByRole("link", { name: "Trang" })).toBeVisible();
 
     await openModule(page, "Hệ thống");
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/nguoi-dung$/);
     const sidebar = page.locator("[data-slot=sidebar]");
     await expect(sidebar.getByTestId("module-switcher")).toContainText("Hệ thống");
     const systemModule = sidebar.getByTestId("sidebar-module-system");
@@ -27,7 +35,7 @@ test.describe("Trang quản trị", () => {
     }
 
     await sidebar.getByRole("link", { name: "Vai trò" }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/vai-tro$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/vai-tro$/);
 
     await sidebar.getByTestId("module-switcher").click();
     await page.getByRole("menuitem", { name: "Tất cả module" }).click();
@@ -42,11 +50,11 @@ test.describe("Trang quản trị", () => {
 
   test("người dùng (Account) + vai trò (IAM) trên trang chi tiết", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     await page.getByPlaceholder("Tìm theo email, tên…").fill(E2E_ADMIN.email);
     await page.getByPlaceholder("Tìm theo email, tên…").press("Enter");
     await page.getByRole("link", { name: E2E_ADMIN.email }).first().click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung\/[0-9a-f-]{36}$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/nguoi-dung\/[0-9a-f-]{36}$/);
     // Chi tiết dùng đúng form của trang tạo, thêm card Hoạt động; có nút quay lại danh sách.
     for (const heading of ["Thông tin tài khoản", "Truy cập", "Vai trò", "Hoạt động"]) {
       await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
@@ -61,23 +69,23 @@ test.describe("Trang quản trị", () => {
 
   test("tạo người dùng là trang riêng, không popup; Hủy quay về danh sách", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     await page.getByRole("link", { name: "Tạo người dùng" }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung\/tao-moi$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/nguoi-dung\/tao-moi$/);
     await expect(page.getByRole("dialog")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
     await expect(page.getByText("Email không hợp lệ.")).toBeVisible();
 
     await page.getByRole("link", { name: "Hủy" }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/nguoi-dung$/);
   });
 
   test("tạo vai trò là trang riêng, không popup", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/vai-tro");
+    await page.goto("/vi/quan-tri/he-thong/vai-tro");
     await page.getByRole("link", { name: "Tạo vai trò" }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/vai-tro\/tao-moi$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/vai-tro\/tao-moi$/);
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page.getByLabel("Mã vai trò")).toBeVisible();
   });
@@ -85,7 +93,7 @@ test.describe("Trang quản trị", () => {
     page,
   }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung/tao-moi");
     // Bố cục: một card thông tin + cột phụ (truy cập, vai trò); thanh nút dính đáy luôn trong khung nhìn.
     for (const heading of ["Thông tin tài khoản", "Truy cập", "Vai trò"]) {
       await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
@@ -93,23 +101,28 @@ test.describe("Trang quản trị", () => {
     await expect(page.getByRole("heading", { name: "Hoạt động", exact: true })).toHaveCount(0);
     await expect(page.getByTestId("form-actions")).toBeInViewport();
     await page.getByRole("button", { name: "Chọn tất cả", exact: true }).click();
-    await expect(page.getByRole("checkbox", { name: "Người xem", exact: true })).toBeChecked();
+    await expect(page.getByRole("checkbox", { name: "Quản trị viên", exact: true })).toBeChecked();
     await page.getByRole("button", { name: "Bỏ chọn", exact: true }).click();
-    await expect(page.getByRole("checkbox", { name: "Người xem", exact: true })).not.toBeChecked();
+    await expect(
+      page.getByRole("checkbox", { name: "Quản trị viên", exact: true }),
+    ).not.toBeChecked();
     const email = `e2e-create-${Date.now()}@toannx.local`;
-    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Email", { exact: true }).fill(email);
     await page.getByLabel("Tên người dùng").fill(`e2e_${Date.now()}`);
     await page.getByLabel("Mật khẩu", { exact: true }).fill("E2e-Temp-Passw0rd!");
-    await page.getByLabel("Họ", { exact: true }).fill("Nguyễn");
-    await page.getByLabel("Tên", { exact: true }).fill("Kiểm Thử");
+    await page.getByLabel("Họ và tên", { exact: true }).fill("Nguyễn Kiểm Thử");
     // Vai trò hiện hết dạng danh sách, tick để chọn.
-    await page.getByRole("checkbox", { name: "Người xem", exact: true }).check();
+    await page.getByRole("checkbox", { name: "Quản trị viên", exact: true }).check();
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung\/[0-9a-f-]{36}$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/nguoi-dung\/[0-9a-f-]{36}$/);
     const id = page.url().split("/").pop() ?? "";
     try {
-      const viewer = page.getByRole("checkbox", { name: "Người xem", exact: true });
+      const viewer = page.getByRole("checkbox", { name: "Quản trị viên", exact: true });
       await expect(viewer).toBeChecked();
+      // Trang chi tiết mặc định chỉ xem: bấm Sửa trên header mới mở form (`?mode=edit`).
+      await expect(viewer).toBeDisabled();
+      await page.getByRole("button", { name: "Sửa", exact: true }).click();
+      await expect(page).toHaveURL(/\?mode=edit$/);
       // Sửa vai trò cũng lưu bằng nút Lưu (giống form tạo).
       const save = page.getByRole("button", { name: "Lưu", exact: true });
       await expect(save).toBeDisabled();
@@ -121,7 +134,7 @@ test.describe("Trang quản trị", () => {
       await expect(save).toBeDisabled();
       await page.reload();
       await expect(
-        page.getByRole("checkbox", { name: "Người xem", exact: true }),
+        page.getByRole("checkbox", { name: "Quản trị viên", exact: true }),
       ).not.toBeChecked();
     } finally {
       const csrf = await page.request.get("/api/v1/system/auth/csrf");
@@ -135,7 +148,7 @@ test.describe("Trang quản trị", () => {
     page,
   }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/vai-tro/tao-moi");
+    await page.goto("/vi/quan-tri/he-thong/vai-tro/tao-moi");
     const code = `E2E_PICK_${Date.now()}`;
     await page.getByLabel("Mã vai trò").fill(code);
     await page.getByLabel("Tên vai trò").fill(`Vai trò ${code}`);
@@ -143,7 +156,7 @@ test.describe("Trang quản trị", () => {
     await page.getByRole("checkbox", { name: "Xem vai trò", exact: true }).check();
     await expect(page.getByText("Đã chọn 2 quyền.", { exact: false })).toBeVisible();
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/vai-tro\/[0-9a-f-]{36}$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/vai-tro\/[0-9a-f-]{36}$/);
     const id = page.url().split("/").pop() ?? "";
     try {
       // Chi tiết dùng đúng form tạo: accordion theo module, card có checkbox, đầu module đã chọn / tổng.

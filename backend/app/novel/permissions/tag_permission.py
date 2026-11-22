@@ -27,3 +27,6 @@ class TagPermission(PermissionCatalog):
         name="Xóa thẻ truyện",
         description="Xóa thẻ truyện.",
     )
+
+    # Quyền của vai trò thành viên: thao tác bản ghi do mình tạo.
+    MEMBER = (READ,)

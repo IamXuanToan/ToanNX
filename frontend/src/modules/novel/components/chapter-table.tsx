@@ -10,6 +10,7 @@ import { Link } from "@/i18n/navigation";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 
+import { createBooleanBulkStatus } from "@/shares/lib/bulk-status";
 import { NOVEL_ROUTES } from "../constants/routes";
 import type { ChapterListItem } from "../types/chapter.types";
 import { useChapterTable } from "./hooks/use-chapter-table";
@@ -30,6 +31,7 @@ export function ChapterTable({
   canDelete?: boolean;
 }) {
   const t = useTranslations("novel.chapters");
+  const tPublish = useTranslations("novel.novelForm.fields");
   const state = useChapterTable({ novelId });
   const { table, query } = state;
 
@@ -108,8 +110,18 @@ export function ChapterTable({
             }
           : undefined
       }
-      onEdit={canUpdate ? state.edit : undefined}
-      onDelete={canDelete ? state.remove : undefined}
+      onView={state.view}
+      onEdit={state.edit}
+      onDelete={state.remove}
+      can={{ update: canUpdate, delete: canDelete }}
+      bulkStatus={
+        canUpdate
+          ? createBooleanBulkStatus(
+              { on: tPublish("published"), off: tPublish("draft") },
+              state.bulkSetPublished,
+            )
+          : undefined
+      }
       onBulkDelete={canDelete ? state.bulkDelete : undefined}
       aria-label={t("title")}
     />

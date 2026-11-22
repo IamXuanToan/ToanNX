@@ -3,28 +3,57 @@
 from typing import Any
 
 from django.db import transaction
+from django.db.models import QuerySet
 
 from app.core.exceptions.app_exception import AppException
 from app.core.services.core_crud_service import CoreCrudService
 from app.core.utils.text import ascii_slug as to_slug
 from app.novel.constants.novel_error_code import NovelErrorCode
 from app.novel.models.chapter import Chapter
+from app.novel.permissions.novel_permission import NovelPermission
 from app.novel.repositories.chapter_repository import ChapterRepository
+from app.novel.services.novel_service import NovelService
 
 
 class ChapterService(CoreCrudService[Chapter, ChapterRepository]):
-    """Service nghiệp vụ quản lý vòng đời và dữ liệu chương truyện."""
+    """Service nghiệp vụ quản lý vòng đời và dữ liệu chương truyện.
+
+    Chương thuộc về chủ của truyện: không có `novel.novel.manage_all` thì chỉ thấy/sửa chương của truyện mình
+    (vai trò thành viên module novel).
+    """
 
     repository_class = ChapterRepository
+    manage_all_permission = NovelPermission.MANAGE_ALL.code
 
-    def __init__(self, repository: ChapterRepository | None = None) -> None:
+    def __init__(
+        self, repository: ChapterRepository | None = None, novel_service: NovelService | None = None
+    ) -> None:
         """Khởi tạo service với ChapterRepository.
 
         Args:
             repository: ChapterRepository tùy chọn, mặc định khởi tạo mới.
+            novel_service: Service truyện để kiểm quyền với truyện chứa chương.
         """
         super().__init__(repository or ChapterRepository())
         self.chapter_repository: ChapterRepository = self.repository
+        self.novel_service = novel_service or NovelService()
+
+    def get_queryset_for(self, actor: Any) -> QuerySet[Chapter]:
+        """Chương của truyện actor sở hữu, hoặc mọi chương khi có `manage_all`."""
+        queryset = self.get_queryset()
+        return queryset if self.can_manage_all(actor) else queryset.filter(novel__owner_id=actor.pk)
+
+    def can_manage_all(self, actor: Any) -> bool:
+        """Có quyền quản lý mọi truyện."""
+        return bool(actor.has_perm(self.manage_all_permission))
+
+    def can_access(self, actor: Any, instance: Chapter) -> bool:
+        """Actor là chủ truyện hoặc có `manage_all`."""
+        return instance.novel.owner_id == actor.pk or self.can_manage_all(actor)
+
+    def get_owner_id(self, instance: Chapter) -> Any:
+        """Chủ của chương là chủ truyện."""
+        return instance.novel.owner_id
 
     @transaction.atomic
     def create(self, actor: Any, data: dict[str, Any]) -> Chapter:
@@ -44,6 +73,9 @@ class ChapterService(CoreCrudService[Chapter, ChapterRepository]):
         novel_obj = data.get("novel")
         novel_id = data.get("novel_id") or (getattr(novel_obj, "pk", None) if novel_obj else None)
         chapter_number = data.get("chapter_number")
+        if novel_id:
+            # Chỉ thêm chương vào truyện mình được thấy (NotFoundError nếu của người khác).
+            self.novel_service.get_by_id_for(actor, novel_id)
 
         if novel_id and chapter_number:
             existing = self.chapter_repository.find_by_novel_and_number(novel_id, chapter_number)

@@ -16,7 +16,7 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
   page.on("pageerror", (error) => errors.push(error.message));
   try {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung/tao-moi");
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
     const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện", exact: true });
     const bounds = await picker.boundingBox();
@@ -58,7 +58,7 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
     await manager.getByRole("button", { name: "Đóng", exact: true }).click();
     await expect(picker.locator('input[type="file"]')).toHaveCount(0);
     await picker.getByRole("button", { name: "Hủy", exact: true }).click();
-    await page.goto("/vi/quan-tri/thu-vien");
+    await page.goto("/vi/quan-tri/he-thong/thu-vien");
     await page.getByRole("button", { name: "Tải tệp lên", exact: true }).first().click();
     const uploadDialog = page.getByRole("dialog", { name: "Tải tệp lên", exact: true });
     await uploadDialog.getByRole("combobox", { name: "Thư mục đích", exact: true }).click();
@@ -68,7 +68,7 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
       .setInputFiles({ name: `${prefix}.svg`, mimeType: "image/svg+xml", buffer: SVG_IMAGE });
     await expect(uploadDialog.getByText("Đã tải lên", { exact: true })).toBeVisible();
     await uploadDialog.getByRole("button", { name: "Xong", exact: true }).click();
-    await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung/tao-moi");
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
     await picker.getByRole("searchbox").fill(prefix);
     await picker.getByRole("searchbox").press("Enter");
@@ -120,7 +120,7 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
     ).toBeVisible();
     await picker.getByRole("button", { name: "Hủy", exact: true }).click();
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto(`/vi/quan-tri/thu-vien?search=${prefix}`);
+    await page.goto(`/vi/quan-tri/he-thong/thu-vien?search=${prefix}`);
     await page.getByRole("button", { name: "Quản lý thư mục", exact: true }).click();
     const table = manager.getByTestId("data-table-attachment-folders");
     const rootRow = table.getByRole("row").filter({ has: page.getByText(prefix, { exact: true }) });
@@ -152,7 +152,7 @@ test("thư mục nhiều cấp trong dialog: tạo, upload, lọc và hai cách 
       (await (await page.request.get(`/api/v1/system/attachments/${image.id}`)).json()).data
         .folder_id,
     ).toBe(next.id);
-    await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung/tao-moi");
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
     await picker.getByRole("searchbox").fill(prefix);
     await picker.getByRole("searchbox").press("Enter");
@@ -263,7 +263,7 @@ test("thư viện B: upload, chọn hết/bỏ chọn, dùng ảnh cũ làm avat
   const prefix = `e2e-media-${Date.now()}`;
   let userId: string | undefined;
   try {
-    await page.goto("/vi/quan-tri/thu-vien");
+    await page.goto("/vi/quan-tri/he-thong/thu-vien");
     await expect(page.getByTestId("sidebar-module-attachment")).toContainText("Thư viện");
     await page.getByRole("button", { name: "Tải tệp lên", exact: true }).first().click();
     const uploadDialog = page.getByRole("dialog", { name: "Tải tệp lên", exact: true });
@@ -293,7 +293,7 @@ test("thư viện B: upload, chọn hết/bỏ chọn, dùng ảnh cũ làm avat
     );
     const imageId: string = (await response.json()).data[0].id;
 
-    await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung/tao-moi");
     await page.getByLabel("Email", { exact: true }).fill(`${prefix}@toannx.local`);
     await page.getByLabel("Tên người dùng", { exact: true }).fill(prefix);
     await page.getByLabel("Mật khẩu", { exact: true }).fill(PASSWORD);
@@ -318,7 +318,7 @@ test("thư viện B: upload, chọn hết/bỏ chọn, dùng ảnh cũ làm avat
     expect((await saved.json()).data.avatar.id).toBe(imageId);
 
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto(`/vi/quan-tri/thu-vien?search=${prefix}`);
+    await page.goto(`/vi/quan-tri/he-thong/thu-vien?search=${prefix}`);
     await page.getByRole("button", { name: "Chọn tất cả", exact: true }).click();
     await page.getByRole("button", { name: "Xóa (2)", exact: true }).click();
     await expect(page.getByRole("alertdialog")).toContainText(
@@ -341,7 +341,7 @@ test("bộ chọn avatar chỉ dùng ảnh đã tải lên Thư viện, không n
   await loginViaUi(page);
   const prefix = `e2e-picker-${Date.now()}`;
   try {
-    await page.goto("/vi/quan-tri/thu-vien");
+    await page.goto("/vi/quan-tri/he-thong/thu-vien");
     await page.getByRole("button", { name: "Tải tệp lên", exact: true }).first().click();
     const uploadDialog = page.getByRole("dialog", { name: "Tải tệp lên", exact: true });
     await uploadDialog.getByLabel("Chọn tệp", { exact: true }).setInputFiles([
@@ -354,7 +354,7 @@ test("bộ chọn avatar chỉ dùng ảnh đã tải lên Thư viện, không n
     ]);
     await expect(uploadDialog.getByText("Đã tải lên", { exact: true })).toHaveCount(2);
     await uploadDialog.getByRole("button", { name: "Xong", exact: true }).click();
-    await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung/tao-moi");
     await page.getByRole("button", { name: "Chọn ảnh từ thư viện", exact: true }).click();
     const picker = page.getByRole("dialog", { name: "Chọn ảnh từ Thư viện", exact: true });
     await expect(picker.getByRole("button", { name: "Tải tệp lên", exact: true })).toBeVisible();
@@ -406,7 +406,7 @@ test("staff chỉ xem thư viện của mình và không thể truy cập file n
     const memberPage = await context.newPage();
     await loginViaUi(memberPage, { email: member.email, password: PASSWORD });
     await upload(memberPage.request, `${prefix}-own.svg`);
-    await memberPage.goto(`/vi/quan-tri/thu-vien?search=${prefix}`);
+    await memberPage.goto(`/vi/quan-tri/he-thong/thu-vien?search=${prefix}`);
     await expect(
       memberPage.getByRole("button", { name: `Xem ${prefix}-own.svg`, exact: true }),
     ).toBeVisible();

@@ -36,6 +36,8 @@ export default defineConfig({
         DJANGO_DEBUG: "True",
         E2E_EMAIL: E2E_ADMIN.email,
         E2E_PASSWORD: E2E_ADMIN.password,
+        // SePay sandbox; secret webhook là của từng người (spec đọc từ API Kết nối SePay).
+        SEPAY_ENV: "sandbox",
       },
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,

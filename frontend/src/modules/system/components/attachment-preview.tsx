@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import { cn } from "cn";
-import { FileText, ImageOff, Video } from "lucide-react";
+import { FileText, ImageOff, Lock, Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { Attachment } from "../types/attachment.types";
+import { AttachmentVideoPlayer } from "./attachment-video-player";
 import { useAttachmentPreview } from "./hooks/use-attachment-preview";
 
 /** @param props - File, chế độ hiển thị chi tiết và class tùy biến. @returns Ảnh xem trước hoặc icon phù hợp. */
@@ -39,17 +40,20 @@ export function AttachmentPreview({
             "transition-transform duration-200",
             contain ? "object-contain" : "object-cover group-hover:scale-105",
           )}
-          unoptimized={file.url.startsWith("data:") || file.url.startsWith("blob:")}
+          // Ảnh riêng tư đi qua API có kiểm quyền: trình duyệt tải trực tiếp, không để Next lưu bản tối ưu công khai.
+          unoptimized={
+            file.visibility === "private" ||
+            file.url.startsWith("data:") ||
+            file.url.startsWith("blob:")
+          }
         />
       ) : file.contentType.startsWith("video/") && !state.failed ? (
         contain ? (
-          <video
-            controls
-            preload="metadata"
+          <AttachmentVideoPlayer
             src={file.url}
-            aria-label={file.originalName}
+            title={file.originalName}
             onError={state.onError}
-            className="size-full object-contain"
+            className="size-full"
           />
         ) : (
           <Video className="size-10" aria-hidden />
@@ -59,6 +63,14 @@ export function AttachmentPreview({
       ) : (
         <FileText className="size-10" aria-hidden />
       )}
+      {file.visibility === "private" ? (
+        <span
+          className="bg-background/90 text-foreground absolute bottom-1.5 left-1.5 z-10 inline-flex size-6 items-center justify-center rounded-md border shadow-2xs"
+          title={t("privateBadge")}
+        >
+          <Lock className="size-3.5" aria-label={t("privateBadge")} />
+        </span>
+      ) : null}
     </div>
   );
 }

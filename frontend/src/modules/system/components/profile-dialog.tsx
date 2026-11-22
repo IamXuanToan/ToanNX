@@ -2,6 +2,7 @@
 
 import {
   AlertCircle,
+  Bell as BellIcon,
   Calendar,
   CheckCircle2,
   Clock,
@@ -15,7 +16,7 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import { useFormatter, useNow } from "next-intl";
+import { useFormatter, useNow, useTranslations } from "next-intl";
 
 import Image from "next/image";
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
@@ -38,7 +39,17 @@ import {
 import { Input } from "@/shares/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui/tabs";
 
+import {
+  NOTIFICATION_PREFERENCES_FORM_ID,
+  PROFILE_INFO_FORM_ID,
+  PROFILE_PASSWORD_FORM_ID,
+} from "../constants/profile-forms";
+import { usePermission } from "../hooks/use-permission";
+import { NOTIFICATION_PREFERENCE_PERMISSIONS } from "../permissions/notification-preference-permission";
+import { TELEGRAM_BOT_PERMISSIONS } from "../permissions/telegram-bot-permission";
 import type { AuthRole, AuthUser } from "../types/auth.types";
+import type { ProfileTab } from "../types/profile-tab.types";
+import { NotificationSettingsTab } from "./notification-settings-tab";
 import { useProfileDialog } from "./hooks/use-profile-dialog";
 
 type ProfileDialogProps = {
@@ -76,6 +87,11 @@ export function ProfileDialog({
   const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
 
+  const canPreferences = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.read);
+  const canTelegramBot = usePermission(TELEGRAM_BOT_PERMISSIONS.read);
+  const canNotifications = canPreferences || canTelegramBot;
+  const canPreferenceUpdate = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.update);
+  const tPreferences = useTranslations("system.notifications.preferences");
   const {
     t,
     displayName,
@@ -134,7 +150,7 @@ export function ProfileDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl md:max-w-3xl lg:max-w-4xl"
+        className="flex h-[min(85vh,760px)] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl"
         data-testid="profile-dialog"
       >
         <DialogHeader className="border-border/60 border-b px-6 py-4">
@@ -147,10 +163,12 @@ export function ProfileDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Bố cục 2 cột cân bằng, hiển thị trọn vẹn trong màn hình không cần scroll */}
-        <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[320px_1fr]">
+        {/* Hai cột từ md (trái: thẻ người dùng rộng cố định, phải: tabs), dưới md xếp chồng. Thân cuộn riêng
+            (header/footer đứng yên); cột phải `flex-1 min-w-0` để bảng rộng trong tab Thông báo cuộn ngang trong
+            khung của nó thay vì đẩy cả dialog tràn ra ngoài. */}
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row">
           {/* CỘT TRÁI: Thẻ định danh người dùng, vai trò và thông tin hoạt động */}
-          <div className="border-border/60 bg-muted/25 flex flex-col justify-between space-y-6 border-b p-5 sm:p-6 md:border-r md:border-b-0">
+          <div className="border-border/60 bg-muted/25 flex flex-col justify-between space-y-6 border-b p-5 sm:p-6 md:w-72 md:shrink-0 md:border-r md:border-b-0 lg:w-80">
             <div className="space-y-4">
               {/* Vùng Avatar và các nút thao tác ảnh */}
               <div className="flex flex-col items-center text-center">
@@ -314,30 +332,38 @@ export function ProfileDialog({
           </div>
 
           {/* CỘT PHẢI: Tabs thao tác (Thông tin cá nhân & Đổi mật khẩu) */}
-          <div className="flex flex-col justify-between p-5 sm:p-6">
+          <div className="flex min-w-0 flex-1 flex-col justify-between p-5 sm:p-6">
             <Tabs
               value={activeTab}
-              onValueChange={(val) => setActiveTab(val as "info" | "security" | "social")}
+              onValueChange={(val) => setActiveTab(val as ProfileTab)}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="info">
+              <TabsList
+                className={canNotifications ? "grid w-full grid-cols-4" : "grid w-full grid-cols-3"}
+              >
+                <TabsTrigger value="info" className="min-w-0">
                   <User className="size-4" aria-hidden />
-                  <span>{t("tabs.info")}</span>
+                  <span className="truncate">{t("tabs.info")}</span>
                 </TabsTrigger>
-                <TabsTrigger value="security">
+                <TabsTrigger value="security" className="min-w-0">
                   <KeyRound className="size-4" aria-hidden />
-                  <span>{t("tabs.security")}</span>
+                  <span className="truncate">{t("tabs.security")}</span>
                 </TabsTrigger>
-                <TabsTrigger value="social">
+                <TabsTrigger value="social" className="min-w-0">
                   <Link2 className="size-4" aria-hidden />
-                  <span>{t("tabs.social")}</span>
+                  <span className="truncate">{t("tabs.social")}</span>
                 </TabsTrigger>
+                {canNotifications ? (
+                  <TabsTrigger value="notifications" className="min-w-0">
+                    <BellIcon className="size-4" aria-hidden />
+                    <span className="truncate">{t("tabs.notifications")}</span>
+                  </TabsTrigger>
+                ) : null}
               </TabsList>
 
               {/* TAB 1: THÔNG TIN CÁ NHÂN */}
               <TabsContent value="info">
-                <Form id="profile-info-form" onSubmit={onSaveInfo} className="space-y-4">
+                <Form id={PROFILE_INFO_FORM_ID} onSubmit={onSaveInfo} className="space-y-4">
                   {infoErrors.root?.message ? (
                     <div
                       role="alert"
@@ -401,7 +427,7 @@ export function ProfileDialog({
 
               {/* TAB 2: ĐỔI MẬT KHẨU (THIẾT KẾ RIÊNG BIỆT) */}
               <TabsContent value="security">
-                <Form id="profile-password-form" onSubmit={onSavePassword} className="space-y-4">
+                <Form id={PROFILE_PASSWORD_FORM_ID} onSubmit={onSavePassword} className="space-y-4">
                   {passwordErrors.root?.message ? (
                     <div
                       role="alert"
@@ -667,12 +693,21 @@ export function ProfileDialog({
                   </div>
                 </div>
               </TabsContent>
+
+              {/* TAB 4: THÔNG BÁO (chỉ khi có quyền tùy chọn thông báo hoặc bot Telegram) */}
+              {canNotifications ? (
+                <TabsContent value="notifications">
+                  <NotificationSettingsTab />
+                </TabsContent>
+              ) : null}
             </Tabs>
           </div>
         </div>
 
         {/* Footer cố định ở đáy Dialog */}
-        <DialogFooter className="border-border/60 bg-background/95 flex shrink-0 items-center justify-end gap-2.5 border-t px-6 py-3.5 backdrop-blur-xs">
+        {/* Chiều cao dialog cố định: đổi tab chỉ thân cuộn, không nhảy kích thước. `mx-0 mb-0` bỏ lề âm mặc định
+            của DialogFooter (dành cho DialogContent có p-4; ở đây p-0 nên lề âm đẩy footer lệch ra ngoài). */}
+        <DialogFooter className="border-border/60 bg-background/95 mx-0 mb-0 flex shrink-0 items-center justify-end gap-2.5 border-t px-6 py-3.5 backdrop-blur-xs">
           <Button
             type="button"
             variant="outline"
@@ -683,7 +718,7 @@ export function ProfileDialog({
           </Button>
           {activeTab === "info" ? (
             <Button
-              form="profile-info-form"
+              form={PROFILE_INFO_FORM_ID}
               type="submit"
               disabled={isSaving}
               data-testid="profile-save-info-button"
@@ -700,7 +735,7 @@ export function ProfileDialog({
           ) : null}
           {activeTab === "security" ? (
             <Button
-              form="profile-password-form"
+              form={PROFILE_PASSWORD_FORM_ID}
               type="submit"
               disabled={isSaving}
               data-testid="profile-save-password-button"
@@ -713,6 +748,15 @@ export function ProfileDialog({
               ) : (
                 <span>{t("savePassword")}</span>
               )}
+            </Button>
+          ) : null}
+          {activeTab === "notifications" && canPreferences && canPreferenceUpdate ? (
+            <Button
+              form={NOTIFICATION_PREFERENCES_FORM_ID}
+              type="submit"
+              data-testid="profile-save-notifications-button"
+            >
+              {tPreferences("save")}
             </Button>
           ) : null}
         </DialogFooter>

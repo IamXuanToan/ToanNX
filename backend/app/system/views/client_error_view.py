@@ -1,7 +1,6 @@
-"""API POST /health/client-errors: FE gửi lỗi trình duyệt để ghi log (và Sentry khi bật).
+"""API POST /health/client-errors: FE gửi lỗi trình duyệt để ghi log.
 
-Công khai vì lỗi xảy ra cả ở trang công khai; có CSRF và rate limit theo IP. Ghi log mức ERROR kèm request id,
-Sentry (nếu bật) bắt log này thành event.
+Công khai vì lỗi xảy ra cả ở trang công khai; có CSRF và rate limit theo IP. Ghi log mức ERROR kèm request id.
 """
 
 import logging

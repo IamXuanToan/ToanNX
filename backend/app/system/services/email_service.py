@@ -1,4 +1,4 @@
-"""Dịch vụ gửi email cho phần xác thực (module System)."""
+"""Dịch vụ gửi email theo template (module System)."""
 
 import logging
 from concurrent.futures import ThreadPoolExecutor
@@ -13,96 +13,116 @@ from app.system.models.user import User
 
 logger = logging.getLogger("app.auth.email")
 
-# Thread pool worker xử lý gửi email bất đồng bộ không chặn luồng web
+# Thread pool gửi email ngầm khi EMAIL_ASYNC bật. Trên serverless, luồng nền có thể bị dừng khi response
+# trả xong, nên nơi cần chắc chắn đã gửi (outbox thông báo) phải dùng `send_now`.
 _email_executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="auth-email-worker")
 
 
 class EmailService:
-    """Xử lý gửi email xác thực (đặt lại mật khẩu, thông báo bảo mật)."""
+    """Dựng email từ template `system/email/<name>_<lang>.{txt,html}` rồi gửi."""
 
-    @classmethod
-    def _execute_send(cls, message: EmailMultiAlternatives, recipient: str) -> bool:
-        """Thực hiện gửi email thật qua Django mail backend.
+    def send_now(self, *, subject: str, recipient: str, text_body: str, html_body: str | None = None) -> bool:
+        """Gửi đồng bộ một email đã có nội dung.
 
         Args:
-            message: Thư điện tử đã dựng.
-            recipient: Địa chỉ email người nhận.
+            subject: Tiêu đề.
+            recipient: Email người nhận.
+            text_body: Nội dung dạng chữ.
+            html_body: Nội dung HTML (không bắt buộc).
 
         Returns:
-            True nếu gửi thành công.
+            True nếu mail backend nhận thư thành công.
         """
+        message = EmailMultiAlternatives(
+            subject=subject,
+            body=text_body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[recipient],
+        )
+        if html_body:
+            message.attach_alternative(html_body, "text/html")
+        return self._deliver(message, recipient)
+
+    def send_template(
+        self,
+        *,
+        template: str,
+        subject: str,
+        recipient: str,
+        context: dict[str, Any],
+        locale: str = "vi",
+        async_send: bool | None = None,
+    ) -> bool:
+        """Dựng email từ template theo ngôn ngữ rồi gửi.
+
+        Args:
+            template: Tên template không kèm ngôn ngữ và đuôi (vd `password_reset`).
+            subject: Tiêu đề đã dịch.
+            recipient: Email người nhận.
+            context: Dữ liệu cho template (`current_year` tự thêm).
+            locale: Mã ngôn ngữ ('vi' hoặc 'en').
+            async_send: True gửi ngầm, False gửi đồng bộ, None đọc `settings.EMAIL_ASYNC`.
+
+        Returns:
+            True nếu đã gửi hoặc đã đưa vào hàng đợi; False nếu lỗi khi dựng/gửi.
+        """
+        lang = "en" if locale == "en" else "vi"
+        full_context = {"current_year": timezone.now().year, **context}
         try:
-            message.send(fail_silently=False)
-            logger.info("Đã gửi email thành công cho %s", recipient)
-            return True
+            text_body = render_to_string(f"system/email/{template}_{lang}.txt", full_context)
+            html_body = render_to_string(f"system/email/{template}_{lang}.html", full_context)
+            message = EmailMultiAlternatives(
+                subject=subject,
+                body=text_body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[recipient],
+            )
+            message.attach_alternative(html_body, "text/html")
         except Exception:
-            logger.exception("Lỗi khi gửi email cho %s", recipient)
+            logger.exception("Lỗi khi dựng email %s cho %s", template, recipient)
             return False
 
-    @classmethod
+        should_async = async_send if async_send is not None else settings.EMAIL_ASYNC
+        if should_async:
+            _email_executor.submit(self._deliver, message, recipient)
+            logger.info("Đã đưa email %s cho %s vào hàng đợi", template, recipient)
+            return True
+        return self._deliver(message, recipient)
+
     def send_password_reset_email(
-        cls,
+        self,
         user: User,
         reset_url: str,
         locale: str = "vi",
         *,
         async_send: bool | None = None,
     ) -> bool:
-        """Gửi email đặt lại mật khẩu với liên kết an toàn.
+        """Gửi email đặt lại mật khẩu.
 
         Args:
             user: Người dùng yêu cầu.
             reset_url: URL tuyệt đối của trang đặt lại mật khẩu.
             locale: Mã ngôn ngữ ('vi' hoặc 'en').
-            async_send: True để gửi qua worker thread ngầm, False để gửi đồng bộ.
-                Nếu là None, đọc từ settings.EMAIL_ASYNC (mặc định True).
+            async_send: Xem `send_template`.
 
         Returns:
-            True nếu đã lập lịch hoặc gửi thành công, False nếu thất bại khi chuẩn bị.
+            Kết quả của `send_template`.
         """
-        lang = "en" if locale == "en" else "vi"
-        timeout_minutes = max(1, settings.PASSWORD_RESET_TIMEOUT // 60)
-        display_name = getattr(user, "full_name", None) or user.username or user.email
+        return self.send_template(
+            template="password_reset",
+            subject="Reset your ToanNX password" if locale == "en" else "Đặt lại mật khẩu tài khoản ToanNX",
+            recipient=user.email,
+            context={
+                **self._user_context(user),
+                "reset_url": reset_url,
+                "timeout_minutes": max(1, settings.PASSWORD_RESET_TIMEOUT // 60),
+            },
+            locale=locale,
+            async_send=async_send,
+        )
 
-        context: dict[str, Any] = {
-            "user": user,
-            "user_display_name": display_name,
-            "reset_url": reset_url,
-            "timeout_minutes": timeout_minutes,
-            "current_year": timezone.now().year,
-        }
-
-        subject = "Reset your ToanNX password" if lang == "en" else "Đặt lại mật khẩu tài khoản ToanNX"
-        text_template = f"system/email/password_reset_{lang}.txt"
-        html_template = f"system/email/password_reset_{lang}.html"
-
-        try:
-            text_body = render_to_string(text_template, context)
-            html_body = render_to_string(html_template, context)
-
-            message = EmailMultiAlternatives(
-                subject=subject,
-                body=text_body,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[user.email],
-            )
-            message.attach_alternative(html_body, "text/html")
-
-            should_async = async_send if async_send is not None else getattr(settings, "EMAIL_ASYNC", True)
-
-            if should_async:
-                _email_executor.submit(cls._execute_send, message, user.email)
-                logger.info("Đã đưa tác vụ gửi email cho %s vào hàng đợi bất đồng bộ", user.email)
-                return True
-
-            return cls._execute_send(message, user.email)
-        except Exception:
-            logger.exception("Lỗi khi chuẩn bị email đặt lại mật khẩu cho %s", user.email)
-            return False
-
-    @classmethod
     def send_email_verification(
-        cls,
+        self,
         user: User,
         verification_url: str,
         locale: str = "vi",
@@ -110,60 +130,35 @@ class EmailService:
         timeout_hours: int = 24,
         async_send: bool | None = None,
     ) -> bool:
-        """Gửi email xác minh tài khoản với liên kết an toàn.
+        """Gửi email xác minh tài khoản.
 
         Args:
             user: Người dùng nhận email.
             verification_url: URL tuyệt đối của trang xác minh email.
             locale: Mã ngôn ngữ ('vi' hoặc 'en').
-            timeout_hours: Số giờ hiệu lực của liên kết xác minh.
-            async_send: True để gửi ngầm qua thread pool, False để gửi đồng bộ.
+            timeout_hours: Số giờ hiệu lực của liên kết.
+            async_send: Xem `send_template`.
 
         Returns:
-            True nếu gửi thành công hoặc đã lập lịch gửi.
+            Kết quả của `send_template`.
         """
-        lang = "en" if locale == "en" else "vi"
-        display_name = getattr(user, "full_name", None) or user.username or user.email
+        return self.send_template(
+            template="email_verification",
+            subject="Verify your email address · ToanNX"
+            if locale == "en"
+            else "Xác minh địa chỉ email · ToanNX",
+            recipient=user.email,
+            context={
+                **self._user_context(user),
+                "verification_url": verification_url,
+                "timeout_hours": timeout_hours,
+            },
+            locale=locale,
+            async_send=async_send,
+        )
 
-        context: dict[str, Any] = {
-            "user": user,
-            "user_display_name": display_name,
-            "verification_url": verification_url,
-            "timeout_hours": timeout_hours,
-            "current_year": timezone.now().year,
-        }
-
-        subject = "Verify your email address · ToanNX" if lang == "en" else "Xác minh địa chỉ email · ToanNX"
-        text_template = f"system/email/email_verification_{lang}.txt"
-        html_template = f"system/email/email_verification_{lang}.html"
-
-        try:
-            text_body = render_to_string(text_template, context)
-            html_body = render_to_string(html_template, context)
-
-            message = EmailMultiAlternatives(
-                subject=subject,
-                body=text_body,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[user.email],
-            )
-            message.attach_alternative(html_body, "text/html")
-
-            should_async = async_send if async_send is not None else getattr(settings, "EMAIL_ASYNC", True)
-
-            if should_async:
-                _email_executor.submit(cls._execute_send, message, user.email)
-                logger.info("Đã đưa tác vụ gửi email xác minh cho %s vào hàng đợi", user.email)
-                return True
-
-            return cls._execute_send(message, user.email)
-        except Exception:
-            logger.exception("Lỗi khi chuẩn bị email xác minh cho %s", user.email)
-            return False
-
-    @classmethod
     def send_user_invitation(
-        cls,
+        self,
         user: User,
         invitation_url: str,
         locale: str = "vi",
@@ -171,53 +166,44 @@ class EmailService:
         timeout_days: int = 7,
         async_send: bool | None = None,
     ) -> bool:
-        """Gửi email mời người dùng tham gia hệ thống và thiết lập tài khoản.
+        """Gửi email mời người dùng thiết lập tài khoản.
 
         Args:
             user: Người dùng được mời.
             invitation_url: URL tuyệt đối trang thiết lập tài khoản.
             locale: Mã ngôn ngữ ('vi' hoặc 'en').
-            timeout_days: Số ngày hiệu lực của liên kết mời.
-            async_send: True để gửi ngầm qua thread pool, False để gửi đồng bộ.
+            timeout_days: Số ngày hiệu lực của liên kết.
+            async_send: Xem `send_template`.
 
         Returns:
-            True nếu gửi thành công hoặc đã lập lịch gửi.
+            Kết quả của `send_template`.
         """
-        lang = "en" if locale == "en" else "vi"
+        return self.send_template(
+            template="invitation",
+            subject="Invitation to join ToanNX platform"
+            if locale == "en"
+            else "Lời mời tham gia hệ thống ToanNX",
+            recipient=user.email,
+            context={
+                **self._user_context(user),
+                "invitation_url": invitation_url,
+                "timeout_days": timeout_days,
+            },
+            locale=locale,
+            async_send=async_send,
+        )
+
+    def _user_context(self, user: User) -> dict[str, Any]:
+        """Dữ liệu người nhận dùng chung cho các template."""
         display_name = getattr(user, "full_name", None) or user.username or user.email
+        return {"user": user, "user_display_name": display_name}
 
-        context: dict[str, Any] = {
-            "user": user,
-            "user_display_name": display_name,
-            "invitation_url": invitation_url,
-            "timeout_days": timeout_days,
-            "current_year": timezone.now().year,
-        }
-
-        subject = "Invitation to join ToanNX platform" if lang == "en" else "Lời mời tham gia hệ thống ToanNX"
-        text_template = f"system/email/invitation_{lang}.txt"
-        html_template = f"system/email/invitation_{lang}.html"
-
+    def _deliver(self, message: EmailMultiAlternatives, recipient: str) -> bool:
+        """Gửi thư qua Django mail backend, nuốt lỗi và ghi log."""
         try:
-            text_body = render_to_string(text_template, context)
-            html_body = render_to_string(html_template, context)
-
-            message = EmailMultiAlternatives(
-                subject=subject,
-                body=text_body,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[user.email],
-            )
-            message.attach_alternative(html_body, "text/html")
-
-            should_async = async_send if async_send is not None else getattr(settings, "EMAIL_ASYNC", True)
-
-            if should_async:
-                _email_executor.submit(cls._execute_send, message, user.email)
-                logger.info("Đã đưa tác vụ gửi email mời cho %s vào hàng đợi", user.email)
-                return True
-
-            return cls._execute_send(message, user.email)
+            message.send(fail_silently=False)
         except Exception:
-            logger.exception("Lỗi khi chuẩn bị email mời cho %s", user.email)
+            logger.exception("Lỗi khi gửi email cho %s", recipient)
             return False
+        logger.info("Đã gửi email thành công cho %s", recipient)
+        return True

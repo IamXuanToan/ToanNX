@@ -4,6 +4,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
 import { NOVEL_ROUTES } from "../../constants/routes";
 import { useBulkDeleteGenres } from "../../hooks/use-bulk-delete-genres";
@@ -26,7 +27,8 @@ export function useGenreTable() {
   return {
     table,
     query,
-    edit: (genre: Genre) => router.push(NOVEL_ROUTES.adminGenreDetail(genre.id)),
+    view: (genre: Genre) => router.push(NOVEL_ROUTES.adminGenreDetail(genre.id)),
+    edit: (genre: Genre) => router.push(withEditMode(NOVEL_ROUTES.adminGenreDetail(genre.id))),
     remove: (genre: Genre) => remove.mutateAsync(genre.id),
     bulkDelete: (genres: Genre[]) => bulkDelete.mutateAsync(genres.map((g) => g.id)),
   };

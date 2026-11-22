@@ -17,11 +17,12 @@ import { JOURNAL_ENTRY_PERMISSIONS } from "../permissions/journal-entry-permissi
 export function JournalListView() {
   const t = useTranslations("system.journal");
   const canRead = usePermission(JOURNAL_ENTRY_PERMISSIONS.entryRead);
+  const canDelete = usePermission(JOURNAL_ENTRY_PERMISSIONS.entryDelete);
   if (!canRead) return <ForbiddenView />;
   return (
     <div className="space-y-6">
       <PageHeader title={t("title")} />
-      <JournalTable />
+      <JournalTable canDelete={canDelete} />
     </div>
   );
 }

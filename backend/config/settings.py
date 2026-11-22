@@ -5,17 +5,20 @@ Một file cấu hình duy nhất; local và production chỉ khác nhau ở bi�
 """
 
 from pathlib import Path
+from typing import Any
 
 import environ
 
-from app.core.logging.sentry import init_sentry
 from app.system.constants.media_types import ALLOWED_CONTENT_TYPES
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
-environ.Env.read_env(BASE_DIR / ".env.local", overwrite=False)
-environ.Env.read_env(BASE_DIR / ".env", overwrite=False)
+# Máy local có `.env.local` (DB local, không R2) → chỉ đọc file đó; server production không có file này
+# → đọc `.env`. Không gộp hai file: biến thiếu trong `.env.local` không âm thầm lấy giá trị production.
+# Biến đã có sẵn trong môi trường (Vercel, CI, Playwright) luôn thắng file.
+_LOCAL_ENV_FILE = BASE_DIR / ".env.local"
+environ.Env.read_env(_LOCAL_ENV_FILE if _LOCAL_ENV_FILE.exists() else BASE_DIR / ".env", overwrite=False)
 
 # Secret dùng chung cho toàn hệ thống: session/CSRF của Django, ký access JWT, HMAC refresh token.
 # Đổi giá trị này sẽ vô hiệu mọi phiên đăng nhập.
@@ -35,6 +38,7 @@ INSTALLED_APPS = [
     "app.system",
     "app.novel",
     "app.utilities",
+    "app.finance",
 ]
 
 MIDDLEWARE = [
@@ -105,9 +109,12 @@ CLOUDFLARE_R2_ACCOUNT_ID = env.str("CLOUDFLARE_R2_ACCOUNT_ID", default="")
 CLOUDFLARE_R2_ACCESS_KEY_ID = env.str("CLOUDFLARE_R2_ACCESS_KEY_ID", default="")
 CLOUDFLARE_R2_SECRET_ACCESS_KEY = env.str("CLOUDFLARE_R2_SECRET_ACCESS_KEY", default="")
 CLOUDFLARE_R2_BUCKET_NAME = env.str("CLOUDFLARE_R2_BUCKET_NAME", default="")
+# Bucket R2 riêng KHÔNG bật public access cho file riêng tư (chứng từ...); chỉ mở qua link ký hạn ngắn.
+CLOUDFLARE_R2_PRIVATE_BUCKET_NAME = env.str("CLOUDFLARE_R2_PRIVATE_BUCKET_NAME", default="")
 CLOUDFLARE_R2_CUSTOM_DOMAIN = env.str("CLOUDFLARE_R2_CUSTOM_DOMAIN", default="")
 CLOUDFLARE_R2_ENDPOINT_URL = env.str("CLOUDFLARE_R2_ENDPOINT_URL", default="")
-# API Token Cloudflare (quyền: Account -> R2 Storage -> Read) để lấy dung lượng thực tế từ Cloudflare REST API v4
+# API Token Cloudflare (quyền: Account -> R2 Storage -> Read) để lấy dung lượng thực tế
+# từ Cloudflare REST API v4
 CLOUDFLARE_API_TOKEN = env.str("CLOUDFLARE_API_TOKEN", default="")
 
 _configured_storage = env.str("FILE_STORAGE_BACKEND", default="")
@@ -128,14 +135,31 @@ MEDIA_URL = (
     else "/media/"
 )
 
+# File riêng tư: bucket R2 riêng khi dùng R2; local lưu ngoài MEDIA_ROOT (không được phục vụ công khai).
+# Dùng R2 mà chưa khai bucket riêng tư → upload riêng tư bị từ chối (không lặng lẽ lưu vào filesystem tạm).
+PRIVATE_MEDIA_ROOT = BASE_DIR / "private_media"
+_private_storage: dict[str, Any] = (
+    {"BACKEND": "app.core.storage.r2_private_storage.R2PrivateStorage"}
+    if (_use_r2 and CLOUDFLARE_R2_PRIVATE_BUCKET_NAME)
+    else {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {"location": PRIVATE_MEDIA_ROOT, "base_url": None},
+    }
+)
+PRIVATE_STORAGE_ENABLED = not _use_r2 or bool(CLOUDFLARE_R2_PRIVATE_BUCKET_NAME)
+# Hạn của link ký tới file riêng tư (giây).
+ATTACHMENT_PRIVATE_URL_TTL_SECONDS = env.int("ATTACHMENT_PRIVATE_URL_TTL_SECONDS", default=300)
+
 STORAGES = {
     "default": {
         "BACKEND": _configured_storage,
     },
+    "private": _private_storage,
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
 ATTACHMENT_MAX_SIZE_BYTES = env.int("ATTACHMENT_MAX_SIZE_BYTES", default=5 * 1024 * 1024)
-# Tổng dung lượng lưu trữ tối đa cho phép trên storage (R2/S3/local). Mặc định 9GB (gói miễn phí của Cloudflare R2 là 10GB).
+# Tổng dung lượng lưu trữ tối đa cho phép trên storage (R2/S3/local).
+# Mặc định 9GB (gói miễn phí của Cloudflare R2 là 10GB).
 ATTACHMENT_MAX_TOTAL_STORAGE_BYTES = env.int(
     "ATTACHMENT_MAX_TOTAL_STORAGE_BYTES", default=9 * 1024 * 1024 * 1024
 )
@@ -191,6 +215,8 @@ SPECTACULAR_SETTINGS = {
             ("UNPUBLISHED", "Ngừng công khai"),
         ],
         "ShortLinkStatusEnum": [("ACTIVE", "Hoạt động"), ("INACTIVE", "Tạm tắt")],
+        "FinanceRateSourceEnum": "app.finance.constants.finance_choices.RateSource",
+        "FinanceManualRateSourceEnum": [("API", "Tự động (Vietcombank)"), ("MANUAL", "Nhập tay")],
         "NovelStatusEnum": [
             ("ONGOING", "Đang ra"),
             ("COMPLETED", "Hoàn thành"),
@@ -261,6 +287,10 @@ RATE_LIMITS: dict[str, tuple[int, int, str]] = {
     "utilities.qr_code.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
     "utilities.qr_code.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
     "system.client_error.create": (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
+    "system.attachment.content": (env.int("RL_ATTACHMENT_CONTENT", default=120), 60, "user"),
+    "finance.sepay.call": (env.int("RL_SEPAY_CALL", default=10), 60, "user"),
+    "finance.sepay.webhook": (env.int("RL_SEPAY_WEBHOOK", default=120), 60, "ip"),
+    "system.telegram.call": (env.int("RL_TELEGRAM_CALL", default=20), 60, "user"),
     "novel.create": (env.int("RL_NOVEL_CREATE", default=60), 3600, "user"),
     "novel.import": (env.int("RL_NOVEL_IMPORT", default=10), 3600, "user"),
 }
@@ -271,6 +301,17 @@ JOURNAL_RETENTION_DAYS = env.int("JOURNAL_RETENTION_DAYS", default=365)
 AUTH_EXPIRED_RETENTION_DAYS = env.int("AUTH_EXPIRED_RETENTION_DAYS", default=30)
 # Header bí mật của Vercel Cron khi gọi /api/v1/system/health/cleanup (rỗng = tắt endpoint).
 CRON_SECRET = env.str("CRON_SECRET", default="")
+
+# SePay (module Tài chính). Bí mật chỉ ở ENV, không lưu DB, không trả ra client.
+SEPAY_ENV = env.str("SEPAY_ENV", default="sandbox")
+if SEPAY_ENV not in ("sandbox", "production"):
+    raise ValueError("SEPAY_ENV phải là 'sandbox' hoặc 'production'.")
+# Telegram bot cho thông báo dùng chung (module System).
+# Firebase Cloud Messaging (thông báo trình duyệt); thiếu một trong hai thì kênh PUSH bị ẩn.
+FIREBASE_PROJECT_ID = env.str("FIREBASE_PROJECT_ID", default="")
+FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 = env.str("FIREBASE_SERVICE_ACCOUNT_JSON_BASE64", default="")
+# Ngân sách (giây) gửi thông báo ngay sau commit trong một request; phần còn lại cron gửi.
+NOTIFICATION_DISPATCH_BUDGET_SECONDS = env.float("NOTIFICATION_DISPATCH_BUDGET_SECONDS", default=5.0)
 
 # Tiện ích → Trang tùy chỉnh: giới hạn nội dung Tiptap và đoạn đường dẫn giữa dành riêng (một chỗ duy nhất).
 CUSTOM_PAGE_CONTENT_MAX_BYTES = env.int("CUSTOM_PAGE_CONTENT_MAX_BYTES", default=256 * 1024)
@@ -342,15 +383,6 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
-
-# Báo lỗi lên Sentry: để trống SENTRY_DSN là tắt (local, test).
-SENTRY_DSN = env.str("SENTRY_DSN", default="")
-init_sentry(
-    dsn=SENTRY_DSN,
-    environment=env.str("SENTRY_ENVIRONMENT", default="production"),
-    release=env.str("VERCEL_GIT_COMMIT_SHA", default=""),
-    traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
-)
 
 LOGGING = {
     "version": 1,

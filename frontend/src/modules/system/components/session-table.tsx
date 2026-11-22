@@ -174,7 +174,8 @@ export function SessionTable({ canRevoke, canDelete }: { canRevoke: boolean; can
               ]
             : undefined
         }
-        onDelete={canDelete ? state.remove : undefined}
+        onDelete={state.remove}
+        can={{ delete: canDelete }}
         canDeleteRow={state.canDeleteSession}
         onBulkDelete={canDelete ? state.bulkDelete : undefined}
         canSelectRow={canDelete ? state.canDeleteSession : state.canRevokeSession}

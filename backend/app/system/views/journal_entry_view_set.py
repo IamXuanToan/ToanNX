@@ -11,7 +11,7 @@ from app.system.filters.journal_entry_filter import JournalEntryFilter
 from app.system.models.journal_entry import JournalEntry
 from app.system.permissions.journal_entry_permission import JournalEntryPermission
 from app.system.services.journal_entry_service import JournalEntryService
-from app.system.types.permission_rule import permission_rule
+from app.system.types.permission_rule import DENY, permission_rule
 
 
 class JournalEntryViewSet(CoreModelViewSet[JournalEntry]):
@@ -27,8 +27,12 @@ class JournalEntryViewSet(CoreModelViewSet[JournalEntry]):
     ordering = ("-created_at", "-pk")
     list_serializer_class = CoreJournalEntryResponseSerializer
     detail_serializer_class = CoreJournalEntryResponseSerializer
-    http_method_names = ["get", "head", "options"]
+    bulk_delete_enabled = True
+    http_method_names = ["get", "post", "delete", "head", "options"]
     action_permissions = {
         "list": permission_rule(JournalEntryPermission.ENTRY_READ),
         "retrieve": permission_rule(JournalEntryPermission.ENTRY_READ),
+        "create": DENY,  # nhật ký chỉ do JournalRecorder ghi; POST chỉ mở cho bulk-delete
+        "destroy": permission_rule(JournalEntryPermission.ENTRY_DELETE),
+        "bulk_delete": permission_rule(JournalEntryPermission.ENTRY_DELETE),
     }

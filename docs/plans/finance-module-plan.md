@@ -1,10 +1,38 @@
 # Module Tài chính cá nhân — thu nhập, giao dịch ngân hàng (SePay), chứng từ, thuế
+> **Đã thay thế** phần mô hình dữ liệu và chức năng bởi [finance-refactor-plan.md](finance-refactor-plan.md) và
+> [notification-system-plan.md](notification-system-plan.md) (11/2026).
+
 
 Ngày 21/11/2026 · bản 5 (chống trùng theo mã giao dịch; mẫu thông báo; rà soát hoàn thiện).
-Trạng thái: **PHÂN TÍCH — CHƯA TRIỂN KHAI**.
+Trạng thái: **ĐÃ TRIỂN KHAI GIAI ĐOẠN 0–6** (code + test) — còn kiểm thật V1/V2/V3/V4 và checklist go-live (giai đoạn 7).
+
+Tiến độ (21/11/2026):
+
+- Giai đoạn 0: `EmailService` thành instance method + `send_template`/`send_now`; `SettingKey`, tham số
+  keyword-only; `notification_events` + `NotificationEventDefinition` trong `ModuleDescriptor`; thêm `requests`,
+  `regex`; ghi lý do `noqa`. Sửa thêm lỗi có sẵn: OAuth Google/GitHub gọi `BusinessRuleError(code, message)` sai
+  chữ ký → 500 thay vì mã lỗi (đã có test).
+- Giai đoạn 0b: `Attachment.visibility`, kho riêng tư `STORAGES["private"]`, `AttachmentStorageService`,
+  `GET /attachments/{id}/content`, `POST /attachments/{id}/visibility`, quyền `system.attachment.read_private`,
+  XLSX/CSV/XML, dọn file và đo dung lượng theo hai kho; FE: props `AttachmentPicker`/`AttachmentUpload`, công tắc
+  Riêng tư, biểu tượng khóa, nút chuyển trong dialog chi tiết, trang `/tep/[id]`.
+- Khác thiết kế ở 5.6: file riêng tư **không trả `url = null`** mà trả `url` = URL API có kiểm quyền
+  (`/api/v1/system/attachments/{id}/content`, tuyệt đối theo domain request) — giữ nguyên contract, mọi nơi
+  đang dùng `url` không vỡ, vẫn không lộ link R2. Không thêm field `content_url`.
+- V5: CSP hiện có `img-src https:` nên link ký R2 hiển thị được, không cần sửa.
+- Giai đoạn 1–6 (21/11/2026): module `finance` (13 model, API theo mục 5–7, quyền 5.4), webhook HMAC + chống trùng
+  theo mã giao dịch + lấy thủ công API v2, nhập tay/sửa/khôi phục/gộp, engine quy tắc (`regex` timeout), khoản thu +
+  phân bổ + hủy, thuế ước tính có bản chụp thuế suất, chứng từ riêng tư + liên kết, dashboard/báo cáo năm (giờ VN,
+  CSV, in), thông báo Email/Telegram qua outbox `system`. FE: nhóm "Tài chính" (Tổng quan, Giao dịch, Thu nhập,
+  Nền tảng + Kênh, Quy tắc, Chứng từ, Thuế + Chính sách, Báo cáo, Kết nối SePay) và Hệ thống → Thông báo.
+- Khác thiết kế: biểu đồ dashboard vẽ bằng CSS (chưa thêm `shadcn chart`/recharts để không thêm dependency FE);
+  bảng/form các tài nguyên dựng từ cấu hình (`modules/finance/constants/finance-resources.ts`) + panel nghiệp vụ.
+- Giai đoạn 7 còn: chạy E2E (chưa viết spec finance), V1 (mã webhook = mã API, kiểm trong Test mode), V2 (gửi thử
+  webhook sau deploy), V3 (định dạng `/start <mã>` khi thêm bot vào nhóm — code đã nhận cả `/start@bot <mã>`),
+  V4 (bucket R2 riêng tư), checklist go-live SePay.
 
 Cơ sở: source `develop` (21/11/2026), `docs/rules/*`, `docs/common-catalog.md`, `SYSTEM_CONTEXT.md`,
-`docs/deployment.md`, skill `sepay` đối chiếu developer.sepay.vn và sepay.vn/bang-gia.html (đọc 21/11/2026), tài liệu
+`docs/guides/deployment.md`, skill `sepay` đối chiếu developer.sepay.vn và sepay.vn/bang-gia.html (đọc 21/11/2026), tài liệu
 giới hạn Vercel.
 
 Đọc nhanh: mục 1 (quyết định) → mục 3 (SePay) → mục 5 (model) → mục 6 (UI) → mục 11 (giai đoạn) → mục 12 (rà soát, việc cần kiểm).
@@ -13,23 +41,23 @@ giới hạn Vercel.
 
 ## 1. Quyết định đã chốt
 
-| # | Chủ đề | Quyết định |
-| --- | --- | --- |
-| D1 | Phạm vi xem file chứng từ | Theo luật Thư viện hiện có: người upload xem file của mình; superuser hoặc người có `system.attachment.manage_all` xem tất cả |
-| D2 | Upload chứng từ | Giữ luật Thư viện, upload qua bộ chọn dùng chung `AttachmentPicker` (đã có upload kéo thả qua `canUpload`); màn Chứng từ chỉ truyền props (5.6), không tự viết bộ upload |
-| D3 | Dependency | Duyệt `regex` (timeout chống regex treo), `shadcn chart` (recharts), khai `requests` tường minh. Không `openpyxl`: xuất CSV (Excel mở được) + in PDF bằng trang in |
-| D4 | Nhận giao dịch | Chỉ nhận webhook SePay (đơn giản, dưới 50 giao dịch/tháng). Không tự gọi API định kỳ, không GitHub Actions, không cron đồng bộ. Webhook mất sau khi SePay hết lượt gửi lại thì dùng nút **Lấy giao dịch từ SePay** (người dùng bấm, chọn khoảng ngày) |
-| D4b | Đối chiếu | Chủ dự án tự kiểm lại cuối tháng; hệ thống phải lưu đủ mã giao dịch (id SePay, mã tham chiếu ngân hàng) và ngày giờ để đối chiếu sao kê. Không làm tính năng theo dõi hạn mức gói FREE |
-| D5 | Thời hạn Journal | Theo rule hiện tại (`JOURNAL_RETENTION_DAYS`, mặc định 365 ngày); không ngoại lệ cho `finance` |
-| D6 | Ngân hàng | Ngân hàng và tài khoản cấu hình ở SePay; hệ thống chỉ nhận qua webhook (+ lấy thủ công khi cần). Không màn tạo tài khoản ngân hàng thủ công |
-| D7 | Xác minh thu nhập | Giao dịch nhận diện được → khoản thu **đã xác nhận** ngay. Chỉ giao dịch không nhận diện được (hoặc xung đột) là **chưa xác minh**, chờ xử lý. Mọi kết quả đều sửa được |
-| D8 | Tiền vào/ra | Webhook nhận cả tiền vào và tiền ra; dashboard tách rõ "Thu nhập" và "Dòng tiền ngân hàng (vào/ra)" |
-| D9 | Sửa giao dịch | Không tin dữ liệu 100 %: mọi trường của giao dịch ngân hàng đều sửa được (số tiền, chiều, ngày giờ, nội dung, mã tham chiếu, tài khoản). Bản SePay gửi về được giữ nguyên trong `source_snapshot` để so sánh, khôi phục và chống trùng (4.8) |
-| D10 | File riêng tư | Attachment có chế độ `public`/`private`. File riêng tư chỉ người upload, superuser hoặc người có quyền `system.attachment.read_private` xem được; người khác (kể cả có link) không xem được, không dò ra được. Nơi upload tự đặt chế độ qua props của bộ chọn; Thư viện có nút chuyển công khai/riêng tư; có màn "không có quyền xem tệp" (5.6) |
-| D11 | Loại file chứng từ | Mở thêm XLSX, CSV, XML cho Thư viện (chỉ lưu, không đọc nội dung) |
-| D12 | Giao dịch ngân hàng có 3 nguồn | Webhook (chính), **nhập tay**, **lấy qua API** (bấm); mọi giao dịch sửa được (D9) |
-| D13 | Chống trùng | **Theo mã giao dịch** (mã tham chiếu ngân hàng `reference_code`) là khóa chính giữa các nguồn (3.4) |
-| D14 | Nội dung thông báo | Tiền vào/ra, mã giao dịch, nền tảng, số tiền, nội dung (7.1) |
+| #   | Chủ đề                         | Quyết định                                                                                                                                                                                                                                                                                                                                      |
+| --- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Phạm vi xem file chứng từ      | Theo luật Thư viện hiện có: người upload xem file của mình; superuser hoặc người có `system.attachment.manage_all` xem tất cả                                                                                                                                                                                                                   |
+| D2  | Upload chứng từ                | Giữ luật Thư viện, upload qua bộ chọn dùng chung `AttachmentPicker` (đã có upload kéo thả qua `canUpload`); màn Chứng từ chỉ truyền props (5.6), không tự viết bộ upload                                                                                                                                                                        |
+| D3  | Dependency                     | Duyệt `regex` (timeout chống regex treo), `shadcn chart` (recharts), khai `requests` tường minh. Không `openpyxl`: xuất CSV (Excel mở được) + in PDF bằng trang in                                                                                                                                                                              |
+| D4  | Nhận giao dịch                 | Chỉ nhận webhook SePay (đơn giản, dưới 50 giao dịch/tháng). Không tự gọi API định kỳ, không GitHub Actions, không cron đồng bộ. Webhook mất sau khi SePay hết lượt gửi lại thì dùng nút **Lấy giao dịch từ SePay** (người dùng bấm, chọn khoảng ngày)                                                                                           |
+| D4b | Đối chiếu                      | Chủ dự án tự kiểm lại cuối tháng; hệ thống phải lưu đủ mã giao dịch (id SePay, mã tham chiếu ngân hàng) và ngày giờ để đối chiếu sao kê. Không làm tính năng theo dõi hạn mức gói FREE                                                                                                                                                          |
+| D5  | Thời hạn Journal               | Theo rule hiện tại (`JOURNAL_RETENTION_DAYS`, mặc định 365 ngày); không ngoại lệ cho `finance`                                                                                                                                                                                                                                                  |
+| D6  | Ngân hàng                      | Ngân hàng và tài khoản cấu hình ở SePay; hệ thống chỉ nhận qua webhook (+ lấy thủ công khi cần). Không màn tạo tài khoản ngân hàng thủ công                                                                                                                                                                                                     |
+| D7  | Xác minh thu nhập              | Giao dịch nhận diện được → khoản thu **đã xác nhận** ngay. Chỉ giao dịch không nhận diện được (hoặc xung đột) là **chưa xác minh**, chờ xử lý. Mọi kết quả đều sửa được                                                                                                                                                                         |
+| D8  | Tiền vào/ra                    | Webhook nhận cả tiền vào và tiền ra; dashboard tách rõ "Thu nhập" và "Dòng tiền ngân hàng (vào/ra)"                                                                                                                                                                                                                                             |
+| D9  | Sửa giao dịch                  | Không tin dữ liệu 100 %: mọi trường của giao dịch ngân hàng đều sửa được (số tiền, chiều, ngày giờ, nội dung, mã tham chiếu, tài khoản). Bản SePay gửi về được giữ nguyên trong `source_snapshot` để so sánh, khôi phục và chống trùng (4.8)                                                                                                    |
+| D10 | File riêng tư                  | Attachment có chế độ `public`/`private`. File riêng tư chỉ người upload, superuser hoặc người có quyền `system.attachment.read_private` xem được; người khác (kể cả có link) không xem được, không dò ra được. Nơi upload tự đặt chế độ qua props của bộ chọn; Thư viện có nút chuyển công khai/riêng tư; có màn "không có quyền xem tệp" (5.6) |
+| D11 | Loại file chứng từ             | Mở thêm XLSX, CSV, XML cho Thư viện (chỉ lưu, không đọc nội dung)                                                                                                                                                                                                                                                                               |
+| D12 | Giao dịch ngân hàng có 3 nguồn | Webhook (chính), **nhập tay**, **lấy qua API** (bấm); mọi giao dịch sửa được (D9)                                                                                                                                                                                                                                                               |
+| D13 | Chống trùng                    | **Theo mã giao dịch** (mã tham chiếu ngân hàng `reference_code`) là khóa chính giữa các nguồn (3.4)                                                                                                                                                                                                                                             |
+| D14 | Nội dung thông báo             | Tiền vào/ra, mã giao dịch, nền tảng, số tiền, nội dung (7.1)                                                                                                                                                                                                                                                                                    |
 
 ---
 
@@ -52,20 +80,20 @@ giới hạn Vercel.
 
 ## 3. SePay — đã xác minh trên tài liệu chính thức
 
-| Chủ đề | Sự thật | Nguồn |
-| --- | --- | --- |
-| Payload webhook | `id` (integer, không đổi qua retry/replay), `gateway`, `transactionDate` (`YYYY-MM-DD HH:mm:ss` giờ VN, không múi giờ), `accountNumber`, `subAccount`, `code` (có thể null), `content` (gốc), `transferType` `in`/`out`, `description` (có thể rỗng, thường có tên người chuyển), `transferAmount` (integer VND, luôn dương), `accumulated` (có thể 0), `referenceCode` (có thể rỗng) | `/vi/sepay-webhooks/tich-hop-webhook` |
-| Phản hồi hợp lệ | HTTP 200/201 + body đúng `{"success": true}` trong 30 giây | cùng trang |
-| Xác thực | HMAC-SHA256 ký `{X-SePay-Timestamp}.{raw body}`, header `X-SePay-Signature: sha256=<hex>`, chống replay ±5 phút | `/vi/sepay-webhooks/xac-thuc` |
-| Retry | Xem 3.2: tự gửi lại 8 lần trong ~33 phút; sau đó webhook bị đánh dấu Failed và **không tự gửi nữa** | `/vi/sepay-webhooks/xu-ly-loi#lich-retry` |
-| Gửi lại thủ công | Trên trang quản lý webhook của SePay, admin gửi lại được kể cả log đã thành công | `/vi/sepay-webhooks/tich-hop-webhook#chong-trung-lap` |
-| API giao dịch | `GET https://userapi.sepay.vn/v2/transactions`, Bearer token cả công ty, `id` là **UUID**, `since_id` + `transaction_date_sort=asc`, `per_page ≤ 100`, `has_more`; không có trường tên người chuyển | `/vi/sepay-api/v2/giao-dich/danh-sach` |
-| Rate limit API | 3 request/giây/IP, 429 + `Retry-After` | `/vi/sepay-api/v2/xac-thuc` |
-| Định danh | Webhook `id` (số) ≠ API `id` (UUID) → mã chung giữa hai nguồn là mã giao dịch ngân hàng (`referenceCode` / `reference_number`); mã này có thể trống hoặc dùng chung cho giao dịch lô, nên chống trùng kèm tài khoản + chiều + số tiền (3.4) | skill `sepay`, `/vi/sepay-api/v2/nang-cap-tu-v1` |
-| Quản lý webhook bằng API | Chỉ qua OAuth2 → UI hướng dẫn cấu hình trên my.sepay.vn, không giả lập | `/vi/sepay-oauth2/api-webhook` |
-| IP gửi ra | 7 IPv4 + 2 IPv6, có thể đổi | `/vi/dia-chi-ip` |
-| Test mode | Môi trường riêng (`userapi-sandbox.sepay.vn`, token/secret riêng), **Mô phỏng giao dịch** | skill `sepay` |
-| Gói FREE | 50 giao dịch **tiền vào**/tháng, có webhook + API; vượt thì tính phí (nhu cầu thực tế dưới 50, không làm tính năng theo dõi) | sepay.vn/bang-gia.html |
+| Chủ đề                   | Sự thật                                                                                                                                                                                                                                                                                                                                                                               | Nguồn                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Payload webhook          | `id` (integer, không đổi qua retry/replay), `gateway`, `transactionDate` (`YYYY-MM-DD HH:mm:ss` giờ VN, không múi giờ), `accountNumber`, `subAccount`, `code` (có thể null), `content` (gốc), `transferType` `in`/`out`, `description` (có thể rỗng, thường có tên người chuyển), `transferAmount` (integer VND, luôn dương), `accumulated` (có thể 0), `referenceCode` (có thể rỗng) | `/vi/sepay-webhooks/tich-hop-webhook`                 |
+| Phản hồi hợp lệ          | HTTP 200/201 + body đúng `{"success": true}` trong 30 giây                                                                                                                                                                                                                                                                                                                            | cùng trang                                            |
+| Xác thực                 | HMAC-SHA256 ký `{X-SePay-Timestamp}.{raw body}`, header `X-SePay-Signature: sha256=<hex>`, chống replay ±5 phút                                                                                                                                                                                                                                                                       | `/vi/sepay-webhooks/xac-thuc`                         |
+| Retry                    | Xem 3.2: tự gửi lại 8 lần trong ~33 phút; sau đó webhook bị đánh dấu Failed và **không tự gửi nữa**                                                                                                                                                                                                                                                                                   | `/vi/sepay-webhooks/xu-ly-loi#lich-retry`             |
+| Gửi lại thủ công         | Trên trang quản lý webhook của SePay, admin gửi lại được kể cả log đã thành công                                                                                                                                                                                                                                                                                                      | `/vi/sepay-webhooks/tich-hop-webhook#chong-trung-lap` |
+| API giao dịch            | `GET https://userapi.sepay.vn/v2/transactions`, Bearer token cả công ty, `id` là **UUID**, `since_id` + `transaction_date_sort=asc`, `per_page ≤ 100`, `has_more`; không có trường tên người chuyển                                                                                                                                                                                   | `/vi/sepay-api/v2/giao-dich/danh-sach`                |
+| Rate limit API           | 3 request/giây/IP, 429 + `Retry-After`                                                                                                                                                                                                                                                                                                                                                | `/vi/sepay-api/v2/xac-thuc`                           |
+| Định danh                | Webhook `id` (số) ≠ API `id` (UUID) → mã chung giữa hai nguồn là mã giao dịch ngân hàng (`referenceCode` / `reference_number`); mã này có thể trống hoặc dùng chung cho giao dịch lô, nên chống trùng kèm tài khoản + chiều + số tiền (3.4)                                                                                                                                           | skill `sepay`, `/vi/sepay-api/v2/nang-cap-tu-v1`      |
+| Quản lý webhook bằng API | Chỉ qua OAuth2 → UI hướng dẫn cấu hình trên my.sepay.vn, không giả lập                                                                                                                                                                                                                                                                                                                | `/vi/sepay-oauth2/api-webhook`                        |
+| IP gửi ra                | 7 IPv4 + 2 IPv6, có thể đổi                                                                                                                                                                                                                                                                                                                                                           | `/vi/dia-chi-ip`                                      |
+| Test mode                | Môi trường riêng (`userapi-sandbox.sepay.vn`, token/secret riêng), **Mô phỏng giao dịch**                                                                                                                                                                                                                                                                                             | skill `sepay`                                         |
+| Gói FREE                 | 50 giao dịch **tiền vào**/tháng, có webhook + API; vượt thì tính phí (nhu cầu thực tế dưới 50, không làm tính năng theo dõi)                                                                                                                                                                                                                                                          | sepay.vn/bang-gia.html                                |
 
 Lưu ý ngân hàng (D6): với tài khoản cá nhân ở BIDV, MSB, OCB, KienlongBank (kết nối API, không SMS), SePay chỉ nhận
 tiền qua VA. Chủ dự án xác nhận đã cấu hình ngân hàng trên SePay; hệ thống chỉ hiện thông tin `va_only` lấy từ API
@@ -90,12 +118,12 @@ tiền qua VA. Chủ dự án xác nhận đã cấu hình ngân hàng trên SeP
 
 ### 3.2 Khi server lỗi: SePay có gửi lại không? (đã kiểm tài liệu)
 
-| Lỗi phía server | SePay xử lý | Kết quả |
-| --- | --- | --- |
-| Không kết nối được (DNS, connection refused, lỗi SSL) hoặc quá 30 giây không trả lời | **Luôn gửi lại**, không cần bật gì | Server sống lại trong ~33 phút thì không mất |
-| Server trả HTTP ngoài 2xx (500, 503…) | Chỉ gửi lại khi bật **Tự động gửi lại khi server trả lỗi** | Bật tùy chọn này thì giống dòng trên; không bật thì **mất ngay** từ lần đầu |
-| Lịch gửi lại | 8 lần (ngay, +1, +1, +2, +3, +5, +8, +13 phút), tổng ~33 phút | Hết 8 lần → webhook **Failed**, SePay không tự gửi nữa (có cảnh báo nếu bật) |
-| Sau khi Failed | Admin vẫn **gửi lại thủ công** được từ lịch sử gửi trên my.sepay.vn | Cách thứ nhất để lấy lại |
+| Lỗi phía server                                                                      | SePay xử lý                                                         | Kết quả                                                                      |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Không kết nối được (DNS, connection refused, lỗi SSL) hoặc quá 30 giây không trả lời | **Luôn gửi lại**, không cần bật gì                                  | Server sống lại trong ~33 phút thì không mất                                 |
+| Server trả HTTP ngoài 2xx (500, 503…)                                                | Chỉ gửi lại khi bật **Tự động gửi lại khi server trả lỗi**          | Bật tùy chọn này thì giống dòng trên; không bật thì **mất ngay** từ lần đầu  |
+| Lịch gửi lại                                                                         | 8 lần (ngay, +1, +1, +2, +3, +5, +8, +13 phút), tổng ~33 phút       | Hết 8 lần → webhook **Failed**, SePay không tự gửi nữa (có cảnh báo nếu bật) |
+| Sau khi Failed                                                                       | Admin vẫn **gửi lại thủ công** được từ lịch sử gửi trên my.sepay.vn | Cách thứ nhất để lấy lại                                                     |
 
 Kết luận: không mất nếu server sập dưới ~33 phút và đã bật "Tự động gửi lại khi server trả lỗi". Sập lâu hơn thì có
 hai cách lấy lại, đều do người dùng chủ động:
@@ -121,12 +149,12 @@ webhook (số) và API (UUID).
 
 Thứ tự kiểm khi một giao dịch đến (webhook, API hoặc người dùng lưu form nhập tay):
 
-| Bước | Kiểm | Kết quả |
-| --- | --- | --- |
-| 1 | Cùng `sepay_webhook_id` (UNIQUE) hoặc cùng `sepay_api_id` (UNIQUE) | Đã có → bỏ qua (webhook gửi lại, gửi lại thủ công, bấm lấy lại) |
-| 2 | Cùng **tài khoản + mã giao dịch** | Cùng chiều và cùng số tiền → **là một giao dịch**: gắn id còn thiếu vào bản cũ (`origin = both`/`manual_merged`), không tạo dòng mới. Cùng mã nhưng khác số tiền/chiều → tạo mới ở `needs_review/possible_duplicate`, liên kết bản cũ (ngân hàng dùng chung mã cho giao dịch lô) |
-| 3 | Không có mã giao dịch (một số ngân hàng bỏ trống với lãi, phí; nhập tay không điền) | So dấu phụ: cùng tài khoản, chiều, số tiền, thời điểm (đến giây với SePay; ±1 ngày với nhập tay), nội dung. Có ứng viên → `needs_review/possible_duplicate` + nút **Gộp** / **Không trùng**; không tự gộp |
-| 4 | Không khớp gì | Tạo mới |
+| Bước | Kiểm                                                                                | Kết quả                                                                                                                                                                                                                                                                          |
+| ---- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Cùng `sepay_webhook_id` (UNIQUE) hoặc cùng `sepay_api_id` (UNIQUE)                  | Đã có → bỏ qua (webhook gửi lại, gửi lại thủ công, bấm lấy lại)                                                                                                                                                                                                                  |
+| 2    | Cùng **tài khoản + mã giao dịch**                                                   | Cùng chiều và cùng số tiền → **là một giao dịch**: gắn id còn thiếu vào bản cũ (`origin = both`/`manual_merged`), không tạo dòng mới. Cùng mã nhưng khác số tiền/chiều → tạo mới ở `needs_review/possible_duplicate`, liên kết bản cũ (ngân hàng dùng chung mã cho giao dịch lô) |
+| 3    | Không có mã giao dịch (một số ngân hàng bỏ trống với lãi, phí; nhập tay không điền) | So dấu phụ: cùng tài khoản, chiều, số tiền, thời điểm (đến giây với SePay; ±1 ngày với nhập tay), nội dung. Có ứng viên → `needs_review/possible_duplicate` + nút **Gộp** / **Không trùng**; không tự gộp                                                                        |
+| 4    | Không khớp gì                                                                       | Tạo mới                                                                                                                                                                                                                                                                          |
 
 - So khớp dùng giá trị trong `source_snapshot` với giao dịch SePay (không dùng giá trị người dùng đã sửa) và giá trị
   hiện tại với giao dịch nhập tay. Mã giao dịch so sau khi bỏ khoảng trắng hai đầu, không phân biệt hoa thường.
@@ -143,12 +171,12 @@ Thứ tự kiểm khi một giao dịch đến (webhook, API hoặc người dù
 
 ### 3.5 Lỗi khác
 
-| Tình huống | Xử lý |
-| --- | --- |
-| Token API sai/hết hạn khi lấy thủ công | Báo lỗi rõ trên màn hình (`FINANCE_SEPAY_AUTH_FAILED`), lưu vào lịch sử lấy |
-| 429 khi lấy thủ công | Dừng, báo số đã lấy được, bấm lại sau |
-| Chữ ký webhook sai liên tục | Trang Kết nối SePay hiện lần lỗi xác thực gần nhất; sự kiện thông báo kỹ thuật (gom theo giờ) |
-| Lẫn Test mode với live | `SEPAY_ENV` + token/secret riêng; dữ liệu sandbox `is_test`, loại khỏi mọi thống kê |
+| Tình huống                             | Xử lý                                                                                         |
+| -------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Token API sai/hết hạn khi lấy thủ công | Báo lỗi rõ trên màn hình (`FINANCE_SEPAY_AUTH_FAILED`), lưu vào lịch sử lấy                   |
+| 429 khi lấy thủ công                   | Dừng, báo số đã lấy được, bấm lại sau                                                         |
+| Chữ ký webhook sai liên tục            | Trang Kết nối SePay hiện lần lỗi xác thực gần nhất; sự kiện thông báo kỹ thuật (gom theo giờ) |
+| Lẫn Test mode với live                 | `SEPAY_ENV` + token/secret riêng; dữ liệu sandbox `is_test`, loại khỏi mọi thống kê           |
 
 ---
 
@@ -177,13 +205,13 @@ Lấy thủ công qua API (bấm) ─► SepaySyncRun ──────┤
 
 `BankTransaction.classification_status`:
 
-| Giá trị | Nghĩa |
-| --- | --- |
-| `unclassified` | Chưa xác minh: không quy tắc khớp hoặc nội dung rỗng |
-| `needs_review` | Chưa xác minh: xung đột quy tắc, nghi trùng, khớp khoản nhập tay |
-| `auto_classified` | Nhận diện được → có khoản thu đã xác nhận |
-| `manual_classified` | Người dùng chọn/sửa; quy tắc không bao giờ ghi đè |
-| `excluded` | Không phải thu nhập (cá nhân, chuyển nội bộ, hoàn tiền…) |
+| Giá trị             | Nghĩa                                                            |
+| ------------------- | ---------------------------------------------------------------- |
+| `unclassified`      | Chưa xác minh: không quy tắc khớp hoặc nội dung rỗng             |
+| `needs_review`      | Chưa xác minh: xung đột quy tắc, nghi trùng, khớp khoản nhập tay |
+| `auto_classified`   | Nhận diện được → có khoản thu đã xác nhận                        |
+| `manual_classified` | Người dùng chọn/sửa; quy tắc không bao giờ ghi đè                |
+| `excluded`          | Không phải thu nhập (cá nhân, chuyển nội bộ, hoàn tiền…)         |
 
 `review_reason`: `no_rule`, `empty_content`, `rule_conflict`, `possible_duplicate`, `matches_manual_income`.
 
@@ -257,15 +285,15 @@ dịch ngân hàng.
 Mỗi giao dịch lưu đủ để so từng dòng với sao kê ngân hàng và lịch sử trên my.sepay.vn, không cần thêm tính năng
 đối soát tự động:
 
-| Trường | Dùng để |
-| --- | --- |
-| `sepay_webhook_id` | Tra giao dịch trong **Lịch sử gửi** webhook trên my.sepay.vn, gửi lại thủ công |
-| `sepay_api_id` (UUID, khi lấy qua API) | Tra qua SePay API |
-| `reference_code` | **Mã giao dịch** (mã tham chiếu ngân hàng) — so với sao kê, khóa chống trùng chính (3.4) |
-| `transaction_at` | Ngày giờ ngân hàng ghi sổ (giờ VN từ SePay, lưu UTC, hiển thị giờ VN) |
-| `created_at` (có sẵn của `CoreModel`) | Lúc hệ thống ghi nhận (webhook đến, lấy thủ công hoặc nhập tay) — thấy được giao dịch đến muộn. Không đặt tên `received_at` vì `IncomeRecord.received_at` đã mang nghĩa "ngày nhận tiền" |
-| `origin` | `webhook` / `api` / `both` / `manual` / `manual_merged` — biết dòng nào lấy thủ công, dòng nào nhập tay |
-| `bank_account`, `direction`, `amount`, `raw_content`, `balance_after` | Khớp dòng sao kê |
+| Trường                                                                | Dùng để                                                                                                                                                                                  |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sepay_webhook_id`                                                    | Tra giao dịch trong **Lịch sử gửi** webhook trên my.sepay.vn, gửi lại thủ công                                                                                                           |
+| `sepay_api_id` (UUID, khi lấy qua API)                                | Tra qua SePay API                                                                                                                                                                        |
+| `reference_code`                                                      | **Mã giao dịch** (mã tham chiếu ngân hàng) — so với sao kê, khóa chống trùng chính (3.4)                                                                                                 |
+| `transaction_at`                                                      | Ngày giờ ngân hàng ghi sổ (giờ VN từ SePay, lưu UTC, hiển thị giờ VN)                                                                                                                    |
+| `created_at` (có sẵn của `CoreModel`)                                 | Lúc hệ thống ghi nhận (webhook đến, lấy thủ công hoặc nhập tay) — thấy được giao dịch đến muộn. Không đặt tên `received_at` vì `IncomeRecord.received_at` đã mang nghĩa "ngày nhận tiền" |
+| `origin`                                                              | `webhook` / `api` / `both` / `manual` / `manual_merged` — biết dòng nào lấy thủ công, dòng nào nhập tay                                                                                  |
+| `bank_account`, `direction`, `amount`, `raw_content`, `balance_after` | Khớp dòng sao kê                                                                                                                                                                         |
 
 Màn Giao dịch có lọc theo tháng + tài khoản, sắp theo `transaction_at`, hiện các cột trên và **xuất CSV** để đặt cạnh
 sao kê.
@@ -323,21 +351,21 @@ finance (mới) ── SePay, tài khoản nhận tiền, giao dịch, nền t�
 
 ### 5.2 Model `finance`
 
-| Model | Mục đích | Trường chính | Vòng đời |
-| --- | --- | --- | --- |
-| `BankAccount` | Tài khoản nhận tiền (tự ghi nhận, D6) | `sepay_bank_account_id` (UUID, unique nullable), `bank_name`, `account_number`, `label`, `va_only` (từ API), `is_active`, `last_transaction_at` | Tự tạo khi webhook/API gặp tài khoản mới (khóa: ngân hàng + số tài khoản); người dùng chỉ sửa nhãn, bật/tắt. Không xóa khi còn giao dịch |
-| `SepayWebhookEvent` | Nhật ký webhook hợp lệ | `sepay_webhook_id` (unique), `raw_body`, `received_at`, `status`, `error_code`, `bank_transaction` | Không ghi request sai chữ ký; quyền đọc hạn chế |
-| `SepaySyncRun` | Lịch sử các lần lấy thủ công | `requested_by`, khoảng ngày, số lấy về/mới/đã có/nghi trùng, `status`, `error_code`, thời gian | Chỉ để xem lại; không cursor |
-| `BankTransaction` | Giao dịch ngân hàng | Định danh (không sửa): `sepay_webhook_id`, `sepay_api_id`, `origin`, `is_test`, `source_snapshot` (bản SePay gửi). Sửa được: `bank_account`, `direction`, `amount`, `currency`, `transaction_at`, `raw_content`, `raw_description`, `reference_code`, `sepay_code`, `sub_account`, `balance_after`. Phân loại: `normalized_content`, `classification_status`, `review_reason`, `flow_category`, `platform`, `platform_account`, `matched_rule` + `matched_rule_version` + `match_span`, `conflict_rules`, `duplicate_candidate`, `related_transaction` (hoàn tiền/đảo chiều), `note` (lúc hệ thống ghi nhận = `created_at` của `CoreModel`) | JournalTracker trên mọi trường sửa được; DELETE bị chặn trừ `is_test`. Index (`bank_account`, `reference_code`) cho chống trùng, (`bank_account`, `transaction_at`), (`classification_status`) |
-| `IncomePlatform` | Nền tảng | `name`, `code`, `description`, `icon` (FK `Attachment`, null = icon mặc định), `default_income_type`, `is_active`, `position` | Ngừng dùng = tắt |
-| `PlatformAccount` | Kênh/tài khoản trong nền tảng | `platform`, `name`, `external_ref`, `note`, `is_active` | Không bắt buộc cho giao dịch |
-| `ClassificationRule` | Quy tắc | `name`, `match_mode`, `pattern`, `match_on`, `direction`, `bank_account`, `amount_min/max`, đích nền tảng **hoặc** `target_flow_category`, `priority`, `is_active`, `examples`, `version`, `description` | JournalTracker |
-| `IncomeRecord` | Khoản thu | `platform`, `platform_account`, `income_type`, `source` (`bank`/`manual`), `gross_amount`, `fee_amount`, `net_amount`, `currency`, ngoại tệ, `received_at`, `income_date`, `earned_period_start/end`, `tax_year`, `status`, `void_reason`, `is_user_edited`, `document_required`, `note` | JournalTracker; hủy thay vì xóa |
-| `IncomeAllocation` | Giao dịch ↔ khoản thu | `bank_transaction`, `income_record`, `amount` | Unique cặp |
-| `TaxPolicy` | Chính sách thuế | `name`, `tax_kind`, `income_type`, `rate`, `threshold_amount`, `effective_from/to`, `legal_basis`, `note`, `is_active` | JournalTracker |
-| `TaxEntry` | Khoản thuế | `income_record` (null), `kind`, `tax_kind`, `amount`, `tax_year`, kỳ, `withholder_name`, `paid_at`, `reference_no`, `confidence`, `policy` + `rate_snapshot`, `note` | JournalTracker |
-| `FinanceDocument` | Chứng từ | `attachment` (`PROTECT`), `doc_type`, `title`, `description`, `platform`, kỳ, `tax_year`, `amount`, `currency`, `document_number`, `issuer`, `issued_at`, `validity_status` | JournalTracker |
-| `FinanceDocumentLink` | Chứng từ ↔ giao dịch/khoản thu/thuế | `document` + đúng một FK đích | Nhiều–nhiều |
+| Model                 | Mục đích                              | Trường chính                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Vòng đời                                                                                                                                                                                       |
+| --------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BankAccount`         | Tài khoản nhận tiền (tự ghi nhận, D6) | `sepay_bank_account_id` (UUID, unique nullable), `bank_name`, `account_number`, `label`, `va_only` (từ API), `is_active`, `last_transaction_at`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Tự tạo khi webhook/API gặp tài khoản mới (khóa: ngân hàng + số tài khoản); người dùng chỉ sửa nhãn, bật/tắt. Không xóa khi còn giao dịch                                                       |
+| `SepayWebhookEvent`   | Nhật ký webhook hợp lệ                | `sepay_webhook_id` (unique), `raw_body`, `received_at`, `status`, `error_code`, `bank_transaction`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Không ghi request sai chữ ký; quyền đọc hạn chế                                                                                                                                                |
+| `SepaySyncRun`        | Lịch sử các lần lấy thủ công          | `requested_by`, khoảng ngày, số lấy về/mới/đã có/nghi trùng, `status`, `error_code`, thời gian                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Chỉ để xem lại; không cursor                                                                                                                                                                   |
+| `BankTransaction`     | Giao dịch ngân hàng                   | Định danh (không sửa): `sepay_webhook_id`, `sepay_api_id`, `origin`, `is_test`, `source_snapshot` (bản SePay gửi). Sửa được: `bank_account`, `direction`, `amount`, `currency`, `transaction_at`, `raw_content`, `raw_description`, `reference_code`, `sepay_code`, `sub_account`, `balance_after`. Phân loại: `normalized_content`, `classification_status`, `review_reason`, `flow_category`, `platform`, `platform_account`, `matched_rule` + `matched_rule_version` + `match_span`, `conflict_rules`, `duplicate_candidate`, `related_transaction` (hoàn tiền/đảo chiều), `note` (lúc hệ thống ghi nhận = `created_at` của `CoreModel`) | JournalTracker trên mọi trường sửa được; DELETE bị chặn trừ `is_test`. Index (`bank_account`, `reference_code`) cho chống trùng, (`bank_account`, `transaction_at`), (`classification_status`) |
+| `IncomePlatform`      | Nền tảng                              | `name`, `code`, `description`, `icon` (FK `Attachment`, null = icon mặc định), `default_income_type`, `is_active`, `position`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Ngừng dùng = tắt                                                                                                                                                                               |
+| `PlatformAccount`     | Kênh/tài khoản trong nền tảng         | `platform`, `name`, `external_ref`, `note`, `is_active`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Không bắt buộc cho giao dịch                                                                                                                                                                   |
+| `ClassificationRule`  | Quy tắc                               | `name`, `match_mode`, `pattern`, `match_on`, `direction`, `bank_account`, `amount_min/max`, đích nền tảng **hoặc** `target_flow_category`, `priority`, `is_active`, `examples`, `version`, `description`                                                                                                                                                                                                                                                                                                                                                                                                                                    | JournalTracker                                                                                                                                                                                 |
+| `IncomeRecord`        | Khoản thu                             | `platform`, `platform_account`, `income_type`, `source` (`bank`/`manual`), `gross_amount`, `fee_amount`, `net_amount`, `currency`, ngoại tệ, `received_at`, `income_date`, `earned_period_start/end`, `tax_year`, `status`, `void_reason`, `is_user_edited`, `document_required`, `note`                                                                                                                                                                                                                                                                                                                                                    | JournalTracker; hủy thay vì xóa                                                                                                                                                                |
+| `IncomeAllocation`    | Giao dịch ↔ khoản thu                 | `bank_transaction`, `income_record`, `amount`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Unique cặp                                                                                                                                                                                     |
+| `TaxPolicy`           | Chính sách thuế                       | `name`, `tax_kind`, `income_type`, `rate`, `threshold_amount`, `effective_from/to`, `legal_basis`, `note`, `is_active`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | JournalTracker                                                                                                                                                                                 |
+| `TaxEntry`            | Khoản thuế                            | `income_record` (null), `kind`, `tax_kind`, `amount`, `tax_year`, kỳ, `withholder_name`, `paid_at`, `reference_no`, `confidence`, `policy` + `rate_snapshot`, `note`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | JournalTracker                                                                                                                                                                                 |
+| `FinanceDocument`     | Chứng từ                              | `attachment` (`PROTECT`), `doc_type`, `title`, `description`, `platform`, kỳ, `tax_year`, `amount`, `currency`, `document_number`, `issuer`, `issued_at`, `validity_status`                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | JournalTracker                                                                                                                                                                                 |
+| `FinanceDocumentLink` | Chứng từ ↔ giao dịch/khoản thu/thuế   | `document` + đúng một FK đích                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Nhiều–nhiều                                                                                                                                                                                    |
 
 Lý do chính: giao dịch + phân loại chung một bảng (1–1, cùng vòng đời), bản SePay gốc là một cột JSON thay vì bảng
 riêng; khoản thu tách riêng (nhập tay, nhiều lần
@@ -347,15 +375,15 @@ diện bằng quy tắc (đích `flow_category`), không cần bảng tài kho�
 
 ### 5.3 Bổ sung `system`
 
-| Thành phần | Nội dung |
-| --- | --- |
-| `NotificationEventDefinition` + `ModuleDescriptor.notification_events` | Module khai sự kiện như khai quyền (`code`, tên, mô tả, `kind` nghiệp vụ/kỹ thuật) |
-| `TelegramChat` | `chat_id` (unique), `title`, `chat_type`, `status` (`active`/`unreachable`/`removed`), `is_active`, `last_verified_at`, `last_error_code` |
-| `NotificationRoute` | `event_code`, `channel` (`email`/`telegram`), `telegram_chat` hoặc `recipient_user`, `is_active`, `throttle_minutes` |
-| `NotificationDelivery` (outbox) | `route`, `event_code`, `dedup_key`, `subject`, `body`, `status`, `attempts`, `next_attempt_at`, `last_error_code`, `sent_at`, `provider_message_id`; unique (`route`, `dedup_key`) |
-| `NotificationService` | `publish(event_code, dedup_key, context)`: tạo delivery (insert-ignore), gửi ngay với timeout ngắn, lỗi thì hẹn retry (tối đa 5 lần); cron dọn dẹp hằng ngày đã có chạy thêm `dispatch_pending` |
-| `TelegramService` | `getMe`, `getUpdates`, `getChatMember`, `sendMessage`; token `TELEGRAM_BOT_TOKEN` trong ENV, không lưu DB, không hiển thị |
-| `EmailService` | Sửa vi phạm (mục 10) + method gửi đồng bộ cho outbox, template `system/email/notification_{vi,en}` |
+| Thành phần                                                             | Nội dung                                                                                                                                                                                        |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NotificationEventDefinition` + `ModuleDescriptor.notification_events` | Module khai sự kiện như khai quyền (`code`, tên, mô tả, `kind` nghiệp vụ/kỹ thuật)                                                                                                              |
+| `TelegramChat`                                                         | `chat_id` (unique), `title`, `chat_type`, `status` (`active`/`unreachable`/`removed`), `is_active`, `last_verified_at`, `last_error_code`                                                       |
+| `NotificationRoute`                                                    | `event_code`, `channel` (`email`/`telegram`), `telegram_chat` hoặc `recipient_user`, `is_active`, `throttle_minutes`                                                                            |
+| `NotificationDelivery` (outbox)                                        | `route`, `event_code`, `dedup_key`, `subject`, `body`, `status`, `attempts`, `next_attempt_at`, `last_error_code`, `sent_at`, `provider_message_id`; unique (`route`, `dedup_key`)              |
+| `NotificationService`                                                  | `publish(event_code, dedup_key, context)`: tạo delivery (insert-ignore), gửi ngay với timeout ngắn, lỗi thì hẹn retry (tối đa 5 lần); cron dọn dẹp hằng ngày đã có chạy thêm `dispatch_pending` |
+| `TelegramService`                                                      | `getMe`, `getUpdates`, `getChatMember`, `sendMessage`; token `TELEGRAM_BOT_TOKEN` trong ENV, không lưu DB, không hiển thị                                                                       |
+| `EmailService`                                                         | Sửa vi phạm (mục 10) + method gửi đồng bộ cho outbox, template `system/email/notification_{vi,en}`                                                                                              |
 
 ### 5.4 Quyền
 
@@ -371,7 +399,7 @@ diện bằng quy tắc (đích `flow_category`), không cần bảng tài kho�
 
 - ENV: `SEPAY_ENV` (`sandbox`/`production`), `SEPAY_API_TOKEN`, `SEPAY_WEBHOOK_SECRET`, `SEPAY_WEBHOOK_ALLOWED_IPS`
   (tùy chọn), `TELEGRAM_BOT_TOKEN`, `CLOUDFLARE_R2_PRIVATE_BUCKET_NAME` (5.6). Cập nhật `.env.example`,
-  `docs/deployment.md`.
+  `docs/guides/deployment.md`.
 - Giao dịch nhận khi `SEPAY_ENV=sandbox` tự đánh `is_test = True`.
 - `Setting` nhóm `finance`: `finance_auto_classify_enabled`, `finance_duplicate_window_days`.
 - UI chỉ hiện "đã cấu hình / chưa cấu hình" cho bí mật.
@@ -431,24 +459,24 @@ Frontend (common, cập nhật `docs/common-catalog.md`):
 Wireframe chi tiết làm bằng skill `ui-ux` ở từng giai đoạn giao diện; mục này chốt tổ chức. Nhóm quản trị
 **Tài chính**:
 
-| Menu | Đường dẫn (vi) | Nội dung |
-| --- | --- | --- |
-| Tổng quan | `/quan-tri/tai-chinh` | Bộ chọn năm/khoảng thời gian + cơ sở thời gian (ngày nhận tiền / kỳ doanh thu). Khối **Thu nhập**: tổng đã xác nhận, nhận qua ngân hàng, nhập tay, thuế khấu trừ, thuế đã nộp, theo nền tảng, theo tháng. Khối **Dòng tiền ngân hàng** (D8): tiền vào, tiền ra, chênh lệch theo tháng; tiền vào chia thu nhập / không phải thu nhập / chưa xác minh; tiền ra chia theo loại (hoàn tiền, phí, chuyển nội bộ, chi tiêu, khác). Khối **Việc cần làm**: chưa xác minh, nghi trùng, thiếu chứng từ, lỗi xác thực webhook gần nhất. Mỗi chỉ số có chú thích ý nghĩa |
-| Giao dịch | `/quan-tri/tai-chinh/giao-dich` | Tab: Tất cả · **Chưa xác minh** (badge) · Tiền ra. Chi tiết (một form): thông tin giao dịch sửa được, trường đã khác bản SePay hiện cột "SePay gửi" + **Khôi phục theo SePay**; phân loại (nền tảng/kênh, loại dòng tiền, ghi chú, **Tạo quy tắc từ giao dịch này**); phân bổ khoản thu; chứng từ; lịch sử |
-| Thu nhập | `/quan-tri/tai-chinh/thu-nhap` | Danh sách + một form tạo/sửa/xem: số tiền (trước thuế/phí/thực nhận), thời gian (nhận, phát sinh, kỳ, năm thuế), ngoại tệ, giao dịch phân bổ, khoản thuế, chứng từ, hủy |
-| Nền tảng | `/quan-tri/tai-chinh/nen-tang` | Danh sách có icon; form: thông tin, icon (chọn từ Thư viện, khung vuông `object-contain`), kênh/tài khoản, quy tắc của nền tảng |
-| Quy tắc nhận diện | `/quan-tri/tai-chinh/quy-tac` | Danh sách theo ưu tiên, cảnh báo xung đột; form có bảng thử cột phải: nhiều chuỗi mẫu, highlight phần khớp, nền tảng xác định, quy tắc khác cùng khớp, lỗi regex có vị trí; **Xem trước trên lịch sử** → **Áp dụng lại** (xác nhận) |
-| Chứng từ | `/quan-tri/tai-chinh/chung-tu` | Lọc loại/năm/nền tảng/trạng thái hợp lệ; chọn/upload nhiều file qua bộ chọn dùng chung (mặc định riêng tư); liên kết giao dịch/khoản thu/thuế |
-| Thuế | `/quan-tri/tai-chinh/thue` | Tab: Khoản thuế · Chính sách thuế |
-| Báo cáo | `/quan-tri/tai-chinh/bao-cao` | Theo năm: thu nhập theo nguồn, thực nhận, thuế khấu trừ/đã nộp/ước tính, dòng tiền vào/ra, mức hoàn thiện hồ sơ, phạm vi dữ liệu, danh sách chi tiết; xuất CSV, in PDF; nhãn "Bảng tổng hợp tham khảo — không phải tờ khai" |
-| Kết nối SePay | `/quan-tri/tai-chinh/sepay` | Tab: **Trạng thái & kiểm tra** (môi trường, bí mật đã cấu hình, Test kết nối, URL webhook + sao chép, hướng dẫn cấu hình trên my.sepay.vn, lần nhận webhook cuối, lỗi xác thực gần nhất, bật/tắt tự phân loại, hướng dẫn gửi lại thủ công trên my.sepay.vn) · **Lấy giao dịch từ SePay** (chọn khoảng ngày → kết quả mới/đã có/nghi trùng, lịch sử các lần lấy) · **Tài khoản ngân hàng** (tự ghi nhận, nhãn, ngày giao dịch đầu/cuối) · **Webhook đã nhận** |
-| Hệ thống → Thông báo | `/quan-tri/thong-bao` (`system`) | Tab: **Telegram** (trạng thái bot, đăng ký nhóm, kiểm tra, gửi thử) · **Quy tắc gửi** (ma trận sự kiện × Email/Telegram, nhóm theo module) · **Lịch sử gửi** (lọc, gửi lại) |
+| Menu                 | Đường dẫn (vi)                   | Nội dung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tổng quan            | `/quan-tri/tai-chinh`            | Bộ chọn năm/khoảng thời gian + cơ sở thời gian (ngày nhận tiền / kỳ doanh thu). Khối **Thu nhập**: tổng đã xác nhận, nhận qua ngân hàng, nhập tay, thuế khấu trừ, thuế đã nộp, theo nền tảng, theo tháng. Khối **Dòng tiền ngân hàng** (D8): tiền vào, tiền ra, chênh lệch theo tháng; tiền vào chia thu nhập / không phải thu nhập / chưa xác minh; tiền ra chia theo loại (hoàn tiền, phí, chuyển nội bộ, chi tiêu, khác). Khối **Việc cần làm**: chưa xác minh, nghi trùng, thiếu chứng từ, lỗi xác thực webhook gần nhất. Mỗi chỉ số có chú thích ý nghĩa |
+| Giao dịch            | `/quan-tri/tai-chinh/giao-dich`  | Tab: Tất cả · **Chưa xác minh** (badge) · Tiền ra. Chi tiết (một form): thông tin giao dịch sửa được, trường đã khác bản SePay hiện cột "SePay gửi" + **Khôi phục theo SePay**; phân loại (nền tảng/kênh, loại dòng tiền, ghi chú, **Tạo quy tắc từ giao dịch này**); phân bổ khoản thu; chứng từ; lịch sử                                                                                                                                                                                                                                                    |
+| Thu nhập             | `/quan-tri/tai-chinh/thu-nhap`   | Danh sách + một form tạo/sửa/xem: số tiền (trước thuế/phí/thực nhận), thời gian (nhận, phát sinh, kỳ, năm thuế), ngoại tệ, giao dịch phân bổ, khoản thuế, chứng từ, hủy                                                                                                                                                                                                                                                                                                                                                                                       |
+| Nền tảng             | `/quan-tri/tai-chinh/nen-tang`   | Danh sách có icon; form: thông tin, icon (chọn từ Thư viện, khung vuông `object-contain`), kênh/tài khoản, quy tắc của nền tảng                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Quy tắc nhận diện    | `/quan-tri/tai-chinh/quy-tac`    | Danh sách theo ưu tiên, cảnh báo xung đột; form có bảng thử cột phải: nhiều chuỗi mẫu, highlight phần khớp, nền tảng xác định, quy tắc khác cùng khớp, lỗi regex có vị trí; **Xem trước trên lịch sử** → **Áp dụng lại** (xác nhận)                                                                                                                                                                                                                                                                                                                           |
+| Chứng từ             | `/quan-tri/tai-chinh/chung-tu`   | Lọc loại/năm/nền tảng/trạng thái hợp lệ; chọn/upload nhiều file qua bộ chọn dùng chung (mặc định riêng tư); liên kết giao dịch/khoản thu/thuế                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Thuế                 | `/quan-tri/tai-chinh/thue`       | Tab: Khoản thuế · Chính sách thuế                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Báo cáo              | `/quan-tri/tai-chinh/bao-cao`    | Theo năm: thu nhập theo nguồn, thực nhận, thuế khấu trừ/đã nộp/ước tính, dòng tiền vào/ra, mức hoàn thiện hồ sơ, phạm vi dữ liệu, danh sách chi tiết; xuất CSV, in PDF; nhãn "Bảng tổng hợp tham khảo — không phải tờ khai"                                                                                                                                                                                                                                                                                                                                   |
+| Kết nối SePay        | `/quan-tri/tai-chinh/sepay`      | Tab: **Trạng thái & kiểm tra** (môi trường, bí mật đã cấu hình, Test kết nối, URL webhook + sao chép, hướng dẫn cấu hình trên my.sepay.vn, lần nhận webhook cuối, lỗi xác thực gần nhất, bật/tắt tự phân loại, hướng dẫn gửi lại thủ công trên my.sepay.vn) · **Lấy giao dịch từ SePay** (chọn khoảng ngày → kết quả mới/đã có/nghi trùng, lịch sử các lần lấy) · **Tài khoản ngân hàng** (tự ghi nhận, nhãn, ngày giao dịch đầu/cuối) · **Webhook đã nhận**                                                                                                  |
+| Hệ thống → Thông báo | `/quan-tri/thong-bao` (`system`) | Tab: **Telegram** (trạng thái bot, đăng ký nhóm, kiểm tra, gửi thử) · **Quy tắc gửi** (ma trận sự kiện × Email/Telegram, nhóm theo module) · **Lịch sử gửi** (lọc, gửi lại)                                                                                                                                                                                                                                                                                                                                                                                   |
 
 Luồng chính:
 
 - **Xử lý giao dịch chưa xác minh**: tab Chưa xác minh → mở giao dịch → chọn nền tảng hoặc "Không phải thu nhập"
-  + loại → Lưu (tạo khoản thu `confirmed` khi là thu nhập) → tùy chọn "Tạo quy tắc" với form điền sẵn và test ngay
-  trên giao dịch đó.
+  - loại → Lưu (tạo khoản thu `confirmed` khi là thu nhập) → tùy chọn "Tạo quy tắc" với form điền sẵn và test ngay
+    trên giao dịch đó.
 - **Sửa kết quả tự động** (D7): mở giao dịch hoặc khoản thu → sửa → lưu; đánh dấu người dùng đã sửa.
 - **Test webhook**: hướng dẫn Test mode + **Mô phỏng giao dịch** của SePay; giao dịch thử (`is_test`) hiện ở danh
   sách, xóa được.
@@ -485,14 +513,14 @@ Tài khoản: MBBank ••1234 · 21/11/2026 09:35
 Xem chi tiết: https://toannx.com/vi/quan-tri/tai-chinh/giao-dich/<id>
 ```
 
-| Trường | Quy tắc hiển thị |
-| --- | --- |
-| Tiền vào / Tiền ra | Theo `direction`; số tiền có dấu `+` / `−` |
-| Nền tảng | Tên nền tảng đã nhận diện; tiền ra hiện loại dòng tiền (Phí, Hoàn tiền…); không nhận diện được → "Chưa xác định — cần xử lý" |
-| Mã giao dịch | `reference_code`; trống → "Không có mã" |
-| Số tiền | Định dạng vi-VN, đơn vị ₫ |
-| Nội dung | Nội dung chuyển khoản gốc, escape HTML, cắt ở 200 ký tự |
-| Tài khoản | Ngân hàng + 4 số cuối, không số đầy đủ; không tên người chuyển |
+| Trường             | Quy tắc hiển thị                                                                                                             |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Tiền vào / Tiền ra | Theo `direction`; số tiền có dấu `+` / `−`                                                                                   |
+| Nền tảng           | Tên nền tảng đã nhận diện; tiền ra hiện loại dòng tiền (Phí, Hoàn tiền…); không nhận diện được → "Chưa xác định — cần xử lý" |
+| Mã giao dịch       | `reference_code`; trống → "Không có mã"                                                                                      |
+| Số tiền            | Định dạng vi-VN, đơn vị ₫                                                                                                    |
+| Nội dung           | Nội dung chuyển khoản gốc, escape HTML, cắt ở 200 ký tự                                                                      |
+| Tài khoản          | Ngân hàng + 4 số cuối, không số đầy đủ; không tên người chuyển                                                               |
 
 Thông báo kỹ thuật (lỗi xác thực webhook) dùng mẫu riêng: loại lỗi, số lần trong giờ, thời điểm gần nhất, link trang
 Kết nối SePay.
@@ -505,7 +533,7 @@ Kết nối SePay.
   (~33 phút), sau đó gửi lại thủ công trên my.sepay.vn hoặc bấm lấy thủ công.
 - Không scheduler mới: không GitHub Actions, không cron đồng bộ. Chỉ thêm việc gửi lại thông báo lỗi vào cron dọn dẹp
   hằng ngày đã có.
-- Không Redis/Celery; Sentry cho lỗi không lường trước, lỗi nghiệp vụ không gửi Sentry.
+- Không Redis/Celery; ghi log tập trung cho lỗi không lường trước.
 - Xuất CSV theo năm làm bản sao lưu cá nhân; sao lưu DB theo gói Neon (kiểm khi deploy).
 
 ---
@@ -522,33 +550,33 @@ nội dung chuyển khoản luôn escape, không bao giờ coi là lệnh; CSV x
 
 ### 9.2 Rủi ro
 
-| # | Rủi ro | Biện pháp |
-| --- | --- | --- |
-| R-1 | Webhook ↔ API không chung id → ghi trùng | Gộp theo mã giao dịch (3.4); không có mã thì nghi trùng chờ người dùng; kiểm V1 trong Test mode |
-| R-1b | Ngân hàng dùng chung một mã giao dịch cho nhiều giao dịch (lô) → gộp nhầm | Chỉ gộp khi cùng tài khoản + mã + chiều + số tiền; khác số tiền thì nghi trùng, không gộp |
-| R-2 | Nhóm theo UTC → sai năm thu nhập | Tổng hợp theo `Asia/Ho_Chi_Minh`, test ranh giới năm |
-| R-3 | Quy tắc quá rộng → nhận sai nền tảng, vì đã tự xác nhận (D7) nên sai đi thẳng vào số liệu | Bắt buộc xem trước trên lịch sử khi tạo/bật quy tắc; cảnh báo quy tắc khớp quá nhiều; dashboard có "giao dịch tự nhận diện trong kỳ" để soát |
-| R-4 | Đổi quy tắc ghi đè kết quả đã sửa | Không tự áp dụng; khóa bản người dùng sửa |
-| R-5 | Suy thuế từ số thực nhận | Không có logic suy luận; ước tính có nhãn |
-| R-6 | Thu nhập tháng 12 nhận tháng 1 | Kỳ doanh thu + năm thuế riêng |
-| R-7 | Tiền cá nhân/nội bộ tính vào doanh thu | Không khớp quy tắc → chưa xác minh, không tự là thu nhập; quy tắc loại trừ |
-| R-8 | Hoàn tiền/đảo chiều | `related_transaction`; tiền ra không là thu nhập âm |
-| R-9 | Lịch sử chỉnh sửa (Journal) bị dọn sau 365 ngày (D5) | Dữ liệu vẫn còn; bản SePay gốc giữ mãi trong `source_snapshot` nên vẫn so được giá trị gốc ↔ hiện tại; tăng `JOURNAL_RETENTION_DAYS` bằng ENV nếu cần |
-| R-10 | Tài khoản liên kết lại → UUID SePay mới; cùng số ở hai ngân hàng | Khóa tài khoản theo (ngân hàng, số); UUID chỉ để tham chiếu |
-| R-11 | Server sập quá ~33 phút → webhook Failed, không tự có lại | Gửi lại thủ công trên my.sepay.vn hoặc nút lấy thủ công; bật cảnh báo lỗi webhook của SePay; chủ dự án kiểm cuối tháng (4.7) |
-| R-12 | Lẫn Test mode vào live | `SEPAY_ENV`, `is_test`, secret riêng |
-| R-13 | Thiếu lịch sử trước khi dùng | Báo cáo hiện ngày giao dịch đầu tiên; nhập tay hoặc lấy thủ công theo khoảng ngày |
-| R-14 | Regex gây treo | `regex` có timeout + giới hạn độ dài |
-| R-15 | Bấm lấy thủ công hai lần; outbox gửi trùng | Unique id + gộp; unique `dedup_key` + chuyển trạng thái có điều kiện |
-| R-16 | Email bằng thread trên serverless bị mất | Outbox + gửi đồng bộ |
-| R-17 | Số giao dịch khác báo cáo nền tảng (phí, khấu trừ) | Trước thuế/phí/thực nhận + phân bổ một phần, hiện chênh lệch |
-| R-18 | Webhook đến khi DB lỗi | Chỉ trả 200 sau commit; 503 khi lỗi |
-| R-19 | Nội dung rỗng | `unclassified/empty_content`, không chạy quy tắc |
-| R-20 | Quên bật "Tự động gửi lại khi server trả lỗi" → lỗi 5xx mất ngay | Checklist cấu hình trên trang Kết nối SePay và go-live ghi rõ bước này |
-| R-21 | Chuyển ảnh đang dùng ở trang công khai/avatar sang riêng tư → ảnh vỡ | Dialog cảnh báo; bộ chọn ở nơi công khai chỉ liệt kê file `public` |
-| R-22 | Đọc file riêng tư qua link cũ đã lưu cache trước khi chuyển riêng tư | Cảnh báo khi chuyển; file chứng từ upload thẳng ở chế độ riêng tư (không qua giai đoạn công khai) |
-| R-23 | Giao dịch nhập tay rồi SePay đến sau → trùng | Nghi trùng + nút Gộp (4.9), không tự gộp vì giờ nhập tay không chính xác |
-| R-24 | Người xem chứng từ có `finance.document.read` nhưng không mở được file riêng tư của người khác | Có chủ ý (D10): cấp thêm `system.attachment.read_private` cho người cần xem file |
+| #    | Rủi ro                                                                                         | Biện pháp                                                                                                                                             |
+| ---- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R-1  | Webhook ↔ API không chung id → ghi trùng                                                       | Gộp theo mã giao dịch (3.4); không có mã thì nghi trùng chờ người dùng; kiểm V1 trong Test mode                                                       |
+| R-1b | Ngân hàng dùng chung một mã giao dịch cho nhiều giao dịch (lô) → gộp nhầm                      | Chỉ gộp khi cùng tài khoản + mã + chiều + số tiền; khác số tiền thì nghi trùng, không gộp                                                             |
+| R-2  | Nhóm theo UTC → sai năm thu nhập                                                               | Tổng hợp theo `Asia/Ho_Chi_Minh`, test ranh giới năm                                                                                                  |
+| R-3  | Quy tắc quá rộng → nhận sai nền tảng, vì đã tự xác nhận (D7) nên sai đi thẳng vào số liệu      | Bắt buộc xem trước trên lịch sử khi tạo/bật quy tắc; cảnh báo quy tắc khớp quá nhiều; dashboard có "giao dịch tự nhận diện trong kỳ" để soát          |
+| R-4  | Đổi quy tắc ghi đè kết quả đã sửa                                                              | Không tự áp dụng; khóa bản người dùng sửa                                                                                                             |
+| R-5  | Suy thuế từ số thực nhận                                                                       | Không có logic suy luận; ước tính có nhãn                                                                                                             |
+| R-6  | Thu nhập tháng 12 nhận tháng 1                                                                 | Kỳ doanh thu + năm thuế riêng                                                                                                                         |
+| R-7  | Tiền cá nhân/nội bộ tính vào doanh thu                                                         | Không khớp quy tắc → chưa xác minh, không tự là thu nhập; quy tắc loại trừ                                                                            |
+| R-8  | Hoàn tiền/đảo chiều                                                                            | `related_transaction`; tiền ra không là thu nhập âm                                                                                                   |
+| R-9  | Lịch sử chỉnh sửa (Journal) bị dọn sau 365 ngày (D5)                                           | Dữ liệu vẫn còn; bản SePay gốc giữ mãi trong `source_snapshot` nên vẫn so được giá trị gốc ↔ hiện tại; tăng `JOURNAL_RETENTION_DAYS` bằng ENV nếu cần |
+| R-10 | Tài khoản liên kết lại → UUID SePay mới; cùng số ở hai ngân hàng                               | Khóa tài khoản theo (ngân hàng, số); UUID chỉ để tham chiếu                                                                                           |
+| R-11 | Server sập quá ~33 phút → webhook Failed, không tự có lại                                      | Gửi lại thủ công trên my.sepay.vn hoặc nút lấy thủ công; bật cảnh báo lỗi webhook của SePay; chủ dự án kiểm cuối tháng (4.7)                          |
+| R-12 | Lẫn Test mode vào live                                                                         | `SEPAY_ENV`, `is_test`, secret riêng                                                                                                                  |
+| R-13 | Thiếu lịch sử trước khi dùng                                                                   | Báo cáo hiện ngày giao dịch đầu tiên; nhập tay hoặc lấy thủ công theo khoảng ngày                                                                     |
+| R-14 | Regex gây treo                                                                                 | `regex` có timeout + giới hạn độ dài                                                                                                                  |
+| R-15 | Bấm lấy thủ công hai lần; outbox gửi trùng                                                     | Unique id + gộp; unique `dedup_key` + chuyển trạng thái có điều kiện                                                                                  |
+| R-16 | Email bằng thread trên serverless bị mất                                                       | Outbox + gửi đồng bộ                                                                                                                                  |
+| R-17 | Số giao dịch khác báo cáo nền tảng (phí, khấu trừ)                                             | Trước thuế/phí/thực nhận + phân bổ một phần, hiện chênh lệch                                                                                          |
+| R-18 | Webhook đến khi DB lỗi                                                                         | Chỉ trả 200 sau commit; 503 khi lỗi                                                                                                                   |
+| R-19 | Nội dung rỗng                                                                                  | `unclassified/empty_content`, không chạy quy tắc                                                                                                      |
+| R-20 | Quên bật "Tự động gửi lại khi server trả lỗi" → lỗi 5xx mất ngay                               | Checklist cấu hình trên trang Kết nối SePay và go-live ghi rõ bước này                                                                                |
+| R-21 | Chuyển ảnh đang dùng ở trang công khai/avatar sang riêng tư → ảnh vỡ                           | Dialog cảnh báo; bộ chọn ở nơi công khai chỉ liệt kê file `public`                                                                                    |
+| R-22 | Đọc file riêng tư qua link cũ đã lưu cache trước khi chuyển riêng tư                           | Cảnh báo khi chuyển; file chứng từ upload thẳng ở chế độ riêng tư (không qua giai đoạn công khai)                                                     |
+| R-23 | Giao dịch nhập tay rồi SePay đến sau → trùng                                                   | Nghi trùng + nút Gộp (4.9), không tự gộp vì giờ nhập tay không chính xác                                                                              |
+| R-24 | Người xem chứng từ có `finance.document.read` nhưng không mở được file riêng tư của người khác | Có chủ ý (D10): cấp thêm `system.attachment.read_private` cho người cần xem file                                                                      |
 
 Để sau: đọc báo cáo CSV/XLSX của Shopee/AdSense, OCR chứng từ, nhiều người dùng (owner), quản lý webhook qua OAuth2,
 hóa đơn điện tử SePay.
@@ -579,13 +607,13 @@ hóa đơn điện tử SePay.
 
 ## 10. Vi phạm rule trong file đã đọc (sửa ở giai đoạn 0)
 
-| File | Vi phạm | Hướng sửa |
-| --- | --- | --- |
-| `backend/app/system/services/email_service.py` | Method công khai `@classmethod`; ba method lặp khối dựng/gửi; thread pool không an toàn trên serverless | Instance method, gom `send_template`, nơi gọi tạo `self.email_service` trong `__init__` |
-| `backend/app/system/services/setting_service.py` | `set_setting_value` 6 tham số vị trí; khóa `auth_*_enabled` là chuỗi lặp | Tham số keyword-only; hằng khóa ở `system/constants/` |
-| `backend/app/system/services/google_oauth_service.py` | Dùng `requests` chưa khai trong `pyproject.toml` | `uv add requests` (D3) |
-| `backend/app/core/storage/r2_usage_service.py` | `# noqa: S310` không ghi lý do | Ghi lý do |
-| `SYSTEM_CONTEXT.md` | Ghi "bộ chọn không có tab upload" nhưng `AttachmentPicker` đã có upload kéo thả (`canUpload`) — tài liệu lệch code | Sửa cùng lúc với 5.6 |
+| File                                                  | Vi phạm                                                                                                            | Hướng sửa                                                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `backend/app/system/services/email_service.py`        | Method công khai `@classmethod`; ba method lặp khối dựng/gửi; thread pool không an toàn trên serverless            | Instance method, gom `send_template`, nơi gọi tạo `self.email_service` trong `__init__` |
+| `backend/app/system/services/setting_service.py`      | `set_setting_value` 6 tham số vị trí; khóa `auth_*_enabled` là chuỗi lặp                                           | Tham số keyword-only; hằng khóa ở `system/constants/`                                   |
+| `backend/app/system/services/google_oauth_service.py` | Dùng `requests` chưa khai trong `pyproject.toml`                                                                   | `uv add requests` (D3)                                                                  |
+| `backend/app/core/storage/r2_usage_service.py`        | `# noqa: S310` không ghi lý do                                                                                     | Ghi lý do                                                                               |
+| `SYSTEM_CONTEXT.md`                                   | Ghi "bộ chọn không có tab upload" nhưng `AttachmentPicker` đã có upload kéo thả (`canUpload`) — tài liệu lệch code | Sửa cùng lúc với 5.6                                                                    |
 
 ---
 
@@ -594,17 +622,17 @@ hóa đơn điện tử SePay.
 Mỗi giai đoạn gồm code, test, i18n, catalog, docs; chỉ kiểm phần đã sửa; giai đoạn có UI dùng skill `ui-ux` trước
 và `playwright-cli` sau.
 
-| Giai đoạn | Mục tiêu | Phạm vi | Phụ thuộc | Hoàn thành khi |
-| --- | --- | --- | --- | --- |
-| 0. Nền | Gỡ vướng | Sửa vi phạm mục 10; `EmailService` gửi đồng bộ; `notification_events` trong `ModuleDescriptor`; thêm dependency D3 | — | Test system liên quan xanh; catalog cập nhật |
-| 0b. File riêng tư | Chứng từ không lộ | Mục 5.6 trọn gói: `visibility`, bucket riêng tư, `content_url`, quyền `read_private`, chuyển chế độ, loại file mới, props `AttachmentPicker`/`AttachmentUpload`, nút trong `AttachmentDetailDialog`, route `/tep/[id]` + màn không có quyền | 0 | Test 9.3 phần file riêng tư xanh; kiểm thật trên R2 (bucket riêng tư không mở được bằng link trực tiếp); catalog + SYSTEM_CONTEXT cập nhật |
-| 1. Kết nối SePay | Nối được SePay | Scaffold `finance`, quyền, nhóm FE; `BankAccount`; `SepayApiClient`; Test kết nối; trang Kết nối SePay | 0 | Test mode: thấy tài khoản, test kết nối đúng |
-| 2. Tiếp nhận & chống trùng | Không mất, không trùng | Webhook; `SepayWebhookEvent`; `BankTransaction`; chống trùng theo mã giao dịch (3.4); nút lấy thủ công + `SepaySyncRun`; danh sách + một form nhập tay/sửa giao dịch (4.8, 4.9) + gộp nghi trùng, lọc theo tháng + xuất CSV (4.7); kiểm V1, V2 | 1 | Toàn bộ test chống trùng xanh; mô phỏng giao dịch rồi lấy thủ công cùng ngày vẫn ra đúng một dòng |
-| 3. Nhận diện & xử lý tay | Phân loại tin cậy | Nền tảng (+icon), kênh, quy tắc, engine, API test, xem trước/áp dụng lại, tab Chưa xác minh, Tiền ra, phân loại tay, tạo quy tắc từ giao dịch | 2 | Kịch bản xung đột/không khớp/áp dụng lại đạt; UI test quy tắc kiểm desktop + mobile |
-| 4. Thu nhập, thuế, chứng từ (cần 0b) | Hồ sơ đủ | `IncomeRecord` (tự tạo `confirmed`), phân bổ, nhập tay, nghi trùng nhập tay, chính sách/khoản thuế, chứng từ + liên kết, thiếu chứng từ | 3 | Ràng buộc phân bổ, không suy thuế, chứng từ thêm sau đều có test |
-| 5. Dashboard & báo cáo | Số đúng | API tổng hợp (giờ VN, hai cơ sở thời gian), khối Thu nhập + Dòng tiền ngân hàng, biểu đồ, báo cáo năm, phạm vi dữ liệu, CSV, in PDF | 4 | Số dashboard khớp tổng `IncomeRecord`/`BankTransaction` trong test |
-| 6. Email & Telegram | Biết ngay khi có việc | Model + service mục 5.3, UI Hệ thống → Thông báo, sự kiện finance | 0, 2 (song song 3–5 được) | Không gửi trùng khi webhook gửi lại hoặc lấy thủ công; lỗi gửi không ảnh hưởng giao dịch |
-| 7. Hoàn thiện & go-live | Vận hành thật | E2E, rà bảo mật, cập nhật `docs/` và `SYSTEM_CONTEXT.md`, checklist go-live SePay (webhook live HMAC, bật "Tự động gửi lại khi server trả lỗi" + cảnh báo lỗi liên tiếp, giao dịch nhỏ thật), `graphify update .` | 1–6 | Checklist đạt |
+| Giai đoạn                            | Mục tiêu               | Phạm vi                                                                                                                                                                                                                                        | Phụ thuộc                 | Hoàn thành khi                                                                                                                             |
+| ------------------------------------ | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0. Nền                               | Gỡ vướng               | Sửa vi phạm mục 10; `EmailService` gửi đồng bộ; `notification_events` trong `ModuleDescriptor`; thêm dependency D3                                                                                                                             | —                         | Test system liên quan xanh; catalog cập nhật                                                                                               |
+| 0b. File riêng tư                    | Chứng từ không lộ      | Mục 5.6 trọn gói: `visibility`, bucket riêng tư, `content_url`, quyền `read_private`, chuyển chế độ, loại file mới, props `AttachmentPicker`/`AttachmentUpload`, nút trong `AttachmentDetailDialog`, route `/tep/[id]` + màn không có quyền    | 0                         | Test 9.3 phần file riêng tư xanh; kiểm thật trên R2 (bucket riêng tư không mở được bằng link trực tiếp); catalog + SYSTEM_CONTEXT cập nhật |
+| 1. Kết nối SePay                     | Nối được SePay         | Scaffold `finance`, quyền, nhóm FE; `BankAccount`; `SepayApiClient`; Test kết nối; trang Kết nối SePay                                                                                                                                         | 0                         | Test mode: thấy tài khoản, test kết nối đúng                                                                                               |
+| 2. Tiếp nhận & chống trùng           | Không mất, không trùng | Webhook; `SepayWebhookEvent`; `BankTransaction`; chống trùng theo mã giao dịch (3.4); nút lấy thủ công + `SepaySyncRun`; danh sách + một form nhập tay/sửa giao dịch (4.8, 4.9) + gộp nghi trùng, lọc theo tháng + xuất CSV (4.7); kiểm V1, V2 | 1                         | Toàn bộ test chống trùng xanh; mô phỏng giao dịch rồi lấy thủ công cùng ngày vẫn ra đúng một dòng                                          |
+| 3. Nhận diện & xử lý tay             | Phân loại tin cậy      | Nền tảng (+icon), kênh, quy tắc, engine, API test, xem trước/áp dụng lại, tab Chưa xác minh, Tiền ra, phân loại tay, tạo quy tắc từ giao dịch                                                                                                  | 2                         | Kịch bản xung đột/không khớp/áp dụng lại đạt; UI test quy tắc kiểm desktop + mobile                                                        |
+| 4. Thu nhập, thuế, chứng từ (cần 0b) | Hồ sơ đủ               | `IncomeRecord` (tự tạo `confirmed`), phân bổ, nhập tay, nghi trùng nhập tay, chính sách/khoản thuế, chứng từ + liên kết, thiếu chứng từ                                                                                                        | 3                         | Ràng buộc phân bổ, không suy thuế, chứng từ thêm sau đều có test                                                                           |
+| 5. Dashboard & báo cáo               | Số đúng                | API tổng hợp (giờ VN, hai cơ sở thời gian), khối Thu nhập + Dòng tiền ngân hàng, biểu đồ, báo cáo năm, phạm vi dữ liệu, CSV, in PDF                                                                                                            | 4                         | Số dashboard khớp tổng `IncomeRecord`/`BankTransaction` trong test                                                                         |
+| 6. Email & Telegram                  | Biết ngay khi có việc  | Model + service mục 5.3, UI Hệ thống → Thông báo, sự kiện finance                                                                                                                                                                              | 0, 2 (song song 3–5 được) | Không gửi trùng khi webhook gửi lại hoặc lấy thủ công; lỗi gửi không ảnh hưởng giao dịch                                                   |
+| 7. Hoàn thiện & go-live              | Vận hành thật          | E2E, rà bảo mật, cập nhật `docs/` và `SYSTEM_CONTEXT.md`, checklist go-live SePay (webhook live HMAC, bật "Tự động gửi lại khi server trả lỗi" + cảnh báo lỗi liên tiếp, giao dịch nhỏ thật), `graphify update .`                              | 1–6                       | Checklist đạt                                                                                                                              |
 
 Trước giai đoạn 6, cảnh báo webhook lỗi dựa vào cảnh báo sẵn có của SePay.
 
@@ -628,10 +656,10 @@ Câu hỏi mở cũ đã chốt: O1 → D10, O2 → D11. Không còn câu hỏi 
 
 Cần kiểm khi bắt tay làm (không cần chủ dự án quyết, nhưng phải xác minh thật trước khi chốt code):
 
-| # | Việc | Ở giai đoạn |
-| --- | --- | --- |
-| V1 | Mã giao dịch của webhook (`referenceCode`) và của API (`reference_number`) cho cùng một giao dịch giống nhau — thử bằng Test mode: mô phỏng giao dịch rồi bấm lấy thủ công, phải ra đúng một dòng | 2 |
-| V2 | Chữ ký webhook không bị hỏng trên đường đi. SePay ký lên nguyên văn nội dung gửi đi; nếu request đi qua proxy (`toannx.com` rewrite sang backend) mà proxy đổi nội dung (nén, đổi mã hóa) thì chữ ký không khớp và hệ thống từ chối mọi webhook. Cách làm: cấu hình URL webhook thẳng vào `api.toannx.com` và gửi thử một webhook sau khi deploy | 2 / go-live |
-| V3 | Đăng ký nhóm Telegram: khi thêm bot vào nhóm qua link, tin nhắn bot nhận được chứa mã đăng ký ở đúng dạng nào — chỉ ảnh hưởng cách code đọc mã, người dùng không phải làm gì (nội dung tin gửi đi đã chốt ở 7.1) | 6 |
-| V4 | R2: tạo được link tạm trên bucket riêng tư bằng `boto3` hiện có; copy file giữa hai bucket | 0b |
-| V5 | Ảnh riêng tư hiển thị được qua `<Image unoptimized />` (đã đồng ý); thêm domain R2 vào CSP `img-src` nếu cần | 0b |
+| #   | Việc                                                                                                                                                                                                                                                                                                                                             | Ở giai đoạn |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| V1  | Mã giao dịch của webhook (`referenceCode`) và của API (`reference_number`) cho cùng một giao dịch giống nhau — thử bằng Test mode: mô phỏng giao dịch rồi bấm lấy thủ công, phải ra đúng một dòng                                                                                                                                                | 2           |
+| V2  | Chữ ký webhook không bị hỏng trên đường đi. SePay ký lên nguyên văn nội dung gửi đi; nếu request đi qua proxy (`toannx.com` rewrite sang backend) mà proxy đổi nội dung (nén, đổi mã hóa) thì chữ ký không khớp và hệ thống từ chối mọi webhook. Cách làm: cấu hình URL webhook thẳng vào `api.toannx.com` và gửi thử một webhook sau khi deploy | 2 / go-live |
+| V3  | Đăng ký nhóm Telegram: khi thêm bot vào nhóm qua link, tin nhắn bot nhận được chứa mã đăng ký ở đúng dạng nào — chỉ ảnh hưởng cách code đọc mã, người dùng không phải làm gì (nội dung tin gửi đi đã chốt ở 7.1)                                                                                                                                 | 6           |
+| V4  | R2: tạo được link tạm trên bucket riêng tư bằng `boto3` hiện có; copy file giữa hai bucket                                                                                                                                                                                                                                                       | 0b          |
+| V5  | Ảnh riêng tư hiển thị được qua `<Image unoptimized />` (đã đồng ý); thêm domain R2 vào CSP `img-src` nếu cần                                                                                                                                                                                                                                     | 0b          |

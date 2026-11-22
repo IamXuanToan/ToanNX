@@ -4,6 +4,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
 import { NOVEL_ROUTES } from "../../constants/routes";
 import { useAuthors } from "../../hooks/use-authors";
@@ -26,7 +27,8 @@ export function useAuthorTable() {
   return {
     table,
     query,
-    edit: (author: Author) => router.push(NOVEL_ROUTES.adminAuthorDetail(author.id)),
+    view: (author: Author) => router.push(NOVEL_ROUTES.adminAuthorDetail(author.id)),
+    edit: (author: Author) => router.push(withEditMode(NOVEL_ROUTES.adminAuthorDetail(author.id))),
     remove: (author: Author) => remove.mutateAsync(author.id),
     bulkDelete: (authors: Author[]) => bulkDelete.mutateAsync(authors.map((a) => a.id)),
   };

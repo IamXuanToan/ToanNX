@@ -37,3 +37,6 @@ class NovelPermission(PermissionCatalog):
         name="Import truyện",
         description="Import truyện và danh sách chương từ file template mẫu.",
     )
+
+    # Quyền của vai trò thành viên: thao tác bản ghi do mình tạo.
+    MEMBER = (READ, CREATE, UPDATE, DELETE)

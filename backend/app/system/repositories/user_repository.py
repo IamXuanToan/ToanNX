@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from django.db.models import Prefetch, QuerySet
+from django.db.models import Prefetch, Q, QuerySet
 
 from app.core.repositories.core_repository import CoreRepository
 from app.system.models.user import User
@@ -103,6 +103,32 @@ class UserRepository(CoreRepository[User]):
         """
         user.last_seen_at = when
         self.save(user, update_fields=["last_seen_at"])
+
+    def active_with_permission(self, code: str | None) -> QuerySet[User]:
+        """Người dùng đang hoạt động có quyền `code` qua vai trò đang bật (superuser luôn có).
+
+        Args:
+            code: Mã quyền; None = mọi người dùng đang hoạt động.
+
+        Returns:
+            QuerySet không trùng.
+        """
+        queryset = self.get_queryset().filter(is_active=True)
+        if code is None:
+            return queryset
+        return queryset.filter(
+            Q(is_superuser=True)
+            | Q(
+                user_roles__role__is_active=True,
+                user_roles__role__deleted_at__isnull=True,
+                user_roles__role__role_permissions__permission__code=code,
+                user_roles__role__role_permissions__permission__is_active=True,
+            )
+        ).distinct()
+
+    def active_in_roles(self, role_ids: list[Any]) -> QuerySet[User]:
+        """Người dùng đang hoạt động thuộc một trong các vai trò."""
+        return self.get_queryset().filter(is_active=True, user_roles__role_id__in=role_ids).distinct()
 
     def lock_active_superusers(self) -> list[User]:
         """Khóa dòng mọi superuser đang hoạt động (chống race khi hạ quyền đồng thời).

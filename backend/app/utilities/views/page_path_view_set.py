@@ -16,6 +16,9 @@ from app.utilities.permissions.page_path_permission import PagePathPermission as
 from app.utilities.serializers.responses.page_path_response_serializer import (
     PagePathResponseSerializer,
 )
+from app.utilities.serializers.validates.page_path_bulk_update_validate_serializer import (
+    PagePathBulkUpdateValidateSerializer,
+)
 from app.utilities.serializers.validates.page_path_create_validate_serializer import (
     PagePathCreateValidateSerializer,
 )
@@ -37,6 +40,8 @@ class PagePathViewSet(CoreModelViewSet[PagePath]):
     detail_serializer_class = PagePathResponseSerializer
     create_serializer_class = PagePathCreateValidateSerializer
     update_serializer_class = PagePathUpdateValidateSerializer
+    bulk_update_serializer_class = PagePathBulkUpdateValidateSerializer
+    bulk_delete_enabled = True
     history_enabled = True
     action_rate_limits = {"create": "utilities.page_path.create"}
     action_permissions = {
@@ -45,5 +50,7 @@ class PagePathViewSet(CoreModelViewSet[PagePath]):
         "create": permission_rule(P.PATH_CREATE),
         "partial_update": permission_rule(P.PATH_UPDATE),
         "destroy": permission_rule(P.PATH_DELETE),
+        "bulk_update": permission_rule(P.PATH_UPDATE),
+        "bulk_delete": permission_rule(P.PATH_DELETE),
         "history": permission_rule(P.PATH_READ),
     }

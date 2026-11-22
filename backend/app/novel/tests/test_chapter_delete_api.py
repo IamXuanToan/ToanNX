@@ -19,7 +19,7 @@ class TestChapterDeleteApi(BaseApiTestCase):
 
     def test_delete_success_soft_delete(self, user: Any, login: Any) -> None:
         """Xóa mềm chương thành công (204 No Content)."""
-        chapter = ChapterFactory()
+        chapter = ChapterFactory(novel__owner=user)
         grant(user, ChapterPermission.DELETE)
         api = login(user)
 

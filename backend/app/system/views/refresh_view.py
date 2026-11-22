@@ -33,6 +33,7 @@ class RefreshView(CoreApiView):
             **kwargs: Tham số của DRF.
         """
         super().__init__(**kwargs)
+        self.auth_cookie_service = AuthCookieService()
         self.auth_service = AuthService()
 
     @extend_schema(request=None, responses=CurrentUserResponseSerializer)
@@ -52,9 +53,9 @@ class RefreshView(CoreApiView):
             result = self.auth_service.refresh(request._request, raw_token)
         except AuthenticationError as exc:
             error_response = CoreErrorResponse(exc.code, exc.message, exc.status_code)
-            AuthCookieService.clear_cookies(error_response)
+            self.auth_cookie_service.clear_cookies(error_response)
             return error_response
 
         response = CoreResponse(CurrentUserResponseSerializer(result.profile).data)
-        AuthCookieService.set_cookies(response, result)
+        self.auth_cookie_service.set_cookies(response, result)
         return response

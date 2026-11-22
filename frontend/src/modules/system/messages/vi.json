@@ -199,25 +199,97 @@
     "saving": "Đang lưu…",
     "fileUpdated": "Đã cập nhật thông tin tệp.",
     "copyName": "Chép tên",
-    "copiedName": "Đã chép"
+    "copiedName": "Đã chép",
+    "visibility": "Chế độ xem",
+    "visibilityPublic": "Công khai",
+    "visibilityPrivate": "Riêng tư",
+    "privateToggle": "Riêng tư",
+    "privateToggleHint": "Chỉ bạn, quản trị viên và người được cấp quyền mở được tệp.",
+    "privateLocked": "Tệp tải lên ở đây luôn ở chế độ riêng tư.",
+    "privateBadge": "Tệp riêng tư",
+    "makePrivate": "Chuyển sang riêng tư",
+    "makePublic": "Chuyển sang công khai",
+    "makePrivateTitle": "Chuyển tệp sang riêng tư?",
+    "makePrivateDescription": "Link công khai cũ sẽ không mở được nữa. Bản đã lưu trong bộ nhớ đệm của trình duyệt hoặc CDN có thể còn hiển thị thêm một thời gian.",
+    "makePublicTitle": "Chuyển tệp sang công khai?",
+    "makePublicDescription": "Ai có link đều xem được tệp này, kể cả người chưa đăng nhập.",
+    "madePrivate": "Đã chuyển tệp sang riêng tư",
+    "madePublic": "Đã chuyển tệp sang công khai",
+    "pickerTitleFile": "Chọn tệp từ Thư viện",
+    "pickerUploadHintFile": "Chọn tệp từ thư viện hoặc tải tệp mới từ thiết bị.",
+    "useFile": "Dùng tệp này",
+    "useFiles": "Dùng {count} tệp",
+    "noFile": "Chưa chọn tệp",
+    "dropFileHere": "Thả tệp vào đây để tải lên ngay",
+    "fileNotAccepted": "Tệp đã tải lên nhưng không thuộc loại được nhận ở đây.",
+    "imageEditorTitle": "Chỉnh sửa hình ảnh",
+    "editImage": "Chỉnh sửa ảnh",
+    "crop": "Cắt ảnh",
+    "cropShape": "Kiểu cắt",
+    "cropShapeFree": "Tự do",
+    "cropShapeSquare": "Vuông (1:1)",
+    "cropShapeRound": "Tròn",
+    "cropShape4_3": "4:3",
+    "cropShape16_9": "16:9",
+    "zoom": "Thu phóng",
+    "rotate90": "Xoay 90°",
+    "watermark": "Đóng dấu",
+    "watermarkEnable": "Bật đóng dấu watermark",
+    "watermarkHint": "Chèn chữ bản quyền lên hình ảnh.",
+    "watermarkText": "Nội dung chữ đóng dấu",
+    "watermarkPlaceholder": "Nhập chữ đóng dấu…",
+    "watermarkPosition": "Vị trí đóng dấu",
+    "watermarkPosBottomRight": "Góc dưới phải",
+    "watermarkPosBottomLeft": "Góc dưới trái",
+    "watermarkPosTopRight": "Góc trên phải",
+    "watermarkPosTopLeft": "Góc trên trái",
+    "watermarkPosCenter": "Ở giữa",
+    "watermarkOpacity": "Độ mờ",
+    "watermarkColor": "Màu chữ",
+    "saveAsNew": "Lưu ảnh mới",
+    "imageEditSaved": "Đã lưu ảnh mới vào thư viện.",
+    "imageEditFailed": "Không thể xử lý hình ảnh.",
+    "cropShapeOriginal": "Ảnh gốc",
+    "watermarkFontSize": "Cỡ chữ",
+    "watermarkFontSizeValue": "{percent}% chiều rộng",
+    "watermarkColorWhite": "Trắng",
+    "watermarkColorBlack": "Đen",
+    "watermarkColorPicker": "Chọn màu chữ"
   },
   "auth": {
     "login": {
       "title": "Đăng nhập",
+      "subtitle": "Chào mừng bạn quay lại hệ thống quản trị ToanNX",
       "password": "Mật khẩu",
       "submit": "Đăng nhập",
       "submitting": "Đang đăng nhập...",
       "identifier": "Email hoặc tên người dùng",
+      "identifierPlaceholder": "Nhập email hoặc tên người dùng",
+      "passwordPlaceholder": "Nhập mật khẩu",
       "forgotPasswordLink": "Quên mật khẩu?",
       "orContinueWith": "Hoặc tiếp tục với",
       "loginWithGoogle": "Đăng nhập với Google",
       "loginWithGithub": "Đăng nhập với GitHub",
       "socialNotConfigured": "Nền tảng chưa được cấu hình trên hệ thống.",
-      "callbackTitle": "Đang xác thực tài khoản...",
-      "callbackProcessing": "Đang xử lý thông tin xác thực từ nhà cung cấp...",
-      "callbackSuccess": "Đăng nhập thành công, đang chuyển hướng...",
+      "callbackTitle": "Đang xác thực tài khoản",
+      "callbackProcessing": "Đang kết nối và xác minh với {provider}...",
+      "callbackProcessingWait": "Vui lòng giữ nguyên cửa sổ trình duyệt trong giây lát...",
+      "callbackSuccessTitle": "Đăng nhập thành công",
+      "callbackSuccessDesc": "Phiên đăng nhập an toàn đã được kích hoạt.",
+      "callbackLinkSuccessTitle": "Liên kết thành công",
+      "callbackLinkSuccessDesc": "Tài khoản {provider} đã được kết nối với hồ sơ của bạn.",
+      "callbackRedirecting": "Đang chuyển hướng về không gian làm việc...",
+      "callbackRedirectNow": "Chuyển hướng ngay",
+      "callbackFailedTitle": "Xác thực thất bại",
+      "callbackFailedDesc": "Không thể hoàn tất quá trình xác thực với nhà cung cấp.",
       "callbackFailed": "Xác thực không thành công",
+      "callbackNotLinkedTitle": "Chưa liên kết tài khoản",
+      "callbackNotLinkedDesc": "Tài khoản {provider} này chưa được liên kết với bất kỳ người dùng nào trong hệ thống.",
+      "callbackNotLinkedGuidance": "Vì lý do bảo mật, vui lòng đăng nhập bằng mật khẩu trước, sau đó vào Hồ sơ cá nhân > Tài khoản liên kết để kích hoạt.",
       "callbackBackToLogin": "Quay lại trang đăng nhập",
+      "callbackLoginWithPassword": "Đăng nhập bằng mật khẩu",
+      "callbackBackHome": "Về trang chủ",
+      "callbackCsrfFailed": "Phiên xác thực bảo mật không khớp hoặc đã hết hạn (CSRF Protection). Vui lòng thử lại.",
       "temporarilyDisabled": "Tạm ngưng",
       "socialDisabledHint": "Phương thức đăng nhập này hiện đang tạm ngưng bảo trì theo cấu hình hệ thống."
     },
@@ -388,7 +460,8 @@
       "tabs": {
         "info": "Thông tin cá nhân",
         "security": "Bảo mật",
-        "social": "Tài khoản liên kết"
+        "social": "Tài khoản liên kết",
+        "notifications": "Thông báo"
       },
       "avatar": "Ảnh đại diện",
       "avatarLibrary": "Thư viện ảnh",
@@ -573,7 +646,6 @@
       "system_permissions_changed": "đã cập nhật quyền",
       "system_roles_changed": "đã cập nhật vai trò"
     },
-    "viewDetail": "Xem chi tiết",
     "moreFields": "+{count} trường khác",
     "fields": {
       "permissions": "Quyền",
@@ -632,5 +704,229 @@
       "saveValue": "Lưu cấu hình",
       "jsonInvalid": "Giá trị phải là JSON hợp lệ."
     }
+  },
+  "fileAccess": {
+    "title": "Không mở được tệp",
+    "description": "Bạn không có quyền xem tệp này hoặc tệp không tồn tại.",
+    "backHome": "Về trang chủ",
+    "signInOther": "Đăng nhập tài khoản khác"
+  },
+  "notifications": {
+    "nav": "Nhật ký thông báo",
+    "bell": {
+      "title": "Thông báo",
+      "personal": "Cá nhân",
+      "system": "Hệ thống",
+      "markAll": "Đã đọc hết",
+      "settings": "Cài đặt thông báo",
+      "empty": "Chưa có thông báo nào.",
+      "more": "Xem thêm",
+      "unread": "Chưa đọc",
+      "hide": "Ẩn",
+      "pushPrompt": "Nhận thông báo ngay cả khi đóng tab?",
+      "pushEnable": "Bật"
+    },
+    "settings": {
+      "hint": "Chọn nơi nhận và sự kiện muốn nhận. Thông báo lỗi luôn hiện trong ứng dụng."
+    },
+    "push": {
+      "title": "Thông báo trình duyệt",
+      "enable": "Bật trên trình duyệt này",
+      "hint": "Hiện popup kể cả khi đã đóng tab.",
+      "granted": "Đã bật trên trình duyệt này.",
+      "denied": "Trình duyệt đang chặn thông báo; mở lại quyền trong cài đặt trang.",
+      "unsupported": "Trình duyệt chưa hỗ trợ hoặc hệ thống chưa cấu hình Firebase."
+    },
+    "telegramBot": {
+      "title": "Bot Telegram của bạn",
+      "placeholder": "Dán token bot...",
+      "save": "Lưu và kiểm tra",
+      "check": "Kiểm tra",
+      "change": "Đổi token",
+      "remove": "Xóa bot",
+      "checkOk": "Bot hoạt động bình thường.",
+      "hasWebhook": "Bot đang đặt webhook ở nơi khác, hãy gỡ webhook để dùng.",
+      "steps": {
+        "1": "Mở Telegram, chat với @BotFather, gõ /newbot.",
+        "2": "Đặt tên và username cho bot (kết thúc bằng bot).",
+        "3": "Chép token BotFather gửi về và dán vào đây."
+      },
+      "errors": {
+        "TELEGRAM_BOT_TOKEN_INVALID": "Token không còn dùng được, hãy nhập lại.",
+        "TELEGRAM_BOT_HAS_WEBHOOK": "Bot đang đặt webhook ở nơi khác."
+      }
+    },
+    "telegramChats": {
+      "title": "Nơi nhận Telegram",
+      "empty": "Chưa có nơi nhận nào.",
+      "addGroup": "Thêm nhóm",
+      "addPrivate": "Chat riêng với bot",
+      "pendingHint": "Mở Telegram bằng nút dưới (mã {code}, hết hạn sau 10 phút) rồi bấm Kiểm tra.",
+      "openTelegram": "Mở Telegram",
+      "verify": "Kiểm tra",
+      "test": "Gửi thử",
+      "status": {
+        "pending": "Chờ xác minh",
+        "active": "Hoạt động",
+        "unreachable": "Không gửi được",
+        "removed": "Bot đã bị xóa"
+      },
+      "remove": "Xóa"
+    },
+    "preferences": {
+      "event": "Sự kiện",
+      "inApp": "Trong app",
+      "push": "Trình duyệt",
+      "email": "Email",
+      "telegram": "Telegram",
+      "save": "Lưu tùy chọn"
+    },
+    "deliveries": {
+      "title": "Nhật ký thông báo",
+      "searchPlaceholder": "Tìm theo tiêu đề, đích...",
+      "empty": "Chưa có lần gửi nào.",
+      "retry": "Gửi lại",
+      "columns": {
+        "createdAt": "Thời gian",
+        "title": "Thông báo",
+        "recipient": "Người nhận",
+        "channel": "Kênh",
+        "status": "Trạng thái",
+        "attempts": "Số lần thử"
+      },
+      "channel": {
+        "PUSH": "Trình duyệt",
+        "EMAIL": "Email",
+        "TELEGRAM": "Telegram",
+        "IN_APP": "Trong app"
+      },
+      "status": {
+        "PENDING": "Chờ gửi",
+        "SENT": "Đã gửi",
+        "FAILED": "Thất bại",
+        "SKIPPED": "Bỏ qua"
+      }
+    },
+    "announcements": {
+      "nav": "Gửi thông báo",
+      "title": "Thông báo hệ thống",
+      "create": "Gửi thông báo",
+      "send": "Gửi",
+      "searchPlaceholder": "Tìm theo tiêu đề...",
+      "empty": "Chưa gửi thông báo nào.",
+      "sections": {
+        "content": "Nội dung",
+        "target": "Đối tượng"
+      },
+      "fields": {
+        "title": "Tiêu đề",
+        "body": "Nội dung",
+        "level": "Mức",
+        "link": "Đường dẫn",
+        "linkHint": "Đường dẫn trong site, bắt đầu bằng /.",
+        "target": "Gửi tới",
+        "roles": "Vai trò",
+        "expiresAt": "Hết hạn",
+        "recipients": "Người nhận",
+        "sentAt": "Gửi lúc"
+      },
+      "level": {
+        "INFO": "Thông tin",
+        "WARNING": "Cảnh báo",
+        "ERROR": "Lỗi"
+      },
+      "target": {
+        "ALL": "Mọi người",
+        "ROLES": "Theo vai trò"
+      },
+      "validation": {
+        "required": "Bắt buộc nhập.",
+        "link": "Phải bắt đầu bằng /.",
+        "roles": "Chọn ít nhất một vai trò."
+      }
+    },
+    "events": {
+      "login": "Có lượt đăng nhập mới",
+      "newDevice": "Đăng nhập từ thiết bị mới",
+      "passwordChanged": "Mật khẩu vừa được đổi",
+      "deliveryFailed": "Có thông báo gửi thất bại",
+      "storageQuota": "Dung lượng lưu trữ đã dùng {percent}%"
+    }
+  },
+  "webhooks": {
+    "nav": "Webhook",
+    "title": "Webhook của hệ thống",
+    "empty": "Chưa có webhook nào.",
+    "copy": "Sao chép URL",
+    "copied": "Đã sao chép",
+    "auth": "Xác thực",
+    "setup": "Cấu hình phía bên thứ ba"
+  },
+  "callbacks": {
+    "nav": "Callback",
+    "title": "URL callback",
+    "empty": "Chưa có callback nào.",
+    "copy": "Sao chép URL",
+    "copied": "Đã sao chép",
+    "setup": "Khai phía bên thứ ba",
+    "configured": "Đã cấu hình",
+    "notConfigured": "Chưa cấu hình client id",
+    "originHint": "URL dựng theo domain bạn đang mở trang này; mở bằng domain khác thì khai thêm URL của domain đó."
+  },
+  "currencies": {
+    "nav": "Tiền tệ",
+    "title": "Tiền tệ",
+    "create": "Thêm tiền tệ",
+    "searchPlaceholder": "Tìm theo mã, tên...",
+    "empty": "Chưa có tiền tệ.",
+    "base": "Tiền tệ gốc",
+    "sections": {
+      "info": "Thông tin"
+    },
+    "fields": {
+      "code": "Mã (ISO 4217)",
+      "name": "Tên",
+      "symbol": "Ký hiệu",
+      "decimalPlaces": "Số lẻ",
+      "position": "Thứ tự",
+      "isActive": "Đang dùng"
+    },
+    "validation": {
+      "required": "Bắt buộc nhập.",
+      "code": "3 chữ in hoa, ví dụ USD."
+    }
+  },
+  "exchangeRates": {
+    "nav": "Tỷ giá",
+    "title": "Tỷ giá",
+    "create": "Nhập tay tỷ giá",
+    "empty": "Chưa có tỷ giá.",
+    "sections": {
+      "info": "Thông tin"
+    },
+    "fields": {
+      "currency": "Ngoại tệ",
+      "rateDate": "Ngày",
+      "rate": "Tỷ giá (VNĐ)",
+      "source": "Nguồn",
+      "note": "Ghi chú",
+      "noteHint": "Ví dụ: tỷ giá trung tâm NHNN ngày …"
+    },
+    "source": {
+      "VIETCOMBANK_TRANSFER_BUY": "Vietcombank · mua chuyển khoản",
+      "MANUAL": "Nhập tay"
+    },
+    "validation": {
+      "required": "Bắt buộc nhập.",
+      "positive": "Nhập số hợp lệ."
+    }
+  },
+  "navSections": {
+    "access": "Tài khoản & phân quyền",
+    "library": "Thư viện",
+    "notifications": "Thông báo",
+    "catalogs": "Danh mục",
+    "integrations": "Tích hợp",
+    "operations": "Vận hành"
   }
 }

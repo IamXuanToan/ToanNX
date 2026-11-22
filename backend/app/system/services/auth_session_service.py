@@ -3,6 +3,8 @@
 from datetime import timedelta
 from typing import Any
 
+from django.conf import settings
+from django.db import transaction
 from django.utils import timezone
 
 from app.core.constants.error_codes import ErrorCode
@@ -12,6 +14,7 @@ from app.system.models.auth_session import AuthSession
 from app.system.repositories.auth_session_repository import AuthSessionRepository
 from app.system.repositories.refresh_token_repository import RefreshTokenRepository
 from app.system.services.access_token_service import AccessTokenService
+from app.system.services.rate_limit_service import RateLimitService
 from app.system.services.refresh_token_service import RefreshTokenService
 from app.system.services.user_service import UserService
 
@@ -41,6 +44,20 @@ class AuthSessionService:
         self.refresh_token_repository = refresh_token_repository or RefreshTokenRepository()
         self.access_token_service = access_token_service or AccessTokenService()
         self.user_service = user_service or UserService()
+        self.refresh_token_service = RefreshTokenService()
+        self.rate_limit_service = RateLimitService()
+
+    @transaction.atomic
+    def purge_expired_auth(self) -> int:
+        """Xóa bucket rate limit hết hạn và phiên hết hạn/thu hồi quá `AUTH_EXPIRED_RETENTION_DAYS`.
+
+        Returns:
+            Tổng số bản ghi đã xóa.
+        """
+        now = timezone.now()
+        buckets = self.rate_limit_service.purge_expired(now)
+        moment = now - timedelta(days=settings.AUTH_EXPIRED_RETENTION_DAYS)
+        return buckets + self.repository.delete_expired_before(moment)
 
     def authenticate_access_token(self, token: str) -> AuthSession:
         """Xác minh access token và phiên còn hiệu lực (logout/khóa có hiệu lực ngay).
@@ -105,7 +122,9 @@ class AuthSessionService:
         """
         if not raw_refresh_token:
             return
-        token = self.refresh_token_repository.find_by_hash(RefreshTokenService.hash_token(raw_refresh_token))
+        token = self.refresh_token_repository.find_by_hash(
+            self.refresh_token_service.hash_token(raw_refresh_token)
+        )
         if token is not None:
             self.repository.revoke_where("logout", pk=token.session_id)
 

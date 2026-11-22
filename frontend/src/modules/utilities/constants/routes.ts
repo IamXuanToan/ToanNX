@@ -33,19 +33,40 @@ export const PUBLIC_PAGE_ROUTE_PREFIX = "page-view";
 
 /** Pathname theo ngôn ngữ của module Tiện ích (gộp vào `routing.pathnames`). */
 export const UTILITIES_PATHNAMES = {
-  "/admin/short-links": { vi: "/quan-tri/link-rut-gon", en: "/admin/short-links" },
-  "/admin/short-links/new": { vi: "/quan-tri/link-rut-gon/tao-moi", en: "/admin/short-links/new" },
-  "/admin/short-links/[id]": { vi: "/quan-tri/link-rut-gon/[id]", en: "/admin/short-links/[id]" },
+  "/admin/short-links": {
+    vi: "/quan-tri/tien-ich/link-rut-gon",
+    en: "/admin/utilities/short-links",
+  },
+  "/admin/short-links/new": {
+    vi: "/quan-tri/tien-ich/link-rut-gon/tao-moi",
+    en: "/admin/utilities/short-links/new",
+  },
+  "/admin/short-links/[id]": {
+    vi: "/quan-tri/tien-ich/link-rut-gon/[id]",
+    en: "/admin/utilities/short-links/[id]",
+  },
   "/link-unavailable": { vi: "/lien-ket-khong-kha-dung", en: "/link-unavailable" },
-  "/admin/qr-codes": { vi: "/quan-tri/ma-qr", en: "/admin/qr-codes" },
-  "/admin/qr-codes/new": { vi: "/quan-tri/ma-qr/tao-moi", en: "/admin/qr-codes/new" },
-  "/admin/qr-codes/[id]": { vi: "/quan-tri/ma-qr/[id]", en: "/admin/qr-codes/[id]" },
-  "/admin/pages": { vi: "/quan-tri/trang", en: "/admin/pages" },
-  "/admin/pages/new": { vi: "/quan-tri/trang/tao-moi", en: "/admin/pages/new" },
-  "/admin/pages/[id]": { vi: "/quan-tri/trang/[id]", en: "/admin/pages/[id]" },
-  "/admin/page-paths": { vi: "/quan-tri/duong-dan", en: "/admin/page-paths" },
-  "/admin/page-paths/new": { vi: "/quan-tri/duong-dan/tao-moi", en: "/admin/page-paths/new" },
-  "/admin/page-paths/[id]": { vi: "/quan-tri/duong-dan/[id]", en: "/admin/page-paths/[id]" },
+  "/admin/qr-codes": { vi: "/quan-tri/tien-ich/ma-qr", en: "/admin/utilities/qr-codes" },
+  "/admin/qr-codes/new": {
+    vi: "/quan-tri/tien-ich/ma-qr/tao-moi",
+    en: "/admin/utilities/qr-codes/new",
+  },
+  "/admin/qr-codes/[id]": {
+    vi: "/quan-tri/tien-ich/ma-qr/[id]",
+    en: "/admin/utilities/qr-codes/[id]",
+  },
+  "/admin/pages": { vi: "/quan-tri/tien-ich/trang", en: "/admin/utilities/pages" },
+  "/admin/pages/new": { vi: "/quan-tri/tien-ich/trang/tao-moi", en: "/admin/utilities/pages/new" },
+  "/admin/pages/[id]": { vi: "/quan-tri/tien-ich/trang/[id]", en: "/admin/utilities/pages/[id]" },
+  "/admin/page-paths": { vi: "/quan-tri/tien-ich/duong-dan", en: "/admin/utilities/page-paths" },
+  "/admin/page-paths/new": {
+    vi: "/quan-tri/tien-ich/duong-dan/tao-moi",
+    en: "/admin/utilities/page-paths/new",
+  },
+  "/admin/page-paths/[id]": {
+    vi: "/quan-tri/tien-ich/duong-dan/[id]",
+    en: "/admin/utilities/page-paths/[id]",
+  },
 } as const;
 
 /**

@@ -27,14 +27,14 @@ export function PasswordInput({
     <div className="relative">
       <Lock
         aria-hidden
-        className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
+        className="text-muted-foreground pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2"
       />
       <Input
         type={visible ? "text" : "password"}
         autoCapitalize="none"
         spellCheck={false}
         disabled={disabled}
-        className={cn("pr-11 pl-9", className)}
+        className={cn("pr-11 pl-10", className)}
         {...props}
       />
       <Button
@@ -45,7 +45,7 @@ export function PasswordInput({
         onClick={toggle}
         aria-label={label}
         aria-pressed={visible}
-        className="text-muted-foreground hover:text-primary absolute top-1/2 right-0.5 size-9 -translate-y-1/2 rounded-lg"
+        className="text-muted-foreground hover:text-foreground absolute top-1/2 right-1 size-8 -translate-y-1/2 rounded-lg"
       >
         {visible ? <EyeOff /> : <Eye />}
       </Button>

@@ -66,6 +66,17 @@ class UserService(CoreCrudService[User, UserRepository]):
         """
         return self.repository.find_by_id(user_id)
 
+    def username_exists(self, username: str) -> bool:
+        """Tên người dùng đã có người dùng (kể cả tài khoản bị khóa).
+
+        Args:
+            username: Tên người dùng (khớp chính xác).
+
+        Returns:
+            True nếu đã tồn tại.
+        """
+        return self.repository.find_by_username(username) is not None
+
     def find_by_identifier(self, identifier: str) -> User | None:
         """Tìm người dùng theo email (ưu tiên, không phân biệt hoa thường) hoặc tên người dùng.
 

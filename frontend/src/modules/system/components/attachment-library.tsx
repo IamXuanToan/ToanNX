@@ -243,7 +243,10 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
       ) : query.isError ? (
         <ErrorState onRetry={() => query.refetch()} />
       ) : state.items.length ? (
-        <div className="flex min-w-0 flex-col justify-between space-y-8 sm:space-y-10" aria-busy={query.isFetching}>
+        <div
+          className="flex min-w-0 flex-col justify-between space-y-8 sm:space-y-10"
+          aria-busy={query.isFetching}
+        >
           <div className="min-h-[280px] sm:min-h-[340px]">
             <AttachmentGrid
               files={state.items}

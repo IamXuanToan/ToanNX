@@ -1,4 +1,4 @@
-﻿# Chạy toàn bộ kiểm tra của dự án. Dừng ngay ở bước đầu tiên thất bại (exit code khác 0).
+# Chạy toàn bộ kiểm tra của dự án. Dừng ngay ở bước đầu tiên thất bại (exit code khác 0).
 # Cùng quy trình với scripts/check-all.sh.
 # Lệnh native (uv, pnpm) ghi log ra stderr; dựa vào $LASTEXITCODE thay vì coi stderr là lỗi.
 $ErrorActionPreference = "Continue"
@@ -19,7 +19,7 @@ try {
     Invoke-Step "1. Backend format check (ruff format --check)" { uv run ruff format --check . }
     Invoke-Step "2a. Backend lint (ruff check)" { uv run ruff check . }
     Invoke-Step "2b. Backend type check (mypy)" { uv run mypy . }
-    Invoke-Step "3. Backend tests (pytest, PostgreSQL test database)" { uv run pytest -q }
+    Invoke-Step "3. Backend tests (pytest, PostgreSQL test database)" { uv run pytest --reuse-db -q }
 } finally { Pop-Location }
 
 Push-Location (Join-Path $Root "frontend")

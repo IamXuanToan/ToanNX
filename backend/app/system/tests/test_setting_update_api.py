@@ -7,7 +7,6 @@ import pytest
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.system.models.setting import Setting
 from app.system.models.user import User
-from app.system.permissions.setting_permission import SettingPermission as A
 
 pytestmark = pytest.mark.django_db
 URL = "/api/v1/system/settings"

@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 
 import { useUploadAttachment } from "../../hooks/use-upload-attachment";
-import type { Attachment } from "../../types/attachment.types";
-import { UNFILED_FOLDER } from "../../constants/media-types";
+import type { Attachment, AttachmentVisibility } from "../../types/attachment.types";
+import { type MediaKind, UNFILED_FOLDER, isAcceptedKind } from "../../constants/media-types";
 import { useAttachmentFolders } from "../../hooks/use-attachment-folders";
 
 type UploadJob = {
@@ -19,13 +19,17 @@ type UploadJob = {
 
 /** @param props - Chế độ upload và callback của nơi dùng. @returns Hàng đợi tuần tự, trạng thái từng tệp và input. */
 export function useAttachmentUpload({
-  imageOnly,
+  accept,
+  visibility,
+  lockVisibility,
   multiple,
   onUploaded,
   onBusyChange,
   canReadFolders = false,
 }: {
-  imageOnly: boolean;
+  accept?: readonly MediaKind[];
+  visibility: AttachmentVisibility;
+  lockVisibility: boolean;
   multiple: boolean;
   onUploaded?: (file: Attachment) => void;
   onBusyChange?: (busy: boolean) => void;
@@ -36,6 +40,9 @@ export function useAttachmentUpload({
   const [jobs, setJobs] = useState<UploadJob[]>([]);
   const [busy, setBusy] = useState(false);
   const [folderId, setFolderId] = useState(UNFILED_FOLDER);
+  const [chosenVisibility, setUploadVisibility] = useState<AttachmentVisibility>(visibility);
+  // Nơi dùng khóa chế độ thì luôn theo props, không theo lựa chọn cũ.
+  const uploadVisibility = lockVisibility ? visibility : chosenVisibility;
   const folderQuery = useAttachmentFolders(canReadFolders, ["MINE"]);
   if (
     folderId !== UNFILED_FOLDER &&
@@ -78,12 +85,13 @@ export function useAttachmentUpload({
           const uploaded = await mutation.mutateAsync({
             file,
             folderId: folderId === UNFILED_FOLDER ? null : folderId,
+            visibility: uploadVisibility,
           });
-          if (imageOnly && !uploaded.contentType.startsWith("image/")) {
+          if (accept && !isAcceptedKind(uploaded.contentType, accept)) {
+            const error =
+              accept.length === 1 && accept[0] === "IMAGE" ? t("imageOnly") : t("fileNotAccepted");
             setJobs((current) =>
-              current.map((job) =>
-                job.id === id ? { ...job, status: "failed", error: t("imageOnly") } : job,
-              ),
+              current.map((job) => (job.id === id ? { ...job, status: "failed", error } : job)),
             );
             continue;
           }
@@ -115,5 +123,7 @@ export function useAttachmentUpload({
     folderId,
     setFolderId,
     folderQuery,
+    uploadVisibility,
+    setUploadVisibility,
   };
 }

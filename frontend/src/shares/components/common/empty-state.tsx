@@ -2,7 +2,7 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
-import { LogoMark } from "@/shares/components/layout/logo";
+import { LogoMark } from "@/shares/components/layout/logo-mark";
 
 /**
  * Trạng thái không có dữ liệu chuẩn (bảng rỗng, lọc ra 0 kết quả, danh mục rỗng).

@@ -5,7 +5,7 @@ Next.js 16 (App Router) + TypeScript strict + Tailwind 4 + shadcn/ui (Radix) + n
 ```bash
 cp .env.example .env.local    # BACKEND_ORIGIN=http://localhost:8000
 pnpm install
-pnpm dev                      # http://localhost:3000
+pnpm dev -p 3001              # http://localhost:3001
 ```
 
 | Lệnh                              | Mục đích                          |
@@ -16,4 +16,4 @@ pnpm dev                      # http://localhost:3000
 | `pnpm build`                      | Build production                  |
 | `pnpm e2e`                        | Playwright (cần backend + DB dev) |
 
-Cấu trúc và quy tắc: xem [../AGENTS.md](../AGENTS.md), [../docs/architecture.md](../docs/architecture.md).
+Cấu trúc và quy tắc: xem [../AGENTS.md](../AGENTS.md), [../docs/architecture/architecture.md](../docs/architecture/architecture.md).

@@ -34,6 +34,7 @@ class LoginView(CoreApiView):
             **kwargs: Tham số của DRF.
         """
         super().__init__(**kwargs)
+        self.auth_cookie_service = AuthCookieService()
         self.auth_service = AuthService()
 
     @extend_schema(responses=CurrentUserResponseSerializer)
@@ -54,5 +55,5 @@ class LoginView(CoreApiView):
         rotate_token(request._request)  # Chống fixation cho CSRF token.
 
         response = CoreResponse(CurrentUserResponseSerializer(result.profile).data)
-        AuthCookieService.set_cookies(response, result)
+        self.auth_cookie_service.set_cookies(response, result)
         return response

@@ -4,6 +4,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
 import { NOVEL_ROUTES } from "../../constants/routes";
 import { useBulkDeleteTags } from "../../hooks/use-bulk-delete-tags";
@@ -26,7 +27,8 @@ export function useTagTable() {
   return {
     table,
     query,
-    edit: (tag: Tag) => router.push(NOVEL_ROUTES.adminTagDetail(tag.id)),
+    view: (tag: Tag) => router.push(NOVEL_ROUTES.adminTagDetail(tag.id)),
+    edit: (tag: Tag) => router.push(withEditMode(NOVEL_ROUTES.adminTagDetail(tag.id))),
     remove: (tag: Tag) => remove.mutateAsync(tag.id),
     bulkDelete: (tags: Tag[]) => bulkDelete.mutateAsync(tags.map((t) => t.id)),
   };

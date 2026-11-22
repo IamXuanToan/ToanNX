@@ -9,7 +9,7 @@ from app.core.exceptions.not_found_error import NotFoundError
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
-from app.novel.serializers.responses.reading_history_response_serializer import (
+from app.novel.serializers.responses.reading_history_delete_response_serializer import (
     ReadingHistoryDeleteResponseSerializer,
 )
 from app.novel.services.reading_history_service import ReadingHistoryService

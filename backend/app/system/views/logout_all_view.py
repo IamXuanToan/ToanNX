@@ -28,6 +28,7 @@ class LogoutAllView(CoreApiView):
             **kwargs: Tham số của DRF.
         """
         super().__init__(**kwargs)
+        self.auth_cookie_service = AuthCookieService()
         self.auth_session_service = AuthSessionService()
 
     @extend_schema(request=None, responses=LogoutAllResponseSerializer)
@@ -42,5 +43,5 @@ class LogoutAllView(CoreApiView):
         """
         revoked = self.auth_session_service.revoke_all(self.get_actor(request), "logout_all")
         response = CoreResponse(LogoutAllResponseSerializer({"revoked_sessions": revoked}).data)
-        AuthCookieService.clear_cookies(response)
+        self.auth_cookie_service.clear_cookies(response)
         return response

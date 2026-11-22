@@ -5,6 +5,7 @@ from typing import Any
 
 from django.apps import apps
 from django.conf import settings
+from django.db import transaction
 from django.utils import timezone
 
 from app.core.services.core_crud_service import CoreCrudService
@@ -14,12 +15,11 @@ from app.system.repositories.journal_entry_repository import JournalEntryReposit
 
 
 class JournalEntryService(CoreCrudService[JournalEntry, JournalEntryRepository]):
-    """Nhật ký chỉ đọc qua API; ghi do `JournalRecorder`."""
+    """Nhật ký ghi do `JournalRecorder`; API chỉ đọc và xóa (xóa cứng)."""
 
     repository_class = JournalEntryRepository
 
-    @staticmethod
-    def list_resources() -> list[dict[str, Any]]:
+    def list_resources(self) -> list[dict[str, Any]]:
         """Tài nguyên đang ghi lịch sử (model kế thừa JournalTracker), làm bộ lọc `module.model`.
 
         Returns:
@@ -39,6 +39,20 @@ class JournalEntryService(CoreCrudService[JournalEntry, JournalEntryRepository])
             if issubclass(model, JournalTracker)
         ]
         return sorted(items, key=lambda item: item["resource"])
+
+    @transaction.atomic
+    def delete(self, actor: Any, pk: Any) -> None:
+        """Xóa hẳn một mục nhật ký.
+
+        Xóa cứng vì `JournalEntry` không có `deleted_at`: nhật ký là bản ghi lịch sử, giữ bản "đã xóa" của
+        chính nó không có ý nghĩa (rule backend mục 9, xóa cứng có lý do).
+
+        Args:
+            actor: Người thực hiện.
+            pk: Id mục nhật ký.
+        """
+        entry = self.get_for_write(actor, pk)
+        self.repository.hard_delete(entry)
 
     def purge_expired(self) -> int:
         """Xóa mục cũ hơn `JOURNAL_RETENTION_DAYS`.

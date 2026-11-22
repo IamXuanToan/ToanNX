@@ -43,10 +43,10 @@ export function ChillAudio({ isDay = true, suggestedTrack, thunderTrigger }: Chi
 
   return (
     <div
-      className={`flex w-full items-center justify-between gap-2.5 rounded-2xl border p-3 shadow-xl backdrop-blur-md transition-all duration-700 sm:px-5 ${
+      className={`flex w-full items-center justify-between gap-2.5 rounded-2xl border p-3.5 shadow-lg backdrop-blur-xl transition-all duration-700 sm:px-5 sm:py-3.5 ${
         isDay
-          ? "border-white/40 bg-white/30 text-slate-800 shadow-[0_8px_32px_rgba(0,0,0,0.06)]"
-          : "border-white/10 bg-black/30 text-slate-100 shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
+          ? "border-white/50 bg-white/40 text-slate-800 shadow-black/5"
+          : "border-white/10 bg-black/40 text-slate-100 shadow-black/20"
       }`}
     >
       {/* 1. Nút Play / Pause và Tên bài hát */}
@@ -101,9 +101,9 @@ export function ChillAudio({ isDay = true, suggestedTrack, thunderTrigger }: Chi
         ) : null}
       </div>
 
-      {/* 2. Bộ chọn không gian âm thanh (Pills gọn gàng) */}
+      {/* 2. Bộ chọn không gian âm thanh (chỉ hiển thị trên tablet/desktop md trở lên đồng bộ với canvas) */}
       <div
-        className={`flex items-center gap-1 rounded-lg border p-1 ${
+        className={`hidden items-center gap-1 rounded-lg border p-1 md:flex ${
           isDay ? "border-white/40 bg-white/30" : "border-white/5 bg-white/[0.03]"
         }`}
       >
@@ -142,7 +142,7 @@ export function ChillAudio({ isDay = true, suggestedTrack, thunderTrigger }: Chi
       </div>
 
       {/* 3. Nút chỉnh âm lượng chuẩn Shadcn UI Slider trên cùng 1 dòng */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex shrink-0 items-center gap-1.5">
         <Button
           type="button"
           variant="ghost"

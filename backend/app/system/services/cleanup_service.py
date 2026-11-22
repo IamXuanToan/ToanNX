@@ -12,8 +12,7 @@ logger = logging.getLogger("app.cleanup")
 class CleanupService:
     """Một task lỗi không chặn task khác; kết quả ghi log."""
 
-    @staticmethod
-    def run_all() -> dict[str, int]:
+    def run_all(self) -> dict[str, int]:
         """Chạy lần lượt các task.
 
         Returns:

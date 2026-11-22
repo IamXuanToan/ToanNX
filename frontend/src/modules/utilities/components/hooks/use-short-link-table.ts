@@ -2,6 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { useBulkDeleteShortLinks } from "../../hooks/use-bulk-delete-short-links";
@@ -34,7 +35,8 @@ export function useShortLinkTable() {
   return {
     table,
     query,
-    edit: (link: ShortLink) => router.push(UTILITIES_ROUTES.shortLinkDetail(link.id)),
+    view: (link: ShortLink) => router.push(UTILITIES_ROUTES.shortLinkDetail(link.id)),
+    edit: (link: ShortLink) => router.push(withEditMode(UTILITIES_ROUTES.shortLinkDetail(link.id))),
     setStatus: (link: ShortLink, status: ShortLinkStatus) =>
       bulkStatus.mutate({ ids: [link.id], status }),
     remove: (link: ShortLink) => remove.mutateAsync(link.id),

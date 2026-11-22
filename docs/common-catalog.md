@@ -38,9 +38,12 @@ Gốc: `backend/app/core/`. Core không import module nghiệp vụ (trừ `TYPE
 
 | Export | File | Dùng khi |
 | --- | --- | --- |
-| `ModuleDescriptor` | `registry/module_descriptor.py` | `module.py` của mỗi module: quyền, `dependencies`, `cleanup_tasks` |
-| `ModuleRegistry` | `registry/module_registry.py` | Tra danh sách module đã cài (không tự đăng ký tay) |
-| `PermissionCatalog` | `registry/permission_catalog.py` | Gốc danh mục quyền `permissions/<model>_permission.py`; `.all()` |
+| `ModuleDescriptor` | `registry/module_descriptor.py` | `module.py` của mỗi module: quyền, `member_permissions` (bắt buộc khi có quyền: `*XxxPermission.member()` của vai trò `<MÃ>_MEMBER`, không gồm `manage_all`/`read_private`), `dependencies`, `cleanup_tasks`, `notification_events`, `webhooks`, `callbacks` |
+| `ModuleRegistry` | `registry/module_registry.py` | Tra danh sách module đã cài (không tự đăng ký tay); `notification_event_definitions()`, `find_notification_event(code)`, `validate_notification_permissions()` (gọi khi khởi động) |
+| `WebhookDefinition` | `registry/webhook_definition.py` | Một webhook bên thứ ba gọi vào (`path` sau `/api/v1`, mô tả, `auth`, `setup`) khai trong `webhooks`; hiện ở Hệ thống → Webhook |
+| `CallbackDefinition` | `registry/callback_definition.py` | Một URL callback trên FE (OAuth...) khai trong `callbacks` (`path`, `setup`, `setting` báo đã cấu hình); hiện ở Hệ thống → Callback |
+| `NotificationEventDefinition` | `registry/notification_event_definition.py` | Một sự kiện thông báo `<module>.<resource>.<event>` khai trong `notification_events`: `scope` (PERSONAL/SYSTEM), `audience` (OWNER/SUBSCRIBERS), `permission`, `default_level` (INFO/WARNING/ERROR), `default_channels`, `kind` business/technical; `validate()` |
+| `PermissionCatalog` | `registry/permission_catalog.py` | Gốc danh mục quyền `permissions/<model>_permission.py`; `.all()`; `MEMBER = (...)` + `.member()` khai quyền của vai trò thành viên |
 | `PermissionDefinition` | `registry/permission_definition.py` | Một quyền `<module>.<resource>.<action>` có name + description |
 
 ### 1.3 Decorator, permission, filter, phân trang
@@ -90,12 +93,12 @@ Gốc: `backend/app/core/`. Core không import module nghiệp vụ (trừ `TYPE
 | `get_current_user`, `get_user_id`, `get_request_id`, `get_current_request`, `set_current_user`, `request_context` | `context/user_context.py` | Đọc người dùng/request_id hiện tại ngoài view (repository ghi audit, log) |
 | `RequestContextMiddleware` | `middleware/request_context_middleware.py` | Đã cài: dựng ngữ cảnh request |
 | `RequestContextFilter` | `logging/request_context_filter.py` | Đã cài: gắn `request_id` vào log |
-| `init_sentry` | `logging/sentry.py` | Bật Sentry khi có `SENTRY_DSN` |
 | `ChangeRecorder` | `tracking/change_recorder.py` | Hợp đồng nơi lưu lịch sử (bản thật ở `system`) |
 | `ChangeSet` | `tracking/change_set.py` | Dữ liệu một thay đổi do `JournalTracker` phát |
 | `get_change_recorder` | `tracking/recorder_registry.py` | Nạp recorder từ `CORE_CHANGE_RECORDER` |
 | `R2Storage` | `storage/r2_storage.py` | Storage backend Cloudflare R2 (cấu hình qua settings) |
 | `R2UsageService` | `storage/r2_usage_service.py` | Lấy dung lượng đã dùng trên R2 |
+| `SecretCipher` | `security/secret_cipher.py` | Mã hóa/giải mã bí mật bên thứ ba của từng người dùng lưu DB (token SePay, bot Telegram): `encrypt(purpose, plaintext)` / `decrypt(purpose, token)`; khóa Fernet dẫn xuất từ `DJANGO_SECRET_KEY` theo mục đích; lỗi → `SecretCipherError` |
 
 ### 1.7 Tiện ích và validator
 
@@ -103,7 +106,7 @@ Gốc: `backend/app/core/`. Core không import module nghiệp vụ (trừ `TYPE
 | --- | --- | --- |
 | `to_ascii`, `ascii_slug` | `utils/text.py` | Bỏ dấu ở Python (`anyascii`); không tự viết bảng bỏ dấu |
 | `normalize_slug`, `generate_slug` | `utils/slug.py` | Slug URL công khai (link rút gọn, trang, đoạn đường dẫn) |
-| `validate_public_url`, `build_absolute_url` | `utils/url.py` | Kiểm URL người dùng nhập; dựng URL tuyệt đối theo request |
+| `validate_public_url`, `build_absolute_url`, `build_backend_url` | `utils/url.py` | Kiểm URL người dùng nhập; dựng URL tuyệt đối theo request; `build_backend_url` = URL theo Host backend thật (webhook bên thứ ba gọi thẳng) |
 | `CoreValidator` | `validators/core_validator.py` | Quy tắc validate dùng lại giữa các module |
 
 ---
@@ -120,11 +123,19 @@ repository của `system`.
 | `HasIamPermission` | `system/permissions/has_iam_permission.py` | Permission IAM mặc định (đã cấu hình trong settings) |
 | `IamPermissionBackend` | `system/backends/iam_permission_backend.py` | `User.has_perm` hỏi IAM (đã cấu hình) |
 | `BucketThrottle` | `system/throttles/bucket_throttle.py` | Throttle mặc định theo `settings.RATE_LIMITS` (đã cấu hình) |
-| `AttachmentService` | `system/services/attachment_service.py` | File/ảnh của module khác: `get_image`, `find_alive_images`, `create_generated`, `replace_content`, `delete_generated`, `get_current_storage_usage_bytes` |
+| `AttachmentService` | `system/services/attachment_service.py` | File/ảnh của module khác: `get_image` (chỉ ảnh công khai), `find_alive_images` (bỏ file riêng tư), `public_url` (None nếu riêng tư), `get_content_for`, `set_visibility`, `create_generated`, `replace_content`, `delete_generated`, `get_current_storage_usage_bytes` |
+| `AttachmentStorageService` | `system/services/attachment_storage_service.py` | Nơi duy nhất chọn kho theo `Attachment.visibility` (`STORAGES["default"]` / `STORAGES["private"]`): lưu, mở, xóa, chép giữa kho, link ký hạn ngắn; không dùng `attachment.file.storage` trực tiếp |
 | `Attachment` | `system/models/attachment.py` | Khóa ngoại tới tệp đính kèm (ảnh bìa, avatar...) |
 | `AttachmentPermission` | `system/permissions/attachment_permission.py` | Quyền đọc/ghi thư viện khi module khác cần kiểm |
 | `User` | `system/models/user.py` (`settings.AUTH_USER_MODEL`) | Khóa ngoại người dùng; ưu tiên `settings.AUTH_USER_MODEL` trong model |
 | `get_client_ip` | `system/utils/client_ip.py` | Lấy IP client sau proxy |
+| `EmailService` | `system/services/email_service.py` | Gửi email: `send_template(template=, subject=, recipient=, context=, locale=, async_send=)` dựng `system/email/<template>_<lang>.{txt,html}`; `send_now(...)` gửi đồng bộ (outbox, serverless). Tạo `self.email_service = EmailService()` trong `__init__` |
+| `NotificationService` | `system/services/notification_service.py` | Cách **duy nhất** để module phát thông báo: `notify(event_code, *, dedup_key, payload, recipient=None, recipients=None)` (OWNER phải có `recipient`; SUBSCRIBERS tự tìm người có `permission`); `revoke(event_code, dedup_key)`; outbox chống trùng, gửi sau commit trong `NOTIFICATION_DISPATCH_BUDGET_SECONDS`, lỗi không ném ra; `dispatch_pending` cho cron |
+| `NotificationPayload` | `system/types/notification_payload.py` | Nội dung thông báo: `title`, `body` (văn bản thuần, kênh tự escape), `link` (đường dẫn FE bắt đầu `/`), `level` (ghi đè mức mặc định), `message_key` + `params` (FE dịch), `data`, `expires_at` |
+| `TelegramClient` | `system/services/telegram_client.py` | Gọi Telegram Bot API (getMe/getWebhookInfo/getUpdates/getChatMember/sendMessage), token truyền theo tham số (bot của từng người, lưu DB qua `SecretCipher`), đổi lỗi thành mã ổn định |
+| `CurrencyService` | `system/services/currency_service.py` | Danh mục tiền tệ (seed VND gốc, USD): `base()`, `get_active(pk)`; khóa ngoại tới `system.Currency` |
+| `ExchangeRateService` | `system/services/exchange_rate_service.py` | Tỷ giá quy về VNĐ: `resolve(currency, date)` (cache DB → Vietcombank, lùi tối đa 7 ngày), `resolve_by_id`, `refetch`; tỷ giá nhập tay ưu tiên hơn API |
+| `SettingService` / `SettingKey` | `system/services/setting_service.py`, `system/constants/setting_key.py` | Đọc/ghi `system.Setting` (`get_setting_value`, `set_setting_value(key, value, *, ...)`); khóa dùng trong code khai ở `SettingKey`, không viết chuỗi trực tiếp |
 | `get_frontend_origin` | `system/utils/frontend_url.py` | Origin FE để dựng link (email, link công khai) |
 | `detect_content_type` | `system/utils/file_signature.py` | Nhận loại file thật theo chữ ký byte khi nhận upload |
 | `looks_like_svg`, `find_svg_problem` | `system/utils/svg_inspector.py` | Kiểm SVG an toàn trước khi lưu |
@@ -153,8 +164,9 @@ Gốc: `frontend/src/shares/`. `shares/` không import module.
 ### 4.1 UI primitive — `components/ui/` (shadcn)
 
 `accordion`, `alert`, `alert-dialog`, `avatar`, `badge`, `breadcrumb`, `button`, `calendar`, `card`, `checkbox`,
-`command`, `dialog`, `dropdown-menu`, `field`, `input`, `label`, `popover`, `radio-group`, `select`, `separator`,
-`sheet`, `sidebar`, `skeleton`, `slider`, `sonner`, `switch`, `table`, `tabs`, `textarea`, `tooltip`.
+`command`, `dialog`, `dropdown-menu`, `field`, `hover-card`, `input`, `label`, `popover`, `radio-group`, `select`, `separator`,
+`sheet`, `sidebar`, `skeleton`, `slider`, `sonner`, `switch`, `table`, `tabs`, `textarea`, `tooltip`, `chart`
+(shadcn chart = recharts: `ChartContainer` + `ChartTooltip`/`ChartLegend`, màu theo token `--chart-1..5`).
 
 Thiếu thì thêm bằng `pnpm dlx shadcn@latest add <name>` rồi ghi vào danh sách này. Màn hình nghiệp vụ ưu tiên
 component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/` chưa có thứ tương đương.
@@ -163,8 +175,11 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 
 | Export | File | Dùng khi |
 | --- | --- | --- |
-| `Form`, `useFormId` | `form.tsx` | Thẻ form hệ thống (`noValidate`, có id cho nút submit ngoài form) |
-| `FormPage` | `form-page.tsx` | Khung trang tạo/sửa/chi tiết (header dính, không mũi tên quay lại) |
+| `Form` | `form.tsx` | Thẻ form hệ thống (`noValidate`, có id cho nút submit ngoài form) |
+| `useFormId`, `FormIdContext` | `hooks/use-form-id.ts`, `form-id-context.ts` | Đọc id của `Form` gần nhất (nút submit đặt ngoài thẻ form) |
+| `FormPage` | `form-page.tsx` | Khung trang tạo/sửa/chi tiết (header dính, không mũi tên quay lại); tự hiện nút Sửa khi trong `EditModeProvider` |
+| `EditModeProvider`, `EditModeContext` | `edit-mode-provider.tsx`, `edit-mode-context.ts` | View trang chi tiết bọc nội dung để `FormPage` hiện nút Sửa khi đang chỉ xem mà có quyền |
+| `EditModeButton` | `edit-mode-button.tsx` | Nút Sửa trên header (thêm `?mode=edit`); `FormPage` tự render, không dùng riêng |
 | `FormLayout` | `form-layout.tsx` | Bố cục 2 cột: cột chính + cột phụ 22rem |
 | `FormSection` | `form-section.tsx` | Nhóm trường có tiêu đề (card) |
 | `FormField` | `form-field.tsx` | Nối label, mô tả, lỗi RHF với input; `required` → `*` đỏ |
@@ -193,16 +208,18 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | `MoneyInput`, `MoneyCurrency`, `DEFAULT_CURRENCY` | `money-input.tsx` | Ô tiền |
 | `CodeInput` | `code-input.tsx` | Mã (vai trò, danh mục): chữ, số, `.`, `_`, `-` |
 | `SlugInput` | `slug-input.tsx` | Slug URL, tự chuẩn hóa khi gõ |
-| `ColorInput` | `color-input.tsx` | Chọn màu HEX |
+| `ColorInput` | `color-input.tsx` | Chọn màu HEX (ô màu mở bảng chọn + ô nhập `#RRGGBB`); `inputClassName` chỉnh ô mã khi đặt trên nền tối |
 | `TagsInput` | `tags-input.tsx` | Nhập nhiều thẻ (Enter hoặc `,`) |
 | `DatePicker` | `date-picker.tsx` | Chọn ngày |
 | `TimePicker` | `time-picker.tsx` | Chọn giờ (`minuteStep`) |
+| `TimePickerPopover`, `TimeScrollColumn` | `time-picker-popover.tsx`, `time-scroll-column.tsx` | Phần trong của `TimePicker`/`DateTimePicker` (không dùng riêng) |
 | `DateTimePicker` | `date-time-picker.tsx` | Chọn ngày + giờ |
 | `MonthSelect`, `normalizeMonthValue` | `month-select.tsx` | Chọn tháng 1–12 |
 | `ImageUpload`, `UploadedFile` | `image-upload.tsx`, `image-upload.types.ts` | Ảnh đại diện/logo chọn từ Thư viện (module truyền callback) |
 | `TiptapEditor` | `tiptap-editor.tsx` | Editor soạn thảo **duy nhất** (giá trị JSON) |
 | `TiptapContent` | `tiptap-content.tsx` | Hiển thị JSON Tiptap chỉ đọc (chạy được ở server) |
 | `TiptapToolbar` | `tiptap-toolbar.tsx` | Thanh công cụ của `TiptapEditor` (không dùng riêng) |
+| `TiptapToggle`, `UrlPopover` | `tiptap-toggle.tsx`, `url-popover.tsx` | Nút bật/tắt định dạng và ô nhập link bên trong `TiptapToolbar` (không dùng riêng) |
 | `createBaseExtensions`, `LibraryImage`, `LINK_PROTOCOLS` | `tiptap-extensions.ts` | Extension chung của editor và nội dung |
 | `TiptapDocument`, `TiptapImage`, `TiptapInsertItem`, `TiptapEditorProps` | `tiptap-editor.types.ts` | Kiểu của editor |
 
@@ -210,12 +227,12 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 
 | Export | File | Dùng khi |
 | --- | --- | --- |
-| `DataTable` | `data-table.tsx` | **Mọi** bảng: chọn dòng, ẩn/hiện, ghim, resize cột, card mobile dưới `md`, `rowActions`, `bulkActions`, `pagination` |
+| `DataTable` | `data-table.tsx` | **Mọi** bảng: chọn dòng, ẩn/hiện, ghim, resize cột, card mobile dưới `md`, `onView`/`onEdit`/`onDelete` + `can` (luôn hiện, thiếu quyền thì mờ), `rowActions`, `bulkActions`, `pagination` |
 | `DataTableColumn`, `DataTableRowAction`, `DataTableBulkAction`, `DataTableProps`... | `data-table.types.ts` | Khai cột và thao tác của bảng |
 | `DataPagination`, `PAGE_SIZE_OPTIONS` | `data-pagination.tsx` | Phân trang (truyền qua prop `pagination` của `DataTable`) |
 | `TableToolbar` | `table-toolbar.tsx` | Ô tìm + bộ lọc + Tải lại + menu cột |
 | `TableBulkBar` | `table-bulk-bar.tsx` | Thanh thao tác hàng loạt đơn dòng chuẩn Linear/Vercel khi chọn dòng (trái: badge số lượng + vạch chia + Bỏ chọn, phải: Đổi trạng thái, thao tác riêng, Xóa) |
-| `TableRowActions` | `table-row-actions.tsx` | Cột Sửa → Sao chép → Xóa + thao tác riêng |
+| `TableRowActions` | `table-row-actions.tsx` | Cột Xem → Sửa → Sao chép → Xóa (nút mờ + tooltip lý do khi thiếu quyền/dòng khóa) + thao tác riêng |
 | `TableStatusSwitch` | `table-status-switch.tsx` | Bật/tắt trạng thái trong bảng (**chỉ** dùng cái này) |
 | `TableHeaderCell`, `TableColumnResizer` | `table-header-cell.tsx`, `table-column-resizer.tsx` | Phần trong của `DataTable` (không dùng riêng) |
 | `StatusBadge`, `StatusTone` | `status-badge.tsx` | Badge trạng thái theo sắc thái token |
@@ -232,10 +249,12 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | `ErrorState` | `components/errors/error-state.tsx` | Khối báo lỗi trong trang |
 | `QueryErrorState` | `components/errors/query-error-state.tsx` | Lỗi tải bản ghi (404 → "không tìm thấy" + link quay lại) |
 | `ForbiddenView` | `components/errors/forbidden-view.tsx` | Màn 403 |
-| `Logo`, `LogoMark` | `components/layout/logo.tsx` | Logo thương hiệu |
+| `Logo` | `components/layout/logo.tsx` | Logo ngang (biểu tượng + chữ) |
+| `LogoMark` | `components/layout/logo-mark.tsx` | Biểu tượng logo vuông (header, màn xác thực, trang lỗi) |
 | `LanguageSwitcher` | `components/layout/language-switcher.tsx` | Đổi ngôn ngữ giữ trang hiện tại |
 | `ThemeSwitcher` | `components/layout/theme-switcher.tsx` | Đổi Sáng/Tối/Hệ thống |
 | `AppProviders` | `components/providers/app-providers.tsx` | Provider gốc: theme, React Query, tooltip, toast |
+| `AppAnalytics` | `components/analytics/app-analytics.tsx` | Nhúng Umami Analytics và Vercel Analytics vào layout gốc |
 
 ### 4.6 Hook dùng chung — `hooks/`
 
@@ -244,6 +263,8 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | `useListQuery` | `use-list-query.ts` | Truy vấn danh sách (giữ dữ liệu trang trước) |
 | `useResourceMutation` | `use-resource-mutation.ts` | **Mọi** mutation: toast chuẩn + invalidate khóa đã khai |
 | `useTableState` | `use-table-state.ts` | State bảng trên URL: `search`, `page`, `pageSize`, `ordering`, bộ lọc |
+| `useBulkActions` | `use-bulk-actions.ts` | Hook bảng: `bulkDelete(rows)` / `bulkUpdate(rows, patch)` chuẩn (toast + invalidate); thay mọi `useBulkDeleteXxx` riêng |
+| `useEditMode` | `use-edit-mode.ts` | View trang chi tiết: `useEditMode(canUpdate)` = có quyền **và** URL `?mode=edit`; truyền kết quả xuống form |
 | `useApiErrorMessage` | `use-api-error-message.ts` | Dịch lỗi API theo mã |
 | `useMessage` | `use-message.ts` | Dịch khóa đầy đủ do module khai (`system.account.nav.users`) |
 | `useStoredPreference` | `use-stored-preference.ts` | Lưu tùy chọn người dùng vào localStorage (key không tiền tố `toannx`) |
@@ -259,7 +280,7 @@ Hook trong `components/common/hooks/` còn lại là hook riêng của từng co
 
 | Export | File | Dùng khi |
 | --- | --- | --- |
-| `apiClient`, `refreshSession` | `api-client.ts` | Gọi API trong service (camel ⇄ snake, CSRF, refresh single-flight) |
+| `apiClient`, `refreshSession` | `api-client.ts` | Gọi API trong service (camel ⇄ snake, CSRF, refresh single-flight); request bị người gọi hủy (`signal`) → `ApiError` mã `REQUEST_CANCELLED`, không ném lại `AbortError` |
 | `createCrudService` | `create-crud-service.ts` | Service CRUD chuẩn cho một ViewSet BE |
 | `createResourceKeys`, `ResourceKeys` | `resource-keys.ts` | Query key chuẩn `[module, resource, ...]` |
 | `toPaginated` | `to-paginated.ts` | Chuẩn hóa response danh sách thành `Paginated` |
@@ -282,8 +303,11 @@ Hook trong `components/common/hooks/` còn lại là hook riêng của từng co
 | `normalizeSearchText`, `filterOptionsByKeyword` | `lib/search-text.ts` | Tìm không dấu, không phân biệt hoa thường ở FE |
 | `sanitizeCodeInput`, `sanitizeSlugInput`, `isValidCodeValue`, `isValidSlugValue`, `CODE_VALUE_REGEX`, `SLUG_VALUE_REGEX` | `lib/code-slug-input.ts` | Lọc/kiểm mã và slug |
 | `isOnline`, `ONLINE_WINDOW_MS` | `lib/presence.ts` | Người dùng đang trực tuyến |
+| `createBooleanBulkStatus` | `lib/bulk-status.ts` | `bulkStatus` của `DataTable` cho cờ boolean (đang dùng/tắt, xuất bản/ẩn) |
+| `EDIT_MODE_PARAM`, `EDIT_MODE_VALUE`, `withEditMode` | `lib/edit-mode.ts` | Hook bảng: `edit` → `withEditMode(<M>_ROUTES.xxxDetail(id))` mở thẳng chế độ sửa |
 | `ICON_PATHS` | `lib/asset-paths.ts` | Đường dẫn các tài nguyên tĩnh SVG trong `public/` (Google, GitHub) |
-| `env` | `config/env.ts` | **Chỗ duy nhất** đọc `process.env` |
+| `env` | `config/env.ts` | **Chỗ duy nhất** đọc `process.env` (gồm `NEXT_PUBLIC_FIREBASE_*`) |
+| `isPushSupported`, `getPushToken`, `deletePushToken`, `NOTIFICATION_SW_PATH` | `lib/firebase-messaging.ts` | Lấy/xóa token FCM (đăng ký `public/notification-sw.js`); chỉ dùng qua hook push của `system` |
 
 ### 4.9 Kiểu dùng chung — `types/`
 
@@ -293,7 +317,7 @@ Hook trong `components/common/hooks/` còn lại là hook riêng của từng co
 | (sinh tự động) | `types/api-schema.gen.ts` | Do `pnpm api:types` sinh; không sửa tay |
 | `ApiResult`, `ApiMeta`, `Pagination`, `Paginated`, `ListParams`, `HistoryEntry` | `types/api.types.ts` | Envelope, phân trang, tham số danh sách |
 | `AttachmentSummary` | `types/attachment.types.ts` | Tóm tắt tệp đính kèm hiển thị ở module khác |
-| `AdminModuleNavigation`, `AdminNavItem`, `AdminGroupCode`, `MessageKey`... | `types/navigation.types.ts` | Khai `navigation.ts` của module |
+| `AdminModuleNavigation`, `AdminNavItem` (`section`), `AdminNavSection`, `AdminGroupCode`, `MessageKey`... | `types/navigation.types.ts` | Khai `navigation.ts` của module |
 
 ---
 
@@ -321,9 +345,14 @@ Module khác được import các phần dưới đây (page ghép qua slot); ph
 | `RecordHistoryView` | `modules/system/views/record-history-view.tsx` | Slot `history` của form: `path=".../{id}/history"`, `fieldPrefix` |
 | `AttachmentImageUploadView` | `modules/system/views/attachment-image-upload-view.tsx` | Chọn/tải ảnh từ Thư viện cho `ImageUpload` |
 | `AttachmentTiptapImagePlugin` | `modules/system/views/attachment-tiptap-image-plugin.tsx` | Slot `editorPlugins`: chèn ảnh Thư viện vào editor |
-| `AttachmentDetailDialog` | `modules/system/components/attachment-detail-dialog.tsx` | Dialog chi tiết & inline edit metadata tệp (ảnh lớn, thao tác nhanh, footer chuẩn không cắt chữ) |
+| `AttachmentDetailDialog` | `modules/system/components/attachment-detail-dialog.tsx` | Dialog chi tiết & inline edit metadata tệp (tối ưu nằm trọn 1 màn hình không scroll, tích hợp công cụ crop/watermark ảnh, video player ghi nhớ âm lượng localStorage, thao tác nhanh, chuyển công khai/riêng tư có xác nhận); `isSelectable` + `selectLabel` cho nơi chọn file không phải ảnh |
+| `AttachmentPicker` | `modules/system/components/attachment-picker.tsx` | Bộ chọn + upload file Thư viện. Mặc định: một ảnh công khai. Props nơi dùng: `accept` (`MediaKind[]`), `visibility` + `lockVisibility` (màn Chứng từ: `"private"` + khóa), `visibilityFilter` (mặc định chế độ đang khóa, không khóa thì `"public"`; `"all"` liệt kê cả hai), `multiple` + `onSelectMany` |
+| `AttachmentUpload` | `modules/system/components/attachment-upload.tsx` | Khu kéo thả upload: `accept` (`imageOnly` là bí danh `["IMAGE"]`), `visibility`, `lockVisibility`, `multiple`; có công tắc Riêng tư khi không khóa |
+| `SYSTEM_ROUTES.fileAccess(id)` | `modules/system/constants/routes.ts` | Link chia sẻ file riêng tư `/vi/tep/{id}` (en `/files/{id}`): có quyền thì mở file, không thì màn không có quyền |
 | `UserRolePickerView`, `UserRoleFilterView` | `modules/system/views/` | Chọn/lọc vai trò người dùng ở form/bảng khác |
+| `NotificationBell` | `modules/system/components/notification-bell.tsx` | Chuông thông báo 2 tab Cá nhân / Hệ thống (đã gắn trong `AdminShell`); realtime FCM + polling 60 giây |
+| `useCurrencyOptions`, `useExchangeRateResolve` | `modules/system/hooks/` | Chọn tiền tệ và tra tỷ giá VNĐ ở form module khác (Thu nhập) |
 | `SYSTEM_ROUTES`, `SYSTEM_PATHNAMES`, `SYSTEM_API_ENDPOINTS` | `modules/system/constants/` | Link/endpoint của `system` khi module khác cần |
 | `journal-field-prefixes.ts` | `modules/system/constants/` | Thêm tiền tố nhãn field cho model có `JournalTracker` |
 | `AdminShell` | `modules/manage-app/components/admin-shell.tsx` | Khung quản trị (layout `/quan-tri`) |
-| `ADMIN_MODULE_NAVIGATION`, `ADMIN_GROUPS`, `findModuleCodeByPath` | `modules/manage-app/constants/admin-navigation.ts` | Đăng ký `navigation.ts` của module mới; nhóm hiển thị; tìm module theo path |
+| `ADMIN_MODULE_NAVIGATION`, `ADMIN_GROUPS`, `findModuleCodeByPath`, `findActiveNavHref`, `groupNavSections` | `modules/manage-app/constants/admin-navigation.ts` | Đăng ký `navigation.ts` của module mới; nhóm hiển thị; tìm module theo path; gom mục theo cụm cho sidebar |

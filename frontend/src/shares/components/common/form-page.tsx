@@ -3,6 +3,7 @@
 import { cn } from "cn";
 import type { ReactNode } from "react";
 
+import { EditModeButton } from "./edit-mode-button";
 import { PageHeader } from "./page-header";
 import { FormPageActionsContext, useFormPageHeader } from "./hooks/use-form-page-header";
 
@@ -45,6 +46,7 @@ export function FormPage({
               actions={
                 <>
                   {actions}
+                  <EditModeButton />
                   <div ref={setSlot} className="flex items-center gap-2 empty:hidden" />
                 </>
               }

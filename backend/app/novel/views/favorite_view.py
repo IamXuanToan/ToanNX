@@ -3,31 +3,22 @@
 from typing import Any
 
 from drf_spectacular.utils import extend_schema
-from rest_framework import serializers
 from rest_framework.request import Request
 
 from app.core.decorators.validate_request import validate_request
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
-from app.core.serializers.core_validate_serializer import CoreValidateSerializer
 from app.core.views.core_api_view import CoreApiView
 from app.novel.serializers.responses.favorite_response_serializer import (
     FavoriteResponseSerializer,
 )
+from app.novel.serializers.responses.favorite_toggle_response_serializer import (
+    FavoriteToggleResponseSerializer,
+)
+from app.novel.serializers.validates.favorite_toggle_validate_serializer import (
+    FavoriteToggleValidateSerializer,
+)
 from app.novel.services.favorite_service import FavoriteService
-
-
-class FavoriteToggleValidateSerializer(CoreValidateSerializer):
-    """Input bật/tắt yêu thích truyện."""
-
-    novel_id = serializers.UUIDField(help_text="Mã truyện (UUID).")
-
-
-class FavoriteToggleResponseSerializer(serializers.Serializer[dict[str, object]]):
-    """Kết quả bật/tắt yêu thích."""
-
-    is_favorite = serializers.BooleanField(help_text="Trạng thái yêu thích mới.")
-    favorites_count = serializers.IntegerField(help_text="Tổng lượt thích của truyện sau khi cập nhật.")
 
 
 class FavoriteView(CoreApiView):
@@ -43,7 +34,7 @@ class FavoriteView(CoreApiView):
             **kwargs: Các tham số bổ sung cho CoreApiView.
         """
         super().__init__(**kwargs)
-        self.service = service or FavoriteService()
+        self.favorite_service = service or FavoriteService()
 
     @extend_schema(responses={200: FavoriteResponseSerializer(many=True)})
     def get(self, request: Request) -> CoreResponse:
@@ -56,7 +47,7 @@ class FavoriteView(CoreApiView):
             CoreResponse: Danh sách các bản ghi truyện yêu thích đã serialize.
         """
         actor = self.get_actor(request)
-        queryset = self.service.list_for_user(actor.pk)
+        queryset = self.favorite_service.list_for_user(actor.pk)
         data = FavoriteResponseSerializer(queryset, many=True, context={"request": request}).data
         return CoreResponse(data)
 
@@ -76,5 +67,5 @@ class FavoriteView(CoreApiView):
             CoreResponse: Kết quả trạng thái yêu thích mới và tổng lượt thích.
         """
         actor = self.get_actor(request)
-        is_favorite, favorites_count = self.service.toggle(actor, validated_data["novel_id"])
+        is_favorite, favorites_count = self.favorite_service.toggle(actor, validated_data["novel_id"])
         return CoreResponse({"is_favorite": is_favorite, "favorites_count": favorites_count})

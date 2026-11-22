@@ -3,6 +3,7 @@
 from typing import Any
 
 from app.core.services.core_crud_service import CoreCrudService
+from app.system.constants.setting_key import SettingKey
 from app.system.models.setting import Setting
 from app.system.permissions.setting_permission import SettingPermission
 from app.system.repositories.setting_repository import SettingRepository
@@ -38,6 +39,7 @@ class SettingService(CoreCrudService[Setting, SettingRepository]):
         self,
         key: str,
         value: Any,
+        *,
         description: str = "",
         category: str = "general",
         is_public: bool = False,
@@ -74,9 +76,8 @@ class SettingService(CoreCrudService[Setting, SettingRepository]):
         Returns:
             True nếu đang cho phép, False nếu quản trị viên tạm khóa.
         """
-        key = f"auth_{provider.lower()}_enabled"
         # Mặc định True nếu chưa có cấu hình trong DB
-        val = self.get_setting_value(key, default=True)
+        val = self.get_setting_value(SettingKey.social_login(provider), default=True)
         return bool(val)
 
     def get_public_settings(self) -> dict[str, Any]:
@@ -90,8 +91,6 @@ class SettingService(CoreCrudService[Setting, SettingRepository]):
         for record in records:
             result[record.key] = record.value
         # Đảm bảo các cờ auth luôn có giá trị boolean mặc định
-        if "auth_google_enabled" not in result:
-            result["auth_google_enabled"] = True
-        if "auth_github_enabled" not in result:
-            result["auth_github_enabled"] = True
+        for key in (SettingKey.AUTH_GOOGLE_ENABLED, SettingKey.AUTH_GITHUB_ENABLED):
+            result.setdefault(key.value, True)
         return result

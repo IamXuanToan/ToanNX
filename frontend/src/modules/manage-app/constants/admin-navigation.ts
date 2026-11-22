@@ -1,9 +1,15 @@
+import { financeNavigation } from "@/modules/finance/navigation";
 import { novelNavigation } from "@/modules/novel/navigation";
 import { systemNavigation } from "@/modules/system/navigation";
 import { utilitiesNavigation } from "@/modules/utilities/navigation";
-import { BookOpen, LayoutTemplate, type LucideIcon, Settings } from "lucide-react";
+import { BookOpen, LayoutTemplate, type LucideIcon, Settings, Wallet } from "lucide-react";
 
-import type { AdminGroupCode, AdminModuleNavigation } from "@/shares/types/navigation.types";
+import type {
+  AdminGroupCode,
+  AdminModuleNavigation,
+  AdminNavItem,
+  AdminNavSection,
+} from "@/shares/types/navigation.types";
 
 /**
  * Nhóm module hiển thị ở màn chọn (một thẻ mỗi nhóm), theo thứ tự hiển thị.
@@ -14,6 +20,7 @@ export const ADMIN_GROUPS: { code: AdminGroupCode; icon: LucideIcon }[] = [
   { code: "system", icon: Settings },
   { code: "content", icon: LayoutTemplate },
   { code: "novel", icon: BookOpen },
+  { code: "finance", icon: Wallet },
 ];
 
 /**
@@ -25,6 +32,7 @@ export const ADMIN_MODULE_NAVIGATION: AdminModuleNavigation[] = [
   systemNavigation,
   utilitiesNavigation,
   novelNavigation,
+  financeNavigation,
 ];
 
 /**
@@ -37,4 +45,34 @@ export function findModuleCodeByPath(pathname: string): string | undefined {
   return ADMIN_MODULE_NAVIGATION.find((navigation) =>
     navigation.items.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`)),
   )?.module;
+}
+
+/**
+ * Mục menu đang mở: href khớp **dài nhất** (`/admin/finance` không sáng khi đang ở `/admin/finance/transactions`).
+ *
+ * @param pathname - Pathname nội bộ.
+ * @param hrefs - Href các mục đang hiển thị.
+ * @returns Href của mục đang mở, hoặc undefined.
+ */
+export function findActiveNavHref(pathname: string, hrefs: readonly string[]): string | undefined {
+  return hrefs
+    .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
+    .sort((a, b) => b.length - a.length)[0];
+}
+
+/**
+ * Gom các mục menu liền nhau cùng `section` thành cụm (giữ thứ tự khai báo). Chạy sau khi lọc quyền nên cụm
+ * hết mục tự biến mất, không còn nhãn hay vạch ngăn thừa.
+ *
+ * @param items - Mục menu đã lọc quyền của một module.
+ * @returns Danh sách cụm theo thứ tự hiển thị.
+ */
+export function groupNavSections(items: readonly AdminNavItem[]): AdminNavSection[] {
+  const sections: AdminNavSection[] = [];
+  for (const item of items) {
+    const last = sections.at(-1);
+    if (last && last.labelKey === item.section) last.items.push(item);
+    else sections.push({ labelKey: item.section, items: [item] });
+  }
+  return sections;
 }

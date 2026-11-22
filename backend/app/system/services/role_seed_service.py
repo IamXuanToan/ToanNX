@@ -18,6 +18,9 @@ from app.system.constants.predefined_roles import (
     MODULE_MANAGER_DESCRIPTION,
     MODULE_MANAGER_NAME,
     MODULE_MANAGER_PATTERN,
+    MODULE_MEMBER_CODE,
+    MODULE_MEMBER_DESCRIPTION,
+    MODULE_MEMBER_NAME,
     MODULE_VIEWER_CODE,
     MODULE_VIEWER_DESCRIPTION,
     MODULE_VIEWER_NAME,
@@ -63,7 +66,7 @@ class RoleSeedService:
         self.registry = registry or module_registry
 
     def predefined_roles(self) -> list[PredefinedRoleSpec]:
-        """Danh sách vai trò mẫu: `ADMIN` rồi cặp quản lý/chỉ xem của từng module có khai quyền.
+        """Danh sách vai trò mẫu: `ADMIN` rồi quản lý/chỉ xem/thành viên của từng module có khai quyền.
 
         Returns:
             Khai báo vai trò theo thứ tự tạo.
@@ -75,14 +78,14 @@ class RoleSeedService:
         return specs
 
     @staticmethod
-    def _module_roles(module: ModuleDescriptor) -> tuple[PredefinedRoleSpec, PredefinedRoleSpec]:
-        """Hai vai trò của một module: quản lý (mọi quyền) và chỉ xem (quyền `read`).
+    def _module_roles(module: ModuleDescriptor) -> tuple[PredefinedRoleSpec, ...]:
+        """Vai trò của một module: quản lý (mọi quyền), chỉ xem (quyền `read`), thành viên (dữ liệu của mình).
 
         Args:
             module: Descriptor của module.
 
         Returns:
-            (vai trò quản lý, vai trò chỉ xem).
+            (quản lý, chỉ xem, thành viên); không có thành viên khi module chưa khai `member_permissions`.
         """
         # Mã vai trò là CHỮ_HOA_SNAKE (`ROLE_CODE_PATTERN`) nên đổi `-` trong mã module thành `_`.
         role_prefix = module.code.upper().replace("-", "_")
@@ -98,7 +101,15 @@ class RoleSeedService:
             description=MODULE_VIEWER_DESCRIPTION.format(module=module.name),
             permission_patterns=(MODULE_VIEWER_PATTERN.format(module=module.code),),
         )
-        return manager, viewer
+        if not module.member_permissions:
+            return manager, viewer
+        member = PredefinedRoleSpec(
+            code=MODULE_MEMBER_CODE.format(module=role_prefix),
+            name=MODULE_MEMBER_NAME.format(module=module.name),
+            description=MODULE_MEMBER_DESCRIPTION.format(module=module.name),
+            permission_patterns=tuple(permission.code for permission in module.member_permissions),
+        )
+        return manager, viewer, member
 
     @transaction.atomic
     def seed(self, *, system_only: bool = False) -> dict[str, int]:

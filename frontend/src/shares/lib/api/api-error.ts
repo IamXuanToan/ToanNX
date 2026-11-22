@@ -3,6 +3,8 @@ export const CLIENT_ERROR_CODES = {
   network: "NETWORK_ERROR",
   timeout: "TIMEOUT",
   invalidResponse: "INVALID_RESPONSE",
+  /** Người gọi hủy request (React Query hủy query khi unmount). */
+  cancelled: "REQUEST_CANCELLED",
 } as const;
 
 /** Lỗi API đã chuẩn hóa từ response `{ success: false, error: {...} }`. */

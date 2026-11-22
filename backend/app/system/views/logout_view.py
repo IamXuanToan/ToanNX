@@ -27,6 +27,7 @@ class LogoutView(CoreApiView):
             **kwargs: Tham số của DRF.
         """
         super().__init__(**kwargs)
+        self.auth_cookie_service = AuthCookieService()
         self.auth_session_service = AuthSessionService()
 
     @extend_schema(request=None, responses={200: None})
@@ -41,5 +42,5 @@ class LogoutView(CoreApiView):
         """
         self.auth_session_service.logout(request.COOKIES.get(settings.AUTH_REFRESH_COOKIE_NAME, ""))
         response = CoreResponse()
-        AuthCookieService.clear_cookies(response)
+        self.auth_cookie_service.clear_cookies(response)
         return response

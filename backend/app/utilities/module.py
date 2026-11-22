@@ -15,6 +15,12 @@ MODULE = ModuleDescriptor(
     ),
     version="1.0.0",
     dependencies=("system",),
+    member_permissions=(
+        *ShortLinkPermission.member(),
+        *QrCodePermission.member(),
+        *PagePermission.member(),
+        *PagePathPermission.member(),
+    ),
     permissions=(
         *ShortLinkPermission.all(),
         *QrCodePermission.all(),

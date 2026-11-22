@@ -25,7 +25,7 @@ class EmailVerificationService:
 
     def __init__(
         self,
-        email_service: type[EmailService] | None = None,
+        email_service: EmailService | None = None,
         user_service: UserService | None = None,
     ) -> None:
         """Khởi tạo service.
@@ -34,7 +34,7 @@ class EmailVerificationService:
             email_service: Service gửi email.
             user_service: Service quản lý người dùng.
         """
-        self.email_service = email_service or EmailService
+        self.email_service = email_service or EmailService()
         self.user_service = user_service or UserService()
         self.signer = TimestampSigner(salt=SIGNER_SALT)
 

@@ -6,7 +6,7 @@ import { useReportClientError } from "../../hooks/use-report-client-error";
 
 /**
  * Hook quản lý logic màn hình lỗi máy chủ/thời gian chạy (500 Error Boundary):
- * - Báo cáo lỗi lên backend/Sentry qua `useReportClientError`.
+ * - Báo cáo lỗi lên backend qua `useReportClientError`.
  * - Trích xuất mã digest lỗi từ Next.js error boundary.
  * - Trích xuất error message trong môi trường development.
  * - Quản lý clipboard copy mã digest kèm timeout 2s.

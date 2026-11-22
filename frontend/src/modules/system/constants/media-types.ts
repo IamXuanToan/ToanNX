@@ -13,7 +13,33 @@ export const MEDIA_FORMATS: { kind: MediaKind; value: string; label: string }[] 
   { kind: "VIDEO", value: "video/quicktime", label: "MOV (.mov)" },
   { kind: "VIDEO", value: "video/webm", label: "WebM (.webm)" },
   { kind: "DOCUMENT", value: "application/pdf", label: "PDF (.pdf)" },
+  {
+    kind: "DOCUMENT",
+    value: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    label: "Excel (.xlsx)",
+  },
+  { kind: "DOCUMENT", value: "text/csv", label: "CSV (.csv)" },
+  { kind: "DOCUMENT", value: "application/xml", label: "XML (.xml)" },
 ];
+
+/** Giá trị thuộc tính `accept` của input file theo loại media được nhận. */
+const ACCEPT_BY_KIND: Record<MediaKind, string> = {
+  IMAGE: "image/*",
+  VIDEO: "video/mp4,video/webm,video/quicktime",
+  DOCUMENT: "application/pdf,.xlsx,.csv,.xml",
+};
+
+/** @param kinds - Loại media nơi dùng nhận. @returns Chuỗi `accept` cho input file (rỗng = mọi loại backend hỗ trợ). */
+export function acceptAttributeFor(kinds: readonly MediaKind[]) {
+  return kinds.map((kind) => ACCEPT_BY_KIND[kind]).join(",") || undefined;
+}
+
+/** @param contentType - MIME đã xác minh. @param kinds - Loại nơi dùng nhận. @returns File thuộc một loại được nhận. */
+export function isAcceptedKind(contentType: string, kinds: readonly MediaKind[]) {
+  return MEDIA_FORMATS.some(
+    (format) => format.value === contentType && kinds.includes(format.kind),
+  );
+}
 
 export const UNFILED_FOLDER = "UNFILED";
 

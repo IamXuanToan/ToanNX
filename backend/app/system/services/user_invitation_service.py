@@ -35,7 +35,7 @@ class UserInvitationService:
 
     def __init__(
         self,
-        email_service: type[EmailService] | None = None,
+        email_service: EmailService | None = None,
         user_repository: UserRepository | None = None,
         auth_service: AuthService | None = None,
     ) -> None:
@@ -46,7 +46,7 @@ class UserInvitationService:
             user_repository: Repository người dùng.
             auth_service: Service xác thực và tạo phiên đăng nhập.
         """
-        self.email_service = email_service or EmailService
+        self.email_service = email_service or EmailService()
         self.user_repository = user_repository or UserRepository()
         self._auth_service = auth_service
         self.signer = TimestampSigner(salt=SIGNER_SALT)

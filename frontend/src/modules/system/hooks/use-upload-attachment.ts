@@ -10,9 +10,7 @@ import type { AttachmentUploadInput } from "../types/attachment.types";
 export function useUploadAttachment() {
   return useResourceMutation({
     mutationFn: (input: File | AttachmentUploadInput) =>
-      input instanceof File
-        ? attachmentService.upload(input)
-        : attachmentService.upload(input.file, input.folderId),
+      attachmentService.upload(input instanceof File ? { file: input } : input),
     invalidate: [attachmentKeys.all],
     success: false,
     toastError: false,

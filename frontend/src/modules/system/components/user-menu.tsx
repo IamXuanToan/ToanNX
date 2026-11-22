@@ -16,26 +16,10 @@ import {
 
 import { ProfileDialog } from "./profile-dialog";
 import { useUserMenu } from "./hooks/use-user-menu";
+import { AccountEmail } from "./account-email";
 
 const ITEM_CLASS =
   "h-10 gap-2.5 rounded-xl px-3 data-highlighted:bg-destructive/10 data-highlighted:text-destructive data-highlighted:[&_svg]:text-destructive";
-
-/**
- * Email một dòng: cắt phần trước `@`, giữ nguyên tên miền.
- *
- * @param props - Email.
- * @returns Email rút gọn.
- */
-function AccountEmail({ email }: { email: string }) {
-  const at = email.lastIndexOf("@");
-  if (at < 0) return <span className="block truncate">{email}</span>;
-  return (
-    <span className="flex min-w-0" title={email}>
-      <span className="truncate">{email.slice(0, at)}</span>
-      <span className="shrink-0">{email.slice(at)}</span>
-    </span>
-  );
-}
 
 /**
  * Menu người dùng: thông tin cá nhân, mở dialog hồ sơ cá nhân, đăng xuất, đăng xuất mọi thiết bị.

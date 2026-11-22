@@ -35,6 +35,7 @@ class AcceptInvitationView(CoreApiView):
             **kwargs: Tham số của DRF.
         """
         super().__init__(**kwargs)
+        self.auth_cookie_service = AuthCookieService()
         self.invitation_service = UserInvitationService()
 
     @extend_schema(
@@ -64,5 +65,5 @@ class AcceptInvitationView(CoreApiView):
         rotate_token(request._request)
 
         response = CoreResponse(CurrentUserResponseSerializer(result.profile).data)
-        AuthCookieService.set_cookies(response, result)
+        self.auth_cookie_service.set_cookies(response, result)
         return response

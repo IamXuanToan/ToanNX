@@ -5,4 +5,5 @@
  */
 export const JOURNAL_ENTRY_PERMISSIONS = {
   entryRead: "system.journal_entry.read",
+  entryDelete: "system.journal_entry.delete",
 } as const;

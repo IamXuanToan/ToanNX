@@ -4,11 +4,11 @@ import { ArrowLeft, FileQuestion, Home, Images, LogIn } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link, useRouter } from "@/i18n/navigation";
-import { LogoMark } from "@/shares/components/layout/logo";
+import { LogoMark } from "@/shares/components/layout/logo-mark";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
-
 import { SYSTEM_ROUTES } from "@/modules/system/constants/routes";
+
 import { HOME_ROUTES } from "../constants/routes";
 
 /**

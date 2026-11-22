@@ -63,6 +63,7 @@ class SessionObjectView(CoreApiView):
             **kwargs: Tham số của DRF.
         """
         super().__init__(**kwargs)
+        self.auth_cookie_service = AuthCookieService()
         self.auth_session_service = AuthSessionService()
 
     @extend_schema(responses={204: None})
@@ -79,5 +80,5 @@ class SessionObjectView(CoreApiView):
         self.auth_session_service.revoke_session(self.get_actor(request), session_id)
         response = Response(status=204)
         if str(getattr(request.auth, "pk", "")) == str(session_id):
-            AuthCookieService.clear_cookies(response)
+            self.auth_cookie_service.clear_cookies(response)
         return response

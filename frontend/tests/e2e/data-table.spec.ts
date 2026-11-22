@@ -11,12 +11,12 @@ const PASSWORD = "E2e-Temp-Passw0rd!";
  * @param email - Email người dùng mới.
  */
 async function createUser(page: Page, email: string) {
-  await page.goto("/vi/quan-tri/nguoi-dung/tao-moi");
+  await page.goto("/vi/quan-tri/he-thong/nguoi-dung/tao-moi");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Tên người dùng").fill(email.split("@")[0]);
   await page.getByLabel("Mật khẩu", { exact: true }).fill(PASSWORD);
   await page.getByRole("button", { name: "Tạo", exact: true }).click();
-  await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung\/[0-9a-f-]{36}$/);
+  await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/nguoi-dung\/[0-9a-f-]{36}$/);
 }
 
 /**
@@ -26,11 +26,11 @@ async function createUser(page: Page, email: string) {
  * @param code - Mã vai trò.
  */
 async function createRole(page: Page, code: string) {
-  await page.goto("/vi/quan-tri/vai-tro/tao-moi");
+  await page.goto("/vi/quan-tri/he-thong/vai-tro/tao-moi");
   await page.getByLabel("Mã vai trò").fill(code);
   await page.getByLabel("Tên vai trò").fill(`Vai trò ${code}`);
   await page.getByRole("button", { name: "Tạo", exact: true }).click();
-  await expect(page).toHaveURL(/\/vi\/quan-tri\/vai-tro\/[0-9a-f-]{36}$/);
+  await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/vai-tro\/[0-9a-f-]{36}$/);
 }
 
 /** Bảng dữ liệu của trang. */
@@ -40,7 +40,7 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
   test("kéo đổi độ rộng cột phiên, giữ sau tải lại và tách riêng theo bảng", async ({ page }) => {
     await loginViaUi(page);
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/vi/quan-tri/phien");
+    await page.goto("/vi/quan-tri/he-thong/phien");
     const header = table(page).locator('thead th[data-col="user"]');
     const resize = header.getByRole("separator", {
       name: "Đổi độ rộng cột Người dùng",
@@ -80,13 +80,13 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
       .poll(async () => (await header.boundingBox())!.width)
       .toBeCloseTo(original + 140, 0);
 
-    await page.goto("/vi/quan-tri/vai-tro");
+    await page.goto("/vi/quan-tri/he-thong/vai-tro");
     await page.getByRole("button", { name: "Cột hiển thị", exact: true }).click();
     await expect(
       page.getByRole("menuitem", { name: "Khôi phục độ rộng cột", exact: true }),
     ).toBeDisabled();
     await page.keyboard.press("Escape");
-    await page.goto("/vi/quan-tri/phien");
+    await page.goto("/vi/quan-tri/he-thong/phien");
     await expect
       .poll(async () => (await header.boundingBox())!.width)
       .toBeCloseTo(original + 140, 0);
@@ -102,7 +102,7 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
   }) => {
     await loginViaUi(page);
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/vi/quan-tri/phien");
+    await page.goto("/vi/quan-tri/he-thong/phien");
     for (const name of ["Người dùng", "Trạng thái"]) {
       await page.getByRole("button", { name: `Ghim cột ${name}`, exact: true }).click();
       await page.getByRole("menuitem", { name: "Ghim trái", exact: true }).click();
@@ -189,7 +189,7 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
     page,
   }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     const headers = table(page).getByRole("columnheader");
     await expect(
       headers.first().getByRole("checkbox", { name: "Chọn tất cả dòng trong trang" }),
@@ -202,7 +202,9 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
     const selfRow = table(page).getByRole("row").filter({ hasText: E2E_ADMIN.email });
     await expect(selfRow).toHaveCount(1);
     await expect(selfRow.getByRole("checkbox")).toBeDisabled();
-    await expect(selfRow.getByRole("button", { name: "Xoá" })).toHaveCount(0);
+    // Cột Thao tác luôn đủ Xem / Sửa / Xoá: chính mình thì Xoá hiện nhưng khoá (không ẩn).
+    await expect(selfRow.getByRole("button", { name: "Xoá" })).toBeDisabled();
+    await expect(selfRow.getByRole("button", { name: "Xem" })).toBeVisible();
     await expect(selfRow.getByRole("button", { name: "Sửa" })).toBeVisible();
     await expect(selfRow.getByRole("button", { name: "Sao chép" })).toBeVisible();
     // Khoá/mở là công tắc ở cột Trạng thái (không nằm trong cột Thao tác); chính mình thì bị khoá.
@@ -214,7 +216,7 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
 
   test("bấm tiêu đề cột để sắp xếp: tăng → giảm → bỏ; ghi lên URL", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     const header = table(page).getByRole("columnheader", { name: /Người dùng/ });
     await header.getByRole("button", { name: /Sắp xếp/ }).click();
     await expect(page).toHaveURL(/ordering=email/);
@@ -226,7 +228,7 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
     await expect(page).not.toHaveURL(/ordering=-?email/);
 
     // Tải lại trang vẫn giữ sắp xếp và từ khóa từ URL.
-    await page.goto("/vi/quan-tri/nguoi-dung?ordering=email&search=e2e");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung?ordering=email&search=e2e");
     await expect(page.getByRole("searchbox")).toHaveValue("e2e");
     await expect(header).toHaveAttribute("aria-sort", "ascending");
   });
@@ -237,7 +239,7 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
     const email = `e2e-table-${Date.now()}@toannx.local`;
     await loginViaUi(page);
     await createUser(page, email);
-    await page.goto(`/vi/quan-tri/nguoi-dung?search=${encodeURIComponent(email)}`);
+    await page.goto(`/vi/quan-tri/he-thong/nguoi-dung?search=${encodeURIComponent(email)}`);
     const row = table(page).getByRole("row").filter({ hasText: email });
     await expect(row).toHaveCount(1);
 
@@ -275,11 +277,11 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
     await loginViaUi(page);
     for (const code of codes) await createRole(page, code);
 
-    await page.goto("/vi/quan-tri/vai-tro?search=ADMIN");
+    await page.goto("/vi/quan-tri/he-thong/vai-tro?search=ADMIN");
     const adminRow = table(page).getByRole("row").filter({ hasText: "ADMIN" }).first();
     await expect(adminRow.getByRole("checkbox")).toBeDisabled();
 
-    await page.goto(`/vi/quan-tri/vai-tro?search=E2E_`);
+    await page.goto(`/vi/quan-tri/he-thong/vai-tro?search=E2E_`);
     await expect(table(page).getByRole("row").filter({ hasText: suffix })).toHaveCount(2);
     await page.getByRole("searchbox").fill(suffix);
     await page.getByRole("searchbox").press("Enter");
@@ -295,7 +297,7 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
 
   test("ẩn/hiện cột và đổi số dòng mỗi trang", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     await page.getByRole("button", { name: "Cột hiển thị" }).click();
     await page.getByRole("menuitemcheckbox", { name: "Trạng thái" }).click();
     await page.keyboard.press("Escape");
@@ -313,17 +315,17 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
     const code = `E2E_C_${Date.now().toString().slice(-6)}`;
     await loginViaUi(page);
     await createRole(page, code);
-    await page.goto(`/vi/quan-tri/vai-tro?search=${code}`);
+    await page.goto(`/vi/quan-tri/he-thong/vai-tro?search=${code}`);
     const row = table(page).getByRole("row").filter({ hasText: code });
     await row.getByRole("button", { name: "Sao chép" }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/vai-tro\/tao-moi\?copyFrom=/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/vai-tro\/tao-moi\?copyFrom=/);
     await expect(page.getByLabel("Mã vai trò")).toHaveValue(`${code}_COPY`);
     await expect(page.getByLabel("Tên vai trò")).toHaveValue(`Vai trò ${code} (bản sao)`);
   });
 
   test("ghim cột trái rồi bỏ ghim; thứ tự cột đổi theo", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     const headers = table(page).getByRole("columnheader");
     // Thứ tự mặc định: [chọn] [#] Người dùng, Quyền truy cập, Trạng thái, …
     await expect(headers.nth(2)).toContainText("Người dùng");
@@ -343,17 +345,17 @@ test.describe("Bảng dữ liệu chuẩn (DataTable)", () => {
 
   test("ghim phải được nhớ theo từng bảng, không truyền sang bảng vai trò", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     await page.getByRole("button", { name: "Ghim cột Trạng thái" }).click();
     await page.getByRole("menuitem", { name: "Ghim phải" }).click();
 
     let headers = table(page).getByRole("columnheader");
     await expect(headers.nth((await headers.count()) - 2)).toContainText("Trạng thái");
-    await page.goto("/vi/quan-tri/vai-tro");
+    await page.goto("/vi/quan-tri/he-thong/vai-tro");
     headers = table(page).getByRole("columnheader");
     await expect(headers.nth(2)).toContainText("Vai trò");
 
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     headers = table(page).getByRole("columnheader");
     await expect(headers.nth((await headers.count()) - 2)).toContainText("Trạng thái");
     await expect(headers.nth((await headers.count()) - 2)).toHaveCSS("position", "sticky");

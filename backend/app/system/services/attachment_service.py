@@ -1,11 +1,10 @@
-"""Nghiệp vụ file đính kèm: upload, đọc, xóa mềm.
+"""Nghiệp vụ file đính kèm: upload, đọc, xóa mềm, chuyển công khai/riêng tư.
 
-Storage dùng `default_storage` của Django (STORAGES["default"]): local filesystem khi dev,
-object storage (S3/R2/Vercel Blob...) khi production — Vercel không có filesystem bền.
+Kho lưu chọn theo `Attachment.visibility` qua `AttachmentStorageService` (công khai: STORAGES["default"];
+riêng tư: STORAGES["private"]) — Vercel không có filesystem bền nên production dùng R2.
 """
 
 import hashlib
-import logging
 from typing import Any
 
 from django.conf import settings
@@ -15,19 +14,29 @@ from django.db import transaction
 from django.utils import timezone
 
 from app.core.exceptions.authorization_error import AuthorizationError
+from app.core.exceptions.not_found_error import NotFoundError
 from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
 from app.core.storage.r2_usage_service import R2UsageService
 from app.system.constants.attachment_error_code import AttachmentErrorCode
+from app.system.constants.notification_defaults import STORAGE_WARNING_PERCENT
+from app.system.constants.system_notification_event import SystemNotificationEvent
 from app.system.models.attachment import Attachment
 from app.system.permissions.attachment_permission import AttachmentPermission
 from app.system.repositories.attachment_repository import AttachmentRepository
 from app.system.services.attachment_folder_service import AttachmentFolderService
+from app.system.services.attachment_storage_service import (
+    DOWNLOAD_ONLY_CONTENT_TYPES,
+    AttachmentStorageService,
+)
+from app.system.services.notification_service import NotificationService
+from app.system.types.notification_payload import NotificationPayload
 from app.system.utils.file_signature import detect_content_type
 from app.system.utils.svg_inspector import SVG_CONTENT_TYPE, find_svg_problem
 
 _CHUNK_SIZE = 64 * 1024
-logger = logging.getLogger(__name__)
+PERCENT = 100
+ATTACHMENTS_PATH = "/admin/attachments"
 
 
 class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
@@ -43,11 +52,37 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         repository: AttachmentRepository | None = None,
         folder_service: AttachmentFolderService | None = None,
         r2_usage_service: R2UsageService | None = None,
+        storage_service: AttachmentStorageService | None = None,
+        private_r2_usage_service: R2UsageService | None = None,
+        notification_service: NotificationService | None = None,
     ) -> None:
-        """Khởi tạo phụ thuộc của kho file, thư mục logic và service đo dung lượng R2."""
+        """Khởi tạo phụ thuộc: kho file, thư mục logic, đo dung lượng R2, kho lưu theo chế độ xem."""
         super().__init__(repository)
         self.folder_service = folder_service or AttachmentFolderService()
         self.r2_usage_service = r2_usage_service or R2UsageService()
+        self.private_r2_usage_service = private_r2_usage_service or R2UsageService(
+            bucket_name=settings.CLOUDFLARE_R2_PRIVATE_BUCKET_NAME
+        )
+        self.storage_service = storage_service or AttachmentStorageService()
+        self.notification_service = notification_service or NotificationService()
+
+    def _warn_quota(self, total_bytes: int) -> None:
+        """Dung lượng vượt ngưỡng cảnh báo → báo người có `manage_all` file (gom theo ngày)."""
+        limit = settings.ATTACHMENT_MAX_TOTAL_STORAGE_BYTES
+        if not limit or total_bytes * PERCENT < limit * STORAGE_WARNING_PERCENT:
+            return
+        used = round(total_bytes * PERCENT / limit)
+        self.notification_service.notify(
+            SystemNotificationEvent.STORAGE_QUOTA_WARNING,
+            dedup_key=f"{timezone.now():%Y%m%d}",
+            payload=NotificationPayload(
+                title=f"Dung lượng lưu trữ đã dùng {used}%",
+                body="Dọn file không dùng hoặc tăng giới hạn ATTACHMENT_MAX_TOTAL_STORAGE_BYTES.",
+                link=ATTACHMENTS_PATH,
+                message_key="system.notifications.events.storageQuota",
+                params={"percent": used},
+            ),
+        )
 
     def get_current_storage_usage_bytes(self) -> int:
         """Lấy tổng dung lượng lưu trữ hiện tại.
@@ -59,24 +94,36 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         Returns:
             Số bytes nguyên.
         """
-        r2_usage = self.r2_usage_service.get_bucket_usage_bytes()
-        if r2_usage is not None:
-            return r2_usage
-        return self.repository.get_total_storage_size()
+        public_usage = self.r2_usage_service.get_bucket_usage_bytes()
+        if public_usage is None:
+            # Không đo được bucket công khai: tổng DB của cả hai chế độ (công khai + riêng tư).
+            return self.repository.get_total_storage_size()
+        if self.private_r2_usage_service.bucket_name == self.r2_usage_service.bucket_name:
+            # Cấu hình nhầm hai kho cùng một bucket: số của API đã gồm mọi file, cộng nữa là đếm hai lần.
+            return public_usage
+        # Bucket riêng tư chưa cấu hình/lỗi API thì cộng tổng file riêng tư trong DB.
+        private_usage = (
+            self.private_r2_usage_service.get_bucket_usage_bytes()
+            if self.private_r2_usage_service.is_configured()
+            else None
+        )
+        if private_usage is None:
+            private_usage = self.repository.get_total_storage_size(Attachment.Visibility.PRIVATE)
+        return public_usage + private_usage
 
     def get_image(self, attachment_id: Any, *, actor: Any | None = None) -> Attachment:
-        """Lấy file và bảo đảm là ảnh (dùng cho ảnh đại diện).
+        """Lấy file và bảo đảm là ảnh công khai (ảnh đại diện, logo QR: người khác phải xem được).
 
         Args:
             attachment_id: Id file.
             actor: Người chọn ảnh; truyền vào khi gán ảnh từ dữ liệu client.
 
         Returns:
-            Attachment là ảnh.
+            Attachment là ảnh công khai.
 
         Raises:
             NotFoundError: Không tồn tại.
-            ValidationError: File không phải ảnh.
+            ValidationError: File không phải ảnh hoặc đang riêng tư.
         """
         if actor is not None and not actor.has_perm(AttachmentPermission.FILE_READ.code):
             raise AuthorizationError(details={"permissions": [AttachmentPermission.FILE_READ.code]})
@@ -85,6 +132,12 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         )
         if not attachment.is_image:
             raise ValidationError(details={"avatar_id": ["File phải là ảnh."]})
+        if attachment.is_private:
+            raise ValidationError(
+                "Ảnh đang ở chế độ riêng tư.",
+                code=AttachmentErrorCode.ATTACHMENT_MUST_BE_PUBLIC,
+                details={"avatar_id": ["Ảnh phải ở chế độ công khai."]},
+            )
         return attachment
 
     @transaction.atomic
@@ -93,7 +146,8 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
 
         Args:
             actor: Người upload.
-            data: Dữ liệu đã qua AttachmentUploadValidateSerializer (`file`).
+            data: Dữ liệu đã qua AttachmentUploadValidateSerializer (`file`, `visibility` tùy chọn:
+                không gửi thì CSV/XLSX/XML mặc định riêng tư, loại khác công khai).
 
         Returns:
             Attachment đã lưu.
@@ -111,9 +165,15 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         content_type = detect_content_type(upload)
         if content_type not in settings.ATTACHMENT_ALLOWED_CONTENT_TYPES:
             raise ValidationError(
-                "Định dạng file không được hỗ trợ.",
-                details={"file": ["Định dạng file không được hỗ trợ."]},
+                "Định dạng file không được hỗ trợ hoặc file bị hỏng.",
+                details={"file": ["Định dạng file không được hỗ trợ hoặc file bị hỏng."]},
             )
+        visibility = data.get("visibility") or (
+            Attachment.Visibility.PRIVATE
+            if content_type in DOWNLOAD_ONLY_CONTENT_TYPES
+            else Attachment.Visibility.PUBLIC
+        )
+        self.storage_service.ensure_ready(visibility)
 
         if content_type == SVG_CONTENT_TYPE:
             problem = find_svg_problem(upload)
@@ -125,6 +185,7 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         # ============================================================
         file_size = upload.size or 0
         current_total = self.get_current_storage_usage_bytes()
+        self._warn_quota(current_total + file_size)
         if current_total + file_size > settings.ATTACHMENT_MAX_TOTAL_STORAGE_BYTES:
             max_gb = round(settings.ATTACHMENT_MAX_TOTAL_STORAGE_BYTES / (1024 * 1024 * 1024), 2)
             raise ValidationError(
@@ -136,22 +197,28 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
             )
 
         # ============================================================
-        # BƯỚC 3: Tính checksum rồi lưu vào storage + DB
+        # BƯỚC 3: Tính checksum, lưu vào kho theo chế độ xem rồi ghi DB (lỗi DB thì xóa file vừa lưu)
         # ============================================================
         digest = hashlib.sha256()
         for chunk in upload.chunks(_CHUNK_SIZE):
             digest.update(chunk)
         upload.seek(0)
-        return self.repository.create(
-            actor=actor,
-            file=upload,
-            original_name=(upload.name or "file")[:255],
-            alt_text=(data.get("alt_text") or "").strip()[:255],
-            content_type=content_type,
-            size=upload.size or 0,
-            checksum=digest.hexdigest(),
-            folder=folder,
-        )
+        stored_name = self.storage_service.save_upload(visibility, upload)
+        try:
+            return self.repository.create(
+                actor=actor,
+                file=stored_name,
+                visibility=visibility,
+                original_name=(upload.name or "file")[:255],
+                alt_text=(data.get("alt_text") or "").strip()[:255],
+                content_type=content_type,
+                size=upload.size or 0,
+                checksum=digest.hexdigest(),
+                folder=folder,
+            )
+        except Exception:
+            self.storage_service.delete(visibility, stored_name)
+            raise
 
     def find_alive_images(self, ids: Any) -> dict[str, Attachment]:
         """Ảnh còn tồn tại theo id (một query), dùng khi dựng nội dung công khai.
@@ -162,7 +229,86 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         Returns:
             `{id dạng chuỗi: attachment}`; id không tồn tại/không phải ảnh thì không có trong kết quả.
         """
-        return {str(item.pk): item for item in self.repository.filter(pk__in=list(ids)) if item.is_image}
+        return {
+            str(item.pk): item
+            for item in self.repository.filter(pk__in=list(ids))
+            if item.is_image and not item.is_private
+        }
+
+    def public_url(self, attachment: Attachment) -> str | None:
+        """URL công khai của file (dùng trong nội dung công khai: trang, QR); file riêng tư trả None.
+
+        Args:
+            attachment: File.
+
+        Returns:
+            URL của kho công khai (tương đối khi dev) hoặc None.
+        """
+        if attachment.is_private:
+            return None
+        return self.storage_service.public_url(attachment)
+
+    def get_content_for(self, actor: Any, pk: Any) -> Attachment:
+        """File actor được mở nội dung (`GET /attachments/{id}/content`).
+
+        File công khai: mọi người đã đăng nhập. File riêng tư: người upload, superuser hoặc
+        `system.attachment.read_private`. Không đủ quyền và không tồn tại cùng là NotFoundError để không dò
+        được file riêng tư nào tồn tại.
+
+        Args:
+            actor: Người dùng đã đăng nhập.
+            pk: Id file.
+
+        Returns:
+            Attachment còn file vật lý.
+
+        Raises:
+            NotFoundError: Không tồn tại, đã xóa, đã dọn hoặc không có quyền.
+        """
+        attachment = self.repository.find_by_id(pk)
+        if attachment is None or attachment.purged_at is not None:
+            raise NotFoundError()
+        if attachment.is_private and not (
+            attachment.created_by_id == actor.pk
+            or actor.has_perm(AttachmentPermission.FILE_READ_PRIVATE.code)
+        ):
+            raise NotFoundError()
+        return attachment
+
+    def set_visibility(self, actor: Any, pk: Any, visibility: str) -> Attachment:
+        """Chuyển file giữa kho công khai và kho riêng tư (giữ id).
+
+        Thứ tự an toàn: chép sang kho đích → cập nhật DB → sau commit mới xóa bản cũ. Lỗi khi chép hoặc ghi
+        DB thì xóa bản chép, file cũ còn nguyên. Xóa bản cũ lỗi thì để bước dọn file mồ côi xử lý.
+
+        Args:
+            actor: Người thực hiện (owner hoặc `manage_all`).
+            pk: Id file.
+            visibility: Chế độ mới.
+
+        Returns:
+            Attachment sau khi chuyển.
+
+        Raises:
+            NotFoundError: Không tồn tại hoặc không có quyền.
+            ValidationError: Kho riêng tư chưa cấu hình.
+        """
+        with transaction.atomic():
+            attachment = self.get_for_write(actor, pk)
+            source_visibility = attachment.visibility
+            old_name = attachment.file.name
+            if source_visibility == visibility:
+                return attachment
+            new_name = self.storage_service.copy_to(attachment, visibility)
+            try:
+                updated = self.repository.update(
+                    attachment, actor=actor, visibility=visibility, file=new_name
+                )
+            except Exception:
+                self.storage_service.delete(visibility, new_name)
+                raise
+            transaction.on_commit(lambda: self.storage_service.delete(source_visibility, old_name))
+        return updated
 
     # ==================================================================
     # File do hệ thống sinh (ảnh mã QR...): module khác gọi, không qua upload của client
@@ -191,13 +337,11 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         """
         instance = self.get_for_write(actor, pk)
         file_name = instance.file.name if instance.file else None
-        storage = instance.file.storage if instance.file else None
+        visibility = instance.visibility
 
         self.repository.delete(instance, actor=actor)
         self.repository.mark_purged([instance.pk], timezone.now())
-
-        if file_name and storage:
-            self._delete_from_storage(storage, file_name)
+        self.storage_service.delete(visibility, file_name)
 
     @transaction.atomic
     def replace_content(self, actor: Any, attachment_id: Any, content: bytes, name: str) -> Attachment:
@@ -216,20 +360,20 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         """
         attachment = self.repository.get_for_update(attachment_id)
         old_file_name = attachment.file.name if attachment.file else None
-        old_storage = attachment.file.storage if attachment.file else None
         upload = ContentFile(content, name=name)
         if detect_content_type(upload) != attachment.content_type:
             raise ValidationError(details={"file": ["Nội dung mới phải cùng định dạng với file cũ."]})
+        stored_name = self.storage_service.save_upload(attachment.visibility, upload)
         updated = self.repository.update(
             attachment,
             actor=actor,
-            file=upload,
+            file=stored_name,
             original_name=name[:255],
             size=len(content),
             checksum=hashlib.sha256(content).hexdigest(),
         )
-        if old_file_name and old_storage and old_file_name != updated.file.name:
-            self._delete_from_storage(old_storage, old_file_name)
+        if old_file_name and old_file_name != stored_name:
+            self.storage_service.delete(updated.visibility, old_file_name)
         return updated
 
     @transaction.atomic
@@ -243,23 +387,9 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         attachment = self.repository.find_by_id(attachment_id)
         if attachment is not None:
             file_name = attachment.file.name if attachment.file else None
-            storage = attachment.file.storage if attachment.file else None
             self.repository.delete(attachment, actor=actor)
             self.repository.mark_purged([attachment.pk], timezone.now())
-            if file_name and storage:
-                self._delete_from_storage(storage, file_name)
-
-    @staticmethod
-    def _delete_from_storage(storage: Any, name: str) -> None:
-        """Xóa file vật lý khỏi storage (R2/local), log cảnh báo nếu gặp lỗi kết nối."""
-        if not name:
-            return
-        try:
-            storage.delete(name)
-        except (OSError, FileNotFoundError):
-            pass
-        except Exception:  # noqa: BLE001 - Bắt mọi ngoại lệ của cloud storage driver để không gián đoạn luồng chính
-            logger.warning("Không thể xóa file %s khỏi storage", name, exc_info=True)
+            self.storage_service.delete(attachment.visibility, file_name)
 
     @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> Attachment:

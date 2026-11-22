@@ -16,8 +16,7 @@ from app.system.types.auth_result import AuthResult
 class AuthCookieService:
     """Ghi/xóa bộ cookie phiên trên response."""
 
-    @staticmethod
-    def set_cookies(response: HttpResponse, result: AuthResult) -> None:
+    def set_cookies(self, response: HttpResponse, result: AuthResult) -> None:
         """Gắn cookie phiên đăng nhập vào response.
 
         Args:
@@ -59,8 +58,7 @@ class AuthCookieService:
             samesite="Lax",
         )
 
-    @staticmethod
-    def clear_cookies(response: HttpResponse) -> None:
+    def clear_cookies(self, response: HttpResponse) -> None:
         """Xóa toàn bộ cookie phiên đăng nhập.
 
         Args:

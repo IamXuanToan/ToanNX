@@ -4,6 +4,8 @@
   "superuserBadge": "Superuser",
   "staffBadge": "Staff",
   "itemUnit": "items",
+  "moreItemsTrigger": "+{count} more items",
+  "allFeatures": "All features",
   "systemOnline": "All systems operational",
   "lastLogin": "Last login: {time}",
   "empty": {

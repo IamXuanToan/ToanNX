@@ -27,3 +27,6 @@ class AttachmentFolderPermission(PermissionCatalog):
         name="Xóa thư mục",
         description="Xóa mềm cả nhánh, giữ file về chưa phân loại; xóa cả file cần thêm quyền xóa file.",
     )
+
+    # Quyền của vai trò thành viên: thao tác bản ghi do mình tạo.
+    MEMBER = (FOLDER_READ, FOLDER_CREATE, FOLDER_UPDATE, FOLDER_DELETE)

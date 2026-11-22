@@ -1,716 +1,834 @@
-# Graph Report - toannx  (2026-11-21)
+# Graph Report - toannx  (2026-11-22)
 
 ## Corpus Check
-- 1360 files · ~389,833 words
+- 2070 files · ~582,111 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 13 file(s) not represented in the graph (top: (none) 7, .example 2, .lock 1)
 
 ## Summary
-- 8615 nodes · 24848 edges · 632 communities (146 shown, 486 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 1000 edges (avg confidence: 0.93)
+- 11977 nodes · 38202 edges · 414 communities (167 shown, 247 thin omitted)
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 2348 edges (avg confidence: 0.94)
 - Token cost: 173,764 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `abb62606`
+- Built from commit: `4771ba59`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- api-contract.test.ts
-- typing
+- genre.service.ts
+- NovelFactory
 - rest_framework
-- short_link_service.py
-- AccountAuthBackend
-- CoreResponse
-- page_service.py
-- TestPagePublicApi
-- django_db
-- use-author-form.ts
-- Skeleton
-- CoreRepository
-- next-intl
-- Role
-- routing.ts
+- IncomeService
+- notification.types.ts
+- CoreApiView
+- use-data-table.ts
+- ListParams
+- .post
+- AppException
+- useResourceMutation
+- Card
+- attachment-image-editor.tsx
+- Platform
+- user_service.py
+- use-admin-shell.ts
 - cn
 - Button
-- session-table.tsx
-- user-avatar.tsx
-- vitest
-- .post
-- .get_actor
-- QrCode
+- NotificationService
+- datetime
+- TelegramChat
+- admin_auth_session_view_set.py
+- Income
+- useResourceMutation
 - use-qr-code-form.ts
 - .assert_success
+- BusinessRuleError
 - useTableState
-- IAM Role Form
+- CoreModelViewSet
 - core_model_view_set.py
-- AuthSessionRepository
+- react
 - next-intl
 - use-short-link-form.ts
-- test_journal_tracker.py
-- test_vietqr_payload.py
-- NovelGuard
-- use-clear-history.ts
+- ModuleRegistry
+- Invoice
+- ClassificationRuleService
+- novel-reader.tsx
+- chapter.service.ts
 - useResourceMutation
-- api.types.ts
-- .get_actor
-- PasswordResetService
+- @tanstack/react-query
+- user_role_view.py
 - PermissionChecker
-- Permission
+- TestModuleConventions
 - recorder_registry.py
-- NotFoundError
-- use-admin-shell.ts
+- github_oauth_service.py
+- AdminAuthSessionService
+- navigation.types.ts
 - use-resource-mutation.ts
 - package.json
-- ErrorCode
-- NovelFactory
-- RoleFactory
-- auth.types.ts
 - AuthSession
-- CurrentUserResponseSerializer
-- Author
+- .assert_forbidden
+- RoleFactory
+- AttachmentFolder
+- auth_service.py
+- test_list_query_count.py
+- UserSocialAccountFactory
+- R2UsageService
+- TelegramBotView
+- SepayConnectionService
 - .hard_delete_where
-- zod
-- RoleSeedService
-- .post
+- attachment_folder_view_set.py
+- TestUserUpdateApi
+- user_view_set.py
+- TestAttachmentContentApi
 - use-column-resizing.ts
-- PermissionDefinition
-- exception_handler.py
-- use-resource-mutation.ts
+- typing
+- role_permission_view.py
+- sepay_import_service.py
+- NotificationPreferenceView
+- user.types.ts
+- NotificationPreferenceService
 - [segment]/[slug]/page.tsx
-- ShortLink
-- CoreChoiceInFilter
-- use-profile-dialog.ts
-- user_context.py
+- ShortLinkResolveView
+- .post
+- CoreUUIDInFilter
+- TestAttachmentVisibilityApi
+- use-weather-widget.ts
+- callback_view.py
 - Any
 - test_seed_local.py
 - PageService
-- RateLimitService
-- Project Configuration compiler Options
-- AttachmentService
-- AuthService
+- novel_view_set.py
+- UserRoleService
+- SettingService
+- setting.service.ts
+- helpers.ts
 - User
-- UserInvitationService
-- clock-widget.tsx
+- EmailService
+- use-tiptap-plugins.ts
+- ExchangeRate
 - use-weather-canvas.ts
 - test_client_error_api.py
-- genre.service.ts
+- SystemAnnouncement
 - R2UsageService
+- webhook_view.py
+- TestAuthorCreateApi
 - TestUserCreateApi
-- CoreModuleConfig
-- TestRoleListApi
+- files/[id]/page.tsx
+- TaxWithholdingCalculator
+- TestPermissionRule
+- report-series.ts
+- module_registry.py
 - module-registry.test.ts
 - TestNovelUpdateApi
-- Project Configuration with
-- AttachmentRepository
-- react
-- user_context.py
 - Favorite
-- CorePageNumberPagination
-- module-launcher.tsx
+- useStoredPreference
+- QrCodeService
+- currency_view_set.py
+- system/urls.py
+- ReadingHistoryRepository
+- test_attachment_purge.py
 - RateLimitBucketRepository
-- rate_limit
-- Project Configuration settings py
-- lucide-react
-- TestUserDeleteApi
-- tag_view_set.py
-- AttachmentFolder
-- .get
-- cookie_jwt_authentication_scheme.py
-- time-picker-popover.tsx
-- CorePageNumberPagination
+- use-platform-tax-rates-section.ts
+- RoleService
+- .post
+- django_core_management_base
+- JournalEntryService
+- OAuthUserInfo
+- @hookform/resolvers
+- sidebar.tsx
+- page_service.py
+- test_openapi_schema.py
+- test_finance_report_summary_api.py
+- TestSettingListApi
+- tiptap-extensions.ts
+- UserService
+- ExchangeRateResolveView
+- SepayPreviewView
+- CoreModuleConfig
+- TestJournalEntryBulkDeleteApi
 - detect_content_type
-- Novel
+- use-session-table.ts
 - Any
-- TestUserBulkDeleteApi
+- test_password_reset_confirm_api.py
 - TestUserBulkUpdateApi
+- .patch
 - dependencies
 - CsrfView
-- TestPagePathCreateApi
-- BusinessRuleError
-- chapter_view_set.py
-- code-slug-input.ts
+- test_endpoint_access.py
+- TestClassificationRuleBulkUpdateApi
+- test_vietqr_payload.py
+- TestInvoiceBulkDeleteApi
+- TestCurrencyBulkDeleteApi
+- FinanceReportService
 - request_context_middleware.py
-- page_content_validator.py
-- test_client_error_api.py
-- core_page_number_pagination.py
-- select-field.tsx
-- role_seed_service.py
+- attachment-video-player.tsx
+- TestRoleCreateApi
+- build_brand_assets.py
+- TestCurrencyBulkUpdateApi
+- TestPagePathCreateApi
+- notification_read_view.py
+- cn
+- .validate
+- InvitationValidateView
 - Project Configuration next config ts
-- Project Configuration admin page tsx
-- PermissionRule
+- TestExchangeRateBulkDeleteApi
+- report_summary_view.py
 - TestNovelClientDetailApi
 - TestNovelDeleteApi
-- use-weather-widget.ts
-- TestRoleDeleteApi
-- Project Documentation Permission Rule
-- IamSyncService
-- number-format.ts
+- TestJournalEntryDeleteApi
+- TestNotificationDeliveryBulkDeleteApi
+- TestJournalResourceListApi
+- TestUserBulkDeleteApi
+- OAuthService
+- AttachmentService
+- TestUserBulkUpdateApi
+- home-hero.tsx
 - health_service.py
-- JournalEntryService
-- .assert_forbidden
+- JournalResourceView
+- rate_limit_service.py
 - CoreAutoSchema
+- TestRoleDeleteApi
+- AttachmentFolderRepository
+- _field_refs
+- 0002_seed_default_platforms.py
 - Project Documentation Module Registry
 - Project Documentation Rotating Refresh Token
-- .duplicate
-- JournalRecorder
+- 0010_seed_currencies.py
+- ValidationError
+- JournalEntry
+- tests/conftest.py
 - vietqr_banks.py
 - UserManager
 - .test_update_success_full_data
 - TestRoleBulkDeleteApi
-- TestReadingHistoryCreateApi
-- TestReadingHistoryDeleteApi
+- test_one_class_per_file.py
+- API Contract
+- Action Permissions
 - TestReadingHistoryListApi
-- TestMe
-- .get
-- TestAuthorCreateApi
-- AttachmentFolderViewSet
+- ShortLink
+- TestPlatformBulkDeleteApi
+- TestAuthorUpdateApi
+- Role
+- ._get_rule
+- test_client_error_api.py
+- TestChapterBulkDeleteApi
+- TestChapterBulkUpdateApi
+- NotificationDeliveryRetryView
 - .enforce
 - .test_detail_success_full_data
-- Project Documentation Backend Layering
-- Project Documentation Frontend Layering
+- Frontend Module Wiring
+- RateLimitBucketRepository
 - Project Documentation Journal Tracking
-- TestUserBulkDeleteApi
-- TestUserBulkUpdateApi
-- HealthView
-- use-reset-password-form.ts
-- system/migrations/0001_initial.py
-- admin-breadcrumb.tsx
-- TestPagePathDeleteApi
-- use-column-resizing.ts
-- useListQuery
+- email_service.py
+- TestAdminSessionBulkDeleteApi
+- CoreResponse
+- cookie_jwt_authentication_scheme.py
+- PermissionCatalog
+- TestIamAccess
+- PagePublicView
+- TestNotificationDeliveryDeleteApi
+- TestSettingBulkDeleteApi
+- test_notification_dispatch_api.py
 - settings.py
-- grant
-- django_core_management_base
-- _field_refs
-- page_create_validate_serializer.py
-- TestQrCodeCreateApi
-- Command
-- Backend Core core __init__ py
-- Backend Core tracking __init__ py
-- Backend Core core utils __init__
+- TestShortLinkBulkUpdateApi
+- TestJournalEntryDetailApi
+- .test_bulk_delete_success
+- logout_all_view.py
+- use-clock.ts
+- get_client_ip
+- use-column-resizing.ts
+- Journal Change History
+- Soft Delete
 - Backend Core core validators __init__
-- TestAdminSessionListApi
-- UserService
-- novel_import_response_serializer.py
-- date-picker.tsx
-- test_create_requires_username
-- use-tag-form.ts
-- TestNovelImportApi
+- django_db
+- NovelImportView
+- .test_confirm_reset_success_and_revokes_sessions
+- TestShortLinkCreateApi
+- build_success_schema
+- QrCode
 - .assert_unauthorized
-- PageRepository
-- select.tsx
-- CoreAutoSchema
-- novel/urls.py
-- ChapterFactory
+- TestRefresh
+- .post
+- NotFoundError
+- TestAuthorBulkDeleteApi
+- TestNovelImportTemplateApi
+- TestAuthorDeleteApi
+- TestPermissionListApi
+- TestAuthorDetailApi
+- TestGenreDeleteApi
+- .get
+- finance.spec.ts
+- ._notify_new
+- TestTagBulkDeleteApi
+- .post
+- .post
 - TestTagCreateApi
-- AttachmentFilter
-- TestQrCodeHistoryApi
+- .authenticate
+- TestEmailVerificationVerifyApi
+- .post
+- test_error_codes.py
+- TestPageBulkUpdateApi
+- author_view_set.py
+- UserSocialAccountRepository
+- AttachmentRepository
+- GitHubOAuthService
+- date-fns-locale.ts
+- page_templates.py
+- SystemAnnouncementValidateSerializer
+- test_notification_list_api.py
+- test_seed_local.py
+- test_announcement_api.py
+- 0002_unaccent_extension.py
+- 0004_remove_user_first_name_remove_user_last_name_and_more.py
+- sepay_preview_row.py
+- reading_history_clear_response_serializer.py
+- attachment_service.py
+- role_bulk_update_validate_serializer.py
+- Module Registry
+- _media_root
+- test_roles_default_to_newest_first
+- decorator
 - csrf_view.py
 - iam/migrations/__init__.py
-- iam/permissions/__init__.py
-- iam/serializers/__init__.py
-- iam/serializers/responses/__init__.py
-- iam/serializers/validates/__init__.py
 - iam/services/__init__.py
 - iam/tests/helpers/__init__.py
 - Giám sát lỗi với Sentry (Error Tracking & Performance)
 - iam/types/__init__.py
-- iam/views/__init__.py
-- use-data-table.ts
 - journal/filters/__init__.py
 - seed_page_paths
-- TestRefresh
-- TestAdminSessionBulkDeleteApi
-- JournalResourceView
-- TestShortLinkResolveApi
-- TestFavoriteToggleApi
-- TestEmailVerificationSendApi
-- TestAuthorBulkDeleteApi
-- TestPasswordResetValidateApi
-- to_ascii
+- test_vietqr_payload.py
 - AccountSeedService
-- use-data-table.ts
-- TestTagBulkDeleteApi
-- AttachmentSummaryResponseSerializer
-- RateLimitBucket
-- TestEmailVerificationVerifyApi
-- TestPermissionListApi
-- TestRoleBulkUpdateApi
-- .post
-- TestPagePathUpdateApi
-- AuthService
-- use-reader-settings.ts
 - .__call__
-- GenreService
-- TagService
-- global.d.ts
-- request_context_filter.py
-- TestResponses
-- TestTagListApi
-- TestUserInvitationValidateApi
-- attachment-library.spec.ts
-- CorePaginationResponse
+- next
 - TestUserCreateApi
-- _list_routes
-- eslint.config.mjs
-- AttachmentUploadValidateSerializer
-- TestLogoutApi
-- _codes
-- AuthSessionService
-- month-select.tsx
-- 0002_unaccent_extension.py
-- 0004_remove_user_first_name_remove_user_last_name_and_more.py
-- attachment_upload_path
-- JournalEntryPermission
-- qr-logo.spec.ts
 - decorator
-- FavoriteToggleResponseSerializer
-- test_endpoint_access.py
-- TestRoleUpdateApi
-- api-client.ts
-- TestGenreCreateApi
-- TestPageBulkDeleteApi
-- TestIamAccess
-- CurrentUserService
-- TestJournalEntryListApi
-- TestRoleCreateApi
-- TestPagePathDetailApi
-- use-column-resizing.ts
-- .validate
+- s/[slug]/page.tsx
+- grant
 
 ## God Nodes (most connected - your core abstractions)
-1. `grant()` - 329 edges
-2. `BaseApiTestCase` - 270 edges
-3. `User` - 265 edges
-4. `Button()` - 216 edges
-5. `UserFactory` - 213 edges
-6. `next-intl` - 211 edges
-7. `react` - 185 edges
-8. `Link` - 130 edges
-9. `lucide-react` - 118 edges
-10. `useResourceMutation()` - 114 edges
+1. `grant()` - 416 edges
+2. `User` - 341 edges
+3. `BaseApiTestCase` - 331 edges
+4. `next-intl` - 303 edges
+5. `Button()` - 292 edges
+6. `UserFactory` - 278 edges
+7. `CoreResponse` - 246 edges
+8. `react` - 234 edges
+9. `useResourceMutation()` - 202 edges
+10. `CoreValidateSerializer` - 189 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Tập trung tại Backend` --references--> `_attach_request_id()`  [INFERRED]
-  docs/sentry.md → backend/app/core/logging/sentry.py
-- `Tập trung tại Backend` --references--> `init_sentry()`  [INFERRED]
-  docs/sentry.md → backend/app/core/logging/sentry.py
-- `ToanNX Development Instructions` --references--> `Authentication Design`  [EXTRACTED]
-  AGENTS.md → docs/authentication.md
-- `ToanNX Development Instructions` --references--> `Internationalization Design`  [EXTRACTED]
-  AGENTS.md → docs/i18n.md
-- `ToanNX Development Instructions` --references--> `ToanNX system standardization plan (15 Nov 2026)`  [EXTRACTED]
-  AGENTS.md → docs/plans/system-standardization-plan.md
+- `Clean Admin Design System` --conceptually_related_to--> `DataTable Standard`  [INFERRED]
+  DESIGN.md → docs/rules/frontend.md
+- `Tiptap JSON Content` --conceptually_related_to--> `QR Code Module`  [INFERRED]
+  docs/rules/frontend.md → SYSTEM_CONTEXT.md
+- `ToanNX Development Instructions` --references--> `Backend Rules`  [EXTRACTED]
+  AGENTS.md → docs/rules/backend.md
+- `Backend Development Commands` --references--> `ToanNX Development Instructions`  [EXTRACTED]
+  backend/README.md → AGENTS.md
+- `Frontend Development Commands` --references--> `ToanNX Development Instructions`  [EXTRACTED]
+  frontend/README.md → AGENTS.md
 
 ## Import Cycles
 - None detected.
 
-## Communities (632 total, 486 thin omitted)
+## Communities (414 total, 247 thin omitted)
 
-### Community 0 - "api-contract.test.ts"
-Cohesion: 0.06
-Nodes (50): useChapterForm(), useNovelDetail(), useNovelFavoritesComponent(), useNovelForm(), useReaderContent(), ReaderContent(), ReaderContentProps, useChapters() (+42 more)
+### Community 0 - "genre.service.ts"
+Cohesion: 0.13
+Nodes (23): useGenreForm(), useGenreTable(), INVALIDATE, useBulkDeleteGenres(), INVALIDATE, useCreateGenre(), INVALIDATE, useDeleteGenre() (+15 more)
 
-### Community 1 - "typing"
-Cohesion: 0.02
-Nodes (28): PermissionCatalog, PermissionDefinition, BaseApiTestCase, ReadingHistory, Meta, AuthorPermission, ChapterPermission, GenrePermission (+20 more)
+### Community 1 - "NovelFactory"
+Cohesion: 0.01
+Nodes (44): ReadingHistory, Meta, ChapterPermission, GenrePermission, NovelPermission, TagPermission, AuthorFactory, Meta (+36 more)
 
 ### Community 2 - "rest_framework"
-Cohesion: 0.02
-Nodes (36): CoreValidateSerializer, AuthorUpdateValidateSerializer, AuthorValidateSerializer, GenreUpdateValidateSerializer, GenreValidateSerializer, NovelChapterImportItemSerializer, NovelImportValidateSerializer, NovelInfoImportSerializer (+28 more)
+Cohesion: 0.01
+Nodes (58): CoreValidateSerializer, IncomeRecalculateTaxValidateSerializer, IncomeReclassifyValidateSerializer, PlatformTaxRateResolveValidateSerializer, PlatformTaxRateUpdateValidateSerializer, PlatformTaxRateValidateSerializer, ReportMonthlyValidateSerializer, ReportSummaryValidateSerializer (+50 more)
 
-### Community 3 - "short_link_service.py"
-Cohesion: 0.10
-Nodes (11): _link(), test_bulk_is_all_or_nothing(), test_manage_all_sees_every_owner(), test_owner_is_actor_and_scope_is_private(), test_quota_per_owner(), test_soft_deleted_record_cannot_be_written(), test_soft_delete_suffix_respects_max_length(), _short_links() (+3 more)
+### Community 3 - "IncomeService"
+Cohesion: 0.08
+Nodes (4): IncomeService, ConversionResult, TaxResult, vn_date()
 
-### Community 5 - "CoreResponse"
-Cohesion: 0.05
-Nodes (17): validate_request(), CsrfProtected, IsActiveAuthenticated, CoreResponse, CoreApiView, PasswordResetDetailResponseSerializer, AuthCookieService, AttachmentFolderDeleteView (+9 more)
+### Community 4 - "notification.types.ts"
+Cohesion: 0.07
+Nodes (42): useAnnouncementTable(), useNotificationDeliveryTable(), useNotificationPreferenceMatrix(), useTelegramBotCard(), useTelegramChatList(), notificationKeys, useAnnouncements(), useCheckTelegramBot() (+34 more)
 
-### Community 6 - "page_service.py"
-Cohesion: 0.09
-Nodes (6): ValidationError, generate_slug(), normalize_slug(), validate_public_url(), _contrast(), validate_theme()
-
-### Community 7 - "TestPagePublicApi"
-Cohesion: 0.15
-Nodes (4): create_qr_image(), make_doc(), make_paragraph(), TestPagePublicApi
-
-### Community 9 - "django_db"
+### Community 5 - "CoreApiView"
 Cohesion: 0.04
-Nodes (14): test_ascii_slug_keeps_d(), _chapters(), ascii_slug(), NovelErrorCode, Chapter, Meta, AuthorRepository, ChapterRepository (+6 more)
+Nodes (26): rate_limit(), validate_request(), IsActiveAuthenticated, CoreApiView, IncomePermission, SepayPermission, IncomeBulkResultResponseSerializer, SepayTestResponseSerializer (+18 more)
 
-### Community 10 - "use-author-form.ts"
+### Community 6 - "use-data-table.ts"
 Cohesion: 0.36
-Nodes (9): useAuthorForm(), useCreateAuthor(), useUpdateAuthor(), AUTHOR_DEFAULTS, AuthorFormValues, authorSchema(), fromAuthor(), toAuthorInput() (+1 more)
+Nodes (7): EMPTY_ROWS, isPinned(), isStringArray(), NO_PINS, PinnedColumns, useDataTable(), ColumnPin
 
-### Community 11 - "Skeleton"
+### Community 7 - "ListParams"
+Cohesion: 0.19
+Nodes (15): useExchangeRateTable(), currencyKeys, useDeleteExchangeRate(), useExchangeRates(), useFetchExchangeRate(), currencyService, crud, exchangeRateService (+7 more)
+
+### Community 9 - "AppException"
+Cohesion: 0.02
+Nodes (28): test_ascii_slug_keeps_d(), _chapters(), ascii_slug(), NovelErrorCode, Author, Meta, Chapter, Meta (+20 more)
+
+### Community 10 - "useResourceMutation"
 Cohesion: 0.05
-Nodes (52): generateMetadata, QrCodeDetailPage(), NovelFavorites(), useAuthor(), AuthorDetailView(), useRoleCreateForm(), JournalEntryDetail(), PermissionCatalog() (+44 more)
+Nodes (61): generateMetadata, Page(), fromInvoice(), useInvoiceForm(), useRuleTester(), useSepayConnection(), useSepayImportState(), FINANCE_API_ENDPOINTS (+53 more)
 
-### Community 12 - "CoreRepository"
+### Community 11 - "Card"
+Cohesion: 0.06
+Nodes (75): GlobalError(), generateMetadata, Page(), generateMetadata, Page(), FinanceCountChart(), FinanceCumulativeChart(), FinanceDashboard() (+67 more)
+
+### Community 12 - "attachment-image-editor.tsx"
+Cohesion: 0.20
+Nodes (13): UseAttachmentImageEditorProps, CROP_ASPECT_RATIOS, CROP_ZOOM_STEP, MAX_CROP_ZOOM, MIN_CROP_ZOOM, WATERMARK_POSITIONS, calculateRotatedSize(), getCroppedImageCanvas() (+5 more)
+
+### Community 13 - "Platform"
+Cohesion: 0.06
+Nodes (9): _finance(), Platform, Meta, PlatformTaxRate, Meta, PlatformTaxRateRepository, PlatformResponseSerializer, Meta (+1 more)
+
+### Community 14 - "user_service.py"
 Cohesion: 0.05
-Nodes (10): CoreModel, Meta, CoreRepository, PagePath, Meta, PagePathRepository, QrCodeRepository, ShortLinkRepository (+2 more)
+Nodes (7): AccountErrorCode, UserInvitationService, TestUserInvitationAcceptApi, TestUserInvitationValidateApi, AuthResult, CurrentUserProfile, PasswordValidator
 
-### Community 13 - "next-intl"
+### Community 15 - "use-admin-shell.ts"
 Cohesion: 0.03
-Nodes (79): AdminAuthorDetailPage(), generateMetadata, AdminAuthorCreatePage(), generateMetadata, AdminAuthorListPage(), generateMetadata, AdminChapterDetailPage(), generateMetadata (+71 more)
-
-### Community 14 - "Role"
-Cohesion: 0.05
-Nodes (22): _PlainRoleRepository, test_base_queryset_hides_soft_deleted(), test_bulk_create_sets_audit(), test_create_and_update_audit(), test_delete_is_soft_by_default(), test_delete_where_releases_unique_values(), test_integrity_error_becomes_conflict(), test_read_helpers() (+14 more)
-
-### Community 15 - "routing.ts"
-Cohesion: 0.04
-Nodes (73): contentSecurityPolicy, isHttps, nextConfig, withNextIntl, GlobalError(), metadata, ForgotPasswordPage(), generateMetadata (+65 more)
+Nodes (128): AdminHomePage(), generateMetadata, generateMetadata, Props, SocialAuthCallbackPage(), useRouter, EMPTY, useClassificationRuleForm() (+120 more)
 
 ### Community 16 - "cn"
-Cohesion: 0.07
-Nodes (97): AuthorForm(), ChapterForm(), GenreForm(), NovelForm(), NovelImportDialog(), FONT_OPTIONS, ReaderSettingsDialog(), ReaderSettingsDialogProps (+89 more)
+Cohesion: 0.08
+Nodes (101): ClassificationRuleForm(), useInvoiceAttachmentsField(), IncomeForm(), InvoiceAttachmentsField(), InvoiceForm(), PlatformForm(), PlatformTaxRatesSection(), RuleTester() (+93 more)
 
 ### Community 17 - "Button"
+Cohesion: 0.04
+Nodes (121): AttachmentsPage(), generateMetadata, useNovelImportDialog(), NovelImportDialog(), FONT_OPTIONS, ReaderSettingsDialog(), ReaderSettingsDialogProps, THEME_OPTIONS (+113 more)
+
+### Community 18 - "NotificationService"
+Cohesion: 0.03
+Nodes (28): NotificationChannel, NotificationScope, NotificationDelivery, Meta, Status, Notification, Meta, NotificationDeliveryRepository (+20 more)
+
+### Community 19 - "datetime"
+Cohesion: 0.07
+Nodes (6): ExchangeRateService, VietcombankRateClient, test_api_rows_are_read_only(), test_falls_back_and_caches(), test_unavailable(), FetchedRate
+
+### Community 20 - "TelegramChat"
+Cohesion: 0.03
+Nodes (20): SecretCipherError, SecretCipher, NotificationErrorCode, TelegramBot, Meta, TelegramChat, Meta, Status (+12 more)
+
+### Community 21 - "admin_auth_session_view_set.py"
 Cohesion: 0.05
-Nodes (98): AttachmentsPage(), generateMetadata, AdminLayout(), AdminAttachmentPickerSlot(), AdminShell(), HeaderActions(), LauncherLayout(), LauncherSkeleton() (+90 more)
+Nodes (5): CoreBulkResultResponseSerializer, AdminSessionUserResponseSerializer, AttachmentFolderDeleteValidateSerializer, AdminAuthSessionViewSet, AttachmentFolderDeleteView
 
-### Community 18 - "session-table.tsx"
-Cohesion: 0.29
-Nodes (11): ConfirmDialog(), AlertDialog(), AlertDialogAction(), AlertDialogCancel(), AlertDialogContent(), AlertDialogDescription(), AlertDialogFooter(), AlertDialogHeader() (+3 more)
-
-### Community 19 - "user-avatar.tsx"
-Cohesion: 0.25
-Nodes (9): useUserMenu(), getUserDisplayName(), getUserInitials(), UserAvatar(), UserAvatarProps, UserAvatarSource, Avatar(), AvatarFallback() (+1 more)
-
-### Community 20 - "vitest"
-Cohesion: 0.15
-Nodes (10): AuthRole, mockRoles, mockUpdateAsync, mockUser, mockSetTheme, mockLogout, mockLogoutAll, mockUser (+2 more)
-
-### Community 21 - ".post"
+### Community 22 - "Income"
 Cohesion: 0.05
-Nodes (4): CoreBulkResultResponseSerializer, AdminSessionUserResponseSerializer, LogoutAllResponseSerializer, AdminAuthSessionViewSet
+Nodes (39): segno_png(), Income, AmountStatus, Meta, Source, TaxStatus, IncomeResponseSerializer, Meta (+31 more)
 
-### Community 23 - ".get_actor"
-Cohesion: 0.06
-Nodes (8): FavoriteResponseSerializer, Meta, ReadingHistoryClearResponseSerializer, ReadingHistoryDeleteResponseSerializer, ReadingHistoryResponseSerializer, Meta, FavoriteView, ReadingHistoryView
-
-### Community 24 - "QrCode"
-Cohesion: 0.06
-Nodes (16): QrCodeFilter, Meta, QrCode, Meta, Type, QrCodeDetailResponseSerializer, Meta, QrCodeListResponseSerializer (+8 more)
+### Community 24 - "useResourceMutation"
+Cohesion: 0.07
+Nodes (73): useClassificationRuleTable(), FILTER_KEYS, useIncomeTable(), useInvoiceTable(), usePlatformTable(), useBulkDeleteIncomes(), useBulkDeleteInvoices(), useClassificationRules() (+65 more)
 
 ### Community 25 - "use-qr-code-form.ts"
 Cohesion: 0.09
-Nodes (38): BACKEND_FIELDS, useQrCodeForm(), useQrCodePicker(), useQrCodeTable(), qrCodeKeys, INVALIDATE, useBulkDeleteQrCodes(), INVALIDATE (+30 more)
+Nodes (34): BACKEND_FIELDS, useQrCodeForm(), useQrCodePicker(), qrCodeKeys, INVALIDATE, INVALIDATE, useCreateQrCode(), INVALIDATE (+26 more)
 
 ### Community 26 - ".assert_success"
 Cohesion: 0.02
-Nodes (17): upload_file(), _media_root(), _media_root(), _media_root(), TestAttachmentCreateApi, _media_root(), TestAttachmentDeleteApi, _media_root() (+9 more)
+Nodes (15): TestAccentInsensitiveSearch, TestResponses, upload_file(), _media_root(), _media_root(), _media_root(), TestAttachmentCreateApi, TestAttachmentCreatePrivateAndDataFiles (+7 more)
+
+### Community 27 - "BusinessRuleError"
+Cohesion: 0.04
+Nodes (16): BusinessRuleError, IncomeRepository, InvoiceRepository, PlatformRepository, CurrencyConverter, InvoiceService, PlatformService, test_implied_rate_and_rounding() (+8 more)
 
 ### Community 28 - "useTableState"
-Cohesion: 0.07
-Nodes (53): usePermissionCatalog(), sameIds(), useRoleForm(), BOOLEAN_VALUES, useRoleTable(), useUserRoleFilter(), useUserRolePicker(), SYSTEM_API_ENDPOINTS (+45 more)
+Cohesion: 0.04
+Nodes (77): HOME_API_ENDPOINTS, clientErrorService, LIMITS, sameIds(), useRoleForm(), useUserRoleFilter(), useUserRolePicker(), SYSTEM_API_ENDPOINTS (+69 more)
+
+### Community 29 - "CoreModelViewSet"
+Cohesion: 0.06
+Nodes (8): CoreModelViewSet, GenreValidateSerializer, TagUpdateValidateSerializer, TagValidateSerializer, GenreViewSet, TagViewSet, QrCodeUpdateValidateSerializer, QrCodeViewSet
 
 ### Community 30 - "core_model_view_set.py"
-Cohesion: 0.04
-Nodes (19): CoreBulkIdsValidateSerializer, NovelFilter, Meta, NovelStatus, NovelBulkUpdateValidateSerializer, NovelCreateValidateSerializer, NovelUpdateValidateSerializer, NovelViewSet (+11 more)
+Cohesion: 0.03
+Nodes (24): CoreBulkIdsValidateSerializer, CoreJournalEntryResponseSerializer, ClassificationRuleResponseSerializer, Meta, ClassificationRuleBulkUpdateValidateSerializer, ClassificationRuleUpdateValidateSerializer, ClassificationRuleValidateSerializer, PlatformBulkUpdateValidateSerializer (+16 more)
+
+### Community 31 - "react"
+Cohesion: 0.02
+Nodes (163): generateMetadata, Page(), AdminAuthorDetailPage(), generateMetadata, AdminAuthorCreatePage(), generateMetadata, AdminChapterDetailPage(), generateMetadata (+155 more)
 
 ### Community 32 - "next-intl"
-Cohesion: 0.05
-Nodes (102): AdminNovelPage(), generateMetadata, UsersPage(), Link, redirect, useRouter, AuthorTable(), ChapterList() (+94 more)
+Cohesion: 0.03
+Nodes (183): generateMetadata, Page(), AdminAuthorListPage(), generateMetadata, CallbacksPage(), generateMetadata, AdminChapterListPage(), generateMetadata (+175 more)
 
 ### Community 33 - "use-short-link-form.ts"
-Cohesion: 0.06
-Nodes (49): next-themes@^0.4.6, LocaleLayout(), dynamic, metadata, ShortLinkPage(), EMPTY, fromLink(), toInput() (+41 more)
+Cohesion: 0.07
+Nodes (47): fromIncome(), useIncomeForm(), usePlatformTaxRateResolve(), useSaveIncome(), toVnd(), grossAmount(), roundHalfUp(), withheldTax() (+39 more)
 
-### Community 34 - "test_journal_tracker.py"
-Cohesion: 0.05
-Nodes (9): test_shared_resource_has_no_owner_filter(), IamErrorCode, RolePermission, Meta, RolePermissionRepository, RolePermissionService, RoleService, test_sync_permissions_records_before_after_and_constant_queries() (+1 more)
+### Community 34 - "ModuleRegistry"
+Cohesion: 0.09
+Nodes (13): ModuleDescriptor, ModuleRegistry, NotificationEventDefinition, _links(), test_accepts_member_permissions_from_catalog(), test_finds_registered_notification_event(), test_rejects_invalid_code(), test_rejects_invalid_notification_event_code() (+5 more)
 
-### Community 35 - "test_vietqr_payload.py"
-Cohesion: 0.05
-Nodes (14): _qr_codes(), QrCodeService, test_logo_qr_is_scannable(), test_vietqr_payload_can_be_decoded_with_verified_crc(), build_payload(), _logo_stamp(), _make(), render_png() (+6 more)
+### Community 35 - "Invoice"
+Cohesion: 0.07
+Nodes (14): RateSource, Invoice, DocType, Meta, InvoiceResponseSerializer, Meta, IncomeUpdateValidateSerializer, IncomeValidateSerializer (+6 more)
 
-### Community 37 - "NovelGuard"
-Cohesion: 0.14
-Nodes (15): NovelFavoritesPage(), ReadingHistoryPage(), NovelListPage(), NovelReaderPage(), PageProps, NovelDetailPage(), PageProps, useNovelGuard() (+7 more)
+### Community 36 - "ClassificationRuleService"
+Cohesion: 0.08
+Nodes (5): ClassificationRuleRepository, ClassificationEngine, ClassificationRuleService, RuleMatch, normalize_content()
 
-### Community 38 - "use-clear-history.ts"
-Cohesion: 0.35
-Nodes (7): useNovelCatalog(), useReadingHistory(), useClearHistory(), useDeleteHistoryItem(), useReadingHistory(), readingHistoryService, ReadingHistoryItem
+### Community 37 - "novel-reader.tsx"
+Cohesion: 0.10
+Nodes (21): NovelFavoritesPage(), ReadingHistoryPage(), NovelListPage(), NovelReaderPage(), PageProps, NovelDetailPage(), PageProps, useNovelGuard() (+13 more)
+
+### Community 38 - "chapter.service.ts"
+Cohesion: 0.11
+Nodes (25): useChapterForm(), UseChapterListProps, useReaderContent(), ReaderContent(), ReaderContentProps, INVALIDATE, useCreateChapter(), INVALIDATE (+17 more)
 
 ### Community 39 - "useResourceMutation"
 Cohesion: 0.06
-Nodes (67): readDraft(), usePageForm(), writeDraft(), usePagePathForm(), usePagePathTable(), usePageTable(), pageKeys, pagePathKeys (+59 more)
+Nodes (58): readDraft(), usePageForm(), writeDraft(), usePagePathForm(), pageKeys, pagePathKeys, qrCodes, INVALIDATE (+50 more)
 
-### Community 40 - "api.types.ts"
-Cohesion: 0.21
-Nodes (12): useJournalEntryDetail(), useJournalTable(), JOURNAL_FIELD_PREFIXES, journalKeys, useJournalEntries(), useJournalEntry(), useJournalResources(), journalEntryService (+4 more)
+### Community 40 - "@tanstack/react-query"
+Cohesion: 0.08
+Nodes (33): firebase@^13.4.0, useJournalEntryDetail(), useNotificationBell(), useNotificationRealtime(), WorkerMessage, deviceLabel(), usePushRegistration(), PushDeviceCard() (+25 more)
 
-### Community 41 - ".get_actor"
-Cohesion: 0.07
-Nodes (7): NovelImportView, require_permission(), decorator(), RoleSummaryResponseSerializer, Meta, UserRoleObjectView, UserRoleView
-
-### Community 42 - "PasswordResetService"
-Cohesion: 0.06
-Nodes (5): PasswordResetTokenValidResponseSerializer, PasswordResetService, PasswordResetConfirmView, PasswordResetRequestView, PasswordResetValidateTokenView
+### Community 41 - "user_role_view.py"
+Cohesion: 0.13
+Nodes (4): RoleSummaryResponseSerializer, Meta, UserRoleObjectView, UserRoleView
 
 ### Community 43 - "PermissionChecker"
 Cohesion: 0.07
 Nodes (4): IamPermissionBackend, _code(), PermissionChecker, TestPermissionChecker
 
-### Community 44 - "Permission"
-Cohesion: 0.04
-Nodes (13): PermissionFilter, Meta, Permission, Meta, IamPermission, PermissionRepository, PermissionListResponseSerializer, Meta (+5 more)
+### Community 44 - "TestModuleConventions"
+Cohesion: 0.11
+Nodes (6): _iter_view_classes(), _iter_views(), _module_app_configs(), _module_views(), _subclasses(), TestModuleConventions
 
 ### Community 45 - "recorder_registry.py"
 Cohesion: 0.10
 Nodes (4): Command, CleanupResponseSerializer, CleanupService, CleanupView
 
-### Community 47 - "NotFoundError"
+### Community 48 - "navigation.types.ts"
 Cohesion: 0.06
-Nodes (7): AuthorizationError, NotFoundError, UserRole, Meta, UserRoleRepository, UserRoleService, test_sync_roles_records_before_after()
-
-### Community 48 - "use-admin-shell.ts"
-Cohesion: 0.06
-Nodes (43): CustomPageCreatePage(), generateMetadata, AdminModulesContext, AdminModulesProvider(), useAdminShell(), UseSidebarModuleGroupProps, ModuleGroupCard(), ADMIN_GROUPS (+35 more)
+Nodes (49): financeNavigation, INVOICE_PERMISSIONS, PLATFORM_PERMISSIONS, RULE_PERMISSIONS, SEPAY_PERMISSIONS, AdminBreadcrumb(), BreadcrumbEntry, AdminModulesContext (+41 more)
 
 ### Community 50 - "use-resource-mutation.ts"
-Cohesion: 0.05
-Nodes (58): useAuthorTable(), useNovelImportDialog(), useNovelTable(), useTagTable(), novelKeys, useAuthors(), INVALIDATE, useBulkDeleteAuthors() (+50 more)
+Cohesion: 0.04
+Nodes (93): zod@^4.6.7, useAuthorForm(), useNovelCatalog(), useNovelDetail(), useNovelFavoritesComponent(), useNovelForm(), useReadingHistory(), useTagForm() (+85 more)
 
 ### Community 51 - "package.json"
 Cohesion: 0.07
-Nodes (27): devDependencies, jsdom@27.4.0, openapi-typescript@7.13.0, @playwright/test@^1.65.0, prettier@^3.10.1, prettier-plugin-tailwindcss@^0.8.1, tailwindcss@4.3.3, @tailwindcss/turbopack@4.3.3 (+19 more)
+Nodes (37): eslintConfig, devDependencies, eslint@^9, eslint-config-next@16.4.6, jsdom@27.4.0, openapi-typescript@7.13.0, @playwright/test@^1.65.0, prettier@^3.10.1 (+29 more)
 
-### Community 52 - "ErrorCode"
-Cohesion: 0.04
-Nodes (19): ErrorCode, AppException, ConflictError, app_exception_handler(), _field_errors(), handler400(), handler403(), handler404() (+11 more)
+### Community 52 - "AuthSession"
+Cohesion: 0.05
+Nodes (14): AuthSession, Meta, RefreshToken, Meta, RefreshTokenRepository, AdminAuthSessionResponseSerializer, Meta, SessionListResponseSerializer (+6 more)
 
-### Community 53 - "NovelFactory"
+### Community 53 - ".assert_forbidden"
 Cohesion: 0.02
-Nodes (24): walk(), AuthorFactory, Meta, GenreFactory, Meta, NovelFactory, Meta, TagFactory (+16 more)
+Nodes (10): TestAuthorListApi, TestTagListApi, TestAdminSessionBulkRevokeApi, TestCallbackListApi, TestCsrf, _make(), TestSystemAnnouncementBulkDeleteApi, TestWebhookListApi (+2 more)
 
 ### Community 54 - "RoleFactory"
-Cohesion: 0.07
-Nodes (4): RoleFactory, Meta, TestIamSyncApi, TestUserRoleRevokeApi
+Cohesion: 0.04
+Nodes (9): IamPermission, UserPermission, RoleFactory, Meta, TestIamSyncApi, TestRoleAssignPermissionApi, TestRoleRevokePermissionApi, TestRoleUpdateApi (+1 more)
 
-### Community 55 - "auth.types.ts"
-Cohesion: 0.21
-Nodes (13): authService, currentUserService, AcceptInvitationPayload, CurrentUser, InvitationValidateResponse, LoginCredentials, PasswordResetConfirmPayload, PasswordResetRequestPayload (+5 more)
+### Community 55 - "AttachmentFolder"
+Cohesion: 0.18
+Nodes (3): AttachmentFolder, Meta, AttachmentFolderService
 
-### Community 57 - "AuthSession"
+### Community 56 - "auth_service.py"
 Cohesion: 0.03
-Nodes (28): AuthenticationError, _authors(), _count(), _folders(), _genres(), _novels(), _pages(), _permissions() (+20 more)
+Nodes (9): AuthSessionRepository, AccessTokenService, AuthService, AuthSessionService, CurrentUserService, LoginNotificationService, RateLimitService, RefreshTokenService (+1 more)
 
-### Community 58 - "CurrentUserResponseSerializer"
-Cohesion: 0.05
-Nodes (9): CurrentUserResponseSerializer, UserDetailResponseSerializer, Meta, UserListResponseSerializer, Meta, AcceptInvitationView, LoginView, MeView (+1 more)
+### Community 57 - "test_list_query_count.py"
+Cohesion: 0.04
+Nodes (24): _authors(), _count(), make(), _folders(), _genres(), _list_routes(), _novels(), _pages() (+16 more)
 
-### Community 59 - "Author"
-Cohesion: 0.09
-Nodes (6): Author, Meta, AuthorSummaryResponseSerializer, Meta, AuthorService, AuthorViewSet
+### Community 58 - "UserSocialAccountFactory"
+Cohesion: 0.13
+Nodes (4): UserSocialAccountFactory, Meta, TestSocialAccountListApi, TestSocialUnlinkApi
 
-### Community 63 - "zod"
-Cohesion: 0.15
-Nodes (14): useInvitationForm(), useLoginForm(), useLogin(), ForgotPasswordFormValues, Translate, createInvitationSchema(), InvitationFormValues, Translate (+6 more)
-
-### Community 64 - "RoleSeedService"
+### Community 59 - "R2UsageService"
 Cohesion: 0.10
-Nodes (3): RoleSeedService, _module_codes(), TestRoleSeedService
+Nodes (8): R2UsageService, _Repository, _service(), test_private_bucket_unavailable_falls_back_to_db_private_total(), test_public_bucket_unavailable_uses_db_total_of_both(), test_same_bucket_for_both_is_not_counted_twice(), test_sums_both_buckets_from_r2_api(), _Usage
+
+### Community 60 - "TelegramBotView"
+Cohesion: 0.11
+Nodes (5): TelegramBotCheckResponseSerializer, TelegramBotResponseSerializer, Meta, TelegramBotCheckView, TelegramBotView
+
+### Community 61 - "SepayConnectionService"
+Cohesion: 0.05
+Nodes (7): FinanceErrorCode, SepayApiError, SepayConnection, Meta, SepayConnectionRepository, SepayApiClient, SepayConnectionService
+
+### Community 63 - "attachment_folder_view_set.py"
+Cohesion: 0.12
+Nodes (7): AttachmentFolderFilter, Meta, AttachmentFolderResponseSerializer, Meta, AttachmentFolderUpdateValidateSerializer, AttachmentFolderValidateSerializer, AttachmentFolderViewSet
+
+### Community 65 - "user_view_set.py"
+Cohesion: 0.12
+Nodes (7): UserConnectedSocialSummaryResponseSerializer, UserDetailResponseSerializer, Meta, UserListResponseSerializer, Meta, UserBulkUpdateValidateSerializer, UserViewSet
+
+### Community 66 - "TestAttachmentContentApi"
+Cohesion: 0.15
+Nodes (4): owner(), TestAttachmentContentApi, _upload(), _url()
 
 ### Community 67 - "use-column-resizing.ts"
-Cohesion: 0.10
-Nodes (14): StaffFactory, SuperuserFactory, client(), csrf_client(), _fast_hasher(), _isolated_media(), login(), refresh_cookie() (+6 more)
-
-### Community 68 - "PermissionDefinition"
 Cohesion: 0.09
-Nodes (5): ModuleDescriptor, ModuleRegistry, test_rejects_invalid_code(), test_rejects_permission_of_other_module(), CoreValidator
+Nodes (15): StaffFactory, SuperuserFactory, client(), csrf_client(), _fast_hasher(), _isolated_media(), login(), refresh_cookie() (+7 more)
 
-### Community 71 - "exception_handler.py"
-Cohesion: 0.08
-Nodes (5): CoreErrorResponse, build_error_body(), build_meta(), ReadinessResponseSerializer, ReadinessView
+### Community 68 - "typing"
+Cohesion: 0.02
+Nodes (35): BaseApiTestCase, AuthorPermission, Attachment, Meta, Visibility, AttachmentPermission, SessionPermission, build_xlsx_bytes() (+27 more)
 
-### Community 72 - "use-resource-mutation.ts"
-Cohesion: 0.07
-Nodes (50): useRoleProfile(), EMPTY, fromUser(), useUserForm(), useUserProfile(), useUserTable(), accountKeys, authKeys (+42 more)
+### Community 70 - "sepay_import_service.py"
+Cohesion: 0.10
+Nodes (3): SepayTransactionParser, IncomingSepayTransaction, parse_sepay_datetime()
+
+### Community 71 - "NotificationPreferenceView"
+Cohesion: 0.13
+Nodes (4): NotificationEventResponseSerializer, NotificationPreferenceItemResponseSerializer, NotificationPreferenceResponseSerializer, NotificationPreferenceView
+
+### Community 72 - "user.types.ts"
+Cohesion: 0.12
+Nodes (19): useUserProfile(), UserSocialAccountCardProps, accountKeys, authKeys, INVALIDATE, INVALIDATE, INVALIDATE, INVALIDATE (+11 more)
+
+### Community 73 - "NotificationPreferenceService"
+Cohesion: 0.10
+Nodes (5): NotificationPreference, Meta, NotificationPreferenceRepository, NotificationPreferenceService, ResolvedChannels
 
 ### Community 74 - "[segment]/[slug]/page.tsx"
+Cohesion: 0.11
+Nodes (22): @tiptap/core@3.34.0, @tiptap/static-renderer@3.34.0, generateMetadata(), loadPage, Params, PublicCustomPage(), usePreviewNotice(), UsePreviewNoticeProps (+14 more)
+
+### Community 76 - ".post"
+Cohesion: 0.14
+Nodes (5): TelegramChatResponseSerializer, Meta, TelegramRegistrationResponseSerializer, TelegramChatActionObjectView, TelegramChatActionView
+
+### Community 77 - "CoreUUIDInFilter"
+Cohesion: 0.03
+Nodes (34): CoreBooleanInFilter, CoreCharInFilter, CoreChoiceInFilter, CoreInFilterMixin, CoreUUIDInFilter, ClassificationRuleFilter, Meta, IncomeFilter (+26 more)
+
+### Community 78 - "TestAttachmentVisibilityApi"
+Cohesion: 0.16
+Nodes (4): owner(), TestAttachmentVisibilityApi, _upload(), _url()
+
+### Community 79 - "use-weather-widget.ts"
+Cohesion: 0.19
+Nodes (18): DEFAULT_FALLBACK, detectRainIntensity(), detectWeatherCondition(), isLocationKey(), LOCATIONS, useWeatherWidget(), UseWeatherWidgetProps, WeatherIcon() (+10 more)
+
+### Community 80 - "callback_view.py"
 Cohesion: 0.15
-Nodes (15): generateMetadata(), loadPage, Params, PublicCustomPage(), usePreviewNotice(), UsePreviewNoticeProps, PreviewNotice(), BUTTON_RADIUS (+7 more)
-
-### Community 75 - "ShortLink"
-Cohesion: 0.05
-Nodes (11): build_absolute_url(), ShortLink, Meta, Status, ShortLinkDetailResponseSerializer, Meta, ShortLinkListResponseSerializer, Meta (+3 more)
-
-### Community 77 - "CoreChoiceInFilter"
-Cohesion: 0.04
-Nodes (20): CoreBooleanInFilter, CoreCharInFilter, CoreChoiceInFilter, CoreInFilterMixin, CoreUUIDInFilter, ChapterFilter, Meta, AttachmentFolderFilter (+12 more)
-
-### Community 78 - "use-profile-dialog.ts"
-Cohesion: 0.36
-Nodes (8): useProfileDialog(), useUpdateProfile(), createProfileInfoSchema(), createProfilePasswordSchema(), InfoTranslate, PasswordTranslate, ProfileInfoFormValues, ProfilePasswordFormValues
-
-### Community 79 - "user_context.py"
-Cohesion: 0.07
-Nodes (7): JournalTracker, Meta, _normalize(), Genre, Meta, Tag, Meta
+Nodes (3): CallbackResponseSerializer, CallbackCatalogService, CallbackView
 
 ### Community 81 - "Any"
-Cohesion: 0.12
-Nodes (26): usePageButtonDialog(), UsePageButtonDialogProps, EMPTY_DOCUMENT, TIPTAP_PROSE_CLASS, useTiptapEditor(), TiptapPluginContext, TiptapPluginRegistry, useTiptapPluginItems() (+18 more)
+Cohesion: 0.20
+Nodes (15): usePageButtonDialog(), UsePageButtonDialogProps, EMPTY_DOCUMENT, useTiptapEditor(), useTiptapPluginItems(), isAllowedLink(), isHttps(), TextAlignValue (+7 more)
 
 ### Community 82 - "test_seed_local.py"
-Cohesion: 0.09
-Nodes (5): R2Storage, TestR2Storage, test_seed_local_creates_superuser_and_is_idempotent(), test_seed_local_promotes_existing_user(), test_seed_local_refuses_outside_debug()
+Cohesion: 0.10
+Nodes (3): R2PrivateStorage, R2Storage, TestR2Storage
 
 ### Community 83 - "PageService"
-Cohesion: 0.10
-Nodes (3): PageService, resolve(), _transform()
+Cohesion: 0.07
+Nodes (13): PageService, resolve(), _transform(), _check_attrs(), _check_marks(), _check_node(), _color(), _fail() (+5 more)
 
-### Community 85 - "RateLimitService"
+### Community 84 - "novel_view_set.py"
+Cohesion: 0.16
+Nodes (7): NovelStatus, NovelDetailResponseSerializer, Meta, NovelBulkUpdateValidateSerializer, NovelCreateValidateSerializer, NovelUpdateValidateSerializer, NovelViewSet
+
+### Community 86 - "SettingService"
 Cohesion: 0.06
-Nodes (4): RateLimitBucketRepository, RateLimitService, purge_expired_auth(), BucketThrottle
+Nodes (5): SettingKey, SettingRepository, PublicSettingResponseSerializer, SettingService, PublicSettingView
 
-### Community 86 - "Project Configuration compiler Options"
-Cohesion: 0.11
-Nodes (6): _iter_view_classes(), _iter_views(), _module_app_configs(), _module_views(), _subclasses(), TestModuleConventions
+### Community 87 - "setting.service.ts"
+Cohesion: 0.23
+Nodes (14): useSettingTable(), SettingEditDialogProps, SettingEditFormProps, settingKeys, useDeleteSetting(), useSettings(), INVALIDATE, crud (+6 more)
 
-### Community 87 - "AttachmentService"
-Cohesion: 0.08
-Nodes (8): _attachments(), AttachmentService, purge_deleted_files(), _age(), _png(), test_purges_old_orphan_files_only(), test_purges_old_soft_deleted_files_and_keeps_rows(), test_replaced_qr_image_becomes_orphan()
-
-### Community 88 - "AuthService"
-Cohesion: 0.29
-Nodes (4): E2E_ADMIN, loginViaUi(), openModule(), @playwright/test
+### Community 88 - "helpers.ts"
+Cohesion: 0.13
+Nodes (8): cleanupFiles(), post(), SVG_IMAGE, E2E_ADMIN, loginViaUi(), openModule(), LOGO_PNG, @playwright/test
 
 ### Community 89 - "User"
 Cohesion: 0.03
-Nodes (12): TestAccentInsensitiveSearch, TestRequestLimits, User, Meta, TestAccountAuthBackend, _entries(), TestJournalTracker, _is_owner() (+4 more)
+Nodes (9): TestRequestLimits, User, Meta, TestAccountAuthBackend, TestJournalEntryListApi, _entries(), TestJournalTracker, TestRoleListApi (+1 more)
 
-### Community 92 - "clock-widget.tsx"
-Cohesion: 0.10
-Nodes (29): generateMetadata, HomePage(), ChillAudio(), calculateClockSnapshot(), CAN, CHI, ClockSnapshot, ClockWidget() (+21 more)
+### Community 90 - "EmailService"
+Cohesion: 0.05
+Nodes (4): EmailService, EmailVerificationService, PasswordResetService, get_frontend_origin()
+
+### Community 91 - "use-tiptap-plugins.ts"
+Cohesion: 0.20
+Nodes (10): LibraryImageInsert(), AttachmentTiptapImagePlugin(), useLibraryImageInsert(), QrCodeInsert(), useQrCodeInsert(), useShortLinkButtonInsert(), QrCodeTiptapPlugin(), TiptapPluginContext (+2 more)
+
+### Community 92 - "ExchangeRate"
+Cohesion: 0.13
+Nodes (6): ExchangeRate, Meta, Source, ExchangeRateRepository, ExchangeRateResponseSerializer, Meta
 
 ### Community 93 - "use-weather-canvas.ts"
 Cohesion: 0.10
-Nodes (19): createLightningTree(), generateBranch(), drawRealisticMoon(), Drip, Firefly, FogPuff, FoliageCluster, Leaf (+11 more)
+Nodes (24): createLightningTree(), generateBranch(), drawRealisticMoon(), Drip, Firefly, FogPuff, FoliageCluster, Leaf (+16 more)
 
 ### Community 94 - "test_client_error_api.py"
 Cohesion: 0.09
 Nodes (21): aliases, components, hooks, lib, ui, utils, iconLibrary, menuAccent (+13 more)
 
-### Community 95 - "genre.service.ts"
-Cohesion: 0.14
-Nodes (23): useGenreForm(), useGenreTable(), INVALIDATE, useBulkDeleteGenres(), INVALIDATE, useCreateGenre(), INVALIDATE, useDeleteGenre() (+15 more)
+### Community 95 - "SystemAnnouncement"
+Cohesion: 0.13
+Nodes (5): SystemAnnouncement, Meta, Target, SystemAnnouncementRepository, SystemAnnouncementService
+
+### Community 97 - "webhook_view.py"
+Cohesion: 0.13
+Nodes (4): build_backend_url(), WebhookResponseSerializer, WebhookCatalogService, WebhookView
 
 ### Community 99 - "TestUserCreateApi"
-Cohesion: 0.14
-Nodes (16): Declarative action rate limits, Attachment module, Module cleanup tasks, CoreApiView, CoreCrudService, CoreModelViewSet, CoreRepository, Custom pages module (+8 more)
+Cohesion: 0.07
+Nodes (34): ToanNX Development Instructions, Backend Development Commands, Claude Repository Guidance, ToanNX Admin Design, Declarative action rate limits, Attachment module, Browser content security policy, Module cleanup tasks (+26 more)
 
-### Community 102 - "CoreModuleConfig"
-Cohesion: 0.10
-Nodes (6): CoreModuleConfig, NovelConfig, _revoke_sessions_on_credentials_change(), _seed_after_migrate(), SystemConfig, UtilitiesConfig
+### Community 100 - "files/[id]/page.tsx"
+Cohesion: 0.60
+Nodes (3): FileAccessPage(), generateMetadata, FileAccessView()
+
+### Community 101 - "TaxWithholdingCalculator"
+Cohesion: 0.15
+Nodes (3): TaxWithholdingCalculator, test_statuses(), test_withheld()
+
+### Community 102 - "TestPermissionRule"
+Cohesion: 0.25
+Nodes (4): _is_owner(), _request(), TestPermissionRule, _View
+
+### Community 103 - "report-series.ts"
+Cohesion: 0.20
+Nodes (14): useFinanceDashboard(), useReportMonthly(), useReportSummary(), buildMonthSeries(), buildPlatformSeries(), changePercent(), value(), financeReportService (+6 more)
+
+### Community 105 - "module-registry.test.ts"
+Cohesion: 0.11
+Nodes (12): MODULES, SRC, FILES, SRC, tsxFiles(), SRC, TABLE_FILES, CSS (+4 more)
 
 ### Community 106 - "TestNovelUpdateApi"
 Cohesion: 0.11
 Nodes (18): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+10 more)
 
-### Community 107 - "Project Configuration with"
-Cohesion: 0.22
-Nodes (18): ToanNX Development Instructions, Backend Development Commands, Claude Repository Guidance, ToanNX Admin Design, ToanNX Architecture, Authentication Design, IAM Authorization Design, Vercel Neon Deployment (+10 more)
+### Community 107 - "Favorite"
+Cohesion: 0.12
+Nodes (3): Favorite, Meta, FavoriteRepository
 
-### Community 109 - "react"
-Cohesion: 0.08
-Nodes (41): name, packageManager, private, version, CheckboxField(), ChoiceGroup, ChoiceGroups(), ChoiceControl (+33 more)
+### Community 108 - "useStoredPreference"
+Cohesion: 0.15
+Nodes (16): ChillAudioProps, ChillTrack, isBoolean(), isValidVolume(), useChillAudio(), UseChillAudioProps, DEFAULT_SETTINGS, isValidSettings() (+8 more)
 
-### Community 110 - "user_context.py"
-Cohesion: 0.16
-Nodes (8): get_current_request(), get_request_id(), get_user_id(), request_context(), set_current_user(), test_audit_from_context(), test_request_id_resets(), test_user_resets_after_scope()
+### Community 109 - "QrCodeService"
+Cohesion: 0.15
+Nodes (3): _qr_codes(), QrCodeService, build_payload()
 
-### Community 111 - "Favorite"
-Cohesion: 0.08
-Nodes (4): Favorite, Meta, FavoriteRepository, FavoriteService
+### Community 110 - "currency_view_set.py"
+Cohesion: 0.17
+Nodes (8): CurrencyFilter, Meta, CurrencyResponseSerializer, Meta, CurrencyBulkUpdateValidateSerializer, CurrencyUpdateValidateSerializer, CurrencyValidateSerializer, CurrencyViewSet
 
-### Community 113 - "module-launcher.tsx"
-Cohesion: 0.25
-Nodes (9): AdminHomePage(), generateMetadata, useAdminGroups(), useModuleLauncher(), LauncherFooter(), LauncherHeader(), ModuleLauncher(), ModuleLauncherView() (+1 more)
+### Community 111 - "system/urls.py"
+Cohesion: 0.02
+Nodes (26): handler400(), handler403(), handler404(), handler500(), CsrfProtected, CoreErrorResponse, build_error_body(), build_meta() (+18 more)
 
-### Community 117 - "rate_limit"
+### Community 113 - "test_attachment_purge.py"
+Cohesion: 0.09
+Nodes (7): AttachmentPurgeService, purge_deleted_files(), _age(), _png(), test_purges_old_orphan_files_only(), test_purges_old_soft_deleted_files_and_keeps_rows(), test_replaced_qr_image_becomes_orphan()
+
+### Community 115 - "use-platform-tax-rates-section.ts"
+Cohesion: 0.29
+Nodes (10): EMPTY_DRAFT, TaxRateDraft, usePlatformTaxRatesSection(), useDeleteTaxRate(), usePlatformTaxRates(), useSaveTaxRate(), platformTaxRateService, PlatformTaxRate (+2 more)
+
+### Community 116 - "RoleService"
+Cohesion: 0.09
+Nodes (4): test_shared_resource_has_no_owner_filter(), RolePermissionService, RoleService, test_sync_permissions_records_before_after_and_constant_queries()
+
+### Community 121 - "@hookform/resolvers"
+Cohesion: 0.07
+Nodes (33): PLATFORM_FORM_FIELDS, PlatformFormValues, platformSchema(), Translate, InvitationFormValues, Translate, createLoginSchema(), LoginFormValues (+25 more)
+
+### Community 122 - "sidebar.tsx"
+Cohesion: 0.03
+Nodes (104): AdminLayout(), metadata, PublicRouteLayout(), usePathname, PublicHeader(), PublicLayout(), AdminAttachmentPickerSlot(), AdminShell() (+96 more)
+
+### Community 123 - "page_service.py"
 Cohesion: 0.05
-Nodes (7): rate_limit(), InvitationDetailResponseSerializer, InvitationValidateView, ShortLinkDestinationResponseSerializer, ShortLinkPublicResponseSerializer, Meta, ShortLinkResolveView
+Nodes (11): ConflictError, generate_slug(), normalize_slug(), UtilitiesErrorCode, PagePath, Meta, PagePathRepository, PageRepository (+3 more)
 
-### Community 121 - "Project Configuration settings py"
+### Community 124 - "test_openapi_schema.py"
 Cohesion: 0.21
 Nodes (3): _json_schema(), schema(), TestOpenApiSchema
 
-### Community 122 - "lucide-react"
-Cohesion: 0.06
-Nodes (57): PublicRouteLayout(), usePathname, PublicHeader(), PublicLayout(), useSidebarModuleGroup(), ModuleSidebar(), SidebarModuleGroup(), ModuleSwitcher() (+49 more)
+### Community 125 - "test_finance_report_summary_api.py"
+Cohesion: 0.21
+Nodes (7): scenario(), test_by_month_and_currency(), test_by_platform_split_by_rate(), test_month_and_previous_year(), test_resolving_unknown_amount(), test_step_results(), test_year_2026_totals()
 
-### Community 127 - "tag_view_set.py"
+### Community 127 - "tiptap-extensions.ts"
+Cohesion: 0.11
+Nodes (18): @tiptap/extension-highlight@3.34.0, @tiptap/extension-image@3.34.0, @tiptap/extension-list@3.34.0, @tiptap/extension-table@3.34.0, @tiptap/extension-text-align@3.34.0, @tiptap/extension-text-style@3.34.0, @tiptap/extension-youtube@3.34.0, @tiptap/starter-kit@3.34.0 (+10 more)
+
+### Community 128 - "UserService"
+Cohesion: 0.05
+Nodes (3): AccountAuthBackend, Command, UserService
+
+### Community 129 - "ExchangeRateResolveView"
+Cohesion: 0.10
+Nodes (4): ExchangeRateResolveResponseSerializer, ExchangeRateResolveView, QrBankResponseSerializer, QrBankView
+
+### Community 131 - "CoreModuleConfig"
 Cohesion: 0.08
-Nodes (11): GenreSummaryResponseSerializer, Meta, NovelDetailResponseSerializer, Meta, NovelListResponseSerializer, Meta, TagSummaryResponseSerializer, Meta (+3 more)
-
-### Community 129 - "AttachmentFolder"
-Cohesion: 0.06
-Nodes (5): AttachmentFolder, Meta, AttachmentFolderRepository, AttachmentFolderService, TestAttachmentFolders
-
-### Community 132 - "time-picker-popover.tsx"
-Cohesion: 0.20
-Nodes (18): DateTimePicker(), useDatePicker(), useTimePickerPopover(), useTimeScrollColumn(), TimePickerPopover(), TimeScrollColumn(), TimePicker(), formatDateTimeLocal() (+10 more)
+Nodes (8): CoreModuleConfig, FinanceConfig, NovelConfig, _notify_on_password_change(), _revoke_sessions_on_credentials_change(), _seed_after_migrate(), SystemConfig, UtilitiesConfig
 
 ### Community 134 - "detect_content_type"
-Cohesion: 0.13
-Nodes (4): test_media_signatures(), detect_content_type(), find_svg_problem(), looks_like_svg()
+Cohesion: 0.10
+Nodes (8): test_media_signatures(), detect_content_type(), _detect_data_document(), _is_safe_xml(), _is_utf8_text(), _is_xlsx(), find_svg_problem(), looks_like_svg()
+
+### Community 135 - "use-session-table.ts"
+Cohesion: 0.25
+Nodes (13): useSessionTable(), useAdminSessionUsers(), INVALIDATE, useAdminSessions(), useBulkRevokeAdminSessions(), useDeleteAdminSessions(), useRevokeAdminSession(), adminAuthSessionService (+5 more)
 
 ### Community 136 - "Any"
 Cohesion: 0.23
 Nodes (13): steps, steps, steps, name, run, uses, with, working-directory (+5 more)
-
-### Community 138 - "TestUserBulkDeleteApi"
-Cohesion: 0.26
-Nodes (4): Medoly frontend reference, Tiptap editor reference, PMS backend reference, PMS and Medoly source audit
 
 ### Community 139 - "TestUserBulkUpdateApi"
 Cohesion: 0.17
 Nodes (11): concurrency, cancel-in-progress, group, jobs, name, on, pull_request, push (+3 more)
 
 ### Community 141 - "dependencies"
-Cohesion: 0.04
-Nodes (49): dependencies, class-variance-authority@^0.7.1, cmdk@^1.1.1, cn@^0.5.2, @hookform/resolvers@^7.0.6, lucide-react@^1.72.0, next@16.4.6, next-intl@^4.15.1 (+41 more)
+Cohesion: 0.05
+Nodes (39): dependencies, class-variance-authority@^0.7.1, cmdk@^1.1.1, cn@^0.5.2, @hookform/resolvers@^7.0.6, lucide-react@^1.72.0, next@16.4.6, next-intl@^4.15.1 (+31 more)
 
-### Community 145 - "chapter_view_set.py"
-Cohesion: 0.14
-Nodes (7): ChapterDetailResponseSerializer, Meta, ChapterListResponseSerializer, Meta, ChapterCreateValidateSerializer, ChapterUpdateValidateSerializer, ChapterViewSet
+### Community 143 - "test_endpoint_access.py"
+Cohesion: 0.12
+Nodes (10): _call(), _endpoints(), _kind(), _path(), _sample(), test_anonymous_gets_401_on_protected_endpoints(), test_override_views_are_declared(), test_user_without_permission_gets_403_on_iam_endpoints() (+2 more)
 
-### Community 148 - "code-slug-input.ts"
-Cohesion: 0.18
-Nodes (13): useSlugInput(), mergeTags(), splitTags(), useTagsInput(), TagsInput(), CODE_INPUT_MAX_LENGTH, CODE_VALUE_REGEX, isValidSlugValue() (+5 more)
+### Community 145 - "test_vietqr_payload.py"
+Cohesion: 0.11
+Nodes (6): test_postgres_unaccent_matches_library_for_vietnamese(), test_to_ascii_covers_every_vietnamese_letter(), to_ascii(), test_logo_qr_is_scannable(), test_vietqr_payload_can_be_decoded_with_verified_crc(), build_vietqr_payload()
 
 ### Community 149 - "request_context_middleware.py"
 Cohesion: 0.18
 Nodes (11): scripts, api:types, build, dev, e2e, format, format:check, lint (+3 more)
 
-### Community 150 - "page_content_validator.py"
-Cohesion: 0.25
-Nodes (10): _check_attrs(), _check_marks(), _check_node(), _color(), _fail(), PageContentRefs, _url(), _uuid() (+2 more)
+### Community 150 - "attachment-video-player.tsx"
+Cohesion: 0.26
+Nodes (7): AttachmentVideoPlayer(), AttachmentVideoPlayerProps, formatVideoTime(), useAttachmentVideoPlayer(), DEFAULT_MEDIA_VOLUME, MEDIA_PLAYER_MUTED_KEY, MEDIA_PLAYER_VOLUME_KEY
 
-### Community 151 - "test_client_error_api.py"
-Cohesion: 0.16
-Nodes (10): _attach_request_id(), init_sentry(), test_client_error_is_logged(), test_client_error_requires_csrf(), test_client_error_validates_body(), test_sentry_disabled_without_dsn(), test_sentry_event_gets_request_id(), 1. Cơ chế hoạt động trong ToanNX (+2 more)
+### Community 152 - "build_brand_assets.py"
+Cohesion: 0.15
+Nodes (4): main(), load_square_logo(), main(), resized()
 
-### Community 156 - "select-field.tsx"
-Cohesion: 0.13
-Nodes (28): FORM_CONTROL_OPTION_CLASS, FORM_CONTROL_POPOVER_CLASS, FORM_CONTROL_TRIGGER_CLASS, CHOICE_SEARCHABLE_THRESHOLD, useChoiceList(), FILTER_SEARCHABLE_THRESHOLD, useFilterSelect(), useMultiSelect() (+20 more)
+### Community 155 - "notification_read_view.py"
+Cohesion: 0.04
+Nodes (10): CorePageNumberPagination, CorePaginationResponse, NotificationPermission, NotificationResponseSerializer, Meta, NotificationUnreadCountResponseSerializer, NotificationReadObjectView, NotificationReadView (+2 more)
+
+### Community 156 - "cn"
+Cohesion: 0.04
+Nodes (80): NovelCard(), NovelCatalog(), AttachmentImageEditor(), AttachmentImageEditorProps, useAttachmentImageEditor(), NotificationBell(), COLORS, ICONS (+72 more)
 
 ### Community 161 - "Project Configuration next config ts"
 Cohesion: 0.36
 Nodes (8): Initial JWT and rotating refresh authentication, Initial Django backend foundation, Vercel and Neon deployment readiness (13 Nov 2026), Initial Next.js frontend foundation, Vietnamese and English localization, Initial IAM RBAC, ToanNX foundation report (13 Nov 2026), Foundation verification results (13 Nov 2026)
 
-### Community 162 - "Project Configuration admin page tsx"
-Cohesion: 0.22
-Nodes (8): 2. Chi tiết các biến môi trường, 3. Hướng dẫn thiết lập Sentry từng bước, 4. Cách kiểm tra kết nối Sentry hoạt động, 5. Quy trình điều tra lỗi khi gặp sự cố, Bước 1: Tạo Project trên Sentry, Bước 2: Lấy chuỗi DSN, Bước 3: Cấu hình vào hệ thống, Giám sát lỗi với Sentry (Error Tracking & Performance)
-
-### Community 163 - "PermissionRule"
-Cohesion: 0.13
-Nodes (4): _uses_iam(), HasIamPermission, _never(), PermissionRule
+### Community 163 - "report_summary_view.py"
+Cohesion: 0.11
+Nodes (8): ReportCurrencyResponseSerializer, ReportMonthResponseSerializer, ReportMonthlyResponseSerializer, ReportPlatformMonthResponseSerializer, ReportPlatformResponseSerializer, ReportSummaryResponseSerializer, ReportSummaryTotalsResponseSerializer, ReportTotalsResponseSerializer
 
 ### Community 164 - "TestNovelClientDetailApi"
 Cohesion: 0.28
@@ -720,21 +838,21 @@ Nodes (9): env, runs-on, timeout-minutes, env, DATABASE_URL, DJANGO_DEBUG, DJANG
 Cohesion: 0.22
 Nodes (9): services, POSTGRES_DB, POSTGRES_PASSWORD, POSTGRES_USER, env, image, options, ports (+1 more)
 
-### Community 166 - "use-weather-widget.ts"
-Cohesion: 0.14
-Nodes (16): zustand@^5.1.0, DEFAULT_FALLBACK, detectRainIntensity(), detectWeatherCondition(), isLocationKey(), LOCATIONS, useWeatherWidget(), UseWeatherWidgetProps (+8 more)
+### Community 170 - "OAuthService"
+Cohesion: 0.04
+Nodes (8): SocialAuthUrlResponseSerializer, SocialUnlinkResponseSerializer, UserSocialAccountSummaryResponseSerializer, OAuthService, SocialAuthUrlView, SocialLinkView, SocialUnlinkView, UserSocialAccountView
 
-### Community 169 - "Project Documentation Permission Rule"
-Cohesion: 0.25
-Nodes (6): Browser content security policy, createCrudService, Frontend page to service flow, OpenAPI generated frontend types, Tiptap JSON content, useResourceMutation
-
-### Community 171 - "number-format.ts"
-Cohesion: 0.29
-Nodes (4): APP_NUMBER_LOCALE, FormatDisplayMoneyOptions, FormatDisplayNumberOptions, NumberSeparators
+### Community 173 - "home-hero.tsx"
+Cohesion: 0.27
+Nodes (9): generateMetadata, HomePage(), ChillAudio(), ClockWidget(), isClockFormat(), HomeHero(), useHomeHero(), WeatherCanvas() (+1 more)
 
 ### Community 178 - "CoreAutoSchema"
 Cohesion: 0.29
 Nodes (7): defaults, run, defaults, runs-on, timeout-minutes, frontend, working-directory
+
+### Community 182 - "0002_seed_default_platforms.py"
+Cohesion: 0.33
+Nodes (3): Migration, seed(), unseed()
 
 ### Community 183 - "Project Documentation Module Registry"
 Cohesion: 0.33
@@ -744,173 +862,165 @@ Nodes (5): allowBuilds, @parcel/watcher, sharp, @swc/core, unrs-resolver
 Cohesion: 0.33
 Nodes (5): plugins, printWidth, semi, singleQuote, trailingComma
 
-### Community 187 - "JournalRecorder"
-Cohesion: 0.05
-Nodes (10): get_current_user(), test_delete_requires_soft_delete_field(), ChangeRecorder, ChangeSet, get_change_recorder(), JournalEntry, Action, Meta (+2 more)
+### Community 185 - "0010_seed_currencies.py"
+Cohesion: 0.33
+Nodes (3): Migration, seed(), unseed()
+
+### Community 186 - "ValidationError"
+Cohesion: 0.03
+Nodes (15): ErrorCode, AppException, AuthenticationError, AuthorizationError, RateLimitError, ValidationError, _CsrfCheck, _empty_response() (+7 more)
+
+### Community 187 - "JournalEntry"
+Cohesion: 0.03
+Nodes (19): get_current_request(), get_current_user(), get_request_id(), get_user_id(), request_context(), set_current_user(), RequestContextFilter, test_request_id_resets() (+11 more)
+
+### Community 188 - "tests/conftest.py"
+Cohesion: 0.22
+Nodes (3): _fake_vietcombank(), _finance_settings(), _without_seed_platforms()
 
 ### Community 191 - ".test_update_success_full_data"
 Cohesion: 0.40
 Nodes (4): builds, crons, routes, $schema
 
-### Community 195 - "TestReadingHistoryCreateApi"
-Cohesion: 0.50
-Nodes (4): API Response Envelope, CSRF Protection, Error Code Translation, API Contract
-
-### Community 196 - "TestReadingHistoryDeleteApi"
-Cohesion: 0.50
-Nodes (4): IAM Permission Backend, PermissionRule, Action Permissions, Endpoint Access Tests
+### Community 194 - "test_one_class_per_file.py"
+Cohesion: 0.22
+Nodes (4): _sources(), test_entry_points_do_not_touch_orm_or_repositories(), test_one_class_per_file(), test_service_public_methods_are_not_static()
 
 ### Community 197 - "TestReadingHistoryListApi"
 Cohesion: 0.67
 Nodes (3): PYTHONUTF8, check-all.sh script, step()
 
-### Community 206 - "AttachmentFolderViewSet"
-Cohesion: 0.18
-Nodes (5): AttachmentFolderResponseSerializer, Meta, AttachmentFolderUpdateValidateSerializer, AttachmentFolderValidateSerializer, AttachmentFolderViewSet
+### Community 198 - "ShortLink"
+Cohesion: 0.03
+Nodes (29): _link(), test_bulk_is_all_or_nothing(), test_manage_all_sees_every_owner(), test_owner_is_actor_and_scope_is_private(), test_quota_per_owner(), test_soft_deleted_record_cannot_be_written(), test_soft_delete_suffix_respects_max_length(), _short_links() (+21 more)
 
-### Community 209 - "Project Documentation Backend Layering"
-Cohesion: 0.67
-Nodes (3): Module Registry, Frontend Module Wiring, Module Registry
+### Community 201 - "Role"
+Cohesion: 0.03
+Nodes (42): _PlainRoleRepository, test_audit_from_context(), test_base_queryset_hides_soft_deleted(), test_bulk_create_sets_audit(), test_create_and_update_audit(), test_delete_is_soft_by_default(), test_delete_requires_soft_delete_field(), test_delete_where_releases_unique_values() (+34 more)
 
-### Community 210 - "Project Documentation Frontend Layering"
-Cohesion: 0.67
-Nodes (3): Access JWT, Rotating Refresh Token, Single Flight Refresh
+### Community 203 - "test_client_error_api.py"
+Cohesion: 0.47
+Nodes (3): test_client_error_is_logged(), test_client_error_requires_csrf(), test_client_error_validates_body()
+
+### Community 206 - "NotificationDeliveryRetryView"
+Cohesion: 0.22
+Nodes (3): NotificationDeliveryResponseSerializer, Meta, NotificationDeliveryRetryView
 
 ### Community 211 - "Project Documentation Journal Tracking"
 Cohesion: 0.67
 Nodes (3): runs-on, timeout-minutes, backend
 
-### Community 216 - "use-reset-password-form.ts"
-Cohesion: 0.43
-Nodes (4): useResetPasswordForm(), createResetPasswordSchema(), ResetPasswordFormValues, Translate
-
-### Community 218 - "system/migrations/0001_initial.py"
-Cohesion: 0.18
-Nodes (4): Migration, Migration, Migration, Migration
-
-### Community 219 - "admin-breadcrumb.tsx"
-Cohesion: 0.35
-Nodes (9): AdminBreadcrumb(), BreadcrumbEntry, Breadcrumb(), BreadcrumbItem(), BreadcrumbLink(), BreadcrumbList(), BreadcrumbPage(), BreadcrumbSeparator() (+1 more)
-
-### Community 222 - "use-column-resizing.ts"
-Cohesion: 0.29
-Nodes (8): ChillAudioProps, ChillTrack, isBoolean(), isValidVolume(), useChillAudio(), UseChillAudioProps, memory, useStoredPreference()
-
-### Community 223 - "useListQuery"
-Cohesion: 0.25
-Nodes (13): useSessionTable(), useAdminSessionUsers(), INVALIDATE, useAdminSessions(), useBulkRevokeAdminSessions(), useDeleteAdminSessions(), useRevokeAdminSession(), adminAuthSessionService (+5 more)
-
-### Community 225 - "grant"
-Cohesion: 0.01
-Nodes (31): TestAuthorListApi, TestNovelBulkDeleteApi, TestNovelListApi, UserFactory, Meta, grant(), TestUserListApi, TestUserRoleFilter (+23 more)
-
-### Community 246 - "UserService"
-Cohesion: 0.04
-Nodes (8): AccountErrorCode, AttachmentErrorCode, UserRepository, EmailService, EmailVerificationService, UserService, get_frontend_origin(), PasswordValidator
-
-### Community 250 - "date-picker.tsx"
-Cohesion: 0.31
-Nodes (9): date-fns@^4.4.0, DatePicker(), DatePickerProps, DATE_DISPLAY_FORMAT_BY_LOCALE, DATE_FNS_LOCALE_MAP, getDateDisplayFormat(), getDateFnsLocale(), isAppLocale() (+1 more)
-
-### Community 252 - "use-tag-form.ts"
-Cohesion: 0.36
-Nodes (9): useTagForm(), useCreateTag(), useUpdateTag(), fromTag(), TAG_DEFAULTS, TagFormValues, tagSchema(), toTagInput() (+1 more)
-
-### Community 254 - ".assert_unauthorized"
+### Community 215 - "CoreResponse"
 Cohesion: 0.02
-Nodes (16): TestGenreBulkDeleteApi, TestGenreListApi, TestNovelImportTemplateApi, TestAdminSessionBulkRevokeApi, TestAdminSessionRevokeApi, TestAdminSessionUserChoicesApi, _media_root(), TestAttachmentListApi (+8 more)
+Nodes (20): CoreResponse, PlatformPermission, PlatformSeedResponseSerializer, PlatformTaxRateMutationResponseSerializer, PlatformTaxRateResponseSerializer, Meta, SepayStatusResponseSerializer, PlatformSeedView (+12 more)
 
-### Community 257 - "select.tsx"
+### Community 217 - "PermissionCatalog"
+Cohesion: 0.04
+Nodes (32): PermissionCatalog, PermissionDefinition, InvoicePermission, ReportPermission, RulePermission, AnnouncementPermission, AttachmentFolderPermission, CallbackPermission (+24 more)
+
+### Community 230 - "use-clock.ts"
 Cohesion: 0.27
-Nodes (7): NovelCatalog(), Select(), SelectContent(), SelectItem(), SelectScrollDownButton(), SelectScrollUpButton(), SelectValue()
+Nodes (9): calculateClockSnapshot(), CAN, CHI, getClientSnapshot(), getServerSnapshot(), SERVER_SNAPSHOT, subscribe(), useClock() (+1 more)
 
-### Community 259 - "novel/urls.py"
-Cohesion: 0.05
-Nodes (6): NovelClientDetailResponseSerializer, Meta, ReadingHistoryService, ChapterClientView, NovelClientView, ReadingHistoryObjectView
+### Community 234 - "use-column-resizing.ts"
+Cohesion: 0.29
+Nodes (7): Drag, isColumnWidths(), NO_WIDTHS, useColumnResizing(), Widths, useMediaQuery(), useIsMobile()
 
-### Community 260 - "ChapterFactory"
+### Community 246 - "django_db"
+Cohesion: 0.02
+Nodes (31): CoreModel, Meta, CoreQuerySet, CoreRepository, JournalTracker, Meta, ClassificationRule, Meta (+23 more)
+
+### Community 249 - "NovelImportView"
+Cohesion: 0.12
+Nodes (3): NovelImportResultResponseSerializer, NovelImportTemplateResponseSerializer, NovelImportView
+
+### Community 254 - "TestShortLinkCreateApi"
+Cohesion: 0.06
+Nodes (3): TestGenreCreateApi, TestShortLinkCreateApi, TestShortLinkResolveApi
+
+### Community 258 - "build_success_schema"
+Cohesion: 0.14
+Nodes (3): CoreAutoSchema, build_meta_schema(), build_success_schema()
+
+### Community 259 - "QrCode"
 Cohesion: 0.03
-Nodes (13): ChapterFactory, Meta, TestChapterBulkDeleteApi, TestChapterDeleteApi, TestChapterDetailApi, TestChapterListApi, TestChapterUpdateApi, TestNovelClientChapterApi (+5 more)
+Nodes (27): build_absolute_url(), _server_host(), AuthorSummaryResponseSerializer, Meta, ChapterDetailResponseSerializer, Meta, ChapterListResponseSerializer, Meta (+19 more)
 
-### Community 557 - "to_ascii"
-Cohesion: 0.22
-Nodes (3): test_postgres_unaccent_matches_library_for_vietnamese(), test_to_ascii_covers_every_vietnamese_letter(), to_ascii()
+### Community 260 - ".assert_unauthorized"
+Cohesion: 0.02
+Nodes (11): walk(), TestAdminSessionRevokeApi, TestEmailVerificationSendApi, TestLogin, TestLogoutAllApi, test_me_reuses_authenticated_user(), TestMe, TestRoleBulkUpdateApi (+3 more)
+
+### Community 271 - "NotFoundError"
+Cohesion: 0.03
+Nodes (15): NotFoundError, FavoriteResponseSerializer, Meta, FavoriteToggleResponseSerializer, NovelClientDetailResponseSerializer, Meta, ReadingHistoryDeleteResponseSerializer, FavoriteService (+7 more)
+
+### Community 280 - "finance.spec.ts"
+Cohesion: 0.29
+Nodes (4): csrf(), Income, send(), SepayStatus
+
+### Community 290 - "test_error_codes.py"
+Cohesion: 0.47
+Nodes (3): _all_codes(), test_error_codes_are_unique(), test_frontend_translates_every_error_code()
+
+### Community 315 - "author_view_set.py"
+Cohesion: 0.32
+Nodes (3): AuthorUpdateValidateSerializer, AuthorValidateSerializer, AuthorViewSet
+
+### Community 322 - "date-fns-locale.ts"
+Cohesion: 0.32
+Nodes (7): date-fns@^4.4.0, DATE_DISPLAY_FORMAT_BY_LOCALE, DATE_FNS_LOCALE_MAP, getDateDisplayFormat(), getDateFnsLocale(), isAppLocale(), date-fns
+
+### Community 328 - "test_notification_list_api.py"
+Cohesion: 0.60
+Nodes (3): _make(), test_bell_tabs_and_read(), test_cannot_touch_others()
+
+### Community 330 - "test_seed_local.py"
+Cohesion: 0.47
+Nodes (3): test_seed_local_creates_superuser_and_is_idempotent(), test_seed_local_promotes_existing_user(), test_seed_local_refuses_outside_debug()
+
+### Community 338 - "attachment_service.py"
+Cohesion: 0.06
+Nodes (3): AttachmentErrorCode, attachment_upload_path(), AttachmentStorageService
+
+### Community 557 - "test_vietqr_payload.py"
+Cohesion: 0.23
+Nodes (5): _attachments(), _logo_stamp(), _make(), render_png(), render_svg_data_url()
 
 ### Community 558 - "AccountSeedService"
-Cohesion: 0.08
-Nodes (3): Command, Command, AccountSeedService
+Cohesion: 0.04
+Nodes (4): Command, Command, UserRepository, AccountSeedService
 
-### Community 559 - "use-data-table.ts"
+### Community 573 - "next"
+Cohesion: 0.03
+Nodes (73): contentSecurityPolicy, isHttps, nextConfig, withNextIntl, next-themes@^0.4.6, ForgotPasswordPage(), generateMetadata, generateMetadata (+65 more)
+
+### Community 613 - "s/[slug]/page.tsx"
 Cohesion: 0.27
-Nodes (9): @tanstack/react-table@8.20.6, EMPTY_ROWS, isPinned(), isStringArray(), NO_PINS, PinnedColumns, useDataTable(), ColumnPin (+1 more)
+Nodes (11): convertKeys(), ConvertOptions, isPlainObject(), keysToCamel(), keysToSnake(), toCamelKey(), toSnakeKey(), BACKEND_ORIGIN (+3 more)
 
-### Community 561 - "AttachmentSummaryResponseSerializer"
-Cohesion: 0.06
-Nodes (9): AttachmentDetailResponseSerializer, Meta, AttachmentSummaryResponseSerializer, Meta, PageDetailResponseSerializer, Meta, PageListResponseSerializer, Meta (+1 more)
-
-### Community 562 - "RateLimitBucket"
-Cohesion: 0.25
-Nodes (3): RateLimitBucket, Meta, TestCleanup
-
-### Community 568 - "AuthService"
-Cohesion: 0.09
-Nodes (6): AuthService, test_concurrent_refresh_only_one_rotation(), worker(), AuthResult, get_client_ip(), test_concurrent_slug_creation_has_one_winner()
-
-### Community 569 - "use-reader-settings.ts"
-Cohesion: 0.25
-Nodes (8): DEFAULT_SETTINGS, isValidSettings(), READER_CONTENT_WIDTHS, READER_FONT_FAMILIES, READER_FONT_SIZES, READER_LINE_HEIGHTS, READER_THEMES, useReaderSettings()
-
-### Community 573 - "global.d.ts"
-Cohesion: 0.15
-Nodes (5): AppConfig, Messages, next-intl, flatten(), Tree
-
-### Community 578 - "attachment-library.spec.ts"
-Cohesion: 0.33
-Nodes (3): cleanupFiles(), post(), SVG_IMAGE
-
-### Community 584 - "eslint.config.mjs"
-Cohesion: 0.33
-Nodes (5): eslintConfig, eslint@^9, eslint-config-next@16.4.6, eslint, eslint-config-next
-
-### Community 590 - "month-select.tsx"
-Cohesion: 0.67
-Nodes (3): MONTHS, MonthSelect(), normalizeMonthValue()
-
-### Community 609 - "test_endpoint_access.py"
-Cohesion: 0.16
-Nodes (8): _call(), _endpoints(), _kind(), _path(), _sample(), test_anonymous_gets_401_on_protected_endpoints(), test_override_views_are_declared(), test_user_without_permission_gets_403_on_iam_endpoints()
-
-### Community 613 - "api-client.ts"
-Cohesion: 0.08
-Nodes (34): AI_BOT_USER_AGENTS, robots(), HOME_API_ENDPOINTS, clientErrorService, LIMITS, env, buildUrl(), HttpMethod (+26 more)
-
-### Community 635 - "CurrentUserService"
-Cohesion: 0.08
-Nodes (4): AccessTokenService, CurrentUserService, AccessClaims, CurrentUserProfile
-
-### Community 644 - "use-column-resizing.ts"
-Cohesion: 0.38
-Nodes (5): Drag, isColumnWidths(), NO_WIDTHS, useColumnResizing(), Widths
+### Community 642 - "grant"
+Cohesion: 0.01
+Nodes (40): _make(), TestClassificationRuleBulkDeleteApi, _make(), TestPlatformBulkUpdateApi, TestNovelListApi, UserFactory, Meta, grant() (+32 more)
 
 ## Knowledge Gaps
-- **46 isolated node(s):** `toannx-backend`, `PYTHONUTF8`, `ToanNX Admin Design`, `Next.js 16 Agent Instructions`, `Vercel and Neon deployment readiness (13 Nov 2026)` (+41 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3649 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **486 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **32 isolated node(s):** `toannx-backend`, `PYTHONUTF8`, `Vercel and Neon deployment readiness (13 Nov 2026)`, `Foundation verification results (13 Nov 2026)`, `API Contract` (+27 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 4749 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **247 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `grant()` connect `grant` to `typing`, `AttachmentFolder`, `short_link_service.py`, `ChapterFactory`, `TestJournalEntryListApi`, `TestTagCreateApi`, `TestPagePathDetailApi`, `Role`, `TestPagePathCreateApi`, `.assert_success`, `test_journal_tracker.py`, `TestAdminSessionBulkDeleteApi`, `TestAuthorBulkDeleteApi`, `Permission`, `PermissionChecker`, `NotFoundError`, `TestTagBulkDeleteApi`, `NovelFactory`, `RoleFactory`, `TestPagePathUpdateApi`, `AuthSession`, `use-column-resizing.ts`, `TestMe`, `TestAuthorCreateApi`, `JournalEntryPermission`, `User`, `TestPagePathDeleteApi`, `TestGenreCreateApi`, `TestQrCodeCreateApi`, `TestPageBulkDeleteApi`, `TestIamAccess`, `TestQrCodeHistoryApi`, `TestNovelImportApi`, `.assert_unauthorized`?**
-  _High betweenness centrality (0.046) - this node is a cross-community bridge._
+- **Why does `User` connect `User` to `UserService`, `grant`, `TestJournalEntryBulkDeleteApi`, `CoreApiView`, `.assert_unauthorized`, `user_service.py`, `test_endpoint_access.py`, `NotificationService`, `TestPermissionListApi`, `TestRoleCreateApi`, `.assert_success`, `TestJournalEntryDeleteApi`, `TestNotificationDeliveryBulkDeleteApi`, `TestJournalResourceListApi`, `TestUserBulkDeleteApi`, `OAuthService`, `PermissionChecker`, `TestUserBulkUpdateApi`, `AccountSeedService`, `TestRoleDeleteApi`, `AuthSession`, `.assert_forbidden`, `RoleFactory`, `auth_service.py`, `ValidationError`, `UserManager`, `TestUserUpdateApi`, `user_view_set.py`, `TestRoleBulkDeleteApi`, `use-column-resizing.ts`, `typing`, `TestUserCreateApi`, `Role`, `test_seed_local.py`, `CoreUUIDInFilter`, `email_service.py`, `UserRoleService`, `EmailService`, `TestIamAccess`, `TestNotificationDeliveryDeleteApi`, `TestSettingBulkDeleteApi`, `TestJournalEntryDetailApi`, `TestPermissionRule`, `get_client_ip`, `RoleService`, `django_db`, `TestSettingListApi`?**
+  _High betweenness centrality (0.051) - this node is a cross-community bridge._
 - **Are the 6 inferred relationships involving `grant()` (e.g. with `PermissionDefinition` and `Permission`) actually correct?**
   _`grant()` has 6 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `toannx-backend`, `PYTHONUTF8`, `ToanNX Admin Design` to the rest of the system?**
-  _46 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `api-contract.test.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05955734406438632 - nodes in this community are weakly interconnected._
-- **Why does `User` connect `User` to `typing`, `AccountAuthBackend`, `CoreResponse`, `page_service.py`, `CoreRepository`, `Role`, `.assert_success`, `core_model_view_set.py`, `test_journal_tracker.py`, `PasswordResetService`, `Permission`, `AccountSeedService`, `NotFoundError`, `.assert_forbidden`, `AttachmentSummaryResponseSerializer`, `TestPermissionListApi`, `TestRoleBulkUpdateApi`, `RoleFactory`, `AuthService`, `AuthSession`, `CurrentUserResponseSerializer`, `UserManager`, `use-column-resizing.ts`, `TestUserCreateApi`, `CoreChoiceInFilter`, `user_context.py`, `test_seed_local.py`, `JournalEntryPermission`, `TestUserBulkDeleteApi`, `TestUserBulkUpdateApi`, `UserInvitationService`, `test_endpoint_access.py`, `grant`, `TestUserDeleteApi`, `UserService`, `TestIamAccess`, `CurrentUserService`, `TestJournalEntryListApi`, `TestRoleCreateApi`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
-- **Are the 55 inferred relationships involving `User` (e.g. with `TestAccentInsensitiveSearch` and `test_user_without_permission_gets_403_on_iam_endpoints()`) actually correct?**
-  _`User` has 55 INFERRED edges - model-reasoned connections that need verification._
-- **Should `typing` be split into smaller, more focused modules?**
-  _Cohesion score 0.018647538167676683 - nodes in this community are weakly interconnected._
+- **What connects `toannx-backend`, `PYTHONUTF8`, `Vercel and Neon deployment readiness (13 Nov 2026)` to the rest of the system?**
+  _32 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `genre.service.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.13445378151260504 - nodes in this community are weakly interconnected._
+- **Why does `grant()` connect `grant` to `NovelFactory`, `.assert_unauthorized`, `TestJournalEntryBulkDeleteApi`, `TestClassificationRuleBulkUpdateApi`, `TestAuthorBulkDeleteApi`, `TestInvoiceBulkDeleteApi`, `TestAuthorDeleteApi`, `TestAuthorDetailApi`, `TestGenreDeleteApi`, `Income`, `Any`, `TestNovelImportTemplateApi`, `TestCurrencyBulkDeleteApi`, `.assert_success`, `TestTagBulkDeleteApi`, `TestCurrencyBulkUpdateApi`, `TestPagePathCreateApi`, `TestTagCreateApi`, `TestExchangeRateBulkDeleteApi`, `TestPageBulkUpdateApi`, `TestJournalEntryDeleteApi`, `TestNotificationDeliveryBulkDeleteApi`, `TestJournalResourceListApi`, `PermissionChecker`, `AttachmentService`, `.assert_forbidden`, `RoleFactory`, `TestAttachmentContentApi`, `use-column-resizing.ts`, `typing`, `ShortLink`, `TestPlatformBulkDeleteApi`, `TestAuthorUpdateApi`, `Role`, `TestChapterBulkDeleteApi`, `TestChapterBulkUpdateApi`, `test_announcement_api.py`, `TestAttachmentVisibilityApi`, `TestAdminSessionBulkDeleteApi`, `PermissionCatalog`, `User`, `TestIamAccess`, `NotificationService`, `TestNotificationDeliveryDeleteApi`, `TestSettingBulkDeleteApi`, `TestShortLinkBulkUpdateApi`, `TestAuthorCreateApi`, `TestJournalEntryDetailApi`, `.test_bulk_delete_success`, `TestPermissionRule`, `django_db`, `TestShortLinkCreateApi`?**
+  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+- **Are the 70 inferred relationships involving `User` (e.g. with `TestAccentInsensitiveSearch` and `test_user_without_permission_gets_403_on_iam_endpoints()`) actually correct?**
+  _`User` has 70 INFERRED edges - model-reasoned connections that need verification._
+- **Should `NovelFactory` be split into smaller, more focused modules?**
+  _Cohesion score 0.010642781875658588 - nodes in this community are weakly interconnected._

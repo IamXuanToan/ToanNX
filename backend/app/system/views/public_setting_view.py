@@ -9,6 +9,7 @@ from rest_framework.request import Request
 from app.core.decorators.rate_limit import rate_limit
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.setting_key import SettingKey
 from app.system.serializers.responses.public_setting_response_serializer import (
     PublicSettingResponseSerializer,
 )
@@ -43,8 +44,8 @@ class PublicSettingView(CoreApiView):
         """
         public_data = self.setting_service.get_public_settings()
         payload = {
-            "auth_google_enabled": public_data.get("auth_google_enabled", True),
-            "auth_github_enabled": public_data.get("auth_github_enabled", True),
+            "auth_google_enabled": public_data[SettingKey.AUTH_GOOGLE_ENABLED],
+            "auth_github_enabled": public_data[SettingKey.AUTH_GITHUB_ENABLED],
             "settings": public_data,
         }
         return CoreResponse(payload)

@@ -377,5 +377,9 @@
       "isPublished": "Publish Immediately",
       "viewsCount": "Views"
     }
+  },
+  "navSections": {
+    "content": "Content",
+    "catalogs": "Catalogs"
   }
 }

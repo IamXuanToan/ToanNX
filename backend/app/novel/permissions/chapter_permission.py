@@ -27,3 +27,6 @@ class ChapterPermission(PermissionCatalog):
         name="Xóa chương",
         description="Xóa mềm chương truyện.",
     )
+
+    # Quyền của vai trò thành viên: thao tác bản ghi do mình tạo.
+    MEMBER = (READ, CREATE, UPDATE, DELETE)

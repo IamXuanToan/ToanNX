@@ -47,6 +47,17 @@ class RateLimitService:
         if self.repository.increment(self._hash(key), start, expires) > limit:
             raise RateLimitError(retry_after=max(1, math.ceil((expires - now).total_seconds())))
 
+    def purge_expired(self, now: datetime) -> int:
+        """Xóa bucket rate limit đã hết cửa sổ.
+
+        Args:
+            now: Mốc hiện tại.
+
+        Returns:
+            Số bucket đã xóa.
+        """
+        return self.repository.delete_expired(now)
+
     def reset(self, key: str, window_seconds: int) -> None:
         """Xóa bộ đếm cửa sổ hiện tại (ví dụ sau khi đăng nhập thành công).
 

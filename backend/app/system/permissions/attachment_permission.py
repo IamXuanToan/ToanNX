@@ -19,8 +19,8 @@ class AttachmentPermission(PermissionCatalog):
     )
     FILE_UPDATE = PermissionDefinition(
         code="system.attachment.update",
-        name="Chuyển thư mục file",
-        description="Đổi nhóm logic của file; không sửa nội dung hoặc URL.",
+        name="Sửa file",
+        description="Đổi tên, alt, nhóm logic, chuyển công khai/riêng tư; không sửa nội dung file.",
     )
     FILE_DELETE = PermissionDefinition(
         code="system.attachment.delete",
@@ -32,3 +32,11 @@ class AttachmentPermission(PermissionCatalog):
         name="Quản lý file của mọi người",
         description="Mở rộng phạm vi sang file và thư mục của mọi người; vẫn cần quyền thao tác tương ứng.",
     )
+    FILE_READ_PRIVATE = PermissionDefinition(
+        code="system.attachment.read_private",
+        name="Xem mọi tệp riêng tư",
+        description="Mở nội dung file riêng tư của người khác (chứng từ...); không mở rộng quyền sửa, xóa.",
+    )
+
+    # Quyền của vai trò thành viên: thao tác bản ghi do mình tạo.
+    MEMBER = (FILE_READ, FILE_CREATE, FILE_UPDATE, FILE_DELETE)

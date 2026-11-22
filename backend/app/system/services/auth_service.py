@@ -16,6 +16,7 @@ from app.system.models.user import User
 from app.system.repositories.auth_session_repository import AuthSessionRepository
 from app.system.services.access_token_service import AccessTokenService
 from app.system.services.current_user_service import CurrentUserService
+from app.system.services.login_notification_service import LoginNotificationService
 from app.system.services.rate_limit_service import RateLimitService
 from app.system.services.refresh_token_service import RefreshTokenService
 from app.system.services.user_service import UserService
@@ -39,6 +40,7 @@ class AuthService:
         rate_limit_service: RateLimitService | None = None,
         user_service: UserService | None = None,
         current_user_service: CurrentUserService | None = None,
+        login_notification_service: LoginNotificationService | None = None,
     ) -> None:
         """Khởi tạo service.
 
@@ -56,6 +58,7 @@ class AuthService:
         self.rate_limit_service = rate_limit_service or RateLimitService()
         self.user_service = user_service or UserService()
         self.current_user_service = current_user_service or CurrentUserService(user_service=self.user_service)
+        self.login_notification_service = login_notification_service or LoginNotificationService()
 
     def login(self, request: HttpRequest, identifier: str, password: str) -> AuthResult:
         """Đăng nhập bằng email hoặc tên người dùng + mật khẩu.
@@ -106,6 +109,7 @@ class AuthService:
             )
             refresh_raw = self.refresh_token_service.issue(session)
             self.user_service.record_login(user)
+            self.login_notification_service.notify_login(user, session)
         return self._build_result(session, refresh_raw)
 
     def create_session_for_user(self, request: HttpRequest, user: User) -> AuthResult:
@@ -128,6 +132,7 @@ class AuthService:
             )
             refresh_raw = self.refresh_token_service.issue(session)
             self.user_service.record_login(user)
+            self.login_notification_service.notify_login(user, session)
         return self._build_result(session, refresh_raw)
 
     def refresh(self, request: HttpRequest, raw_token: str) -> AuthResult:

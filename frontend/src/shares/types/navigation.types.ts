@@ -20,10 +20,22 @@ export type AdminNavItem = {
   icon: LucideIcon;
   /** Quyền cần có để thấy mục (bỏ trống = mọi người vào được khung quản trị). */
   permission?: string;
+  /**
+   * Cụm của mục trong sidebar (khóa dịch nhãn cụm). Các mục liền nhau cùng cụm gom một khối có nhãn nhỏ;
+   * thu gọn thì giữa các cụm có vạch ngăn. Module ít mục (≤ 5) có thể bỏ trống (một cụm không nhãn).
+   */
+  section?: MessageKey;
+};
+
+/** Một cụm mục menu liền nhau của module (đã lọc quyền), dựng từ `AdminNavItem.section`. */
+export type AdminNavSection = {
+  /** Khóa dịch nhãn cụm; không có = cụm không nhãn. */
+  labelKey?: MessageKey;
+  items: AdminNavItem[];
 };
 
 /** Mã nhóm module hiển thị ở màn chọn module. */
-export type AdminGroupCode = "system" | "content" | "novel";
+export type AdminGroupCode = "system" | "content" | "novel" | "finance";
 
 /** Khai báo điều hướng của một module FE (mỗi module một file `navigation.ts`). */
 export type AdminModuleNavigation = {
@@ -36,7 +48,7 @@ export type AdminModuleNavigation = {
   group: AdminGroupCode;
   /** Icon của module. */
   icon: LucideIcon;
-  /** Menu sidebar khi đang ở trong module, theo thứ tự hiển thị. */
+  /** Menu sidebar khi đang ở trong module, theo thứ tự hiển thị; mục cùng cụm phải liền nhau. */
   items: AdminNavItem[];
 };
 

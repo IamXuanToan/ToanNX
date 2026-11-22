@@ -1,10 +1,16 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { type FormEvent, useState } from "react";
 
+import { getPathname } from "@/i18n/navigation";
+import type { AppLocale } from "@/i18n/routing";
+
+import { SYSTEM_ROUTES } from "../../constants/routes";
+
+import { useSetAttachmentVisibility } from "../../hooks/use-set-attachment-visibility";
 import { useUpdateAttachment } from "../../hooks/use-update-attachment";
-import type { Attachment } from "../../types/attachment.types";
+import type { Attachment, AttachmentVisibility } from "../../types/attachment.types";
 
 /**
  * Thuộc tính đầu vào của hook `useAttachmentDetailDialog`.
@@ -25,17 +31,26 @@ export interface UseAttachmentDetailDialogProps {
 export function useAttachmentDetailDialog({ file, onUpdated }: UseAttachmentDetailDialogProps) {
   const t = useTranslations("system.attachment");
   const updateMutation = useUpdateAttachment();
+  const visibilityMutation = useSetAttachmentVisibility();
+  const [pendingVisibility, setPendingVisibility] = useState<AttachmentVisibility | null>(null);
 
   const [currentFile, setCurrentFile] = useState<Attachment>(file);
   const [isEditing, setIsEditing] = useState(false);
+  const [isImageEditing, setIsImageEditing] = useState(false);
   const [editName, setEditName] = useState(file.originalName);
   const [editAlt, setEditAlt] = useState(file.altText || "");
   const [nameError, setNameError] = useState("");
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [copiedName, setCopiedName] = useState(false);
+  const locale = useLocale() as AppLocale;
+  // File riêng tư chia sẻ bằng trang kiểm quyền `/tep/{id}` (báo "không có quyền" thay vì lỗi API thô).
+  const shareUrl =
+    currentFile.visibility === "private" && typeof window !== "undefined"
+      ? `${window.location.origin}${getPathname({ href: SYSTEM_ROUTES.fileAccess(currentFile.id), locale })}`
+      : currentFile.url;
 
   const handleCopyUrl = () => {
-    void navigator.clipboard.writeText(currentFile.url);
+    void navigator.clipboard.writeText(shareUrl);
     setCopiedUrl(true);
     setTimeout(() => setCopiedUrl(false), 2000);
   };
@@ -86,9 +101,28 @@ export function useAttachmentDetailDialog({ file, onUpdated }: UseAttachmentDeta
     }
   };
 
+  const confirmVisibility = async () => {
+    if (!pendingVisibility || visibilityMutation.isPending) return;
+    try {
+      const updated = await visibilityMutation.mutateAsync({
+        id: currentFile.id,
+        visibility: pendingVisibility,
+      });
+      setCurrentFile(updated);
+      onUpdated?.(updated);
+      setPendingVisibility(null);
+    } catch {
+      // Lỗi được báo qua toast của useSetAttachmentVisibility
+    }
+  };
+
   return {
     currentFile,
+    setCurrentFile,
+    shareUrl,
     isEditing,
+    isImageEditing,
+    setIsImageEditing,
     editName,
     setEditName,
     editAlt,
@@ -103,5 +137,9 @@ export function useAttachmentDetailDialog({ file, onUpdated }: UseAttachmentDeta
     handleStartEdit,
     handleCancelEdit,
     handleSaveEdit,
+    pendingVisibility,
+    setPendingVisibility,
+    confirmVisibility,
+    isChangingVisibility: visibilityMutation.isPending,
   };
 }

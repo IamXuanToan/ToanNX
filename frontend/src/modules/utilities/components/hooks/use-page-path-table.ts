@@ -2,7 +2,11 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
+import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
+import { pageKeys, pagePathKeys } from "../../constants/query-keys";
+import { pagePathService } from "../../services/page-path.service";
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { useDeletePagePath } from "../../hooks/use-delete-page-path";
 import { usePagePaths } from "../../hooks/use-page-paths";
@@ -23,10 +27,17 @@ export function usePagePathTable() {
   });
   const remove = useDeletePagePath();
   const setActive = useSetPagePathActive();
+  const bulk = useBulkActions<PagePath>({
+    service: pagePathService,
+    invalidate: [pagePathKeys.all, pageKeys.all],
+  });
   return {
+    bulkDelete: bulk.bulkDelete,
+    bulkSetActive: (rows: PagePath[], value: boolean) => bulk.bulkUpdate(rows, { isActive: value }),
     table,
     query,
-    edit: (path: PagePath) => router.push(UTILITIES_ROUTES.pagePathDetail(path.id)),
+    view: (path: PagePath) => router.push(UTILITIES_ROUTES.pagePathDetail(path.id)),
+    edit: (path: PagePath) => router.push(withEditMode(UTILITIES_ROUTES.pagePathDetail(path.id))),
     setActive: (path: PagePath, isActive: boolean) => setActive.mutate({ id: path.id, isActive }),
     remove: (path: PagePath) => remove.mutateAsync(path.id),
   };

@@ -1,5 +1,7 @@
 "use client";
 
+import type { ProfileTab } from "../../types/profile-tab.types";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -45,9 +47,14 @@ export function useProfileDialog({
   const searchParams = useSearchParams();
   const tabParam = searchParams?.get("tab");
   const validTab =
-    tabParam === "security" || tabParam === "social" || tabParam === "info" ? tabParam : "info";
+    tabParam === "security" ||
+    tabParam === "social" ||
+    tabParam === "info" ||
+    tabParam === "notifications"
+      ? tabParam
+      : "info";
   const [prevParam, setPrevParam] = useState(validTab);
-  const [selectedTab, setSelectedTab] = useState<"info" | "security" | "social">(validTab);
+  const [selectedTab, setSelectedTab] = useState<ProfileTab>(validTab);
 
   if (prevParam !== validTab) {
     setPrevParam(validTab);
@@ -56,7 +63,7 @@ export function useProfileDialog({
 
   const activeTab = selectedTab;
 
-  const setActiveTab = (tab: "info" | "security" | "social") => {
+  const setActiveTab = (tab: ProfileTab) => {
     setSelectedTab(tab);
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);

@@ -8,9 +8,12 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
+import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
+import { novelKeys } from "../../constants/query-keys";
+import { novelService } from "../../services/novel.service";
 import { NOVEL_ROUTES } from "../../constants/routes";
-import { useBulkDeleteNovels } from "../../hooks/use-bulk-delete-novels";
 import { useDeleteNovel } from "../../hooks/use-delete-novel";
 import { useNovels } from "../../hooks/use-novels";
 import type { Novel } from "../../types/novel.types";
@@ -34,15 +37,15 @@ export function useNovelTable() {
   });
 
   const remove = useDeleteNovel();
-  const bulkDelete = useBulkDeleteNovels();
-
-  const ids = (novels: Novel[]) => novels.map((novel) => novel.id);
-
+  const bulk = useBulkActions<Novel>({ service: novelService, invalidate: [novelKeys.novel.all] });
   return {
+    bulkDelete: bulk.bulkDelete,
+    bulkSetPublished: (rows: Novel[], value: boolean) =>
+      bulk.bulkUpdate(rows, { isPublished: value }),
     table,
     query,
-    edit: (novel: Novel) => router.push(NOVEL_ROUTES.adminNovelDetail(novel.id)),
+    view: (novel: Novel) => router.push(NOVEL_ROUTES.adminNovelDetail(novel.id)),
+    edit: (novel: Novel) => router.push(withEditMode(NOVEL_ROUTES.adminNovelDetail(novel.id))),
     remove: (novel: Novel) => remove.mutateAsync(novel.id),
-    bulkDelete: (novels: Novel[]) => bulkDelete.mutateAsync(ids(novels)),
   };
 }

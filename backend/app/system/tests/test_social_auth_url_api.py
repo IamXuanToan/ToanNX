@@ -62,7 +62,6 @@ class TestSocialAuthUrlApi(BaseApiTestCase):
         )
         self.assert_error(response, 422, "ACCOUNT_SOCIAL_PROVIDER_DISABLED")
 
-
     def test_missing_params(self, client: APIClient) -> None:
         response = client.get("/api/v1/system/auth/social/google/url")
         self.assert_error(response, 400, "VALIDATION_ERROR")

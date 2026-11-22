@@ -3,6 +3,10 @@
 import type { ReactNode } from "react";
 
 import { usePermission } from "@/modules/system/hooks/use-permission";
+import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
+
+import { EditModeProvider } from "@/shares/components/common/edit-mode-provider";
+import { useEditMode } from "@/shares/hooks/use-edit-mode";
 
 import { UserProfile } from "../components/user-profile";
 import { USER_PERMISSIONS } from "../permissions/user-permission";
@@ -25,6 +29,13 @@ export function UserDetailView({
   extensions?: ReactNode;
   history?: ReactNode;
 }) {
+  const canRead = usePermission(USER_PERMISSIONS.userRead);
   const canEdit = usePermission(USER_PERMISSIONS.userUpdate);
-  return <UserProfile id={id} canEdit={canEdit} extensions={extensions} history={history} />;
+  const isEditing = useEditMode(canEdit);
+  if (!canRead) return <ForbiddenView />;
+  return (
+    <EditModeProvider canEdit={canEdit}>
+      <UserProfile id={id} canEdit={isEditing} extensions={extensions} history={history} />
+    </EditModeProvider>
+  );
 }

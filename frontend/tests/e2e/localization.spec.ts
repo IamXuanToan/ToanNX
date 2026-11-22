@@ -8,10 +8,14 @@ test.describe("Đa ngôn ngữ", () => {
     for (const route of [
       {
         vi: "quyen?module=account",
-        en: /\/en\/admin\/permissions\?module=account$/,
+        en: /\/en\/admin\/system\/permissions\?module=account$/,
         title: "Permissions",
       },
-      { vi: "phien?status=ACTIVE", en: /\/en\/admin\/sessions\?status=ACTIVE$/, title: "Sessions" },
+      {
+        vi: "phien?status=ACTIVE",
+        en: /\/en\/admin\/system\/sessions\?status=ACTIVE$/,
+        title: "Sessions",
+      },
     ]) {
       await page.goto(`/vi/quan-tri/${route.vi}`);
       await page.getByTestId("language-switcher").click();
@@ -40,10 +44,10 @@ test.describe("Đa ngôn ngữ", () => {
     await loginViaUi(page);
     await page.getByTestId("module-launcher").getByRole("link", { name: "Hệ thống" }).click();
     await page.locator("[data-slot=sidebar]").getByRole("link", { name: "Vai trò" }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/vai-tro$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/vai-tro$/);
     await page.getByTestId("language-switcher").click();
     await page.getByTestId("locale-en").click();
-    await expect(page).toHaveURL(/\/en\/admin\/roles$/);
+    await expect(page).toHaveURL(/\/en\/admin\/system\/roles$/);
     await expect(page.getByRole("heading", { name: "Roles" })).toBeVisible();
   });
 });

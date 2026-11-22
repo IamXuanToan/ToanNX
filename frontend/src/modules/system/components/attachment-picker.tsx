@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { cn } from "cn";
 import {
   CloudUpload,
@@ -34,44 +33,75 @@ import { Skeleton } from "@/shares/components/ui/skeleton";
 import { usePermission } from "@/modules/system/hooks/use-permission";
 
 import { formatAttachmentSize } from "../services/attachment.service";
-import type { Attachment } from "../types/attachment.types";
+import type { Attachment, AttachmentVisibility } from "../types/attachment.types";
 import type { FolderCapabilities } from "../types/attachment-folder.types";
+import { type MediaKind, acceptAttributeFor } from "../constants/media-types";
 import { ATTACHMENT_PERMISSIONS } from "../permissions/attachment-permission";
+import { ATTACHMENT_FOLDER_PERMISSIONS } from "../permissions/attachment-folder-permission";
 import { AttachmentMediaFilters } from "./attachment-media-filters";
 import { AttachmentFolderFilter } from "./attachment-folder-filter";
 import { AttachmentFolderManager } from "./attachment-folder-manager";
 import { AttachmentDetailDialog } from "./attachment-detail-dialog";
 import { AttachmentGrid } from "./attachment-grid";
+import { AttachmentPreview } from "./attachment-preview";
 import { AttachmentMoveDialog } from "./attachment-move-dialog";
 import { AttachmentViewModeToggle } from "./attachment-view-mode-toggle";
+import { AttachmentVisibilityToggle } from "./attachment-visibility-toggle";
 import { useAttachmentViewMode } from "./hooks/use-attachment-view-mode";
 import { useAttachmentPicker } from "./hooks/use-attachment-picker";
 
 /**
- * Bộ chọn và tải ảnh dùng chung cho toàn bộ hệ thống.
+ * Bộ chọn và tải file dùng chung cho toàn bộ hệ thống. Mặc định giữ hành vi cũ: chọn một ảnh công khai.
  *
- * @param props - Quyền tải lên, quyền thư mục và callback chọn ảnh.
- * @returns Dialog chọn ảnh trực quan, hỗ trợ kéo thả và tải ảnh trực tiếp từ thiết bị.
+ * @param props - Quyền tải lên/thư mục, callback chọn và cấu hình nơi dùng:
+ *   - `accept`: loại file nhận (mặc định `["IMAGE"]`);
+ *   - `visibility` + `lockVisibility`: chế độ xem của file tải lên mới (màn Chứng từ: `"private"` + khóa);
+ *   - `visibilityFilter`: chỉ liệt kê file một chế độ; mặc định chế độ đang khóa, không khóa thì `"public"`
+ *     (avatar, ảnh bìa, logo QR không chọn nhầm file riêng tư); `"all"` để liệt kê cả hai;
+ *   - `multiple` + `onSelectMany`: chọn nhiều file.
+ * @returns Dialog chọn file trực quan, hỗ trợ kéo thả và tải file trực tiếp từ thiết bị.
  */
 export function AttachmentPicker({
   canUpload,
   folders,
   canDelete: canDeleteProp,
   canMove: canMoveProp,
+  accept = ["IMAGE"],
+  visibility = "public",
+  lockVisibility = false,
+  visibilityFilter,
+  multiple = false,
   onSelect,
+  onSelectMany,
   onClose,
 }: {
   canUpload: boolean;
   folders?: FolderCapabilities;
   canDelete?: boolean;
   canMove?: boolean;
+  accept?: readonly MediaKind[];
+  visibility?: AttachmentVisibility;
+  lockVisibility?: boolean;
+  visibilityFilter?: AttachmentVisibility | "all";
+  multiple?: boolean;
   onSelect: (file: Attachment) => void;
+  onSelectMany?: (files: Attachment[]) => void;
   onClose: () => void;
 }) {
   const t = useTranslations("system.attachment");
   const tChoice = useTranslations("common.choice");
   const { viewMode, setViewMode } = useAttachmentViewMode();
-  const state = useAttachmentPicker();
+  const listVisibility = visibilityFilter ?? (lockVisibility ? visibility : "public");
+  const state = useAttachmentPicker({
+    accept,
+    visibility,
+    lockVisibility,
+    visibilityFilter: listVisibility === "all" ? undefined : listVisibility,
+  });
+  const imageOnly = accept.length === 1 && accept[0] === "IMAGE";
+  const selectedFiles = (state.query.data?.items ?? []).filter((item) =>
+    state.selectedIds.includes(item.id),
+  );
   const {
     query,
     fileInputRef,
@@ -87,8 +117,21 @@ export function AttachmentPicker({
   const canDelete = canDeleteProp ?? hasDeletePermission;
   const canMove = canMoveProp ?? hasUpdatePermission;
 
+  const defaultCanFolderRead = usePermission(ATTACHMENT_FOLDER_PERMISSIONS.folderRead);
+  const defaultCanFolderCreate = usePermission(ATTACHMENT_FOLDER_PERMISSIONS.folderCreate);
+  const defaultCanFolderUpdate = usePermission(ATTACHMENT_FOLDER_PERMISSIONS.folderUpdate);
+  const defaultCanFolderDelete = usePermission(ATTACHMENT_FOLDER_PERMISSIONS.folderDelete);
+
+  const effectiveFolders: FolderCapabilities = {
+    canRead: folders?.canRead ?? defaultCanFolderRead,
+    canCreate: folders?.canCreate ?? defaultCanFolderCreate,
+    canUpdate: folders?.canUpdate ?? defaultCanFolderUpdate,
+    canDelete: folders?.canDelete ?? defaultCanFolderDelete,
+    canDeleteFiles: folders?.canDeleteFiles ?? canDelete,
+  };
+
   const handleConfirmImage = (file: Attachment) => {
-    if (file.contentType.startsWith("image/")) {
+    if (state.isAccepted(file)) {
       onSelect(file);
     }
   };
@@ -101,10 +144,10 @@ export function AttachmentPicker({
           <div className="flex items-center justify-between gap-3 pr-8 sm:pr-0">
             <div className="min-w-0">
               <DialogTitle className="truncate text-base font-semibold sm:text-lg">
-                {t("pickerTitle")}
+                {imageOnly ? t("pickerTitle") : t("pickerTitleFile")}
               </DialogTitle>
               <DialogDescription className="text-muted-foreground mt-0.5 line-clamp-1 text-xs sm:text-sm">
-                {t("pickerUploadHint")}
+                {imageOnly ? t("pickerUploadHint") : t("pickerUploadHintFile")}
               </DialogDescription>
             </div>
           </div>
@@ -114,7 +157,7 @@ export function AttachmentPicker({
         <Input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept={acceptAttributeFor(accept)}
           className="sr-only"
           aria-label={t("upload")}
           disabled={state.isUploading || !canUpload}
@@ -167,21 +210,30 @@ export function AttachmentPicker({
             ) : null}
           </div>
 
+          {canUpload && (lockVisibility || listVisibility === "all") ? (
+            <AttachmentVisibilityToggle
+              value={state.uploadVisibility}
+              onChange={state.setUploadVisibility}
+              locked={lockVisibility}
+              disabled={state.isUploading}
+            />
+          ) : null}
+
           {/* Hàng 2: Bộ lọc (cuộn ngang mượt mà trên mobile) */}
           <div className="no-scrollbar flex items-center gap-2 overflow-x-auto py-0.5 text-xs sm:text-sm">
             <AttachmentFolderFilter
-              canRead={Boolean(folders?.canRead)}
+              canRead={effectiveFolders.canRead}
               value={state.folders}
               onChange={state.changeFolders}
               scope={["MINE"]}
             />
+            <AttachmentFolderManager capabilities={effectiveFolders} />
             <AttachmentMediaFilters
               kinds={state.kinds}
               formats={state.formats}
               onKindsChange={state.changeKinds}
               onFormatsChange={state.changeFormats}
             />
-            <AttachmentFolderManager capabilities={folders} />
             {hasActiveFilters ? (
               <Button
                 variant="ghost"
@@ -196,7 +248,7 @@ export function AttachmentPicker({
           </div>
 
           {/* Hàng 3: Thanh thao tác chọn nhiều (Bulk Bar: Chuyển thư mục & Xóa) */}
-          {(canDelete || canMove) && state.selectedIds.length > 0 ? (
+          {(canDelete || canMove || multiple) && state.selectedIds.length > 0 ? (
             <div className="bg-primary/5 border-primary/20 animate-in fade-in-50 flex min-h-12 w-full flex-wrap items-center justify-between gap-3 rounded-xl border px-3.5 py-1.5 shadow-2xs duration-150 sm:flex-nowrap">
               <div className="flex shrink-0 items-center gap-2">
                 <span className="bg-primary/10 text-primary border-primary/20 inline-flex h-8 items-center rounded-lg border px-2.5 text-xs font-semibold tabular-nums">
@@ -233,12 +285,7 @@ export function AttachmentPicker({
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      const selectedFiles =
-                        query.data?.items.filter((item) => state.selectedIds.includes(item.id)) ??
-                        [];
-                      state.setPendingMoveFiles(selectedFiles);
-                    }}
+                    onClick={() => state.setPendingMoveFiles(selectedFiles)}
                     className="h-8 gap-1.5 rounded-lg px-3 text-xs font-medium"
                     data-testid="picker-bulk-move-button"
                   >
@@ -289,7 +336,9 @@ export function AttachmentPicker({
               <div className="bg-primary/10 text-primary mb-3 animate-bounce rounded-full p-4">
                 <CloudUpload className="size-8" />
               </div>
-              <p className="text-foreground text-base font-semibold">{t("dropImageHere")}</p>
+              <p className="text-foreground text-base font-semibold">
+                {imageOnly ? t("dropImageHere") : t("dropFileHere")}
+              </p>
               <p className="text-muted-foreground mt-1 text-xs">{t("dropHint")}</p>
             </div>
           ) : null}
@@ -328,7 +377,7 @@ export function AttachmentPicker({
                   selectedIds={state.selectedIds}
                   viewMode={viewMode}
                   onInspect={state.setSelected}
-                  onToggle={canDelete ? state.toggleSelect : undefined}
+                  onToggle={canDelete || canMove || multiple ? state.toggleSelect : undefined}
                   onConfirm={handleConfirmImage}
                   onViewDetails={(file) => setDetailFile(file)}
                   disabled={query.isPlaceholderData}
@@ -384,13 +433,7 @@ export function AttachmentPicker({
           {state.selected ? (
             <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
               <div className="bg-muted relative size-10 shrink-0 overflow-hidden rounded-lg border">
-                <Image
-                  src={state.selected.url}
-                  alt={state.selected.altText || state.selected.originalName}
-                  fill
-                  sizes="40px"
-                  className="object-cover"
-                />
+                <AttachmentPreview file={state.selected} className="size-full" />
               </div>
               <div className="min-w-0 pr-1">
                 <p
@@ -416,20 +459,32 @@ export function AttachmentPicker({
               </Button>
             </div>
           ) : (
-            <span className="text-muted-foreground text-xs sm:text-sm">{t("noImage")}</span>
+            <span className="text-muted-foreground text-xs sm:text-sm">
+              {imageOnly ? t("noImage") : t("noFile")}
+            </span>
           )}
 
           <div className="flex shrink-0 items-center gap-2">
             <Button variant="outline" onClick={onClose} className="h-10 rounded-xl px-4">
               {t("cancel")}
             </Button>
-            <Button
-              disabled={!state.selected || !state.selected.contentType.startsWith("image/")}
-              onClick={() => state.selected && onSelect(state.selected)}
-              className="h-10 rounded-xl px-4 font-medium shadow-xs sm:px-5"
-            >
-              {t("useImage")}
-            </Button>
+            {multiple && onSelectMany ? (
+              <Button
+                disabled={!selectedFiles.some(state.isAccepted)}
+                onClick={() => onSelectMany(selectedFiles.filter(state.isAccepted))}
+                className="h-10 rounded-xl px-4 font-medium shadow-xs sm:px-5"
+              >
+                {t("useFiles", { count: selectedFiles.filter(state.isAccepted).length })}
+              </Button>
+            ) : (
+              <Button
+                disabled={!state.selected || !state.isAccepted(state.selected)}
+                onClick={() => state.selected && onSelect(state.selected)}
+                className="h-10 rounded-xl px-4 font-medium shadow-xs sm:px-5"
+              >
+                {imageOnly ? t("useImage") : t("useFile")}
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>
@@ -437,7 +492,7 @@ export function AttachmentPicker({
       {state.pendingMoveFiles.length > 0 ? (
         <AttachmentMoveDialog
           files={state.pendingMoveFiles}
-          canReadFolders={Boolean(folders?.canRead)}
+          canReadFolders={effectiveFolders.canRead}
           onClose={() => state.setPendingMoveFiles([])}
           onDone={state.handleMoveDone}
         />
@@ -482,6 +537,8 @@ export function AttachmentPicker({
         canEdit={canMove}
         canDelete={canDelete}
         disabled={state.isDeleting}
+        isSelectable={state.isAccepted}
+        selectLabel={imageOnly ? t("useImage") : t("useFile")}
       />
     </Dialog>
   );

@@ -143,6 +143,10 @@ class CoreModel(models.Model):
             if not value or DELETED_SUFFIX in value:
                 continue
             max_length = getattr(self._meta.get_field(name), "max_length", None)
+            # Field quá ngắn để chứa hậu tố (mã ISO 3 ký tự...): giữ nguyên giá trị, nếu không lưu sẽ lỗi
+            # độ dài; mã đó chỉ dùng lại được sau khi bản ghi bị dọn hẳn.
+            if max_length and max_length <= len(suffix):
+                continue
             base = value[: max_length - len(suffix)] if max_length else value
             setattr(self, name, f"{base}{suffix}")
             changed.append(name)

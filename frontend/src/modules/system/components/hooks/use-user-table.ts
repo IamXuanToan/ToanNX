@@ -3,6 +3,7 @@
 import { useRouter } from "@/i18n/navigation";
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
+import { withEditMode } from "@/shares/lib/edit-mode";
 
 import { SYSTEM_ROUTES } from "../../constants/routes";
 import { useBulkDeleteUsers } from "../../hooks/use-bulk-delete-users";
@@ -40,7 +41,8 @@ export function useUserTable() {
     query,
     table,
     isSelf,
-    edit: (user: User) => router.push(SYSTEM_ROUTES.userDetail(user.id)),
+    view: (user: User) => router.push(SYSTEM_ROUTES.userDetail(user.id)),
+    edit: (user: User) => router.push(withEditMode(SYSTEM_ROUTES.userDetail(user.id))),
     copy: (user: User) =>
       router.push({ pathname: SYSTEM_ROUTES.userCreate, query: { copyFrom: user.id } }),
     setActive: (user: User, isActive: boolean) =>

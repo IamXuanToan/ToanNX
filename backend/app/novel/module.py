@@ -13,6 +13,13 @@ MODULE = ModuleDescriptor(
     description="Quản lý và đọc truyện tiểu thuyết.",
     version="1.0.0",
     dependencies=("system",),
+    member_permissions=(
+        *NovelPermission.member(),
+        *ChapterPermission.member(),
+        *AuthorPermission.member(),
+        *GenrePermission.member(),
+        *TagPermission.member(),
+    ),
     permissions=(
         *NovelPermission.all(),
         *ChapterPermission.all(),

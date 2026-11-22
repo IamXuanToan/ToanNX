@@ -4,7 +4,7 @@ import { loginViaUi } from "./helpers";
 
 test("bộ lọc trạng thái có hai thao tác cùng hàng và chọn tất cả rồi xóa lọc", async ({ page }) => {
   await loginViaUi(page);
-  await page.goto("/vi/quan-tri/link-rut-gon");
+  await page.goto("/vi/quan-tri/tien-ich/link-rut-gon");
   await page.getByRole("button", { name: "Trạng thái", exact: true }).click();
 
   const selectAll = page.getByRole("button", { name: "Chọn tất cả", exact: true });

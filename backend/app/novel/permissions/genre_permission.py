@@ -27,3 +27,6 @@ class GenrePermission(PermissionCatalog):
         name="Xóa thể loại",
         description="Xóa thể loại.",
     )
+
+    # Quyền của vai trò thành viên: thao tác bản ghi do mình tạo.
+    MEMBER = (READ,)

@@ -13,6 +13,9 @@ import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
+import { EditModeProvider } from "@/shares/components/common/edit-mode-provider";
+import { useEditMode } from "@/shares/hooks/use-edit-mode";
+
 import { TagForm } from "../components/tag-form";
 import { NOVEL_ROUTES } from "../constants/routes";
 import { useTag } from "../hooks/use-tag";
@@ -28,6 +31,7 @@ export function TagDetailView({ id, history }: { id: string; history?: ReactNode
   const t = useTranslations("novel.tags");
   const canRead = usePermission(TAG_PERMISSIONS.read);
   const canUpdate = usePermission(TAG_PERMISSIONS.update);
+  const isEditing = useEditMode(canUpdate);
 
   const query = useTag(id, canRead);
 
@@ -45,9 +49,11 @@ export function TagDetailView({ id, history }: { id: string; history?: ReactNode
   }
 
   return (
-    <FormPage title={query.data.name || t("editTitle")}>
-      <TagForm tag={query.data} disabled={!canUpdate} />
-      {history ? <div className="mt-6">{history}</div> : null}
-    </FormPage>
+    <EditModeProvider canEdit={canUpdate}>
+      <FormPage title={query.data.name || t("editTitle")}>
+        <TagForm tag={query.data} disabled={!isEditing} />
+        {history ? <div className="mt-6">{history}</div> : null}
+      </FormPage>
+    </EditModeProvider>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Eye } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
@@ -20,11 +19,12 @@ import { useJournalTable } from "./hooks/use-journal-table";
  *
  * @returns Bảng nhật ký.
  */
-export function JournalTable() {
+export function JournalTable({ canDelete }: { canDelete: boolean }) {
   const t = useTranslations("system.journal");
   const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
-  const { table, query, resources, resourceName, summarize, openDetail } = useJournalTable();
+  const state = useJournalTable();
+  const { table, query, resources, resourceName, summarize } = state;
 
   const columns: DataTableColumn<JournalEntry>[] = [
     {
@@ -104,7 +104,10 @@ export function JournalTable() {
       rows={query.data?.items}
       getRowId={(entry) => entry.id}
       getRowLabel={(entry) => entry.objectLabel}
-      rowActions={[{ key: "detail", label: t("viewDetail"), icon: Eye, onClick: openDetail }]}
+      onView={state.view}
+      onDelete={state.remove}
+      can={{ delete: canDelete }}
+      onBulkDelete={canDelete ? state.bulkDelete : undefined}
       search={{ ...table.search, placeholder: t("searchPlaceholder") }}
       onClearFilters={table.hasFilters ? table.clearFilters : undefined}
       filters={

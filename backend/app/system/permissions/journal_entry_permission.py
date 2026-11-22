@@ -12,3 +12,8 @@ class JournalEntryPermission(PermissionCatalog):
         name="Xem nhật ký hệ thống",
         description="Xem lịch sử thay đổi của mọi bản ghi trong toàn hệ thống, lọc theo module.model.",
     )
+    ENTRY_DELETE = PermissionDefinition(
+        code="system.journal_entry.delete",
+        name="Xóa nhật ký thay đổi",
+        description="Xóa hẳn mục nhật ký (từng mục hoặc hàng loạt); lịch sử đã xóa không khôi phục được.",
+    )

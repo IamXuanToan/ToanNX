@@ -75,9 +75,12 @@ export function DataTable<T>(props: DataTableProps<T>) {
     onReload,
     toolbar,
     onClearFilters,
+    onView,
     onEdit,
     onCopy,
     onDelete,
+    can,
+    canEditRow,
     canDeleteRow,
     rowActions,
     onBulkDelete,
@@ -89,8 +92,9 @@ export function DataTable<T>(props: DataTableProps<T>) {
   const t = useTranslations("common.table");
   const state = useDataTable(props);
   const { table, selectable, selectedRows, visibleColumns, tableRef } = state;
-  const hasActions = Boolean(onEdit || onCopy || onDelete || rowActions?.length);
+  const hasActions = Boolean(onView || onEdit || onCopy || onDelete || rowActions?.length);
   const actionCount =
+    Number(Boolean(onView)) +
     Number(Boolean(onEdit)) +
     Number(Boolean(onCopy)) +
     Number(Boolean(onDelete)) +
@@ -155,7 +159,7 @@ export function DataTable<T>(props: DataTableProps<T>) {
       <TableRow
         key={row.id}
         data-state={row.getIsSelected() ? "selected" : undefined}
-        onDoubleClick={() => onEdit?.(item)}
+        onDoubleClick={() => (onView ?? onEdit)?.(item)}
         className={cn(
           "group/row md:hover:bg-surface-hover md:data-[state=selected]:bg-primary-light transition-colors",
           "max-md:bg-card max-md:data-[state=selected]:border-primary/40 max-md:grid max-md:items-start max-md:gap-x-3 max-md:gap-y-2.5 max-md:rounded-xl max-md:border max-md:p-4",
@@ -229,11 +233,13 @@ export function DataTable<T>(props: DataTableProps<T>) {
           >
             <TableRowActions
               row={item}
+              onView={onView}
               onEdit={onEdit}
               onCopy={onCopy}
-              onDelete={
-                onDelete && (canDeleteRow?.(item) ?? true) ? state.requestDelete : undefined
-              }
+              onDelete={onDelete ? state.requestDelete : undefined}
+              can={can}
+              canEdit={canEditRow?.(item) ?? true}
+              canDelete={canDeleteRow?.(item) ?? true}
               rowActions={rowActions}
             />
           </TableCell>

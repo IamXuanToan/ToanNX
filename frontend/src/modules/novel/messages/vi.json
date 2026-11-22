@@ -377,5 +377,9 @@
       "isPublished": "Xuất bản ngay",
       "viewsCount": "Lượt đọc"
     }
+  },
+  "navSections": {
+    "content": "Nội dung",
+    "catalogs": "Danh mục"
   }
 }

@@ -9,9 +9,10 @@
 5. [docs/rules/git.md](docs/rules/git.md) — tên nhánh, commit và quy trình push.
 6. [docs/common-catalog.md](docs/common-catalog.md) — danh mục common BE + FE đang có (tra trước khi viết).
 
-Tài liệu chi tiết: [docs/architecture.md](docs/architecture.md), [docs/authentication.md](docs/authentication.md),
-[docs/authorization.md](docs/authorization.md), [docs/i18n.md](docs/i18n.md), [docs/deployment.md](docs/deployment.md),
-[docs/testing.md](docs/testing.md). Lý do của các chuẩn: [docs/plans/system-standardization-plan.md](docs/plans/system-standardization-plan.md).
+Mục lục tài liệu: [docs/README.md](docs/README.md) — `docs/architecture/` (kiến trúc, xác thực, phân quyền, i18n,
+kiểm thử), `docs/guides/` (triển khai, R2, OAuth, thông báo, tài chính), `docs/modules/<module>/` (tài liệu từng
+module), `docs/features/` (mô tả từng chức năng: phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác, sidebar, file
+công khai/riêng tư, Web Push). Lý do của các chuẩn: [docs/plans/system-standardization-plan.md](docs/plans/system-standardization-plan.md).
 
 Mẫu prompt giao việc cho agent: [prompt.md](prompt.md).
 
@@ -42,10 +43,67 @@ Mẫu prompt giao việc cho agent: [prompt.md](prompt.md).
   các key đó, header, query/cache key, biến môi trường không có `toannx_`/`toannx-`/`toannx:`/`TOANNX_`
   (`access_token`, `novel_reader_settings`, `READER_SETTINGS_KEY`). Tên dự án chỉ ở nội dung hiển thị, domain,
   tên DB, dữ liệu seed (rule chung mục 3).
+- **Bí mật dùng `DJANGO_SECRET_KEY` khi hệ thống tự tạo và tự kiểm**: ký token, băm, mã xác minh nội bộ dẫn
+  xuất từ `DJANGO_SECRET_KEY` (`django.core.signing` / `salted_hmac`, salt riêng từng mục đích), không thêm biến
+  env bí mật mới. Bí mật bên thứ ba cấp cho cả hệ thống (OAuth secret, `CRON_SECRET`, khóa R2, service account
+  Firebase) dùng biến riêng; bí mật bên thứ ba của từng người dùng (token SePay, token bot Telegram) lưu DB mã hóa
+  bằng `SecretCipher`, không qua env; không đưa `DJANGO_SECRET_KEY` ra ngoài; không ghi bí mật thật vào
+  `.env.example` (rule chung mục 5).
+- **Quyền thành viên khai trong class quyền**: mỗi `XxxPermission` tự khai `MEMBER = (READ, CREATE, ...)`,
+  `module.py` gom `member_permissions=(*XxxPermission.member(), ...)`; không khai bằng chuỗi/mẫu `*`; `MEMBER` không
+  chứa `manage_all`/`read_private`. Phạm vi "của mình" đến từ việc thiếu `manage_all` (rule backend mục 9,
+  [docs/features/permission-scope.md](docs/features/permission-scope.md)).
+- **Ẩn/khóa theo quyền ba tầng**: menu ẩn mục thiếu quyền `read` (module hết mục thì ẩn); View trả `ForbiddenView`
+  khi thiếu quyền trang; trang chi tiết mặc định chỉ xem (`useEditMode` + `EditModeProvider`, nút Sửa → `?mode=edit`),
+  có `read` mà không `update` thì không sửa được. Mỗi class quyền BE một file quyền FE cùng tên (rule frontend §3.1).
+- **Cột Thao tác luôn có Xem / Sửa / Xóa**: luôn truyền `onView`/`onEdit`/`onDelete`, thiếu quyền khai ở
+  `can={{ update, delete }}` để nút mờ + tooltip, không ẩn nút; ngoại lệ (phiên, thông báo chung, tỷ giá, nhật ký,
+  thư viện file) ghi ở [docs/features/table-actions.md](docs/features/table-actions.md) (rule frontend §3.1).
+- **Chọn nhiều và thao tác hàng loạt**: bảng có Xoá thì bắt buộc có cột chọn + Xoá hàng loạt; tài nguyên có cờ
+  boolean bật/tắt thì có Đổi trạng thái hàng loạt. BE bật `bulk_delete_enabled` / `bulk_update_serializer_class`;
+  FE dùng common `useBulkActions` + `createBooleanBulkStatus`; bảng không có thao tác thì cột Thao tác tự ẩn
+  (rule backend mục 9, rule frontend §3.1, `tests/unit/table-conventions.test.ts`).
+- **Sidebar không nhãn module thừa**: nhóm chỉ một module thì không hiện nhãn module IN HOA (rule frontend §4.1).
+- **Menu module chia cụm**: module hơn 5 mục khai `section` cho mọi mục, mục cùng cụm liền nhau; sidebar thu gọn
+  có vạch ngăn giữa cụm, tooltip "Cụm › Mục" (rule frontend §4.1).
+- **File công khai/riêng tư**: ảnh hiển thị cho khách (avatar, logo QR, ảnh trang công khai) bắt buộc công khai;
+  chứng từ/hóa đơn/CSV/XLSX/XML bắt buộc riêng tư; API không bao giờ trả URL storage của file riêng tư (chỉ
+  `/attachments/{id}/content`) (rule chung mục 5.2).
+- **Tài liệu `docs/` cập nhật cùng lần sửa**: đổi model/quyền/route/sự kiện/webhook của module →
+  `docs/modules/<module>/README.md`; đổi cách một chức năng chạy → `docs/features/<chức-năng>.md`; module mới thêm
+  thư mục `docs/modules/<module>/` (rule chung mục 4).
+- **Thông báo chỉ qua `NotificationService.notify`**: sự kiện khai `scope`/`audience`/`permission` trong
+  `ModuleDescriptor.notification_events`; sự kiện `OWNER` phải truyền `recipient`; không tự gửi email/Telegram/push
+  (rule backend mục 9).
+- **URL quản trị có tiền tố module**: `/quan-tri/<module-vi>/...` (en `/admin/<module-en>/...`), ví dụ
+  `/quan-tri/he-thong/nguoi-dung`, `/quan-tri/truyen/tac-gia`; chỉ sửa `<M>_PATHNAMES`, pathname nội bộ và thư mục
+  `app/` giữ nguyên; sửa URL trong E2E/tài liệu cùng lần (rule frontend mục 1).
+- **Webhook/callback khai trong `ModuleDescriptor`** (`webhooks=`, `callbacks=`) để hiện ở Hệ thống → Webhook /
+  Callback; sửa endpoint là sửa khai báo cùng lần. URL không hardcode domain: `build_backend_url` (backend),
+  `get_frontend_origin` (FE) (rule backend mục 8).
+- **File env**: `.env.local` = local + pytest (PostgreSQL local, lưu file filesystem, không khóa R2, email console),
+  `.env` = production (toannx.com / api.toannx.com), `.env.example` = đủ mọi biến kèm chú thích tiếng Việt. Backend
+  có `.env.local` thì chỉ đọc file đó; `backend/conftest.py` tắt R2/Cloudflare/Firebase trong test và dừng nếu DB test
+  không ở local (rule chung mục 5).
+- **Biến môi trường luôn có trong `.env.example`**: thêm/đổi/xóa biến thì cập nhật `backend/.env.example` hoặc
+  `frontend/.env.example` cùng lần, mỗi biến có chú thích tiếng Việt có dấu (dùng làm gì, lấy ở đâu, để trống
+  thì sao), bí mật để trống; biến production ghi thêm vào `docs/guides/deployment.md` (rule chung mục 5).
 - **Chỉ kiểm tra phần đã sửa**: format/lint/typecheck file đã sửa và test liên quan (BE đúng file
   `test_<resource>_<action>_api.py`, FE đúng file Vitest/spec E2E của luồng). Chạy toàn bộ (`scripts/check-all.*`,
-  `pnpm e2e` đầy đủ) chỉ khi người dùng yêu cầu (rule chung mục 7).
+  `pnpm e2e` đầy đủ, `uv run pytest`/`pnpm test` không chỉ định file) chỉ khi người dùng yêu cầu, kể cả khi sửa
+  nhiều file (rule chung mục 7).
+- **Chạy test Backend trên PostgreSQL local**: khi chạy test backend (`pytest`), `DATABASE_URL` bắt buộc trỏ về
+  PostgreSQL local (`postgresql://postgress:123456@localhost:5432/toannx?sslmode=prefer`, user `postgress`, pass `123456`),
+  không trỏ tới DB cloud/server (Neon) để tránh quá lâu và timeout; luôn chạy với `--reuse-db`
+  (`uv run pytest --reuse-db ...`).
 - Làm đúng phạm vi, không thêm dependency khi chưa được đồng ý; docstring/comment tiếng Việt.
+- **Trả lời người dùng bằng tiếng Việt có dấu** (cả báo cáo cuối); chưa kiểm được trên giao diện thật thì nói rõ.
+- **Màu và dialog**: class màu ngữ nghĩa phải có token `--color-<tên>` trong `globals.css`
+  (`tests/unit/theme-tokens.test.ts`); ưu tiên thang Tailwind thay giá trị tùy ý; `DialogContent p-0` thì
+  `DialogFooter` thêm `mx-0 mb-0`; dialog có tab cao cố định, chỉ thân cuộn (rule frontend §3.1.1, §4.0).
+- **Hủy request**: truyền `signal` của React Query cho `apiClient`, không tự abort `fetch` (rule frontend mục 5).
+- **ViewSet chỉ đọc mở `post` cho bulk** thì khai `"create": DENY`; xoá model không có `deleted_at` bằng
+  `hard_delete` có lý do; field unique ngắn dùng `UniqueConstraint` có điều kiện (rule backend mục 9).
 - **`graphify update .` chỉ chạy khi thay đổi lớn** (thêm/xóa/gộp module, đổi cấu trúc thư mục, di chuyển/đổi tên
   khoảng 10 file trở lên, refactor kiến trúc) **hoặc graph đã cũ** (`graphify-out/graph.json` quá 7 ngày, hay
   `graphify query` trả về file/symbol không còn). Sửa nhỏ thì không chạy.
@@ -57,8 +115,12 @@ Backend:
    (`default = True`, `name = "app.links"`, `label = "links"` = mã module).
 2. `permissions/<model>_permission.py` (PermissionCatalog cho từng model riêng biệt, mỗi model 1 file, không gộp chung; mỗi quyền có name + description; mã dạng `<module>.<resource>.<action>`),
    `constants/<module>_error_code.py` (StrEnum mã lỗi riêng, thêm bản dịch FE — test bắt nếu thiếu), `module.py`
-   (`ModuleDescriptor(..., permissions=(*ModelAPermission.all(), *ModelBPermission.all()), dependencies=..., cleanup_tasks=...)`).
-   Module mới tự có vai trò `<MÃ_MODULE>_MANAGER`/`<MÃ_MODULE>_VIEWER` khi chạy `uv run python manage.py seed_roles`
+   (`ModuleDescriptor(..., permissions=(*ModelAPermission.all(), *ModelBPermission.all()), dependencies=..., cleanup_tasks=..., notification_events=...)`;
+   `notification_events` là các `NotificationEventDefinition` mã `<module>.<resource>.<event>` module có thể phát;
+   `webhooks`/`callbacks` là `WebhookDefinition`/`CallbackDefinition` của endpoint bên thứ ba gọi/chuyển về).
+   Module có quyền phải khai `member_permissions=(*ModelAPermission.member(), ...)`; quyền thành viên khai ở
+   `MEMBER = (...)` trong từng class quyền (không gồm `manage_all`/`read_private`).
+   Module mới tự có vai trò `<MÃ_MODULE>_MANAGER`/`_VIEWER`/`_MEMBER` khi chạy `uv run python manage.py seed_roles`
    (không khai vai trò riêng trong code).
 3. Model kế thừa `CoreModel`; muốn có lịch sử thay đổi thì thêm `JournalTracker` **trước** `CoreModel`
    (`class Link(JournalTracker, CoreModel)`, tùy chọn `journal_fields`/`journal_masked_fields`). Index owner có
@@ -94,11 +156,13 @@ Frontend:
 2. Service một file một model BE: `{ ...createCrudService<...>(LINKS_API_ENDPOINTS.links), /* method riêng */ }`.
    Hook: `useListQuery`, `useQuery`, `useResourceMutation` (toast + invalidate chuẩn) — không tự viết handler.
    Mỗi hook một file `hooks/use-<tên>.ts`; mỗi component một file, hook của component ở `components/hooks/`.
-3. Bảng `DataTable` + `useTableState`; một form cho tạo/sửa/xem (`FormPage` + `FormLayout` + `FormSection` +
+3. Bảng `DataTable` + `useTableState`, cột Thao tác luôn Xem/Sửa/Xóa (`onView`/`onEdit`/`onDelete` + `can`);
+   trang chi tiết chỉ xem mặc định (`useEditMode` + `EditModeProvider`); một form cho tạo/sửa/xem (`FormPage` + `FormLayout` + `FormSection` +
    `FormActions`); tạo/sửa nhanh tài nguyên liên quan bằng `FormDialog` chứa đúng form đó. Soạn thảo dùng
    `TiptapEditor` (JSON), hiển thị bằng `TiptapContent`. Chi tiết: rule frontend mục 3.1.
 4. Ghép vào `src/i18n/routing.ts`, `src/i18n/messages.ts`, `src/global.d.ts`, `ADMIN_MODULE_NAVIGATION`
-   (`navigation.ts` khai `module`, `nameKey`/`descriptionKey`, `labelKey` là khóa đầy đủ trong namespace của module).
+   (`navigation.ts` khai `module`, `nameKey`/`descriptionKey`, `labelKey` là khóa đầy đủ trong namespace của module;
+   hơn 5 mục thì mỗi mục khai `section: "<module>.navSections.<cụm>"`).
    `tests/unit/module-registry.test.ts` đỏ nếu quên chỗ nào.
    Chạy `pnpm api:types` khi đổi serializer BE; kiểu viết tay thêm một dòng vào `tests/unit/api-contract.test.ts`
    (hoặc dùng thẳng `ApiModel<"…Response">`). Model có `JournalTracker` thì thêm tiền tố nhãn field vào
@@ -110,5 +174,8 @@ Frontend:
    - Mọi UI primitive (`Button`, `Checkbox`, `Label`, `Input`, `Dialog`, `Card`...) bắt buộc dùng từ `@/shares/components/ui/` (nếu thiếu thì tải bằng `pnpm dlx shadcn@latest add <name>`, không tự chế; không bọc button/checkbox vào thẻ `<label>`).
    - Tên tệp đính kèm (`original_name` / `alt_text`) phải cho phép người dùng đổi tên và cấu hình alt text.
    - Thanh thao tác hàng loạt (`TableBulkBar` / bulk bar chọn nhiều): bắt buộc thiết kế trên 1 dòng duy nhất (`min-h-12 w-full flex items-center justify-between gap-3 rounded-xl border px-3.5 py-1.5`), tuyệt đối không dùng container flex-col hoặc bọc trong thẻ `Card` gây tách 2 tầng và căn giữa; bên trái là badge số lượng + vạch chia + nút Bỏ chọn, bên phải là cụm nút hành động.
+
+Tài liệu: thêm `docs/modules/links/README.md` (mục đích, model, quyền + `MEMBER`, màn quản trị theo cụm, sự kiện,
+webhook/callback) và dòng mục lục ở `docs/README.md`.
 
 Không cần sửa core hay IAM.

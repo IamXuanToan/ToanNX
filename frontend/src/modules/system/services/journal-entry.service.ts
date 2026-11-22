@@ -5,7 +5,7 @@ import { toPaginated } from "@/shares/lib/api/to-paginated";
 import { SYSTEM_API_ENDPOINTS } from "../constants/api-endpoints";
 import type { JournalEntry, JournalFilters, JournalResource } from "../types/journal-entry.types";
 
-/** Service nhật ký (BE `journal/services/journal_entry_service.py`, chỉ đọc). */
+/** Service nhật ký (BE `system/services/journal_entry_service.py`): đọc và xóa (xóa hẳn). */
 export const journalEntryService = {
   /** Một trang nhật ký; `changes` giữ nguyên tên field của BE. */
   async list(filters: JournalFilters, signal?: AbortSignal): Promise<Paginated<JournalEntry>> {
@@ -25,6 +25,23 @@ export const journalEntryService = {
         opaqueKeys: ["changes"],
       })
     ).data;
+  },
+
+  /** Xóa hẳn một mục nhật ký. */
+  async delete(id: string): Promise<void> {
+    await apiClient.delete(`${SYSTEM_API_ENDPOINTS.journalEntries}/${id}`);
+  },
+
+  /** @returns Số mục đã xóa hẳn. */
+  async bulkDelete(ids: string[]): Promise<number> {
+    return (
+      await apiClient.post<{ count: number }>(
+        `${SYSTEM_API_ENDPOINTS.journalEntries}/bulk-delete`,
+        {
+          ids,
+        },
+      )
+    ).data.count;
   },
 
   /** @returns Các `module.model` đang ghi lịch sử (không phân trang). */

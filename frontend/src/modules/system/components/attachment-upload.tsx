@@ -9,38 +9,62 @@ import { Card } from "@/shares/components/ui/card";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 
-import type { Attachment } from "../types/attachment.types";
+import type { Attachment, AttachmentVisibility } from "../types/attachment.types";
 import type { FolderCapabilities } from "../types/attachment-folder.types";
-import { UNFILED_FOLDER } from "../constants/media-types";
+import { type MediaKind, UNFILED_FOLDER, acceptAttributeFor } from "../constants/media-types";
 import { folderPath } from "../utils/folder-path";
 import { SelectField } from "@/shares/components/common/select-field";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { AttachmentFolderManager } from "./attachment-folder-manager";
+import { AttachmentVisibilityToggle } from "./attachment-visibility-toggle";
 import { useAttachmentUpload } from "./hooks/use-attachment-upload";
 
-/** @param props - Chỉ ảnh hoặc mọi file, callback sau upload. @returns Khu kéo thả và kết quả từng file, không nuốt lỗi. */
+/**
+ * @param props - Loại file nhận (`accept`; `imageOnly` là bí danh của `accept={["IMAGE"]}`), chế độ xem của file
+ *   mới (`visibility`, `lockVisibility` để nơi dùng bắt buộc một chế độ), callback sau upload.
+ * @returns Khu kéo thả và kết quả từng file, không nuốt lỗi.
+ */
 export function AttachmentUpload({
   imageOnly = false,
+  accept,
+  visibility = "public",
+  lockVisibility = false,
   multiple = true,
   onUploaded,
   onBusyChange,
   folders,
 }: {
   imageOnly?: boolean;
+  accept?: readonly MediaKind[];
+  visibility?: AttachmentVisibility;
+  lockVisibility?: boolean;
   multiple?: boolean;
   onUploaded?: (file: Attachment) => void;
   onBusyChange?: (busy: boolean) => void;
   folders?: FolderCapabilities;
 }) {
   const t = useTranslations("system.attachment");
-  const { registerInput, openFileChooser, busy, jobs, upload, folderId, setFolderId, folderQuery } =
-    useAttachmentUpload({
-      imageOnly,
-      multiple,
-      onUploaded,
-      onBusyChange,
-      canReadFolders: folders?.canRead,
-    });
+  const kinds = accept ?? (imageOnly ? (["IMAGE"] as const) : undefined);
+  const {
+    registerInput,
+    openFileChooser,
+    busy,
+    jobs,
+    upload,
+    folderId,
+    setFolderId,
+    folderQuery,
+    uploadVisibility,
+    setUploadVisibility,
+  } = useAttachmentUpload({
+    accept: kinds,
+    visibility,
+    lockVisibility,
+    multiple,
+    onUploaded,
+    onBusyChange,
+    canReadFolders: folders?.canRead,
+  });
 
   return (
     <div className="space-y-4">
@@ -70,6 +94,12 @@ export function AttachmentUpload({
           {folderQuery.isError ? <ErrorState onRetry={() => folderQuery.refetch()} /> : null}
         </div>
       ) : null}
+      <AttachmentVisibilityToggle
+        value={uploadVisibility}
+        onChange={setUploadVisibility}
+        locked={lockVisibility}
+        disabled={busy}
+      />
       <Card
         className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-6 text-center shadow-none"
         onDragOver={(event) => event.preventDefault()}
@@ -85,7 +115,7 @@ export function AttachmentUpload({
           ref={registerInput}
           type="file"
           multiple={multiple}
-          accept={imageOnly ? "image/*" : undefined}
+          accept={kinds ? acceptAttributeFor(kinds) : undefined}
           disabled={busy}
           className="sr-only"
           aria-label={t("chooseFiles")}

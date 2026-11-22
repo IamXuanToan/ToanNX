@@ -5,6 +5,7 @@ from django.core.files.uploadedfile import UploadedFile
 from rest_framework import serializers
 
 from app.core.serializers.core_validate_serializer import CoreValidateSerializer
+from app.system.models.attachment import Attachment
 
 
 class AttachmentUploadValidateSerializer(CoreValidateSerializer):
@@ -21,9 +22,14 @@ class AttachmentUploadValidateSerializer(CoreValidateSerializer):
         help_text="Văn bản thay thế (alt) cho ảnh.",
     )
 
+    visibility = serializers.ChoiceField(
+        choices=Attachment.Visibility.choices,
+        required=False,
+        help_text="public/private; không gửi thì CSV, XLSX, XML là private, loại khác là public.",
+    )
     file = serializers.FileField(
         allow_empty_file=False,
-        help_text="File upload: PNG, JPEG, WEBP, GIF, SVG an toàn, PDF, MP4, MOV hoặc WEBM.",
+        help_text="File upload: PNG, JPEG, WEBP, GIF, SVG an toàn, PDF, XLSX, CSV, XML, MP4, MOV hoặc WEBM.",
     )
 
     def validate_file(self, value: UploadedFile) -> UploadedFile:

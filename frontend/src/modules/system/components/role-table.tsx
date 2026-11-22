@@ -32,7 +32,8 @@ export function RoleTable({
 }) {
   const t = useTranslations("system.iam.roles");
   const tStatus = useTranslations("common.status");
-  const { query, table, edit, copy, setActive, remove, bulkSetActive, bulkDelete } = useRoleTable();
+  const { query, table, view, edit, copy, setActive, remove, bulkSetActive, bulkDelete } =
+    useRoleTable();
 
   const columns: DataTableColumn<Role>[] = [
     {
@@ -145,9 +146,11 @@ export function RoleTable({
             }
           : undefined
       }
-      onEdit={canUpdate ? edit : undefined}
-      onCopy={canCreate ? copy : undefined}
-      onDelete={canDelete ? remove : undefined}
+      onView={view}
+      onEdit={edit}
+      onCopy={copy}
+      onDelete={remove}
+      can={{ update: canUpdate, create: canCreate, delete: canDelete }}
       canDeleteRow={(role) => !role.isSystem}
       canSelectRow={(role) => !role.isSystem}
       bulkStatus={

@@ -25,7 +25,7 @@ Phạm vi hiện tại: **foundation** (IAM, xác thực, module registry, i18n 
 scripts\dev.bat
 ```
 
-Script migrate database rồi mở backend (http://localhost:8000) và frontend (http://localhost:3000)
+Script migrate database rồi mở backend (http://localhost:8001) và frontend (http://localhost:3001)
 ở 2 cửa sổ riêng. Nếu cổng 8000/3000 đang bị chương trình khác chiếm, script dừng và báo PID để tắt.
 
 ### 0. Git
@@ -76,13 +76,13 @@ pnpm dev                     # http://localhost:3001 → /vi
 cd frontend && pnpm e2e         # E2E Playwright (tự khởi động server nếu chưa chạy)
 ```
 
-Chi tiết: [docs/testing.md](docs/testing.md).
+Chi tiết: [docs/architecture/testing.md](docs/architecture/testing.md).
 
 ## Tài liệu
 
 - [SYSTEM_CONTEXT.md](SYSTEM_CONTEXT.md) — bối cảnh hệ thống, quyết định đã chốt
 - [AGENTS.md](AGENTS.md) — quy tắc phát triển (người và AI agent)
-- [docs/architecture.md](docs/architecture.md) · [docs/authentication.md](docs/authentication.md) · [docs/authorization.md](docs/authorization.md)
-- [docs/i18n.md](docs/i18n.md) · [docs/deployment.md](docs/deployment.md) · [docs/testing.md](docs/testing.md)
-- [docs/reference-audit.md](docs/reference-audit.md) — đánh giá source tham khảo PMS/Medoly
+- [docs/architecture/architecture.md](docs/architecture/architecture.md) · [docs/architecture/authentication.md](docs/architecture/authentication.md) · [docs/architecture/authorization.md](docs/architecture/authorization.md)
+- [docs/architecture/i18n.md](docs/architecture/i18n.md) · [docs/guides/deployment.md](docs/guides/deployment.md) · [docs/architecture/testing.md](docs/architecture/testing.md)
+- [docs/architecture/reference-audit.md](docs/architecture/reference-audit.md) — đánh giá source tham khảo PMS/Medoly
 - [docs/reports/foundation-report.html](docs/reports/foundation-report.html) — báo cáo foundation

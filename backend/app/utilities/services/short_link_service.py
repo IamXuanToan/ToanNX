@@ -114,8 +114,7 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
         """
         return {str(item.pk): item for item in self.repository.filter(pk__in=list(ids))}
 
-    @staticmethod
-    def is_resolvable(link: ShortLink) -> bool:
+    def is_resolvable(self, link: ShortLink) -> bool:
         """Link đang hoạt động và chưa hết hạn.
 
         Args:

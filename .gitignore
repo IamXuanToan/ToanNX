@@ -12,6 +12,7 @@ __pycache__/
 .pytest_cache/
 staticfiles/
 media/
+private_media/
 
 # Node / Next.js
 node_modules/

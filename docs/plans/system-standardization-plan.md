@@ -320,7 +320,7 @@ Chi tiết module journal ở mục 7.
 
 - `DATABASES["default"]["OPTIONS"]["options"] = "-c statement_timeout=5000"` (đổi bằng biến môi trường) (B8).
 - Production dùng host **pooler** của Neon; `CONN_MAX_AGE` giữ 0 trên Vercel, bật `CONN_HEALTH_CHECKS`. Ghi vào
-  `docs/deployment.md`.
+  `docs/guides/deployment.md`.
 - Index chuẩn cho model có owner và xóa mềm: `Index(fields=["owner", "-created_at"], condition=Q(deleted_at__isnull=True))`.
   Tìm kiếm `ILIKE` chỉ thêm index trigram khi bảng vượt khoảng 10.000 dòng; ghi điều kiện này vào rule, không làm trước.
 

@@ -12,6 +12,12 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 - **Mở file nào thì kiểm rule file đó**: vi phạm trong file đang mở (đọc hay sửa) thì sửa luôn, coi là trong phạm
   vi, và ghi vào báo cáo. Sửa kéo theo đổi contract API/migration hoặc lan khoảng 10 file trở lên thì báo trước.
 - Không over-engineering: không tạo abstraction/thư mục chỉ để đủ tên; không để thư mục rỗng.
+- **Agent trả lời người dùng bằng tiếng Việt có dấu** (cập nhật giữa chừng, câu hỏi, báo cáo cuối), kể cả khi
+  skill/tài liệu tham khảo viết tiếng Anh. Tên file, mã, lệnh giữ nguyên.
+- Tìm hiểu codebase: chạy `graphify query "<câu hỏi>"` trước khi grep/đọc file (`graphify-out/graph.json`);
+  chỉ đọc file thô ở đúng chỗ graph đã chỉ ra.
+- Sửa xong mà chưa kiểm được trên giao diện thật (thiếu tài khoản, DB E2E lỗi…) thì nói rõ trong báo cáo,
+  không tuyên bố đã chạy đúng.
 - Scaffold bằng CLI chính thức: `uv init`, `uv add`, `django-admin startproject`, `manage.py startapp`,
   `create-next-app`, `pnpm add`, `shadcn add`. Không viết tay lockfile hay khai báo dependency giả.
 - Không sửa source tham khảo (PMS, Medoly); không copy credentials hay cấu hình production.
@@ -109,10 +115,38 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 - **`AGENTS.md` và `CLAUDE.md` luôn đồng bộ**: sửa một file thì sửa luôn phần tương ứng ở file kia trong cùng
   lần đó (`AGENTS.md` tiếng Việt cho mọi agent, `CLAUDE.md` tiếng Anh cho Claude Code; nội dung rule phải khớp).
   Đổi rule trong `docs/rules/` mà hai file này có tóm tắt thì cập nhật cả hai.
+- **Tài liệu trong `docs/` cập nhật cùng lần sửa** (mục lục và cấu trúc ở [docs/README.md](../README.md)):
+  - đổi model, quyền (`MEMBER`), route, sự kiện thông báo, webhook/callback của module → `docs/modules/<module>/README.md`;
+  - đổi cách một chức năng chạy (phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác, sidebar, file công khai/riêng
+    tư, Web Push…) → file tương ứng trong `docs/features/`; chức năng dùng chung mới → thêm file + dòng mục lục;
+  - đổi cách cài đặt/vận hành → `docs/guides/`; đổi kiến trúc nền → `docs/architecture/`;
+  - thêm module → thêm `docs/modules/<module>/README.md`.
+  Tài liệu lệch với code coi như việc chưa xong.
 
 ## 5. Bảo mật
 
 - Không hardcode secrets, URL môi trường; mọi cấu hình qua biến môi trường.
+- **Bí mật**: bí mật hệ thống tự tạo và tự kiểm (ký token, băm, mã xác minh nội bộ, link ký) luôn dẫn xuất
+  từ `DJANGO_SECRET_KEY` qua `django.core.signing` / `salted_hmac`, mỗi mục đích một `salt` riêng; không tạo biến
+  env bí mật mới cho các việc này. Bí mật bên thứ ba cấp cho **cả hệ thống** (OAuth client secret, `CRON_SECRET`,
+  khóa R2, service account Firebase) dùng biến env riêng. Bí mật bên thứ ba của **từng người dùng** (token API
+  SePay, token bot Telegram) lưu DB đã mã hóa bằng `SecretCipher` (khóa dẫn xuất từ `DJANGO_SECRET_KEY` theo mục
+  đích), API chỉ trả 4 ký tự cuối, không qua env. Secret webhook riêng từng người do hệ thống tự tạo thì dẫn xuất
+  bằng `salted_hmac` (không lưu DB). Không bao giờ đưa `DJANGO_SECRET_KEY` ra ngoài hệ thống. Đổi
+  `DJANGO_SECRET_KEY` làm mất hiệu lực các bí mật dẫn xuất/mã hóa đó (ghi trong `docs/guides/deployment.md`). Không ghi
+  giá trị bí mật thật vào `.env.example`, code, log hay commit.
+- **Ba file env mỗi phía** (`backend/`, `frontend/`; chỉ `.env.example` được commit):
+  - `.env.local`: máy dev + pytest. DB PostgreSQL local, `FILE_STORAGE_BACKEND` = filesystem, không khóa R2, không
+    `CLOUDFLARE_API_TOKEN`, email console, `SEPAY_ENV=sandbox`. Backend có file này thì **chỉ đọc file này** (không
+    gộp `.env`); Next.js gộp `.env.local` lên `.env` nên `frontend/.env.local` phải khai đủ mọi biến.
+  - `.env`: production (domain `toannx.com`, API `api.toannx.com`); là bản để chép vào biến môi trường server/Vercel.
+  - `.env.example`: mẫu đủ mọi biến code đọc, chú thích tiếng Việt, không giá trị bí mật.
+- **Test không gọi dịch vụ ngoài**: `backend/conftest.py` tắt R2 Usage API, R2, Firebase trong mọi test và dừng phiên
+  test nếu `DATABASE_URL` không trỏ về PostgreSQL local. Test cần dịch vụ ngoài thì mock hoặc tự đặt setting trong test.
+- **Thêm/đổi tên/xóa biến môi trường thì cập nhật file example trong cùng lần sửa**: `backend/.env.example`
+  (BE) hoặc `frontend/.env.example` (FE). Mỗi biến có chú thích **tiếng Việt có dấu** ngay phía trên: dùng làm
+  gì, lấy giá trị ở đâu, để trống thì hệ thống làm gì; biến cùng nhóm đặt chung dưới một tiêu đề. Bí mật để
+  trống, biến không bí mật ghi giá trị mặc định. Biến chạy production thì ghi thêm vào `docs/guides/deployment.md`.
 - Backend là nơi kiểm soát quyền cuối cùng; FE chỉ ẩn/hiện.
 - Không trả stack trace, mật khẩu, token, hash ra client.
 - Không tin dữ liệu client: validate mọi input; kiểu file xác định bằng chữ ký file, không bằng header.
@@ -124,6 +158,25 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 - BE lưu và so sánh thời gian ở UTC có múi giờ (`django.utils.timezone.now()`), không dùng `datetime.now()` naive.
   API trả ISO 8601; FE hiển thị theo locale và múi giờ người xem.
 - Tiền và số cần chính xác dùng `Decimal` (BE) / số nguyên đơn vị nhỏ nhất hoặc chuỗi (FE), không dùng float để tính.
+
+## 5.2 File công khai và riêng tư
+
+Chi tiết luồng: [docs/features/attachment-visibility.md](../features/attachment-visibility.md).
+
+- Mọi file người dùng tải lên đi qua Thư viện (`Attachment`, `AttachmentService`); module khác không tự lưu file
+  hay đọc storage trực tiếp.
+- **Bắt buộc công khai** (`public`): ảnh đại diện, logo QR, ảnh bìa truyện, ảnh trong trang công khai, mọi ảnh
+  hiển thị cho khách.
+  Bộ chọn (`AttachmentPicker`) mặc định chỉ liệt kê file công khai.
+- **Bắt buộc riêng tư** (`private`): chứng từ, hóa đơn, file chứa dữ liệu cá nhân/tài chính, CSV/XLSX/XML. Màn
+  dùng file riêng tư truyền `visibility="private" lockVisibility`. CSV/XLSX/XML luôn tải về, không hiển thị.
+- File riêng tư nằm ở kho riêng (bucket R2 không bật public access); API chỉ trả
+  `/api/v1/system/attachments/{id}/content`, **không bao giờ** trả URL storage thật. Mở file: BE kiểm quyền rồi
+  302 tới link ký 5 phút; không quyền và không tồn tại cùng trả 404. Link chia sẻ là trang `/vi/tep/{id}`.
+- Người mở được file riêng tư: người upload, superuser, người có `system.attachment.read_private`
+  (`read_private` chỉ mở xem, không mở rộng sửa/xóa). `read_private`/`manage_all` không vào `MEMBER`.
+- Đổi chế độ chỉ qua `POST /attachments/{id}/visibility` (chép sang kho kia, xóa bản cũ sau commit); không tự
+  di chuyển file giữa hai kho trong module.
 
 ## 6. API contract
 
@@ -148,13 +201,17 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 - Không báo PASS khi chưa chạy thật.
 - **Chỉ chạy kiểm tra liên quan tới phần đã sửa trong lần đó**, không chạy toàn bộ (chậm):
   - BE: `ruff format`/`ruff check`/`mypy` trên file đã sửa; `pytest` đúng file test của endpoint/service bị ảnh
-    hưởng (`uv run pytest app/<m>/tests/test_<x>.py`). Đổi route, view, quyền, serializer thì chạy thêm
-    `core/tests/test_endpoint_access.py`, `test_module_conventions.py`, `test_openapi_schema.py` và `pnpm api:types`.
+    hưởng (`uv run pytest --reuse-db app/<m>/tests/test_<x>.py`). `DATABASE_URL` khi test bắt buộc trỏ về PostgreSQL
+    local (`postgresql://postgress:123456@localhost:5432/toannx?sslmode=prefer`, user `postgress`, pass `123456`),
+    tuyệt đối không dùng DB cloud/server (Neon) để tránh chậm mạng và timeout. Đổi route, view, quyền, serializer
+    thì chạy thêm `core/tests/test_endpoint_access.py`, `test_module_conventions.py`, `test_openapi_schema.py` và `pnpm api:types`.
   - FE: `eslint`/`prettier --check` trên file đã sửa, `pnpm typecheck` (kiểu liên đới cả project), Vitest đúng
     file test liên quan; `pnpm build` khi đổi route/page/layout/config; E2E chỉ spec của luồng bị đổi
     (`pnpm e2e tests/e2e/<luồng>.spec.ts`).
-  - Toàn bộ (`scripts/check-all.ps1`/`.sh`, `pnpm e2e` đầy đủ) **chỉ chạy khi người dùng yêu cầu**. Sửa vùng nền
-    rộng (`app/core`, `shares/`, `apiClient`, settings) thì báo để người dùng quyết định có chạy toàn bộ không.
+  - Toàn bộ (`scripts/check-all.ps1`/`.sh`, `pnpm e2e` đầy đủ, `uv run pytest` / `pnpm test` / `pnpm lint`
+    **không chỉ định file**) **chỉ chạy khi người dùng yêu cầu**, kể cả khi đã sửa nhiều file: chạy toàn bộ quá lâu
+    và không cần. Sửa vùng nền rộng (`app/core`, `shares/`, `apiClient`, settings) thì vẫn chỉ chạy test file liên
+    quan, rồi báo để người dùng quyết định có chạy toàn bộ không.
   - Báo cáo ghi rõ đã chạy lệnh nào, kết quả, và phần nào chưa kiểm.
 - Sửa bug: thêm test tái hiện trước/cùng lúc với bản sửa.
 - Test nằm cạnh code: `app/<m>/tests/`, `app/core/tests/` (BE); `frontend/tests/` (FE).
@@ -172,7 +229,7 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 2. Theo đúng rule (kiến trúc, một file một đơn vị, đặt tên, docstring tiếng Việt, i18n đủ vi + en).
 3. Có test cho hành vi mới/lỗi đã sửa; format, lint, typecheck và các test **liên quan** đều qua.
 4. UI đã kiểm tra thực tế (playwright-cli): desktop + mobile, light + dark, loading/rỗng/lỗi.
-5. Tài liệu (`docs/`, `SYSTEM_CONTEXT.md`) cập nhật nếu đổi quyết định hay contract; thêm/đổi/xóa common thì
+5. Tài liệu (`docs/modules/<m>/`, `docs/features/`, `SYSTEM_CONTEXT.md`) cập nhật theo §4; thêm/đổi/xóa common thì
    `docs/common-catalog.md` đã cập nhật. `graphify update .` chỉ chạy
    khi thay đổi lớn (thêm/xóa/gộp module, đổi cấu trúc thư mục, di chuyển/đổi tên khoảng 10 file trở lên, refactor
    kiến trúc) hoặc graph đã cũ (quá 7 ngày, hay query trả về file không còn); sửa nhỏ thì không chạy.

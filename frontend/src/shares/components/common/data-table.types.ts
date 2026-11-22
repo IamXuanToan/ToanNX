@@ -39,7 +39,7 @@ export type DataTableColumn<T> = {
 };
 
 /**
- * Thao tác riêng của một dòng, đặt trong cột Thao tác sau Sửa / Sao chép / Xoá
+ * Thao tác riêng của một dòng, đặt trong cột Thao tác sau Xem / Sửa / Sao chép / Xoá
  * (ví dụ Thu hồi phiên — bảng không có Sửa/Xoá). Nút chỉ icon + tooltip.
  */
 export type DataTableRowAction<T> = {
@@ -51,6 +51,13 @@ export type DataTableRowAction<T> = {
   hidden?: (row: T) => boolean;
   /** Tô đỏ khi rê (thao tác phá huỷ). */
   destructive?: boolean;
+};
+
+/** Quyền cho thao tác chuẩn của dòng: Sửa (`update`), Sao chép (`create`), Xoá (`delete`). Xem luôn được. */
+export type DataTableActionPermissions = {
+  update?: boolean;
+  create?: boolean;
+  delete?: boolean;
 };
 
 /** Thao tác hàng loạt tuỳ biến (ngoài Đổi trạng thái / Xoá dựng sẵn). */
@@ -105,13 +112,21 @@ export type DataTableProps<T> = {
   /** Có bộ lọc đang áp dụng: hiện nút xóa và trạng thái rỗng do lọc. */
   onClearFilters?: () => void;
   /**
-   * Cột Thao tác: Sửa, Sao chép, Xoá (xoá có xác nhận) rồi tới `rowActions`; Thêm ở toolbar.
+   * Cột Thao tác chuẩn, thứ tự cố định: Xem → Sửa → Sao chép → Xoá (xoá có xác nhận), rồi tới `rowActions`.
+   * Tài nguyên có trang chi tiết thì **luôn** truyền đủ `onView`/`onEdit`/`onDelete`; thiếu quyền thì khai ở
+   * `can` để nút hiện mờ (disabled + tooltip lý do), không truyền `undefined` để ẩn nút. Chỉ bỏ handler khi
+   * nghiệp vụ không có thao tác đó (bảng ngoại lệ ở rule frontend §3.1). Thêm ở toolbar.
    * Bật/tắt trạng thái (khoá, kích hoạt…) đặt ở cột Trạng thái (`TableStatusSwitch`), không ở đây.
    */
+  onView?: (row: T) => void;
   onEdit?: (row: T) => void;
   onCopy?: (row: T) => void;
   onDelete?: (row: T) => unknown;
-  /** Dòng không được xoá (ẩn nút Xoá), ví dụ chính mình, bản ghi hệ thống. */
+  /** Quyền của người dùng cho thao tác chuẩn (mặc định có). `false` = nút mờ, tooltip "không có quyền". */
+  can?: DataTableActionPermissions;
+  /** Dòng không được sửa (nút Sửa mờ), ví dụ bản ghi hệ thống. */
+  canEditRow?: (row: T) => boolean;
+  /** Dòng không được xoá (nút Xoá mờ), ví dụ chính mình, bản ghi hệ thống. */
   canDeleteRow?: (row: T) => boolean;
   /** Thao tác riêng của dòng (Thu hồi…), sau các thao tác chuẩn trong cột Thao tác. */
   rowActions?: DataTableRowAction<T>[];

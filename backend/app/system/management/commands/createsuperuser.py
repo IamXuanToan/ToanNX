@@ -9,11 +9,18 @@ from typing import Any
 from django.contrib.auth.management.commands.createsuperuser import Command as BaseCreateSuperUserCommand
 from django.core.management.base import CommandError, CommandParser
 
+from app.system.services.user_service import UserService
+
 
 class Command(BaseCreateSuperUserCommand):
     """Override createsuperuser: bắt buộc nhập username hợp lệ và duy nhất."""
 
     help = "Tạo tài khoản siêu quản trị (superuser), bắt buộc nhập email và tên người dùng (username)."
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Khởi tạo phụ thuộc: service người dùng (kiểm tra trùng username)."""
+        super().__init__(*args, **kwargs)
+        self.user_service = UserService()
 
     def add_arguments(self, parser: CommandParser) -> None:
         """Bổ sung argument cho lệnh tạo superuser."""
@@ -46,5 +53,5 @@ class Command(BaseCreateSuperUserCommand):
             raise CommandError("Tên người dùng không được vượt quá 150 ký tự.")
         if not re.match(r"^[\w.@+-]+$", username):
             raise CommandError("Tên người dùng chỉ được chứa chữ cái, số và các ký tự: @/./+/-/_.")
-        if self.UserModel.objects.filter(username=username).exists():
+        if self.user_service.username_exists(username):
             raise CommandError(f"Tên người dùng '{username}' đã tồn tại trong hệ thống.")

@@ -16,6 +16,8 @@ import { SettingEditForm } from "./setting-edit-form";
 interface SettingEditDialogProps {
   setting: SystemSetting | null;
   open: boolean;
+  /** Mở từ nút Xem (hoặc thiếu quyền sửa): chỉ xem giá trị, không lưu. */
+  readOnly: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
@@ -25,7 +27,12 @@ interface SettingEditDialogProps {
  * @param props - Cấu hình setting đang chọn và callback đóng/mở.
  * @returns Dialog chỉnh sửa giá trị cấu hình.
  */
-export function SettingEditDialog({ setting, open, onOpenChange }: SettingEditDialogProps) {
+export function SettingEditDialog({
+  setting,
+  open,
+  readOnly,
+  onOpenChange,
+}: SettingEditDialogProps) {
   const t = useTranslations("system.settings.table");
 
   return (
@@ -40,6 +47,7 @@ export function SettingEditDialog({ setting, open, onOpenChange }: SettingEditDi
           <SettingEditForm
             key={setting.id}
             setting={setting}
+            readOnly={readOnly}
             onCancel={() => onOpenChange(false)}
             onSuccess={() => onOpenChange(false)}
           />

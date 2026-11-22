@@ -1,13 +1,17 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
+import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
 import { pickAllowedValues, useTableState } from "@/shares/hooks/use-table-state";
 
 import { JOURNAL_FIELD_PREFIXES } from "../../constants/journal-field-prefixes";
+import { journalKeys } from "../../constants/query-keys";
 import { SYSTEM_ROUTES } from "../../constants/routes";
+import { useDeleteJournalEntry } from "../../hooks/use-delete-journal-entry";
 import { useJournalEntries } from "../../hooks/use-journal-entries";
 import { useJournalFormat } from "../../hooks/use-journal-format";
 import { useJournalResources } from "../../hooks/use-journal-resources";
+import { journalEntryService } from "../../services/journal-entry.service";
 import { JOURNAL_ACTIONS, type JournalEntry } from "../../types/journal-entry.types";
 
 /** Số field hiện ngay trong bảng; phần còn lại xem ở trang chi tiết. */
@@ -51,7 +55,19 @@ export function useJournalTable() {
     return { lines, more: Math.max(all.length - SUMMARY_FIELDS, 0) };
   };
 
-  const openDetail = (entry: JournalEntry) =>
-    router.push(SYSTEM_ROUTES.journalEntryDetail(entry.id));
-  return { table, query, resources, resourceName, summarize, openDetail };
+  const remove = useDeleteJournalEntry();
+  const bulk = useBulkActions<JournalEntry>({
+    service: journalEntryService,
+    invalidate: [journalKeys.all],
+  });
+  return {
+    table,
+    query,
+    resources,
+    resourceName,
+    summarize,
+    view: (entry: JournalEntry) => router.push(SYSTEM_ROUTES.journalEntryDetail(entry.id)),
+    remove: (entry: JournalEntry) => remove.mutateAsync(entry.id),
+    bulkDelete: bulk.bulkDelete,
+  };
 }

@@ -8,6 +8,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/auth-store";
 
 import { SYSTEM_ROUTES } from "../constants/routes";
+import { unregisterPushDevice } from "../lib/unregister-push-device";
 import { authService } from "../services/auth.service";
 
 /**
@@ -24,6 +25,7 @@ export function useLogout() {
   return useMutation({
     mutationFn: async (all: boolean = false) => {
       useAuthStore.getState().startLoggingOut();
+      await unregisterPushDevice();
       return all ? authService.logoutAll() : authService.logout();
     },
     onSettled: (_data, _error, variables) => {

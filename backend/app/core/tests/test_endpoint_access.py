@@ -46,6 +46,8 @@ PUBLIC_VIEWS = frozenset(
         "SocialAuthUrlView",
         "SocialLoginView",
         "PublicSettingView",
+        "SepayWebhookView",
+        "NotificationDispatchView",
     }
 )
 # View chỉ cần đăng nhập (dữ liệu của chính người dùng hoặc danh mục tĩnh).
@@ -53,6 +55,7 @@ LOGIN_ONLY_VIEWS = frozenset(
     {
         "LogoutAllView",
         "MeView",
+        "AttachmentContentView",
         "SendVerificationEmailView",
         "SessionView",
         "SessionObjectView",

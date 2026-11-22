@@ -39,7 +39,7 @@ class TestLogin(BaseApiTestCase):
         response = client.post(LOGIN, {"identifier": user.email, "password": DEFAULT_PASSWORD}, format="json")
         raw = response.cookies[settings.AUTH_REFRESH_COOKIE_NAME].value
         assert not RefreshToken.objects.filter(token_hash=raw).exists()
-        assert RefreshToken.objects.filter(token_hash=RefreshTokenService.hash_token(raw)).exists()
+        assert RefreshToken.objects.filter(token_hash=RefreshTokenService().hash_token(raw)).exists()
 
     def test_invalid_password(self, client: APIClient, user: Any) -> None:
         response = client.post(LOGIN, {"identifier": user.email, "password": "wrong-password"}, format="json")

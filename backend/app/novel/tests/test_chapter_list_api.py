@@ -19,7 +19,7 @@ class TestChapterListApi(BaseApiTestCase):
 
     def test_list_success_paginated(self, user: Any, login: Any) -> None:
         """Lấy danh sách chương có phân trang."""
-        novel = NovelFactory()
+        novel = NovelFactory(owner=user)
         ChapterFactory.create_batch(3, novel=novel)
 
         grant(user, ChapterPermission.READ)
@@ -33,8 +33,8 @@ class TestChapterListApi(BaseApiTestCase):
 
     def test_list_filter_by_novel(self, user: Any, login: Any) -> None:
         """Lọc chương theo novel_id."""
-        n1 = NovelFactory()
-        n2 = NovelFactory()
+        n1 = NovelFactory(owner=user)
+        n2 = NovelFactory(owner=user)
         ChapterFactory.create_batch(2, novel=n1)
         ChapterFactory.create_batch(3, novel=n2)
 

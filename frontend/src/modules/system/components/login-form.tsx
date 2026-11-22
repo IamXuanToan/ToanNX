@@ -1,6 +1,7 @@
 "use client";
+
 import Image from "next/image";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
@@ -17,8 +18,13 @@ import { usePublicSettings } from "../hooks/use-public-settings";
 import { useLoginForm } from "./hooks/use-login-form";
 
 /**
- * Form đăng nhập: email hoặc tên người dùng + mật khẩu, kèm đăng nhập nhanh Google & GitHub.
+ * Form đăng nhập chuẩn hoá theo quy chuẩn UI/UX:
+ * - Hỗ trợ đăng nhập nhanh bằng Google & GitHub.
+ * - Trường Email/Tên người dùng có icon User và placeholder rõ ràng.
+ * - Trường Mật khẩu có icon Lock, nút xem/ẩn mật khẩu và link Quên mật khẩu.
+ * - Chiều cao ô và nút đạt chuẩn h-11 cho màn xác thực đứng một mình.
  *
+ * @param props - Đường dẫn điều hướng sau khi đăng nhập thành công.
  * @returns Form đăng nhập.
  */
 export function LoginForm({ redirectTo }: { redirectTo: AppPathname }) {
@@ -32,12 +38,12 @@ export function LoginForm({ redirectTo }: { redirectTo: AppPathname }) {
 
   return (
     <div className="space-y-4">
-      {/* Đăng nhập bằng Google & GitHub */}
-      <div className="grid grid-cols-2 gap-2.5">
+      {/* 1. Đăng nhập nhanh bằng Google & GitHub */}
+      <div className="grid grid-cols-2 gap-3">
         <Button
           type="button"
           variant="outline"
-          className="h-10 gap-2 text-xs font-semibold"
+          className="border-border/80 hover:bg-muted/50 h-11 gap-2 rounded-xl text-xs font-semibold shadow-2xs transition-colors"
           onClick={() => void handleSocialLogin("google")}
           disabled={isSubmitting || Boolean(socialLoading) || !isGoogleEnabled}
           title={!isGoogleEnabled ? t("socialDisabledHint") : undefined}
@@ -46,16 +52,17 @@ export function LoginForm({ redirectTo }: { redirectTo: AppPathname }) {
           {socialLoading === "google" ? (
             <Loader2 className="size-4 animate-spin" />
           ) : (
-            <Image src={ICON_PATHS.google} alt="Google" width={16} height={16} />
+            <Image src={ICON_PATHS.google} alt="Google" width={18} height={18} />
           )}
           <span className="truncate">
             Google {!isGoogleEnabled ? `(${t("temporarilyDisabled")})` : ""}
           </span>
         </Button>
+
         <Button
           type="button"
           variant="outline"
-          className="h-10 gap-2 text-xs font-semibold"
+          className="border-border/80 hover:bg-muted/50 h-11 gap-2 rounded-xl text-xs font-semibold shadow-2xs transition-colors"
           onClick={() => void handleSocialLogin("github")}
           disabled={isSubmitting || Boolean(socialLoading) || !isGithubEnabled}
           title={!isGithubEnabled ? t("socialDisabledHint") : undefined}
@@ -67,8 +74,8 @@ export function LoginForm({ redirectTo }: { redirectTo: AppPathname }) {
             <Image
               src={ICON_PATHS.github}
               alt="GitHub"
-              width={16}
-              height={16}
+              width={18}
+              height={18}
               className="dark:invert"
             />
           )}
@@ -78,58 +85,83 @@ export function LoginForm({ redirectTo }: { redirectTo: AppPathname }) {
         </Button>
       </div>
 
+      {/* 2. Đường phân cách */}
       <div className="relative my-3">
         <div className="absolute inset-0 flex items-center">
           <div className="border-border/60 w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background text-muted-foreground px-2 text-[11px] font-medium">
+          <span className="bg-card text-muted-foreground px-2.5 text-[11px] font-medium tracking-wider">
             {t("orContinueWith")}
           </span>
         </div>
       </div>
 
+      {/* 3. Form nhập liệu thông tin đăng nhập */}
       <Form onSubmit={onSubmit} noValidate className="space-y-4" data-testid="login-form">
         {rootError ? (
           <div
             role="alert"
-            className="border-destructive/30 bg-destructive/5 text-destructive flex items-start gap-2 rounded-lg border p-3 text-sm"
+            className="border-destructive/30 bg-destructive/10 text-destructive flex items-start gap-2.5 rounded-xl border p-3 text-xs leading-relaxed"
           >
             <AlertCircle className="mt-0.5 size-4 shrink-0" />
             <span>{rootError}</span>
           </div>
         ) : null}
-        <FieldGroup>
+
+        <FieldGroup className="space-y-3.5">
+          {/* Email hoặc tên người dùng */}
           <FormField control={form.control} name="identifier" label={t("identifier")} required>
             {(field) => (
-              <Input
+              <div className="relative">
+                <User
+                  aria-hidden
+                  className="text-muted-foreground pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2"
+                />
+                <Input
+                  {...field}
+                  autoComplete="username"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  autoFocus
+                  placeholder={t("identifierPlaceholder")}
+                  className="h-11 rounded-xl pl-10 text-sm"
+                />
+              </div>
+            )}
+          </FormField>
+
+          {/* Mật khẩu */}
+          <FormField control={form.control} name="password" label={t("password")} required>
+            {(field) => (
+              <PasswordInput
                 {...field}
-                autoComplete="username"
-                autoCapitalize="none"
-                spellCheck={false}
-                autoFocus
+                autoComplete="current-password"
+                placeholder={t("passwordPlaceholder")}
+                className="h-11 rounded-xl text-sm"
               />
             )}
           </FormField>
-          <FormField control={form.control} name="password" label={t("password")} required>
-            {(field) => <PasswordInput {...field} autoComplete="current-password" />}
-          </FormField>
         </FieldGroup>
-        <div className="flex items-center justify-end">
+
+        {/* Link Quên mật khẩu */}
+        <div className="flex items-center justify-end pt-0.5">
           <Link
             href="/forgot-password"
-            className="text-muted-foreground hover:text-foreground text-xs font-medium transition-colors hover:underline"
+            className="text-muted-foreground hover:text-primary text-xs font-medium transition-colors hover:underline"
           >
             {t("forgotPasswordLink")}
           </Link>
         </div>
+
+        {/* Nút gửi form Đăng nhập */}
         <Button
           type="submit"
           size="lg"
-          className="w-full"
+          className="h-11 w-full rounded-xl text-sm font-semibold shadow-xs"
           disabled={isSubmitting || Boolean(socialLoading)}
         >
-          {isSubmitting ? <Loader2 className="animate-spin" /> : null}
+          {isSubmitting ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
           {isSubmitting ? t("submitting") : t("submit")}
         </Button>
       </Form>
