@@ -6,7 +6,7 @@ import { useCallback } from "react";
 import type { MessageKey } from "@/shares/types/navigation.types";
 
 /**
- * Dịch khóa đầy đủ do module khai (`account.nav.users`) — dùng khi khóa đến từ cấu hình module
+ * Dịch khóa đầy đủ do module khai (`system.account.nav.users`) — dùng khi khóa đến từ cấu hình module
  * (điều hướng, nhãn field), không biết trước lúc viết code.
  *
  * @returns Hàm `(key) => chuỗi`; khóa không tồn tại thì trả lại chính khóa.

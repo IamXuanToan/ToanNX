@@ -13,7 +13,7 @@ Quy ước:
 """
 
 import uuid
-from collections.abc import Iterator
+from collections.abc import Generator
 from typing import Any
 
 from django.conf import settings
@@ -27,7 +27,7 @@ DELETED_SUFFIX = "_deleted_"
 _UNIQUE_TEXT_FIELDS: dict[type, tuple[str, ...]] = {}
 
 
-def _field_refs(expression: Any) -> Iterator[str]:
+def _field_refs(expression: Any) -> Generator[str]:
     """Tên field được tham chiếu trong biểu thức (`Lower("slug")` → `slug`)."""
     if isinstance(expression, F):
         yield str(getattr(expression, "name", ""))
@@ -143,6 +143,10 @@ class CoreModel(models.Model):
             if not value or DELETED_SUFFIX in value:
                 continue
             max_length = getattr(self._meta.get_field(name), "max_length", None)
+            # Field quá ngắn để chứa hậu tố (mã ISO 3 ký tự...): giữ nguyên giá trị, nếu không lưu sẽ lỗi
+            # độ dài; mã đó chỉ dùng lại được sau khi bản ghi bị dọn hẳn.
+            if max_length and max_length <= len(suffix):
+                continue
             base = value[: max_length - len(suffix)] if max_length else value
             setattr(self, name, f"{base}{suffix}")
             changed.append(name)

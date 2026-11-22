@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 
-import { LoginView } from "@/modules/auth/views/login-view";
+import { LoginView } from "@/modules/system/views/login-view";
 import { HOME_ROUTES } from "@/modules/home/constants/routes";
 import { MANAGE_APP_ROUTES } from "@/modules/manage-app/constants/routes";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({
-  title: "auth.login.title",
+  title: "system.auth.login.title",
   index: false,
   alternates: "/login",
 });

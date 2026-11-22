@@ -17,14 +17,18 @@ from app.core.registry.module_registry import ModuleRegistry, module_registry
 from app.core.services.core_crud_service import CoreCrudService
 from app.core.views.core_api_view import CoreApiView
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.modules.iam.decorators.require_permission import PERMISSION_RULE_ATTR
-from app.modules.iam.permissions.has_iam_permission import HasIamPermission
+from app.system.decorators.require_permission import PERMISSION_RULE_ATTR
+from app.system.permissions.has_iam_permission import HasIamPermission
 
-MODULE_APP_PREFIX = "app.modules."
+MODULE_APP_PREFIX = "app."
 
 
 def _module_app_configs() -> list[Any]:
-    return [config for config in apps.get_app_configs() if config.name.startswith(MODULE_APP_PREFIX)]
+    return [
+        config
+        for config in apps.get_app_configs()
+        if config.name.startswith(MODULE_APP_PREFIX) and config.name != "app.core"
+    ]
 
 
 def _iter_view_classes(patterns: list[URLPattern | URLResolver]) -> list[type]:
@@ -50,6 +54,7 @@ def _module_views() -> list[tuple[type, dict[str, str]]]:
         (view_class, actions)
         for view_class, actions in _iter_views(get_resolver().url_patterns)
         if view_class.__module__.startswith(MODULE_APP_PREFIX)
+        and not view_class.__module__.startswith("app.core")
     ]
 
 
@@ -71,7 +76,7 @@ class TestModuleConventions:
 
     def test_every_module_app_uses_core_module_config(self) -> None:
         configs = _module_app_configs()
-        assert configs, "Không tìm thấy app nào trong app/modules"
+        assert configs, "Không tìm thấy app nào trong app"
         for config in configs:
             assert isinstance(config, CoreModuleConfig), f"{config.name} phải kế thừa CoreModuleConfig"
             descriptor = module_registry.get(config.label)
@@ -88,6 +93,8 @@ class TestModuleConventions:
             view_class
             for view_class in _iter_view_classes(get_resolver().url_patterns)
             if view_class.__module__.startswith(MODULE_APP_PREFIX)
+            and not view_class.__module__.startswith("app.core")
+            and not view_class.__module__.startswith("app.core")
         ]
         assert view_classes
         for view_class in view_classes:

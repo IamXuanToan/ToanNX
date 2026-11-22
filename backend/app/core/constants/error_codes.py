@@ -1,6 +1,6 @@
 """Mã lỗi API chung của core (mọi module dùng).
 
-Mã riêng của module nằm ở `app/modules/<m>/constants/<m>_error_code.py`. Frontend dịch theo giá trị mã;
+Mã riêng của module nằm ở `app/<m>/constants/<m>_error_code.py`. Frontend dịch theo giá trị mã;
 KHÔNG đổi giá trị đã phát hành. `core/tests/test_error_codes.py` kiểm không trùng và FE có bản dịch.
 """
 

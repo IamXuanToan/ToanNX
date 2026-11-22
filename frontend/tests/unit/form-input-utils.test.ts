@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { mergeTags, splitTags } from "@/shares/components/common/tags-input/tags-input";
+import { mergeTags, splitTags } from "@/shares/components/common/tags-input";
 import {
   isValidSlugValue,
   sanitizeCodeInput,

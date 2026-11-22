@@ -32,7 +32,8 @@ export function useResourceMutation<TVariables, TResult>({
   onSuccess,
 }: {
   mutationFn: (variables: TVariables) => Promise<TResult>;
-  invalidate: readonly QueryKey[];
+  /** Khóa hoặc danh sách các khóa cache cần làm mới khi mutation thành công. */
+  invalidate: QueryKey | readonly QueryKey[];
   /** Thông báo chuẩn, hoặc hàm trả câu riêng của module (đã dịch) theo kết quả. */
   success?: MutationSuccessMessage | ((result: TResult) => string);
   /** Form tự hiện lỗi theo field thì đặt `false`. */
@@ -50,7 +51,16 @@ export function useResourceMutation<TVariables, TResult>({
       } else if (success) {
         toast.success(t(success, { count: typeof result === "number" ? result : 0 }));
       }
-      await Promise.all(invalidate.map((queryKey) => queryClient.invalidateQueries({ queryKey })));
+      const invalidateKeys: readonly QueryKey[] =
+        invalidate.length === 0
+          ? []
+          : Array.isArray(invalidate[0])
+            ? (invalidate as readonly QueryKey[])
+            : [invalidate as QueryKey];
+
+      await Promise.all(
+        invalidateKeys.map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+      );
       await onSuccess?.(result, variables);
     },
     onError: toastError ? (error: unknown) => toast.error(errorMessage(error)) : undefined,

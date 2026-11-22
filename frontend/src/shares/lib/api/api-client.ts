@@ -26,6 +26,17 @@ export type RequestOptions = {
 };
 
 const SAFE_METHODS: readonly HttpMethod[] = ["GET"];
+/** Lý do abort khi hết giờ chờ (bên ngoài hủy thì không abort, xem `send`). */
+const TIMEOUT_REASON = "timeout";
+
+/** @returns Lỗi chuẩn khi người gọi hủy request (React Query bỏ qua, không retry). */
+function cancelledError(): ApiError {
+  return new ApiError({
+    status: 0,
+    code: CLIENT_ERROR_CODES.cancelled,
+    message: "Request cancelled",
+  });
+}
 /** Mã 401 có thể khắc phục bằng refresh. */
 const REFRESHABLE_CODES = new Set([
   "AUTH_TOKEN_EXPIRED",
@@ -73,35 +84,45 @@ async function send(method: HttpMethod, path: string, options: RequestOptions): 
     if (token) headers.set(CSRF_HEADER_NAME, token);
   }
 
-  // Hết thời gian chờ → hủy request; vẫn tôn trọng tín hiệu hủy từ bên ngoài.
+  // Bên ngoài hủy (React Query hủy query khi unmount/làm mới cache): KHÔNG abort `fetch`, chỉ cho
+  // promise này thua cuộc đua ngay bằng `ApiError` mã `cancelled` của client; request chạy nốt trong
+  // nền rồi bị bỏ. Abort `fetch` bằng một lý do bất kỳ (DOMException hay chuỗi) làm lý do đó lọt vào
+  // promise không ai bắt và Next dev báo "Runtime AbortError" / "Runtime Error: cancelled".
+  // Hết giờ chờ vẫn abort thật vì request đang treo.
+  if (options.signal?.aborted) throw cancelledError();
   const controller = new AbortController();
   const timeout = setTimeout(
-    () => controller.abort("timeout"),
+    () => controller.abort(TIMEOUT_REASON),
     options.timeoutMs ?? env.apiTimeoutMs,
   );
-  options.signal?.addEventListener("abort", () => controller.abort(options.signal?.reason), {
-    once: true,
+  let onAbort: (() => void) | undefined;
+  const cancelled = new Promise<never>((_, reject) => {
+    onAbort = () => reject(cancelledError());
+    options.signal?.addEventListener("abort", onAbort, { once: true });
+  });
+  // Nhánh hủy chỉ dùng trong cuộc đua; khi fetch thắng thì nó không bao giờ settle, không cần bắt lỗi.
+  const request = fetch(buildUrl(path, options.query), {
+    method,
+    headers,
+    body,
+    credentials: "same-origin",
+    signal: controller.signal,
   });
   try {
-    return await fetch(buildUrl(path, options.query), {
-      method,
-      headers,
-      body,
-      credentials: "same-origin",
-      signal: controller.signal,
-    });
+    return await Promise.race([request, cancelled]);
   } catch (error) {
-    if (controller.signal.reason === "timeout") {
+    if (error instanceof ApiError) throw error;
+    if (controller.signal.reason === TIMEOUT_REASON) {
       throw new ApiError({
         status: 0,
         code: CLIENT_ERROR_CODES.timeout,
         message: "Request timeout",
       });
     }
-    if (options.signal?.aborted) throw error;
     throw new ApiError({ status: 0, code: CLIENT_ERROR_CODES.network, message: "Network error" });
   } finally {
     clearTimeout(timeout);
+    if (onAbort) options.signal?.removeEventListener("abort", onAbort);
   }
 }
 

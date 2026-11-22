@@ -1,5 +1,5 @@
 @echo off
-rem Chay moi truong dev trong MOT terminal: migrate database -> backend (8000, chay nen) + frontend (3000).
+rem Chay moi truong dev trong MOT terminal: migrate database -> backend (8001, chay nen) + frontend (3001).
 rem Cach dung: double-click file nay, hoac chay `scripts\dev.bat` tu thu muc goc.
 rem Dung: Ctrl+C (hoac dong cua so) -> tat ca backend va frontend.
 setlocal
@@ -8,12 +8,12 @@ chcp 65001 >nul
 set "ROOT=%~dp0.."
 set "BACKEND=%ROOT%\backend"
 set "FRONTEND=%ROOT%\frontend"
-rem Cong co dinh: frontend proxy /api sang 8000, CSRF_TRUSTED_ORIGINS cho phep localhost:3000.
-set "BACKEND_PORT=8000"
-set "FRONTEND_PORT=3000"
+rem Cong co dinh: frontend proxy /api sang 8001, CSRF_TRUSTED_ORIGINS cho phep localhost:3001.
+set "BACKEND_PORT=8001"
+set "FRONTEND_PORT=3001"
 
 if not exist "%BACKEND%\.env" (
-  echo [dev] Thieu backend\.env. Tao tu backend\.env.example roi dien DB_* va DJANGO_SECRET_KEY.
+  echo [dev] Thieu backend\.env. Tao tu backend\.env.example roi dien DATABASE_URL va DJANGO_SECRET_KEY.
   goto :fail
 )
 
@@ -26,7 +26,7 @@ pushd "%BACKEND%"
 call uv run python manage.py makemigrations
 if errorlevel 1 (
   popd
-  echo [dev] Migrations that bai. Kiem tra PostgreSQL dang chay va thong tin DB_* trong backend\.env.
+  echo [dev] Migrations that bai. Kiem tra PostgreSQL dang chay va DATABASE_URL trong backend\.env.
   goto :fail
 )
 popd
@@ -36,7 +36,7 @@ pushd "%BACKEND%"
 call uv run python manage.py migrate
 if errorlevel 1 (
   popd
-  echo [dev] Migrate that bai. Kiem tra PostgreSQL dang chay va thong tin DB_* trong backend\.env.
+  echo [dev] Migrate that bai. Kiem tra PostgreSQL dang chay va DATABASE_URL trong backend\.env.
   goto :fail
 )
 popd

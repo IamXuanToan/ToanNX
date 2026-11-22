@@ -6,12 +6,12 @@ from app.core.context.user_context import request_context, set_current_user
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
 from app.core.repositories.core_repository import CoreRepository
-from app.modules.account.tests.factories.user_factory import UserFactory
-from app.modules.iam.models.role import Role
-from app.modules.iam.repositories.role_repository import RoleRepository
-from app.modules.journal.repositories.journal_entry_repository import JournalEntryRepository
-from app.modules.short_links.models.short_link import ShortLink
-from app.modules.short_links.services.short_link_service import ShortLinkService
+from app.system.models.role import Role
+from app.system.repositories.journal_entry_repository import JournalEntryRepository
+from app.system.repositories.role_repository import RoleRepository
+from app.system.tests.factories.user_factory import UserFactory
+from app.utilities.models.short_link import ShortLink
+from app.utilities.services.short_link_service import ShortLinkService
 
 pytestmark = pytest.mark.django_db
 
@@ -77,7 +77,7 @@ def test_delete_requires_soft_delete_field() -> None:
         actor_id=None,
         actor_label="",
         request_id="",
-        resource="iam.role",
+        resource="system.role",
         object_id="x",
         object_label="x",
         action="EVENT",

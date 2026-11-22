@@ -1,9 +1,9 @@
-import { CUSTOM_PAGES_API_ENDPOINTS } from "@/modules/custom-pages/constants/api-endpoints";
-import { PagePathDetailView } from "@/modules/custom-pages/views/page-path-detail-view";
-import { RecordHistoryView } from "@/modules/journal/views/record-history-view";
+import { UTILITIES_API_ENDPOINTS } from "@/modules/utilities/constants/api-endpoints";
+import { PagePathDetailView } from "@/modules/utilities/views/page-path-detail-view";
+import { RecordHistoryView } from "@/modules/system/views/record-history-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
-export const generateMetadata = createPageMetadata({ title: "customPages.nav.paths" });
+export const generateMetadata = createPageMetadata({ title: "utilities.nav.pagePaths" });
 
 /**
  * Trang chi tiết đường dẫn giữa + lịch sử thay đổi (Journal) qua slot `history`.
@@ -20,8 +20,8 @@ export default async function PagePathDetailPage({
       id={id}
       history={
         <RecordHistoryView
-          path={`${CUSTOM_PAGES_API_ENDPOINTS.paths}/${id}/history`}
-          fieldPrefix="customPages.paths.fields"
+          path={`${UTILITIES_API_ENDPOINTS.pagePaths}/${id}/history`}
+          fieldPrefix="utilities.customPages.paths.fields"
         />
       }
     />

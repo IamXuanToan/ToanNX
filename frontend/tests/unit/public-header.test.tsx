@@ -2,7 +2,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { PublicHeader } from "@/modules/home/components/public-header/public-header";
+import { PublicHeader } from "@/modules/home/components/public-header";
 
 let mockPathname = "/";
 
@@ -62,7 +62,7 @@ describe("PublicHeader", () => {
     render(<PublicHeader />);
 
     // 1. Logo
-    expect(screen.getByLabelText("TOANNX")).toBeTruthy();
+    expect(screen.getByLabelText("ToanNX")).toBeTruthy();
 
     // 2. LanguageSwitcher
     expect(screen.getByTestId("language-switcher")).toBeTruthy();

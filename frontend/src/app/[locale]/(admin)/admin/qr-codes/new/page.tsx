@@ -1,10 +1,13 @@
+import { QrCodeCreateView } from "@/modules/utilities/views/qr-code-create-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
-import { QrCodeEditor } from "../qr-code-editor";
+export const generateMetadata = createPageMetadata({ title: "utilities.qrCodes.create" });
 
-export const generateMetadata = createPageMetadata({ title: "qrCodes.create" });
-
-/** Trang tạo mã QR. */
+/**
+ * Trang tạo mã QR (module Tiện ích).
+ *
+ * @returns QrCodeCreateView.
+ */
 export default function QrCodeCreatePage() {
-  return <QrCodeEditor />;
+  return <QrCodeCreateView />;
 }

@@ -82,6 +82,35 @@ def app_exception_handler(exc: Exception, context: dict[str, Any]) -> Response:
     return CoreErrorResponse(ErrorCode.INTERNAL_ERROR, "Đã xảy ra lỗi hệ thống.", 500)
 
 
+def handler400(request: HttpRequest, exception: Exception | None = None) -> JsonResponse:
+    """Trả JSON 400 cho yêu cầu không hợp lệ ngoài DRF.
+
+    Args:
+        request: HTTP request.
+        exception: Ngoại lệ nếu có.
+
+    Returns:
+        JsonResponse 400.
+    """
+    return JsonResponse(build_error_body(ErrorCode.VALIDATION_ERROR, "Yêu cầu không hợp lệ."), status=400)
+
+
+def handler403(request: HttpRequest, exception: Exception | None = None) -> JsonResponse:
+    """Trả JSON 403 cho yêu cầu bị từ chối quyền ngoài DRF (ví dụ CSRF).
+
+    Args:
+        request: HTTP request.
+        exception: Ngoại lệ nếu có.
+
+    Returns:
+        JsonResponse 403.
+    """
+    return JsonResponse(
+        build_error_body(ErrorCode.PERMISSION_DENIED, "Bạn không có quyền thực hiện thao tác này."),
+        status=403,
+    )
+
+
 def handler404(request: HttpRequest, exception: Exception) -> JsonResponse:
     """Trả JSON 404 cho URL không tồn tại.
 

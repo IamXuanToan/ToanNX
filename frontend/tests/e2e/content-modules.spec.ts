@@ -6,11 +6,11 @@ test.describe("Nhóm Tiện ích", () => {
   test("các trang danh sách mở được, không lỗi", async ({ page }) => {
     await loginViaUi(page);
     const pages: Array<[string, string]> = [
-      ["/vi/quan-tri/link-rut-gon", "Link rút gọn"],
-      ["/vi/quan-tri/ma-qr", "Mã QR"],
-      ["/vi/quan-tri/trang", "Trang"],
-      ["/vi/quan-tri/duong-dan", "Đường dẫn giữa"],
-      ["/vi/quan-tri/nhat-ky", "Nhật ký thay đổi"],
+      ["/vi/quan-tri/tien-ich/link-rut-gon", "Link rút gọn"],
+      ["/vi/quan-tri/tien-ich/ma-qr", "Mã QR"],
+      ["/vi/quan-tri/tien-ich/trang", "Trang"],
+      ["/vi/quan-tri/tien-ich/duong-dan", "Đường dẫn giữa"],
+      ["/vi/quan-tri/he-thong/nhat-ky", "Nhật ký thay đổi"],
     ];
     for (const [url, title] of pages) {
       await page.goto(url);
@@ -21,12 +21,12 @@ test.describe("Nhóm Tiện ích", () => {
   test("link rút gọn mở trang trung gian trước URL đích", async ({ page }) => {
     const slug = `e2e-${Date.now()}`;
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/link-rut-gon/tao-moi");
+    await page.goto("/vi/quan-tri/tien-ich/link-rut-gon/tao-moi");
     await page.getByLabel("Tên", { exact: true }).fill(`Link ${slug}`);
     await page.getByLabel("Slug", { exact: true }).fill(slug);
     await page.getByRole("textbox", { name: "URL đích" }).fill("https://example.com/e2e");
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/link-rut-gon\/[0-9a-f-]{36}$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/tien-ich\/link-rut-gon\/[0-9a-f-]{36}$/);
 
     const response = await page.request.get(`/s/${slug}`, { maxRedirects: 0 });
     expect(response.status()).toBe(200);
@@ -53,7 +53,7 @@ test.describe("Nhóm Tiện ích", () => {
 
   test("UUID và mật khẩu trên trang trung gian", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/link-rut-gon/tao-moi");
+    await page.goto("/vi/quan-tri/tien-ich/link-rut-gon/tao-moi");
     await page.getByLabel("Tên", { exact: true }).fill("Link có mật khẩu");
     await page.getByRole("button", { name: "Tạo UUID" }).click();
     const slug = await page.getByLabel("Slug", { exact: true }).inputValue();
@@ -61,7 +61,7 @@ test.describe("Nhóm Tiện ích", () => {
     await page.getByRole("textbox", { name: "URL đích" }).fill("https://example.com/protected");
     await page.getByLabel("Mật khẩu", { exact: true }).fill("easy-pass");
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/link-rut-gon\/[0-9a-f-]{36}$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/tien-ich\/link-rut-gon\/[0-9a-f-]{36}$/);
 
     await page.goto(`/s/${slug}`);
     await expect(page.getByText("https://example.com/protected")).toHaveCount(0);
@@ -78,14 +78,14 @@ test.describe("Nhóm Tiện ích", () => {
     const slug = `e2e-auto-${Date.now()}`;
     const destination = "https://example.com/shortlink-auto";
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/link-rut-gon/tao-moi");
+    await page.goto("/vi/quan-tri/tien-ich/link-rut-gon/tao-moi");
     await page.getByLabel("Tên", { exact: true }).fill("Link tự mở");
     await page.getByLabel("Slug", { exact: true }).fill(slug);
     await page.getByRole("textbox", { name: "URL đích" }).fill(destination);
     await page.getByRole("radio", { name: /Tự chuyển sau một khoảng chờ/ }).click();
     await page.getByLabel("Tự chuyển sau (giây)").fill("2");
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/link-rut-gon\/[0-9a-f-]{36}$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/tien-ich\/link-rut-gon\/[0-9a-f-]{36}$/);
 
     await page.route(destination, (route) => route.fulfill({ status: 200, body: "Đã tới đích" }));
     await page.goto(`/s/${slug}`);
@@ -96,16 +96,16 @@ test.describe("Nhóm Tiện ích", () => {
   test("link hết hạn hiển thị thông báo tại URL ngắn", async ({ page }) => {
     const slug = `e2e-expired-${Date.now()}`;
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/link-rut-gon/tao-moi");
+    await page.goto("/vi/quan-tri/tien-ich/link-rut-gon/tao-moi");
     await page.getByLabel("Tên", { exact: true }).fill("Link hết hạn");
     await page.getByLabel("Slug", { exact: true }).fill(slug);
     await page.getByRole("textbox", { name: "URL đích" }).fill("https://example.com/expired");
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/link-rut-gon\/[0-9a-f-]{36}$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/tien-ich\/link-rut-gon\/[0-9a-f-]{36}$/);
     const id = new URL(page.url()).pathname.split("/").pop();
-    const csrf = await page.request.get("/api/v1/auth/csrf");
+    const csrf = await page.request.get("/api/v1/system/auth/csrf");
     const token = (await csrf.json()).data.csrf_token as string;
-    const update = await page.request.patch(`/api/v1/short_links/links/${id}`, {
+    const update = await page.request.patch(`/api/v1/utilities/short-links/${id}`, {
       data: { expires_at: new Date(Date.now() + 3000).toISOString() },
       headers: { "X-CSRFToken": token },
     });
@@ -119,24 +119,26 @@ test.describe("Nhóm Tiện ích", () => {
   test("nhật ký: sửa link hiện field cũ → mới, xem chi tiết từng giá trị", async ({ page }) => {
     const slug = `e2e-journal-${Date.now()}`;
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/link-rut-gon/tao-moi");
+    await page.goto("/vi/quan-tri/tien-ich/link-rut-gon/tao-moi");
     await page.getByLabel("Tên", { exact: true }).fill("Tên cũ");
     await page.getByLabel("Slug", { exact: true }).fill(slug);
     await page.getByRole("textbox", { name: "URL đích" }).fill("https://example.com/journal");
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/link-rut-gon\/[0-9a-f-]{36}$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/tien-ich\/link-rut-gon\/[0-9a-f-]{36}$/);
+    // Trang chi tiết mặc định chỉ xem: bấm Sửa để mở form.
+    await page.getByRole("button", { name: "Sửa", exact: true }).click();
     await page.getByLabel("Tên", { exact: true }).fill("Tên mới");
     await page.getByRole("button", { name: "Lưu", exact: true }).click();
     await expect(page.getByText("Tên mới").first()).toBeVisible();
 
     const id = new URL(page.url()).pathname.split("/").pop() ?? "";
-    await page.goto(`/vi/quan-tri/nhat-ky?search=${id}`);
+    await page.goto(`/vi/quan-tri/he-thong/nhat-ky?search=${id}`);
     const row = page.getByRole("row").filter({ hasText: "Tên cũ" }).filter({ hasText: "Tên mới" });
     await expect(row).toContainText("Tên cũ");
     await expect(row).toContainText("Tên mới");
     await row.getByRole("button", { name: "Xem chi tiết" }).click();
 
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/nhat-ky\/[0-9a-f-]{36}$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/nhat-ky\/[0-9a-f-]{36}$/);
     await expect(page.getByRole("heading", { level: 1, name: "Chi tiết thay đổi" })).toBeVisible();
     const change = page.getByRole("row").filter({ hasText: "name" });
     await expect(change).toContainText("Tên cũ");

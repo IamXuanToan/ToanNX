@@ -15,7 +15,7 @@ step "2. Backend lint + type check (ruff check, mypy)"
 uv run ruff check .
 uv run mypy .
 step "3. Backend tests (pytest, PostgreSQL test database)"
-uv run pytest -q
+uv run pytest --reuse-db -q
 
 cd "$ROOT/frontend"
 step "4. Frontend lint (eslint + prettier check)"

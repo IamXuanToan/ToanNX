@@ -8,7 +8,7 @@ class PermissionDefinition:
     """Quyền `module.resource.action` kèm tên và mô tả công dụng.
 
     Attributes:
-        code: Mã quyền, ví dụ `account.user.read`.
+        code: Mã quyền, ví dụ `system.user.read`.
         name: Tên ngắn hiển thị trên UI.
         description: Quyền này cho phép làm gì (đọc là hiểu, không cần mở code).
     """

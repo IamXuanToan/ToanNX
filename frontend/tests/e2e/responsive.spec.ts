@@ -49,7 +49,7 @@ test.describe("Responsive", () => {
     await expect(page.getByTestId("module-launcher")).toBeVisible();
     await expectNoHorizontalScroll(page);
     await openModule(page, "Hệ thống");
-    await expect(page).toHaveURL(/\/vi\/quan-tri\/nguoi-dung$/);
+    await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/nguoi-dung$/);
     await expectNoHorizontalScroll(page);
     await expect(page.getByRole("dialog")).toHaveCount(0); // drawer sidebar đang đóng
     await page.getByRole("button", { name: /toggle sidebar/i }).click();
@@ -60,7 +60,7 @@ test.describe("Responsive", () => {
 
   test("bảng người dùng trên mobile: mỗi dòng một card, không tràn ngang", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     const table = page.getByRole("table");
     // Đợi dòng dữ liệu thật (dòng khung chờ không có link).
     await expect(table.getByRole("link").first()).toBeVisible();

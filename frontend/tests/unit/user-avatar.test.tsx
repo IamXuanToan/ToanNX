@@ -6,7 +6,7 @@ import {
   getUserDisplayName,
   getUserInitials,
   UserAvatar,
-} from "@/shares/components/common/user-avatar/user-avatar";
+} from "@/shares/components/common/user-avatar";
 
 describe("user-avatar helpers", () => {
   it("lấy displayName theo thứ tự: fullName > lastName + firstName > username > email", () => {

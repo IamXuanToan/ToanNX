@@ -14,9 +14,11 @@ FRONTEND_MESSAGES = Path(settings.BASE_DIR).parent / "frontend" / "src" / "messa
 
 def _all_codes() -> list[str]:
     codes = [item.value for item in ErrorCode]
-    modules_dir = Path(settings.BASE_DIR) / "app" / "modules"
-    for path in sorted(modules_dir.glob("*/constants/*_error_code.py")):
-        module = import_module(f"app.modules.{path.parent.parent.name}.constants.{path.stem}")
+    apps_dir = Path(settings.BASE_DIR) / "app"
+    for path in sorted(apps_dir.glob("*/constants/*_error_code.py")):
+        if path.parent.parent.name == "core":
+            continue
+        module = import_module(f"app.{path.parent.parent.name}.constants.{path.stem}")
         for value in vars(module).values():
             if isinstance(value, type) and issubclass(value, StrEnum) and value is not StrEnum:
                 codes += [item.value for item in value]

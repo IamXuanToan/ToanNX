@@ -1,25 +1,30 @@
 [project]
 name = "toannx-backend"
 version = "0.1.0"
-description = "TOANNX backend — Django + Django REST Framework"
+description = "ToanNX backend — Django + Django REST Framework"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "anyascii>=0.3.3",
     "argon2-cffi>=25.1.0",
+    "boto3>=1.35.0",
+    "cryptography>=50.0.2",
     "defusedxml>=0.7.1",
     "django>=6.0,<6.1",
     "django-cors-headers>=4.9.0",
     "django-environ>=0.14.0",
     "django-filter>=26.2",
+    "django-storages[s3]>=1.14.4",
     "djangorestframework>=3.18.3",
     "drf-spectacular>=0.30.0",
+    "google-auth>=2.63.0",
     "napas-qr-python>=0.2.0,<0.3.0",
     "pillow>=12.0,<13.0",
     "psycopg[binary]>=3.3.9",
     "pyjwt>=2.15.1",
+    "regex>=2024.11.6,<2026.11",
+    "requests>=2.34.2",
     "segno>=1.6.6",
-    "sentry-sdk[django]>=2.75.0",
 ]
 
 [dependency-groups]
@@ -64,7 +69,12 @@ warn_unused_ignores = true
 exclude = ["migrations/", "tests/", "conftest.py", "manage.py"]
 
 [[tool.mypy.overrides]]
-module = ["environ.*", "factory.*"]
+# `regex` chưa có stub kiểu đi kèm.
+module = ["regex"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["environ.*", "factory.*", "storages.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
@@ -81,4 +91,4 @@ testpaths = ["app"]
 addopts = "-ra --strict-markers"
 
 [tool.vercel.scripts]
-build = 'DATABASE_URL="$DATABASE_URL_UNPOOLED" python manage.py migrate --noinput'
+build = 'DATABASE_URL="$DATABASE_URL" python manage.py migrate --noinput'

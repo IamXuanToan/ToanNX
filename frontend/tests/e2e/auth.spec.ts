@@ -29,10 +29,10 @@ test.describe("Xác thực", () => {
     const admin = await browser.newContext({ baseURL });
     const adminPage = await admin.newPage();
     await loginViaUi(adminPage);
-    const csrf = await adminPage.request.get("/api/v1/auth/csrf");
+    const csrf = await adminPage.request.get("/api/v1/system/auth/csrf");
     const token = (await csrf.json()).data.csrf_token as string;
     const username = `e2e_user_${Date.now()}`;
-    const created = await adminPage.request.post("/api/v1/account/users", {
+    const created = await adminPage.request.post("/api/v1/system/users", {
       data: {
         email: `${username}@toannx.local`,
         username,
@@ -51,7 +51,7 @@ test.describe("Xác thực", () => {
       );
       await loginViaUi(page, { email: username, password: "E2e-Temp-Passw0rd!" });
     } finally {
-      await adminPage.request.delete(`/api/v1/account/users/${userId}`, {
+      await adminPage.request.delete(`/api/v1/system/users/${userId}`, {
         headers: { "X-CSRFToken": token },
       });
       await admin.close();
@@ -82,7 +82,7 @@ test.describe("Xác thực", () => {
     await context.clearCookies();
     await context.addCookies(remaining);
     const refresh = page.waitForResponse((response) =>
-      response.url().endsWith("/api/v1/auth/refresh"),
+      response.url().endsWith("/api/v1/system/auth/refresh"),
     );
     await openModule(page, "Hệ thống");
     expect((await refresh).status()).toBe(200);

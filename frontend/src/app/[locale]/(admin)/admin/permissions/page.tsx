@@ -1,4 +1,4 @@
-import { PermissionListView } from "@/modules/iam/views/permission-list-view";
+import { PermissionListView } from "@/modules/system/views/permission-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "common.nav.permissions" });

@@ -6,7 +6,7 @@ Business logic quan trọng nên nhận `actor` tường minh; context chỉ là
 dự phòng cho audit và logging.
 """
 
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Any
@@ -17,7 +17,7 @@ _current_request: ContextVar[Any | None] = ContextVar("current_request", default
 
 
 @contextmanager
-def request_context(request_id: str, request: Any | None = None) -> Iterator[None]:
+def request_context(request_id: str, request: Any | None = None) -> Generator[None]:
     """Mở phạm vi ngữ cảnh request; tự reset khi kết thúc kể cả khi có lỗi.
 
     Args:

@@ -1,0 +1,354 @@
+{
+  "module": {
+    "name": "Finance",
+    "description": "Income, platform tax withholding, invoices, reports."
+  },
+  "nav": {
+    "dashboard": "Overview",
+    "incomes": "Income",
+    "invoices": "Invoices",
+    "platforms": "Platforms",
+    "rules": "Matching rules",
+    "reports": "Reports",
+    "sepay": "SePay connection"
+  },
+  "validation": {
+    "required": "Required.",
+    "slug": "Lowercase letters, numbers and hyphens only.",
+    "positive": "Enter a valid number.",
+    "attachments": "At least one file is required."
+  },
+  "taxStatus": {
+    "WITHHELD": "Withheld",
+    "NOT_WITHHELD": "Not withheld",
+    "NO_RATE": "No tax setting",
+    "UNCLASSIFIED": "Unclassified",
+    "PENDING": "Amount pending"
+  },
+  "history": {
+    "fields": {
+      "receivedAt": "Received at",
+      "platform": "Platform",
+      "currency": "Currency",
+      "originalAmount": "Original amount",
+      "exchangeRate": "Exchange rate",
+      "amount": "Received (VND)",
+      "taxWithheld": "Withheld",
+      "taxRate": "Withholding %",
+      "taxAmount": "Tax amount",
+      "content": "Content",
+      "note": "Note",
+      "docType": "Type",
+      "number": "Number",
+      "issuer": "Issuer",
+      "issuedOn": "Issued on",
+      "name": "Name",
+      "code": "Code",
+      "defaultCurrency": "Default currency",
+      "isActive": "Active",
+      "pattern": "Regex",
+      "priority": "Priority"
+    }
+  },
+  "platforms": {
+    "title": "Platforms",
+    "create": "Add platform",
+    "searchPlaceholder": "Search by name, code...",
+    "empty": "No platforms yet.",
+    "seed": "Create sample platforms",
+    "withheld": "Withheld {rate}%",
+    "notWithheld": "Not withheld",
+    "noRate": "No tax setting",
+    "sections": {
+      "info": "Details"
+    },
+    "fields": {
+      "name": "Name",
+      "code": "Code",
+      "defaultCurrency": "Default currency",
+      "defaultCurrencyHint": "Prefilled when adding income manually.",
+      "note": "Note",
+      "isActive": "Active",
+      "currentTax": "Current withholding"
+    }
+  },
+  "taxRates": {
+    "title": "Tax withholding history",
+    "add": "Add entry",
+    "affected": "{count} transactions use a rate different from the new history.",
+    "keep": "Keep",
+    "apply": "Update transactions",
+    "from": "From {date}",
+    "withheld": "Withheld {rate}%",
+    "notWithheld": "Not withheld",
+    "empty": "No entries yet: transactions will show “no tax setting”.",
+    "fields": {
+      "effectiveFrom": "Effective from",
+      "taxWithheld": "Platform withholds tax",
+      "rate": "Rate (%)",
+      "note": "Note"
+    },
+    "edit": "Edit",
+    "remove": "Delete"
+  },
+  "rules": {
+    "title": "Matching rules",
+    "create": "Add rule",
+    "searchPlaceholder": "Search by name, regex...",
+    "empty": "No rules yet.",
+    "sections": {
+      "info": "Details"
+    },
+    "fields": {
+      "name": "Name",
+      "platform": "Platform",
+      "pattern": "Regex",
+      "patternHint": "Matched against unaccented, upper-cased content. Example: FACEBOOK|META\\s*PLATFORMS",
+      "priority": "Priority",
+      "priorityHint": "Higher wins; ties go to the older rule.",
+      "isActive": "Enabled"
+    },
+    "tester": {
+      "title": "Try content",
+      "placeholder": "Paste a transfer description...",
+      "run": "Try",
+      "normalized": "Normalized",
+      "matched": "Matched “{text}”",
+      "notMatched": "No match"
+    }
+  },
+  "incomes": {
+    "title": "Income",
+    "create": "Add income",
+    "detailTitle": "Income on {date}",
+    "searchPlaceholder": "Search content, reference...",
+    "empty": "No transactions yet.",
+    "sections": {
+      "preview": "Conversion and withholding",
+      "tax": "Tax withholding",
+      "info": "Details"
+    },
+    "fields": {
+      "exchangeRate": "Exchange rate",
+      "amount": "Received (VND)",
+      "taxRate": "Withholding %",
+      "taxAmount": "Tax withheld",
+      "taxAmountHint": "Leave empty to compute from %.",
+      "grossAmount": "Before withholding",
+      "isTaxManual": "Enter withholding manually",
+      "isTaxManualHint": "From a certificate; not recalculated when history changes.",
+      "taxWithheld": "Tax was withheld",
+      "receivedAt": "Received at",
+      "platform": "Platform",
+      "platformHint": "Leave empty to detect by rules.",
+      "currency": "Currency",
+      "originalAmount": "Original amount",
+      "originalAmountBank": "Original foreign amount (optional)",
+      "rateSource": "Exchange rate source",
+      "content": "Content",
+      "note": "Note",
+      "noteHint": "For reference, e.g. “Per Facebook December statement”.",
+      "taxStatus": "Withholding",
+      "source": "Source"
+    },
+    "rateUnavailable": "No rate for this day, enter it manually.",
+    "rateDate": "on {date}",
+    "notWithheld": "Not withheld",
+    "noTaxEntry": "The platform has no tax entry for this date.",
+    "autoDetect": "Auto-detect",
+    "rateSource": {
+      "API": "Automatic (Vietcombank)",
+      "MANUAL": "Manual",
+      "BASE": "VND",
+      "BANK_ACTUAL": "From bank amount"
+    },
+    "sepayInfo": "From SePay · {bank} …{last4} · ref {reference}",
+    "actions": {
+      "refreshRate": "Refresh rate",
+      "recalculate": "Recalculate from platform",
+      "reclassify": "Re-detect platform",
+      "export": "Export CSV"
+    },
+    "rateTooltip": "Rate {rate} · {source}",
+    "unknownAmount": "Unknown amount",
+    "manualTax": "Manual",
+    "hasInvoice": "Has document",
+    "source": {
+      "MANUAL": "Manual",
+      "SEPAY": "SePay"
+    },
+    "filters": {
+      "review": "Review",
+      "needsReview": "Needs review",
+      "invoice": "Document",
+      "withInvoice": "With document",
+      "withoutInvoice": "Without document"
+    }
+  },
+  "invoices": {
+    "title": "Invoices / documents",
+    "create": "Add document",
+    "searchPlaceholder": "Search number, issuer...",
+    "empty": "No documents yet.",
+    "removeFile": "Remove file",
+    "addFiles": "Choose files",
+    "noIncomes": "No matching transactions (filtered by platform and issue year).",
+    "vndSummary": "In VND: {amount} ₫ · tax {tax} ₫",
+    "sections": {
+      "files": "Files",
+      "reconciliation": "Reconciliation",
+      "info": "Details",
+      "amount": "Amount",
+      "incomes": "Related transactions"
+    },
+    "reconciliation": {
+      "incomeCount": "Linked transactions",
+      "gross": "Gross total",
+      "tax": "Total tax withheld",
+      "grossDifference": "Gross difference",
+      "taxDifference": "Tax difference"
+    },
+    "fields": {
+      "docType": "Type",
+      "number": "Number",
+      "issuer": "Issuer",
+      "issuerTaxCode": "Issuer tax code",
+      "issuedOn": "Issued on",
+      "platform": "Platform",
+      "periodFrom": "Period from",
+      "periodTo": "Period to",
+      "currency": "Currency",
+      "originalAmount": "Total",
+      "originalTaxAmount": "Tax withheld",
+      "rateSource": "Exchange rate source",
+      "exchangeRate": "Exchange rate",
+      "note": "Note",
+      "links": "Transactions · files"
+    },
+    "docType": {
+      "WITHHOLDING_CERTIFICATE": "Withholding certificate",
+      "INVOICE": "Invoice",
+      "STATEMENT": "Statement",
+      "CONTRACT": "Contract",
+      "OTHER": "Other"
+    },
+    "rateSource": {
+      "API": "Automatic (Vietcombank)",
+      "MANUAL": "Manual"
+    }
+  },
+  "dashboard": {
+    "title": "Finance overview",
+    "unclassified": "Unclassified",
+    "previousYear": "Previous year",
+    "average": "Average per transaction",
+    "growth": "Change",
+    "kpi": {
+      "total": "Total income",
+      "withheld": "Tax withheld income",
+      "notWithheld": "Not withheld income",
+      "tax": "Tax withheld",
+      "count": "Transactions",
+      "noPrevious": "No previous year data",
+      "change": "{percent}% vs last year"
+    },
+    "charts": {
+      "total": "Total income by month",
+      "withheld": "Withheld income by month",
+      "notWithheld": "Not withheld income by month",
+      "cumulative": "Year to date",
+      "count": "Transactions and average",
+      "tax": "Tax withheld by month",
+      "platforms": "Income by platform",
+      "growth": "Month-over-month change",
+      "platformShare": "Platform share",
+      "currencyShare": "Currency share (in VND)"
+    }
+  },
+  "report": {
+    "title": "Income report",
+    "year": "Year",
+    "month": "Month",
+    "allMonths": "Whole year",
+    "total": "Total income",
+    "count": "{count} transactions",
+    "countShort": "Count",
+    "withheld": "Withheld",
+    "tax": "Tax withheld",
+    "notWithheld": "Not withheld",
+    "unclassified": "Unclassified",
+    "needsReview": "Needs review",
+    "byPlatform": "By platform",
+    "platform": "Platform",
+    "rate": "Withholding",
+    "noWithholding": "None",
+    "byMonth": "By month",
+    "byCurrency": "By currency",
+    "currency": "Currency",
+    "original": "Original total"
+  },
+  "sepay": {
+    "title": "SePay connection",
+    "testOk": "Connected: {count} linked accounts.",
+    "copied": "Copied",
+    "copy": "Copy",
+    "connected": "Connected (…{last4})",
+    "notConnected": "Not connected",
+    "active": "Receive webhooks",
+    "remove": "Remove connection",
+    "lastError": "Last error: {code}",
+    "lastWebhook": "Last valid webhook: {at}",
+    "token": {
+      "title": "SePay API token",
+      "hint": "Create it at my.sepay.vn → API Access ({env}). Stored encrypted; only the last 4 characters are shown.",
+      "placeholder": "Paste token...",
+      "save": "Save and verify",
+      "test": "Test"
+    },
+    "webhook": {
+      "title": "Your webhook",
+      "url": "Webhook URL",
+      "secret": "Secret (HMAC-SHA256)",
+      "rotate": "Rotate secret",
+      "steps": {
+        "1": "my.sepay.vn → Webhooks → Add webhook, paste the URL above.",
+        "2": "Event: Money in only; turn off “Use for payment verification”.",
+        "3": "Authentication HMAC-SHA256, Secret Key = the secret above.",
+        "4": "Turn on “Retry when the server returns an error”."
+      }
+    },
+    "import": {
+      "title": "Fetch transactions manually",
+      "from": "From",
+      "to": "To",
+      "preview": "Preview",
+      "selected": "{count} selected",
+      "submit": "Import selected",
+      "done": "Created {created}, updated {updated}, skipped {skipped}.",
+      "empty": "No incoming transactions in this range.",
+      "columns": {
+        "status": "Status",
+        "time": "Time",
+        "amount": "Amount",
+        "content": "Content",
+        "platform": "Expected platform"
+      },
+      "status": {
+        "NEW": "New",
+        "EXISTS": "Exists",
+        "CHANGED": "Changed",
+        "INVALID": "Invalid amount"
+      }
+    }
+  },
+  "notifications": {
+    "incomeReceived": "Received {amount} ₫ · {platform}",
+    "incomeNeedsReview": "Income needs review · {platform}",
+    "webhookAuthFailed": "SePay webhook rejected ({reason})"
+  },
+  "navSections": {
+    "overview": "Overview",
+    "transactions": "Transactions",
+    "configuration": "Configuration"
+  }
+}

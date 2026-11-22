@@ -21,7 +21,7 @@ export function readCsrfToken(): string | null {
 let pending: Promise<string | null> | null = null;
 
 /**
- * Đảm bảo có CSRF token; nếu chưa có hoặc `force` thì gọi `/auth/csrf` (single-flight).
+ * Đảm bảo có CSRF token; nếu chưa có hoặc `force` thì gọi `/system/auth/csrf` (single-flight).
  *
  * @param force - Bắt buộc lấy token mới (sau khi CSRF bị từ chối).
  * @returns CSRF token.

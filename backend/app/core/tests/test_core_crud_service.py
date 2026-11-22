@@ -6,12 +6,12 @@ import pytest
 
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
-from app.modules.account.tests.factories.user_factory import UserFactory
-from app.modules.iam.services.role_service import RoleService
-from app.modules.iam.tests.helpers.permission_helper import grant
-from app.modules.short_links.models.short_link import ShortLink
-from app.modules.short_links.permissions.short_links_permission import ShortLinksPermission as P
-from app.modules.short_links.services.short_link_service import ShortLinkService
+from app.system.services.role_service import RoleService
+from app.system.tests.factories.user_factory import UserFactory
+from app.system.tests.helpers.permission_helper import grant
+from app.utilities.models.short_link import ShortLink
+from app.utilities.permissions.short_link_permission import ShortLinkPermission as P
+from app.utilities.services.short_link_service import ShortLinkService
 
 pytestmark = pytest.mark.django_db
 

@@ -1,0 +1,354 @@
+{
+  "module": {
+    "name": "Tài chính",
+    "description": "Thu nhập, khấu trừ thuế theo nền tảng, hóa đơn, báo cáo."
+  },
+  "nav": {
+    "dashboard": "Tổng quan",
+    "incomes": "Thu nhập",
+    "invoices": "Hóa đơn",
+    "platforms": "Nền tảng",
+    "rules": "Quy tắc nhận diện",
+    "reports": "Báo cáo",
+    "sepay": "Kết nối SePay"
+  },
+  "validation": {
+    "required": "Bắt buộc nhập.",
+    "slug": "Chỉ chữ thường, số và dấu gạch ngang.",
+    "positive": "Nhập số hợp lệ.",
+    "attachments": "Cần ít nhất một file."
+  },
+  "taxStatus": {
+    "WITHHELD": "Đã khấu trừ",
+    "NOT_WITHHELD": "Chưa khấu trừ",
+    "NO_RATE": "Chưa cấu hình thuế",
+    "UNCLASSIFIED": "Chưa nhận diện",
+    "PENDING": "Chờ số tiền"
+  },
+  "history": {
+    "fields": {
+      "receivedAt": "Thời điểm nhận",
+      "platform": "Nền tảng",
+      "currency": "Tiền tệ",
+      "originalAmount": "Số gốc",
+      "exchangeRate": "Tỷ giá",
+      "amount": "Thực nhận (VNĐ)",
+      "taxWithheld": "Đã khấu trừ",
+      "taxRate": "% khấu trừ",
+      "taxAmount": "Tiền thuế",
+      "content": "Nội dung",
+      "note": "Ghi chú",
+      "docType": "Loại",
+      "number": "Số",
+      "issuer": "Bên phát hành",
+      "issuedOn": "Ngày lập",
+      "name": "Tên",
+      "code": "Mã",
+      "defaultCurrency": "Tiền tệ mặc định",
+      "isActive": "Đang dùng",
+      "pattern": "Regex",
+      "priority": "Ưu tiên"
+    }
+  },
+  "platforms": {
+    "title": "Nền tảng",
+    "create": "Thêm nền tảng",
+    "searchPlaceholder": "Tìm theo tên, mã...",
+    "empty": "Chưa có nền tảng nào.",
+    "seed": "Tạo nền tảng mẫu",
+    "withheld": "Khấu trừ {rate}%",
+    "notWithheld": "Không khấu trừ",
+    "noRate": "Chưa cấu hình thuế",
+    "sections": {
+      "info": "Thông tin"
+    },
+    "fields": {
+      "name": "Tên",
+      "code": "Mã",
+      "defaultCurrency": "Tiền tệ mặc định",
+      "defaultCurrencyHint": "Điền sẵn khi nhập tay thu nhập.",
+      "note": "Ghi chú",
+      "isActive": "Đang dùng",
+      "currentTax": "Khấu trừ hiện tại"
+    }
+  },
+  "taxRates": {
+    "title": "Lịch sử khấu trừ thuế",
+    "add": "Thêm mốc",
+    "affected": "{count} giao dịch đang dùng % khác với lịch sử mới.",
+    "keep": "Giữ nguyên",
+    "apply": "Cập nhật các giao dịch",
+    "from": "Từ {date}",
+    "withheld": "Khấu trừ {rate}%",
+    "notWithheld": "Không khấu trừ",
+    "empty": "Chưa có mốc nào: giao dịch của nền tảng sẽ báo “chưa cấu hình thuế”.",
+    "fields": {
+      "effectiveFrom": "Áp dụng từ",
+      "taxWithheld": "Nền tảng khấu trừ thuế",
+      "rate": "Tỷ lệ (%)",
+      "note": "Ghi chú"
+    },
+    "edit": "Sửa",
+    "remove": "Xóa"
+  },
+  "rules": {
+    "title": "Quy tắc nhận diện",
+    "create": "Thêm quy tắc",
+    "searchPlaceholder": "Tìm theo tên, regex...",
+    "empty": "Chưa có quy tắc nào.",
+    "sections": {
+      "info": "Thông tin"
+    },
+    "fields": {
+      "name": "Tên",
+      "platform": "Nền tảng",
+      "pattern": "Regex",
+      "patternHint": "So trên nội dung đã bỏ dấu, viết hoa. Ví dụ: FACEBOOK|META\\s*PLATFORMS",
+      "priority": "Ưu tiên",
+      "priorityHint": "Số lớn thắng; bằng nhau thì quy tắc tạo trước thắng.",
+      "isActive": "Đang bật"
+    },
+    "tester": {
+      "title": "Thử nội dung",
+      "placeholder": "Dán nội dung chuyển khoản...",
+      "run": "Thử",
+      "normalized": "Đã chuẩn hóa",
+      "matched": "Khớp “{text}”",
+      "notMatched": "Không khớp"
+    }
+  },
+  "incomes": {
+    "title": "Thu nhập",
+    "create": "Nhập tay thu nhập",
+    "detailTitle": "Thu nhập ngày {date}",
+    "searchPlaceholder": "Tìm theo nội dung, mã giao dịch...",
+    "empty": "Chưa có giao dịch nào.",
+    "sections": {
+      "preview": "Quy đổi và khấu trừ",
+      "tax": "Khấu trừ thuế",
+      "info": "Thông tin"
+    },
+    "fields": {
+      "exchangeRate": "Tỷ giá",
+      "amount": "Thực nhận (VNĐ)",
+      "taxRate": "% khấu trừ",
+      "taxAmount": "Tiền thuế bị khấu trừ",
+      "taxAmountHint": "Để trống để tính theo %.",
+      "grossAmount": "Trước khấu trừ",
+      "isTaxManual": "Nhập khấu trừ tay",
+      "isTaxManualHint": "Theo chứng từ; không tự tính lại khi đổi lịch sử thuế.",
+      "taxWithheld": "Đã bị khấu trừ thuế",
+      "receivedAt": "Thời điểm nhận",
+      "platform": "Nền tảng",
+      "platformHint": "Để trống thì tự nhận diện theo quy tắc.",
+      "currency": "Tiền tệ",
+      "originalAmount": "Số tiền gốc",
+      "originalAmountBank": "Số ngoại tệ gốc (tùy chọn)",
+      "rateSource": "Cách lấy tỷ giá",
+      "content": "Nội dung",
+      "note": "Ghi chú",
+      "noteHint": "Tham khảo, ví dụ “Theo sao kê Facebook tháng 12”.",
+      "taxStatus": "Khấu trừ",
+      "source": "Nguồn"
+    },
+    "rateUnavailable": "Không lấy được tỷ giá ngày này, hãy nhập tay.",
+    "rateDate": "ngày {date}",
+    "notWithheld": "Không khấu trừ",
+    "noTaxEntry": "Nền tảng chưa có mốc thuế cho ngày này.",
+    "autoDetect": "Tự nhận diện",
+    "rateSource": {
+      "API": "Tự động (Vietcombank)",
+      "MANUAL": "Nhập tay",
+      "BASE": "VNĐ",
+      "BANK_ACTUAL": "Theo số ngân hàng đã trả"
+    },
+    "sepayInfo": "Từ SePay · {bank} …{last4} · mã {reference}",
+    "actions": {
+      "refreshRate": "Lấy lại tỷ giá",
+      "recalculate": "Tính lại theo nền tảng",
+      "reclassify": "Nhận diện lại",
+      "export": "Xuất CSV"
+    },
+    "rateTooltip": "Tỷ giá {rate} · {source}",
+    "unknownAmount": "Không rõ số tiền",
+    "manualTax": "Đã sửa tay",
+    "hasInvoice": "Có chứng từ",
+    "source": {
+      "MANUAL": "Nhập tay",
+      "SEPAY": "SePay"
+    },
+    "filters": {
+      "review": "Xử lý",
+      "needsReview": "Cần xử lý",
+      "invoice": "Chứng từ",
+      "withInvoice": "Có chứng từ",
+      "withoutInvoice": "Chưa có chứng từ"
+    }
+  },
+  "invoices": {
+    "title": "Hóa đơn / chứng từ",
+    "create": "Thêm chứng từ",
+    "searchPlaceholder": "Tìm theo số, bên phát hành...",
+    "empty": "Chưa có chứng từ nào.",
+    "removeFile": "Bỏ file",
+    "addFiles": "Chọn file",
+    "noIncomes": "Không có giao dịch phù hợp (lọc theo nền tảng và năm của ngày lập).",
+    "vndSummary": "Quy VNĐ: {amount} ₫ · thuế {tax} ₫",
+    "sections": {
+      "files": "File chứng từ",
+      "reconciliation": "Đối chiếu",
+      "info": "Thông tin",
+      "amount": "Số tiền",
+      "incomes": "Giao dịch liên quan"
+    },
+    "reconciliation": {
+      "incomeCount": "Số giao dịch gắn",
+      "gross": "Tổng trước khấu trừ",
+      "tax": "Tổng thuế bị khấu trừ",
+      "grossDifference": "Chênh lệch tổng",
+      "taxDifference": "Chênh lệch thuế"
+    },
+    "fields": {
+      "docType": "Loại",
+      "number": "Số",
+      "issuer": "Bên phát hành",
+      "issuerTaxCode": "Mã số thuế bên phát hành",
+      "issuedOn": "Ngày lập",
+      "platform": "Nền tảng",
+      "periodFrom": "Kỳ từ",
+      "periodTo": "Kỳ đến",
+      "currency": "Tiền tệ",
+      "originalAmount": "Tổng tiền",
+      "originalTaxAmount": "Tiền thuế đã khấu trừ",
+      "rateSource": "Cách lấy tỷ giá",
+      "exchangeRate": "Tỷ giá",
+      "note": "Ghi chú",
+      "links": "Giao dịch · file"
+    },
+    "docType": {
+      "WITHHOLDING_CERTIFICATE": "Chứng từ khấu trừ thuế",
+      "INVOICE": "Hóa đơn / invoice",
+      "STATEMENT": "Sao kê / bảng thanh toán",
+      "CONTRACT": "Hợp đồng",
+      "OTHER": "Khác"
+    },
+    "rateSource": {
+      "API": "Tự động (Vietcombank)",
+      "MANUAL": "Nhập tay"
+    }
+  },
+  "dashboard": {
+    "title": "Tổng quan tài chính",
+    "unclassified": "Chưa nhận diện",
+    "previousYear": "Năm trước",
+    "average": "Trung bình mỗi giao dịch",
+    "growth": "Tăng/giảm",
+    "kpi": {
+      "total": "Tổng thu nhập",
+      "withheld": "Đã khấu trừ thuế",
+      "notWithheld": "Chưa khấu trừ thuế",
+      "tax": "Tiền thuế bị khấu trừ",
+      "count": "Số giao dịch",
+      "noPrevious": "Năm trước chưa có dữ liệu",
+      "change": "{percent}% so với cùng kỳ"
+    },
+    "charts": {
+      "total": "Tổng thu nhập theo tháng",
+      "withheld": "Thu nhập đã khấu trừ theo tháng",
+      "notWithheld": "Thu nhập chưa khấu trừ theo tháng",
+      "cumulative": "Lũy kế từ đầu năm",
+      "count": "Số giao dịch và trung bình",
+      "tax": "Tiền thuế bị khấu trừ theo tháng",
+      "platforms": "Thu nhập theo nền tảng",
+      "growth": "% tăng/giảm so với tháng trước",
+      "platformShare": "Tỷ trọng nền tảng",
+      "currencyShare": "Tỷ trọng tiền tệ (quy VNĐ)"
+    }
+  },
+  "report": {
+    "title": "Báo cáo thu nhập",
+    "year": "Năm",
+    "month": "Tháng",
+    "allMonths": "Cả năm",
+    "total": "Tổng thu nhập",
+    "count": "{count} giao dịch",
+    "countShort": "Số GD",
+    "withheld": "Đã khấu trừ thuế",
+    "tax": "Tiền thuế bị khấu trừ",
+    "notWithheld": "Chưa khấu trừ thuế",
+    "unclassified": "Chưa nhận diện",
+    "needsReview": "Cần xử lý",
+    "byPlatform": "Theo nền tảng",
+    "platform": "Nền tảng",
+    "rate": "Khấu trừ",
+    "noWithholding": "Không",
+    "byMonth": "Theo tháng",
+    "byCurrency": "Theo tiền tệ",
+    "currency": "Tiền tệ",
+    "original": "Tổng số gốc"
+  },
+  "sepay": {
+    "title": "Kết nối SePay",
+    "testOk": "Kết nối được: {count} tài khoản liên kết.",
+    "copied": "Đã sao chép",
+    "copy": "Sao chép",
+    "connected": "Đã kết nối (…{last4})",
+    "notConnected": "Chưa kết nối",
+    "active": "Nhận webhook",
+    "remove": "Xóa kết nối",
+    "lastError": "Lỗi gần nhất: {code}",
+    "lastWebhook": "Webhook hợp lệ gần nhất: {at}",
+    "token": {
+      "title": "Token API SePay",
+      "hint": "Tạo ở my.sepay.vn → API Access (môi trường {env}). Token được mã hóa, chỉ hiện 4 ký tự cuối.",
+      "placeholder": "Dán token...",
+      "save": "Lưu và kiểm tra",
+      "test": "Kiểm tra"
+    },
+    "webhook": {
+      "title": "Webhook riêng của bạn",
+      "url": "URL webhook",
+      "secret": "Secret (HMAC-SHA256)",
+      "rotate": "Tạo secret mới",
+      "steps": {
+        "1": "my.sepay.vn → Webhooks → Thêm webhook, dán URL ở trên.",
+        "2": "Sự kiện: Chỉ tiền vào; tắt “Dùng để xác thực thanh toán”.",
+        "3": "Xác thực HMAC-SHA256, Secret Key = secret ở trên.",
+        "4": "Bật “Tự động gửi lại khi server trả lỗi”."
+      }
+    },
+    "import": {
+      "title": "Lấy giao dịch thủ công",
+      "from": "Từ ngày",
+      "to": "Đến ngày",
+      "preview": "Xem trước",
+      "selected": "Đã chọn {count}",
+      "submit": "Nhập giao dịch đã chọn",
+      "done": "Tạo {created}, cập nhật {updated}, bỏ qua {skipped}.",
+      "empty": "Không có giao dịch tiền vào trong khoảng này.",
+      "columns": {
+        "status": "Trạng thái",
+        "time": "Thời điểm",
+        "amount": "Số tiền",
+        "content": "Nội dung",
+        "platform": "Nền tảng dự kiến"
+      },
+      "status": {
+        "NEW": "Mới",
+        "EXISTS": "Đã có",
+        "CHANGED": "Khác",
+        "INVALID": "Lỗi số tiền"
+      }
+    }
+  },
+  "notifications": {
+    "incomeReceived": "Tiền vào {amount} ₫ · {platform}",
+    "incomeNeedsReview": "Thu nhập cần xử lý · {platform}",
+    "webhookAuthFailed": "Webhook SePay bị từ chối ({reason})"
+  },
+  "navSections": {
+    "overview": "Tổng quan",
+    "transactions": "Giao dịch",
+    "configuration": "Cấu hình"
+  }
+}

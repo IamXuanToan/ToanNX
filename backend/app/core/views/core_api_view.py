@@ -32,7 +32,7 @@ from rest_framework.views import APIView
 from app.core.exceptions.authentication_error import AuthenticationError
 
 if TYPE_CHECKING:
-    from app.modules.account.models.user import User
+    from app.system.models.user import User
 
 
 class CoreApiView(APIView):

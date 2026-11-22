@@ -8,7 +8,7 @@ async function apiPost<T = unknown>(
   path: string,
   data: Record<string, unknown>,
 ): Promise<T> {
-  const csrf = await request.get("/api/v1/auth/csrf");
+  const csrf = await request.get("/api/v1/system/auth/csrf");
   const token = (await csrf.json()).data.csrf_token as string;
   const response = await request.post(path, { data, headers: { "X-CSRFToken": token } });
   expect(response.ok(), await response.text()).toBe(true);
@@ -18,7 +18,7 @@ async function apiPost<T = unknown>(
 
 /** Xóa dữ liệu kiểm thử do chính ca kiểm thử tạo. */
 async function apiDelete(request: APIRequestContext, path: string) {
-  const csrf = await request.get("/api/v1/auth/csrf");
+  const csrf = await request.get("/api/v1/system/auth/csrf");
   const token = (await csrf.json()).data.csrf_token as string;
   expect((await request.delete(path, { headers: { "X-CSRFToken": token } })).status()).toBe(204);
 }
@@ -30,13 +30,13 @@ test.describe("Quản trị Hệ thống", () => {
   }) => {
     await loginViaUi(page);
     const suffix = Date.now();
-    const role = await apiPost<{ id: string }>(page.request, "/api/v1/iam/roles", {
+    const role = await apiPost<{ id: string }>(page.request, "/api/v1/system/roles", {
       code: `E2E_SESSION_READER_${suffix}`,
       name: "Session reader",
     });
     const staff = await apiPost<{ id: string; email: string }>(
       page.request,
-      "/api/v1/account/users",
+      "/api/v1/system/users",
       {
         email: `e2e-session-reader-${suffix}@toannx.local`,
         username: `e2e-session-reader-${suffix}@toannx.local`.split("@")[0],
@@ -48,20 +48,20 @@ test.describe("Quản trị Hệ thống", () => {
     const context = await browser.newContext({ baseURL: new URL(page.url()).origin });
     try {
       const response = await page.request.get(
-        "/api/v1/iam/permissions?search=authentication.session.read",
+        "/api/v1/system/permissions?search=system.session.read",
       );
       const permissions: { data: { id: string }[] } = await response.json();
-      await apiPost(page.request, `/api/v1/iam/roles/${role.id}/permissions`, {
+      await apiPost(page.request, `/api/v1/system/roles/${role.id}/permissions`, {
         permission_id: permissions.data[0].id,
       });
-      await apiPost(page.request, `/api/v1/iam/users/${staff.id}/roles`, { role_id: role.id });
+      await apiPost(page.request, `/api/v1/system/users/${staff.id}/roles`, { role_id: role.id });
       const staffPage = await context.newPage();
       await loginViaUi(staffPage, { email: staff.email, password: "E2e-Temp-Passw0rd!" });
       await staffPage
         .getByTestId("module-launcher")
         .getByRole("link", { name: /Hệ thống/ })
         .click();
-      await expect(staffPage).toHaveURL(/\/quan-tri\/phien$/);
+      await expect(staffPage).toHaveURL(/\/quan-tri\/he-thong\/phien$/);
       await expect(staffPage.getByText("Phiên hiện tại", { exact: true })).toBeVisible();
       await expect(staffPage.getByTestId("sidebar-module-account").getByRole("link")).toHaveCount(
         1,
@@ -72,7 +72,7 @@ test.describe("Quản trị Hệ thống", () => {
       ).toHaveCount(0);
       await expect(staffPage.getByRole("table").getByRole("checkbox")).toHaveCount(0);
       // Chỉ có quyền xem phiên vẫn lọc được người dùng, không cần đọc hồ sơ tài khoản.
-      expect((await staffPage.request.get("/api/v1/account/users")).status()).toBe(403);
+      expect((await staffPage.request.get("/api/v1/system/users")).status()).toBe(403);
       const userFilter = staffPage.getByRole("button", { name: "Người dùng", exact: true });
       await userFilter.click();
       await staffPage
@@ -104,23 +104,23 @@ test.describe("Quản trị Hệ thống", () => {
       await staffPage.getByRole("button", { name: "Xoá lọc", exact: true }).click();
       await staffPage.keyboard.press("Escape");
       await expect(staffPage).not.toHaveURL(/user=/);
-      await staffPage.goto("/vi/quan-tri/quyen");
+      await staffPage.goto("/vi/quan-tri/he-thong/quyen");
       await expect(staffPage.getByTestId("forbidden")).toBeVisible();
     } finally {
       await context.close();
-      await apiDelete(page.request, `/api/v1/account/users/${staff.id}`);
-      await apiDelete(page.request, `/api/v1/iam/roles/${role.id}`);
+      await apiDelete(page.request, `/api/v1/system/users/${staff.id}`);
+      await apiDelete(page.request, `/api/v1/system/roles/${role.id}`);
     }
   });
 
   test("gõ chưa Enter không gọi tìm kiếm; bộ lọc và URL giữ nhau khi tải lại", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/nguoi-dung");
+    await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     await expect(page.getByRole("table").getByRole("link").first()).toBeVisible();
     const searches: string[] = [];
     page.on("request", (request) => {
       const url = new URL(request.url());
-      if (url.pathname === "/api/v1/account/users" && url.searchParams.has("search"))
+      if (url.pathname === "/api/v1/system/users" && url.searchParams.has("search"))
         searches.push(url.searchParams.get("search") ?? "");
     });
     await page.getByRole("searchbox").fill(E2E_ADMIN.email);
@@ -148,13 +148,13 @@ test.describe("Quản trị Hệ thống", () => {
   }) => {
     await loginViaUi(page);
     const suffix = Date.now();
-    const role = await apiPost<{ id: string; name: string }>(page.request, "/api/v1/iam/roles", {
+    const role = await apiPost<{ id: string; name: string }>(page.request, "/api/v1/system/roles", {
       code: `E2E_FILTER_${suffix}`,
       name: `Vai trò lọc ${suffix}`,
     });
     const user = await apiPost<{ id: string; email: string }>(
       page.request,
-      "/api/v1/account/users",
+      "/api/v1/system/users",
       {
         email: `e2e-filter-${suffix}@toannx.local`,
         username: `e2e-filter-${suffix}@toannx.local`.split("@")[0],
@@ -163,8 +163,8 @@ test.describe("Quản trị Hệ thống", () => {
       },
     );
     try {
-      await apiPost(page.request, `/api/v1/iam/users/${user.id}/roles`, { role_id: role.id });
-      await page.goto("/vi/quan-tri/nguoi-dung");
+      await apiPost(page.request, `/api/v1/system/users/${user.id}/roles`, { role_id: role.id });
+      await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
       await page.getByRole("button", { name: "Vai trò", exact: true }).click();
       await page.getByRole("option", { name: new RegExp(role.name) }).click();
       await page.keyboard.press("Escape");
@@ -185,14 +185,14 @@ test.describe("Quản trị Hệ thống", () => {
         role.name,
       );
     } finally {
-      await apiDelete(page.request, `/api/v1/account/users/${user.id}`);
-      await apiDelete(page.request, `/api/v1/iam/roles/${role.id}`);
+      await apiDelete(page.request, `/api/v1/system/users/${user.id}`);
+      await apiDelete(page.request, `/api/v1/system/roles/${role.id}`);
     }
   });
 
   test("vai trò có bộ lọc loại, trạng thái và chính sách tự cấp quyền", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/vai-tro");
+    await page.goto("/vi/quan-tri/he-thong/vai-tro");
     await page.getByRole("button", { name: "Loại vai trò", exact: true }).click();
     await page.getByRole("option", { name: "Hệ thống", exact: true }).click();
     await page.keyboard.press("Escape");
@@ -222,41 +222,41 @@ test.describe("Quản trị Hệ thống", () => {
 
   test("danh mục quyền chỉ đọc, nhóm theo module và tìm khi Enter", async ({ page }) => {
     await loginViaUi(page);
-    await page.goto("/vi/quan-tri/quyen");
+    await page.goto("/vi/quan-tri/he-thong/quyen");
     await expect(page.getByRole("heading", { name: "Quyền", exact: true })).toBeVisible();
     // Mỗi module một mục accordion, mặc định mở.
-    const accountModule = page
+    const systemModule = page
       .getByTestId("admin-content")
-      .getByRole("button", { name: /^Tài khoản/ });
-    await expect(accountModule).toHaveAttribute("aria-expanded", "true");
-    await expect(page.getByText("authentication.session.read", { exact: true })).toBeVisible();
+      .getByRole("button", { name: /^Hệ thống/ });
+    await expect(systemModule).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByText("system.session.read", { exact: true })).toBeVisible();
     await expect(page.getByTestId("admin-content").getByRole("checkbox")).toHaveCount(0);
     await expect(page.getByTestId("admin-content").getByRole("switch")).toHaveCount(0);
     await expect(page.getByTestId("admin-content").getByRole("link")).toHaveCount(0);
     // Thu gọn rồi mở lại một module.
-    await accountModule.click();
-    await expect(accountModule).toHaveAttribute("aria-expanded", "false");
-    await expect(page.getByText("account.user.read", { exact: true })).toHaveCount(0);
-    await accountModule.click();
+    await systemModule.click();
+    await expect(systemModule).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByText("system.user.read", { exact: true })).toHaveCount(0);
+    await systemModule.click();
     const search = page.getByRole("searchbox", { name: "Tìm theo tên, mã, mô tả…", exact: true });
-    await search.fill("authentication.session.read");
-    await expect(page.getByText("account.user.read", { exact: true })).toBeVisible();
+    await search.fill("system.session.read");
+    await expect(page.getByText("system.user.read", { exact: true })).toBeVisible();
     await search.press("Enter");
     await expect(page.getByTestId("admin-content").locator("li")).toHaveCount(1);
-    await expect(page.getByText("account.user.read", { exact: true })).toHaveCount(0);
+    await expect(page.getByText("system.user.read", { exact: true })).toHaveCount(0);
     await page.getByRole("button", { name: "Module", exact: true }).click();
-    await page.getByRole("option", { name: "Tài khoản", exact: true }).click();
+    await page.getByRole("option", { name: "Tiện ích", exact: true }).click();
     await page.keyboard.press("Escape");
     await expect(page.getByText("Không có quyền phù hợp.")).toBeVisible();
     await page.getByRole("button", { name: "Xóa bộ lọc", exact: true }).click();
-    await expect(page.getByText("account.user.read", { exact: true })).toBeVisible();
+    await expect(page.getByText("system.user.read", { exact: true })).toBeVisible();
   });
 
   test("xem phiên của người khác, hủy xác nhận rồi thu hồi thực sự", async ({ page, browser }) => {
     await loginViaUi(page);
     const user = await apiPost<{ id: string; email: string }>(
       page.request,
-      "/api/v1/account/users",
+      "/api/v1/system/users",
       {
         email: `e2e-session-${Date.now()}@toannx.local`,
         username: `e2e-session-${Date.now()}@toannx.local`.split("@")[0],
@@ -266,12 +266,12 @@ test.describe("Quản trị Hệ thống", () => {
     );
     const target = await browser.newContext({ baseURL: new URL(page.url()).origin });
     try {
-      await apiPost(target.request, "/api/v1/auth/login", {
+      await apiPost(target.request, "/api/v1/system/auth/login", {
         identifier: user.email,
         password: "E2e-Temp-Passw0rd!",
       });
-      expect((await target.request.get("/api/v1/auth/me")).status()).toBe(200);
-      await page.goto("/vi/quan-tri/phien");
+      expect((await target.request.get("/api/v1/system/auth/me")).status()).toBe(200);
+      await page.goto("/vi/quan-tri/he-thong/phien");
       await expect(page.getByText("Phiên hiện tại", { exact: true })).toBeVisible();
       await page.getByRole("searchbox").fill(user.email);
       await page.getByRole("searchbox").press("Enter");
@@ -280,12 +280,12 @@ test.describe("Quản trị Hệ thống", () => {
       await row.getByRole("button", { name: "Thu hồi", exact: true }).click();
       await expect(page.getByRole("alertdialog")).toContainText(user.email);
       await page.getByRole("button", { name: "Hủy", exact: true }).click();
-      expect((await target.request.get("/api/v1/auth/me")).status()).toBe(200);
+      expect((await target.request.get("/api/v1/system/auth/me")).status()).toBe(200);
       await row.getByRole("button", { name: "Thu hồi", exact: true }).click();
       await page.getByTestId("confirm-dialog-confirm").click();
       await expect(row).toContainText("Đã thu hồi");
       await expect(row.getByRole("button", { name: "Thu hồi", exact: true })).toHaveCount(0);
-      expect((await target.request.get("/api/v1/auth/me")).status()).toBe(401);
+      expect((await target.request.get("/api/v1/system/auth/me")).status()).toBe(401);
       await row.getByRole("button", { name: "Xoá", exact: true }).click();
       await page.getByTestId("confirm-dialog-confirm").click();
       await expect(row).toHaveCount(0);
@@ -293,7 +293,7 @@ test.describe("Quản trị Hệ thống", () => {
       await expect(row).toHaveCount(0);
     } finally {
       await target.close();
-      await apiDelete(page.request, `/api/v1/account/users/${user.id}`);
+      await apiDelete(page.request, `/api/v1/system/users/${user.id}`);
     }
   });
   test("chọn nhiều phiên rồi thu hồi hàng loạt; lọc nhiều trạng thái", async ({
@@ -303,7 +303,7 @@ test.describe("Quản trị Hệ thống", () => {
     await loginViaUi(page);
     const user = await apiPost<{ id: string; email: string }>(
       page.request,
-      "/api/v1/account/users",
+      "/api/v1/system/users",
       {
         email: `e2e-bulk-session-${Date.now()}@toannx.local`,
         username: `e2e-bulk-session-${Date.now()}@toannx.local`.split("@")[0],
@@ -318,12 +318,12 @@ test.describe("Quản trị Hệ thống", () => {
     ];
     try {
       for (const device of devices) {
-        await apiPost(device.request, "/api/v1/auth/login", {
+        await apiPost(device.request, "/api/v1/system/auth/login", {
           identifier: user.email,
           password: "E2e-Temp-Passw0rd!",
         });
       }
-      await page.goto("/vi/quan-tri/phien");
+      await page.goto("/vi/quan-tri/he-thong/phien");
       await page.getByRole("searchbox").fill(user.email);
       await page.getByRole("searchbox").press("Enter");
       const rows = page.getByRole("table").getByRole("row").filter({ hasText: user.email });
@@ -337,7 +337,7 @@ test.describe("Quản trị Hệ thống", () => {
       await expect(rows.first()).toContainText("Đã thu hồi");
       await expect(rows.nth(1)).toContainText("Đã thu hồi");
       for (const device of devices) {
-        expect((await device.request.get("/api/v1/auth/me")).status()).toBe(401);
+        expect((await device.request.get("/api/v1/system/auth/me")).status()).toBe(401);
       }
       // Lọc nhiều trạng thái cùng lúc.
       await page.getByRole("button", { name: "Trạng thái", exact: true }).click();
@@ -348,7 +348,7 @@ test.describe("Quản trị Hệ thống", () => {
       await expect(rows).toHaveCount(2);
     } finally {
       for (const device of devices) await device.close();
-      await apiDelete(page.request, `/api/v1/account/users/${user.id}`);
+      await apiDelete(page.request, `/api/v1/system/users/${user.id}`);
     }
   });
 });

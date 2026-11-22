@@ -55,14 +55,26 @@ describe("đăng ký module FE", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("auth là module nền: không import module khác", () => {
+  it("system là module nền: không import module khác", () => {
     const walk = (dir: string): string[] =>
       readdirSync(join(SRC, dir), { withFileTypes: true }).flatMap((entry) =>
         entry.isDirectory() ? walk(join(dir, entry.name)) : [join(dir, entry.name)],
       );
-    const offenders = walk("modules/auth").filter((file) =>
-      /from "@\/modules\/(?!auth\/)/.test(read(file)),
+    const offenders = walk("modules/system").filter((file) =>
+      /from "@\/modules\/(?!system\/)/.test(read(file)),
     );
     expect(offenders).toEqual([]);
+  });
+
+  it("mọi nhóm module trong navigation.ts đều được khai trong ADMIN_GROUPS", () => {
+    const adminNav = read("modules/manage-app/constants/admin-navigation.ts");
+    const navModules = MODULES.filter((mod) => has(mod, "navigation.ts"));
+    for (const mod of navModules) {
+      const navContent = read(`modules/${mod}/navigation.ts`);
+      const groupMatch = navContent.match(/group:\s*"([^"]+)"/);
+      if (groupMatch) {
+        expect(adminNav).toContain(`code: "${groupMatch[1]}"`);
+      }
+    }
   });
 });

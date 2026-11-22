@@ -7,6 +7,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 import { type AppLocale, routing } from "@/i18n/routing";
+import { AppAnalytics } from "@/shares/components/analytics/app-analytics";
 import { AppProviders } from "@/shares/components/providers/app-providers";
 import { env } from "@/shares/config/env";
 
@@ -23,10 +24,10 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const t = await getTranslations({ locale: locale as AppLocale, namespace: "common.seo" });
   return {
     metadataBase: new URL(env.siteUrl),
-    title: { default: t("title"), template: `%s · TOANNX` },
+    title: { default: t("title"), template: `%s · ToanNX` },
     description: t("description"),
-    applicationName: "TOANNX",
-    openGraph: { siteName: "TOANNX", locale, type: "website" },
+    applicationName: "ToanNX",
+    openGraph: { siteName: "ToanNX", locale, type: "website" },
   };
 }
 
@@ -46,6 +47,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <NextIntlClientProvider>
           <AppProviders>{children}</AppProviders>
         </NextIntlClientProvider>
+        <AppAnalytics />
       </body>
     </html>
   );

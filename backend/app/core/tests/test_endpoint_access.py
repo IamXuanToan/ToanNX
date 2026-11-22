@@ -16,12 +16,12 @@ from rest_framework.permissions import AllowAny
 from rest_framework.test import APIClient
 
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
-from app.modules.account.models.user import User
-from app.modules.iam.permissions.has_iam_permission import HasIamPermission
+from app.system.models.user import User
+from app.system.permissions.has_iam_permission import HasIamPermission
 
 pytestmark = pytest.mark.django_db
 
-MODULE_PREFIX = "app.modules."
+MODULE_PREFIX = "app."
 METHODS = ("get", "post", "put", "patch", "delete")
 
 # View công khai (AllowAny): đăng nhập, CSRF, health, link rút gọn, trang công khai, cron dọn dẹp (có secret).
@@ -40,10 +40,36 @@ PUBLIC_VIEWS = frozenset(
         "PasswordResetRequestView",
         "PasswordResetValidateTokenView",
         "PasswordResetConfirmView",
+        "VerifyEmailView",
+        "InvitationValidateView",
+        "AcceptInvitationView",
+        "SocialAuthUrlView",
+        "SocialLoginView",
+        "PublicSettingView",
+        "SepayWebhookView",
+        "NotificationDispatchView",
     }
 )
 # View chỉ cần đăng nhập (dữ liệu của chính người dùng hoặc danh mục tĩnh).
-LOGIN_ONLY_VIEWS = frozenset({"LogoutAllView", "MeView", "SessionView", "SessionObjectView", "QrBankView"})
+LOGIN_ONLY_VIEWS = frozenset(
+    {
+        "LogoutAllView",
+        "MeView",
+        "AttachmentContentView",
+        "SendVerificationEmailView",
+        "SessionView",
+        "SessionObjectView",
+        "UserSocialAccountView",
+        "SocialLinkView",
+        "SocialUnlinkView",
+        "QrBankView",
+        "ReadingHistoryView",
+        "ReadingHistoryObjectView",
+        "FavoriteView",
+        "NovelClientView",
+        "ChapterClientView",
+    }
+)
 
 _REGEX_GROUP = re.compile(r"\(\?P<\w+>[^)]*\)")
 _CONVERTER = re.compile(r"<(?:(\w+):)?\w+>")
@@ -51,6 +77,8 @@ _CONVERTER = re.compile(r"<(?:(\w+):)?\w+>")
 
 def _sample(converter: str | None) -> str:
     """Giá trị mẫu cho tham số URL."""
+    if converter == "int":
+        return "1"
     return str(uuid.uuid4()) if converter == "uuid" else "sample"
 
 
@@ -72,7 +100,11 @@ def _endpoints(patterns: list[URLPattern | URLResolver], prefix: str = "/") -> l
             continue
         callback = pattern.callback
         view_class = getattr(callback, "cls", None) or getattr(callback, "view_class", None)
-        if view_class is None or not view_class.__module__.startswith(MODULE_PREFIX):
+        if (
+            view_class is None
+            or not view_class.__module__.startswith(MODULE_PREFIX)
+            or view_class.__module__.startswith("app.core")
+        ):
             continue
         actions = getattr(callback, "actions", None) or {}
         methods = [m for m in actions if m in METHODS] or [m for m in METHODS if hasattr(view_class, m)]

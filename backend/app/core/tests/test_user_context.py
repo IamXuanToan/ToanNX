@@ -3,7 +3,7 @@
 from typing import Any
 
 from app.core.context.user_context import get_request_id, get_user_id, request_context, set_current_user
-from app.modules.account.tests.factories.user_factory import UserFactory
+from app.system.tests.factories.user_factory import UserFactory
 
 
 def test_request_id_resets() -> None:

@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 
 import { loadMessages } from "@/i18n/messages";
 import { LOCALE_COOKIE, resolveRequestLocale } from "@/i18n/request-locale";
+import { AppAnalytics } from "@/shares/components/analytics/app-analytics";
 import { LanguageSwitcher } from "@/shares/components/layout/language-switcher";
 import { ThemeSwitcher } from "@/shares/components/layout/theme-switcher";
 import { AppProviders } from "@/shares/components/providers/app-providers";
@@ -62,6 +63,7 @@ export default async function ShortLinkLayout({ children }: LayoutProps<"/s">) {
             </main>
           </AppProviders>
         </NextIntlClientProvider>
+        <AppAnalytics />
       </body>
     </html>
   );

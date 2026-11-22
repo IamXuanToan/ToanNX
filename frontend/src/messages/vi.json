@@ -1,11 +1,11 @@
 {
   "common": {
     "seo": {
-      "title": "TOANNX",
+      "title": "ToanNX",
       "description": "Website cá nhân của ToanNX."
     },
     "home": {
-      "title": "TOANNX",
+      "title": "ToanNX",
       "description": "Góc nhỏ bình yên & thư giãn của Xuân Toàn.",
       "badge": "Không gian chill",
       "greeting": "Xin chào, mình là",
@@ -117,7 +117,8 @@
       "menu": "Menu",
       "sessions": "Phiên",
       "permissions": "Quyền",
-      "attachments": "Thư viện"
+      "attachments": "Thư viện",
+      "settings": "Cài đặt"
     },
     "theme": {
       "toggle": "Đổi giao diện",
@@ -155,20 +156,6 @@
       "active": "Hoạt động",
       "inactive": "Đã khóa"
     },
-    "adminModules": {
-      "account": {
-        "name": "Tài khoản",
-        "description": "Người dùng và phiên đăng nhập."
-      },
-      "iam": {
-        "name": "Phân quyền",
-        "description": "Vai trò và danh mục quyền."
-      },
-      "attachment": {
-        "name": "Tệp đính kèm",
-        "description": "Thư viện ảnh và tài liệu."
-      }
-    },
     "adminGroups": {
       "system": {
         "name": "Hệ thống",
@@ -177,6 +164,14 @@
       "content": {
         "name": "Tiện ích",
         "description": "Liên kết rút gọn, mã QR và trang."
+      },
+      "novel": {
+        "name": "Tiểu thuyết",
+        "description": "Quản lý và đọc truyện chữ."
+      },
+      "finance": {
+        "name": "Tài chính",
+        "description": "Giao dịch, thu nhập, thuế và chứng từ."
       }
     },
     "select": {
@@ -218,7 +213,9 @@
       "pinRight": "Ghim phải",
       "unpin": "Bỏ ghim",
       "clearFilters": "Xóa bộ lọc",
-      "noFilterResults": "Không có kết quả phù hợp với bộ lọc."
+      "noFilterResults": "Không có kết quả phù hợp với bộ lọc.",
+      "noPermission": "Bạn không có quyền thực hiện thao tác này",
+      "rowLocked": "Không thể thao tác với bản ghi này"
     },
     "search": {
       "clear": "Xoá từ khoá"
@@ -333,10 +330,12 @@
       "ATTACHMENT_FOLDER_NAME_EXISTS": "Tên thư mục đã tồn tại trong cùng thư mục cha.",
       "ATTACHMENT_FOLDER_OWNER_MISMATCH": "Tệp và thư mục phải thuộc cùng một người.",
       "ATTACHMENT_FOLDER_CYCLE": "Không thể chuyển thư mục vào chính nó hoặc thư mục con.",
+      "ATTACHMENT_STORAGE_QUOTA_EXCEEDED": "Dung lượng lưu trữ hệ thống đã vượt quá giới hạn cho phép.",
       "UNKNOWN": "Đã xảy ra lỗi, vui lòng thử lại.",
       "NETWORK_ERROR": "Không kết nối được máy chủ. Kiểm tra mạng và thử lại.",
       "TIMEOUT": "Máy chủ phản hồi quá lâu, vui lòng thử lại.",
       "INVALID_RESPONSE": "Phản hồi từ máy chủ không hợp lệ.",
+      "REQUEST_CANCELLED": "Yêu cầu đã bị hủy.",
       "VALIDATION_ERROR": "Dữ liệu chưa hợp lệ.",
       "PARSE_ERROR": "Dữ liệu gửi lên không đọc được.",
       "NOT_FOUND": "Không tìm thấy dữ liệu.",
@@ -367,36 +366,155 @@
       "ACCOUNT_SELF_MODIFICATION": "Bạn không thể tự thay đổi trạng thái hoặc quyền truy cập của chính mình.",
       "ACCOUNT_PRIVILEGE_ESCALATION": "Chỉ superuser mới được cấp hoặc gỡ quyền superuser.",
       "ACCOUNT_SUPERUSER_PROTECTED": "Chỉ superuser mới được sửa tài khoản superuser.",
+      "ACCOUNT_EMAIL_ALREADY_VERIFIED": "Email này đã được xác minh trước đó.",
+      "ACCOUNT_EMAIL_VERIFICATION_TOKEN_EXPIRED": "Liên kết xác minh email đã hết hạn. Vui lòng yêu cầu liên kết mới.",
+      "ACCOUNT_EMAIL_VERIFICATION_TOKEN_INVALID": "Liên kết xác minh email không hợp lệ hoặc đã được sử dụng.",
+      "ACCOUNT_INVITATION_TOKEN_EXPIRED": "Lời mời tham gia hệ thống đã hết hạn. Vui lòng liên hệ quản trị viên để nhận lời mời mới.",
+      "ACCOUNT_INVITATION_TOKEN_INVALID": "Lời mời tham gia không hợp lệ hoặc đã được sử dụng.",
+      "ACCOUNT_USERNAME_EXISTS": "Tên người dùng đã được sử dụng, vui lòng chọn tên khác.",
+      "ACCOUNT_SOCIAL_NOT_LINKED": "Tài khoản mạng xã hội này chưa được liên kết. Vui lòng đăng nhập bằng mật khẩu trước để liên kết trong Hồ sơ cá nhân.",
+      "ACCOUNT_SOCIAL_ALREADY_LINKED": "Tài khoản mạng xã hội này đã được liên kết với một người dùng khác trong hệ thống.",
+      "ACCOUNT_SOCIAL_PROVIDER_EXISTS": "Bạn đã liên kết tài khoản này rồi. Vui lòng hủy liên kết cũ trước nếu muốn đổi.",
+      "ACCOUNT_SOCIAL_CANNOT_UNLINK_LAST": "Không thể hủy liên kết phương thức đăng nhập duy nhất khi chưa thiết lập mật khẩu.",
+      "ACCOUNT_SOCIAL_INVALID_CODE": "Mã xác thực từ mạng xã hội không hợp lệ hoặc đã hết hạn.",
+      "ACCOUNT_SOCIAL_PROVIDER_UNSUPPORTED": "Nền tảng đăng nhập này không được hỗ trợ.",
+      "ACCOUNT_SOCIAL_AUTH_FAILED": "Không thể xác thực với nền tảng mạng xã hội. Vui lòng thử lại sau.",
+      "ACCOUNT_SOCIAL_PROVIDER_DISABLED": "Phương thức đăng nhập qua nền tảng này đang tạm thời bị quản trị viên tắt.",
       "IAM_ROLE_CODE_EXISTS": "Mã vai trò đã tồn tại.",
       "IAM_ROLE_INACTIVE": "Vai trò đang bị tắt.",
       "IAM_SELF_MODIFICATION": "Bạn không thể tự thay đổi quyền của chính mình.",
       "IAM_PRIVILEGE_ESCALATION": "Bạn không thể cấp quyền vượt quá quyền của bạn.",
       "IAM_SYSTEM_ROLE_PROTECTED": "Chỉ superuser mới được sửa vai trò hệ thống.",
       "QUOTA_EXCEEDED": "Bạn đã đạt số lượng tối đa cho phép.",
-      "SHORT_LINK_EXPIRED": "Liên kết đã hết hạn.",
-      "SHORT_LINK_INVALID_PASSWORD": "Mật khẩu liên kết không đúng.",
-      "CUSTOM_PAGES_PATH_IN_USE": "Đường dẫn giữa còn trang, không xóa được.",
-      "CUSTOM_PAGES_PATH_INACTIVE": "Đường dẫn giữa đang tắt, không tạo trang mới vào đây được.",
-      "CUSTOM_PAGES_VERSION_CONFLICT": "Trang đã được sửa ở nơi khác. Tải lại để xem bản mới nhất."
+      "UTILITIES_SHORT_LINK_EXPIRED": "Liên kết đã hết hạn.",
+      "UTILITIES_SHORT_LINK_INVALID_PASSWORD": "Mật khẩu liên kết không đúng.",
+      "UTILITIES_PAGE_PATH_IN_USE": "Đường dẫn giữa còn trang, không xóa được.",
+      "UTILITIES_PAGE_PATH_INACTIVE": "Đường dẫn giữa đang tắt, không tạo trang mới vào đây được.",
+      "UTILITIES_PAGE_VERSION_CONFLICT": "Trang đã được sửa ở nơi khác. Tải lại để xem bản mới nhất.",
+      "NOVEL_NOT_FOUND": "Không tìm thấy truyện.",
+      "NOVEL_SLUG_EXISTS": "Đường dẫn định danh (slug) truyện đã tồn tại.",
+      "NOVEL_FORBIDDEN": "Bạn không có quyền thao tác trên truyện này.",
+      "NOVEL_IMPORT_INVALID": "Dữ liệu import truyện không hợp lệ.",
+      "CHAPTER_NOT_FOUND": "Không tìm thấy chương truyện.",
+      "CHAPTER_NUMBER_EXISTS": "Số thứ tự chương của truyện đã tồn tại.",
+      "ATTACHMENT_PRIVATE_STORAGE_NOT_CONFIGURED": "Chưa cấu hình kho lưu tệp riêng tư.",
+      "ATTACHMENT_MUST_BE_PUBLIC": "Ảnh phải ở chế độ công khai.",
+      "FINANCE_SEPAY_UNAUTHORIZED": "SePay từ chối API token (sai, hết hạn hoặc khác môi trường).",
+      "FINANCE_SEPAY_RATE_LIMITED": "SePay đang giới hạn tần suất, thử lại sau ít phút.",
+      "FINANCE_SEPAY_UNAVAILABLE": "Không kết nối được SePay, thử lại sau.",
+      "FINANCE_SYNC_RANGE_INVALID": "Khoảng ngày tối đa 31 ngày.",
+      "FINANCE_TRANSACTION_DUPLICATE": "Giao dịch này đã có.",
+      "FINANCE_TRANSACTION_NOT_DELETABLE": "Không xóa giao dịch thật; hãy chuyển sang “Không phải thu nhập”.",
+      "FINANCE_TRANSACTION_NOT_DUPLICATE_CANDIDATE": "Giao dịch không ở trạng thái nghi trùng.",
+      "FINANCE_ALLOCATION_EXCEEDS_AMOUNT": "Tổng phân bổ vượt số tiền.",
+      "FINANCE_RULE_PATTERN_INVALID": "Mẫu quy tắc không hợp lệ.",
+      "FINANCE_RULE_TARGET_REQUIRED": "Chọn đúng một đích: nền tảng hoặc loại dòng tiền.",
+      "FINANCE_PLATFORM_IN_USE": "Nền tảng đã được dùng, hãy tắt thay vì xóa.",
+      "FINANCE_INCOME_VOIDED": "Khoản thu đã hủy.",
+      "FINANCE_DOCUMENT_LINK_TARGET_REQUIRED": "Chọn đúng một đích liên kết.",
+      "NOTIFICATION_TELEGRAM_UNAVAILABLE": "Không kết nối được Telegram.",
+      "NOTIFICATION_TELEGRAM_REGISTRATION_NOT_FOUND": "Chưa thấy bot được thêm vào nhóm với mã này.",
+      "NOTIFICATION_TELEGRAM_REGISTRATION_EXPIRED": "Mã đăng ký đã hết hạn, hãy tạo mã mới.",
+      "NOTIFICATION_TELEGRAM_CHAT_INACTIVE": "Nhóm Telegram chưa xác minh hoặc bot không có quyền gửi.",
+      "NOTIFICATION_EVENT_UNKNOWN": "Sự kiện không tồn tại.",
+      "NOTIFICATION_ROUTE_TARGET_INVALID": "Nơi nhận không hợp lệ.",
+      "FINANCE_TAX_RATE_INVALID": "Tỷ lệ khấu trừ phải lớn hơn 0 và nhỏ hơn 100.",
+      "FINANCE_TAX_RATE_DUPLICATE_DATE": "Đã có mốc cùng ngày.",
+      "FINANCE_EXCHANGE_RATE_UNAVAILABLE": "Không có tỷ giá cho ngày này, hãy nhập tay.",
+      "FINANCE_CURRENCY_INACTIVE": "Tiền tệ đang tắt.",
+      "FINANCE_AMOUNT_LOCKED": "Không sửa số tiền ngân hàng đã báo.",
+      "FINANCE_AMOUNT_REQUIRED": "Nhập số tiền.",
+      "FINANCE_INVOICE_ATTACHMENT_REQUIRED": "Cần ít nhất một file.",
+      "FINANCE_INVOICE_INCOME_INVALID": "Giao dịch không hợp lệ.",
+      "FINANCE_INVOICE_PERIOD_INVALID": "Kỳ hoặc số tiền không hợp lệ.",
+      "FINANCE_INVOICE_DUPLICATE": "Đã có chứng từ cùng số.",
+      "FINANCE_PLATFORM_INVALID": "Nền tảng không hợp lệ.",
+      "FINANCE_SEPAY_NOT_CONNECTED": "Chưa kết nối SePay.",
+      "FINANCE_SEPAY_TOKEN_INVALID": "Token SePay không hợp lệ, hãy nhập lại.",
+      "FINANCE_SEPAY_RANGE_TOO_LONG": "Chọn khoảng tối đa 92 ngày.",
+      "SYSTEM_CURRENCY_BASE_LOCKED": "Không sửa mã/trạng thái hay xóa tiền tệ gốc.",
+      "SYSTEM_CURRENCY_IN_USE": "Tiền tệ đang được dùng, hãy tắt thay vì xóa.",
+      "SYSTEM_CURRENCY_INACTIVE": "Tiền tệ đang tắt.",
+      "SYSTEM_EXCHANGE_RATE_UNAVAILABLE": "Không lấy được tỷ giá, hãy nhập tay.",
+      "SYSTEM_EXCHANGE_RATE_READ_ONLY": "Tỷ giá lấy từ API chỉ đọc.",
+      "TELEGRAM_BOT_TOKEN_INVALID": "Token bot Telegram không hợp lệ.",
+      "TELEGRAM_BOT_HAS_WEBHOOK": "Bot đang đặt webhook ở nơi khác; hãy gỡ webhook để dùng.",
+      "TELEGRAM_BOT_REQUIRED": "Hãy cấu hình bot Telegram trước.",
+      "NOTIFICATION_EVENT_FORBIDDEN": "Bạn không được nhận sự kiện này.",
+      "NOTIFICATION_CHANNEL_UNAVAILABLE": "Kênh chưa dùng được.",
+      "NOTIFICATION_IN_APP_REQUIRED": "Sự kiện lỗi luôn hiện trong ứng dụng.",
+      "NOTIFICATION_CHAT_INVALID": "Chat Telegram không hợp lệ.",
+      "PUSH_NOT_CONFIGURED": "Chưa cấu hình Firebase.",
+      "NOTIFICATION_EMAIL_FAILED": "Gửi email thất bại.",
+      "NOTIFICATION_PERMISSION_REVOKED": "Người nhận không còn quyền nhận thông báo này.",
+      "NOTIFICATION_RECIPIENT_INACTIVE": "Người nhận đã bị khóa.",
+      "NOTIFICATION_SEND_FAILED": "Gửi thông báo thất bại.",
+      "PUSH_TOKEN_INVALID": "Trình duyệt đã hủy đăng ký nhận thông báo.",
+      "PUSH_UNAVAILABLE": "Không gửi được thông báo trình duyệt lúc này.",
+      "TELEGRAM_BOT_MISSING": "Chưa cấu hình bot Telegram."
     },
     "generic": {
       "title": "Không tải được dữ liệu",
-      "description": "Đã xảy ra lỗi khi tải dữ liệu.",
-      "retry": "Thử lại"
+      "description": "Đã xảy ra lỗi khi tải dữ liệu. Vui lòng kiểm tra lại kết nối hoặc thử lại sau.",
+      "retry": "Thử lại",
+      "backHome": "Về trang chủ",
+      "backPrevious": "Quay lại"
     },
     "forbidden": {
-      "title": "Không có quyền truy cập",
-      "description": "Tài khoản của bạn không được phép vào khu vực quản trị."
+      "badge": "403 · TỪ CHỐI",
+      "title": "Truy cập bị từ chối",
+      "description": "Bạn không có quyền truy cập vào khu vực hoặc tài nguyên này. Vui lòng liên hệ quản trị viên nếu bạn cần được cấp quyền.",
+      "backHome": "Về trang chủ",
+      "backPrevious": "Quay lại trang trước",
+      "back": "Quay lại",
+      "switchAccount": "Đăng nhập tài khoản khác",
+      "contactAdmin": "Liên hệ quản trị"
     },
     "notFound": {
+      "badge": "404 · KHÔNG TÌM THẤY",
       "title": "Không tìm thấy trang",
-      "description": "Đường dẫn không tồn tại hoặc đã bị thay đổi.",
-      "backHome": "Về trang chủ"
+      "description": "Trang bạn đang tìm kiếm không tồn tại, đã bị xóa hoặc đường dẫn đã thay đổi.",
+      "rootTitle": "Không tìm thấy trang",
+      "rootDescription": "Đường dẫn không tồn tại hoặc đã bị xóa.",
+      "backHome": "Về trang chủ",
+      "backPrevious": "Quay lại trang trước",
+      "helpfulLinks": "Liên kết hữu ích",
+      "home": "Trang chủ",
+      "library": "Thư viện",
+      "signIn": "Đăng nhập"
+    },
+    "serverError": {
+      "badge": "500 · LỖI MÁY CHỦ",
+      "title": "Đã xảy ra lỗi máy chủ",
+      "description": "Hệ thống gặp sự cố ngoài ý muốn trong quá trình xử lý yêu cầu. Sự cố đã được tự động ghi nhận để khắc phục.",
+      "retry": "Thử lại ngay",
+      "backHome": "Về trang chủ",
+      "technicalDetails": "Chi tiết kỹ thuật",
+      "devOnly": "Chỉ môi trường phát triển",
+      "errorDigest": "Mã sự cố (Digest)",
+      "copyDigest": "Sao chép mã lỗi",
+      "copiedDigest": "Đã sao chép"
+    },
+    "network": {
+      "title": "Mất kết nối mạng",
+      "description": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra đường truyền Internet của bạn và thử lại.",
+      "retry": "Thử kết nối lại"
     },
     "recordNotFound": {
       "title": "Không tìm thấy bản ghi",
-      "description": "Bản ghi đã bị xóa hoặc đường dẫn không đúng.",
-      "back": "Về danh sách"
+      "description": "Bản ghi không tồn tại, đã bị xóa hoặc bạn không có quyền xem.",
+      "back": "Về danh sách",
+      "backPrevious": "Quay lại"
+    },
+    "global": {
+      "badge": "500 · LỖI HỆ THỐNG",
+      "title": "Đã xảy ra lỗi hệ thống",
+      "documentTitle": "Lỗi hệ thống · ToanNX",
+      "subtitle": "Sự cố nghiêm trọng ở tầng giao diện gốc",
+      "description": "Hệ thống gặp sự cố ngoài ý muốn trong quá trình kết xuất layout gốc. Vui lòng thử lại hoặc tải lại trang.",
+      "retry": "Thử lại",
+      "reload": "Tải lại trang",
+      "errorDigest": "Mã sự cố (Digest)"
     }
   }
 }

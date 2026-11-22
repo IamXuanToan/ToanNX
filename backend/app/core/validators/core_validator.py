@@ -30,6 +30,18 @@ class CoreValidator:
         return bool(PERMISSION_CODE_PATTERN.match(value))
 
     @staticmethod
+    def is_event_code(value: str) -> bool:
+        """Mã sự kiện thông báo dạng `module.resource.event` (cùng định dạng mã quyền).
+
+        Args:
+            value: Mã cần kiểm tra.
+
+        Returns:
+            True nếu hợp lệ.
+        """
+        return bool(PERMISSION_CODE_PATTERN.match(value))
+
+    @staticmethod
     def is_module_code(value: str) -> bool:
         """Mã module snake_case chữ thường, 2-32 ký tự.
 

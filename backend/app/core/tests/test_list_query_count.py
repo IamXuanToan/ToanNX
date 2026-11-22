@@ -5,6 +5,8 @@ Module mới thêm endpoint danh sách thì thêm một dòng vào `CASES`; quê
 """
 
 import io
+import itertools
+import uuid
 from collections.abc import Callable
 from datetime import timedelta
 from typing import Any
@@ -17,16 +19,21 @@ from django.urls import URLPattern, URLResolver, get_resolver
 from django.utils import timezone
 
 from app.core.views.core_model_view_set import CoreModelViewSet
-from app.modules.account.tests.factories.user_factory import UserFactory
-from app.modules.attachment.services.attachment_folder_service import AttachmentFolderService
-from app.modules.attachment.services.attachment_service import AttachmentService
-from app.modules.authentication.models.auth_session import AuthSession
-from app.modules.custom_pages.models.page_path import PagePath
-from app.modules.custom_pages.services.page_service import PageService
-from app.modules.iam.models.permission import Permission
-from app.modules.iam.tests.factories.role_factory import RoleFactory
-from app.modules.qr_codes.services.qr_code_service import QrCodeService
-from app.modules.short_links.services.short_link_service import ShortLinkService
+from app.system.models.auth_session import AuthSession
+from app.system.models.permission import Permission
+from app.system.models.setting import Setting
+from app.system.services.attachment_folder_service import AttachmentFolderService
+from app.system.services.attachment_service import AttachmentService
+from app.system.tests.factories.role_factory import RoleFactory
+from app.system.tests.factories.user_factory import UserFactory
+from app.utilities.models.page_path import PagePath
+from app.utilities.services.page_service import PageService
+from app.utilities.services.qr_code_service import QrCodeService
+from app.utilities.services.short_link_service import ShortLinkService
+
+# Mã tiền tệ (3 ký tự, unique) tuần tự toàn phiên test: chỉ gồm chữ số nên không bao giờ trùng
+# mã ISO đã seed (VND, USD...) và không trùng nhau như mã ngẫu nhiên.
+_CURRENCY_CODE_SEQ = itertools.count(1)
 
 pytestmark = pytest.mark.django_db
 
@@ -39,7 +46,8 @@ def _short_links(owner: Any, count: int) -> None:
 
 
 def _pages(owner: Any, count: int) -> None:
-    service, path = PageService(), PagePath.objects.get(segment="p")
+    path, _ = PagePath.objects.get_or_create(segment="p", defaults={"name": "Trang"})
+    service = PageService()
     for _ in range(count):
         service.create(owner, {"path_id": path.pk, "title": "Trang"})
 
@@ -97,18 +105,203 @@ def _attachments(owner: Any, count: int) -> None:
         service.create_generated(owner, buffer.getvalue(), f"qc-{index}.png")
 
 
+def _novels(owner: Any, count: int) -> None:
+    from app.novel.services.novel_service import NovelService
+
+    service = NovelService()
+    for _ in range(count):
+        uid = uuid.uuid4().hex[:8]
+        service.create(owner, {"title": f"Truyen {uid}", "slug": f"truyen-{uid}"})
+
+
+def _chapters(owner: Any, count: int) -> None:
+    from app.novel.models.novel import Novel
+    from app.novel.services.chapter_service import ChapterService
+
+    novel, _ = Novel.objects.get_or_create(
+        slug="truyen-test-ch", defaults={"title": "Truyen Test", "owner": owner}
+    )
+    service = ChapterService()
+    start = novel.chapters.count() + 1
+    for index in range(count):
+        service.create(
+            owner,
+            {
+                "novel_id": novel.pk,
+                "chapter_number": start + index,
+                "title": f"Chuong {start + index}",
+                "content": "Noi dung",
+            },
+        )
+
+
+def _authors(owner: Any, count: int) -> None:
+    from app.novel.services.author_service import AuthorService
+
+    service = AuthorService()
+    for _ in range(count):
+        uid = uuid.uuid4().hex[:8]
+        service.create(owner, {"name": f"Tac gia {uid}", "slug": f"tg-{uid}"})
+
+
+def _genres(owner: Any, count: int) -> None:
+    from app.novel.services.genre_service import GenreService
+
+    service = GenreService()
+    for _ in range(count):
+        uid = uuid.uuid4().hex[:8]
+        service.create(owner, {"name": f"The loai {uid}", "slug": f"tl-{uid}"})
+
+
+def _tags(owner: Any, count: int) -> None:
+    from app.novel.services.tag_service import TagService
+
+    service = TagService()
+    for _ in range(count):
+        uid = uuid.uuid4().hex[:8]
+        service.create(owner, {"name": f"The {uid}", "slug": f"tag-{uid}"})
+
+
+def _finance(model: str) -> Callable[[Any, int], None]:
+    """Bản ghi Tài chính đủ quan hệ để lộ N+1 (nền tảng, tiền tệ, mốc thuế, file, giao dịch)."""
+
+    def make(owner: Any, count: int) -> None:
+        from decimal import Decimal
+
+        from app.finance.models.classification_rule import ClassificationRule
+        from app.finance.models.income import Income
+        from app.finance.models.invoice import Invoice
+        from app.finance.models.platform import Platform
+        from app.finance.models.platform_tax_rate import PlatformTaxRate
+        from app.system.models.currency import Currency
+
+        vnd = Currency.objects.get(code="VND")
+        now = timezone.now()
+        for _ in range(count):
+            uid = uuid.uuid4().hex[:8]
+            platform = Platform.objects.create(owner=owner, name=uid, code=uid, default_currency=vnd)
+            PlatformTaxRate.objects.create(
+                platform=platform, effective_from=now.date(), tax_withheld=True, rate=5
+            )
+            if model == "rules":
+                ClassificationRule.objects.create(owner=owner, name=uid, platform=platform, pattern=uid)
+            income = Income.objects.create(
+                owner=owner,
+                source="MANUAL",
+                received_at=now,
+                received_date=now.date(),
+                currency=vnd,
+                original_amount=Decimal(1),
+                amount=Decimal(1),
+                platform=platform,
+            )
+            if model == "invoices":
+                attachment = AttachmentService().create_generated(owner, segno_png(), f"{uid}.png")
+                invoice = Invoice.objects.create(
+                    owner=owner,
+                    doc_type="INVOICE",
+                    issuer=uid,
+                    issued_on=now.date(),
+                    currency=vnd,
+                    original_amount=Decimal(1),
+                    amount=Decimal(1),
+                    platform=platform,
+                )
+                invoice.attachments.add(attachment)
+                invoice.incomes.add(income)
+
+    return make
+
+
+def _system(model: str) -> Callable[[Any, int], None]:
+    """Thông báo, tiền tệ, tỷ giá, thông báo hệ thống."""
+
+    def make(owner: Any, count: int) -> None:
+        from datetime import date
+        from decimal import Decimal
+
+        from app.system.models.currency import Currency
+        from app.system.models.exchange_rate import ExchangeRate
+        from app.system.models.notification import Notification
+        from app.system.models.notification_delivery import NotificationDelivery
+        from app.system.models.system_announcement import SystemAnnouncement
+        from app.system.models.telegram_bot import TelegramBot
+        from app.system.models.telegram_chat import TelegramChat
+
+        usd = Currency.objects.get(code="USD")
+        bot, _ = TelegramBot.objects.get_or_create(
+            owner=owner, defaults={"token_encrypted": "x", "token_last4": "1234"}
+        )
+        for index in range(count):
+            uid = uuid.uuid4().hex
+            if model == "chats":
+                TelegramChat.objects.create(
+                    owner=owner, bot=bot, chat_id=uid[:12], title="g", status="active"
+                )
+            elif model == "deliveries":
+                notification = Notification.objects.create(
+                    recipient=owner, event_code="system.auth.login", module="system", title="t", dedup_key=uid
+                )
+                NotificationDelivery.objects.create(
+                    notification=notification, channel="EMAIL", target=owner.email
+                )
+            elif model == "currencies":
+                Currency.objects.create(
+                    code=f"{next(_CURRENCY_CODE_SEQ):03d}", name=uid, symbol="x", position=index + 10
+                )
+            elif model == "rates":
+                ExchangeRate.objects.create(
+                    currency=usd,
+                    rate_date=date(2020, 1, 1) + timedelta(days=ExchangeRate.objects.count()),
+                    rate=Decimal(25000),
+                    source="MANUAL",
+                    note=uid,
+                )
+            elif model == "announcements":
+                SystemAnnouncement.objects.create(title=uid)
+
+    return make
+
+
+def segno_png() -> bytes:
+    """PNG nhỏ hợp lệ."""
+    buffer = io.BytesIO()
+    segno.make("qc").save(buffer, kind="png")
+    return buffer.getvalue()
+
+
 CASES: list[tuple[str, Callable[[Any, int], None]]] = [
-    ("/api/v1/account/users", lambda owner, n: UserFactory.create_batch(n)),
-    ("/api/v1/iam/roles", lambda owner, n: RoleFactory.create_batch(n)),
-    ("/api/v1/short_links/links", _short_links),
-    ("/api/v1/journal/entries", lambda owner, n: RoleFactory.create_batch(n)),
-    ("/api/v1/custom_pages/pages", _pages),
-    ("/api/v1/custom_pages/paths", lambda owner, n: None),
-    ("/api/v1/qr_codes/codes", _qr_codes),
-    ("/api/v1/auth/admin-sessions", _sessions),
-    ("/api/v1/iam/permissions", _permissions),
-    ("/api/v1/attachments/folders", _folders),
-    ("/api/v1/attachments", _attachments),
+    ("/api/v1/finance/platforms", _finance("platforms")),
+    ("/api/v1/finance/rules", _finance("rules")),
+    ("/api/v1/finance/incomes", _finance("incomes")),
+    ("/api/v1/finance/invoices", _finance("invoices")),
+    ("/api/v1/system/telegram-chats", _system("chats")),
+    ("/api/v1/system/notification-deliveries", _system("deliveries")),
+    ("/api/v1/system/currencies", _system("currencies")),
+    ("/api/v1/system/exchange-rates", _system("rates")),
+    ("/api/v1/system/announcements", _system("announcements")),
+    ("/api/v1/system/users", lambda owner, n: UserFactory.create_batch(n)),
+    ("/api/v1/system/roles", lambda owner, n: RoleFactory.create_batch(n)),
+    ("/api/v1/utilities/short-links", _short_links),
+    ("/api/v1/system/journal-entries", lambda owner, n: RoleFactory.create_batch(n)),
+    ("/api/v1/utilities/pages", _pages),
+    ("/api/v1/utilities/page-paths", lambda owner, n: None),
+    ("/api/v1/utilities/qr-codes", _qr_codes),
+    ("/api/v1/system/auth/admin-sessions", _sessions),
+    ("/api/v1/system/permissions", _permissions),
+    ("/api/v1/system/attachments/folders", _folders),
+    ("/api/v1/system/attachments", _attachments),
+    ("/api/v1/novel/novels", _novels),
+    ("/api/v1/novel/chapters", _chapters),
+    ("/api/v1/novel/authors", _authors),
+    ("/api/v1/novel/genres", _genres),
+    ("/api/v1/novel/tags", _tags),
+    (
+        "/api/v1/system/settings",
+        lambda owner, n: [
+            Setting.objects.create(key=f"setting_{uuid.uuid4().hex[:6]}", value=True) for _ in range(n)
+        ],
+    ),
 ]
 
 

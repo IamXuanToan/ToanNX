@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { mediaFormatsFor, normalizeMediaFormats } from "@/modules/attachment/constants/media-types";
-import type { AttachmentFolder } from "@/modules/attachment/types/attachment.types";
-import { canParentFolder, folderPath } from "@/modules/attachment/utils/folder-path";
+import { mediaFormatsFor, normalizeMediaFormats } from "@/modules/system/constants/media-types";
+import type { AttachmentFolder } from "@/modules/system/types/attachment-folder.types";
+import { canParentFolder, folderPath } from "@/modules/system/utils/folder-path";
 
 /** @param id - ID giả. @param parentId - Cha. @returns Thư mục đủ contract. */
 function folder(id: string, parentId: string | null): AttachmentFolder {

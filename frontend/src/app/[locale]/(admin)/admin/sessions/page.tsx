@@ -1,4 +1,4 @@
-import { SessionListView } from "@/modules/auth/views/session-list-view";
+import { SessionListView } from "@/modules/system/views/session-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "common.nav.sessions" });

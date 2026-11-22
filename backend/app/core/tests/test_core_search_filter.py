@@ -7,13 +7,13 @@ from django.db import connection
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.core.utils.text import ascii_slug, to_ascii
-from app.modules.account.models.user import User
-from app.modules.account.tests.factories.user_factory import UserFactory
-from app.modules.iam.tests.factories.role_factory import RoleFactory
+from app.system.models.user import User
+from app.system.tests.factories.role_factory import RoleFactory
+from app.system.tests.factories.user_factory import UserFactory
 
 pytestmark = pytest.mark.django_db
 
-USERS = "/api/v1/account/users"
+USERS = "/api/v1/system/users"
 
 
 # Toàn bộ nguyên âm tiếng Việt (12 nguyên âm × 6 thanh, hoa + thường) và đ/Đ.
@@ -62,28 +62,30 @@ class TestAccentInsensitiveSearch(BaseApiTestCase):
 
     @pytest.mark.parametrize("term", ["nguyen", "Nguyễn", "NGUYEN", "duc", "Đức"])
     def test_user_search_ignores_accents(self, superuser: User, login: Any, term: str) -> None:
-        target = UserFactory(first_name="Đức", last_name="Nguyễn")
+        target = UserFactory(full_name="Nguyễn Đức")
         data = self.assert_success(login(superuser).get(USERS, {"search": term}))
         assert str(target.pk) in {item["id"] for item in data}
 
     @pytest.mark.parametrize("term", ["huong", "HƯỞNG", "hướng", "Huơng"])
     def test_stacked_diacritics(self, superuser: User, login: Any, term: str) -> None:
-        target = UserFactory(first_name="Hưởng", last_name="Trần")
+        target = UserFactory(full_name="Trần Hưởng")
         data = self.assert_success(login(superuser).get(USERS, {"search": term}))
         assert str(target.pk) in {item["id"] for item in data}
 
     def test_accented_term_matches_plain_value(self, superuser: User, login: Any) -> None:
         role = RoleFactory(name="Quan tri noi dung")
-        data = self.assert_success(login(superuser).get("/api/v1/iam/roles", {"search": "quản trị"}))
+        data = self.assert_success(login(superuser).get("/api/v1/system/roles", {"search": "quản trị"}))
         assert str(role.pk) in {item["id"] for item in data}
 
     def test_search_through_relation(self, superuser: User, login: Any) -> None:
-        owner = UserFactory(first_name="Thảo", last_name="Lê")
+        owner = UserFactory(full_name="Lê Thảo")
         login(owner)
-        data = self.assert_success(login(superuser).get("/api/v1/auth/admin-sessions", {"search": "thao"}))
+        data = self.assert_success(
+            login(superuser).get("/api/v1/system/auth/admin-sessions", {"search": "thao"})
+        )
         assert any(item["user_id"] == str(owner.pk) for item in data)
 
     def test_non_matching_term_returns_nothing(self, superuser: User, login: Any) -> None:
-        UserFactory(first_name="Đức", last_name="Nguyễn")
+        UserFactory(full_name="Nguyễn Đức")
         data = self.assert_success(login(superuser).get(USERS, {"search": "khongtontai"}))
         assert data == []

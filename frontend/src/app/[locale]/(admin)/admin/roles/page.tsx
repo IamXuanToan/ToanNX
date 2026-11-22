@@ -1,4 +1,4 @@
-import { RoleListView } from "@/modules/iam/views/role-list-view";
+import { RoleListView } from "@/modules/system/views/role-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "common.nav.roles" });

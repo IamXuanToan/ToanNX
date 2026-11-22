@@ -1,20 +1,24 @@
-"""Cấu hình Django của TOANNX.
+"""Cấu hình Django của ToanNX.
 
 Một file cấu hình duy nhất; local và production chỉ khác nhau ở biến môi trường
-(DJANGO_DEBUG, DB_*, DJANGO_SECRET_KEY...). Không hardcode secrets.
+(DJANGO_DEBUG, DATABASE_URL, DJANGO_SECRET_KEY...). Không hardcode secrets.
 """
 
 from pathlib import Path
+from typing import Any
 
 import environ
 
-from app.core.logging.sentry import init_sentry
-from app.modules.attachment.constants.media_types import ALLOWED_CONTENT_TYPES
+from app.system.constants.media_types import ALLOWED_CONTENT_TYPES
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
-environ.Env.read_env(BASE_DIR / ".env", overwrite=False)
+# Máy local có `.env.local` (DB local, không R2) → chỉ đọc file đó; server production không có file này
+# → đọc `.env`. Không gộp hai file: biến thiếu trong `.env.local` không âm thầm lấy giá trị production.
+# Biến đã có sẵn trong môi trường (Vercel, CI, Playwright) luôn thắng file.
+_LOCAL_ENV_FILE = BASE_DIR / ".env.local"
+environ.Env.read_env(_LOCAL_ENV_FILE if _LOCAL_ENV_FILE.exists() else BASE_DIR / ".env", overwrite=False)
 
 # Secret dùng chung cho toàn hệ thống: session/CSRF của Django, ký access JWT, HMAC refresh token.
 # Đổi giá trị này sẽ vô hiệu mọi phiên đăng nhập.
@@ -31,15 +35,10 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "django_filters",
-    "app.modules.attachment",
-    "app.modules.account",
-    "app.modules.iam",
-    "app.modules.authentication",
-    "app.modules.health",
-    "app.modules.short_links",
-    "app.modules.custom_pages",
-    "app.modules.journal",
-    "app.modules.qr_codes",
+    "app.system",
+    "app.novel",
+    "app.utilities",
+    "app.finance",
 ]
 
 MIDDLEWARE = [
@@ -66,27 +65,28 @@ TEMPLATES = [
 
 # Database. Test do pytest-django tạo DB riêng `test_toannx`, không đụng DB thật.
 _STATEMENT_TIMEOUT_MS = env.int("DB_STATEMENT_TIMEOUT_MS", default=5000)
+_DEFAULT_DB_CONFIG = env.db_url("DATABASE_URL")
+_DEFAULT_DB_CONFIG.setdefault("OPTIONS", {})
+_DEFAULT_DB_CONFIG["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=0)
+_DEFAULT_DB_CONFIG["CONN_HEALTH_CHECKS"] = True
+_DEFAULT_DB_CONFIG["TEST"] = {"NAME": "test_toannx"}
+if "DB_NAME" in env:
+    _DEFAULT_DB_CONFIG["NAME"] = env.str("DB_NAME")
+if not _DEFAULT_DB_CONFIG.get("PORT"):
+    _DEFAULT_DB_CONFIG["PORT"] = 5432
+else:
+    _DEFAULT_DB_CONFIG["PORT"] = int(_DEFAULT_DB_CONFIG["PORT"])
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env.str("DB_NAME"),
-        "USER": env.str("DB_USER"),
-        "PASSWORD": env.str("DB_PASSWORD"),
-        "HOST": env.str("DB_HOST", default="localhost"),
-        "PORT": env.int("DB_PORT", default=5432),
-        # Serverless + pooler (Neon/Vercel): 0 = mở/đóng kết nối mỗi request.
-        "CONN_MAX_AGE": env.int("DB_CONN_MAX_AGE", default=0),
-        "CONN_HEALTH_CHECKS": True,
-        "TEST": {"NAME": "test_toannx"},
-    }
+    "default": _DEFAULT_DB_CONFIG,
 }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Người dùng & mật khẩu
-AUTH_USER_MODEL = "account.User"
+AUTH_USER_MODEL = "system.User"
 AUTHENTICATION_BACKENDS = [
-    "app.modules.account.backends.account_auth_backend.AccountAuthBackend",
-    "app.modules.iam.backends.iam_permission_backend.IamPermissionBackend",
+    "app.system.backends.account_auth_backend.AccountAuthBackend",
+    "app.system.backends.iam_permission_backend.IamPermissionBackend",
 ]
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
@@ -104,16 +104,65 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # File upload (module attachment).
 # Local: lưu filesystem `media/`. Production (Vercel không có filesystem bền): cấu hình
-# STORAGES["default"] sang object storage (S3/R2/Vercel Blob) qua biến môi trường.
-MEDIA_URL = "/media/"
+# Cloudflare R2 Object Storage (Zero Egress fees) qua biến môi trường.
+CLOUDFLARE_R2_ACCOUNT_ID = env.str("CLOUDFLARE_R2_ACCOUNT_ID", default="")
+CLOUDFLARE_R2_ACCESS_KEY_ID = env.str("CLOUDFLARE_R2_ACCESS_KEY_ID", default="")
+CLOUDFLARE_R2_SECRET_ACCESS_KEY = env.str("CLOUDFLARE_R2_SECRET_ACCESS_KEY", default="")
+CLOUDFLARE_R2_BUCKET_NAME = env.str("CLOUDFLARE_R2_BUCKET_NAME", default="")
+# Bucket R2 riêng KHÔNG bật public access cho file riêng tư (chứng từ...); chỉ mở qua link ký hạn ngắn.
+CLOUDFLARE_R2_PRIVATE_BUCKET_NAME = env.str("CLOUDFLARE_R2_PRIVATE_BUCKET_NAME", default="")
+CLOUDFLARE_R2_CUSTOM_DOMAIN = env.str("CLOUDFLARE_R2_CUSTOM_DOMAIN", default="")
+CLOUDFLARE_R2_ENDPOINT_URL = env.str("CLOUDFLARE_R2_ENDPOINT_URL", default="")
+# API Token Cloudflare (quyền: Account -> R2 Storage -> Read) để lấy dung lượng thực tế
+# từ Cloudflare REST API v4
+CLOUDFLARE_API_TOKEN = env.str("CLOUDFLARE_API_TOKEN", default="")
+
+_configured_storage = env.str("FILE_STORAGE_BACKEND", default="")
+_use_r2 = bool(
+    _configured_storage == "app.core.storage.r2_storage.R2Storage"
+    or (CLOUDFLARE_R2_BUCKET_NAME and _configured_storage != "django.core.files.storage.FileSystemStorage")
+)
+
+if not _configured_storage:
+    _configured_storage = (
+        "app.core.storage.r2_storage.R2Storage" if _use_r2 else "django.core.files.storage.FileSystemStorage"
+    )
+
 MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = (
+    f"https://{CLOUDFLARE_R2_CUSTOM_DOMAIN.replace('https://', '').replace('http://', '').rstrip('/')}/"
+    if (_use_r2 and CLOUDFLARE_R2_CUSTOM_DOMAIN)
+    else "/media/"
+)
+
+# File riêng tư: bucket R2 riêng khi dùng R2; local lưu ngoài MEDIA_ROOT (không được phục vụ công khai).
+# Dùng R2 mà chưa khai bucket riêng tư → upload riêng tư bị từ chối (không lặng lẽ lưu vào filesystem tạm).
+PRIVATE_MEDIA_ROOT = BASE_DIR / "private_media"
+_private_storage: dict[str, Any] = (
+    {"BACKEND": "app.core.storage.r2_private_storage.R2PrivateStorage"}
+    if (_use_r2 and CLOUDFLARE_R2_PRIVATE_BUCKET_NAME)
+    else {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {"location": PRIVATE_MEDIA_ROOT, "base_url": None},
+    }
+)
+PRIVATE_STORAGE_ENABLED = not _use_r2 or bool(CLOUDFLARE_R2_PRIVATE_BUCKET_NAME)
+# Hạn của link ký tới file riêng tư (giây).
+ATTACHMENT_PRIVATE_URL_TTL_SECONDS = env.int("ATTACHMENT_PRIVATE_URL_TTL_SECONDS", default=300)
+
 STORAGES = {
     "default": {
-        "BACKEND": env.str("FILE_STORAGE_BACKEND", default="django.core.files.storage.FileSystemStorage")
+        "BACKEND": _configured_storage,
     },
+    "private": _private_storage,
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
 ATTACHMENT_MAX_SIZE_BYTES = env.int("ATTACHMENT_MAX_SIZE_BYTES", default=5 * 1024 * 1024)
+# Tổng dung lượng lưu trữ tối đa cho phép trên storage (R2/S3/local).
+# Mặc định 9GB (gói miễn phí của Cloudflare R2 là 10GB).
+ATTACHMENT_MAX_TOTAL_STORAGE_BYTES = env.int(
+    "ATTACHMENT_MAX_TOTAL_STORAGE_BYTES", default=9 * 1024 * 1024 * 1024
+)
 # File của tệp đã xóa mềm và file mồ côi (ảnh QR cũ...) bị dọn khỏi storage sau số ngày này.
 ATTACHMENT_PURGE_DAYS = env.int("ATTACHMENT_PURGE_DAYS", default=30)
 ATTACHMENT_ALLOWED_CONTENT_TYPES = ALLOWED_CONTENT_TYPES
@@ -131,16 +180,16 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "app.modules.authentication.authentications.cookie_jwt_authentication.CookieJwtAuthentication",
+        "app.system.authentications.cookie_jwt_authentication.CookieJwtAuthentication",
     ],
     # Mặc định DENY: endpoint public phải khai báo AllowAny tường minh.
     # Mặc định: đăng nhập + quyền IAM đã khai (không khai → 403). View công khai ghi đè trong chính view đó.
     "DEFAULT_PERMISSION_CLASSES": [
         "app.core.permissions.is_active_authenticated.IsActiveAuthenticated",
-        "app.modules.iam.permissions.has_iam_permission.HasIamPermission",
+        "app.system.permissions.has_iam_permission.HasIamPermission",
     ],
     # Rate limit khai báo (`action_rate_limits` / `@rate_limit`), đếm bằng bucket PostgreSQL.
-    "DEFAULT_THROTTLE_CLASSES": ["app.modules.authentication.throttles.bucket_throttle.BucketThrottle"],
+    "DEFAULT_THROTTLE_CLASSES": ["app.system.throttles.bucket_throttle.BucketThrottle"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "EXCEPTION_HANDLER": "app.core.exceptions.exception_handler.app_exception_handler",
@@ -155,7 +204,7 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "app.core.schemas.core_auto_schema.CoreAutoSchema",
 }
 SPECTACULAR_SETTINGS = {
-    "TITLE": "TOANNX API",
+    "TITLE": "ToanNX API",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
@@ -166,6 +215,13 @@ SPECTACULAR_SETTINGS = {
             ("UNPUBLISHED", "Ngừng công khai"),
         ],
         "ShortLinkStatusEnum": [("ACTIVE", "Hoạt động"), ("INACTIVE", "Tạm tắt")],
+        "FinanceRateSourceEnum": "app.finance.constants.finance_choices.RateSource",
+        "FinanceManualRateSourceEnum": [("API", "Tự động (Vietcombank)"), ("MANUAL", "Nhập tay")],
+        "NovelStatusEnum": [
+            ("ONGOING", "Đang ra"),
+            ("COMPLETED", "Hoàn thành"),
+            ("PAUSED", "Tạm dừng"),
+        ],
     },
 }
 
@@ -182,15 +238,24 @@ AUTH_COOKIE_SECURE = not DEBUG
 AUTH_ACCESS_COOKIE_NAME = "access_token"
 AUTH_ACCESS_COOKIE_PATH = "/api"
 AUTH_REFRESH_COOKIE_NAME = "refresh_token"
-AUTH_REFRESH_COOKIE_PATH = "/api/v1/auth"
+AUTH_REFRESH_COOKIE_PATH = "/api/v1/system/auth"
 AUTH_SESSION_HINT_COOKIE_NAME = "session_hint"
 
 # CSRF: double-submit cookie của Django + kiểm tra Origin
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SAMESITE = "Lax" if DEBUG else "None"
 CSRF_COOKIE_SECURE = not DEBUG
-CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:3000"])
+CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:3001"])
+if DEBUG:
+    for _dev_origin in [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ]:
+        if _dev_origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(_dev_origin)
 
 CORS_ALLOWED_ORIGINS: list[str] = env.list("CORS_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_CREDENTIALS = True
@@ -205,26 +270,50 @@ SHORT_LINK_INTERNAL_HOSTS = env.list(
 RATE_LIMITS: dict[str, tuple[int, int, str]] = {
     "default.write": (env.int("RL_DEFAULT_WRITE", default=300), 60, "user"),
     "public.read": (env.int("RL_PUBLIC_READ", default=120), 60, "ip"),
-    "auth.password_reset_request": (env.int("RL_AUTH_PASSWORD_RESET_REQUEST", default=5), 900, "ip"),
-    "auth.password_reset_validate": (env.int("RL_AUTH_PASSWORD_RESET_VALIDATE", default=30), 900, "ip"),
-    "auth.password_reset_confirm": (env.int("RL_AUTH_PASSWORD_RESET_CONFIRM", default=10), 900, "ip"),
-    "short_links.create": (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
-    "short_links.unlock": (env.int("RL_SHORT_LINK_UNLOCK", default=10), 60, "ip"),
-    "custom_pages.create": (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
-    "custom_pages.path.create": (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
-    "qr_codes.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
-    "qr_codes.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
-    "health.client_error": (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
+    "system.password_reset.request": (env.int("RL_AUTH_PASSWORD_RESET_REQUEST", default=5), 900, "ip"),
+    "system.password_reset.validate": (env.int("RL_AUTH_PASSWORD_RESET_VALIDATE", default=30), 900, "ip"),
+    "system.password_reset.confirm": (env.int("RL_AUTH_PASSWORD_RESET_CONFIRM", default=10), 900, "ip"),
+    "system.email_verification.send": (env.int("RL_EMAIL_VERIFICATION_SEND", default=5), 300, "user"),
+    "system.email_verification.verify": (env.int("RL_EMAIL_VERIFICATION_VERIFY", default=30), 900, "ip"),
+    "system.invitation.validate": (env.int("RL_INVITATION_VALIDATE", default=30), 900, "ip"),
+    "system.invitation.accept": (env.int("RL_INVITATION_ACCEPT", default=10), 900, "ip"),
+    "system.social.auth": (env.int("RL_SOCIAL_AUTH", default=30), 900, "ip"),
+    "system.social.link": (env.int("RL_SOCIAL_LINK", default=10), 900, "user"),
+    "system.social.unlink": (env.int("RL_SOCIAL_UNLINK", default=10), 900, "user"),
+    "utilities.short_link.create": (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
+    "utilities.short_link.unlock": (env.int("RL_SHORT_LINK_UNLOCK", default=10), 60, "ip"),
+    "utilities.page.create": (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
+    "utilities.page_path.create": (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
+    "utilities.qr_code.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
+    "utilities.qr_code.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
+    "system.client_error.create": (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
+    "system.attachment.content": (env.int("RL_ATTACHMENT_CONTENT", default=120), 60, "user"),
+    "finance.sepay.call": (env.int("RL_SEPAY_CALL", default=10), 60, "user"),
+    "finance.sepay.webhook": (env.int("RL_SEPAY_WEBHOOK", default=120), 60, "ip"),
+    "system.telegram.call": (env.int("RL_TELEGRAM_CALL", default=20), 60, "user"),
+    "novel.create": (env.int("RL_NOVEL_CREATE", default=60), 3600, "user"),
+    "novel.import": (env.int("RL_NOVEL_IMPORT", default=10), 3600, "user"),
 }
 # Lịch sử thay đổi: model kế thừa JournalTracker tự ghi qua recorder này (rỗng = tắt).
-CORE_CHANGE_RECORDER = "app.modules.journal.recorders.journal_recorder.JournalRecorder"
+CORE_CHANGE_RECORDER = "app.system.recorders.journal_recorder.JournalRecorder"
 JOURNAL_RETENTION_DAYS = env.int("JOURNAL_RETENTION_DAYS", default=365)
 # Phiên/refresh token hết hạn quá số ngày này thì bị dọn.
 AUTH_EXPIRED_RETENTION_DAYS = env.int("AUTH_EXPIRED_RETENTION_DAYS", default=30)
-# Header bí mật của Vercel Cron khi gọi POST /health/cleanup (rỗng = tắt endpoint).
+# Header bí mật của Vercel Cron khi gọi /api/v1/system/health/cleanup (rỗng = tắt endpoint).
 CRON_SECRET = env.str("CRON_SECRET", default="")
 
-# Custom Pages: giới hạn nội dung Tiptap và đoạn đường dẫn giữa dành riêng (một chỗ duy nhất).
+# SePay (module Tài chính). Bí mật chỉ ở ENV, không lưu DB, không trả ra client.
+SEPAY_ENV = env.str("SEPAY_ENV", default="sandbox")
+if SEPAY_ENV not in ("sandbox", "production"):
+    raise ValueError("SEPAY_ENV phải là 'sandbox' hoặc 'production'.")
+# Telegram bot cho thông báo dùng chung (module System).
+# Firebase Cloud Messaging (thông báo trình duyệt); thiếu một trong hai thì kênh PUSH bị ẩn.
+FIREBASE_PROJECT_ID = env.str("FIREBASE_PROJECT_ID", default="")
+FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 = env.str("FIREBASE_SERVICE_ACCOUNT_JSON_BASE64", default="")
+# Ngân sách (giây) gửi thông báo ngay sau commit trong một request; phần còn lại cron gửi.
+NOTIFICATION_DISPATCH_BUDGET_SECONDS = env.float("NOTIFICATION_DISPATCH_BUDGET_SECONDS", default=5.0)
+
+# Tiện ích → Trang tùy chỉnh: giới hạn nội dung Tiptap và đoạn đường dẫn giữa dành riêng (một chỗ duy nhất).
 CUSTOM_PAGE_CONTENT_MAX_BYTES = env.int("CUSTOM_PAGE_CONTENT_MAX_BYTES", default=256 * 1024)
 CUSTOM_PAGE_MAX_IMAGES = env.int("CUSTOM_PAGE_MAX_IMAGES", default=30)
 CUSTOM_PAGE_MAX_VIDEOS = env.int("CUSTOM_PAGE_MAX_VIDEOS", default=10)
@@ -279,6 +368,12 @@ FRONTEND_URL = env.str("FRONTEND_URL", default="")
 # Gửi email bất đồng bộ qua background worker thread (tránh block request web)
 EMAIL_ASYNC = env.bool("EMAIL_ASYNC", default=True)
 
+# Cấu hình đăng nhập & liên kết mạng xã hội qua OAuth (Google, GitHub...)
+GOOGLE_OAUTH_CLIENT_ID = env.str("GOOGLE_OAUTH_CLIENT_ID", default="")
+GOOGLE_OAUTH_CLIENT_SECRET = env.str("GOOGLE_OAUTH_CLIENT_SECRET", default="")
+GITHUB_OAUTH_CLIENT_ID = env.str("GITHUB_OAUTH_CLIENT_ID", default="")
+GITHUB_OAUTH_CLIENT_SECRET = env.str("GITHUB_OAUTH_CLIENT_SECRET", default="")
+
 # Backend luôn đứng sau proxy (Next.js rewrite / Vercel): lấy domain + scheme gốc của trình duyệt
 # từ X-Forwarded-* để dựng URL tuyệt đối (ví dụ URL file). Host vẫn phải nằm trong ALLOWED_HOSTS.
 USE_X_FORWARDED_HOST = True
@@ -288,15 +383,6 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
-
-# Báo lỗi lên Sentry: để trống SENTRY_DSN là tắt (local, test).
-SENTRY_DSN = env.str("SENTRY_DSN", default="")
-init_sentry(
-    dsn=SENTRY_DSN,
-    environment=env.str("SENTRY_ENVIRONMENT", default="production"),
-    release=env.str("VERCEL_GIT_COMMIT_SHA", default=""),
-    traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
-)
 
 LOGGING = {
     "version": 1,

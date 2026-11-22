@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isColumnWidths } from "@/shares/components/common/data-table/hooks/use-column-resizing";
+import { isColumnWidths } from "@/shares/components/common/hooks/use-column-resizing";
 
 describe("cấu hình độ rộng cột từ storage", () => {
   it("chỉ nhận bản đồ các độ rộng hữu hạn và dương", () => {

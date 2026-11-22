@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 
-import { isApiError } from "./api/api-error";
+import { CLIENT_ERROR_CODES, isApiError } from "./api/api-error";
 
 const STALE_TIME_MS = 30_000;
 const MAX_RETRIES = 2;
@@ -17,6 +17,7 @@ export function createQueryClient(): QueryClient {
         staleTime: STALE_TIME_MS,
         refetchOnWindowFocus: false,
         retry: (failureCount, error) => {
+          if (isApiError(error) && error.code === CLIENT_ERROR_CODES.cancelled) return false;
           if (isApiError(error) && error.status >= 400 && error.status < 500) return false;
           return failureCount < MAX_RETRIES;
         },

@@ -245,8 +245,9 @@ class CoreCrudService[M: models.Model, R: CoreRepository[Any]]:
                 details={"limit": limit},
             )
 
-    @staticmethod
-    def log_event(instance: M, event: str, data: dict[str, Any] | None = None, actor: Any = None) -> None:
+    def log_event(
+        self, instance: M, event: str, data: dict[str, Any] | None = None, actor: Any = None
+    ) -> None:
         """Ghi sự kiện không phải đổi field vào journal (model phải có JournalTracker).
 
         Args:

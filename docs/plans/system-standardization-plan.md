@@ -1,4 +1,4 @@
-# Chuẩn hóa hệ thống TOANNX — BE + FE
+# Chuẩn hóa hệ thống ToanNX — BE + FE
 
 Ngày 15/11/2026 · bản 7. Thay cho `qr-shortlinks-custompages-plan.md` (bản 6) và file Q&A (đã gộp vào mục 13).
 Trạng thái: **ĐÃ THỰC HIỆN** (15/11/2026) trên `develop`. Chưa làm: sinh type FE từ OpenAPI, CI workflow, CSP,
@@ -139,10 +139,10 @@ Mặc định toàn hệ thống trong `config/settings.py` (lớp base **không
 ```python
 "DEFAULT_PERMISSION_CLASSES": [
     "app.core.permissions.is_active_authenticated.IsActiveAuthenticated",   # chuyển từ iam về core
-    "app.modules.iam.permissions.has_iam_permission.HasIamPermission",
+    "app.iam.permissions.has_iam_permission.HasIamPermission",
 ],
 "DEFAULT_THROTTLE_CLASSES": [
-    "app.modules.authentication.throttles.bucket_throttle.BucketThrottle",  # 4.5
+    "app.authentication.throttles.bucket_throttle.BucketThrottle",  # 4.5
 ],
 ```
 
@@ -166,17 +166,22 @@ class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
     detail_serializer_class = ShortLinkDetailResponseSerializer
     create_serializer_class = ShortLinkCreateValidateSerializer
     update_serializer_class = ShortLinkUpdateValidateSerializer
-    bulk_update_serializer_class = ShortLinkBulkUpdateValidateSerializer   # None = không có bulk-update
-    bulk_delete_enabled = True                                             # False = không có bulk-delete
-    history_enabled = True                                                 # cần model có journal (4.7)
+    bulk_update_serializer_class = (
+        ShortLinkBulkUpdateValidateSerializer  # None = không có bulk-update
+    )
+    bulk_delete_enabled = True  # False = không có bulk-delete
+    history_enabled = True  # cần model có journal (4.7)
     action_permissions = {
-        "list": permission_rule(P.READ), "retrieve": permission_rule(P.READ),
-        "create": permission_rule(P.CREATE), "partial_update": permission_rule(P.UPDATE),
+        "list": permission_rule(P.READ),
+        "retrieve": permission_rule(P.READ),
+        "create": permission_rule(P.CREATE),
+        "partial_update": permission_rule(P.UPDATE),
         "destroy": permission_rule(P.DELETE),
-        "bulk_update": permission_rule(P.UPDATE), "bulk_delete": permission_rule(P.DELETE),
+        "bulk_update": permission_rule(P.UPDATE),
+        "bulk_delete": permission_rule(P.DELETE),
         "history": permission_rule(P.READ),
     }
-    action_rate_limits = {"create": "short_links.create"}                  # 4.5
+    action_rate_limits = {"create": "short_links.create"}  # 4.5
 ```
 
 - Mọi action gọi `service.*_for(actor)` nên owner tự áp. `create` trả `get_by_id_for`.
@@ -203,9 +208,9 @@ class HasIamPermission(BasePermission):
 ```python
 class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
     repository_class = ShortLinkRepository
-    owner_field = "owner"                                     # None = tài nguyên chung (users, roles, paths)
+    owner_field = "owner"  # None = tài nguyên chung (users, roles, paths)
     manage_all_permission = ShortLinksPermission.MANAGE_ALL.code
-    owner_quota_setting = "SHORT_LINK_MAX_PER_OWNER"          # None = không giới hạn tổng
+    owner_quota_setting = "SHORT_LINK_MAX_PER_OWNER"  # None = không giới hạn tổng
 ```
 
 | Method | Hành vi mặc định |
@@ -236,13 +241,17 @@ Dùng `actor.has_perm()` (Django gọi `IamPermissionBackend`) nên core **khôn
 # config/settings.py — một bảng duy nhất, đổi được bằng biến môi trường
 RATE_LIMITS = {
     #  khóa                  (số lần, cửa sổ giây, theo)
-    "default.write":        (env.int("RL_DEFAULT_WRITE", 300), 60, "user"),   # áp mọi POST/PATCH/DELETE không khai riêng
-    "short_links.create":   (env.int("RL_SHORT_LINK_CREATE", 30), 3600, "user"),
-    "custom_pages.create":  (env.int("RL_PAGE_CREATE", 20), 3600, "user"),
+    "default.write": (
+        env.int("RL_DEFAULT_WRITE", 300),
+        60,
+        "user",
+    ),  # áp mọi POST/PATCH/DELETE không khai riêng
+    "short_links.create": (env.int("RL_SHORT_LINK_CREATE", 30), 3600, "user"),
+    "custom_pages.create": (env.int("RL_PAGE_CREATE", 20), 3600, "user"),
     "custom_pages.path.create": (env.int("RL_PAGE_PATH_CREATE", 10), 3600, "user"),
-    "qr_codes.create":      (env.int("RL_QR_CREATE", 60), 3600, "user"),
-    "qr_codes.preview":     (env.int("RL_QR_PREVIEW", 120), 60, "user"),
-    "public.read":          (env.int("RL_PUBLIC_READ", 120), 60, "ip"),
+    "qr_codes.create": (env.int("RL_QR_CREATE", 60), 3600, "user"),
+    "qr_codes.preview": (env.int("RL_QR_PREVIEW", 120), 60, "user"),
+    "public.read": (env.int("RL_PUBLIC_READ", 120), 60, "ip"),
 }
 ```
 
@@ -255,7 +264,7 @@ RATE_LIMITS = {
 
 ### 4.6 Mã lỗi
 
-- `app/modules/<m>/constants/<m>_error_code.py`: `class ShortLinksErrorCode(StrEnum)`. Core chỉ giữ mã chung
+- `app/<m>/constants/<m>_error_code.py`: `class ShortLinksErrorCode(StrEnum)`. Core chỉ giữ mã chung
   (`VALIDATION_ERROR`, `NOT_FOUND`, `CONFLICT`, `PERMISSION_DENIED`, `RATE_LIMITED`, `AUTH_*`…). `AppException.code`
   nhận `str`.
 - Test BE `core/tests/test_error_codes.py`: gom mọi enum mã lỗi, kiểm không trùng giá trị, và đọc
@@ -265,8 +274,8 @@ RATE_LIMITS = {
 ### 4.7 Lịch sử thay đổi (journal) — model kế thừa tracker là chạy
 
 ```python
-class ShortLink(JournalTracker, CoreModel):         # tracker là mixin, thêm vào lớp model
-    journal_masked_fields = ("password_hash",)       # ghi "đã đổi" nhưng không lưu mã băm
+class ShortLink(JournalTracker, CoreModel):  # tracker là mixin, thêm vào lớp model
+    journal_masked_fields = ("password_hash",)  # ghi "đã đổi" nhưng không lưu mã băm
 ```
 
 - `JournalTracker` (`core/tracking/journal_tracker.py`) là mixin trừu tượng: model kế thừa thì CRUD qua repository **tự
@@ -311,7 +320,7 @@ Chi tiết module journal ở mục 7.
 
 - `DATABASES["default"]["OPTIONS"]["options"] = "-c statement_timeout=5000"` (đổi bằng biến môi trường) (B8).
 - Production dùng host **pooler** của Neon; `CONN_MAX_AGE` giữ 0 trên Vercel, bật `CONN_HEALTH_CHECKS`. Ghi vào
-  `docs/deployment.md`.
+  `docs/guides/deployment.md`.
 - Index chuẩn cho model có owner và xóa mềm: `Index(fields=["owner", "-created_at"], condition=Q(deleted_at__isnull=True))`.
   Tìm kiếm `ILIKE` chỉ thêm index trigram khi bảng vượt khoảng 10.000 dòng; ghi điều kiện này vào rule, không làm trước.
 
@@ -472,7 +481,7 @@ Index: `(resource, object_id, created_at DESC)`, `(actor, created_at DESC)`, `(c
 ### 7.2 Ghi
 
 - `JournalRecorder` (`journal/recorders/journal_recorder.py`) thực thi `ChangeRecorder`; settings
-  `CORE_CHANGE_RECORDER = "app.modules.journal.recorders.journal_recorder.JournalRecorder"`.
+  `CORE_CHANGE_RECORDER = "app.journal.recorders.journal_recorder.JournalRecorder"`.
 - Một lần gọi repository = một `INSERT` (bulk). Không có thay đổi thực sự thì không ghi.
 - Bật ngay cho: `User` (trừ `password` ẩn, `last_login`, `last_seen_at` không theo dõi), `Role`, `Attachment`
   (`original_name`, `folder`), `AttachmentFolder`, `ShortLink`, `PagePath`, `Page` (trừ `content`: chỉ ghi "đã đổi nội

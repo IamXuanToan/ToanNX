@@ -2,7 +2,7 @@
 
 ```python
 @require_permission(QrCodesPermission.CREATE)
-@rate_limit("qr_codes.preview")          # khóa trong settings.RATE_LIMITS
+@rate_limit("utilities.qr_code.preview")          # khóa trong settings.RATE_LIMITS
 def post(self, request: Request) -> CoreResponse: ...
 ```
 

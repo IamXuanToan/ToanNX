@@ -1,0 +1,331 @@
+{
+  "module": {
+    "name": "Utilities",
+    "description": "Short links, QR codes and public pages."
+  },
+  "nav": {
+    "shortLinks": "Short links",
+    "qrCodes": "QR codes",
+    "pages": "Pages",
+    "pagePaths": "Page paths"
+  },
+  "shortLinks": {
+    "title": "Short links",
+    "create": "Create short link",
+    "empty": "No short links yet.",
+    "searchPlaceholder": "Search by name, slug, destination…",
+    "copied": "Link copied.",
+    "copy": "Copy {url}",
+    "inactive": "Disabled",
+    "expired": "Expired",
+    "columns": {
+      "name": "Link",
+      "destination": "Destination",
+      "access": "Opening",
+      "expiresAt": "Expires",
+      "owner": "Owner",
+      "status": "Status"
+    },
+    "actions": {
+      "enable": "Enable link",
+      "disable": "Disable link",
+      "generateSlug": "Generate UUID",
+      "preview": "Preview"
+    },
+    "sections": {
+      "info": "Link details",
+      "redirect": "Opening behavior",
+      "access": "Protection and expiry",
+      "status": "Status"
+    },
+    "fields": {
+      "name": "Name",
+      "slug": "Slug",
+      "slugHint": "Leave empty to generate one. URL: toannx.com/s/[slug]",
+      "slugChangeHint": "Changing the slug stops the old URL from working.",
+      "destinationUrl": "Destination URL",
+      "description": "Description",
+      "redirectMode": "When someone opens the link",
+      "autoRedirectSeconds": "Open after (seconds)",
+      "hasExpiry": "Set an expiry",
+      "password": "Password",
+      "passwordHint": "Leave blank to allow anyone with the link.",
+      "passwordKeepHint": "Leave blank to keep the current password.",
+      "removePassword": "Remove current password",
+      "expiresAt": "Expires at",
+      "status": "Status",
+      "isActiveHint": "Disable to show the unavailable page instead.",
+      "shortUrl": "Short link"
+    },
+    "redirect": {
+      "manual": "Wait for a button press",
+      "manualHint": "Visitors choose when to open the destination.",
+      "timed": "Open automatically after a delay",
+      "timedHint": "A button is also available to open it now, up to 60 seconds."
+    },
+    "validation": {
+      "required": "Required.",
+      "url": "Enter a full http or https URL.",
+      "slug": "Slug must be 3–64 characters: a-z, 0-9 and hyphens.",
+      "future": "The expiry must be in the future.",
+      "seconds": "Enter 1 to 60 seconds."
+    },
+    "landing": {
+      "title": "Link Redirection",
+      "subtitle": "Preparing to redirect you to the destination.",
+      "home": "Back to home",
+      "eyebrow": "Short link",
+      "destination": "Destination URL",
+      "copyAction": "Copy",
+      "passwordLabel": "Enter the password to continue",
+      "passwordHint": "Please authenticate with your password to continue.",
+      "unlock": "Unlock",
+      "unlocking": "Checking…",
+      "continue": "Open destination",
+      "manual": "Waiting for confirmation",
+      "autoSeconds": "Opens after {seconds} seconds",
+      "countdown": "Opening in {seconds} seconds. You can use the button now.",
+      "protected": "This link is protected by a password.",
+      "previewNotice": "Preview — the destination button will not navigate.",
+      "invalidPassword": "Incorrect password.",
+      "unlockError": "Could not open this link. Please try again."
+    },
+    "unavailable": {
+      "home": "Back to home",
+      "notice": "Navigation notice",
+      "not-found": {
+        "title": "Link not found",
+        "description": "The link was disabled, deleted or mistyped."
+      },
+      "expired": {
+        "title": "Link expired",
+        "description": "The owner set an expiry for this link."
+      },
+      "busy": {
+        "title": "Too many requests",
+        "description": "Please try again in a few minutes."
+      }
+    },
+    "editor": {
+      "insert": "Short link button",
+      "title": "Insert short link button",
+      "description": "A button to one of your short links; it hides itself when the link is disabled or expired.",
+      "link": "Short link",
+      "label": "Button label",
+      "cancel": "Cancel",
+      "confirm": "Insert"
+    }
+  },
+  "qrCodes": {
+    "title": "QR codes",
+    "create": "Create QR code",
+    "empty": "No QR codes yet.",
+    "searchPlaceholder": "Search by name…",
+    "previewAlt": "QR code preview",
+    "previewEmpty": "Fill in the content to see a preview.",
+    "columns": {
+      "name": "QR code",
+      "qrType": "Type",
+      "owner": "Owner",
+      "updatedAt": "Updated"
+    },
+    "sections": {
+      "content": "Content",
+      "logo": "Custom logo",
+      "preview": "Preview",
+      "design": "Design"
+    },
+    "types": {
+      "BANK_TRANSFER": "Bank transfer",
+      "BANK_TRANSFERHint": "VietQR: scan with a banking app to transfer money.",
+      "URL": "Link",
+      "URLHint": "Opens a web page (short links work too).",
+      "TEXT": "Text",
+      "TEXTHint": "Shows a piece of text when scanned."
+    },
+    "errorCorrection": {
+      "L": "Low (7%)",
+      "M": "Medium (15%)",
+      "Q": "Quartile (25%)",
+      "H": "High (30%)"
+    },
+    "fields": {
+      "name": "Name",
+      "qrType": "QR type",
+      "content": "Content",
+      "design": "Design",
+      "bank": "Bank",
+      "accountNumber": "Account number",
+      "accountName": "Account holder",
+      "accountNameHint": "Uppercased without accents when saved.",
+      "amount": "Amount",
+      "message": "Transfer note",
+      "messageHint": "Up to 25 characters without accents.",
+      "url": "Link",
+      "urlHint": "http or https.",
+      "text": "Text",
+      "size": "Size (px)",
+      "margin": "Margin",
+      "foreground": "Code color",
+      "background": "Background",
+      "errorCorrection": "Error correction",
+      "logo": "Center logo",
+      "logoHint": "PNG, JPEG, WebP or GIF. The logo is kept small for easier scanning.",
+      "logoCorrectionHint": "A logo automatically uses correction H and a margin of at least 4 modules."
+    },
+    "picker": {
+      "insert": "QR code",
+      "title": "Insert QR code",
+      "description": "Pick one of your QR codes; its image will be inserted.",
+      "search": "Search QR codes…",
+      "empty": "No QR codes yet. Create one on the QR codes page first."
+    },
+    "validation": {
+      "required": "Required.",
+      "url": "Enter a full http or https URL.",
+      "accountNumber": "Account number must be 4–19 letters or digits.",
+      "message": "Up to 25 characters: letters, digits and spaces.",
+      "color": "Use a #RRGGBB color.",
+      "logoFormat": "Logo must be a PNG, JPEG, WebP or GIF image."
+    }
+  },
+  "customPages": {
+    "validation": {
+      "required": "Required.",
+      "slug": "Slug must be 3–64 characters: a-z, 0-9 and hyphens.",
+      "segment": "1–32 characters: a-z, 0-9 and hyphens.",
+      "color": "Use a #RRGGBB color."
+    },
+    "pages": {
+      "title": "Pages",
+      "create": "Create page",
+      "empty": "No pages yet.",
+      "searchPlaceholder": "Search by title, slug…",
+      "view": "View page",
+      "createPath": "Create page path",
+      "editPath": "Edit page path",
+      "pathInactive": "Disabled — no new pages here",
+      "conflict": "This page was changed elsewhere. Reload to see the latest version (unsaved changes here will be lost).",
+      "reload": "Reload",
+      "draftFound": "There is unsaved content from last time in this browser.",
+      "draftRestore": "Restore",
+      "draftDiscard": "Discard",
+      "columns": {
+        "title": "Page",
+        "path": "Page path",
+        "status": "Status",
+        "owner": "Owner",
+        "updatedAt": "Updated"
+      },
+      "tabs": {
+        "content": "Content",
+        "design": "Design",
+        "seo": "SEO",
+        "settings": "Settings"
+      },
+      "sections": {
+        "settings": "Page settings",
+        "theme": "Colors and buttons",
+        "images": "Images",
+        "seo": "Search optimization"
+      },
+      "statuses": {
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "UNPUBLISHED": "Unpublished"
+      },
+      "templates": {
+        "blank": "Blank",
+        "blankHint": "Start from an empty page.",
+        "link_in_bio": "Link-in-bio",
+        "link_in_bioHint": "Greeting, link buttons, social links.",
+        "about": "About",
+        "aboutHint": "Introduce yourself and how to reach you.",
+        "donate": "Donate",
+        "donateHint": "A donation note; insert your bank transfer QR code."
+      },
+      "themeModes": {
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      },
+      "buttonStyles": {
+        "rounded": "Rounded",
+        "square": "Square",
+        "pill": "Pill"
+      },
+      "fields": {
+        "path": "Page path",
+        "pathId": "Page path",
+        "title": "Title",
+        "slug": "Slug",
+        "slugHint": "Leave empty to generate one. URL: toannx.com/[path]/[slug]",
+        "slugChangeHint": "Changing the slug stops the old URL from working.",
+        "description": "Description",
+        "status": "Status",
+        "template": "Start from",
+        "themeMode": "Mode",
+        "theme": "Theme",
+        "buttonStyle": "Button style",
+        "primaryColor": "Primary color",
+        "backgroundColor": "Background",
+        "textColor": "Text color",
+        "avatar": "Avatar",
+        "cover": "Cover image",
+        "seoTitle": "SEO title",
+        "seoTitleHint": "Leave empty to use the page title.",
+        "seoDescription": "SEO description",
+        "publishedAt": "Published at"
+      }
+    },
+    "paths": {
+      "title": "Page paths",
+      "create": "Create page path",
+      "empty": "No page paths yet.",
+      "searchPlaceholder": "Search by segment, name…",
+      "inactive": "Disabled",
+      "columns": {
+        "segment": "Path",
+        "pageCount": "Pages",
+        "position": "Order",
+        "status": "Status"
+      },
+      "actions": {
+        "enable": "Enable path",
+        "disable": "Disable path"
+      },
+      "sections": {
+        "info": "Details",
+        "status": "Status"
+      },
+      "fields": {
+        "segment": "Segment",
+        "segmentHint": "For example qr → toannx.com/qr/[slug].",
+        "segmentChangeHint": "Changing the segment breaks every old URL of the pages in it.",
+        "name": "Name",
+        "description": "Description",
+        "position": "Order",
+        "isActive": "Enabled",
+        "isActiveHint": "When disabled, no new pages can be added; existing pages keep working."
+      }
+    },
+    "editor": {
+      "button": "Link button",
+      "callout": "Callout",
+      "spacer": "Spacer",
+      "buttonTitle": "Insert link button",
+      "buttonLabel": "Button label",
+      "buttonUrl": "Link",
+      "buttonLabelRequired": "Enter a button label.",
+      "buttonUrlInvalid": "Only http, https, mailto and tel links are allowed.",
+      "cancel": "Cancel",
+      "insert": "Insert"
+    },
+    "public": {
+      "previewDraft": "This page is a draft.",
+      "previewUnpublished": "This page is unpublished.",
+      "previewHint": "Only people with access can see it.",
+      "edit": "Edit page"
+    }
+  }
+}

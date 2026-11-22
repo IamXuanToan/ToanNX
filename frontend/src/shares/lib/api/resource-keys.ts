@@ -2,7 +2,7 @@
  * Query key chuẩn của một tài nguyên: `[module, resource, ...]`. Invalidate `all` là làm mới cả tài nguyên.
  *
  * ```ts
- * export const shortLinkKeys = createResourceKeys("short-links", "links");
+ * export const shortLinkKeys = createResourceKeys("utilities", "short-links");
  * useQuery({ queryKey: shortLinkKeys.list(filters), ... });
  * ```
  *

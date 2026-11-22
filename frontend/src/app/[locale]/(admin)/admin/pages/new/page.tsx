@@ -1,7 +1,7 @@
-import { PageCreateView } from "@/modules/custom-pages/views/page-create-view";
+import { PageCreateView } from "@/modules/utilities/views/page-create-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
-export const generateMetadata = createPageMetadata({ title: "customPages.pages.create" });
+export const generateMetadata = createPageMetadata({ title: "utilities.customPages.pages.create" });
 
 /** Trang tạo trang công khai. */
 export default function CustomPageCreatePage() {
