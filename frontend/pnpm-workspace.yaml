@@ -1,4 +1,8 @@
 allowBuilds:
+  # Không cần script cài đặt: postinstall của @firebase/util chỉ sinh cấu hình tự động cho Firebase App Hosting
+  # (dự án truyền cấu hình tường minh trong shares/lib/firebase-messaging.ts); của protobufjs chỉ kiểm tra CLI.
+  "@firebase/util": false
+  protobufjs: false
   "@parcel/watcher": false
   "@swc/core": false
   sharp: false
