@@ -2,7 +2,8 @@
 
 from django.test import SimpleTestCase, override_settings
 
-from app.core.storage.r2_storage import R2Storage
+from app.core.storage.r2_private_storage import R2PrivateStorage
+from app.core.storage.r2_storage import PRIVATE_CACHE_CONTROL, PUBLIC_CACHE_CONTROL, R2Storage
 
 
 class TestR2Storage(SimpleTestCase):
@@ -41,3 +42,18 @@ class TestR2Storage(SimpleTestCase):
 
         url = storage.url("attachments/2026/11/abcxyz.jpg")
         assert url == "https://media.toannx.com/attachments/2026/11/abcxyz.jpg"
+
+    @override_settings(
+        CLOUDFLARE_R2_BUCKET_NAME="public-bucket",
+        CLOUDFLARE_R2_PRIVATE_BUCKET_NAME="private-bucket",
+        CLOUDFLARE_R2_ACCESS_KEY_ID="key",
+        CLOUDFLARE_R2_SECRET_ACCESS_KEY="secret",
+        ATTACHMENT_PRIVATE_URL_TTL_SECONDS=300,
+    )
+    def test_cache_control_public_immutable_private_no_store(self) -> None:
+        """File công khai cache 1 năm (khóa UUID mới mỗi lần thay); file riêng tư không cache."""
+        public = R2Storage()
+        private = R2PrivateStorage()
+        assert public.get_object_parameters("a.png")["CacheControl"] == PUBLIC_CACHE_CONTROL
+        assert "immutable" in PUBLIC_CACHE_CONTROL
+        assert private.get_object_parameters("a.pdf")["CacheControl"] == PRIVATE_CACHE_CONTROL

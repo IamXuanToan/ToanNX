@@ -21,6 +21,8 @@ PUSH_DEVICE_STALE_DAYS = 60
 NEW_DEVICE_LOOKBACK_DAYS = 30
 # Cảnh báo dung lượng lưu trữ khi đã dùng từ phần trăm này.
 STORAGE_WARNING_PERCENT = 90
+# Cảnh báo dung lượng database (Neon free 1 GB/project) khi đã dùng từ phần trăm này.
+DATABASE_WARNING_PERCENT = 80
 
 TELEGRAM_TIMEOUT_SECONDS = 5
 TELEGRAM_API_BASE = "https://api.telegram.org"

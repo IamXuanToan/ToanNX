@@ -7,7 +7,7 @@ ra sao và cách vận hành nó.
 | --- | --- | --- |
 | [rules/](rules/) | Rule bắt buộc: `common`, `backend`, `frontend`, `git` | Trước khi viết bất kỳ dòng code nào |
 | [common-catalog.md](common-catalog.md) | Danh mục common BE + FE đang có | Trước khi viết code (tránh viết lại thứ đã có) |
-| [architecture/](architecture/) | Kiến trúc tổng, xác thực, phân quyền, i18n, kiểm thử, đối chiếu tham chiếu | Sửa phần nền, cần hiểu luồng chung |
+| [architecture/](architecture/) | Kiến trúc tổng, xác thực, phân quyền, i18n, kiểm thử, đối chiếu tham chiếu, [hạ tầng và hạn mức gói free](architecture/infrastructure.md) | Sửa phần nền, cần hiểu luồng chung; thêm việc tốn DB/Redis/R2/function |
 | [guides/](guides/) | Hướng dẫn cài đặt, vận hành: triển khai, Cloudflare R2, OAuth, thông báo, tài chính | Cài môi trường, cấu hình dịch vụ ngoài |
 | [modules/](modules/) | Mỗi module một thư mục: mục đích, model, quyền, route, sự kiện, webhook | Làm việc trong một module |
 | [features/](features/) | **Mô tả chức năng**: mỗi file một chức năng, đọc là hiểu luồng xử lý | Sửa hoặc dùng lại một chức năng |

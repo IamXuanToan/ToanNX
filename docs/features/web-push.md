@@ -16,8 +16,11 @@ Bấm popup → focus tab toannx.com đang mở và điều hướng tới link 
 
 1. Người dùng bật ở Hồ sơ → Thông báo (`PushDeviceCard`): `Notification.requestPermission()` (bắt buộc từ thao
    tác bấm) → `getPushToken()` đăng ký `/notification-sw.js` và lấy token FCM → `POST` push device.
-2. Có sự kiện → `NotificationService.notify` → kênh PUSH → `FcmClient.send` gửi **tin data-only**
-   (`title`, `body`, `link`, `level`, `notification_id`) kèm `Urgency: high`.
+2. Có sự kiện → `NotificationService.notify` chỉ ghi outbox (bản gửi kênh PUSH, `PENDING`) trong transaction →
+   sau commit đá `NotificationKickService` → QStash gọi `POST /system/notifications/dispatch` ở lượt function riêng
+   (vài giây sau; không có QStash thì đợi cron) → `FcmClient.send` gửi **tin data-only** (`title`, `body`, `link`,
+   `level`, `notification_id`) kèm `Urgency: high`. Request gốc (ví dụ đăng nhập) không chờ FCM.
+   Làm mới access token Google và gửi đều có timeout 3 giây; lỗi mạng là lỗi tạm, thử lại theo lùi dần.
 3. `public/notification-sw.js` nhận `push`:
    - gửi `postMessage({ type: "notification", data })` tới mọi tab để làm mới chuông;
    - **luôn** gọi `showNotification` (icon logo, `tag` = id thông báo, `renotify`), kể cả khi đang xem trang.
@@ -48,5 +51,5 @@ Không dùng SDK Firebase trong service worker (không `importScripts` từ CDN,
 
 - `frontend/public/notification-sw.js`
 - `frontend/src/shares/lib/firebase-messaging.ts`
-- `frontend/src/modules/system/components/hooks/use-notification-realtime.ts`, `use-push-registration.ts`
+- `frontend/src/modules/system/components/notification/hooks/use-notification-realtime.ts`, `use-push-registration.ts`
 - `backend/app/system/services/fcm_client.py`, `push_device_service.py`

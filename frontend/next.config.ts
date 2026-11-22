@@ -19,12 +19,12 @@ const isHttps = (process.env.NEXT_PUBLIC_SITE_URL ?? "").startsWith("https://");
  */
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://cloud.umami.is${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' https: data: blob:",
   "media-src 'self' https: blob:",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.open-meteo.com https://fcmregistrations.googleapis.com https://firebaseinstallations.googleapis.com",
+  "connect-src 'self' https://api.open-meteo.com https://fcmregistrations.googleapis.com https://firebaseinstallations.googleapis.com https://cloud.umami.is https://gateway.umami.is",
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
   "object-src 'none'",
   "base-uri 'self'",

@@ -123,6 +123,9 @@ def test_push_retry_backoff_and_permanent_failure(user: Any, django_capture_on_c
         NotificationService().notify(
             "system.announcement.published", recipient=user, dedup_key="k", payload=PAYLOAD
         )
+        # `notify` chỉ ghi outbox, không gửi trong request; lượt dispatch (QStash/cron) mới gửi.
+        assert NotificationDelivery.objects.get().attempts == 0
+        NotificationService().dispatch_pending()
     delivery = NotificationDelivery.objects.get()
     assert delivery.status == "PENDING" and delivery.attempts == 1 and delivery.next_attempt_at is not None
     delivery.next_attempt_at = None

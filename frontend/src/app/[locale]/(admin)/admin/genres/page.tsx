@@ -1,4 +1,4 @@
-import { GenreListView } from "@/modules/novel/views/genre-list-view";
+import { GenreListView } from "@/modules/novel/views/genre/genre-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "novel.nav.genres" });

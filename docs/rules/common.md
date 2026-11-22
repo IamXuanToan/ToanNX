@@ -204,7 +204,10 @@ Chi tiết luồng: [docs/features/attachment-visibility.md](../features/attachm
     hưởng (`uv run pytest --reuse-db app/<m>/tests/test_<x>.py`). `DATABASE_URL` khi test bắt buộc trỏ về PostgreSQL
     local (`postgresql://postgress:123456@localhost:5432/toannx?sslmode=prefer`, user `postgress`, pass `123456`),
     tuyệt đối không dùng DB cloud/server (Neon) để tránh chậm mạng và timeout. Đổi route, view, quyền, serializer
-    thì chạy thêm `core/tests/test_endpoint_access.py`, `test_module_conventions.py`, `test_openapi_schema.py` và `pnpm api:types`.
+    thì chạy thêm `core/tests/test_endpoint_access.py`, `test_module_conventions.py`, `test_openapi_schema.py`.
+    **Đổi bất kỳ thứ gì đi vào OpenAPI** (route, view, serializer, `@extend_schema`, `help_text`, mã lỗi, **kể cả
+    docstring của view và method HTTP**) thì chạy `pnpm api:types` và commit `api-schema.gen.ts` cùng lần
+    (rule backend §6; CI đỏ nếu file lệch dù chỉ một dòng mô tả).
   - FE: `eslint`/`prettier --check` trên file đã sửa, `pnpm typecheck` (kiểu liên đới cả project), Vitest đúng
     file test liên quan; `pnpm build` khi đổi route/page/layout/config; E2E chỉ spec của luồng bị đổi
     (`pnpm e2e tests/e2e/<luồng>.spec.ts`).

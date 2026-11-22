@@ -1,4 +1,4 @@
-import { ModuleLauncherView } from "@/modules/manage-app/views/module-launcher-view";
+import { ModuleLauncherView } from "@/modules/manage-app/views/launcher/module-launcher-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "common.nav.modulesLabel" });

@@ -48,7 +48,7 @@ Mỗi phía (`backend/`, `frontend/`) có ba file; chỉ `.env.example` được
   journal quá `JOURNAL_RETENTION_DAYS`, file của tệp đã xóa mềm và file mồ côi quá `ATTACHMENT_PURGE_DAYS`,
   gửi nốt thông báo (`dispatch_notifications`), dọn thông báo cũ (`purge_notifications`).
 - **Cron gửi thông báo** (Vercel Cron chỉ 1 lần/ngày): tạo job miễn phí ở cron-job.org gọi
-  `POST https://api.toannx.com/api/v1/system/notifications/dispatch` mỗi 1–5 phút, header
+  `POST https://api.toannx.com/api/v1/system/notifications/dispatch` **mỗi 10 phút** (lưới an toàn; QStash gửi ngay), header
   `Authorization: Bearer <CRON_SECRET>`. Xem [notification-setup-guide.md](notification-setup.md).
 - **Webhook SePay theo từng người**: mỗi người dùng tự cấu hình ở Tài chính → Kết nối SePay (token API lưu DB mã
   hóa, URL `https://api.toannx.com/api/v1/finance/sepay/webhook/<mã riêng>`, secret riêng). Không còn biến env
@@ -64,11 +64,12 @@ Biến môi trường (Vercel → Settings → Environment Variables):
 | `DJANGO_SECRET_KEY` | chuỗi ngẫu nhiên ≥ 50 ký tự; secret chung (Django, ký JWT, HMAC refresh token) |
 | `DATABASE_URL` | PostgreSQL connection URL (Neon host pooled `...-pooler...` với `sslmode=require&channel_binding=require` hoặc direct host) |
 | `DB_CONN_MAX_AGE` | `0` (serverless + pooler) |
+| `REDIS_URL` | Upstash Redis TCP (`rediss://...`), do integration Upstash của Vercel tự tạo; trống thì không cache công khai và rate limit đếm bằng PostgreSQL. Xem [infrastructure.md](../architecture/infrastructure.md) |
 | `DJANGO_ALLOWED_HOSTS` | `toannx.com,api.toannx.com,<project>.vercel.app` (gồm cả domain frontend, xem dưới) |
 | `CSRF_TRUSTED_ORIGINS` | `https://toannx.com` |
 | `AUTH_ACCESS_TOKEN_LIFETIME_SECONDS` | `600` |
 | `AUTH_REFRESH_TOKEN_LIFETIME_SECONDS` | `604800` |
-| `CRON_SECRET` | chuỗi ngẫu nhiên; trống thì endpoint dọn dẹp trả 404 |
+| `CRON_SECRET` | chuỗi ngẫu nhiên; trống thì endpoint dọn dẹp và cron gửi thông báo trả 404 |
 | `JOURNAL_RETENTION_DAYS` / `ATTACHMENT_PURGE_DAYS` | `365` / `30` |
 | `ATTACHMENT_MAX_TOTAL_STORAGE_BYTES` | `9663676416` (9GB; chi tiết xem [cloudflare-r2.md](cloudflare-r2.md)) |
 | `CLOUDFLARE_R2_PRIVATE_BUCKET_NAME` | Bucket R2 **không bật public access** cho file riêng tư (chứng từ). Thiếu khi đang dùng R2 thì upload riêng tư bị từ chối. Dùng chung access key với bucket công khai (key phải có quyền cả hai bucket) |
@@ -77,7 +78,10 @@ Biến môi trường (Vercel → Settings → Environment Variables):
 | `SEPAY_ENV` | `sandbox` (Test mode) hoặc `production`; token/secret SePay là của từng người (không ở env) |
 | `FIREBASE_PROJECT_ID` | Project Firebase cho thông báo trình duyệt; trống thì tắt kênh "Trình duyệt" |
 | `FIREBASE_SERVICE_ACCOUNT_JSON_BASE64` | **Bí mật**: service account JSON (base64 một dòng) để gọi FCM HTTP v1 |
-| `NOTIFICATION_DISPATCH_BUDGET_SECONDS` | Giây gửi thông báo ngay sau commit trong một request (mặc định 5) |
+| `QSTASH_URL`, `QSTASH_TOKEN`, `QSTASH_CURRENT_SIGNING_KEY`, `QSTASH_NEXT_SIGNING_KEY` | Upstash QStash (integration Vercel tạo). **Bí mật** trừ URL. Trống `QSTASH_TOKEN` thì thông báo chỉ gửi khi cron chạy. Xem [notification-setup.md](notification-setup.md) |
+| `DB_CONNECT_TIMEOUT` | `10` (giây chờ kết nối; Neon đang ngủ cần vài giây để thức) |
+| `DATABASE_MAX_BYTES` | `1073741824` (Neon free 1 GB); cron dọn dẹp cảnh báo khi dùng từ 80%, `0` = tắt |
+| `EMAIL_ASYNC` / `EMAIL_TIMEOUT` | `False` / `5`: gửi thư theo mẫu đồng bộ (luồng nền bị dừng trên Vercel làm mất thư), chặn treo SMTP |
 
 Frontend (project Vercel của FE): `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`,
 `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`, `NEXT_PUBLIC_FIREBASE_APP_ID`, `NEXT_PUBLIC_FIREBASE_VAPID_KEY` (công khai).

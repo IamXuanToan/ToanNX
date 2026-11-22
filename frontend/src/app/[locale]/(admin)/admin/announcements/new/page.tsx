@@ -1,4 +1,4 @@
-import { AnnouncementCreateView } from "@/modules/system/views/announcement-create-view";
+import { AnnouncementCreateView } from "@/modules/system/views/announcement/announcement-create-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({

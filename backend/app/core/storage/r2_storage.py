@@ -5,6 +5,9 @@ from typing import Any
 from django.conf import settings
 from storages.backends.s3 import S3Storage
 
+PUBLIC_CACHE_CONTROL = "public, max-age=31536000, immutable"
+PRIVATE_CACHE_CONTROL = "private, no-store"
+
 
 class R2Storage(S3Storage):
     """Storage adapter chuyên dụng cho Cloudflare R2.
@@ -16,6 +19,9 @@ class R2Storage(S3Storage):
     - File Overwrite: False (không ghi đè file trùng tên)
     - Addressing Style: path
     - Region Name: auto
+    - Cache-Control công khai 1 năm, `immutable`: khóa file là UUID mới mỗi lần tải lên/thay nội dung
+      nên không bao giờ cache nhầm bản cũ; Cloudflare (media.toannx.com) trả lượt xem lặp từ cache, không
+      tốn thao tác loại B của R2 (gói free 10 triệu/tháng).
     """
 
     default_acl = None
@@ -42,4 +48,5 @@ class R2Storage(S3Storage):
             cleaned_domain = custom_domain.replace("https://", "").replace("http://", "").rstrip("/")
             settings_dict.setdefault("custom_domain", cleaned_domain)
 
+        settings_dict.setdefault("object_parameters", {"CacheControl": PUBLIC_CACHE_CONTROL})
         super().__init__(**settings_dict)

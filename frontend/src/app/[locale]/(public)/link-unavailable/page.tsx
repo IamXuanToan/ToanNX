@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { HOME_ROUTES } from "@/modules/home/constants/routes";
-import { LinkUnavailableView } from "@/modules/utilities/views/link-unavailable-view";
+import { LinkUnavailableView } from "@/modules/utilities/views/short-link/link-unavailable-view";
 import { Button } from "@/shares/components/ui/button";
 import { createPageMetadata } from "@/shares/lib/seo";
 

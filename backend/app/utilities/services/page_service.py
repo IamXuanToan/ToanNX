@@ -16,6 +16,7 @@ from app.core.utils.url import build_absolute_url
 from app.system.models.attachment import Attachment
 from app.system.services.attachment_service import AttachmentService
 from app.utilities.constants.page_templates import PAGE_TEMPLATES
+from app.utilities.constants.public_cache import PUBLIC_CACHE_NAMESPACE, PUBLIC_CACHE_TTL_SECONDS
 from app.utilities.constants.utilities_error_code import UtilitiesErrorCode
 from app.utilities.models.page import Page
 from app.utilities.permissions.page_permission import PagePermission
@@ -38,6 +39,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
     owner_field = "owner"
     owner_quota_setting = "CUSTOM_PAGE_MAX_PER_OWNER"
     manage_all_permission = PagePermission.MANAGE_ALL.code
+    public_cache_namespace = PUBLIC_CACHE_NAMESPACE
 
     def __init__(
         self,
@@ -74,7 +76,21 @@ class PageService(CoreCrudService[Page, PageRepository]):
 
         Raises:
             NotFoundError: Không có trang, hoặc chưa công khai mà người xem không có quyền (cùng một lỗi).
+
+        Trang đã xuất bản giống nhau với mọi người xem nên được cache (Redis); bản nháp không bao giờ cache.
         """
+        version = self.cache_service.namespace_version(PUBLIC_CACHE_NAMESPACE)
+        key = None if version is None else f"{PUBLIC_CACHE_NAMESPACE}:{version}:page:{segment}:{slug}"
+        cached = self.cache_service.get_json(key) if key else None
+        if isinstance(cached, dict):
+            return cached
+        data = self._load_public(segment, slug, viewer)
+        if key and not data["preview"]:
+            self.cache_service.set_json(key, data, PUBLIC_CACHE_TTL_SECONDS)
+        return data
+
+    def _load_public(self, segment: str, slug: str, viewer: Any | None) -> dict[str, Any]:
+        """Đọc trang công khai từ DB (xem `get_public`)."""
         page = self.repository.find_by_url(segment, slug)
         if page is None:
             raise NotFoundError()
@@ -143,11 +159,13 @@ class PageService(CoreCrudService[Page, PageRepository]):
             fields["slug"] = normalize_slug(fields["slug"])
         self._prepare(page.owner, fields, current_status=page.status)
         try:
-            return self.repository.update(page, actor=actor, **fields)
+            updated = self.repository.update(page, actor=actor, **fields)
         except ConflictError as exc:
             if exc.code != ErrorCode.CONFLICT:
                 raise
             raise ConflictError("Slug đã được sử dụng.", details=_SLUG_TAKEN) from exc
+        self.invalidate_public_cache()
+        return updated
 
     @transaction.atomic
     def duplicate(self, actor: Any, pk: Any) -> Page:

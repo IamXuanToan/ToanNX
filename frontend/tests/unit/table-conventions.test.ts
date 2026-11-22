@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -11,17 +11,24 @@ import { describe, expect, it } from "vitest";
  */
 const SRC = join(process.cwd(), "src", "modules");
 
+/** Mọi `.tsx` trong `components/` (đệ quy: component nằm trong `components/<nhóm>/`). */
+function componentFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) return componentFiles(path);
+    return entry.name.endsWith(".tsx") ? [path] : [];
+  });
+}
+
 const TABLE_FILES = readdirSync(SRC, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .flatMap((module) => {
     const dir = join(SRC, module.name, "components");
     if (!existsSync(dir)) return [];
-    return readdirSync(dir)
-      .filter((file) => file.endsWith(".tsx"))
-      .map((file) => ({
-        name: `${module.name}/${file}`,
-        source: readFileSync(join(dir, file), "utf8"),
-      }));
+    return componentFiles(dir).map((path) => ({
+      name: `${module.name}/${relative(dir, path).replaceAll("\\", "/")}`,
+      source: readFileSync(path, "utf8"),
+    }));
   })
   .filter((file) => file.source.includes("<DataTable"));
 

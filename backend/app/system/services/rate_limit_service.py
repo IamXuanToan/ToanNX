@@ -1,7 +1,8 @@
-"""Rate limit cửa sổ cố định lưu PostgreSQL.
+"""Rate limit cửa sổ cố định: đếm bằng Redis (Upstash) khi có, dự phòng PostgreSQL.
 
-Vercel Functions không giữ bộ nhớ giữa các invocation nên không dùng limiter
-in-memory. Khi cần tải cao có thể thay repository bằng Redis, giữ nguyên service.
+Vercel Functions không giữ bộ nhớ giữa các invocation nên không dùng limiter in-memory. Có Redis thì lượt
+khách công khai không ghi Neon (không đánh thức DB, xem `docs/architecture/infrastructure.md` §3.2); Redis
+trống hoặc lỗi thì đếm bằng bucket PostgreSQL như trước. Hai nơi cùng cửa sổ, cùng giới hạn, cùng lỗi.
 """
 
 import hashlib
@@ -11,6 +12,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.utils import timezone
 
+from app.core.cache.cache_service import CacheService
 from app.core.exceptions.rate_limit_error import RateLimitError
 from app.system.repositories.rate_limit_bucket_repository import (
     RateLimitBucketRepository,
@@ -20,13 +22,17 @@ from app.system.repositories.rate_limit_bucket_repository import (
 class RateLimitService:
     """Ghi nhận và chặn khi vượt giới hạn."""
 
-    def __init__(self, repository: RateLimitBucketRepository | None = None) -> None:
+    def __init__(
+        self, repository: RateLimitBucketRepository | None = None, cache_service: CacheService | None = None
+    ) -> None:
         """Khởi tạo service.
 
         Args:
-            repository: Repository bộ đếm.
+            repository: Repository bộ đếm (dự phòng khi không có Redis).
+            cache_service: Redis.
         """
         self.repository = repository or RateLimitBucketRepository()
+        self.cache_service = cache_service or CacheService()
 
     def hit(self, key: str, limit: int, window_seconds: int) -> None:
         """Ghi nhận một lần gọi; chặn khi vượt giới hạn.
@@ -44,7 +50,11 @@ class RateLimitService:
         now = timezone.now()
         start = self._window_start(now, window_seconds)
         expires = start + timedelta(seconds=window_seconds)
-        if self.repository.increment(self._hash(key), start, expires) > limit:
+        key_hash = self._hash(key)
+        count = self.cache_service.incr_window(self._cache_key(key_hash, start), window_seconds)
+        if count is None:
+            count = self.repository.increment(key_hash, start, expires)
+        if count > limit:
             raise RateLimitError(retry_after=max(1, math.ceil((expires - now).total_seconds())))
 
     def purge_expired(self, now: datetime) -> int:
@@ -65,7 +75,17 @@ class RateLimitService:
             key: Khóa.
             window_seconds: Độ dài cửa sổ.
         """
-        self.repository.delete_window(self._hash(key), self._window_start(timezone.now(), window_seconds))
+        key_hash = self._hash(key)
+        start = self._window_start(timezone.now(), window_seconds)
+        if self.cache_service.enabled:
+            self.cache_service.delete(self._cache_key(key_hash, start))
+        # Luôn xóa cả bucket DB: lượt trước có thể đã đếm ở dự phòng khi Redis lỗi.
+        self.repository.delete_window(key_hash, start)
+
+    @staticmethod
+    def _cache_key(key_hash: str, window_start: datetime) -> str:
+        """Khóa Redis của một cửa sổ."""
+        return f"rate_limit:{key_hash}:{int(window_start.timestamp())}"
 
     @staticmethod
     def _hash(key: str) -> str:

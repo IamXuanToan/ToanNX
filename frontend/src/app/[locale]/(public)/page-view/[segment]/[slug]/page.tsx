@@ -5,7 +5,7 @@ import { cache } from "react";
 
 import { UTILITIES_API_ENDPOINTS } from "@/modules/utilities/constants/api-endpoints";
 import type { PublicPage } from "@/modules/utilities/types/page.types";
-import { PublicPageView } from "@/modules/utilities/views/public-page-view";
+import { PublicPageView } from "@/modules/utilities/views/page/public-page-view";
 import { serverApiGet } from "@/shares/lib/api/server-api";
 
 type Params = { locale: string; segment: string; slug: string };

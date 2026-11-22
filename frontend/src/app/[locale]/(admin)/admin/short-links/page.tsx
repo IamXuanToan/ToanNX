@@ -1,4 +1,4 @@
-import { ShortLinkListView } from "@/modules/utilities/views/short-link-list-view";
+import { ShortLinkListView } from "@/modules/utilities/views/short-link/short-link-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "utilities.nav.shortLinks" });

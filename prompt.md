@@ -100,6 +100,10 @@ trước khi viết code Next.
   điều kiện `deleted_at__isnull=True` (rule backend mục 9).
 - Dữ liệu test thoả ràng buộc unique (sinh `dedup_key`, mã riêng cho từng bản ghi).
 - Mỗi endpoint đúng một file test `test_<resource>_<action>_api.py`.
+- **Đổi bất kỳ thứ gì đi vào OpenAPI thì chạy `pnpm api:types` ngay trong lần đó** và commit
+  `frontend/src/shares/types/api-schema.gen.ts`: route, view, serializer, `@extend_schema`, `help_text`, mã lỗi,
+  **kể cả chỉ sửa docstring của class view hoặc method `get`/`post`/...** (drf-spectacular đưa docstring vào mô tả
+  OpenAPI). CI chạy `git diff --exit-code` trên file này, lệch một dòng mô tả cũng đỏ (rule backend §6).
 - **Database test Backend**: Khi chạy test backend (`pytest`), `DATABASE_URL` trong `backend/.env` bắt buộc trỏ về
   PostgreSQL local (`postgresql://postgress:123456@localhost:5432/toannx?sslmode=prefer`, user `postgress`, pass `123456`).
   Tuyệt đối không dùng DB trên server/cloud (Neon) để tránh chậm và timeout; luôn truyền cờ `--reuse-db`
@@ -141,7 +145,14 @@ Chi tiết: `docs/features/permission-scope.md`, `docs/features/permission-ui.md
 ### 2.5 Frontend (Next.js 16)
 
 - Luồng: `page → View → component (+ hook riêng) → hook module (React Query) → service → apiClient`.
-- `page.tsx`/`layout.tsx` chỉ khai metadata và render View của module. View chỉ ghép component và kiểm quyền.
+- `page.tsx`/`layout.tsx` chỉ khai metadata và render View của module. View chỉ ghép component và kiểm quyền
+  (chỉ gọi `usePermission`, `useTranslations`, `useEditMode`; không query, state, `useRouter`, `useEffect`).
+- **Chia theo model**: component đặt ở `modules/<m>/components/<model>/<tên>.tsx`, hook của nó ở
+  `components/<model>/hooks/use-<tên>.ts`, view ở `views/<model>/<tên>-view.tsx`. `<model>` trùng tên file service
+  (`user`, `role`, `short-link`...); màn không gắn model thì theo chức năng (`auth`, `current-user`, `reader`,
+  `dashboard`, `shell`...). Không đặt file ở gốc `components/`/`views/`, không tạo `components/hooks/` cấp gốc, không
+  tạo `views/hooks/`, không tạo nhóm `shared`/`common` (dùng chung → nhóm dùng nhiều nhất; toàn app → `shares/`).
+  Chi tiết bản ghi: component `<model>-profile.tsx` tự tải dữ liệu; chuyển trang sau khi tạo nằm trong hook form.
 - Service mỗi model BE một file. Route, API endpoint, query key do từng module tự khai trong `constants/`.
 - `shares/` không import module. UI dùng component chung có sẵn (`DataTable`, `SelectField`, `FilterSelect`,
   `FormPage`...). Control cao 40px. Form tạo/sửa/chi tiết dùng chung một component, không dùng dialog.
@@ -245,7 +256,8 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
    - Backend: `uv run ruff format --check <file>`, `uv run ruff check <file>`, `uv run mypy <file>`,
      `uv run pytest --reuse-db app/<m>/tests/test_<x>.py` (đúng file test của endpoint/service bị ảnh hưởng; DB test
      bắt buộc là PostgreSQL local: user `postgress`, pass `123456`). Đổi route/view/quyền/serializer thì thêm
-     `app/core/tests/test_endpoint_access.py`, `test_module_conventions.py`, `test_openapi_schema.py` và `pnpm api:types`.
+     `app/core/tests/test_endpoint_access.py`, `test_module_conventions.py`, `test_openapi_schema.py`; đổi bất kỳ thứ gì
+     đi vào OpenAPI (cả docstring view/method) thì `pnpm api:types` và commit `api-schema.gen.ts`.
    - Frontend: `pnpm exec eslint <file>`, `pnpm exec prettier --check <file>`, `pnpm typecheck`,
      `pnpm test tests/unit/<file>.test.ts`; `pnpm build` khi đổi route/page/layout/config;
      `pnpm e2e tests/e2e/<luồng>.spec.ts` khi đổi luồng đó.
@@ -292,6 +304,8 @@ Backend:
 Frontend:
 
 - [ ] Một component/hook/class một file; không hook trong `.tsx`; context tách `-context.ts`/`-provider.tsx`/`use-*.ts`.
+- [ ] File mới nằm đúng `components/<model>/` (+ `hooks/`) và `views/<model>/`; không `views/hooks/`, không nhóm
+      `shared`/`common`; `tests/unit/module-structure.test.ts` đạt.
 - [ ] Đúng lớp: page chỉ metadata + View; View không fetch; component không gọi service/apiClient trực tiếp.
 - [ ] Dùng component chung (`DataTable`, `SelectField`, `FilterSelect`, `FormPage`...), control `h-10`, `<Image>`, chuỗi qua i18n.
 - [ ] Primitive lấy từ `@/shares/components/ui/*` (thiếu thì `pnpm dlx shadcn@latest add`); không `<button>`/`<input>`/
@@ -312,6 +326,7 @@ Frontend:
 - [ ] Route quản trị mới có tiền tố module trong `<M>_PATHNAMES` (`/quan-tri/<module-vi>/...`).
 - [ ] Không có `<svg>`/`<path>` nội tuyến hay data URI SVG; SVG nằm trong `public/`, gọi qua hằng đường dẫn.
 - [ ] Đã thêm/đổi common (BE hoặc FE) thì `docs/common-catalog.md` đã cập nhật.
+- [ ] Đổi thứ đi vào OpenAPI (kể cả docstring view/method) thì đã chạy `pnpm api:types`, `api-schema.gen.ts` đi cùng commit.
 - [ ] `tests/unit/one-unit-per-file.test.ts` và `app/core/tests/test_one_class_per_file.py` đạt (một đơn vị một file).
 
 Tài liệu:

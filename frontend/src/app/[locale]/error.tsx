@@ -1,6 +1,6 @@
 "use client";
 
-import { AppErrorView } from "@/modules/home/views/app-error-view";
+import { AppErrorView } from "@/modules/home/views/errors/app-error-view";
 
 /**
  * Error boundary theo ngôn ngữ.

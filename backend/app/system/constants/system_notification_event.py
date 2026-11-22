@@ -12,3 +12,4 @@ class SystemNotificationEvent(StrEnum):
     ANNOUNCEMENT_PUBLISHED = "system.announcement.published"
     DELIVERY_FAILED = "system.notification.delivery_failed"
     STORAGE_QUOTA_WARNING = "system.storage.quota_warning"
+    DATABASE_QUOTA_WARNING = "system.database.quota_warning"

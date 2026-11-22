@@ -1,4 +1,4 @@
-import { SystemSettingsView } from "@/modules/system/views/system-settings-view";
+import { SystemSettingsView } from "@/modules/system/views/setting/system-settings-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "common.nav.settings" });

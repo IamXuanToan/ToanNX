@@ -4,10 +4,13 @@ from datetime import timedelta
 from typing import Any
 
 import pytest
+from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
+from app.core.tests.helpers.fake_redis import FakeRedis
 from app.utilities.models.short_link import ShortLink
+from app.utilities.services.short_link_service import ShortLinkService
 from app.utilities.tests.factories.short_link_factory import ShortLinkFactory
 
 pytestmark = pytest.mark.django_db
@@ -82,3 +85,53 @@ class TestShortLinkResolveApi(BaseApiTestCase):
 
         res2 = client.get(f"{BASE_URL}/A_B")
         self.assert_error(res2, 404, "NOT_FOUND")
+
+
+class TestShortLinkResolveCache(BaseApiTestCase):
+    """Có Redis: lượt khách lặp lại không chạm DB; sửa link thì cache hết hiệu lực ngay."""
+
+    def test_second_visit_hits_cache_without_db(
+        self, client: Any, fake_redis: FakeRedis, django_assert_num_queries: Any
+    ) -> None:
+        link = ShortLinkFactory(slug="cached-link", destination_url="https://example.com/a")
+        assert client.get(f"{BASE_URL}/{link.slug}").status_code == 200
+        with django_assert_num_queries(0):
+            res = client.get(f"{BASE_URL}/{link.slug}")
+        assert self.assert_success(res, 200)["destination_url"] == "https://example.com/a"
+
+    def test_update_invalidates_cache(
+        self,
+        client: Any,
+        superuser: Any,
+        login: Any,
+        fake_redis: FakeRedis,
+        django_capture_on_commit_callbacks: Any,
+    ) -> None:
+        link = ShortLinkFactory(slug="edit-me", destination_url="https://example.com/a", owner=superuser)
+        client.get(f"{BASE_URL}/{link.slug}")
+        with django_capture_on_commit_callbacks(execute=True):
+            ShortLinkService().update(superuser, link.pk, {"destination_url": "https://example.com/b"})
+        data = self.assert_success(client.get(f"{BASE_URL}/{link.slug}"), 200)
+        assert data["destination_url"] == "https://example.com/b"
+
+    def test_locked_link_cache_has_no_hash_or_destination(self, client: Any, fake_redis: FakeRedis) -> None:
+        link = ShortLinkFactory(
+            slug="locked", destination_url="https://example.com/secret", password_hash=make_password("pw")
+        )
+        client.get(f"{BASE_URL}/{link.slug}")
+        stored = " ".join(fake_redis.data.values())
+        assert "secret" not in stored and "pbkdf2" not in stored and "argon2" not in stored
+        data = self.assert_success(client.get(f"{BASE_URL}/{link.slug}"), 200)
+        assert data["has_password"] is True and data["destination_url"] is None
+        # Mở khóa luôn kiểm ở DB.
+        res = client.post(f"{BASE_URL}/{link.slug}", {"password": "pw"}, format="json")
+        assert self.assert_success(res, 200)["destination_url"] == "https://example.com/secret"
+        bad = client.post(f"{BASE_URL}/{link.slug}", {"password": "sai"}, format="json")
+        assert bad.status_code != 200
+
+    def test_missing_slug_cached_briefly(
+        self, client: Any, fake_redis: FakeRedis, django_assert_num_queries: Any
+    ) -> None:
+        assert client.get(f"{BASE_URL}/khong-co").status_code == 404
+        with django_assert_num_queries(0):
+            assert client.get(f"{BASE_URL}/khong-co").status_code == 404

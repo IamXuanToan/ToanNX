@@ -14,3 +14,10 @@ class DatabaseRepository:
         """
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
+
+    def size_bytes(self) -> int:
+        """Dung lượng database hiện tại (byte), tính như Neon tính hạn mức lưu trữ của project."""
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT pg_database_size(current_database())")
+            row = cursor.fetchone()
+        return int(row[0]) if row else 0

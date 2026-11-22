@@ -1,4 +1,4 @@
-import { JournalListView } from "@/modules/system/views/journal-list-view";
+import { JournalListView } from "@/modules/system/views/journal-entry/journal-list-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "system.journal.nav.entries" });

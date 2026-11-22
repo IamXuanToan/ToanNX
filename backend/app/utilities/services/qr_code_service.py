@@ -9,6 +9,7 @@ from app.core.services.core_crud_service import CoreCrudService
 from app.core.utils.text import ascii_slug
 from app.system.models.attachment import Attachment
 from app.system.services.attachment_service import AttachmentService
+from app.utilities.constants.public_cache import PUBLIC_CACHE_NAMESPACE
 from app.utilities.models.qr_code import QrCode
 from app.utilities.permissions.qr_code_permission import QrCodePermission
 from app.utilities.repositories.qr_code_repository import QrCodeRepository
@@ -26,6 +27,7 @@ class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
     owner_field = "owner"
     manage_all_permission = QrCodePermission.MANAGE_ALL.code
     owner_quota_setting = "QR_CODE_MAX_PER_OWNER"
+    public_cache_namespace = PUBLIC_CACHE_NAMESPACE
 
     def __init__(
         self, repository: QrCodeRepository | None = None, attachment_service: AttachmentService | None = None
@@ -55,9 +57,11 @@ class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
             render_png(payload, fields["design"], self._logo_bytes(logo)),
             self._file_name(fields["name"]),
         )
-        return self.repository.create(
+        qr_code = self.repository.create(
             actor=actor, owner=actor, payload=payload, image=image, logo=logo, **fields
         )
+        self.invalidate_public_cache()
+        return qr_code
 
     @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> QrCode:
@@ -96,7 +100,9 @@ class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
                     render_png(fields["payload"], fields["design"], self._logo_bytes(logo)),
                     self._file_name(fields.get("name", qr_code.name)),
                 )
-        return self.repository.update(qr_code, actor=actor, **fields)
+        updated = self.repository.update(qr_code, actor=actor, **fields)
+        self.invalidate_public_cache()
+        return updated
 
     @transaction.atomic
     def delete(self, actor: Any, pk: Any) -> None:
@@ -109,6 +115,7 @@ class QrCodeService(CoreCrudService[QrCode, QrCodeRepository]):
         qr_code = self.get_for_write(actor, pk)
         self.repository.delete(qr_code, actor=actor)
         self.attachment_service.delete_generated(actor, qr_code.image_id)
+        self.invalidate_public_cache()
 
     def preview(
         self, actor: Any, qr_type: str, data: dict[str, Any], style: dict[str, Any], logo_id: Any = None

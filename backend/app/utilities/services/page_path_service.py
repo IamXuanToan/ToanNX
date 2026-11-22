@@ -9,6 +9,7 @@ from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.services.core_crud_service import CoreCrudService
 from app.core.utils.slug import normalize_slug
+from app.utilities.constants.public_cache import PUBLIC_CACHE_NAMESPACE
 from app.utilities.constants.utilities_error_code import UtilitiesErrorCode
 from app.utilities.models.page_path import PagePath
 from app.utilities.repositories.page_path_repository import PagePathRepository
@@ -39,6 +40,7 @@ class PagePathService(CoreCrudService[PagePath, PagePathRepository]):
     """Ai có quyền thì tạo; còn trang thì không xóa được; đổi segment làm URL cũ 404."""
 
     repository_class = PagePathRepository
+    public_cache_namespace = PUBLIC_CACHE_NAMESPACE
 
     @transaction.atomic
     def create(self, actor: Any, data: dict[str, Any]) -> PagePath:
@@ -72,6 +74,7 @@ class PagePathService(CoreCrudService[PagePath, PagePathRepository]):
                 code=UtilitiesErrorCode.PAGE_PATH_IN_USE,
             )
         self.repository.delete(path, actor=actor)
+        self.invalidate_public_cache()
 
     @staticmethod
     def _save(operation: Any) -> PagePath:

@@ -1,4 +1,4 @@
-import { FileAccessView } from "@/modules/system/views/file-access-view";
+import { FileAccessView } from "@/modules/system/views/attachment/file-access-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({

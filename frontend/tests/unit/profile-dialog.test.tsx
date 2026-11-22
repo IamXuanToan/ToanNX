@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ProfileDialog } from "@/modules/system/components/profile-dialog";
+import { ProfileDialog } from "@/modules/system/components/current-user/profile-dialog";
 import type { AuthRole, AuthUser } from "@/modules/system/types/auth.types";
 
 const mockUpdateAsync = vi.fn().mockResolvedValue({});

@@ -3,7 +3,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { Folder } from "lucide-react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ModuleGroupCard } from "@/modules/manage-app/components/module-group-card";
+import { ModuleGroupCard } from "@/modules/manage-app/components/launcher/module-group-card";
 import type { AdminGroup } from "@/shares/types/navigation.types";
 
 vi.mock("@/i18n/navigation", () => ({

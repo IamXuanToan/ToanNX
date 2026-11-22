@@ -314,6 +314,9 @@ class UserRoleView(CoreApiView):
 - APIView chỉ cần `@extend_schema(responses=...)` (serializer của `data`; `{204: None}` khi không body).
 - Schema phải sạch: `uv run python manage.py spectacular --validate --fail-on-warn`
   (được kiểm tra trong `app/core/tests/test_openapi_schema.py`).
+- **Đổi bất kỳ thứ gì đi vào OpenAPI thì chạy `pnpm api:types` (trong `frontend/`) ngay trong lần sửa đó** và để
+  `frontend/src/shares/types/api-schema.gen.ts` đi cùng commit. Gồm: route, view, quyền, serializer, `@extend_schema`, `help_text`/`verbose_name`, mã lỗi, **cả docstring của class view và method `get`/`post`/`put`/`patch`/`delete`** (drf-spectacular đưa docstring vào mô tả OpenAPI). CI chạy
+  `git diff --exit-code` trên file này nên chỉ lệch một dòng mô tả cũng đỏ. Không sửa tay file sinh ra.
 
 ## 7. Phụ thuộc giữa module
 
@@ -372,8 +375,16 @@ class UserRoleView(CoreApiView):
   payload=NotificationPayload(...))` (gọi qua service). Không tự gửi email/Telegram/push, không đọc model thông
   báo. Sự kiện khai trong `ModuleDescriptor.notification_events` với `scope` (`PERSONAL`/`SYSTEM`), `audience`
   (`OWNER` = truyền `recipient` là chủ dữ liệu; `SUBSCRIBERS` = mọi người có `permission`), `permission`,
-  `default_level`, `default_channels`. `notify` không bao giờ ném lỗi ra nơi gọi (savepoint + log), gửi sau commit
-  trong ngân sách thời gian, phần còn lại do cron `POST /system/notifications/dispatch` gửi.
+  `default_level`, `default_channels`. `notify` không bao giờ ném lỗi ra nơi gọi (savepoint + log).
+- **Request không gọi dịch vụ ngoài để gửi thông báo** (FCM, SMTP, Telegram): `notify` chỉ ghi outbox, sau commit
+  đá `NotificationKickService` (QStash gọi lại `POST /system/notifications/dispatch` ở lượt function riêng; cron
+  ngoài là lưới an toàn). Không thêm đường gửi inline, không tăng timeout để che việc gửi chậm. Ngoại lệ duy nhất:
+  nút "Gửi lại" (`retry`) do người dùng bấm. Lời gọi dịch vụ ngoài nào cũng phải có timeout (≤ 5 giây).
+- **Redis (`CacheService`) chỉ để tăng tốc**: dữ liệu gốc, outbox, phiên đăng nhập ở PostgreSQL; Redis trống/lỗi thì
+  tự về dự phòng, không trả 500. Chỉ cache dữ liệu **công khai** (không cache request của quản trị viên); khóa
+  `<module>:<resource>:...` có TTL; service có dữ liệu công khai khai `public_cache_namespace`. Lượt khách và cron
+  không được chạm DB khi cache/mốc còn hiệu lực (Neon free tính CU-giờ theo lúc thức) — ngân sách ở
+  [infrastructure.md](../architecture/infrastructure.md).
 
 ### Xoá và thao tác hàng loạt
 

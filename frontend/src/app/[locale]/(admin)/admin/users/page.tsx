@@ -1,5 +1,5 @@
-import { UserListView } from "@/modules/system/views/user-list-view";
-import { UserRoleFilterView } from "@/modules/system/views/user-role-filter-view";
+import { UserListView } from "@/modules/system/views/user/user-list-view";
+import { UserRoleFilterView } from "@/modules/system/views/user-role/user-role-filter-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "common.nav.users" });

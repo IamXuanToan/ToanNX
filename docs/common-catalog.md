@@ -28,7 +28,7 @@ Gốc: `backend/app/core/`. Core không import module nghiệp vụ (trừ `TYPE
 | `CoreQuerySet` | `models/core_query_set.py` | QuerySet mặc định của `CoreModel` (lọc bản đã xóa mềm) |
 | `JournalTracker` | `tracking/journal_tracker.py` | Mixin đặt **trước** `CoreModel` để CRUD tự ghi lịch sử (`journal_fields`, `journal_masked_fields`, `journal_event`) |
 | `CoreRepository` | `repositories/core_repository.py` | Gốc mọi repository: `get_queryset`, `get_queryset_with_deleted`, `get_by_id`, `find_one`, `exists`, `count`, `get_for_update`, `create`, `update`, `update_where`, `bulk_create`, `delete`, `delete_where`, `hard_delete`, `hard_delete_where` |
-| `CoreCrudService` | `services/core_crud_service.py` | Gốc mọi service CRUD: `owner_field`, `manage_all_permission`, `owner_quota_setting`, `*_for(actor)`, `get_for_write`, `bulk_update`, `bulk_delete`, `log_event` |
+| `CoreCrudService` | `services/core_crud_service.py` | Gốc mọi service CRUD: `owner_field`, `manage_all_permission`, `owner_quota_setting`, `public_cache_namespace` (tài nguyên hiện trên trang công khai: create/update/delete tự làm mới cache sau commit; ghi thẳng repository thì gọi `invalidate_public_cache()`), `*_for(actor)`, `get_for_write`, `bulk_update`, `bulk_delete`, `log_event` |
 | `CoreModelViewSet` | `views/core_model_view_set.py` | Gốc mọi API CRUD: khai serializer, filter, `action_permissions`, `bulk_update_serializer_class`, `bulk_delete_enabled`, `history_enabled`, `action_rate_limits` |
 | `CoreApiView` | `views/core_api_view.py` | Gốc mọi API không phải CRUD; `get_actor(request)`; bảng ghi đè `permission_classes` cho API công khai/chỉ đăng nhập |
 | `CoreModuleConfig` | `registry/core_module_config.py` | `AppConfig` của mọi module (`label` = mã module, tự đăng ký) |
@@ -93,6 +93,8 @@ Gốc: `backend/app/core/`. Core không import module nghiệp vụ (trừ `TYPE
 | `get_current_user`, `get_user_id`, `get_request_id`, `get_current_request`, `set_current_user`, `request_context` | `context/user_context.py` | Đọc người dùng/request_id hiện tại ngoài view (repository ghi audit, log) |
 | `RequestContextMiddleware` | `middleware/request_context_middleware.py` | Đã cài: dựng ngữ cảnh request |
 | `RequestContextFilter` | `logging/request_context_filter.py` | Đã cài: gắn `request_id` vào log |
+| `StepTimer` | `logging/step_timer.py` | Đo từng bước một luồng: `mark(step)` rồi `log()` → `<name> steps a=..ms total=..ms` (kèm `request_id`); chỉ tên bước + ms, không dữ liệu người dùng |
+| `CacheService` | `cache/cache_service.py` | Redis (Upstash) **chỉ để tăng tốc**: `get_json`/`set_json`/`delete`, `incr_window` (bộ đếm cửa sổ), `namespace_version`/`bump_namespace`; `REDIS_URL` trống hoặc Redis lỗi → như cache miss, không ném lỗi (tạm ngắt 30 giây). Khóa `<module>:<resource>:...`, luôn có TTL; không dùng cho request của quản trị viên, phiên đăng nhập hay dữ liệu gốc |
 | `ChangeRecorder` | `tracking/change_recorder.py` | Hợp đồng nơi lưu lịch sử (bản thật ở `system`) |
 | `ChangeSet` | `tracking/change_set.py` | Dữ liệu một thay đổi do `JournalTracker` phát |
 | `get_change_recorder` | `tracking/recorder_registry.py` | Nạp recorder từ `CORE_CHANGE_RECORDER` |
@@ -130,7 +132,9 @@ repository của `system`.
 | `User` | `system/models/user.py` (`settings.AUTH_USER_MODEL`) | Khóa ngoại người dùng; ưu tiên `settings.AUTH_USER_MODEL` trong model |
 | `get_client_ip` | `system/utils/client_ip.py` | Lấy IP client sau proxy |
 | `EmailService` | `system/services/email_service.py` | Gửi email: `send_template(template=, subject=, recipient=, context=, locale=, async_send=)` dựng `system/email/<template>_<lang>.{txt,html}`; `send_now(...)` gửi đồng bộ (outbox, serverless). Tạo `self.email_service = EmailService()` trong `__init__` |
-| `NotificationService` | `system/services/notification_service.py` | Cách **duy nhất** để module phát thông báo: `notify(event_code, *, dedup_key, payload, recipient=None, recipients=None)` (OWNER phải có `recipient`; SUBSCRIBERS tự tìm người có `permission`); `revoke(event_code, dedup_key)`; outbox chống trùng, gửi sau commit trong `NOTIFICATION_DISPATCH_BUDGET_SECONDS`, lỗi không ném ra; `dispatch_pending` cho cron |
+| `NotificationService` | `system/services/notification_service.py` | Cách **duy nhất** để module phát thông báo: `notify(event_code, *, dedup_key, payload, recipient=None, recipients=None)` (OWNER phải có `recipient`; SUBSCRIBERS tự tìm người có `permission`); `revoke(event_code, dedup_key)`; outbox chống trùng, **không gửi trong request** (sau commit chỉ đá `NotificationKickService`), lỗi không ném ra; `dispatch_pending(force=False)` cho QStash/cron |
+| `NotificationKickService` | `system/services/notification_kick_service.py` | Nội bộ thông báo: `kick(delay)` hạ mốc "có việc" trong Redis + đăng tin QStash; `has_due_work()` để cron không chạm DB khi chưa có việc |
+| `QstashClient` | `system/services/qstash_client.py` | Đăng tin Upstash QStash gọi lại backend (`publish`, timeout 1 giây, lỗi không ném) và kiểm `Upstash-Signature` (`verify`) |
 | `NotificationPayload` | `system/types/notification_payload.py` | Nội dung thông báo: `title`, `body` (văn bản thuần, kênh tự escape), `link` (đường dẫn FE bắt đầu `/`), `level` (ghi đè mức mặc định), `message_key` + `params` (FE dịch), `data`, `expires_at` |
 | `TelegramClient` | `system/services/telegram_client.py` | Gọi Telegram Bot API (getMe/getWebhookInfo/getUpdates/getChatMember/sendMessage), token truyền theo tham số (bot của từng người, lưu DB qua `SecretCipher`), đổi lỗi thành mã ổn định |
 | `CurrencyService` | `system/services/currency_service.py` | Danh mục tiền tệ (seed VND gốc, USD): `base()`, `get_active(pk)`; khóa ngoại tới `system.Currency` |
@@ -151,6 +155,8 @@ repository của `system`.
 | `UserFactory`, `StaffFactory`, `SuperuserFactory`, `RoleFactory` | `system/tests/factories/` | Tạo người dùng/vai trò trong test |
 | `grant` | `system/tests/helpers/permission_helper.py` | Cấp quyền cho user trong test: `grant(user, P.READ)` |
 | `upload_file` | `system/tests/helpers/attachment_test_helper.py` | Upload file qua API trong test |
+| `fake_redis` (fixture), `FakeRedis` | `conftest.py`, `core/tests/helpers/fake_redis.py` | Bật `CacheService` với Redis giả trong bộ nhớ (đếm số lệnh); mặc định test không có Redis |
+| `sign` | `system/tests/helpers/qstash_helper.py` | Tạo `Upstash-Signature` hợp lệ cho test endpoint dispatch |
 | `test_endpoint_access.py` | `core/tests/` | Thêm tên view công khai/chỉ đăng nhập |
 | `test_list_query_count.py` | `core/tests/` | Thêm một dòng cho mỗi endpoint danh sách |
 | `test_module_conventions.py` | `core/tests/` | Kiểm quy ước module, view, quyền; thêm kiểm tra tự động cho rule mới ở đây |
@@ -340,19 +346,19 @@ Module khác được import các phần dưới đây (page ghép qua slot); ph
 | Export | File | Dùng khi |
 | --- | --- | --- |
 | `usePermission` | `modules/system/hooks/use-permission.ts` | Kiểm quyền trong View để ẩn/hiện (BE vẫn kiểm lại) |
-| `PermissionGate` | `modules/system/components/permission-gate.tsx` | Bọc phần UI cần quyền |
+| `PermissionGate` | `modules/system/components/permission/permission-gate.tsx` | Bọc phần UI cần quyền |
 | `useCurrentUser` | `modules/system/hooks/use-current-user.ts` | Người dùng đang đăng nhập |
-| `RecordHistoryView` | `modules/system/views/record-history-view.tsx` | Slot `history` của form: `path=".../{id}/history"`, `fieldPrefix` |
-| `AttachmentImageUploadView` | `modules/system/views/attachment-image-upload-view.tsx` | Chọn/tải ảnh từ Thư viện cho `ImageUpload` |
-| `AttachmentTiptapImagePlugin` | `modules/system/views/attachment-tiptap-image-plugin.tsx` | Slot `editorPlugins`: chèn ảnh Thư viện vào editor |
-| `AttachmentDetailDialog` | `modules/system/components/attachment-detail-dialog.tsx` | Dialog chi tiết & inline edit metadata tệp (tối ưu nằm trọn 1 màn hình không scroll, tích hợp công cụ crop/watermark ảnh, video player ghi nhớ âm lượng localStorage, thao tác nhanh, chuyển công khai/riêng tư có xác nhận); `isSelectable` + `selectLabel` cho nơi chọn file không phải ảnh |
-| `AttachmentPicker` | `modules/system/components/attachment-picker.tsx` | Bộ chọn + upload file Thư viện. Mặc định: một ảnh công khai. Props nơi dùng: `accept` (`MediaKind[]`), `visibility` + `lockVisibility` (màn Chứng từ: `"private"` + khóa), `visibilityFilter` (mặc định chế độ đang khóa, không khóa thì `"public"`; `"all"` liệt kê cả hai), `multiple` + `onSelectMany` |
-| `AttachmentUpload` | `modules/system/components/attachment-upload.tsx` | Khu kéo thả upload: `accept` (`imageOnly` là bí danh `["IMAGE"]`), `visibility`, `lockVisibility`, `multiple`; có công tắc Riêng tư khi không khóa |
+| `RecordHistoryView` | `modules/system/views/journal-entry/record-history-view.tsx` | Slot `history` của form: `path=".../{id}/history"`, `fieldPrefix` |
+| `AttachmentImageUploadView` | `modules/system/views/attachment/attachment-image-upload-view.tsx` | Chọn/tải ảnh từ Thư viện cho `ImageUpload` |
+| `AttachmentTiptapImagePlugin` | `modules/system/views/attachment/attachment-tiptap-image-plugin.tsx` | Slot `editorPlugins`: chèn ảnh Thư viện vào editor |
+| `AttachmentDetailDialog` | `modules/system/components/attachment/attachment-detail-dialog.tsx` | Dialog chi tiết & inline edit metadata tệp (tối ưu nằm trọn 1 màn hình không scroll, tích hợp công cụ crop/watermark ảnh, video player ghi nhớ âm lượng localStorage, thao tác nhanh, chuyển công khai/riêng tư có xác nhận); `isSelectable` + `selectLabel` cho nơi chọn file không phải ảnh |
+| `AttachmentPicker` | `modules/system/components/attachment/attachment-picker.tsx` | Bộ chọn + upload file Thư viện. Mặc định: một ảnh công khai. Props nơi dùng: `accept` (`MediaKind[]`), `visibility` + `lockVisibility` (màn Chứng từ: `"private"` + khóa), `visibilityFilter` (mặc định chế độ đang khóa, không khóa thì `"public"`; `"all"` liệt kê cả hai), `multiple` + `onSelectMany` |
+| `AttachmentUpload` | `modules/system/components/attachment/attachment-upload.tsx` | Khu kéo thả upload: `accept` (`imageOnly` là bí danh `["IMAGE"]`), `visibility`, `lockVisibility`, `multiple`; có công tắc Riêng tư khi không khóa |
 | `SYSTEM_ROUTES.fileAccess(id)` | `modules/system/constants/routes.ts` | Link chia sẻ file riêng tư `/vi/tep/{id}` (en `/files/{id}`): có quyền thì mở file, không thì màn không có quyền |
 | `UserRolePickerView`, `UserRoleFilterView` | `modules/system/views/` | Chọn/lọc vai trò người dùng ở form/bảng khác |
-| `NotificationBell` | `modules/system/components/notification-bell.tsx` | Chuông thông báo 2 tab Cá nhân / Hệ thống (đã gắn trong `AdminShell`); realtime FCM + polling 60 giây |
+| `NotificationBell` | `modules/system/components/notification/notification-bell.tsx` | Chuông thông báo 2 tab Cá nhân / Hệ thống (đã gắn trong `AdminShell`); realtime FCM + polling 60 giây |
 | `useCurrencyOptions`, `useExchangeRateResolve` | `modules/system/hooks/` | Chọn tiền tệ và tra tỷ giá VNĐ ở form module khác (Thu nhập) |
 | `SYSTEM_ROUTES`, `SYSTEM_PATHNAMES`, `SYSTEM_API_ENDPOINTS` | `modules/system/constants/` | Link/endpoint của `system` khi module khác cần |
 | `journal-field-prefixes.ts` | `modules/system/constants/` | Thêm tiền tố nhãn field cho model có `JournalTracker` |
-| `AdminShell` | `modules/manage-app/components/admin-shell.tsx` | Khung quản trị (layout `/quan-tri`) |
+| `AdminShell` | `modules/manage-app/components/shell/admin-shell.tsx` | Khung quản trị (layout `/quan-tri`) |
 | `ADMIN_MODULE_NAVIGATION`, `ADMIN_GROUPS`, `findModuleCodeByPath`, `findActiveNavHref`, `groupNavSections` | `modules/manage-app/constants/admin-navigation.ts` | Đăng ký `navigation.ts` của module mới; nhóm hiển thị; tìm module theo path; gom mục theo cụm cho sidebar |

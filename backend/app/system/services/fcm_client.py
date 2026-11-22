@@ -3,6 +3,7 @@
 trong SW)."""
 
 import base64
+import functools
 import json
 import logging
 import threading
@@ -10,6 +11,7 @@ from typing import Any
 
 import requests
 from django.conf import settings
+from google.auth.exceptions import GoogleAuthError
 from google.auth.transport.requests import Request as GoogleAuthRequest
 from google.oauth2 import service_account
 
@@ -64,7 +66,7 @@ class FcmClient:
                 json={"message": {"token": token, "data": data, "webpush": {"headers": {"Urgency": "high"}}}},
                 timeout=NOTIFICATION_PROVIDER_TIMEOUT_SECONDS,
             )
-        except (requests.RequestException, ValueError) as exc:
+        except (requests.RequestException, GoogleAuthError, ValueError) as exc:
             logger.warning("FCM lỗi kết nối: %s", type(exc).__name__)
             return PushSendResult(ok=False, error_code=NotificationErrorCode.PUSH_UNAVAILABLE)
         if response.ok:
@@ -91,7 +93,10 @@ class FcmClient:
         return PushSendResult(ok=False, error_code=f"FCM_{response.status_code}", permanent=True)
 
     def _access_token(self) -> str:
-        """Access token OAuth2 dùng lại tới gần hết hạn (google-auth tự biết khi nào cần làm mới)."""
+        """Access token OAuth2 dùng lại tới gần hết hạn (google-auth tự biết khi nào cần làm mới).
+
+        Làm mới có timeout như lần gửi (mặc định của google-auth là 120 giây, đủ làm treo một lượt gửi).
+        """
         with _lock:
             credentials = _credentials.get("value")
             if credentials is None:
@@ -99,5 +104,8 @@ class FcmClient:
                 credentials = service_account.Credentials.from_service_account_info(info, scopes=[FCM_SCOPE])
                 _credentials["value"] = credentials
             if not credentials.valid:
-                credentials.refresh(GoogleAuthRequest())
+                transport = GoogleAuthRequest(self.session)
+                credentials.refresh(
+                    functools.partial(transport, timeout=NOTIFICATION_PROVIDER_TIMEOUT_SECONDS)
+                )
             return str(credentials.token)

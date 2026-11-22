@@ -1,6 +1,6 @@
-import { RecordHistoryView } from "@/modules/system/views/record-history-view";
+import { RecordHistoryView } from "@/modules/system/views/journal-entry/record-history-view";
 import { NOVEL_API_ENDPOINTS } from "@/modules/novel/constants/api-endpoints";
-import { ChapterDetailView } from "@/modules/novel/views/chapter-detail-view";
+import { ChapterDetailView } from "@/modules/novel/views/chapter/chapter-detail-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "novel.nav.chapters" });

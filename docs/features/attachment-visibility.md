@@ -66,7 +66,7 @@ Test: `backend/app/system/tests/test_attachment_storage_usage.py`.
 
 - BE: `backend/app/system/models/attachment.py` (`Visibility`), `services/attachment_service.py`,
   `backend/app/core/storage/r2_private_storage.py`
-- FE: `frontend/src/modules/system/components/attachment-picker.tsx`, `attachment-visibility-toggle.tsx`,
+- FE: `frontend/src/modules/system/components/attachment/attachment-picker.tsx`, `attachment-visibility-toggle.tsx`,
   `views/file-access-view.tsx` (trang `/tep/{id}`)
 
 Liên quan: [../guides/cloudflare-r2.md](../guides/cloudflare-r2.md), rule common §5.2.

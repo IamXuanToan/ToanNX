@@ -11,6 +11,7 @@ from django.utils import timezone
 
 from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.authentication_error import AuthenticationError
+from app.core.logging.step_timer import StepTimer
 from app.system.models.auth_session import AuthSession
 from app.system.models.user import User
 from app.system.repositories.auth_session_repository import AuthSessionRepository
@@ -78,16 +79,19 @@ class AuthService:
         # ============================================================
         # BƯỚC 1: Rate limit theo tài khoản + IP
         # ============================================================
+        timer = StepTimer("auth.login", logger)
         normalized = identifier.strip().lower()
         ip = get_client_ip(request)
         limit_key = f"login:{normalized}:{ip}"
         window = settings.AUTH_LOGIN_RATE_WINDOW_SECONDS
         self.rate_limit_service.hit(limit_key, settings.AUTH_LOGIN_RATE_LIMIT, window)
+        timer.mark("rate_limit")
 
         # ============================================================
         # BƯỚC 2: Xác thực (qua Django backend → UserService)
         # ============================================================
         user = authenticate(request, username=identifier.strip(), password=password)
+        timer.mark("authenticate")
         if not isinstance(user, User) or user.deleted_at is not None:
             logger.info("Đăng nhập thất bại")
             raise AuthenticationError(
@@ -96,9 +100,10 @@ class AuthService:
         if not user.is_active:
             raise AuthenticationError("Tài khoản đã bị khóa.", code=ErrorCode.AUTH_USER_INACTIVE)
         self.rate_limit_service.reset(limit_key, window)
+        timer.mark("rate_limit_reset")
 
         # ============================================================
-        # BƯỚC 3: Mở phiên, phát token
+        # BƯỚC 3: Mở phiên, phát token; thông báo chỉ ghi outbox (gửi ở lượt function khác)
         # ============================================================
         with transaction.atomic():
             session = self.auth_session_repository.open(
@@ -109,8 +114,14 @@ class AuthService:
             )
             refresh_raw = self.refresh_token_service.issue(session)
             self.user_service.record_login(user)
+            timer.mark("session")
             self.login_notification_service.notify_login(user, session)
-        return self._build_result(session, refresh_raw)
+            timer.mark("notify")
+        timer.mark("commit_kick")
+        result = self._build_result(session, refresh_raw)
+        timer.mark("profile")
+        timer.log()
+        return result
 
     def create_session_for_user(self, request: HttpRequest, user: User) -> AuthResult:
         """Mở phiên và phát token trực tiếp cho người dùng (ví dụ khi kích hoạt tài khoản qua lời mời).

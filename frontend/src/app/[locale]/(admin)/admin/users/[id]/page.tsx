@@ -1,7 +1,7 @@
 import { SYSTEM_API_ENDPOINTS } from "@/modules/system/constants/api-endpoints";
-import { UserDetailView } from "@/modules/system/views/user-detail-view";
-import { UserRolePickerView } from "@/modules/system/views/user-role-picker-view";
-import { RecordHistoryView } from "@/modules/system/views/record-history-view";
+import { UserDetailView } from "@/modules/system/views/user/user-detail-view";
+import { UserRolePickerView } from "@/modules/system/views/user-role/user-role-picker-view";
+import { RecordHistoryView } from "@/modules/system/views/journal-entry/record-history-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
 export const generateMetadata = createPageMetadata({ title: "common.nav.users" });

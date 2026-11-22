@@ -16,6 +16,9 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
   nên luật riêng của lớp con tự áp cho thao tác hàng loạt.
 - Kiểm quyền `manage_all` bằng `actor.has_perm()` (Django hỏi `IamPermissionBackend`)
   nên core không import IAM.
+- `public_cache_namespace`: tài nguyên hiện trên trang công khai (link rút gọn, trang tùy chỉnh) thì khai
+  namespace cache; `create`/`update`/`delete` (và bulk) tự tăng version sau commit để cache công khai hết
+  hiệu lực. Lớp con ghi thẳng qua repository thì gọi `invalidate_public_cache()`.
 """
 
 from typing import Any
@@ -25,6 +28,7 @@ from django.contrib.auth import get_user_model
 from django.db import models, transaction
 from django.db.models import QuerySet
 
+from app.core.cache.cache_service import CacheService
 from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
@@ -44,6 +48,7 @@ class CoreCrudService[M: models.Model, R: CoreRepository[Any]]:
         owner_field: Tên FK owner (`owner`, `created_by`); None = tài nguyên chung.
         manage_all_permission: Mã quyền mở phạm vi sang mọi owner.
         owner_quota_setting: Tên setting chứa số bản ghi tối đa mỗi owner.
+        public_cache_namespace: Namespace cache công khai cần làm mới khi ghi (None = không cache).
         repository: Repository của model.
     """
 
@@ -51,6 +56,7 @@ class CoreCrudService[M: models.Model, R: CoreRepository[Any]]:
     owner_field: str | None = None
     manage_all_permission: str | None = None
     owner_quota_setting: str | None = None
+    public_cache_namespace: str | None = None
 
     def __init__(self, repository: R | None = None) -> None:
         """Khởi tạo service.
@@ -59,6 +65,7 @@ class CoreCrudService[M: models.Model, R: CoreRepository[Any]]:
             repository: Repository (test có thể truyền bản giả).
         """
         self.repository: R = repository or self.repository_class()
+        self.cache_service = CacheService()
 
     # ==================================================================
     # Đọc
@@ -152,7 +159,9 @@ class CoreCrudService[M: models.Model, R: CoreRepository[Any]]:
         if self.owner_field and self.owner_field not in fields and self.owner_field != "created_by":
             fields[self.owner_field] = actor
         self.ensure_quota(actor)
-        return self.repository.create(actor=actor, **fields)
+        instance = self.repository.create(actor=actor, **fields)
+        self.invalidate_public_cache()
+        return instance
 
     @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> M:
@@ -167,7 +176,9 @@ class CoreCrudService[M: models.Model, R: CoreRepository[Any]]:
             Bản ghi sau cập nhật.
         """
         instance = self.get_for_write(actor, pk)
-        return self.repository.update(instance, actor=actor, **data)
+        updated = self.repository.update(instance, actor=actor, **data)
+        self.invalidate_public_cache()
+        return updated
 
     @transaction.atomic
     def delete(self, actor: Any, pk: Any) -> None:
@@ -180,6 +191,7 @@ class CoreCrudService[M: models.Model, R: CoreRepository[Any]]:
         """
         instance = self.get_for_write(actor, pk)
         self.repository.delete(instance, actor=actor)
+        self.invalidate_public_cache()
 
     @transaction.atomic
     def bulk_update(self, actor: Any, ids: list[Any], data: dict[str, Any]) -> int:
@@ -215,6 +227,12 @@ class CoreCrudService[M: models.Model, R: CoreRepository[Any]]:
     # ==================================================================
     # Tiện ích cho lớp con
     # ==================================================================
+    def invalidate_public_cache(self) -> None:
+        """Sau commit, làm mới cache công khai của namespace (không khai namespace thì không làm gì)."""
+        namespace = self.public_cache_namespace
+        if namespace and self.cache_service.enabled:
+            transaction.on_commit(lambda: self.cache_service.bump_namespace(namespace))
+
     def get_for_write(self, actor: Any, pk: Any) -> M:
         """Khóa dòng để ghi và kiểm owner (phải gọi trong transaction).
 

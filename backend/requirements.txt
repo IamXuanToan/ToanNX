@@ -25,9 +25,15 @@ botocore==1.44.6
 certifi==2026.10.23
     # via requests
 cffi==2.1.1
-    # via argon2-cffi-bindings
+    # via
+    #   argon2-cffi-bindings
+    #   cryptography
 charset-normalizer==3.5.2
     # via requests
+cryptography==50.0.2
+    # via
+    #   google-auth
+    #   toannx-backend
 defusedxml==0.7.1
     # via toannx-backend
 django==6.0.10
@@ -52,6 +58,8 @@ djangorestframework==3.18.3
     #   toannx-backend
 drf-spectacular==0.30.0
     # via toannx-backend
+google-auth==2.63.0
+    # via toannx-backend
 idna==3.20
     # via requests
 inflection==0.5.1
@@ -72,6 +80,10 @@ psycopg==3.3.9
     # via toannx-backend
 psycopg-binary==3.3.9 ; implementation_name != 'pypy'
     # via psycopg
+pyasn1==0.6.5
+    # via pyasn1-modules
+pyasn1-modules==0.4.2
+    # via google-auth
 pycparser==3.12 ; implementation_name != 'PyPy'
     # via cffi
 pyjwt==2.15.1
@@ -80,6 +92,8 @@ python-dateutil==2.9.0.post0
     # via botocore
 pyyaml==6.0.3
     # via drf-spectacular
+redis==8.1.0
+    # via toannx-backend
 referencing==0.37.0
     # via
     #   jsonschema
