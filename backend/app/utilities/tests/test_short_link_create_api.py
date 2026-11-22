@@ -44,6 +44,21 @@ class TestShortLinkCreateApi(BaseApiTestCase):
         assert link.owner_id == user.pk
         assert link.password_hash != "secret-password"
 
+    def test_create_success_mixed_case_slug(self, user: Any, login: Any) -> None:
+        """Tạo short link với slug chứa chữ hoa chữ thường (ví dụ ToanToChill)."""
+        grant(user, P.CREATE)
+        api = login(user)
+
+        payload = {
+            "name": "Toan To Chill Fanpage",
+            "slug": "ToanToChill",
+            "destination_url": "https://facebook.com/toantochill",
+        }
+        res = api.post(URL, payload, format="json")
+        data = self.assert_success(res, 201)
+        assert data["slug"] == "ToanToChill"
+        assert data["short_url"] == "http://testserver/s/ToanToChill"
+
     def test_create_success_min_data(self, user: Any, login: Any) -> None:
         """Tạo short link với dữ liệu tối thiểu (bỏ slug để hệ thống tự sinh UUID)."""
         grant(user, P.CREATE)

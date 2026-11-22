@@ -2,17 +2,22 @@
 
 import { useRef, useState } from "react";
 
-import { sanitizeSlugInput } from "@/shares/lib/code-slug-input";
+import { type SanitizeSlugOptions, sanitizeSlugInput } from "@/shares/lib/code-slug-input";
 
 /** Giữ bản đang gõ để bộ gõ tiếng Việt hoàn tất trước khi chuẩn hóa giá trị form. */
-export function useSlugInput(value: string, onChange: (value: string) => void) {
+export function useSlugInput(
+  value: string,
+  onChange: (value: string) => void,
+  options?: SanitizeSlugOptions,
+) {
   const [draft, setDraft] = useState<string | null>(null);
   const composing = useRef(false);
+  const sanitize = (val: string) => sanitizeSlugInput(val, options);
   return {
     display: draft ?? value,
     change: (next: string) => {
       setDraft(next);
-      if (!composing.current) onChange(sanitizeSlugInput(next));
+      if (!composing.current) onChange(sanitize(next));
     },
     startComposition: () => {
       composing.current = true;
@@ -20,10 +25,10 @@ export function useSlugInput(value: string, onChange: (value: string) => void) {
     endComposition: (next: string) => {
       composing.current = false;
       setDraft(next);
-      onChange(sanitizeSlugInput(next));
+      onChange(sanitize(next));
     },
     blur: () => {
-      onChange(sanitizeSlugInput(draft ?? value));
+      onChange(sanitize(draft ?? value));
       setDraft(null);
     },
   };

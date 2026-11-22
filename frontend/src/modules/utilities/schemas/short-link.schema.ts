@@ -15,7 +15,7 @@ export function shortLinkSchema(t: Translate, existingExpiry?: string) {
   return z
     .object({
       name: z.string().trim().min(1, t("required")).max(150),
-      slug: slugField(t("slug"), { required: false }),
+      slug: slugField(t("slug"), { required: false, preserveCase: true }),
       destinationUrl: z
         .string()
         .trim()

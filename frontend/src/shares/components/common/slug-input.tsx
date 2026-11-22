@@ -21,14 +21,16 @@ export function SlugInput({
   className,
   placeholder,
   maxLength = SLUG_INPUT_MAX_LENGTH,
+  preserveCase = false,
   onBlur,
   ...props
 }: Omit<ComponentProps<"input">, "type" | "value" | "defaultValue" | "onChange"> & {
   value: string;
   onChange: (value: string) => void;
+  preserveCase?: boolean;
 }) {
   const t = useTranslations("common.slugInput");
-  const input = useSlugInput(value, onChange);
+  const input = useSlugInput(value, onChange, { preserveCase });
   return (
     <Input
       {...props}

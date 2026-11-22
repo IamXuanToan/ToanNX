@@ -275,6 +275,7 @@ if DEBUG:
             CORS_ALLOWED_ORIGINS.append(_dev_origin)
 
 CORS_ALLOWED_ORIGIN_REGEXES: list[str] = [
+    r"^https:\/\/toannx-frontend(-[a-z0-9-]+)?\.vercel\.app$",
     r"^https:\/\/toannx-frontend(-[a-z0-9-]+)?-nxtoan2k4-1833s-projects\.vercel\.app$",
 ]
 CORS_ALLOW_CREDENTIALS = True

@@ -14,3 +14,7 @@ class ShortLinkRepository(CoreRepository[ShortLink]):
     def get_queryset(self) -> QuerySet[ShortLink]:
         """Chỉ liên kết còn tồn tại, kèm owner cho danh sách (không N+1)."""
         return super().get_queryset().select_related("owner")
+
+    def find_by_slug(self, slug: str) -> ShortLink | None:
+        """Tìm liên kết theo slug không phân biệt hoa thường."""
+        return self.get_queryset().filter(slug__iexact=slug).first()

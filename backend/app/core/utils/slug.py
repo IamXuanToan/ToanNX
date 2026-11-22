@@ -6,7 +6,7 @@ from collections.abc import Iterable
 
 from app.core.exceptions.validation_error import ValidationError
 
-SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+SLUG_PATTERN = re.compile(r"^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$")
 RESERVED_SLUGS = frozenset(
     {"admin", "api", "login", "register", "system", "settings", "new", "edit", "create"}
 )
@@ -21,8 +21,9 @@ def normalize_slug(
     min_length: int = MIN_SLUG_LENGTH,
     max_length: int = MAX_SLUG_LENGTH,
     reserved: Iterable[str] = RESERVED_SLUGS,
+    preserve_case: bool = False,
 ) -> str:
-    """Chữ thường, chỉ `a-z`, `0-9`, `-` giữa các nhóm; từ chối giá trị dành riêng.
+    """Chữ cái (a-z, A-Z), 0-9, `-` giữa các nhóm; từ chối giá trị dành riêng.
 
     Args:
         value: Giá trị thô.
@@ -30,6 +31,7 @@ def normalize_slug(
         min_length: Độ dài tối thiểu.
         max_length: Độ dài tối đa.
         reserved: Giá trị dành riêng.
+        preserve_case: Giữ nguyên hoa/thường (mặc định False = lowercase).
 
     Returns:
         Slug đã chuẩn hóa.
@@ -37,12 +39,14 @@ def normalize_slug(
     Raises:
         ValidationError: Sai định dạng hoặc dành riêng.
     """
-    slug = value.strip().lower()
+    slug = value.strip() if preserve_case else value.strip().lower()
     if not min_length <= len(slug) <= max_length or not SLUG_PATTERN.fullmatch(slug):
         raise ValidationError(
-            details={field: [f"Dài {min_length}–{max_length} ký tự, chỉ gồm a-z, 0-9 và dấu gạch ngang."]}
+            details={
+                field: [f"Dài {min_length}–{max_length} ký tự, chỉ gồm a-z, A-Z, 0-9 và dấu gạch ngang."]
+            }
         )
-    if slug in set(reserved):
+    if slug.lower() in set(reserved):
         raise ValidationError(details={field: ["Giá trị này đã được dành riêng."]})
     return slug
 

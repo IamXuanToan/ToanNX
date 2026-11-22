@@ -10,10 +10,13 @@ export function passwordField(minimum: number, message: string) {
   return z.string().min(minimum, message);
 }
 /** Schema slug chung: thư viện xử lý Unicode trước khi áp hợp đồng URL của backend. */
-export function slugField(message: string, { required = true }: { required?: boolean } = {}) {
+export function slugField(
+  message: string,
+  { required = true, preserveCase = false }: { required?: boolean; preserveCase?: boolean } = {},
+) {
   return z
     .string()
-    .transform(sanitizeSlugInput)
+    .transform((val) => sanitizeSlugInput(val, { preserveCase }))
     .refine(
       (value) =>
         (!required && value === "") ||

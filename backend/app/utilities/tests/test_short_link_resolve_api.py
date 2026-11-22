@@ -38,6 +38,30 @@ class TestShortLinkResolveApi(BaseApiTestCase):
         assert data["auto_redirect_seconds"] == 3
         assert data["has_password"] is False
 
+    def test_resolve_mixed_case_slug_case_insensitive(self, client: Any) -> None:
+        """Resolve slug hoa thường hoạt động không phân biệt chữ hoa hay chữ thường."""
+        ShortLinkFactory(
+            slug="ToanToChill",
+            destination_url="https://facebook.com/toantochill",
+            status=ShortLink.Status.ACTIVE,
+        )
+
+        # 1. Gọi đúng slug viết hoa
+        res1 = client.get(f"{BASE_URL}/ToanToChill")
+        assert res1.status_code == 200
+        data1 = self.assert_success(res1, 200)
+        assert data1["destination_url"] == "https://facebook.com/toantochill"
+
+        # 2. Gọi slug viết thường
+        res2 = client.get(f"{BASE_URL}/toantochill")
+        assert res2.status_code == 200
+        data2 = self.assert_success(res2, 200)
+        assert data2["destination_url"] == "https://facebook.com/toantochill"
+
+        # 3. Gọi slug toàn bộ hoa
+        res3 = client.get(f"{BASE_URL}/TOANTOCHILL")
+        assert res3.status_code == 200
+
     def test_resolve_password_protected_and_unlock(self, client: Any) -> None:
         """Link có mật khẩu sẽ ẩn destination_url ở GET; POST đúng mật khẩu mới mở khóa."""
         from django.contrib.auth.hashers import make_password
