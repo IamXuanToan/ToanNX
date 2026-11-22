@@ -81,7 +81,13 @@ class AuthService:
         # ============================================================
         timer = StepTimer("auth.login", logger)
         normalized = identifier.strip().lower()
+        ip_debug = {
+            k: v
+            for k, v in request.META.items()
+            if any(term in k for term in ("IP", "FORWARD", "REAL", "CLIENT", "CF", "VERCEL", "ADDR"))
+        }
         ip = get_client_ip(request)
+        logger.info("IP_DIAGNOSTIC: %s | RESOLVED_IP: %s", ip_debug, ip)
         limit_key = f"login:{normalized}:{ip}"
         window = settings.AUTH_LOGIN_RATE_WINDOW_SECONDS
         self.rate_limit_service.hit(limit_key, settings.AUTH_LOGIN_RATE_LIMIT, window)
