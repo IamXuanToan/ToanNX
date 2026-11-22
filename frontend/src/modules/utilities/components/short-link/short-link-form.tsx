@@ -190,7 +190,7 @@ export function ShortLinkForm({
             >
               {(field) => (
                 <div className="flex min-w-0 gap-2">
-                  <SlugInput {...field} className="min-w-0 flex-1" disabled={locked} />
+                  <SlugInput {...field} preserveCase className="min-w-0 flex-1" disabled={locked} />
                   <Button
                     type="button"
                     variant="outline"

@@ -44,7 +44,9 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
     def create(self, actor: Any, data: dict[str, Any]) -> ShortLink:
         """Chuẩn hóa slug và URL, chặn liên kết nội bộ có thể tạo vòng lặp."""
         fields = dict(data)
-        fields["slug"] = normalize_slug(fields["slug"]) if fields.get("slug") else str(uuid4())
+        fields["slug"] = (
+            normalize_slug(fields["slug"], preserve_case=True) if fields.get("slug") else str(uuid4())
+        )
         fields["destination_url"] = self._validate_destination(fields["destination_url"])
         self._validate_expiration(fields.get("expires_at"))
         password = fields.pop("password", "")
@@ -61,7 +63,7 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
         """Kiểm tra URL/slug/expiration trước khi sửa trong transaction."""
         fields = dict(data)
         if "slug" in fields:
-            fields["slug"] = normalize_slug(fields["slug"])
+            fields["slug"] = normalize_slug(fields["slug"], preserve_case=True)
         if "destination_url" in fields:
             fields["destination_url"] = self._validate_destination(fields["destination_url"])
         if "expires_at" in fields:
@@ -90,10 +92,10 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
             Link còn hiệu lực.
         """
         try:
-            normalized = normalize_slug(slug)
+            normalized = normalize_slug(slug, preserve_case=True)
         except ValidationError as exc:
             raise NotFoundError() from exc
-        key = self._public_cache_key(normalized)
+        key = self._public_cache_key(normalized.lower())
         cached = self.cache_service.get_json(key) if key else None
         if isinstance(cached, dict):
             return self._from_public_cache(cached)
@@ -108,8 +110,8 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
         return link
 
     def _load_public_link(self, normalized: str) -> ShortLink:
-        """Đọc link công khai từ DB (slug đã chuẩn hóa)."""
-        link = self.repository.find_one(slug=normalized)
+        """Đọc link công khai từ DB (slug không phân biệt hoa thường)."""
+        link = self.repository.find_by_slug(normalized)
         if link is None or link.status != ShortLink.Status.ACTIVE:
             raise NotFoundError()
         if link.expires_at is not None and link.expires_at <= timezone.now():
@@ -128,7 +130,7 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
             URL đích hợp lệ.
         """
         try:
-            normalized = normalize_slug(slug)
+            normalized = normalize_slug(slug, preserve_case=True)
         except ValidationError as exc:
             raise NotFoundError() from exc
         link = self._load_public_link(normalized)
