@@ -28,7 +28,11 @@ class TestShortLinkResolveApi(BaseApiTestCase):
             auto_redirect_seconds=3,
         )
 
-        res = client.get(f"{BASE_URL}/{link.slug}")
+        res = client.get(
+            f"{BASE_URL}/{link.slug}",
+            HTTP_USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            REMOTE_ADDR="198.51.100.1",
+        )
         assert res.status_code == 200
         assert res["Cache-Control"] == "no-store"
         assert res["X-Robots-Tag"] == "noindex"
@@ -37,6 +41,89 @@ class TestShortLinkResolveApi(BaseApiTestCase):
         assert data["destination_url"] == "https://example.com/target"
         assert data["auto_redirect_seconds"] == 3
         assert data["has_password"] is False
+
+        link.refresh_from_db()
+        assert link.clicks_count == 1
+        assert link.visitors_count == 1
+        assert link.last_accessed_at is not None
+
+    def test_resolve_two_different_visitors_increments_both(self, client: Any) -> None:
+        """2 người khác nhau cùng vào link thì cộng đủ cả 2 người vào và 2 lượt click."""
+        link = ShortLinkFactory(
+            slug="shared-link",
+            destination_url="https://example.com/shared",
+        )
+
+        # Người thứ nhất: IP 1, Chrome
+        res1 = client.get(
+            f"{BASE_URL}/{link.slug}",
+            HTTP_USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Chrome/120.0)",
+            REMOTE_ADDR="198.51.100.1",
+        )
+        assert res1.status_code == 200
+
+        # Người thứ hai: IP 2, Safari
+        res2 = client.get(
+            f"{BASE_URL}/{link.slug}",
+            HTTP_USER_AGENT="Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
+            REMOTE_ADDR="198.51.100.2",
+        )
+        assert res2.status_code == 200
+
+        link.refresh_from_db()
+        assert link.clicks_count == 2
+        assert link.visitors_count == 2
+
+    def test_resolve_same_ip_different_devices_recognized_as_different_visitors(self, client: Any) -> None:
+        """2 người cùng mạng WiFi (cùng IP) nhưng dùng thiết bị khác nhau được tính là 2 người vào."""
+        link = ShortLinkFactory(
+            slug="office-wifi-link",
+            destination_url="https://example.com/office",
+        )
+
+        # Người A: cùng IP công ty, dùng Laptop Windows Chrome
+        client.get(
+            f"{BASE_URL}/{link.slug}",
+            HTTP_USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0",
+            REMOTE_ADDR="203.0.113.50",
+        )
+
+        # Người B: cùng IP công ty, dùng iPhone Safari
+        client.get(
+            f"{BASE_URL}/{link.slug}",
+            HTTP_USER_AGENT="Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile/15E148",
+            REMOTE_ADDR="203.0.113.50",
+        )
+
+        link.refresh_from_db()
+        # Vì fingerprint (IP + User-Agent) khác nhau, cả 2 được tính là 2 người vào riêng biệt
+        assert link.clicks_count == 2
+        assert link.visitors_count == 2
+
+    @pytest.mark.django_db(transaction=True)
+    def test_resolve_concurrent_visitors_atomic_increment(self) -> None:
+        """Kiểm tra concurrency: nhiều thread cùng gọi record_access đồng thời không bị lost update."""
+        import threading
+
+        from django.db import connection
+
+        link = ShortLinkFactory(slug="concurrency-test", destination_url="https://example.com/concurrency")
+        service = ShortLinkService()
+
+        def visit(ip: str, ua: str) -> None:
+            connection.close()
+            service.record_access(link, client_ip=ip, user_agent=ua)
+            connection.close()
+
+        threads = [threading.Thread(target=visit, args=(f"192.0.2.{i}", f"Browser-{i}")) for i in range(10)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        link.refresh_from_db()
+        assert link.clicks_count == 10
+        assert link.visitors_count == 10
 
     def test_resolve_mixed_case_slug_case_insensitive(self, client: Any) -> None:
         """Resolve slug hoa thường hoạt động không phân biệt chữ hoa hay chữ thường."""

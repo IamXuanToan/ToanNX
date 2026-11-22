@@ -1,5 +1,6 @@
 """Nghiệp vụ liên kết rút gọn."""
 
+import hashlib
 from typing import Any
 from urllib.parse import urlsplit
 from uuid import uuid4
@@ -176,6 +177,7 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
         self.cache_service.set_json(
             key,
             {
+                "id": str(link.pk) if link.pk else None,
                 "name": link.name,
                 "description": link.description,
                 "destination_url": None if has_password else link.destination_url,
@@ -195,6 +197,7 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
         if expires_at is not None and float(expires_at) <= timezone.now().timestamp():
             raise ShortLinkExpiredError()
         return ShortLink(
+            id=data.get("id"),
             name=data.get("name") or "",
             description=data.get("description") or "",
             destination_url=data.get("destination_url") or "",
@@ -202,6 +205,51 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
             password_hash=LOCKED_MARKER if data.get("has_password") else "",
             auto_redirect_seconds=data.get("auto_redirect_seconds"),
         )
+
+    def record_access(self, link: ShortLink, client_ip: str = "", user_agent: str = "") -> None:
+        """Ghi nhận lượt truy cập và người vào liên kết rút gọn.
+
+        Xử lý đồng thời (concurrency):
+        - Khi 2 người (hoặc nhiều người) cùng truy cập tại cùng một thời điểm: F() expression tại tầng DB
+          thực hiện phép cộng nguyên tử (atomic increment), tránh hoàn toàn tranh chấp race condition /
+          lost update.
+        - Phân biệt 2 người khác nhau ở cùng một địa chỉ IP (ví dụ cùng mạng Wi-Fi tại văn phòng/quán cà phê):
+          kết hợp client_ip và user_agent thành một fingerprint duy nhất. 2 người dùng 2 thiết bị/trình duyệt
+          khác nhau sẽ có 2 fingerprint khác nhau và cả 2 đều được cộng vào visitors_count.
+        - Chống cộng trùng (deduplication / spam):
+          + Trong vòng 3 giây: bỏ qua các click liên tiếp từ cùng một fingerprint (tránh double click /
+            F5 reload tức thì).
+          + Trong vòng 24 giờ: cùng một fingerprint chỉ được tính là 1 người vào (visitors_count), các lần
+            sau chỉ tính là lượt truy cập (clicks_count).
+        - Khi không có Redis: fallback cập nhật an toàn bằng F() expression trong DB.
+
+        Args:
+            link: Đối tượng ShortLink đang được truy cập.
+            client_ip: Địa chỉ IP thực tế của client.
+            user_agent: User-Agent của trình duyệt người xem.
+        """
+        if not link.pk:
+            return
+
+        ip_clean = client_ip.strip() if client_ip else "unknown"
+        ua_clean = user_agent.strip() if user_agent else "unknown"
+        raw_fingerprint = f"{ip_clean}:{ua_clean}".encode()
+        fingerprint = hashlib.sha256(raw_fingerprint).hexdigest()[:16]
+
+        is_new_visitor = True
+        if self.cache_service.enabled:
+            debounce_key = f"utilities:short_link:{link.pk}:debounce:{fingerprint}"
+            if self.cache_service.get_json(debounce_key):
+                return
+            self.cache_service.set_json(debounce_key, 1, 3)
+
+            visitor_key = f"utilities:short_link:{link.pk}:visitor:{fingerprint}"
+            if self.cache_service.get_json(visitor_key):
+                is_new_visitor = False
+            else:
+                self.cache_service.set_json(visitor_key, 1, 86400)
+
+        self.repository.record_access(link.pk, is_new_visitor=is_new_visitor)
 
     @staticmethod
     def _validate_expiration(value: Any) -> None:

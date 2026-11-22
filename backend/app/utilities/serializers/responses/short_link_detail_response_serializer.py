@@ -3,7 +3,8 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from app.core.utils.url import build_absolute_url
+from app.core.context.user_context import get_current_request
+from app.system.utils.frontend_url import get_frontend_origin
 from app.utilities.models.short_link import ShortLink
 
 
@@ -30,6 +31,9 @@ class ShortLinkDetailResponseSerializer(serializers.ModelSerializer[ShortLink]):
             "status",
             "effective_status",
             "expires_at",
+            "clicks_count",
+            "visitors_count",
+            "last_accessed_at",
             "short_url",
             "created_at",
             "updated_at",
@@ -37,8 +41,9 @@ class ShortLinkDetailResponseSerializer(serializers.ModelSerializer[ShortLink]):
         read_only_fields = fields
 
     def get_short_url(self, obj: ShortLink) -> str:
-        """Dựng URL công khai."""
-        return build_absolute_url(f"/s/{obj.slug}")
+        """Dựng URL công khai trên frontend."""
+        request = get_current_request()
+        return f"{get_frontend_origin(request)}/s/{obj.slug}"
 
     def get_effective_status(self, obj: ShortLink) -> str:
         """Tính hết hạn mà không ghi vào DB."""

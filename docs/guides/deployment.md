@@ -94,8 +94,16 @@ nếu không request trả 400. Không expose backend trực tiếp ra Internet 
 
 ## 3. Migration an toàn
 
-Không chạy migration trong request hay khi cold start. Chạy thủ công từ máy tin cậy (hoặc CI) trước khi
-promote deployment:
+Hệ thống đã được cấu hình **tự động chạy migration khi build trên Vercel** thông qua `backend/build_files.sh`
+và `[tool.vercel.scripts].build` trong `backend/pyproject.toml`.
+
+- Khi Vercel build Backend, script sẽ tự động chạy:
+  `DATABASE_URL="${DATABASE_URL_UNPOOLED:-$DATABASE_URL}" python manage.py migrate --noinput`
+- Khuyến nghị cấu hình thêm biến `DATABASE_URL_UNPOOLED` trên Vercel Environment Variables (trỏ trực tiếp tới host
+  Neon direct, không qua pgbouncer pooler `-pooler`) để các lệnh DDL migration không bị hạn chế bởi connection pooling.
+- Nếu không cấu hình `DATABASE_URL_UNPOOLED`, script sẽ fallback dùng `DATABASE_URL`.
+
+Nếu cần chạy thủ công từ máy tin cậy (hoặc CI) trước khi promote deployment:
 
 ```bash
 cd backend

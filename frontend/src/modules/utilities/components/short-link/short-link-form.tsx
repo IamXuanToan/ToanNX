@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { Controller, useWatch } from "react-hook-form";
 
 import { Link } from "@/i18n/navigation";
@@ -45,6 +45,7 @@ export function ShortLinkForm({
   const t = useTranslations("utilities.shortLinks");
   const tCommon = useTranslations("common.actions");
   const tStatus = useTranslations("common.status");
+  const format = useFormatter();
   const { form, onSubmit, isSubmitting } = useShortLinkForm({ link, onSaved });
   const locked = disabled || isSubmitting;
   const redirectMode = useWatch({ control: form.control, name: "redirectMode" });
@@ -230,17 +231,42 @@ export function ShortLinkForm({
             {(field) => <Textarea {...field} rows={3} maxLength={1000} disabled={locked} />}
           </FormField>
           {link ? (
-            <p className="text-muted-foreground text-sm">
-              {t("fields.shortUrl")}:{" "}
-              <a
-                href={link.shortUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary underline"
-              >
-                {link.shortUrl}
-              </a>
-            </p>
+            <div className="bg-muted/30 space-y-2 rounded-xl border p-3.5">
+              <p className="text-sm">
+                <span className="text-muted-foreground">{t("fields.shortUrl")}: </span>
+                <a
+                  href={link.shortUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary font-medium underline underline-offset-4"
+                >
+                  {link.shortUrl}
+                </a>
+              </p>
+              <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs">
+                <span>
+                  {t("fields.visitorsCount")}:{" "}
+                  <strong className="text-foreground font-semibold">{link.visitorsCount}</strong>
+                </span>
+                <span>•</span>
+                <span>
+                  {t("fields.clicksCount")}:{" "}
+                  <strong className="text-foreground font-semibold">{link.clicksCount}</strong>
+                </span>
+                {link.lastAccessedAt ? (
+                  <>
+                    <span>•</span>
+                    <span>
+                      {t("fields.lastAccessedAt")}:{" "}
+                      {format.dateTime(new Date(link.lastAccessedAt), {
+                        dateStyle: "short",
+                        timeStyle: "short",
+                      })}
+                    </span>
+                  </>
+                ) : null}
+              </div>
+            </div>
           ) : null}
           <div className="border-t pt-5">
             <p className="mb-3 text-sm font-medium">{t("sections.status")}</p>

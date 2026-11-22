@@ -78,6 +78,25 @@ class ShortLink(JournalTracker, CoreModel):
         help_text="Thời điểm hết hạn, null là không giới hạn.",
         db_comment="Thời điểm hết hạn",
     )
+    clicks_count = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Lượt truy cập",
+        help_text="Tổng số lượt truy cập liên kết.",
+        db_comment="Tổng số lượt truy cập liên kết",
+    )
+    visitors_count = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Số người vào",
+        help_text="Số lượng người truy cập duy nhất.",
+        db_comment="Số lượng người truy cập duy nhất",
+    )
+    last_accessed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Truy cập gần nhất",
+        help_text="Thời điểm có lượt truy cập gần nhất.",
+        db_comment="Thời điểm có lượt truy cập gần nhất",
+    )
 
     class Meta:
         db_table = "utilities_short_link"

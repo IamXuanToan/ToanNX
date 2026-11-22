@@ -91,5 +91,8 @@ python_files = ["test_*.py"]
 testpaths = ["app"]
 addopts = "-ra --strict-markers"
 
+[tool.vercel]
+entrypoint = "config.wsgi:app"
+
 [tool.vercel.scripts]
-build = 'DATABASE_URL="$DATABASE_URL" python manage.py migrate --noinput'
+build = "bash build_files.sh"

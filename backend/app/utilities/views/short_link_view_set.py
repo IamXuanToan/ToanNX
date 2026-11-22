@@ -39,7 +39,17 @@ class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
     service_class = ShortLinkService
     filterset_class = ShortLinkFilter
     search_fields = ("name", "slug", "destination_url")
-    ordering_fields = ("name", "slug", "created_at", "updated_at", "expires_at", "status")
+    ordering_fields = (
+        "name",
+        "slug",
+        "created_at",
+        "updated_at",
+        "expires_at",
+        "status",
+        "clicks_count",
+        "visitors_count",
+        "last_accessed_at",
+    )
     ordering = ("-created_at", "-pk")
     list_serializer_class = ShortLinkListResponseSerializer
     detail_serializer_class = ShortLinkDetailResponseSerializer

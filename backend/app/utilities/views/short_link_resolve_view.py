@@ -10,6 +10,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.utils.client_ip import get_client_ip
 from app.utilities.serializers.responses.short_link_destination_response_serializer import (
     ShortLinkDestinationResponseSerializer,
 )
@@ -46,6 +47,9 @@ class ShortLinkResolveView(CoreApiView):
             Thông tin trang trung gian với HTTP 200.
         """
         link = self.short_link_service.get_public_link(slug)
+        client_ip = get_client_ip(request)
+        user_agent = str(request.META.get("HTTP_USER_AGENT") or "")
+        self.short_link_service.record_access(link, client_ip=client_ip, user_agent=user_agent)
         response = CoreResponse(ShortLinkPublicResponseSerializer(link).data)
         response["Cache-Control"] = "no-store"
         response["X-Robots-Tag"] = "noindex"

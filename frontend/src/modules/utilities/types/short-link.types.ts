@@ -20,6 +20,9 @@ export type ShortLink = {
   status: ShortLinkStatus;
   effectiveStatus: ShortLinkStatus | "EXPIRED";
   expiresAt: string | null;
+  clicksCount: number;
+  visitorsCount: number;
+  lastAccessedAt: string | null;
   owner: ShortLinkOwner;
   createdAt: string;
   updatedAt: string;

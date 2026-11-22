@@ -11,6 +11,9 @@ const FORWARDED_HEADERS = [
   "x-forwarded-host",
   "x-forwarded-proto",
   "accept-language",
+  "cf-connecting-ip",
+  "user-agent",
+  "referer",
 ];
 
 /**
