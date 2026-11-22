@@ -28,7 +28,7 @@
 
 Mẫu: `<type>(<scope>): <mo-ta-ngan>`. Có thể bỏ `(<scope>)` khi thay đổi không thuộc một phần cụ thể.
 Viết mô tả bằng tiếng Anh, ở dạng mệnh lệnh, không viết hoa chữ đầu và không có dấu chấm cuối; tối đa
-100 ký tự cho dòng đầu. Dùng body để giải thích lý do, migration hoặc tác động không hiển nhiên.
+72 ký tự cho dòng đầu. Dùng body để giải thích lý do, migration hoặc tác động không hiển nhiên.
 
 | Type | Dùng khi | Ví dụ |
 | --- | --- | --- |
@@ -72,7 +72,7 @@ Repo có hook trong `.githooks/`, bật một lần sau khi clone:
 git config core.hooksPath .githooks
 ```
 
-- `commit-msg`: dòng đầu phải đúng mẫu `<type>(<scope>)!: <mo-ta>` (≤ 100 ký tự). Bỏ qua commit merge,
+- `commit-msg`: dòng đầu phải đúng mẫu `<type>(<scope>)!: <mo-ta>` (≤ 72 ký tự). Bỏ qua commit merge,
   `fixup!`/`squash!`.
 - `pre-push`: tên nhánh phải thuộc bảng trên.
 
