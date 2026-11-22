@@ -3,7 +3,7 @@
 Next.js 16 (App Router) + TypeScript strict + Tailwind 4 + shadcn/ui (Radix) + next-intl.
 
 ```bash
-cp .env.example .env.local    # BACKEND_ORIGIN=http://localhost:8000
+cp .env.example .env.local    # NEXT_PUBLIC_API_URL=http://localhost:8001
 pnpm install
 pnpm dev -p 3001              # http://localhost:3001
 ```

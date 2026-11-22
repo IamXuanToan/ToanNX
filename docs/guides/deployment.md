@@ -10,9 +10,10 @@ Trạng thái: **READY** (cấu hình đã có, build production đã chạy th�
 | `toannx-frontend` | `frontend/` | `toannx.com` |
 | `toannx-backend` | `backend/` | `api.toannx.com` |
 
-Frontend rewrite `/api/v1/*` → `${BACKEND_ORIGIN}/api/v1/*` (Vercel external rewrite, header `Set-Cookie`
-được chuyển nguyên). Trình duyệt chỉ thấy `toannx.com` ⇒ cookie host-only, không cần CORS, không cần cookie
-`Domain=.toannx.com`. Có thể gọi trực tiếp `api.toannx.com` bằng `Authorization: Bearer` (không CSRF).
+Trình duyệt gọi trực tiếp API `https://api.toannx.com` qua `NEXT_PUBLIC_API_URL` (CORS credentials include), Cloudflare
+nhận diện đúng IP client thực tế qua `CF-Connecting-IP`. Trình duyệt gửi cookie phiên host-only tới `api.toannx.com`,
+cookie `session_hint` được gắn domain `.toannx.com` để Next.js proxy kiểm tra lạc quan.
+Có thể gọi trực tiếp `api.toannx.com` bằng `Authorization: Bearer` (không CSRF).
 
 ## 0. File biến môi trường
 
@@ -111,7 +112,7 @@ Dùng **direct** connection (không pooler) cho migration. Migration phải tư�
 
 | Biến | Giá trị |
 | --- | --- |
-| `BACKEND_ORIGIN` | `https://api.toannx.com` |
+| `NEXT_PUBLIC_API_URL` | `https://api.toannx.com` |
 | `NEXT_PUBLIC_SITE_URL` | `https://toannx.com` |
 
 Framework preset Next.js, install `pnpm install`, build `pnpm build`.
@@ -125,10 +126,16 @@ curl -sI https://toannx.com/vi/quan-tri              # 307 → /vi/dang-nhap?nex
 
 Đăng nhập, kiểm tra cookie `access_token`/`refresh_token`/`session_hint` có `Secure; HttpOnly`, host `toannx.com`.
 
-## Rủi ro đã biết
+## Rủi ro và kiến trúc mạng
 
-- IP client sau 2 lớp proxy (Vercel frontend → Vercel backend): rate limit theo IP dùng phần tử cuối
-  `X-Forwarded-For`; cần xác minh trên Vercel thật. Giới hạn đăng nhập vẫn có khóa theo email.
-- Content Security Policy (khai trong `frontend/next.config.ts`) cho phép script inline do Next sinh (không dùng
-  nonce để giữ trang tĩnh), ảnh `https:` và iframe YouTube. Thêm dịch vụ ngoài (analytics, font CDN) phải sửa CSP.
+- **Kiến trúc gọi API trực tiếp (Browser → Backend API)**: Trình duyệt tại `toannx.com` gọi trực tiếp sang `https://api.toannx.com`
+  (thông qua `NEXT_PUBLIC_API_URL` và `apiClient` với `credentials: "include"`). Không đi qua Next.js rewrite để Cloudflare
+  của `api.toannx.com` nhận diện chính xác IP thật của người dùng (`CF-Connecting-IP`), tránh bị Vercel Frontend Serverless
+  làm trung gian che khuất IP client gốc.
+- **Cookie phiên và CSRF cross-subdomain**:
+  - `access_token` và `refresh_token` là host-only trên `api.toannx.com` (`SameSite=Lax/Strict`, `HttpOnly`).
+  - `session_hint` được cấu hình `domain=.toannx.com` qua `AUTH_COOKIE_DOMAIN` để Next.js proxy trên `toannx.com` đọc được cờ phiên.
+  - `CSRF`: Token được `apiClient` lấy tự động từ `GET /api/v1/system/auth/csrf`, lưu in-memory và gửi kèm header `X-CSRFToken`.
+- **CORS**: Backend cho phép origins qua `CORS_ALLOWED_ORIGINS` (production: `https://toannx.com,https://www.toannx.com`), preview deployments qua `CORS_ALLOWED_ORIGIN_REGEXES`.
+- **Content Security Policy (CSP)**: Khai báo trong `frontend/next.config.ts`, `connect-src` bao gồm origin của API (`NEXT_PUBLIC_API_URL`).
 - Lỗi trình duyệt đi qua `/api/v1/system/health/client-errors` để ghi log mức ERROR ở BE.

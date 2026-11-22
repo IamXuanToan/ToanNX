@@ -239,6 +239,7 @@ AUTH_REFRESH_TOKEN_LIFETIME_SECONDS = env.int("AUTH_REFRESH_TOKEN_LIFETIME_SECON
 AUTH_REFRESH_REUSE_GRACE_SECONDS = 10
 
 AUTH_COOKIE_SECURE = not DEBUG
+AUTH_COOKIE_DOMAIN = env.str("AUTH_COOKIE_DOMAIN", default="")
 AUTH_ACCESS_COOKIE_NAME = "access_token"
 AUTH_ACCESS_COOKIE_PATH = "/api"
 AUTH_REFRESH_COOKIE_NAME = "refresh_token"
@@ -262,7 +263,21 @@ if DEBUG:
             CSRF_TRUSTED_ORIGINS.append(_dev_origin)
 
 CORS_ALLOWED_ORIGINS: list[str] = env.list("CORS_ALLOWED_ORIGINS", default=[])
+if DEBUG:
+    for _dev_origin in [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ]:
+        if _dev_origin not in CORS_ALLOWED_ORIGINS:
+            CORS_ALLOWED_ORIGINS.append(_dev_origin)
+
+CORS_ALLOWED_ORIGIN_REGEXES: list[str] = [
+    r"^https:\/\/toannx-frontend(-[a-z0-9-]+)?-nxtoan2k4-1833s-projects\.vercel\.app$",
+]
 CORS_ALLOW_CREDENTIALS = True
+CORS_EXPOSE_HEADERS = ["Content-Disposition", "X-Request-ID"]
 
 # Rate limit đăng nhập lưu trên PostgreSQL (Vercel không giữ bộ nhớ giữa các invocation)
 RATE_LIMIT_ENABLED = env.bool("RATE_LIMIT_ENABLED", default=True)

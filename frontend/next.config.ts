@@ -4,10 +4,9 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 /**
- * Origin của Django API. Chỉ dùng phía server (rewrite), không lộ ra bundle client.
- * Frontend gọi `/api/v1/*` cùng origin → cookie phiên là cookie host-only của toannx.com.
+ * Origin của Django API từ NEXT_PUBLIC_API_URL.
  */
-const backendOrigin = process.env.BACKEND_ORIGIN ?? "http://localhost:8001";
+const apiOrigin = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8001").replace(/\/$/, "");
 const isDev = process.env.NODE_ENV === "development";
 const isHttps = (process.env.NEXT_PUBLIC_SITE_URL ?? "").startsWith("https://");
 
@@ -24,7 +23,7 @@ const contentSecurityPolicy = [
   "img-src 'self' https: data: blob:",
   "media-src 'self' https: blob:",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.open-meteo.com https://fcmregistrations.googleapis.com https://firebaseinstallations.googleapis.com https://cloud.umami.is https://gateway.umami.is",
+  `connect-src 'self' ${apiOrigin} https://api.open-meteo.com https://fcmregistrations.googleapis.com https://firebaseinstallations.googleapis.com https://cloud.umami.is https://gateway.umami.is`,
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
   "object-src 'none'",
   "base-uri 'self'",
@@ -67,9 +66,8 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
-      { source: "/api/v1/:path*", destination: `${backendOrigin}/api/v1/:path*` },
       // File upload khi dùng storage local của Django (production dùng URL object storage).
-      { source: "/media/:path*", destination: `${backendOrigin}/media/:path*` },
+      { source: "/media/:path*", destination: `${apiOrigin}/media/:path*` },
     ];
   },
   async headers() {

@@ -56,7 +56,7 @@ function buildUrl(path: string, query?: RequestOptions["query"]): string {
     }
   }
   const search = params.toString();
-  return `${env.apiBasePath}${path}${search ? `?${search}` : ""}`;
+  return `${env.apiBaseUrl}${path}${search ? `?${search}` : ""}`;
 }
 
 function isRawBody(body: unknown): body is BodyInit {
@@ -105,7 +105,7 @@ async function send(method: HttpMethod, path: string, options: RequestOptions): 
     method,
     headers,
     body,
-    credentials: "same-origin",
+    credentials: "include",
     signal: controller.signal,
   });
   try {

@@ -62,7 +62,7 @@ API docs (chỉ khi `DJANGO_DEBUG=True`): http://localhost:8001/api/v1/docs
 
 ```bash
 cd frontend
-cp .env.example .env.local   # BACKEND_ORIGIN=http://localhost:8001
+cp .env.example .env.local   # NEXT_PUBLIC_API_URL=http://localhost:8001
 pnpm install
 pnpm dev                     # http://localhost:3001 → /vi
 ```

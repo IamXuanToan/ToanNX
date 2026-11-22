@@ -289,13 +289,13 @@ Hook trong `components/common/hooks/` còn lại là hook riêng của từng co
 
 | Export | File | Dùng khi |
 | --- | --- | --- |
-| `apiClient`, `refreshSession` | `api-client.ts` | Gọi API trong service (camel ⇄ snake, CSRF, refresh single-flight); request bị người gọi hủy (`signal`) → `ApiError` mã `REQUEST_CANCELLED`, không ném lại `AbortError` |
+| `apiClient`, `refreshSession` | `api-client.ts` | Gọi API trong service (camel ⇄ snake, CSRF in-memory/cookie, refresh single-flight, cross-origin với credentials include); request bị người gọi hủy (`signal`) → `ApiError` mã `REQUEST_CANCELLED`, không ném lại `AbortError` |
 | `createCrudService` | `create-crud-service.ts` | Service CRUD chuẩn cho một ViewSet BE |
 | `createResourceKeys`, `ResourceKeys` | `resource-keys.ts` | Query key chuẩn `[module, resource, ...]` |
 | `toPaginated` | `to-paginated.ts` | Chuẩn hóa response danh sách thành `Paginated` |
 | `ApiError`, `isApiError`, `CLIENT_ERROR_CODES` | `api-error.ts` | Lỗi API có mã |
 | `serverApiGet`, `backendFetch` | `server-api.ts` | Gọi Django từ server component / route handler |
-| `readCsrfToken`, `ensureCsrfToken`, `CSRF_COOKIE_NAME`, `CSRF_HEADER_NAME` | `csrf.ts` | CSRF (thường `apiClient` đã lo) |
+| `readCsrfToken`, `ensureCsrfToken`, `CSRF_COOKIE_NAME`, `CSRF_HEADER_NAME` | `csrf.ts` | CSRF (đọc cookie hoặc in-memory khi cross-subdomain; thường `apiClient` đã lo) |
 | `keysToCamel`, `keysToSnake`, `toCamelKey`, `toSnakeKey` | `case-conversion.ts` | Đổi khóa khi tự xử lý dữ liệu ngoài `apiClient` |
 | `SESSION_API_PATHS`, `PATHS_WITHOUT_REFRESH` | `session-paths.ts` | Path phiên chỉ `apiClient` dùng; không thêm path module vào đây |
 
@@ -315,7 +315,7 @@ Hook trong `components/common/hooks/` còn lại là hook riêng của từng co
 | `createBooleanBulkStatus` | `lib/bulk-status.ts` | `bulkStatus` của `DataTable` cho cờ boolean (đang dùng/tắt, xuất bản/ẩn) |
 | `EDIT_MODE_PARAM`, `EDIT_MODE_VALUE`, `withEditMode` | `lib/edit-mode.ts` | Hook bảng: `edit` → `withEditMode(<M>_ROUTES.xxxDetail(id))` mở thẳng chế độ sửa |
 | `ICON_PATHS` | `lib/asset-paths.ts` | Đường dẫn các tài nguyên tĩnh SVG trong `public/` (Google, GitHub) |
-| `env` | `config/env.ts` | **Chỗ duy nhất** đọc `process.env` (gồm `NEXT_PUBLIC_FIREBASE_*`) |
+| `env` | `config/env.ts` | **Chỗ duy nhất** đọc `process.env` (gồm `apiBaseUrl`, `siteUrl`, `NEXT_PUBLIC_FIREBASE_*`) |
 | `isPushSupported`, `getPushToken`, `deletePushToken`, `NOTIFICATION_SW_PATH` | `lib/firebase-messaging.ts` | Lấy/xóa token FCM (đăng ký `public/notification-sw.js`); chỉ dùng qua hook push của `system` |
 
 ### 4.9 Kiểu dùng chung — `types/`

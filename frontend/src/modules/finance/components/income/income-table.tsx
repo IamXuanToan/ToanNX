@@ -35,7 +35,7 @@ function exportHref(filters: IncomeFilters): string {
   };
   for (const [key, value] of Object.entries(map))
     if (value !== undefined && value !== "") params.set(key, String(value));
-  return `${env.apiBasePath}${FINANCE_API_ENDPOINTS.incomeExport}?${params.toString()}`;
+  return `${env.apiBaseUrl}${FINANCE_API_ENDPOINTS.incomeExport}?${params.toString()}`;
 }
 
 /**

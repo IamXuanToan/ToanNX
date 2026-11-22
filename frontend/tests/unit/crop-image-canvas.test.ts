@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { env } from "@/shares/config/env";
 import { getCroppedImageCanvas } from "@/modules/system/lib/crop-image-canvas";
 import { attachmentService } from "@/modules/system/services/attachment.service";
 
 /**
- * Trình sửa ảnh đọc bytes cùng origin qua backend (`…/content?stream=1`): URL R2 khác origin không có CORS thì
+ * Trình sửa ảnh đọc bytes trực tiếp qua backend (`…/content?stream=1`): URL R2 khác origin không có CORS thì
  * `fetch`/canvas bị chặn ("Failed to fetch").
  */
 afterEach(() => {
@@ -15,19 +16,19 @@ afterEach(() => {
 const CROP = { x: 0, y: 0, width: 10, height: 10 };
 
 describe("trình sửa ảnh: tải ảnh", () => {
-  it("URL đọc nội dung là đường dẫn cùng origin qua backend", () => {
+  it("URL đọc nội dung là đường dẫn qua backend", () => {
     expect(attachmentService.contentStreamUrl("abc")).toBe(
-      "/api/v1/system/attachments/abc/content?stream=1",
+      `${env.apiBaseUrl}/system/attachments/abc/content?stream=1`,
     );
   });
 
-  it("gọi fetch cùng origin tới URL truyền vào", async () => {
+  it("gọi fetch trực tiếp tới URL truyền vào với credentials include", async () => {
     const fetchMock = vi.fn(async () => new Response("", { status: 404 }));
     vi.stubGlobal("fetch", fetchMock);
     const url = attachmentService.contentStreamUrl("abc");
 
     await expect(getCroppedImageCanvas({ imageSrc: url, pixelCrop: CROP })).rejects.toThrow();
-    expect(fetchMock).toHaveBeenCalledWith(url, { credentials: "same-origin" });
+    expect(fetchMock).toHaveBeenCalledWith(url, { credentials: "include" });
   });
 
   it("backend trả lỗi: báo lỗi, không lặng lẽ thử tải trực tiếp từ storage", async () => {
@@ -37,7 +38,7 @@ describe("trình sửa ảnh: tải ảnh", () => {
     );
     await expect(
       getCroppedImageCanvas({
-        imageSrc: "/api/v1/system/attachments/x/content?stream=1",
+        imageSrc: `${env.apiBaseUrl}/system/attachments/x/content?stream=1`,
         pixelCrop: CROP,
       }),
     ).rejects.toBeInstanceOf(Error);

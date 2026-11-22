@@ -2,7 +2,9 @@
 export const env = {
   /** URL công khai của site, dùng cho canonical/hreflang/sitemap. */
   siteUrl: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001").replace(/\/$/, ""),
-  /** Tiền tố API cùng origin (Next.js rewrite sang Django). */
+  /** URL tuyệt đối của Django API (Browser gọi trực tiếp cross-origin hoặc dev local). */
+  apiBaseUrl: `${(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "")}/api/v1`,
+  /** Tiền tố API cùng origin. */
   apiBasePath: "/api/v1",
   /** Thời gian chờ tối đa của một request API (ms). */
   apiTimeoutMs: 15_000,
