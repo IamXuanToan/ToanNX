@@ -591,7 +591,7 @@ pnpm typecheck && pnpm test tests/unit/<file>.test.ts && pnpm e2e tests/e2e/<lu�
 - Unit (Vitest): `tests/unit`. E2E (Playwright): `tests/e2e`, chạy trên server thật với database riêng
   `toannx_e2e` (BE 8001, FE 3001 build vào `.next-e2e`), không đụng dữ liệu dev.
 - Kiểu dữ liệu: `pnpm api:types` sinh `shares/types/api-schema.gen.ts` từ OpenAPI (không sửa tay; CI đỏ nếu
-  cũ). `ApiModel<"…Response">` là kiểu FE nhận được (đã camelCase). Kiểu viết tay phải có đúng tập field
+  cũ). Chạy lại ngay khi BE đổi thứ đi vào OpenAPI, **kể cả chỉ đổi docstring của view/method** (rule backend §6). `ApiModel<"…Response">` là kiểu FE nhận được (đã camelCase). Kiểu viết tay phải có đúng tập field
   của response, kiểm trong `tests/unit/api-contract.test.ts` lúc `pnpm typecheck`.
 - Lỗi ở error boundary được gửi về `/api/v1/system/health/client-errors` để ghi log mức ERROR ở BE.
 

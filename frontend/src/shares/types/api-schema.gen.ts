@@ -2598,7 +2598,7 @@ export interface paths {
      * @description Gửi một lô bản đến hạn.
      *
      *     Raises:
-     *         NotFoundError: Chưa cấu hình hoặc sai bí mật (không lộ endpoint tồn tại).
+     *         NotFoundError: Không phải QStash, chưa cấu hình hoặc sai bí mật cron.
      */
     post: operations["system_notifications_dispatch_create"];
     delete?: never;

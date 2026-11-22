@@ -31,6 +31,10 @@ Note `src/proxy.ts` replaces middleware.
   the root of `components/`/`views/`, no root `components/hooks/`, no `views/hooks/`, no `shared`/`common` group
   (shared component → the group that uses it most; app-wide → `shares/`). Views only call `usePermission`,
   `useTranslations`, `useEditMode` (rule frontend §2, `tests/unit/module-structure.test.ts`).
+- **Regenerate API types with every OpenAPI change**: changing a route, view, serializer, `@extend_schema`,
+  `help_text`, error code — **or just the docstring of a view class / HTTP method** (drf-spectacular puts it in the
+  OpenAPI description) — means running `pnpm api:types` in the same change and committing
+  `frontend/src/shares/types/api-schema.gen.ts`; CI fails on any diff (rule backend §6).
 - **Right layer at every entry point**: views, tasks, commands, signals, middleware, authentication, permission
   classes and recorders call services only, never repositories/ORM. Services/repositories a class uses are created in
   `__init__` (`self.<name>_service`); no `XxxService().method()`/`XxxService.method()` inside methods (rule backend §1, §4, §5.2).

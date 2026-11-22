@@ -314,6 +314,9 @@ class UserRoleView(CoreApiView):
 - APIView chỉ cần `@extend_schema(responses=...)` (serializer của `data`; `{204: None}` khi không body).
 - Schema phải sạch: `uv run python manage.py spectacular --validate --fail-on-warn`
   (được kiểm tra trong `app/core/tests/test_openapi_schema.py`).
+- **Đổi bất kỳ thứ gì đi vào OpenAPI thì chạy `pnpm api:types` (trong `frontend/`) ngay trong lần sửa đó** và để
+  `frontend/src/shares/types/api-schema.gen.ts` đi cùng commit. Gồm: route, view, quyền, serializer, `@extend_schema`, `help_text`/`verbose_name`, mã lỗi, **cả docstring của class view và method `get`/`post`/`put`/`patch`/`delete`** (drf-spectacular đưa docstring vào mô tả OpenAPI). CI chạy
+  `git diff --exit-code` trên file này nên chỉ lệch một dòng mô tả cũng đỏ. Không sửa tay file sinh ra.
 
 ## 7. Phụ thuộc giữa module
 

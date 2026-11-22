@@ -33,6 +33,10 @@ Mẫu prompt giao việc cho agent: [prompt.md](prompt.md).
   `components/`/`views/`, không có `components/hooks/` cấp gốc, không có `views/hooks/`, không có nhóm
   `shared`/`common` (dùng chung → nhóm dùng nhiều nhất; toàn app → `shares/`). View chỉ gọi `usePermission`,
   `useTranslations`, `useEditMode` (rule frontend §2, `tests/unit/module-structure.test.ts`).
+- **Đổi OpenAPI thì sinh lại kiểu API**: đổi route, view, serializer, `@extend_schema`, `help_text`, mã lỗi —
+  **hoặc chỉ docstring của class view / method HTTP** (drf-spectacular đưa vào mô tả OpenAPI) — thì chạy
+  `pnpm api:types` ngay trong lần đó và commit `frontend/src/shares/types/api-schema.gen.ts`; CI đỏ nếu lệch
+  (rule backend mục 6).
 - **Đúng lớp ở mọi điểm vào**: view, task, command, signal, middleware, authentication, permission, recorder chỉ gọi
   service, không gọi repository/ORM. Service/repository được dùng phải khai trong `__init__` (`self.<tên>_service`),
   không gọi `XxxService().method()`/`XxxService.method()` trong method (rule backend §1, §4, §5.2).
@@ -177,7 +181,7 @@ Frontend:
    (`navigation.ts` khai `module`, `nameKey`/`descriptionKey`, `labelKey` là khóa đầy đủ trong namespace của module;
    hơn 5 mục thì mỗi mục khai `section: "<module>.navSections.<cụm>"`).
    `tests/unit/module-registry.test.ts` đỏ nếu quên chỗ nào.
-   Chạy `pnpm api:types` khi đổi serializer BE; kiểu viết tay thêm một dòng vào `tests/unit/api-contract.test.ts`
+   Chạy `pnpm api:types` khi đổi bất kỳ thứ gì đi vào OpenAPI (serializer, view, kể cả docstring của view/method); kiểu viết tay thêm một dòng vào `tests/unit/api-contract.test.ts`
    (hoặc dùng thẳng `ApiModel<"…Response">`). Model có `JournalTracker` thì thêm tiền tố nhãn field vào
    `system/constants/journal-field-prefixes.ts`. Lỗi tải bản ghi dùng `QueryErrorState`.
 5. Module cùng cấp không import nhau: page ghép qua slot (`extensions`, `history`, `editorPlugins`).
