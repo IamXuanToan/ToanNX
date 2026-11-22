@@ -130,7 +130,7 @@ repository của `system`.
 | `Attachment` | `system/models/attachment.py` | Khóa ngoại tới tệp đính kèm (ảnh bìa, avatar...) |
 | `AttachmentPermission` | `system/permissions/attachment_permission.py` | Quyền đọc/ghi thư viện khi module khác cần kiểm |
 | `User` | `system/models/user.py` (`settings.AUTH_USER_MODEL`) | Khóa ngoại người dùng; ưu tiên `settings.AUTH_USER_MODEL` trong model |
-| `get_client_ip` | `system/utils/client_ip.py` | Lấy IP client sau proxy |
+| `get_client_ip` | `system/utils/client_ip.py` | Lấy IP client thực tế sau proxy (thuật toán right-to-left lọc Cloudflare và mạng nội bộ chống spoofing) |
 | `EmailService` | `system/services/email_service.py` | Gửi email: `send_template(template=, subject=, recipient=, context=, locale=, async_send=)` dựng `system/email/<template>_<lang>.{txt,html}`; `send_now(...)` gửi đồng bộ (outbox, serverless). Tạo `self.email_service = EmailService()` trong `__init__` |
 | `NotificationService` | `system/services/notification_service.py` | Cách **duy nhất** để module phát thông báo: `notify(event_code, *, dedup_key, payload, recipient=None, recipients=None)` (OWNER phải có `recipient`; SUBSCRIBERS tự tìm người có `permission`); `revoke(event_code, dedup_key)`; outbox chống trùng, **không gửi trong request** (sau commit chỉ đá `NotificationKickService`), lỗi không ném ra; `dispatch_pending(force=False)` cho QStash/cron |
 | `NotificationPayload` | `system/types/notification_payload.py` | Nội dung một thông báo: `title`, `body` ngắn (chuông, popup), `details=(("💻 Thiết bị", "Chrome trên Windows"), ...)` cho Telegram/email, `link`, `level`, `message_key`/`params` (FE dịch) |
