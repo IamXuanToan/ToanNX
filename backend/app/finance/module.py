@@ -68,6 +68,7 @@ MODULE = ModuleDescriptor(
             "Webhook SePay hoặc lấy thủ công ghi nhận một khoản thu nhập.",
             permission="finance.income.read",
             default_channels=("IN_APP", "PUSH"),
+            icon="💰",
         ),
         NotificationEventDefinition(
             E.INCOME_NEEDS_REVIEW,
@@ -76,6 +77,7 @@ MODULE = ModuleDescriptor(
             permission="finance.income.read",
             default_level="WARNING",
             default_channels=("IN_APP", "PUSH"),
+            icon="🧾",
         ),
         NotificationEventDefinition(
             E.WEBHOOK_AUTH_FAILED,
@@ -85,6 +87,7 @@ MODULE = ModuleDescriptor(
             default_level="ERROR",
             default_channels=("IN_APP", "PUSH", "EMAIL"),
             kind="technical",
+            icon="🚫",
         ),
     ),
 )

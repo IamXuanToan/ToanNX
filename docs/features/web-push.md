@@ -23,7 +23,12 @@ Bấm popup → focus tab toannx.com đang mở và điều hướng tới link 
    Làm mới access token Google và gửi đều có timeout 3 giây; lỗi mạng là lỗi tạm, thử lại theo lùi dần.
 3. `public/notification-sw.js` nhận `push`:
    - gửi `postMessage({ type: "notification", data })` tới mọi tab để làm mới chuông;
-   - **luôn** gọi `showNotification` (icon logo, `tag` = id thông báo, `renotify`), kể cả khi đang xem trang.
+   - **luôn** gọi `showNotification`, kể cả khi đang xem trang: tiêu đề `ToanNX · <tiêu đề>` (dòng trên cùng của
+     popup Windows luôn là tên trình duyệt, web không đổi được), icon `/brand/notification-icon.png` (logo trên nền
+     trắng bo góc, rõ trên nền tối lẫn sáng), nút **Xem chi tiết**, `tag` = id thông báo, `renotify`; mức
+     `WARNING`/`ERROR` dùng `requireInteraction` (popup ở lại tới khi tắt).
+   - Thiết bị trong nội dung là nhãn ngắn do BE dựng (`system/utils/user_agent.py`: "Chrome trên Windows",
+     "Cốc Cốc trên Windows"), không phải cả chuỗi User-Agent.
 4. `useNotificationRealtime` ở trang: chỉ làm mới chuông, không hiện toast.
 
 Không dùng SDK Firebase trong service worker (không `importScripts` từ CDN, không nới CSP).

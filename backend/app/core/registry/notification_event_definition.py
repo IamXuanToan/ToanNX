@@ -26,6 +26,7 @@ class NotificationEventDefinition:
         default_level: Mức mặc định (`INFO`/`WARNING`/`ERROR`).
         default_channels: Kênh bật sẵn khi người dùng chưa chỉnh tùy chọn.
         kind: `business` (nghiệp vụ) hoặc `technical` (lỗi kỹ thuật, vận hành).
+        icon: Emoji đứng đầu tin Telegram/email (trống → theo mức: ℹ️ / ⚠️ / 🚨).
     """
 
     code: str
@@ -37,6 +38,7 @@ class NotificationEventDefinition:
     default_level: NotificationLevel = "INFO"
     default_channels: tuple[NotificationChannel, ...] = field(default=("IN_APP",))
     kind: NotificationEventKind = "business"
+    icon: str = ""
 
     @property
     def module(self) -> str:

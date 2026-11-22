@@ -6,9 +6,17 @@
  * Chi tiết: docs/features/web-push.md.
  */
 
-const DEFAULT_TITLE = "ToanNX";
-const ICON_PATH = "/brand/logo-mark.png";
+/** Tên nền tảng: đứng đầu tiêu đề vì dòng trên cùng của popup Windows luôn là tên trình duyệt. */
+const PLATFORM_NAME = "ToanNX";
+const TITLE_SEPARATOR = " · ";
+/** Logo trên nền trắng bo góc: rõ trên popup nền tối lẫn nền sáng (logo gốc nền trong suốt bị chìm). */
+const ICON_PATH = "/brand/notification-icon.png";
 const BADGE_PATH = "/icon.png";
+/** Mức cần người dùng thấy: popup ở lại tới khi tắt (đăng nhập thiết bị mới, lỗi gửi...). */
+const STICKY_LEVELS = ["WARNING", "ERROR"];
+const OPEN_ACTION = "open";
+/** Tin đẩy không mang ngôn ngữ người dùng; nhãn theo ngôn ngữ mặc định của site (vi). */
+const OPEN_LABEL = "Xem chi tiết";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -33,6 +41,10 @@ function readPayload(event) {
   } catch {
     return null;
   }
+}
+
+function buildTitle(title) {
+  return title ? PLATFORM_NAME + TITLE_SEPARATOR + title : PLATFORM_NAME;
 }
 
 function resolveLink(link) {
@@ -72,12 +84,14 @@ self.addEventListener("push", (event) => {
 
       // Luôn hiện thông báo của hệ điều hành (Windows: thông báo nổi góc màn hình + Action Center),
       // kể cả khi đang xem trang.
-      await self.registration.showNotification(data.title || DEFAULT_TITLE, {
+      await self.registration.showNotification(buildTitle(data.title), {
         body: data.body || "",
         icon: ICON_PATH,
         badge: BADGE_PATH,
         tag: data.notification_id,
         renotify: true,
+        requireInteraction: STICKY_LEVELS.includes(data.level),
+        actions: [{ action: OPEN_ACTION, title: OPEN_LABEL }],
         timestamp: Date.now(),
         data: {
           link: resolveLink(data.link),

@@ -117,5 +117,10 @@ class SepayWebhookService:
                 level="ERROR",
                 message_key="finance.notifications.webhookAuthFailed",
                 params={"reason": reason},
+                details=(
+                    ("🔌 Mã kết nối", str(connection.public_id)),
+                    ("❗ Lý do", reason),
+                    ("🛠️ Cách xử lý", "Kiểm tra secret webhook trên SePay và giờ máy chủ."),
+                ),
             ),
         )

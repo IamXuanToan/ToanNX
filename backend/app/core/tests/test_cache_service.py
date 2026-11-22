@@ -50,3 +50,11 @@ def test_failure_returns_miss_and_pauses_redis(settings: Any) -> None:
     # Sau lần lỗi đầu, Redis bị tạm ngắt: không gọi thêm lệnh nào (không chờ timeout ở từng request).
     assert broken.commands == 1
     assert service.namespace_version("ns") is None
+
+
+def test_upstash_url_is_upgraded_to_tls() -> None:
+    assert CacheService.normalize_url("redis://default:pw@abc.upstash.io:6379") == (
+        "rediss://default:pw@abc.upstash.io:6379"
+    )
+    assert CacheService.normalize_url("rediss://default:pw@abc.upstash.io:6379").startswith("rediss://")
+    assert CacheService.normalize_url("redis://localhost:6379/0") == "redis://localhost:6379/0"

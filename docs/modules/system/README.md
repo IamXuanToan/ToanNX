@@ -80,6 +80,10 @@ file riêng tư `/tep/{id}`.
 - Token bot Telegram không giải mã được hoặc Telegram trả 401/404 → bot bị tắt (`is_active=False`,
   `last_error_code=TELEGRAM_BOT_TOKEN_INVALID`), một bản `FAILED` + cảnh báo; thông báo sau không tạo bản gửi
   Telegram nữa tới khi lưu lại token.
+- Tin Telegram/email dựng bằng `NotificationMessageFormatter`: `<icon> <b>Tiêu đề</b>`, các dòng `details`, `🕒 Thời gian`,
+  `👉 Xem chi tiết`. Icon sự kiện: đăng nhập 🔐, thiết bị mới 🛡️, đổi mật khẩu 🔑, thông báo hệ thống 📢, gửi lỗi 🚨,
+  dung lượng R2 💾, dung lượng DB 🗄️ (finance: tiền vào 💰, cần xử lý 🧾, webhook sai 🚫).
+- Token push hết hạn (`PUSH_TOKEN_INVALID`) chỉ tắt thiết bị, không sinh cảnh báo "gửi thất bại" (`SILENT_FAILURE_CODES`).
 - Email theo mẫu (quên mật khẩu, xác minh, lời mời) gửi đồng bộ (`EMAIL_ASYNC=False`, `EMAIL_TIMEOUT=5`).
 - Login ghi log `auth.login steps rate_limit=.. authenticate=.. session=.. notify=.. commit_kick=.. profile=..
   total=..` kèm `request_id`; dispatcher ghi `notification.send delivery=.. channel=.. status=.. elapsed=..`.

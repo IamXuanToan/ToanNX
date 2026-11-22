@@ -36,6 +36,7 @@ from app.system.utils.svg_inspector import SVG_CONTENT_TYPE, find_svg_problem
 
 _CHUNK_SIZE = 64 * 1024
 PERCENT = 100
+GIGABYTE_DIVISOR = 1024**3
 ATTACHMENTS_PATH = "/admin/attachments"
 
 
@@ -81,6 +82,14 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
                 link=ATTACHMENTS_PATH,
                 message_key="system.notifications.events.storageQuota",
                 params={"percent": used},
+                details=(
+                    (
+                        "📊 Đã dùng",
+                        f"{used}% ({total_bytes / GIGABYTE_DIVISOR:.2f} GB"
+                        f" / {limit / GIGABYTE_DIVISOR:.0f} GB)",
+                    ),
+                    ("🛠️ Cách xử lý", "Dọn file không dùng hoặc tăng ATTACHMENT_MAX_TOTAL_STORAGE_BYTES."),
+                ),
             ),
         )
 

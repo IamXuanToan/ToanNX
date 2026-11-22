@@ -30,6 +30,7 @@ from app.system.constants.notification_defaults import (
     NOTIFICATION_RETENTION_DAYS,
     PUSH_DEVICE_STALE_DAYS,
 )
+from app.system.constants.notification_error_code import NotificationErrorCode
 from app.system.constants.notification_level import NotificationLevel
 from app.system.constants.system_notification_event import SystemNotificationEvent
 from app.system.models.notification import Notification
@@ -46,6 +47,9 @@ from app.system.types.notification_payload import NotificationPayload
 
 logger = logging.getLogger(__name__)
 Channel = NotificationChannel
+# Lỗi vĩnh viễn nhưng bình thường, hệ thống đã tự xử lý (token trình duyệt hết hạn → thiết bị bị tắt):
+# không cảnh báo "gửi thất bại" cho quản trị viên.
+SILENT_FAILURE_CODES = frozenset({NotificationErrorCode.PUSH_TOKEN_INVALID})
 
 
 class NotificationService:
@@ -271,7 +275,9 @@ class NotificationService:
                     message_key=payload.message_key,
                     params=payload.params,
                     link=payload.link,
-                    data=payload.data,
+                    data={**payload.data, "details": [list(row) for row in payload.details]}
+                    if payload.details
+                    else payload.data,
                     dedup_key=dedup_key[:200],
                     # Tắt IN_APP: vẫn cần bản ghi làm nội dung cho email/Telegram/push nhưng ẩn khỏi chuông.
                     expires_at=payload.expires_at if resolved.in_app else now,
@@ -322,8 +328,10 @@ class NotificationService:
             # Lỗi tạm: hẹn QStash gọi lại đúng lúc thử lại theo lùi dần.
             delay = (delivery.next_attempt_at - timezone.now()).total_seconds()
             self.kick_service.kick(int(max(0, delay)) + 1)
-        if delivery.status == NotificationDelivery.Status.FAILED and (
-            delivery.notification.event_code != SystemNotificationEvent.DELIVERY_FAILED
+        if (
+            delivery.status == NotificationDelivery.Status.FAILED
+            and delivery.notification.event_code != SystemNotificationEvent.DELIVERY_FAILED
+            and delivery.last_error_code not in SILENT_FAILURE_CODES
         ):
             now = timezone.now()
             self.notify(
@@ -334,6 +342,12 @@ class NotificationService:
                     body=f"Kênh {delivery.channel}, lỗi {delivery.last_error_code}.",
                     level=NotificationLevel.ERROR,
                     message_key="system.notifications.events.deliveryFailed",
+                    details=(
+                        ("📡 Kênh", str(delivery.channel)),
+                        ("❗ Mã lỗi", delivery.last_error_code or "-"),
+                        ("📨 Sự kiện", delivery.notification.event_code),
+                        ("🔁 Số lần thử", str(delivery.attempts)),
+                    ),
                 ),
             )
         return int(delivery.status == NotificationDelivery.Status.SENT)
