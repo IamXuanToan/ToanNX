@@ -558,6 +558,10 @@ hay vẽ SVG logo riêng.
 
 ## 6. Test
 
+- **Build thử vào thư mục khác** (`NEXT_DIST_DIR=.next-xxx pnpm build`) thì Next tự thêm `.next-xxx/types/**` vào
+  `include` của `tsconfig.json` và ghi lại file không theo prettier → CI đỏ ở bước Format. Build xong phải bỏ các
+  dòng đó (chỉ giữ `.next` và `.next-e2e`) và chạy `pnpm exec prettier --check tsconfig.json` trước khi commit.
+
 ```bash
 pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build && pnpm e2e   # toàn bộ: chỉ khi được yêu cầu
 pnpm exec eslint <file> && pnpm exec prettier --check <file>                                # file đã sửa
