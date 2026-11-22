@@ -22,6 +22,8 @@ SOCKET_TIMEOUT_SECONDS = 1.0
 # Sau một lần lỗi, bỏ qua Redis trong khoảng này.
 OUTAGE_SECONDS = 30.0
 VERSION_SUFFIX = ":ver"
+# Upstash chỉ nhận kết nối TLS: URL `redis://...upstash.io` bị server đóng ngay, nên tự nâng lên `rediss://`.
+TLS_ONLY_HOST_SUFFIX = ".upstash.io"
 # Khóa version của namespace sống lâu hơn mọi dữ liệu dùng nó.
 VERSION_TTL_SECONDS = 30 * 24 * 3600
 
@@ -115,11 +117,27 @@ class CacheService:
             logger.warning("cache.unavailable op=%s error=%s", operation, type(exc).__name__)
             return None
 
+    @staticmethod
+    def normalize_url(url: str) -> str:
+        """Dùng TLS cho host Upstash dù URL ghi `redis://` (Upstash từ chối kết nối không mã hóa).
+
+        Args:
+            url: `REDIS_URL` như cấu hình.
+
+        Returns:
+            URL dùng để kết nối.
+        """
+        scheme, _, rest = url.partition("://")
+        host = rest.rsplit("@", 1)[-1].split(":", 1)[0].split("/", 1)[0]
+        if scheme == "redis" and host.endswith(TLS_ONLY_HOST_SUFFIX):
+            return f"rediss://{rest}"
+        return url
+
     @classmethod
     def _get_client(cls) -> Any:
-        url = settings.REDIS_URL
+        url = cls.normalize_url(settings.REDIS_URL)
         with cls._lock:
-            if cls._client is None or cls._client_url != url:
+            if cls._client is None or cls._client_url not in (url, settings.REDIS_URL):
                 import redis  # noqa: PLC0415 - chỉ nạp khi thật sự dùng Redis
 
                 cls._client = redis.Redis.from_url(

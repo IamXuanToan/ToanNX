@@ -376,6 +376,10 @@ class UserRoleView(CoreApiView):
   báo. Sự kiện khai trong `ModuleDescriptor.notification_events` với `scope` (`PERSONAL`/`SYSTEM`), `audience`
   (`OWNER` = truyền `recipient` là chủ dữ liệu; `SUBSCRIBERS` = mọi người có `permission`), `permission`,
   `default_level`, `default_channels`. `notify` không bao giờ ném lỗi ra nơi gọi (savepoint + log).
+- **Nội dung thông báo theo khuôn**: sự kiện khai `icon` (emoji) trong `NotificationEventDefinition`; payload có
+  `body` ngắn cho chuông/popup và `details` là các dòng `("<emoji> Nhãn", giá trị)` cho Telegram/email
+  (`NotificationMessageFormatter` dựng tiêu đề + chi tiết + giờ + link). Không đưa chuỗi thô dài (User-Agent, JSON)
+  vào thông báo; thiết bị dùng `describe_user_agent`.
 - **Request không gọi dịch vụ ngoài để gửi thông báo** (FCM, SMTP, Telegram): `notify` chỉ ghi outbox, sau commit
   đá `NotificationKickService` (QStash gọi lại `POST /system/notifications/dispatch` ở lượt function riêng; cron
   ngoài là lưới an toàn). Không thêm đường gửi inline, không tăng timeout để che việc gửi chậm. Ngoại lệ duy nhất:

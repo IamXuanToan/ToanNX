@@ -1,7 +1,6 @@
 """Gửi một bản outbox qua kênh của nó (PUSH/EMAIL/TELEGRAM); khóa dòng `skip_locked` để cron và request không
 gửi trùng. Không phụ thuộc `NotificationService` (tránh vòng lặp): cảnh báo gửi lỗi do service gọi xử lý."""
 
-import html
 import logging
 import time
 from datetime import datetime, timedelta
@@ -16,7 +15,6 @@ from app.system.constants.notification_channel import NotificationChannel
 from app.system.constants.notification_defaults import (
     NOTIFICATION_MAX_ATTEMPTS,
     NOTIFICATION_RETRY_BACKOFF_MINUTES,
-    TELEGRAM_MESSAGE_MAX_LENGTH,
 )
 from app.system.constants.notification_error_code import NotificationErrorCode
 from app.system.models.notification import Notification
@@ -27,6 +25,7 @@ from app.system.repositories.push_device_repository import PushDeviceRepository
 from app.system.repositories.telegram_chat_repository import TelegramChatRepository
 from app.system.services.email_service import EmailService
 from app.system.services.fcm_client import FcmClient
+from app.system.services.notification_message_formatter import NotificationMessageFormatter
 from app.system.services.push_device_service import PushDeviceService
 from app.system.services.telegram_bot_service import TelegramBotService
 from app.system.services.telegram_chat_service import TelegramChatService
@@ -64,6 +63,7 @@ class NotificationDispatcher:
         self.registry = registry or module_registry
         self.push_device_service = PushDeviceService(self.push_device_repository, self.fcm_client)
         self.telegram_bot_service = TelegramBotService(client=self.telegram_client)
+        self.message_formatter = NotificationMessageFormatter(self.registry)
         self.telegram_chat_service = TelegramChatService(
             self.telegram_chat_repository, self.telegram_client, self.telegram_bot_service
         )
@@ -152,8 +152,7 @@ class NotificationDispatcher:
         )
 
     def _email(self, delivery: NotificationDelivery, notification: Notification) -> Outcome:
-        link = self._absolute(notification.link)
-        text = f"{notification.body}\n\nXem chi tiết: {link}" if link else notification.body
+        text = self.message_formatter.plain_text(notification, self._absolute(notification.link))
         ok = self.email_service.send_now(
             subject=notification.title, recipient=delivery.target, text_body=text
         )
@@ -185,13 +184,7 @@ class NotificationDispatcher:
         return (Status.PENDING if temporary else Status.FAILED), result.error_code, "", not temporary
 
     def _telegram_html(self, notification: Notification) -> str:
-        parts = [f"<b>{html.escape(notification.title)}</b>"]
-        if notification.body:
-            parts.append(html.escape(notification.body))
-        link = self._absolute(notification.link)
-        if link:
-            parts.append(f'<a href="{html.escape(link, quote=True)}">Xem chi tiết</a>')
-        return "\n".join(parts)[:TELEGRAM_MESSAGE_MAX_LENGTH]
+        return self.message_formatter.telegram_html(notification, self._absolute(notification.link))
 
     def _absolute(self, path: str) -> str:
         """Link tuyệt đối cho email/Telegram (chạy ngoài request nên lấy origin FE từ cấu hình)."""

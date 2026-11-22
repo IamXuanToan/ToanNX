@@ -150,3 +150,18 @@ def test_revoked_permission_is_skipped(django_capture_on_commit_callbacks: Any) 
     role.delete()
     NotificationService().dispatch_pending()
     assert NotificationDelivery.objects.get().last_error_code == "NOTIFICATION_PERMISSION_REVOKED"
+
+
+def test_expired_push_token_does_not_alert_admins(user: Any, superuser: Any) -> None:
+    """Token trình duyệt hết hạn là chuyện bình thường (thiết bị tự tắt): không sinh cảnh báo gửi thất bại."""
+    PushDevice.objects.create(user=user, fcm_token="cu")
+    with patch(
+        "app.system.services.fcm_client.FcmClient.send",
+        return_value=PushSendResult(ok=False, error_code="PUSH_TOKEN_INVALID", permanent=True),
+    ):
+        NotificationService().notify(
+            "system.announcement.published", recipient=user, dedup_key="k", payload=PAYLOAD
+        )
+        NotificationService().dispatch_pending()
+    assert NotificationDelivery.objects.get(notification__recipient=user).status == "FAILED"
+    assert not Notification.objects.filter(event_code="system.notification.delivery_failed").exists()

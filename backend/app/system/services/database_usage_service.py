@@ -49,6 +49,11 @@ class DatabaseUsageService:
                     link=JOURNAL_PATH,
                     message_key="system.notifications.events.databaseQuota",
                     params={"percent": percent, "megabytes": used // MEGABYTE},
+                    details=(
+                        ("📊 Đã dùng", f"{percent}% ({used // MEGABYTE} MB / {limit // MEGABYTE} MB)"),
+                        ("🛠️ Cách xử lý", "Dọn nhật ký, thông báo cũ hoặc dữ liệu không dùng."),
+                        ("⚠️ Lưu ý", "Neon free chặn ghi khi vượt hạn mức."),
+                    ),
                 ),
             )
         return {"used_bytes": used, "limit_bytes": limit, "percent": percent}

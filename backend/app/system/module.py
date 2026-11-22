@@ -70,6 +70,7 @@ MODULE = ModuleDescriptor(
             "Có lượt đăng nhập",
             "Đăng nhập thành công bằng mật khẩu hoặc Google/GitHub.",
             default_channels=("IN_APP",),
+            icon="🔐",
         ),
         NotificationEventDefinition(
             E.AUTH_NEW_DEVICE,
@@ -77,6 +78,7 @@ MODULE = ModuleDescriptor(
             "Đăng nhập từ trình duyệt/IP chưa thấy trong 30 ngày.",
             default_level="WARNING",
             default_channels=("IN_APP", "PUSH", "EMAIL"),
+            icon="🛡️",
         ),
         NotificationEventDefinition(
             E.AUTH_PASSWORD_CHANGED,
@@ -84,6 +86,7 @@ MODULE = ModuleDescriptor(
             "Mật khẩu vừa được đổi hoặc đặt lại.",
             default_level="WARNING",
             default_channels=("IN_APP", "EMAIL"),
+            icon="🔑",
         ),
         NotificationEventDefinition(
             E.ANNOUNCEMENT_PUBLISHED,
@@ -92,6 +95,7 @@ MODULE = ModuleDescriptor(
             scope="SYSTEM",
             audience="SUBSCRIBERS",
             default_channels=("IN_APP", "PUSH"),
+            icon="📢",
         ),
         NotificationEventDefinition(
             E.DELIVERY_FAILED,
@@ -103,6 +107,7 @@ MODULE = ModuleDescriptor(
             default_level="ERROR",
             default_channels=("IN_APP",),
             kind="technical",
+            icon="🚨",
         ),
         NotificationEventDefinition(
             E.DATABASE_QUOTA_WARNING,
@@ -114,6 +119,7 @@ MODULE = ModuleDescriptor(
             default_level="WARNING",
             default_channels=("IN_APP", "EMAIL"),
             kind="technical",
+            icon="🗄️",
         ),
         NotificationEventDefinition(
             E.STORAGE_QUOTA_WARNING,
@@ -125,6 +131,7 @@ MODULE = ModuleDescriptor(
             default_level="WARNING",
             default_channels=("IN_APP", "EMAIL"),
             kind="technical",
+            icon="💾",
         ),
     ),
     webhooks=(

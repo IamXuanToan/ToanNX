@@ -11,6 +11,7 @@ from typing import Any
 
 from django.db import transaction
 from django.db.models import QuerySet
+from django.utils import timezone
 
 from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.services.core_crud_service import CoreCrudService
@@ -506,5 +507,31 @@ class IncomeService(CoreCrudService[Income, IncomeRepository]):
                 else "finance.notifications.incomeReceived",
                 params={"amount": str(income.amount or ""), "platform": platform},
                 data={"income_id": str(income.pk)},
+                details=self._notification_details(income, amount, platform, needs_review),
             ),
         )
+
+    @staticmethod
+    def _notification_details(
+        income: Income, amount: str, platform: str, needs_review: bool
+    ) -> tuple[tuple[str, str], ...]:
+        """Các dòng chi tiết cho tin Telegram/email (dòng trống tự bị bỏ khi hiển thị)."""
+        received = (
+            timezone.localtime(income.received_at).strftime("%H:%M · %d/%m/%Y") if income.received_at else ""
+        )
+        rows = [
+            ("💵 Số tiền", amount if income.amount is not None else "Chưa đọc được"),
+            ("🏷️ Nền tảng", platform),
+            ("🏦 Ngân hàng", income.bank_name or ""),
+            ("🔖 Mã giao dịch", income.reference_code or ""),
+            ("📥 Nhận lúc", received),
+            ("📝 Nội dung", income.content[:NOTIFICATION_CONTENT_MAX]),
+        ]
+        if needs_review:
+            reason = (
+                "Chưa đọc được số tiền"
+                if income.amount_status == AmountStatus.UNKNOWN
+                else str(Status(income.tax_status).label)
+            )
+            rows.append(("⚠️ Cần xử lý", reason))
+        return tuple(rows)

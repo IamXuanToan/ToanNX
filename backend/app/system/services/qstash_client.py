@@ -49,7 +49,11 @@ class QstashClient:
         Returns:
             True khi QStash nhận tin.
         """
-        if not self.is_configured() or "://" not in destination_url:
+        if not self.is_configured():
+            return False
+        if "://" not in destination_url:
+            # Ngoài request (shell, command) không dựng được URL backend tuyệt đối: để cron gửi bù.
+            logger.warning("qstash.publish_skipped reason=no_absolute_url path=%s", destination_url)
             return False
         headers = {
             "Authorization": f"Bearer {settings.QSTASH_TOKEN}",
@@ -72,8 +76,10 @@ class QstashClient:
             logger.warning("qstash.publish_failed error=%s", type(exc).__name__)
             return False
         if not response.ok:
+            # 401 = QSTASH_TOKEN sai/đã reset; thông báo vẫn nằm trong outbox, cron gửi bù.
             logger.warning("qstash.publish_rejected status=%s", response.status_code)
             return False
+        logger.info("qstash.published delay=%ss", delay)
         return True
 
     def verify(self, signature: str, body: bytes, path: str) -> bool:
