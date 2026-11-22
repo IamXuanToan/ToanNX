@@ -5,6 +5,7 @@ Module mới thêm endpoint danh sách thì thêm một dòng vào `CASES`; quê
 """
 
 import io
+import itertools
 import uuid
 from collections.abc import Callable
 from datetime import timedelta
@@ -29,6 +30,10 @@ from app.utilities.models.page_path import PagePath
 from app.utilities.services.page_service import PageService
 from app.utilities.services.qr_code_service import QrCodeService
 from app.utilities.services.short_link_service import ShortLinkService
+
+# Mã tiền tệ (3 ký tự, unique) tuần tự toàn phiên test: chỉ gồm chữ số nên không bao giờ trùng
+# mã ISO đã seed (VND, USD...) và không trùng nhau như mã ngẫu nhiên.
+_CURRENCY_CODE_SEQ = itertools.count(1)
 
 pytestmark = pytest.mark.django_db
 
@@ -242,7 +247,7 @@ def _system(model: str) -> Callable[[Any, int], None]:
                 )
             elif model == "currencies":
                 Currency.objects.create(
-                    code=uid[:3].upper().replace("0", "A"), name=uid, symbol="x", position=index + 10
+                    code=f"{next(_CURRENCY_CODE_SEQ):03d}", name=uid, symbol="x", position=index + 10
                 )
             elif model == "rates":
                 ExchangeRate.objects.create(
