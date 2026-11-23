@@ -30,6 +30,23 @@ class TestShortLinkDetailApi(BaseApiTestCase):
         assert data["name"] == "Chi Tiết Link"
         assert data["slug"] == "chi-tiet"
         assert data["owner_id"] == str(user.pk)
+        assert data["clicks_count"] == 0
+        assert data["visitors_count"] == 0
+        assert data["last_accessed_at"] is None
+
+    def test_detail_short_url_uses_frontend_origin(self, user: Any, login: Any) -> None:
+        """Link ngắn (short_url) lấy theo domain của frontend (qua Referer/Origin) thay vì domain BE."""
+        grant(user, P.READ)
+        link = ShortLinkFactory(owner=user, slug="toan-chill")
+        api = login(user)
+
+        # Khi frontend gọi lên kèm Referer của web frontend
+        res = api.get(
+            f"{BASE_URL}/{link.pk}",
+            HTTP_REFERER="https://www.toannx.com/vi/quan-tri/tien-ich/link-rut-gon",
+        )
+        data = self.assert_success(res, 200)
+        assert data["short_url"] == "https://www.toannx.com/s/toan-chill"
 
     def test_detail_owner_isolation_other_user_404(self, user: Any, login: Any) -> None:
         """Không thể xem chi tiết link của người khác (trả về 404 NOT_FOUND bảo mật)."""

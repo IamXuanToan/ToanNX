@@ -8666,6 +8666,22 @@ export interface components {
        * @description Thời điểm hết hạn, null là không giới hạn.
        */
       readonly expires_at: string | null;
+      /**
+       * Lượt truy cập
+       * @description Tổng số lượt truy cập liên kết.
+       */
+      readonly clicks_count: number;
+      /**
+       * Số người vào
+       * @description Số lượng người truy cập duy nhất.
+       */
+      readonly visitors_count: number;
+      /**
+       * Truy cập gần nhất
+       * Format: date-time
+       * @description Thời điểm có lượt truy cập gần nhất.
+       */
+      readonly last_accessed_at: string | null;
       /** @description URL ngắn tuyệt đối. */
       readonly short_url: string;
       /**
@@ -8727,6 +8743,22 @@ export interface components {
        * @description Thời điểm hết hạn, null là không giới hạn.
        */
       readonly expires_at: string | null;
+      /**
+       * Lượt truy cập
+       * @description Tổng số lượt truy cập liên kết.
+       */
+      readonly clicks_count: number;
+      /**
+       * Số người vào
+       * @description Số lượng người truy cập duy nhất.
+       */
+      readonly visitors_count: number;
+      /**
+       * Truy cập gần nhất
+       * Format: date-time
+       * @description Thời điểm có lượt truy cập gần nhất.
+       */
+      readonly last_accessed_at: string | null;
       /** @description Chủ sở hữu. */
       owner: components["schemas"]["ShortLinkOwnerResponse"];
       /**

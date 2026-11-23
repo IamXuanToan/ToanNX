@@ -18,10 +18,12 @@
     "copy": "Sao chép {url}",
     "inactive": "Tạm tắt",
     "expired": "Hết hạn",
+    "statsSummary": "{visitors} người ({clicks} lượt)",
     "columns": {
       "name": "Link",
       "destination": "URL đích",
       "access": "Cách mở",
+      "stats": "Lượt vào",
       "expiresAt": "Hết hạn",
       "owner": "Chủ sở hữu",
       "status": "Trạng thái"
@@ -55,7 +57,10 @@
       "expiresAt": "Hết hạn lúc",
       "status": "Trạng thái",
       "isActiveHint": "Tắt để link trả về trang không khả dụng.",
-      "shortUrl": "Link ngắn"
+      "shortUrl": "Link ngắn",
+      "clicksCount": "Lượt truy cập",
+      "visitorsCount": "Số người vào",
+      "lastAccessedAt": "Truy cập gần nhất"
     },
     "redirect": {
       "manual": "Chờ bấm nút",

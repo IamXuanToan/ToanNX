@@ -96,6 +96,35 @@ export function ShortLinkTable({
       ),
     },
     {
+      id: "stats",
+      header: t("columns.stats"),
+      sortKey: "visitors_count",
+      cell: (link) => (
+        <div
+          className="flex flex-col text-xs leading-relaxed"
+          title={
+            link.lastAccessedAt
+              ? `${t("fields.lastAccessedAt")}: ${format.dateTime(new Date(link.lastAccessedAt), {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })}`
+              : undefined
+          }
+        >
+          <span className="text-foreground font-medium">
+            {t("statsSummary", { visitors: link.visitorsCount, clicks: link.clicksCount })}
+          </span>
+          {link.lastAccessedAt ? (
+            <span className="text-muted-foreground text-[11px]">
+              {format.relativeTime(new Date(link.lastAccessedAt), now)}
+            </span>
+          ) : (
+            <span className="text-muted-foreground text-[11px]">—</span>
+          )}
+        </div>
+      ),
+    },
+    {
       id: "expiresAt",
       header: t("columns.expiresAt"),
       sortKey: "expires_at",

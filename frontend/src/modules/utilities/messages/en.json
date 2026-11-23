@@ -18,10 +18,12 @@
     "copy": "Copy {url}",
     "inactive": "Disabled",
     "expired": "Expired",
+    "statsSummary": "{visitors} visitors ({clicks} clicks)",
     "columns": {
       "name": "Link",
       "destination": "Destination",
       "access": "Opening",
+      "stats": "Visits",
       "expiresAt": "Expires",
       "owner": "Owner",
       "status": "Status"
@@ -55,7 +57,10 @@
       "expiresAt": "Expires at",
       "status": "Status",
       "isActiveHint": "Disable to show the unavailable page instead.",
-      "shortUrl": "Short link"
+      "shortUrl": "Short link",
+      "clicksCount": "Total clicks",
+      "visitorsCount": "Unique visitors",
+      "lastAccessedAt": "Last accessed"
     },
     "redirect": {
       "manual": "Wait for a button press",
