@@ -6,6 +6,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from app.core.constants.error_codes import ErrorCode
+from app.core.context.user_context import get_current_request
 from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
@@ -15,6 +16,7 @@ from app.core.utils.slug import generate_slug, normalize_slug
 from app.core.utils.url import build_absolute_url
 from app.system.models.attachment import Attachment
 from app.system.services.attachment_service import AttachmentService
+from app.system.utils.frontend_url import get_frontend_origin
 from app.utilities.constants.page_templates import PAGE_TEMPLATES
 from app.utilities.constants.public_cache import PUBLIC_CACHE_NAMESPACE, PUBLIC_CACHE_TTL_SECONDS
 from app.utilities.constants.utilities_error_code import UtilitiesErrorCode
@@ -97,6 +99,33 @@ class PageService(CoreCrudService[Page, PageRepository]):
         preview = page.status != Page.Status.PUBLISHED
         if preview and not self._can_preview(viewer, page):
             raise NotFoundError()
+
+        avatar_url = self._image_url(page.avatar)
+        cover_url = self._image_url(page.cover)
+        content_cfg = page.content_config if isinstance(page.content_config, dict) else {}
+        profile_obj = content_cfg.get("profile")
+        profile_cfg: dict[str, Any] = profile_obj if isinstance(profile_obj, dict) else {}
+
+        if not avatar_url:
+            raw_avatar = (
+                content_cfg.get("avatar_url")
+                or content_cfg.get("avatarUrl")
+                or profile_cfg.get("avatar_url")
+                or profile_cfg.get("avatarUrl")
+            )
+            if raw_avatar and isinstance(raw_avatar, str):
+                avatar_url = raw_avatar
+
+        if not cover_url:
+            raw_cover = (
+                content_cfg.get("cover_url")
+                or content_cfg.get("coverUrl")
+                or profile_cfg.get("cover_url")
+                or profile_cfg.get("coverUrl")
+            )
+            if raw_cover and isinstance(raw_cover, str):
+                cover_url = raw_cover
+
         return {
             "segment": page.path.segment,
             "slug": page.slug,
@@ -107,15 +136,22 @@ class PageService(CoreCrudService[Page, PageRepository]):
             "canonical_url": self.public_url(page),
             "seo_title": page.seo_title or page.title,
             "seo_description": page.seo_description or page.description,
-            "avatar_url": self._image_url(page.avatar),
-            "cover_url": self._image_url(page.cover),
+            "avatar_url": avatar_url,
+            "cover_url": cover_url,
             "theme": page.theme,
+            "page_type": page.page_type,
+            "template_key": page.template_key,
+            "template_version": page.template_version,
+            "content_config": page.content_config or {},
+            "style_config": page.style_config or {},
+            "responsive_config": page.responsive_config or {},
             "content": self._resolve(page, public=True),
         }
 
     def public_url(self, page: Page) -> str:
-        """URL công khai tuyệt đối `/<segment>/<slug>`."""
-        return build_absolute_url(f"/{page.path.segment}/{page.slug}")
+        """URL công khai tuyệt đối `/<segment>/<slug>` trên frontend."""
+        request = get_current_request()
+        return f"{get_frontend_origin(request)}/{page.path.segment}/{page.slug}"
 
     # ==================================================================
     # Ghi
@@ -127,8 +163,10 @@ class PageService(CoreCrudService[Page, PageRepository]):
         fields["path"] = self._active_path(fields.pop("path_id"))
         fields["slug"] = normalize_slug(fields["slug"]) if fields.get("slug") else generate_slug()
         template = fields.pop("template", "blank")
-        fields["content"] = self._checked_content(actor, fields.get("content") or PAGE_TEMPLATES[template])
-        self._prepare(actor, fields, current_status=None)
+        fields["content"] = self._checked_content(
+            actor, fields.get("content") or PAGE_TEMPLATES[template], actor=actor
+        )
+        self._prepare(actor, fields, current_status=None, actor=actor)
         try:
             return super().create(actor, fields)
         except ConflictError as exc:
@@ -149,7 +187,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
                     code=UtilitiesErrorCode.PAGE_VERSION_CONFLICT,
                     details={"content_version": page.content_version},
                 )
-            fields["content"] = self._checked_content(page.owner, fields["content"])
+            fields["content"] = self._checked_content(page.owner, fields["content"], actor=actor)
             fields["content_version"] = page.content_version + 1
         if "path_id" in fields:
             path_id = fields.pop("path_id")
@@ -157,7 +195,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
                 fields["path"] = self._active_path(path_id)
         if "slug" in fields:
             fields["slug"] = normalize_slug(fields["slug"])
-        self._prepare(page.owner, fields, current_status=page.status)
+        self._prepare(page.owner, fields, current_status=page.status, actor=actor)
         try:
             updated = self.repository.update(page, actor=actor, **fields)
         except ConflictError as exc:
@@ -183,6 +221,12 @@ class PageService(CoreCrudService[Page, PageRepository]):
                 "seo_title": source.seo_title,
                 "seo_description": source.seo_description,
                 "theme": source.theme,
+                "page_type": source.page_type,
+                "template_key": source.template_key,
+                "template_version": source.template_version,
+                "content_config": source.content_config,
+                "style_config": source.style_config,
+                "responsive_config": source.responsive_config,
                 "content": content,
             },
         )
@@ -206,41 +250,64 @@ class PageService(CoreCrudService[Page, PageRepository]):
             raise BusinessRuleError("Đường dẫn giữa đang tắt.", code=UtilitiesErrorCode.PAGE_PATH_INACTIVE)
         return path
 
-    def _prepare(self, owner: Any, fields: dict[str, Any], current_status: str | None) -> None:
-        """Theme, ảnh đại diện/bìa (phải của owner), mốc công khai."""
+    def _prepare(
+        self, owner: Any, fields: dict[str, Any], current_status: str | None, actor: Any | None = None
+    ) -> None:
+        """Theme, ảnh đại diện/bìa (phải của owner hoặc actor có quyền), mốc công khai."""
         if "theme" in fields:
             fields["theme"] = validate_theme(fields["theme"])
         for source, target in (("avatar_id", "avatar"), ("cover_id", "cover")):
             if source in fields:
                 attachment_id = fields.pop(source)
                 fields[target] = (
-                    None if attachment_id is None else self._owned_image(owner, attachment_id, source)
+                    None
+                    if attachment_id is None
+                    else self._owned_image(owner, attachment_id, source, actor=actor)
                 )
         if fields.get("status") == Page.Status.PUBLISHED and current_status != Page.Status.PUBLISHED:
             fields["published_at"] = timezone.now()
 
-    def _owned_image(self, owner: Any, attachment_id: Any, field: str) -> Attachment:
-        """Ảnh phải còn tồn tại và do chính owner upload."""
+    def _owned_image(
+        self, owner: Any, attachment_id: Any, field: str, actor: Any | None = None
+    ) -> Attachment:
+        """Ảnh phải còn tồn tại và thuộc chủ trang (hoặc file công khai / actor có quyền quản trị)."""
         image = self.attachment_service.find_alive_images([attachment_id]).get(str(attachment_id))
-        if image is None or image.created_by_id != owner.pk:
+        allowed_owners = {owner.pk}
+        if actor is not None and (
+            getattr(actor, "is_superuser", False) or actor.has_perm(PagePermission.MANAGE_ALL.code)
+        ):
+            allowed_owners.add(actor.pk)
+        if image is None:
+            raise ValidationError(details={field: ["Ảnh không tồn tại hoặc đã bị xóa."]})
+        is_public = getattr(image, "visibility", None) == Attachment.Visibility.PUBLIC
+        if not is_public and image.created_by_id not in allowed_owners:
             raise ValidationError(details={field: ["Ảnh không tồn tại hoặc không thuộc chủ trang."]})
         return image
 
-    def _checked_content(self, owner: Any, content: Any) -> dict[str, Any]:
+    def _checked_content(self, owner: Any, content: Any, actor: Any | None = None) -> dict[str, Any]:
         """Validate tài liệu và kiểm ảnh/link rút gọn thuộc chủ trang."""
         document, refs = validate_page_content(content)
-        self._check_refs(owner, refs)
+        self._check_refs(owner, refs, actor=actor)
         return document
 
-    def _check_refs(self, owner: Any, refs: PageContentRefs) -> None:
+    def _check_refs(self, owner: Any, refs: PageContentRefs, actor: Any | None = None) -> None:
+        allowed_owners = {owner.pk}
+        if actor is not None and (
+            getattr(actor, "is_superuser", False) or actor.has_perm(PagePermission.MANAGE_ALL.code)
+        ):
+            allowed_owners.add(actor.pk)
         images = self.attachment_service.find_alive_images(refs.attachment_ids)
         foreign = [
-            pk for pk in refs.attachment_ids if pk not in images or images[pk].created_by_id != owner.pk
+            pk
+            for pk in refs.attachment_ids
+            if pk not in images or images[pk].created_by_id not in allowed_owners
         ]
         if foreign:
             raise ValidationError(details={"content": [f"Ảnh không thuộc chủ trang: {sorted(foreign)}."]})
         links = self.short_link_service.find_by_ids(refs.short_link_ids)
-        foreign = [pk for pk in refs.short_link_ids if pk not in links or links[pk].owner_id != owner.pk]
+        foreign = [
+            pk for pk in refs.short_link_ids if pk not in links or links[pk].owner_id not in allowed_owners
+        ]
         if foreign:
             raise ValidationError(
                 details={"content": [f"Link rút gọn không thuộc chủ trang: {sorted(foreign)}."]}

@@ -38,13 +38,22 @@ export function ForgotPasswordForm() {
         </div>
 
         <div className="flex flex-col gap-2 pt-2">
-          <Button asChild size="lg" className="w-full">
+          <Button
+            asChild
+            size="lg"
+            className="bg-primary text-primary-foreground shadow-primary/25 hover:bg-primary-hover h-10.5 w-full rounded-xl font-semibold shadow-md"
+          >
             <Link href="/login">
               <ArrowLeft className="mr-2 size-4" />
               {t("backToLogin")}
             </Link>
           </Button>
-          <Button variant="ghost" size="sm" onClick={handleReset} className="w-full text-xs">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleReset}
+            className="text-muted-foreground hover:text-primary w-full text-xs"
+          >
             {t("resend")}
           </Button>
         </div>
@@ -53,36 +62,46 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <Form onSubmit={onSubmit} noValidate className="space-y-5" data-testid="forgot-password-form">
+    <Form onSubmit={onSubmit} noValidate className="space-y-4" data-testid="forgot-password-form">
       {rootError ? (
         <div
           role="alert"
-          className="border-destructive/30 bg-destructive/5 text-destructive flex items-start gap-2 rounded-lg border p-3 text-sm"
+          className="border-destructive/30 bg-destructive/5 text-destructive flex items-start gap-2 rounded-xl border p-3 text-xs"
         >
           <AlertCircle className="mt-0.5 size-4 shrink-0" />
           <span>{rootError}</span>
         </div>
       ) : null}
 
-      <p className="text-muted-foreground text-sm leading-relaxed">{t("description")}</p>
-
       <FieldGroup>
-        <FormField control={form.control} name="email" label={t("email")} required>
+        <FormField control={form.control} name="email" label={t("email")}>
           {(field) => (
-            <Input
-              {...field}
-              type="email"
-              autoComplete="email"
-              placeholder={t("emailPlaceholder")}
-              autoCapitalize="none"
-              spellCheck={false}
-              autoFocus
-            />
+            <div className="relative">
+              <Mail
+                aria-hidden
+                className="text-muted-foreground pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2"
+              />
+              <Input
+                {...field}
+                type="email"
+                autoComplete="email"
+                placeholder={t("emailPlaceholder")}
+                autoCapitalize="none"
+                spellCheck={false}
+                autoFocus
+                className="h-10.5 rounded-xl pl-10 text-sm"
+              />
+            </div>
           )}
         </FormField>
       </FieldGroup>
 
-      <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        size="lg"
+        className="bg-primary text-primary-foreground shadow-primary/25 hover:bg-primary-hover h-10.5 w-full rounded-xl font-semibold shadow-md transition-all active:scale-[0.99]"
+        disabled={isSubmitting}
+      >
         {isSubmitting ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
         {isSubmitting ? t("submitting") : t("submit")}
       </Button>
@@ -90,9 +109,9 @@ export function ForgotPasswordForm() {
       <div className="pt-2 text-center">
         <Link
           href="/login"
-          className="text-muted-foreground hover:text-foreground inline-flex items-center text-xs font-medium transition-colors hover:underline"
+          className="text-muted-foreground hover:text-primary inline-flex items-center text-xs font-medium transition-colors hover:underline"
         >
-          <ArrowLeft className="mr-1 size-3.5" />
+          <ArrowLeft className="mr-1.5 size-3.5" />
           {t("backToLogin")}
         </Link>
       </div>

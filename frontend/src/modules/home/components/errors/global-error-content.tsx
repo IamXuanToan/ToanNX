@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCw, ServerCrash } from "lucide-react";
+import { AlertTriangle, RotateCw, ServerCrash } from "lucide-react";
 
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
@@ -19,6 +19,8 @@ const GLOBAL_MESSAGES = {
     retry: "Thử lại",
     reload: "Tải lại trang",
     digest: "Mã sự cố (Digest):",
+    technicalDetails: "Chi tiết kỹ thuật (Chỉ môi trường phát triển)",
+    stackTrace: "Stack Trace:",
   },
   en: {
     documentTitle: "System Error · ToanNX",
@@ -29,6 +31,8 @@ const GLOBAL_MESSAGES = {
     retry: "Try again",
     reload: "Reload page",
     digest: "Issue code (Digest):",
+    technicalDetails: "Technical Details (Development Environment Only)",
+    stackTrace: "Stack Trace:",
   },
 } as const;
 
@@ -41,14 +45,15 @@ const GLOBAL_MESSAGES = {
  * @returns Tài liệu HTML hoàn chỉnh của trang lỗi toàn cục.
  */
 export function GlobalErrorContent({ error, retry }: { error: unknown; retry: () => void }) {
-  const { locale, digest } = useGlobalErrorContent(error);
+  const { locale, digest, errorName, errorMessage, errorStack, isDev } =
+    useGlobalErrorContent(error);
   const t = GLOBAL_MESSAGES[locale];
 
   return (
     <html lang={locale}>
       <title>{t.documentTitle}</title>
       <body className="bg-background text-foreground flex min-h-dvh flex-col items-center justify-center p-4 text-center antialiased">
-        <div className="mx-auto flex max-w-md flex-col items-center">
+        <div className="mx-auto flex max-w-xl flex-col items-center">
           <Badge
             variant="outline"
             className="border-destructive/30 bg-destructive/10 text-destructive mb-2 rounded-full px-3 py-1 font-mono text-xs"
@@ -87,7 +92,45 @@ export function GlobalErrorContent({ error, retry }: { error: unknown; retry: ()
             </Button>
           </div>
 
-          {digest ? (
+          {/* Khối cảnh báo lỗi nổi bật khi phát triển hoặc khi có chi tiết lỗi */}
+          {isDev || errorMessage ? (
+            <Card className="border-destructive/60 bg-destructive/10 text-destructive mt-8 w-full text-left shadow-md">
+              <CardContent className="p-4 sm:p-5">
+                <div className="border-destructive/20 flex items-center gap-2 border-b pb-3">
+                  <AlertTriangle className="text-destructive size-4 shrink-0 animate-pulse" />
+                  <span className="text-destructive text-xs font-bold tracking-wider uppercase">
+                    {t.technicalDetails}
+                  </span>
+                </div>
+
+                <div className="mt-3 space-y-2.5">
+                  <div className="bg-destructive/15 border-destructive/30 text-destructive rounded-xl border p-3 font-mono text-xs leading-relaxed font-bold break-all select-all">
+                    {errorName}: {errorMessage}
+                  </div>
+
+                  {digest ? (
+                    <div className="text-muted-foreground text-xs">
+                      <span className="text-foreground font-semibold">Digest:</span>{" "}
+                      <code className="bg-muted/60 rounded px-1.5 py-0.5 font-mono select-all">
+                        {digest}
+                      </code>
+                    </div>
+                  ) : null}
+
+                  {errorStack ? (
+                    <div className="mt-2.5">
+                      <span className="text-muted-foreground mb-1.5 block text-xs font-semibold">
+                        {t.stackTrace}
+                      </span>
+                      <pre className="max-h-64 overflow-x-auto rounded-xl bg-zinc-950 p-3.5 font-mono text-[11px] leading-relaxed text-red-300 select-all dark:bg-black dark:text-red-400">
+                        {errorStack}
+                      </pre>
+                    </div>
+                  ) : null}
+                </div>
+              </CardContent>
+            </Card>
+          ) : digest ? (
             <Card className="bg-muted/40 border-border/60 mt-8 w-full text-left shadow-none">
               <CardContent className="p-3">
                 <span className="text-muted-foreground block text-xs font-medium">{t.digest}</span>

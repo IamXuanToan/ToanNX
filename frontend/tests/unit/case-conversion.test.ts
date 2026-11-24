@@ -34,11 +34,32 @@ describe("case conversion", () => {
     expect(keysToSnake(null)).toBeNull();
   });
 
-  it("giữ nguyên nội dung khóa opaque", () => {
-    const result = keysToCamel<Record<string, unknown>>(
+  it("giữ nguyên nội dung khóa opaque trong cả keysToCamel và keysToSnake", () => {
+    const camel = {
+      title: "My Title",
+      contentConfig: {
+        profile: { displayName: "ToanNX", bioText: "Developer" },
+      },
+    };
+    const snake = keysToSnake<Record<string, unknown>>(camel, {
+      opaqueKeys: ["contentConfig"],
+    });
+    expect(snake).toEqual({
+      title: "My Title",
+      content_config: {
+        profile: { displayName: "ToanNX", bioText: "Developer" },
+      },
+    });
+
+    const backToCamel = keysToCamel<Record<string, unknown>>(snake, {
+      opaqueKeys: ["contentConfig"],
+    });
+    expect(backToCamel).toEqual(camel);
+
+    const fromSnakeOpaque = keysToCamel<Record<string, unknown>>(
       { meta_data: { some_key: 1 }, settings: { keep_me: true } },
       { opaqueKeys: ["settings"] },
     );
-    expect(result).toEqual({ metaData: { someKey: 1 }, settings: { keep_me: true } });
+    expect(fromSnakeOpaque).toEqual({ metaData: { someKey: 1 }, settings: { keep_me: true } });
   });
 });

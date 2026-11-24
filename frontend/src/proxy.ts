@@ -8,6 +8,7 @@ import { SYSTEM_ROUTES } from "./modules/system/constants/routes";
 import { PUBLIC_PAGE_ROUTE_PREFIX, RESERVED_SEGMENTS } from "./modules/utilities/constants/routes";
 import { MANAGE_APP_ROUTES } from "./modules/manage-app/constants/routes";
 import { NOVEL_ROUTES } from "./modules/novel/constants/routes";
+import { PORTAL_ROUTES } from "./modules/portal/constants/routes";
 
 /** Cookie "gợi ý có phiên" do backend đặt (HttpOnly, không chứa token; khớp `AUTH_SESSION_HINT_COOKIE_NAME`). */
 const SESSION_HINT_COOKIE = "session_hint";
@@ -49,8 +50,10 @@ export default function proxy(request: NextRequest) {
     const adminPath = localizedPath(MANAGE_APP_ROUTES.admin, locale);
     const loginPath = localizedPath(SYSTEM_ROUTES.login, locale);
     const novelPath = getPathname({ href: NOVEL_ROUTES.catalog, locale });
+    const portalPath = getPathname({ href: PORTAL_ROUTES.dashboard, locale });
     const isAdmin = pathname === adminPath || pathname.startsWith(`${adminPath}/`);
     const isNovel = pathname === novelPath || pathname.startsWith(`${novelPath}/`);
+    const isPortal = pathname === portalPath || pathname.startsWith(`${portalPath}/`);
 
     if (isNovel && !hasSession) {
       const url = new URL(loginPath, request.url);
@@ -58,7 +61,7 @@ export default function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    if (isAdmin && !hasSession) {
+    if ((isAdmin || isPortal) && !hasSession) {
       const url = new URL(loginPath, request.url);
       url.searchParams.set("next", pathname + search);
       return NextResponse.redirect(url);

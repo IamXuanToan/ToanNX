@@ -9,6 +9,7 @@ import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { ICON_PATHS } from "@/shares/lib/asset-paths";
 
 import { useSocialAuthExchange } from "../../../hooks/use-social-auth-exchange";
+import type { CurrentUser } from "../../../types/auth.types";
 
 type CallbackStatus = "processing" | "success" | "error";
 
@@ -85,7 +86,10 @@ export function useSocialAuthCallback(provider: string) {
       const redirectUri = `${window.location.origin}/auth/callback/${provider}`;
 
       try {
-        await exchange(mode, provider, code, redirectUri);
+        const exchangeResult = await exchange(mode, provider, code, redirectUri);
+        const currentUser =
+          mode !== "link" ? (exchangeResult as CurrentUser | undefined) : undefined;
+        const isStaffUser = Boolean(currentUser?.user?.isStaff || currentUser?.user?.isSuperuser);
 
         sessionStorage.removeItem("oauth_state");
         sessionStorage.removeItem("oauth_mode");
@@ -96,6 +100,11 @@ export function useSocialAuthCallback(provider: string) {
         if (next) {
           const separator = next.includes("?") ? "&" : "?";
           targetUrl = mode === "link" ? `${next}${separator}profile=open&tab=social` : next;
+          // Người dùng thường không được chuyển vào trang quản trị: đưa vào client portal
+          const isAdminTarget = targetUrl.includes("/admin") || targetUrl.includes("/quan-tri");
+          if (!isStaffUser && isAdminTarget && mode !== "link") {
+            targetUrl = null;
+          }
         }
         setRedirectTarget(targetUrl);
         setStatus("success");
@@ -103,7 +112,7 @@ export function useSocialAuthCallback(provider: string) {
         // Tự động chuyển hướng sau 1000ms để người dùng cảm nhận được visual feedback thành công
         const timer = setTimeout(() => {
           if (targetUrl) {
-            window.location.assign(targetUrl);
+            router.replace(targetUrl as never);
           } else {
             if (mode === "link") {
               router.replace({
@@ -111,7 +120,7 @@ export function useSocialAuthCallback(provider: string) {
                 query: { profile: "open", tab: "social" },
               });
             } else {
-              router.replace("/admin");
+              router.replace(isStaffUser ? "/admin" : ("/portal" as never));
             }
           }
         }, 1000);
@@ -137,7 +146,7 @@ export function useSocialAuthCallback(provider: string) {
 
   const handleRedirectNow = () => {
     if (redirectTarget) {
-      window.location.assign(redirectTarget);
+      router.replace(redirectTarget as never);
     } else {
       if (authMode === "link") {
         router.replace({

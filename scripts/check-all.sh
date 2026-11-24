@@ -8,6 +8,12 @@ export PYTHONUTF8=1
 
 step() { printf '\n==> %s\n' "$1"; }
 
+step "0. Rule AI đồng bộ (.agents/rules → .claude)"
+uv run --no-project python "$ROOT/scripts/sync-ai-rules.py" --check
+
+step "0b. Skill workflow đồng bộ (.agents/skills → .claude)"
+uv run --no-project python "$ROOT/scripts/check-workflow-skills.py"
+
 cd "$ROOT/backend"
 step "1. Backend format check (ruff format --check)"
 uv run ruff format --check .

@@ -16,6 +16,8 @@ function Invoke-Step([string]$Title, [scriptblock]$Command) {
 
 Push-Location (Join-Path $Root "backend")
 try {
+    Invoke-Step "0. Rule AI dong bo (.agents/rules -> .claude)" { uv run --no-project python (Join-Path $Root "scripts/sync-ai-rules.py") --check }
+    Invoke-Step "0b. Skill workflow dong bo (.agents/skills -> .claude)" { uv run --no-project python (Join-Path $Root "scripts/check-workflow-skills.py") }
     Invoke-Step "1. Backend format check (ruff format --check)" { uv run ruff format --check . }
     Invoke-Step "2a. Backend lint (ruff check)" { uv run ruff check . }
     Invoke-Step "2b. Backend type check (mypy)" { uv run mypy . }

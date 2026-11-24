@@ -191,7 +191,7 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | `EditModeButton` | `edit-mode-button.tsx` | Nút Sửa trên header (thêm `?mode=edit`); `FormPage` tự render, không dùng riêng |
 | `FormLayout` | `form-layout.tsx` | Bố cục 2 cột: cột chính + cột phụ 22rem |
 | `FormSection` | `form-section.tsx` | Nhóm trường có tiêu đề (card) |
-| `FormField` | `form-field.tsx` | Nối label, mô tả, lỗi RHF với input; `required` → `*` đỏ |
+| `FormField` | `form-field.tsx` | Nối label, mô tả, lỗi RHF với input; `required` → `*` đỏ; `tooltip` → icon dấu chấm than hover xem gợi ý |
 | `FormActions` | `form-actions.tsx` | Nút Hủy + nút chính, portal lên header của `FormPage` |
 | `FormSubmitButton` | `form-submit-button.tsx` | Nút gửi gắn `form=<id>` |
 | `FormDialog` | `form-dialog.tsx` | Tạo/sửa nhanh tài nguyên liên quan bằng đúng form của nó |
@@ -224,7 +224,7 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | `TimePickerPopover`, `TimeScrollColumn` | `time-picker-popover.tsx`, `time-scroll-column.tsx` | Phần trong của `TimePicker`/`DateTimePicker` (không dùng riêng) |
 | `DateTimePicker` | `date-time-picker.tsx` | Chọn ngày + giờ |
 | `MonthSelect`, `normalizeMonthValue` | `month-select.tsx` | Chọn tháng 1–12 |
-| `ImageUpload`, `UploadedFile` | `image-upload.tsx`, `image-upload.types.ts` | Ảnh đại diện/logo chọn từ Thư viện (module truyền callback) |
+| `ImageUpload`, `UploadedFile` | `image-upload.tsx`, `image-upload.types.ts` | Ảnh đại diện/logo chọn từ Thư viện (module truyền callback; `hideHint` ẩn dòng gợi ý lộ thiên) |
 | `TiptapEditor` | `tiptap-editor.tsx` | Editor soạn thảo **duy nhất** (giá trị JSON) |
 | `TiptapContent` | `tiptap-content.tsx` | Hiển thị JSON Tiptap chỉ đọc (chạy được ở server) |
 | `TiptapToolbar` | `tiptap-toolbar.tsx` | Thanh công cụ của `TiptapEditor` (không dùng riêng) |
@@ -246,6 +246,7 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | `TableHeaderCell`, `TableColumnResizer` | `table-header-cell.tsx`, `table-column-resizer.tsx` | Phần trong của `DataTable` (không dùng riêng) |
 | `StatusBadge`, `StatusTone` | `status-badge.tsx` | Badge trạng thái theo sắc thái token |
 | `UserAvatar`, `getUserDisplayName`, `getUserInitials` | `user-avatar.tsx` | Ảnh đại diện, tên hiển thị, chữ cái đại diện |
+| `SortableList`, `reorderArray` | `sortable-list.tsx`, `sortable-item.tsx` | Danh sách kéo thả sắp xếp thứ tự (Reorderable List) chuẩn `@dnd-kit` với `rectSortingStrategy`, hiệu ứng di chuyển mượt mà, hỗ trợ Pointer/Touch (khoảng cách kích hoạt 5px) và phím trợ năng |
 | `ActivityTimeline` | `activity-timeline.tsx` | Dòng thời gian lịch sử (dùng qua `RecordHistoryView`) |
 
 ### 4.5 Trạng thái, lỗi, khung trang
@@ -314,7 +315,7 @@ Hook trong `components/common/hooks/` còn lại là hook riêng của từng co
 | `isOnline`, `ONLINE_WINDOW_MS` | `lib/presence.ts` | Người dùng đang trực tuyến |
 | `createBooleanBulkStatus` | `lib/bulk-status.ts` | `bulkStatus` của `DataTable` cho cờ boolean (đang dùng/tắt, xuất bản/ẩn) |
 | `EDIT_MODE_PARAM`, `EDIT_MODE_VALUE`, `withEditMode` | `lib/edit-mode.ts` | Hook bảng: `edit` → `withEditMode(<M>_ROUTES.xxxDetail(id))` mở thẳng chế độ sửa |
-| `ICON_PATHS` | `lib/asset-paths.ts` | Đường dẫn các tài nguyên tĩnh SVG trong `public/` (Google, GitHub) |
+| `ICON_PATHS`, `normalizeMediaUrl`, `isUnoptimizedImage` | `lib/asset-paths.ts` | Đường dẫn tài nguyên tĩnh SVG trong `public/` và chuẩn hóa URL media backend cho Next rewrite / CSP |
 | `env` | `config/env.ts` | **Chỗ duy nhất** đọc `process.env` (gồm `apiBaseUrl`, `siteUrl`, `NEXT_PUBLIC_FIREBASE_*`) |
 | `isPushSupported`, `getPushToken`, `deletePushToken`, `NOTIFICATION_SW_PATH` | `lib/firebase-messaging.ts` | Lấy/xóa token FCM (đăng ký `public/notification-sw.js`); chỉ dùng qua hook push của `system` |
 
@@ -352,7 +353,7 @@ Module khác được import các phần dưới đây (page ghép qua slot); ph
 | `PermissionGate` | `modules/system/components/permission/permission-gate.tsx` | Bọc phần UI cần quyền |
 | `useCurrentUser` | `modules/system/hooks/use-current-user.ts` | Người dùng đang đăng nhập |
 | `RecordHistoryView` | `modules/system/views/journal-entry/record-history-view.tsx` | Slot `history` của form: `path=".../{id}/history"`, `fieldPrefix` |
-| `AttachmentImageUploadView` | `modules/system/views/attachment/attachment-image-upload-view.tsx` | Chọn/tải ảnh từ Thư viện cho `ImageUpload` |
+| `AttachmentImageUploadView` | `modules/system/views/attachment/attachment-image-upload-view.tsx` | Chọn/tải ảnh từ Thư viện cho `ImageUpload` (hỗ trợ `hideHint`) |
 | `AttachmentTiptapImagePlugin` | `modules/system/views/attachment/attachment-tiptap-image-plugin.tsx` | Slot `editorPlugins`: chèn ảnh Thư viện vào editor |
 | `AttachmentDetailDialog` | `modules/system/components/attachment/attachment-detail-dialog.tsx` | Dialog chi tiết & inline edit metadata tệp (tối ưu nằm trọn 1 màn hình không scroll, tích hợp công cụ crop/watermark ảnh, video player ghi nhớ âm lượng localStorage, thao tác nhanh, chuyển công khai/riêng tư có xác nhận); `isSelectable` + `selectLabel` cho nơi chọn file không phải ảnh |
 | `AttachmentPicker` | `modules/system/components/attachment/attachment-picker.tsx` | Bộ chọn + upload file Thư viện. Mặc định: một ảnh công khai. Props nơi dùng: `accept` (`MediaKind[]`), `visibility` + `lockVisibility` (màn Chứng từ: `"private"` + khóa), `visibilityFilter` (mặc định chế độ đang khóa, không khóa thì `"public"`; `"all"` liệt kê cả hai), `multiple` + `onSelectMany` |

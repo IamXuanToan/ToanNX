@@ -1,8 +1,19 @@
 "use client";
 
-import { ChevronsUpDown, LogOut, MonitorSmartphone, User } from "lucide-react";
+import {
+  ChevronsUpDown,
+  LogOut,
+  MonitorSmartphone,
+  ShieldCheck,
+  Sparkles,
+  User,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { Link, usePathname } from "@/i18n/navigation";
+import { AttachmentPicker } from "@/modules/system/components/attachment/attachment-picker";
+import { usePermission } from "@/modules/system/hooks/use-permission";
+import { ATTACHMENT_PERMISSIONS } from "@/modules/system/permissions/attachment-permission";
 import { UserAvatar } from "@/shares/components/common/user-avatar";
 import { Button } from "@/shares/components/ui/button";
 import {
@@ -40,9 +51,28 @@ export function UserMenu({
   }) => React.ReactNode;
 }) {
   const t = useTranslations("system.auth.userMenu");
+  const pathname = usePathname();
   const { user, roles, displayName, isLoggingOut, logout, logoutAll, profileOpen, setProfileOpen } =
     useUserMenu();
   const isSidebar = variant === "sidebar";
+
+  const isPortal = pathname.startsWith("/ca-nhan") || (pathname as string).startsWith("/portal");
+  const isStaff = Boolean(user?.isStaff || user?.isSuperuser);
+
+  const canReadAttachments = usePermission(ATTACHMENT_PERMISSIONS.read);
+  const canUploadAttachments = usePermission(ATTACHMENT_PERMISSIONS.create);
+
+  const defaultRenderPicker =
+    canReadAttachments || Boolean(user)
+      ? (pickerProps: {
+          onSelect: (file: { id: string; url: string }) => void;
+          onClose: () => void;
+        }) => (
+          <AttachmentPicker canUpload={canUploadAttachments || Boolean(user)} {...pickerProps} />
+        )
+      : undefined;
+
+  const effectiveRenderAttachmentPicker = renderAttachmentPicker ?? defaultRenderPicker;
 
   const avatar = <UserAvatar user={user} size="default" className="size-8" />;
 
@@ -104,6 +134,23 @@ export function UserMenu({
                 <User className="size-4 shrink-0" aria-hidden />
                 <span>{t("profile")}</span>
               </DropdownMenuItem>
+              {isPortal ? (
+                isStaff ? (
+                  <DropdownMenuItem asChild className="h-10 cursor-pointer gap-2.5 rounded-xl px-3">
+                    <Link href={"/admin" as never}>
+                      <ShieldCheck className="text-primary size-4 shrink-0" aria-hidden />
+                      <span>{t("admin")}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ) : null
+              ) : (
+                <DropdownMenuItem asChild className="h-10 cursor-pointer gap-2.5 rounded-xl px-3">
+                  <Link href={"/portal" as never}>
+                    <Sparkles className="text-primary size-4 shrink-0" aria-hidden />
+                    <span>{t("portal")}</span>
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
             </>
           ) : null}
@@ -133,7 +180,7 @@ export function UserMenu({
         roles={roles}
         open={profileOpen}
         onOpenChange={setProfileOpen}
-        renderAttachmentPicker={renderAttachmentPicker}
+        renderAttachmentPicker={effectiveRenderAttachmentPicker}
       />
     </>
   );

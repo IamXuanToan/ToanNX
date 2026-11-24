@@ -49,6 +49,7 @@ import { NOTIFICATION_PREFERENCE_PERMISSIONS } from "../../permissions/notificat
 import { TELEGRAM_BOT_PERMISSIONS } from "../../permissions/telegram-bot-permission";
 import type { AuthRole, AuthUser } from "../../types/auth.types";
 import type { ProfileTab } from "../../types/profile-tab.types";
+import { AttachmentPicker } from "../attachment/attachment-picker";
 import { NotificationSettingsTab } from "../notification-preference/notification-settings-tab";
 import { useProfileDialog } from "./hooks/use-profile-dialog";
 
@@ -88,7 +89,8 @@ export function ProfileDialog({
   const now = useNow({ updateInterval: 60_000 });
 
   const canPreferences = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.read);
-  const canTelegramBot = usePermission(TELEGRAM_BOT_PERMISSIONS.read);
+  const hasTelegramBotPermission = usePermission(TELEGRAM_BOT_PERMISSIONS.read);
+  const canTelegramBot = Boolean(user?.isSuperuser) && hasTelegramBotPermission;
   const canNotifications = canPreferences || canTelegramBot;
   const canPreferenceUpdate = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.update);
   const tPreferences = useTranslations("system.notifications.preferences");
@@ -122,6 +124,13 @@ export function ProfileDialog({
     roles,
     open,
   });
+
+  const fallbackRenderAttachmentPicker = (pickerProps: {
+    onSelect: (file: { id: string; url: string }) => void;
+    onClose: () => void;
+  }) => <AttachmentPicker canUpload={true} {...pickerProps} />;
+
+  const effectiveRenderAttachmentPicker = renderAttachmentPicker ?? fallbackRenderAttachmentPicker;
 
   const infoErrors = infoForm.formState.errors;
   const passwordErrors = passwordForm.formState.errors;
@@ -186,20 +195,18 @@ export function ProfileDialog({
                 </div>
 
                 <div className="mt-3 flex items-center gap-2">
-                  {renderAttachmentPicker ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="xs"
-                      className="h-8 gap-1.5 rounded-lg text-xs font-medium"
-                      onClick={() => setLibraryOpen(true)}
-                      disabled={isSaving}
-                      data-testid="profile-open-library-button"
-                    >
-                      <Images className="size-3.5" aria-hidden />
-                      <span>{t("avatarLibrary")}</span>
-                    </Button>
-                  ) : null}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="xs"
+                    className="h-8 gap-1.5 rounded-lg text-xs font-medium"
+                    onClick={() => setLibraryOpen(true)}
+                    disabled={isSaving}
+                    data-testid="profile-open-library-button"
+                  >
+                    <Images className="size-3.5" aria-hidden />
+                    <span>{t("avatarLibrary")}</span>
+                  </Button>
 
                   {user?.avatar ? (
                     <Button
@@ -781,8 +788,8 @@ export function ProfileDialog({
         destructive
       />
 
-      {libraryOpen && renderAttachmentPicker
-        ? renderAttachmentPicker({
+      {libraryOpen
+        ? effectiveRenderAttachmentPicker({
             onSelect: (file) => {
               void handleSelectAvatar(file);
               setLibraryOpen(false);

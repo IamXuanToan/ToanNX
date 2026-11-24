@@ -10,7 +10,7 @@ from app.system.tests.factories.user_factory import UserFactory
 from app.utilities.models.short_link import ShortLink
 
 
-@pytest.mark.django_db(transaction=True, serialized_rollback=True)
+@pytest.mark.django_db(transaction=True)
 def test_concurrent_slug_creation_has_one_winner() -> None:
     """Unique index của DB từ chối một trong hai lệnh tạo đồng thời."""
     owner = UserFactory()

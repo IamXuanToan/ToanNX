@@ -149,6 +149,8 @@
       "cancel": "Cancel",
       "create": "Create",
       "save": "Save",
+      "edit": "Edit",
+      "close": "Close",
       "back": "Back",
       "unsaved": "Unsaved changes"
     },

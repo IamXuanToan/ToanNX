@@ -13,6 +13,8 @@
     "description": "Tài khoản chưa được cấp quyền với module nào. Liên hệ quản trị viên."
   },
   "shell": {
-    "backToModules": "Về màn chọn module"
+    "backToModules": "Về màn chọn module",
+    "portalStudio": "Trang cá nhân",
+    "portalStudioTooltip": "Chuyển sang Studio không gian cá nhân"
   }
 }

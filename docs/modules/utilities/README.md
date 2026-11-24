@@ -10,6 +10,15 @@ Tiện ích: link rút gọn `/s/{slug}`, mã QR (VietQR, liên kết, văn bả
 
 `ShortLink` (lưu trữ `clicks_count` - tổng lượt truy cập, `visitors_count` - số người vào duy nhất, `last_accessed_at` - truy cập gần nhất), `QrCode`, `Page`, `PagePath` (đường dẫn giữa dùng chung cho nhiều trang).
 
+`Page` hỗ trợ hệ thống **Template-Based Website System** thông qua các trường:
+- `page_type`: loại trang (`AFFILIATE`, `BIO`, `DONATION`, `PRODUCT_CATALOG`, `PORTFOLIO`, `LANDING`, `LEGACY_PAGE`).
+- `template_key`: mã template giao diện (ví dụ `product_grid`, `product_list`, `minimal_links`, `vietqr_donate`).
+- `template_version`: phiên bản template (mặc định 1).
+- `content_config`: JSON dữ liệu chuyên biệt theo từng loại trang (sản phẩm, danh mục, liên kết, tài khoản ngân hàng).
+- `style_config`: cấu hình giao diện (theme preset, màu sắc, bo góc, ẩn/hiện giá/ảnh).
+- `responsive_config`: cấu hình hiển thị theo thiết bị (số cột trên desktop, tablet, mobile).
+- `content`: Tiptap JSON giữ lại cho các trang kiểu tự do (`LEGACY_PAGE`) đảm bảo tương thích ngược 100%.
+
 ## Quyền
 
 | Class | Tài nguyên | `MEMBER` |
@@ -37,7 +46,10 @@ Mỗi màn có danh sách, tạo mới, chi tiết (chỉ xem, `?mode=edit` đ�
       chính xác là 2 người vào riêng biệt và cộng đủ cả 2.
     + Chống click ảo / spam: debounce 3 giây bỏ qua double-click hoặc reload tức thì; trong vòng 24 giờ, cùng một người
       chỉ được tính là 1 visitor (`visitors_count`), các lần truy cập tiếp theo chỉ tăng tổng số click (`clicks_count`).
-- `/<đường dẫn>/<slug>`: trang tùy chỉnh, render bằng `TiptapContent`. Ảnh trong trang phải là file công khai.
+- `/<đường dẫn>/<slug>`: trang tùy chỉnh công khai.
+  - Tự động điều hướng hiển thị (`PageRendererDispatcher`): trang Affiliate Storefront, Bio Link, Donation VietQR (hỗ trợ đa phương thức VietQR ngân hàng, MoMo, ZaloPay, PayPal, tùy biến màu sắc, logo giữa mã QR, chế độ đơn/đa mã) hoặc Legacy Tiptap.
+  - Ảnh trong trang hiển thị tối ưu (với e-commerce CDN bên ngoài sử dụng `unoptimized` để không tốn quota Next.js Image optimization).
+- `POST /api/v1/utilities/pages/fetch-metadata`: trích xuất metadata sản phẩm/liên kết từ URL (OpenGraph, Twitter Card, JSON-LD, platform detector) phục vụ chức năng Quick Add trong quản trị. Được bảo vệ bởi bộ lọc an toàn 7 lớp chống SSRF (`SafeHttpClient`) và cache Redis 7 ngày.
 - Cache Redis (`constants/public_cache.py`, namespace `utilities:public`): link công khai và trang **đã xuất bản**
   được cache 10 phút (slug không tồn tại: 60 giây), nên lượt khách lặp lại không chạm Neon. `ShortLinkService`,
   `PageService`, `PagePathService`, `QrCodeService` khai `public_cache_namespace`: mọi ghi tăng version sau commit

@@ -5,14 +5,22 @@ import type { PublicPage as PublicPageData } from "../../types/page.types";
 /**
  * Trang công khai `toannx.com/<segment>/<slug>`; bản nháp (chỉ người có quyền thấy) kèm toast nhắc.
  *
- * @param props - Dữ liệu đã tải ở server.
+ * @param props - Dữ liệu đã tải hoặc segment + slug để tải phía client.
  * @returns Trang.
  */
-export function PublicPageView({ page }: { page: PublicPageData }) {
+export function PublicPageView({
+  page,
+  segment,
+  slug,
+}: {
+  page?: PublicPageData | null;
+  segment?: string;
+  slug?: string;
+}) {
   return (
     <>
-      <PublicPage page={page} />
-      {page.preview ? <PreviewNotice status={page.status} /> : null}
+      <PublicPage page={page} segment={segment} slug={slug} />
+      {page?.preview ? <PreviewNotice status={page.status} /> : null}
     </>
   );
 }

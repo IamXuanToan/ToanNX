@@ -1,10 +1,13 @@
 import { z } from "zod";
 
+import { keysToCamel } from "@/shares/lib/api/case-conversion";
 import { slugField } from "@/shares/lib/field-schemas";
 
 import {
+  ALL_PAGE_TYPES,
   PAGE_STATUSES,
   PAGE_TEMPLATES,
+  PAGE_TYPE,
   type PageDetail,
   type PageInput,
 } from "../types/page.types";
@@ -17,7 +20,7 @@ const optionalColor = (message: string) =>
 const image = z.object({ id: z.string(), url: z.string(), name: z.string() }).nullable();
 
 /**
- * Schema form trang (một form cho tạo và sửa). Nội dung Tiptap kiểm ở BE (danh sách node cho phép).
+ * Schema form trang (một form cho tạo và sửa).
  *
  * @param t - Hàm dịch `utilities.customPages.validation`.
  * @returns Zod schema.
@@ -30,6 +33,12 @@ export function pageSchema(t: Translate) {
     description: z.string().max(1000),
     status: z.enum(PAGE_STATUSES),
     template: z.enum(PAGE_TEMPLATES),
+    pageType: z.enum(ALL_PAGE_TYPES),
+    templateKey: z.string(),
+    templateVersion: z.number().int().min(1),
+    contentConfig: z.record(z.string(), z.unknown()),
+    styleConfig: z.record(z.string(), z.unknown()),
+    responsiveConfig: z.record(z.string(), z.unknown()),
     seoTitle: z.string().max(160),
     seoDescription: z.string().max(300),
     themeMode: z.enum(["system", "light", "dark"]),
@@ -52,10 +61,35 @@ export const PAGE_FORM_DEFAULTS: PageFormValues = {
   description: "",
   status: "DRAFT",
   template: "blank",
+  pageType: PAGE_TYPE.AFFILIATE,
+  templateKey: "product_grid",
+  templateVersion: 1,
+  contentConfig: {
+    categories: [
+      { id: "cat-1", name: "Tất cả", slug: "all", sortOrder: 0, isVisible: true },
+      { id: "cat-2", name: "Đồ công nghệ", slug: "do-cong-nghe", sortOrder: 1, isVisible: true },
+    ],
+    items: [],
+  },
+  styleConfig: {
+    themePreset: "forest_green",
+    primaryColor: "#3D812E",
+    cardRadius: "12px",
+    layout: "grid",
+    showSearch: true,
+    showPrice: true,
+    showImage: true,
+  },
+  responsiveConfig: {
+    desktopColumns: 4,
+    tabletColumns: 3,
+    mobileColumns: 2,
+    hideDescriptionOnMobile: true,
+  },
   seoTitle: "",
   seoDescription: "",
   themeMode: "system",
-  primaryColor: "#2563eb",
+  primaryColor: "#3D812E",
   backgroundColor: "",
   textColor: "",
   buttonStyle: "rounded",
@@ -72,6 +106,8 @@ export const PAGE_FORM_FIELDS = [
   "description",
   "seoTitle",
   "seoDescription",
+  "pageType",
+  "templateKey",
 ] as const;
 
 /** @param page - Trang có sẵn. @returns Giá trị form. */
@@ -83,6 +119,18 @@ export function fromPage(page: PageDetail): PageFormValues {
     slug: page.slug,
     description: page.description,
     status: page.status,
+    pageType: page.pageType ?? PAGE_TYPE.LEGACY_PAGE,
+    templateKey: page.templateKey ?? "blank",
+    templateVersion: page.templateVersion ?? 1,
+    contentConfig: keysToCamel<Record<string, unknown>>(
+      (page.contentConfig as Record<string, unknown>) ?? PAGE_FORM_DEFAULTS.contentConfig,
+    ),
+    styleConfig: keysToCamel<Record<string, unknown>>(
+      (page.styleConfig as Record<string, unknown>) ?? PAGE_FORM_DEFAULTS.styleConfig,
+    ),
+    responsiveConfig: keysToCamel<Record<string, unknown>>(
+      (page.responsiveConfig as Record<string, unknown>) ?? PAGE_FORM_DEFAULTS.responsiveConfig,
+    ),
     seoTitle: page.seoTitle,
     seoDescription: page.seoDescription,
     themeMode: page.theme.mode ?? "system",
@@ -120,6 +168,12 @@ export function toPageInput(
     slug: values.slug || undefined,
     description: values.description,
     status: values.status,
+    pageType: values.pageType,
+    templateKey: values.templateKey,
+    templateVersion: values.templateVersion,
+    contentConfig: values.contentConfig,
+    styleConfig: values.styleConfig,
+    responsiveConfig: values.responsiveConfig,
     seoTitle: values.seoTitle,
     seoDescription: values.seoDescription,
     theme,

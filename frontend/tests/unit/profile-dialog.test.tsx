@@ -6,6 +6,20 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { ProfileDialog } from "@/modules/system/components/current-user/profile-dialog";
 import type { AuthRole, AuthUser } from "@/modules/system/types/auth.types";
 
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({
+    children,
+    href,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+  useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
+  usePathname: () => "/admin",
+}));
+
 const mockUpdateAsync = vi.fn().mockResolvedValue({});
 
 vi.mock("@/modules/system/services/auth.service", () => ({

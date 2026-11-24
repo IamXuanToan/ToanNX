@@ -3421,6 +3421,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/utilities/pages/fetch-metadata": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Đọc thông tin metadata từ URL sản phẩm/liên kết (bảo vệ SSRF). */
+    post: operations["utilities_pages_fetch_metadata_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/utilities/pages/public/{segment}/{slug}": {
     parameters: {
       query?: never;
@@ -5948,6 +5965,28 @@ export interface components {
       /** @description Theme: mode, màu chính/nền/chữ, kiểu nút. */
       theme?: unknown;
       /**
+       * @description Loại trang.
+       *
+       *     * `AFFILIATE` - Tiếp thị liên kết
+       *     * `BIO` - Liên kết cá nhân (Bio)
+       *     * `DONATION` - Ủng hộ / Quyên góp
+       *     * `PRODUCT_CATALOG` - Danh mục sản phẩm số
+       *     * `PORTFOLIO` - Hồ sơ năng lực
+       *     * `LANDING` - Trang đích sự kiện
+       *     * `LEGACY_PAGE` - Trang bài viết tự do (Tiptap cũ)
+       */
+      page_type?: components["schemas"]["PageTypeEnum"];
+      /** @description Mã template hệ thống. */
+      template_key?: string;
+      /** @description Phiên bản template. */
+      template_version?: number;
+      /** @description Dữ liệu nội dung theo template. */
+      content_config?: unknown;
+      /** @description Cấu hình giao diện và phong cách. */
+      style_config?: unknown;
+      /** @description Cấu hình responsive theo thiết bị. */
+      responsive_config?: unknown;
+      /**
        * Format: uuid
        * @description Ảnh đại diện (Thư viện).
        */
@@ -5993,6 +6032,24 @@ export interface components {
        *     * `UNPUBLISHED` - Ngừng công khai
        */
       readonly status: components["schemas"]["CustomPageStatusEnum"];
+      /**
+       * Loại trang
+       * @description Xác định nhóm nghiệp vụ và template tương ứng.
+       *
+       *     * `AFFILIATE` - Tiếp thị liên kết
+       *     * `BIO` - Liên kết cá nhân (Bio)
+       *     * `DONATION` - Ủng hộ / Quyên góp
+       *     * `PRODUCT_CATALOG` - Danh mục sản phẩm số
+       *     * `PORTFOLIO` - Hồ sơ năng lực
+       *     * `LANDING` - Trang đích sự kiện
+       *     * `LEGACY_PAGE` - Trang bài viết tự do (Tiptap cũ)
+       */
+      readonly page_type: components["schemas"]["PageTypeEnum"];
+      /**
+       * Mã template
+       * @description Key của System Template được chọn.
+       */
+      readonly template_key: string;
       /** @description Đường dẫn giữa. */
       path: components["schemas"]["PagePathSummaryResponse"];
       /** @description URL công khai tuyệt đối `/<segment>/<slug>`. */
@@ -6031,6 +6088,26 @@ export interface components {
        * @description Theme có cấu trúc, không chứa CSS/JS tùy ý.
        */
       readonly theme: unknown;
+      /**
+       * Phiên bản template
+       * @description Dùng để tự động migrate config khi template nâng cấp.
+       */
+      readonly template_version: number;
+      /**
+       * Cấu hình nội dung
+       * @description Dữ liệu danh mục, sản phẩm, liên kết theo schema của template.
+       */
+      readonly content_config: unknown;
+      /**
+       * Cấu hình giao diện
+       * @description Màu sắc, typography, kiểu thẻ, nút bấm, bo góc.
+       */
+      readonly style_config: unknown;
+      /**
+       * Cấu hình responsive
+       * @description Số cột, khoảng cách, ẩn/hiện trên desktop/tablet/mobile.
+       */
+      readonly responsive_config: unknown;
       /** @description Ảnh đại diện. */
       avatar: components["schemas"]["AttachmentSummaryResponse"] | null;
       /** @description Ảnh bìa. */
@@ -6044,6 +6121,14 @@ export interface components {
        * @description Tăng mỗi lần lưu nội dung; PATCH phải gửi đúng để không ghi đè lẫn nhau.
        */
       readonly content_version: number;
+    };
+    /** @description Input URL cần trích xuất metadata. */
+    PageFetchMetadataValidateRequest: {
+      /**
+       * Format: uri
+       * @description URL sản phẩm hoặc liên kết cần đọc metadata.
+       */
+      url: string;
     };
     /** @description Tiêu đề, URL công khai, đường dẫn giữa, trạng thái, owner. */
     PageListResponse: {
@@ -6069,6 +6154,24 @@ export interface components {
        *     * `UNPUBLISHED` - Ngừng công khai
        */
       readonly status: components["schemas"]["CustomPageStatusEnum"];
+      /**
+       * Loại trang
+       * @description Xác định nhóm nghiệp vụ và template tương ứng.
+       *
+       *     * `AFFILIATE` - Tiếp thị liên kết
+       *     * `BIO` - Liên kết cá nhân (Bio)
+       *     * `DONATION` - Ủng hộ / Quyên góp
+       *     * `PRODUCT_CATALOG` - Danh mục sản phẩm số
+       *     * `PORTFOLIO` - Hồ sơ năng lực
+       *     * `LANDING` - Trang đích sự kiện
+       *     * `LEGACY_PAGE` - Trang bài viết tự do (Tiptap cũ)
+       */
+      readonly page_type: components["schemas"]["PageTypeEnum"];
+      /**
+       * Mã template
+       * @description Key của System Template được chọn.
+       */
+      readonly template_key: string;
       /** @description Đường dẫn giữa. */
       path: components["schemas"]["PagePathSummaryResponse"];
       /** @description URL công khai tuyệt đối `/<segment>/<slug>`. */
@@ -6093,6 +6196,36 @@ export interface components {
        * @description Thời điểm bản ghi được sửa gần nhất (tự động).
        */
       readonly updated_at: string;
+    };
+    /** @description Thông tin đọc được từ website đích. */
+    PageMetadataResponse: {
+      /** @description Tiêu đề sản phẩm/trang web. */
+      title: string;
+      /** @description Mô tả tóm tắt. */
+      description: string;
+      /**
+       * Format: uri
+       * @description Ảnh đại diện hoặc null.
+       */
+      image_url: string | null;
+      /** @description Nền tảng (shopee, lazada, tiktok, tiki, amazon, custom). */
+      platform: string;
+      /** @description Tên trang web / domain. */
+      site_name: string;
+      /**
+       * Format: double
+       * @description Giá bán đọc được hoặc null.
+       */
+      price: number | null;
+      /** @description Đơn vị tiền tệ (VND, USD...). */
+      currency: string | null;
+      /** @description URL chính tắc của sản phẩm. */
+      canonical_url: string;
+      /**
+       * Format: uri
+       * @description URL đích ban đầu.
+       */
+      destination_url: string;
     };
     /** @description Thông tin tối thiểu của owner, không lộ cờ quyền. */
     PageOwnerResponse: {
@@ -6231,9 +6364,39 @@ export interface components {
       cover_url: string | null;
       /** @description Theme đã validate. */
       theme: unknown;
+      /** @description Loại trang (AFFILIATE, BIO, DONATION, LEGACY_PAGE...). */
+      page_type: string;
+      /** @description Mã template. */
+      template_key: string;
+      /** @description Phiên bản template. */
+      template_version: number;
+      /** @description Dữ liệu nội dung theo template. */
+      content_config: unknown;
+      /** @description Cấu hình giao diện. */
+      style_config: unknown;
+      /** @description Cấu hình responsive. */
+      responsive_config: unknown;
       /** @description Tiptap JSON; ảnh/nút link rút gọn không còn dùng được đã bị bỏ. */
       content: unknown;
     };
+    /**
+     * @description * `AFFILIATE` - Tiếp thị liên kết
+     *     * `BIO` - Liên kết cá nhân (Bio)
+     *     * `DONATION` - Ủng hộ / Quyên góp
+     *     * `PRODUCT_CATALOG` - Danh mục sản phẩm số
+     *     * `PORTFOLIO` - Hồ sơ năng lực
+     *     * `LANDING` - Trang đích sự kiện
+     *     * `LEGACY_PAGE` - Trang bài viết tự do (Tiptap cũ)
+     * @enum {string}
+     */
+    PageTypeEnum:
+      | "AFFILIATE"
+      | "BIO"
+      | "DONATION"
+      | "PRODUCT_CATALOG"
+      | "PORTFOLIO"
+      | "LANDING"
+      | "LEGACY_PAGE";
     PaginatedAdminAuthSessionResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -7271,6 +7434,28 @@ export interface components {
       seo_description?: string;
       /** @description Theme. */
       theme?: unknown;
+      /**
+       * @description Loại trang.
+       *
+       *     * `AFFILIATE` - Tiếp thị liên kết
+       *     * `BIO` - Liên kết cá nhân (Bio)
+       *     * `DONATION` - Ủng hộ / Quyên góp
+       *     * `PRODUCT_CATALOG` - Danh mục sản phẩm số
+       *     * `PORTFOLIO` - Hồ sơ năng lực
+       *     * `LANDING` - Trang đích sự kiện
+       *     * `LEGACY_PAGE` - Trang bài viết tự do (Tiptap cũ)
+       */
+      page_type?: components["schemas"]["PageTypeEnum"];
+      /** @description Mã template hệ thống. */
+      template_key?: string;
+      /** @description Phiên bản template. */
+      template_version?: number;
+      /** @description Dữ liệu nội dung theo template. */
+      content_config?: unknown;
+      /** @description Cấu hình giao diện và phong cách. */
+      style_config?: unknown;
+      /** @description Cấu hình responsive theo thiết bị. */
+      responsive_config?: unknown;
       /**
        * Format: uuid
        * @description Ảnh đại diện; null để gỡ.
@@ -17854,6 +18039,26 @@ export interface operations {
         page?: number;
         /** @description Number of results to return per page. */
         page_size?: number;
+        /**
+         * @description Lọc loại trang, nhiều giá trị.
+         *
+         *     * `AFFILIATE` - Tiếp thị liên kết
+         *     * `BIO` - Liên kết cá nhân (Bio)
+         *     * `DONATION` - Ủng hộ / Quyên góp
+         *     * `PRODUCT_CATALOG` - Danh mục sản phẩm số
+         *     * `PORTFOLIO` - Hồ sơ năng lực
+         *     * `LANDING` - Trang đích sự kiện
+         *     * `LEGACY_PAGE` - Trang bài viết tự do (Tiptap cũ)
+         */
+        page_type?: (
+          | "AFFILIATE"
+          | "BIO"
+          | "DONATION"
+          | "LANDING"
+          | "LEGACY_PAGE"
+          | "PORTFOLIO"
+          | "PRODUCT_CATALOG"
+        )[];
         /** @description Id đường dẫn giữa, nhiều giá trị. */
         path?: string[];
         /** @description A search term. */
@@ -18056,6 +18261,26 @@ export interface operations {
         page?: number;
         /** @description Number of results to return per page. */
         page_size?: number;
+        /**
+         * @description Lọc loại trang, nhiều giá trị.
+         *
+         *     * `AFFILIATE` - Tiếp thị liên kết
+         *     * `BIO` - Liên kết cá nhân (Bio)
+         *     * `DONATION` - Ủng hộ / Quyên góp
+         *     * `PRODUCT_CATALOG` - Danh mục sản phẩm số
+         *     * `PORTFOLIO` - Hồ sơ năng lực
+         *     * `LANDING` - Trang đích sự kiện
+         *     * `LEGACY_PAGE` - Trang bài viết tự do (Tiptap cũ)
+         */
+        page_type?: (
+          | "AFFILIATE"
+          | "BIO"
+          | "DONATION"
+          | "LANDING"
+          | "LEGACY_PAGE"
+          | "PORTFOLIO"
+          | "PRODUCT_CATALOG"
+        )[];
         /** @description Id đường dẫn giữa, nhiều giá trị. */
         path?: string[];
         /** @description A search term. */
@@ -18145,6 +18370,42 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_pages_fetch_metadata_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PageFetchMetadataValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PageMetadataResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;

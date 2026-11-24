@@ -40,7 +40,7 @@ export function ColorInput({
   return (
     <div className="flex min-w-0 items-center gap-2">
       <Label
-        className="border-input focus-within:ring-ring/50 relative size-10 shrink-0 cursor-pointer overflow-hidden rounded-xl border focus-within:ring-3"
+        className="border-input focus-within:ring-ring/50 relative size-9 shrink-0 cursor-pointer overflow-hidden rounded-lg border shadow-2xs focus-within:ring-2"
         style={{ backgroundColor: pickerValue }}
       >
         <Input
@@ -58,7 +58,10 @@ export function ColorInput({
         maxLength={7}
         placeholder={placeholder}
         aria-invalid={invalid || undefined}
-        className={cn("min-w-0 font-mono uppercase", inputClassName)}
+        className={cn(
+          "h-9 min-w-0 px-2 font-mono text-xs tracking-tight uppercase",
+          inputClassName,
+        )}
         onChange={(event) => onChange(event.target.value.toUpperCase())}
       />
     </div>

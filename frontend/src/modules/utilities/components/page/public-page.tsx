@@ -1,80 +1,62 @@
-import Image from "next/image";
-import { cn } from "cn";
-import type { CSSProperties } from "react";
+"use client";
 
-import { TiptapContent } from "@/shares/components/common/tiptap-content";
+import { Loader2 } from "lucide-react";
+import { notFound } from "next/navigation";
+import { useMemo } from "react";
 
-import { PAGE_EXTENSIONS } from "../../extensions/page-extensions";
+import { keysToCamel } from "@/shares/lib/api/case-conversion";
+
+import { usePublicPage } from "../../hooks/use-public-page";
 import type { PublicPage as PublicPageData } from "../../types/page.types";
-
-const BUTTON_RADIUS = {
-  rounded: "[&_.page-button]:rounded-xl",
-  square: "[&_.page-button]:rounded-none",
-  pill: "[&_.page-button]:rounded-full",
-} as const;
+import { PageRendererDispatcher } from "./page-renderer-dispatcher";
 
 /**
- * Trang công khai đã render (chạy được ở server): ảnh bìa, ảnh đại diện, tiêu đề, nội dung Tiptap theo theme.
- * Nội dung đã được BE lọc (ảnh xóa, link rút gọn tắt bị bỏ) nên chỉ hiển thị.
+ * Trang công khai đã render: tự động điều phối renderer theo `pageType`.
+ * Hỗ trợ fetch trực tiếp phía client qua `usePublicPage` khi không truyền sẵn `initialPage`.
  *
- * @param props - Dữ liệu công khai.
- * @returns Trang.
+ * @param props - Dữ liệu công khai hoặc segment + slug.
+ * @returns Trang đã render.
  */
-export function PublicPage({ page }: { page: PublicPageData }) {
-  const theme = page.theme;
-  const style = {
-    "--page-primary": theme.primaryColor ?? "#2563eb",
-    ...(theme.backgroundColor ? { backgroundColor: theme.backgroundColor } : {}),
-    ...(theme.textColor ? { color: theme.textColor } : {}),
-  } as CSSProperties;
-  return (
-    <main
-      style={style}
-      className={cn(
-        "min-h-svh",
-        theme.mode === "dark" && !theme.backgroundColor && "bg-neutral-950 text-neutral-100",
-        theme.mode === "light" && !theme.backgroundColor && "bg-white text-neutral-900",
-      )}
-    >
-      {page.coverUrl ? (
-        <div className="relative h-48 w-full overflow-hidden sm:h-64">
-          <Image
-            src={page.coverUrl}
-            alt={page.title}
-            fill
-            sizes="100vw"
-            priority
-            className="object-cover"
-          />
-        </div>
-      ) : null}
-      <article className="mx-auto max-w-2xl px-4 py-10">
-        <header className="mb-8 flex flex-col items-center gap-4 text-center">
-          {page.avatarUrl ? (
-            <div
-              className={cn(
-                "relative size-24 shrink-0 overflow-hidden rounded-full border-4 shadow-sm",
-                page.coverUrl && "-mt-20",
-              )}
-            >
-              <Image
-                src={page.avatarUrl}
-                alt={page.title}
-                fill
-                sizes="96px"
-                className="object-cover"
-              />
-            </div>
-          ) : null}
-          <h1 className="text-3xl font-bold">{page.title}</h1>
-          {page.description ? <p className="opacity-80">{page.description}</p> : null}
-        </header>
-        <TiptapContent
-          content={page.content}
-          extensions={PAGE_EXTENSIONS}
-          className={BUTTON_RADIUS[theme.buttonStyle ?? "rounded"]}
-        />
-      </article>
-    </main>
-  );
+export function PublicPage({
+  page: initialPage,
+  segment,
+  slug,
+}: {
+  page?: PublicPageData | null;
+  segment?: string;
+  slug?: string;
+}) {
+  const query = usePublicPage(segment ?? "", slug ?? "", !initialPage && Boolean(segment && slug));
+  const rawPage = initialPage ?? query.data ?? null;
+
+  const page = useMemo(() => {
+    if (!rawPage) return null;
+    return {
+      ...rawPage,
+      contentConfig: keysToCamel<Record<string, unknown>>(
+        (rawPage.contentConfig as Record<string, unknown>) ?? {},
+      ),
+      styleConfig: keysToCamel<Record<string, unknown>>(
+        (rawPage.styleConfig as Record<string, unknown>) ?? {},
+      ),
+      responsiveConfig: keysToCamel<Record<string, unknown>>(
+        (rawPage.responsiveConfig as Record<string, unknown>) ?? {},
+      ),
+    } as PublicPageData;
+  }, [rawPage]);
+
+  if (!initialPage && query.isLoading) {
+    return (
+      <div className="flex h-svh w-full items-center justify-center p-6">
+        <Loader2 className="text-primary size-10 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!page) {
+    if (query.isError) notFound();
+    return null;
+  }
+
+  return <PageRendererDispatcher page={page} />;
 }

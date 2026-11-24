@@ -20,6 +20,12 @@ class PagePublicResponseSerializer(serializers.Serializer[Any]):
     avatar_url = serializers.URLField(allow_null=True, help_text="Ảnh đại diện hoặc null.")
     cover_url = serializers.URLField(allow_null=True, help_text="Ảnh bìa hoặc null.")
     theme = serializers.JSONField(help_text="Theme đã validate.")
+    page_type = serializers.CharField(help_text="Loại trang (AFFILIATE, BIO, DONATION, LEGACY_PAGE...).")
+    template_key = serializers.CharField(help_text="Mã template.")
+    template_version = serializers.IntegerField(help_text="Phiên bản template.")
+    content_config = serializers.JSONField(help_text="Dữ liệu nội dung theo template.")
+    style_config = serializers.JSONField(help_text="Cấu hình giao diện.")
+    responsive_config = serializers.JSONField(help_text="Cấu hình responsive.")
     content = serializers.JSONField(
         help_text="Tiptap JSON; ảnh/nút link rút gọn không còn dùng được đã bị bỏ."
     )

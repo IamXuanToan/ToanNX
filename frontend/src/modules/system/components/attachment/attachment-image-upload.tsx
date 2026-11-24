@@ -19,11 +19,13 @@ export function AttachmentImageUpload({
   canRead,
   canUpload,
   folders,
+  hideHint,
   ...props
 }: Omit<ComponentProps<typeof ImageUpload>, "onChoose" | "chooseLabel"> & {
   canRead: boolean;
   canUpload: boolean;
   folders?: FolderCapabilities;
+  hideHint?: boolean;
 }) {
   const t = useTranslations("system.attachment");
   const upload = useAttachmentImageUpload(props.onChange);
@@ -31,6 +33,7 @@ export function AttachmentImageUpload({
     <>
       <ImageUpload
         {...props}
+        hideHint={hideHint}
         onChoose={canRead ? upload.openLibrary : undefined}
         chooseLabel={t("chooseImage")}
       />

@@ -21,7 +21,7 @@ export function LoginView({
   const t = useTranslations("system.auth.login");
 
   return (
-    <AuthShell homeHref={homeHref} title={t("title")} description={t("subtitle")}>
+    <AuthShell homeHref={homeHref} title={t("title")}>
       <LoginForm redirectTo={redirectTo} />
     </AuthShell>
   );

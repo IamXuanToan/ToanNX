@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import { usePermission } from "../../hooks/use-permission";
+import { useCurrentUser } from "../../hooks/use-current-user";
 import { useTelegramBot } from "../../hooks/use-telegram-bot";
 import { NOTIFICATION_PREFERENCE_PERMISSIONS } from "../../permissions/notification-preference-permission";
 import { PUSH_DEVICE_PERMISSIONS } from "../../permissions/push-device-permission";
@@ -21,10 +22,14 @@ import { TelegramChatList } from "../telegram-chat/telegram-chat-list";
  */
 export function NotificationSettingsTab() {
   const t = useTranslations("system.notifications.settings");
+  const { data: currentUser } = useCurrentUser();
+  const isSuperuser = Boolean(currentUser?.user?.isSuperuser);
+
   const canPreference = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.read);
   const canPreferenceUpdate = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.update);
   const canPush = usePermission(PUSH_DEVICE_PERMISSIONS.create);
-  const canBot = usePermission(TELEGRAM_BOT_PERMISSIONS.read);
+  const hasBotPermission = usePermission(TELEGRAM_BOT_PERMISSIONS.read);
+  const canBot = isSuperuser && hasBotPermission;
   const canBotUpdate = usePermission(TELEGRAM_BOT_PERMISSIONS.update);
   const canBotCreate = usePermission(TELEGRAM_BOT_PERMISSIONS.create);
   const canBotWrite = canBotUpdate || canBotCreate;

@@ -22,5 +22,15 @@ export function useGlobalErrorContent(error: unknown) {
       ? (error as { digest: string }).digest
       : null;
 
-  return { locale, digest };
+  const errorName = error instanceof Error ? error.name : "System Error";
+  const errorMessage =
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : "Đã xảy ra lỗi hệ thống.";
+  const errorStack = error instanceof Error ? (error.stack ?? null) : null;
+  const isDev = process.env.NODE_ENV === "development";
+
+  return { locale, digest, errorName, errorMessage, errorStack, isDev };
 }

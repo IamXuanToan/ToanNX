@@ -41,13 +41,30 @@ class ClientErrorView(CoreApiView):
         Returns:
             204 không body.
         """
+        stack = str(validated_data.get("stack") or "").strip()
+        digest = str(validated_data.get("digest") or "").strip()
+        url = validated_data["url"]
+        message = validated_data["message"]
+
+        if stack:
+            log_message = (
+                f"Lỗi trình duyệt tại {url}: {message}\n"
+                f"==================== [CLIENT ERROR DETAIL] ====================\n"
+                f"URL: {url}\n"
+                f"Digest: {digest or 'N/A'}\n"
+                f"Message: {message}\n"
+                f"Stack Trace:\n{stack}\n"
+                f"================================================================"
+            )
+        else:
+            log_message = f"Lỗi trình duyệt tại {url}: {message}"
+
         logger.error(
-            "Lỗi trình duyệt tại %s: %s",
-            validated_data["url"],
-            validated_data["message"],
+            log_message,
             extra={
-                "client_digest": validated_data.get("digest", ""),
-                "client_stack": validated_data.get("stack", ""),
+                "client_digest": digest,
+                "client_stack": stack,
+                "client_url": url,
             },
         )
         return Response(status=204)

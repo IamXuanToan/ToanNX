@@ -335,7 +335,7 @@ export function useUserTable() {
 - **Nút lưu của mọi tab nằm ở footer dialog**, không nằm trong nội dung tab: nội dung bọc `<Form id={…_FORM_ID}>`
   (id khai ở `constants/`), nút footer `type="submit" form={…_FORM_ID}`, chỉ hiện ở tab đang mở và khi có quyền sửa.
 
-## 3.2 Chuẩn hình ảnh (Next.js Image) và Shadcn UI (bắt buộc)
+## 3.2 Chuẩn Next.js (Image, Link) và Shadcn UI (bắt buộc)
 
 **Tối ưu hình ảnh với `next/image`.**
 
@@ -344,6 +344,22 @@ export function useUserTable() {
 - Cấu hình domains/remotePatterns tập trung tại `frontend/next.config.ts` (hỗ trợ `media.toannx.com`, Cloudflare R2 `**.r2.dev`, và `localhost`/`127.0.0.1`).
 - Với khung chứa linh hoạt theo tỷ lệ (aspect-square, avatar, preview), container cha đặt `relative`, thẻ `<Image />` sử dụng `fill`, `className="object-cover"` (hoặc `object-contain`), và khai báo prop `sizes` phù hợp (ví dụ `sizes="80px"` hoặc `sizes="(max-width: 768px) 100vw, 33vw"`).
 - Khi ảnh là chuỗi data URI (`data:image/...`) hoặc blob URL cục bộ từ browser: thêm prop `unoptimized`.
+
+**Chuẩn liên kết với Next.js Link (bắt buộc).**
+
+- Mọi liên kết chuyển trang hoặc mở URL trong project **bắt buộc sử dụng component `<Link />` từ `next/link` (hoặc `@/i18n/navigation` cho liên kết nội bộ có tiền tố ngôn ngữ)** hoặc bọc bằng `<Button asChild><Link href="...">...</Link></Button>`.
+- **Tuyệt đối không dùng thẻ `<a>` trần** ở bất kỳ đâu trong component `.tsx`.
+- Với liên kết ngoài (external URL như shopee, lazada, mạng xã hội, tài liệu...): bắt buộc sử dụng `<Link href={url} target="_blank" rel="noopener noreferrer">` từ `next/link`.
+- Khi liên kết đóng vai trò là nút bấm, hành động (CTA), hoặc item có tương tác: bắt buộc kết hợp component `Button` của shadcn với prop `asChild`:
+  ```tsx
+  <Button asChild variant="outline">
+    <Link href={url} target="_blank" rel="noopener noreferrer">
+      <span>{label}</span>
+      <ExternalLink className="size-3.5" />
+    </Link>
+  </Button>
+  ```
+  Không lồng thẻ `<button>` bên trong `<Link>` hoặc ngược lại mà không có `asChild`.
 
 **SVG: đặt file trong `public/`, nơi dùng gọi theo đường dẫn, không khai trực tiếp.**
 
@@ -564,6 +580,7 @@ hay vẽ SVG logo riêng.
 - Gọi API cùng origin `/api/v1/*` (Next rewrite sang Django); cookie HttpOnly, không lưu token ở JS.
 - `apiClient` tự gắn CSRF, request id, chuyển case, silent refresh single-flight; không tự viết lại.
 - Logout/đổi quyền: xóa/invalidate cache React Query.
+- **Tải dữ liệu 100% phía Client (cấm gọi API ngầm ở SSR)**: mọi trang (kể cả trang công khai như link rút gọn `/s/[slug]`, custom page `/p/[slug]`) bắt buộc gọi API lấy dữ liệu ở phía Client thông qua React Query (`useQuery`) + `service` + `apiClient`. Cấm dùng Server Component gọi API ngầm (`serverApiGet`/`backendFetch`/`fetch` ngầm ở server Next.js) để render trang; `page.tsx` chỉ nhận params và render View. Bắt buộc có API call hiển thị trực tiếp trên tab Network của DevTools trình duyệt để phục vụ việc debug lỗi, đồng thời tránh lỗi mạng/WAF/Cloudflare chặn giữa các serverless functions.
 - **Hủy request**: truyền `signal` của React Query cho `apiClient`; không tự `AbortController.abort()` lên `fetch`
   trong module. `apiClient` không abort `fetch` khi bên ngoài hủy (abort làm lý do hủy lọt vào promise không ai
   bắt → Next dev báo "Runtime AbortError" / "Runtime Error: cancelled"); chỉ trả `ApiError` `REQUEST_CANCELLED`.
@@ -590,6 +607,10 @@ pnpm typecheck && pnpm test tests/unit/<file>.test.ts && pnpm e2e tests/e2e/<lu�
 
 - Unit (Vitest): `tests/unit`. E2E (Playwright): `tests/e2e`, chạy trên server thật với database riêng
   `toannx_e2e` (BE 8001, FE 3001 build vào `.next-e2e`), không đụng dữ liệu dev.
+- Khi viết/sửa unit test FE, tham khảo skill `vitest` cho mock, fake timer và assertion; dùng API tương thích
+  phiên bản trong `frontend/package.json`. Khi viết/sửa E2E spec, dùng `playwright-best-practices` cho locator,
+  chờ điều kiện và fixture; `playwright-cli` dùng để mở UI thật, chụp và kiểm tương tác. Chỉ chạy file test
+  liên quan theo rule chung mục 7.
 - Kiểu dữ liệu: `pnpm api:types` sinh `shares/types/api-schema.gen.ts` từ OpenAPI (không sửa tay; CI đỏ nếu
   cũ). Chạy lại ngay khi BE đổi thứ đi vào OpenAPI, **kể cả chỉ đổi docstring của view/method** (rule backend §6). `ApiModel<"…Response">` là kiểu FE nhận được (đã camelCase). Kiểu viết tay phải có đúng tập field
   của response, kiểm trong `tests/unit/api-contract.test.ts` lúc `pnpm typecheck`.
@@ -629,3 +650,19 @@ Mọi trang lỗi toàn cục phải tuân thủ layout tiêu chuẩn, giao di�
   - `Mất mạng / Timeout / Status 0`: Hiển thị `WifiOff` "Mất kết nối mạng" + nút **Thử kết nối lại**.
   - `500+ Server Error`: Hiển thị `ServerCrash` "Lỗi máy chủ" + nút **Thử lại**.
   - Các lỗi khác: Hiển thị thông báo đã dịch theo mã lỗi BE kèm nút **Thử lại**.
+
+## 8. Kiểm tra giao diện sau khi sửa
+
+- Với màn hình hoặc luồng đã sửa, tạo/cập nhật test liên quan cho các trạng thái và tương tác bị ảnh hưởng.
+  Chạy đúng file Vitest/E2E liên quan; không chạy toàn bộ suite khi người dùng chưa yêu cầu (rule chung mục 7).
+- Dùng skill `ui-ux` khi phân tích hoặc thiết kế UI, `web-design-guidelines` để rà accessibility/UX trên file
+  đã sửa và `vercel-react-best-practices` khi viết/review React/Next.js. Sau khi dựng, dùng `playwright-cli`
+  mở giao diện thật, chụp ảnh rồi xem lại để phát hiện lỗi bố cục; kiểm desktop, mobile 375px, bàn phím,
+  console, network và các trạng thái loading/empty/error/success. Luồng quyền thì kiểm các vai trò liên quan.
+- Nếu môi trường không mở được UI, ghi rõ phần chưa xác minh trong báo cáo; không nhận là đã kiểm giao diện.
+  Skill hỗ trợ chỉ bổ sung góc nhìn, không thay thế quy tắc trong repo.
+- Nếu thay đổi ảnh hưởng hiệu năng trang, dùng `vercel-react-best-practices` để rà mã và đo Network trên luồng
+  bị ảnh hưởng (số request, kích thước tải, waterfall, trạng thái cache). Không khẳng định nhanh hơn chỉ từ
+  cảm nhận hoặc từ số đo môi trường khác; giữ quy tắc API dữ liệu chạy ở Client của mục 1 và 5.
+- Khi được yêu cầu audit tốc độ trang hoặc Core Web Vitals, dùng skill `web-perf` để đo trên URL/môi trường
+  thực tế. Nếu không có công cụ trace, chỉ báo số liệu quan sát được và ghi rõ phép đo còn thiếu.

@@ -28,19 +28,37 @@ export function useAppErrorContent(error: unknown) {
       ? (error as { digest: string }).digest
       : null;
 
+  const errorName = error instanceof Error ? error.name : "Error";
   const errorMessage =
-    process.env.NODE_ENV === "development" && error instanceof Error ? error.message : null;
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : "Đã xảy ra sự cố không mong muốn.";
+  const errorStack = error instanceof Error ? (error.stack ?? null) : null;
+  const isDev = process.env.NODE_ENV === "development";
 
   const handleCopy = () => {
-    if (!digest) return;
-    void navigator.clipboard.writeText(digest);
+    const fullDetails = [
+      `[URL]: ${typeof window !== "undefined" ? window.location.href : "N/A"}`,
+      digest ? `[Digest]: ${digest}` : "",
+      `[Error]: ${errorName}: ${errorMessage}`,
+      errorStack ? `[Stack Trace]:\n${errorStack}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    void navigator.clipboard.writeText(fullDetails);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return {
     digest,
+    errorName,
     errorMessage,
+    errorStack,
+    isDev,
     copied,
     handleCopy,
   };

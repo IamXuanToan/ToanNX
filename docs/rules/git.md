@@ -1,7 +1,14 @@
 # Quy tắc Git
 
 > **AI agent:** không tự tạo nhánh, commit, push, merge hay xóa nhánh khi chưa được yêu cầu rõ; làm trên nhánh
-> hiện tại. Các quy tắc dưới đây áp dụng khi người dùng yêu cầu thao tác git (hoặc tự làm), và để gợi ý câu commit.
+> hiện tại. Các quy tắc dưới đây áp dụng khi người dùng yêu cầu thao tác Git (hoặc tự làm), và khi agent soạn
+> nội dung commit để người dùng dán vào VS Code.
+
+Sau mỗi task, agent đọc trạng thái và diff Git ở chế độ chỉ đọc (xem cả file chưa được theo dõi), rồi gợi ý
+**nội dung commit đầy đủ gồm tiêu đề và phần mô tả** cho toàn bộ thay đổi chưa commit trong project (kể cả thay
+đổi có sẵn trước task). Không mặc định rằng mọi thay đổi đó do agent thực hiện. Nếu thay đổi không cùng một mục
+đích, đề xuất nhiều commit, mỗi commit một khối văn bản riêng. Không có thay đổi thì không gợi ý. Không tự stage,
+commit hoặc push chỉ vì đã gợi ý.
 
 ## Nhánh
 
@@ -26,9 +33,25 @@
 
 ## Commit
 
-Mẫu: `<type>(<scope>): <mo-ta-ngan>`. Có thể bỏ `(<scope>)` khi thay đổi không thuộc một phần cụ thể.
-Viết mô tả bằng tiếng Anh, ở dạng mệnh lệnh, không viết hoa chữ đầu và không có dấu chấm cuối; tối đa
-72 ký tự cho dòng đầu. Dùng body để giải thích lý do, migration hoặc tác động không hiển nhiên.
+Mẫu tiêu đề: `<type>(<scope>): <mo-ta-ngan>`. Có thể bỏ `(<scope>)` khi thay đổi không thuộc một phần cụ thể.
+Viết tiêu đề bằng tiếng Anh, ở dạng mệnh lệnh, không viết hoa chữ đầu và không có dấu chấm cuối; tối đa
+72 ký tự. **Mỗi gợi ý phải có body** sau một dòng trống: nêu cụ thể đã đổi gì, vì sao cần đổi, và tác động/
+migration/API/test nếu liên quan. Body viết tiếng Anh, ngắn gọn, chỉ dựa trên diff đã xem; không liệt kê file
+thay cho mô tả, không bịa kết quả kiểm tra. Ưu tiên dòng body không quá 72 ký tự.
+
+### Dạng trả về để dán vào VS Code
+
+Trả về **văn bản commit thuần** trong khối `text`, để người dùng sao chép cả tiêu đề và body vào ô commit của
+VS Code. Không đưa lệnh `git commit`, cờ `-m`, dấu nháy bọc message hay hướng dẫn shell thay cho nội dung commit.
+Nếu cần tách nhiều commit, ghi nhãn `Commit 1`, `Commit 2` **ngoài** từng khối để nội dung sao chép không dính nhãn.
+Nêu nhóm thay đổi có sẵn trước task ở lời dẫn ngắn ngoài khối; không nhận chúng là phần agent vừa làm.
+
+```text
+feat(utilities): add configurable public pages
+
+Support new public page types with validated configuration.
+Preserve existing URLs so published links continue to work.
+```
 
 | Type | Dùng khi | Ví dụ |
 | --- | --- | --- |

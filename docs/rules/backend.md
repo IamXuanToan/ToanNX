@@ -468,6 +468,11 @@ class UserRoleView(CoreApiView):
   - `response_structure`: Kiểm tra đúng cấu trúc envelope `{success: true, data: ..., meta: {request_id: ...}}`, status code chuẩn (200, 201, 204), không rò rỉ trường nhạy cảm (`password`, `secret`...).
   - `list_features` (cho endpoint danh sách): Tìm kiếm `search`, bộ lọc nhiều giá trị `Core*InFilter`, sắp xếp `ordering` (tăng/giảm), phân trang `page`/`page_size`, trang vượt quá trả `404`.
 - Mỗi endpoint danh sách thêm một dòng vào `core/tests/test_list_query_count.py` (số query không tăng theo số bản ghi).
+- Khi người dùng yêu cầu rà hiệu năng Django, dùng skill `django-perf-review` để truy vết N+1, queryset không
+  giới hạn, index và vòng ghi; xác minh bằng dữ liệu/test liên quan trước khi kết luận. Ví dụ trong skill chỉ
+  minh họa Django chung: tối ưu queryset ở **repository**, không đưa ORM vào view/service/serializer.
+- Khi sửa endpoint danh sách hoặc đường đọc công khai, chạy test số query liên quan trên PostgreSQL local với
+  `--reuse-db`; đánh giá cache hit/miss và số lệnh Redis nếu thay đổi cache. Không đo trên DB production.
 - `core/tests/test_endpoint_access.py` gọi thật **mọi** route: khách nhận 401, người không có quyền nhận 403
   `PERMISSION_DENIED`. View công khai / chỉ đăng nhập phải khai tên trong `PUBLIC_VIEWS` / `LOGIN_ONLY_VIEWS`.
 - Test ghi file vào thư mục media tạm (fixture `_isolated_media`), không đụng `backend/media` của dev.
@@ -477,8 +482,8 @@ class UserRoleView(CoreApiView):
 
 ```bash
 uv run ruff format <file> && uv run ruff check <file> && uv run mypy <file>        # file đã sửa
-uv run pytest app/<m>/tests/test_<x>.py                                            # test liên quan
-uv run ruff format . && uv run ruff check . && uv run mypy . && uv run pytest -q   # toàn bộ: chỉ khi được yêu cầu
+uv run pytest --reuse-db app/<m>/tests/test_<x>.py                                 # test liên quan trên PostgreSQL local
+uv run ruff format . && uv run ruff check . && uv run mypy . && uv run pytest --reuse-db -q   # toàn bộ: chỉ khi được yêu cầu
 uv run python manage.py spectacular --validate --fail-on-warn --file schema.yaml
 ```
 

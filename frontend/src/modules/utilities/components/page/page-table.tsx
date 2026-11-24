@@ -1,5 +1,6 @@
 "use client";
 
+import type { ComponentProps } from "react";
 import { ExternalLink } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 
@@ -8,18 +9,22 @@ import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge } from "@/shares/components/common/status-badge";
+import { Badge } from "@/shares/components/ui/badge";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
-import { PAGE_STATUSES, type Page } from "../../types/page.types";
+import { PAGE_STATUSES, PAGE_TYPES, type Page } from "../../types/page.types";
 import { usePageTable } from "./hooks/use-page-table";
 
 const STATUS_TONE = { DRAFT: "neutral", PUBLISHED: "success", UNPUBLISHED: "warning" } as const;
 
+type DetailRouteFn = (id: string) => { pathname: string; params: Record<string, string> };
+
 /**
- * Bảng trang: tiêu đề + URL công khai, đường dẫn giữa, trạng thái, chủ sở hữu (khi xem được của mọi người),
- * cập nhật; Sửa, Sao chép (nhân bản), Xóa, Xem; hàng loạt công khai/ngừng công khai/xóa.
+ * Bảng trang: tiêu đề + URL công khai, loại trang (Affiliate, Bio, Donation, Legacy...),
+ * đường dẫn giữa, trạng thái, chủ sở hữu, cập nhật; Sửa, Sao chép (nhân bản), Xóa, Xem.
+ * Hỗ trợ truyền detailRoute và ownerId cho Client Portal.
  *
- * @param props - Quyền tạo/sửa/xóa và có hiện cột chủ sở hữu.
+ * @param props - Quyền tạo/sửa/xóa, cờ hiện chủ sở hữu và các tùy biến điều hướng.
  * @returns Bảng.
  */
 export function PageTable({
@@ -27,17 +32,28 @@ export function PageTable({
   canUpdate,
   canDelete,
   showOwner,
+  ownerOnly,
+  ownerId,
+  detailRoute,
 }: {
   canCreate: boolean;
   canUpdate: boolean;
   canDelete: boolean;
   showOwner: boolean;
+  ownerOnly?: boolean;
+  ownerId?: string;
+  detailRoute?: DetailRouteFn;
 }) {
   const t = useTranslations("utilities.customPages.pages");
   const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
-  const state = usePageTable();
+  const state = usePageTable({ ownerOnly, ownerId, detailRoute });
   const { table, query } = state;
+
+  const getTargetHref = (id: string): ComponentProps<typeof Link>["href"] =>
+    (detailRoute ? detailRoute(id) : UTILITIES_ROUTES.pageDetail(id)) as ComponentProps<
+      typeof Link
+    >["href"];
 
   const columns: DataTableColumn<Page>[] = [
     {
@@ -49,7 +65,7 @@ export function PageTable({
       cell: (page) => (
         <div className="min-w-0">
           <Link
-            href={UTILITIES_ROUTES.pageDetail(page.id)}
+            href={getTargetHref(page.id)}
             className="hover:text-primary block truncate font-medium underline-offset-4 hover:underline"
           >
             {page.title}
@@ -58,6 +74,16 @@ export function PageTable({
             {page.publicUrl.replace(/^https?:\/\//, "")}
           </p>
         </div>
+      ),
+    },
+    {
+      id: "pageType",
+      header: t("columns.pageType"),
+      hideBelow: "lg",
+      cell: (page) => (
+        <Badge variant="outline" className="text-xs font-normal">
+          {t(`pageTypes.${page.pageType}`)}
+        </Badge>
       ),
     },
     { id: "path", header: t("columns.path"), cell: (page) => <span>/{page.path.segment}</span> },
@@ -107,6 +133,15 @@ export function PageTable({
       onClearFilters={table.hasFilters ? table.clearFilters : undefined}
       filters={
         <>
+          <FilterSelect
+            label={t("columns.pageType")}
+            value={table.getFilterValues("pageType")}
+            onValueChange={(values) => table.setFilterValues("pageType", values)}
+            options={PAGE_TYPES.map((type) => ({
+              value: type,
+              label: t(`pageTypes.${type}`),
+            }))}
+          />
           <FilterSelect
             label={t("columns.path")}
             value={table.getFilterValues("path")}

@@ -368,6 +368,9 @@ PUBLIC_RESERVED_SEGMENTS = frozenset(
         "media",
         "static",
         "favicon",
+        "demo",
+        "portal",
+        "ca-nhan",
     }
 )
 

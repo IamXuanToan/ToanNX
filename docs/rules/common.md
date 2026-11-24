@@ -115,6 +115,22 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 - **`AGENTS.md` và `CLAUDE.md` luôn đồng bộ**: sửa một file thì sửa luôn phần tương ứng ở file kia trong cùng
   lần đó (`AGENTS.md` tiếng Việt cho mọi agent, `CLAUDE.md` tiếng Anh cho Claude Code; nội dung rule phải khớp).
   Đổi rule trong `docs/rules/` mà hai file này có tóm tắt thì cập nhật cả hai.
+- **Rule cho AI (`.agents/rules/`) luôn đồng bộ với `docs/rules/`**: `docs/rules/` là nguồn chuẩn đầy đủ;
+  `.agents/rules/*.md` là bản tóm tắt cho agent, frontmatter `trigger` (`always_on` luôn bật, `model_decision` AI tự
+  chọn theo `description`, `glob` theo file khớp `globs`, `manual` chỉ khi gọi). Bản cho Claude Code
+  (`.claude/rules/`, `.claude/skills/rule-*/`, `.claude/commands/`) **sinh tự động** bằng
+  `python scripts/sync-ai-rules.py`, không sửa tay; `--check` chạy trong `scripts/check-all.*`. Đổi một rule trong
+  `docs/rules/` (hoặc quy trình/bảng kiểm) thì sửa rule AI tương ứng, `CLAUDE.md`, `AGENTS.md`, `prompt.md` trong cùng
+  lần. Cách viết rule AI: `.agents/rules/40-docs-and-rules.md`.
+- **Skill quy trình của project**: `start-task` cho việc mới, `fix` cho lỗi đã có, `review-code` cho lượt rà cuối
+  có tự sửa lỗi xác nhận được. Chọn bằng ngữ nghĩa câu chat theo `.agents/rules/01-workflow.md`; `review-code`
+  không tự chạy sau mọi lần sửa. Cả ba phải đọc source thực, mục lục `docs/`, rule và tài liệu liên quan trước
+  khi sửa; kiểm đúng phạm vi rồi báo nội dung commit theo [git.md](git.md).
+- Nguồn skill project ở `.agents/skills/<tên>/`; skill viết riêng cho repo được liên kết sang
+  `.claude/skills/<tên>/`. Skill cài từ bên ngoài có nguồn/commit trong `skills-lock.json` và có thể được liên kết
+  bằng CLI. Các thư mục này khác `.claude/skills/rule-*/` sinh từ rule; không sửa tay bản sinh, không để skill
+  ghi đè `docs/rules/`. `scripts/check-workflow-skills.py` kiểm tên, mô tả và bản Claude của ba skill workflow;
+  `scripts/check-all.*` gọi kiểm tra này khi chạy toàn bộ.
 - **Tài liệu trong `docs/` cập nhật cùng lần sửa** (mục lục và cấu trúc ở [docs/README.md](../README.md)):
   - đổi model, quyền (`MEMBER`), route, sự kiện thông báo, webhook/callback của module → `docs/modules/<module>/README.md`;
   - đổi cách một chức năng chạy (phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác, sidebar, file công khai/riêng
@@ -152,6 +168,9 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 - Không tin dữ liệu client: validate mọi input; kiểu file xác định bằng chữ ký file, không bằng header.
 - Log không chứa dữ liệu nhạy cảm (mật khẩu, token, cookie, nội dung file); log kèm `request_id` để đối chiếu.
 - Thêm dependency phải được người yêu cầu đồng ý; chọn gói còn bảo trì, ghim version qua lockfile.
+- Khi sửa luồng xác thực, quyền/owner, webhook, URL bên ngoài, file riêng tư hoặc dữ liệu tài chính, kiểm tra
+  ranh giới tin cậy và thêm test hồi quy cho nhánh từ chối/lỗi liên quan. Skill `security-best-practices` dùng khi
+  người dùng yêu cầu rà soát bảo mật hoặc hướng dẫn viết code an toàn; không tự biến mọi task thành audit toàn repo.
 
 ## 5.1 Thời gian và số tiền
 
@@ -225,13 +244,17 @@ Chi tiết luồng: [docs/features/attachment-visibility.md](../features/attachm
 
 - Test phải ổn định: không `sleep` chờ, không phụ thuộc thứ tự chạy hay dữ liệu dev; cố định thời gian khi
   test logic theo giờ; dữ liệu tạo bằng factory.
+- Khi thay đổi đường nóng, đo đúng nơi bị ảnh hưởng trước/sau: BE kiểm số query không tăng theo số bản ghi,
+  thời gian và số lệnh Redis khi có liên quan; FE kiểm waterfall Network, số request và kích thước tài nguyên
+  trên luồng thực tế. Chỉ kết luận cải thiện hiệu năng khi có số đo hoặc test chứng minh; xét ngân sách free ở
+  `docs/architecture/infrastructure.md` trước khi thêm cache, cron hoặc lời gọi dịch vụ ngoài.
 
 ### Định nghĩa hoàn thành (Definition of Done)
 
 1. Đúng phạm vi yêu cầu, không đụng phần ngoài; vi phạm rule trong các file đã mở đã được sửa hoặc báo lý do.
 2. Theo đúng rule (kiến trúc, một file một đơn vị, đặt tên, docstring tiếng Việt, i18n đủ vi + en).
 3. Có test cho hành vi mới/lỗi đã sửa; format, lint, typecheck và các test **liên quan** đều qua.
-4. UI đã kiểm tra thực tế (playwright-cli): desktop + mobile, light + dark, loading/rỗng/lỗi.
+4. Nếu có đổi UI, đã kiểm tra thực tế (`playwright-cli`): desktop + mobile, light + dark, loading/rỗng/lỗi.
 5. Tài liệu (`docs/modules/<m>/`, `docs/features/`, `SYSTEM_CONTEXT.md`) cập nhật theo §4; thêm/đổi/xóa common thì
    `docs/common-catalog.md` đã cập nhật. `graphify update .` chỉ chạy
    khi thay đổi lớn (thêm/xóa/gộp module, đổi cấu trúc thư mục, di chuyển/đổi tên khoảng 10 file trở lên, refactor
@@ -242,4 +265,6 @@ Chi tiết luồng: [docs/features/attachment-visibility.md](../features/attachm
 - Theo [quy tắc nhánh và commit](git.md). Commit nhỏ theo một thay đổi logic; không commit `.env`,
   `media/`, build output hoặc dữ liệu công cụ cục bộ.
 - **AI agent không tự thao tác git** (tạo nhánh, commit, push, merge, xóa nhánh) khi chưa được yêu cầu rõ;
-  làm trên nhánh hiện tại, chỉ gợi ý câu commit khi được hỏi.
+  làm trên nhánh hiện tại. Sau mỗi task, đọc trạng thái và diff Git (cả file chưa theo dõi) rồi gợi ý nội dung
+  commit gồm tiêu đề và body theo [git.md](git.md), ở dạng văn bản để dán vào VS Code, cho toàn bộ thay đổi chưa
+  commit; không trả lệnh Git thay nội dung commit, không tự stage/commit/push.
