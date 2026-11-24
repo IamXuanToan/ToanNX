@@ -18040,7 +18040,7 @@ export interface operations {
         /** @description Number of results to return per page. */
         page_size?: number;
         /**
-         * @description Lọc theo loại trang, nhiều giá trị.
+         * @description Lọc loại trang, nhiều giá trị.
          *
          *     * `AFFILIATE` - Tiếp thị liên kết
          *     * `BIO` - Liên kết cá nhân (Bio)
@@ -18262,7 +18262,7 @@ export interface operations {
         /** @description Number of results to return per page. */
         page_size?: number;
         /**
-         * @description Lọc theo loại trang, nhiều giá trị.
+         * @description Lọc loại trang, nhiều giá trị.
          *
          *     * `AFFILIATE` - Tiếp thị liên kết
          *     * `BIO` - Liên kết cá nhân (Bio)
