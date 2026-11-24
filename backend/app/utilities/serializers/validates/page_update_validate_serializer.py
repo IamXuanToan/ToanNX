@@ -25,6 +25,14 @@ class PageUpdateValidateSerializer(CoreValidateSerializer):
         required=False, allow_blank=True, max_length=300, help_text="Mô tả SEO."
     )
     theme = serializers.JSONField(required=False, help_text="Theme.")
+    page_type = serializers.ChoiceField(
+        required=False, choices=Page.PageType.choices, help_text="Loại trang."
+    )
+    template_key = serializers.CharField(required=False, max_length=64, help_text="Mã template hệ thống.")
+    template_version = serializers.IntegerField(required=False, min_value=1, help_text="Phiên bản template.")
+    content_config = serializers.JSONField(required=False, help_text="Dữ liệu nội dung theo template.")
+    style_config = serializers.JSONField(required=False, help_text="Cấu hình giao diện và phong cách.")
+    responsive_config = serializers.JSONField(required=False, help_text="Cấu hình responsive theo thiết bị.")
     avatar_id = serializers.UUIDField(required=False, allow_null=True, help_text="Ảnh đại diện; null để gỡ.")
     cover_id = serializers.UUIDField(required=False, allow_null=True, help_text="Ảnh bìa; null để gỡ.")
     content = serializers.JSONField(required=False, help_text="Tài liệu Tiptap JSON.")

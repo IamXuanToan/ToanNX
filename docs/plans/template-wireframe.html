@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToanNX — Interactive Wireframe & Prototype: Template-Based Website System</title>
+  <style>
+    :root {
+      --primary: #3D812E;
+      --primary-hover: #206A2D;
+      --primary-light: #EBF4E8;
+      --bg-page: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --card-radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --preview-bg: #FFFFFF;
+      --preview-text: #0F172A;
+      --preview-primary: #3D812E;
+      --preview-surface: #FFFFFF;
+      --preview-border: #E2E8F0;
+      --preview-radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-page);
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    /* Top Navigation Bar */
+    header.app-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--primary);
+    }
+    .brand-badge {
+      font-size: 11px;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      background: #F1F5F9;
+      padding: 3px;
+      border-radius: 8px;
+    }
+    .nav-tab-btn {
+      border: none;
+      background: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .nav-tab-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Main Container */
+    main.app-body {
+      padding: 20px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Workspace Split Screen */
+    .workspace {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      .workspace { grid-template-columns: 1fr; }
+    }
+
+    /* Left Panel: Form Controls */
+    .panel-form {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .form-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: #F8FAFC;
+      overflow-x: auto;
+    }
+    .form-tab-item {
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+    .form-tab-item.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: var(--surface);
+    }
+    .form-content {
+      padding: 20px;
+      max-height: calc(100vh - 180px);
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .form-group .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline { background: white; border-color: var(--border); color: var(--text); }
+    .btn-outline:hover { background: #F8FAFC; border-color: #CBD5E1; }
+    .btn-sm { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
+
+    /* Theme Presets Grid */
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .preset-card {
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .preset-card.active { border-color: var(--primary); background: var(--primary-light); }
+    .preset-swatch {
+      height: 24px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    /* Right Panel: Live Preview */
+    .panel-preview {
+      background: #E2E8F0;
+      border-radius: var(--card-radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 800px;
+    }
+    .preview-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 16px;
+      background: var(--surface);
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .device-switcher {
+      display: flex;
+      gap: 4px;
+      background: #F1F5F9;
+      padding: 3px;
+      border-radius: 6px;
+    }
+    .device-btn {
+      border: none;
+      background: none;
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .device-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Realistic Viewport Frames */
+    .preview-viewport-frame {
+      transition: width 0.3s ease;
+      background: var(--preview-bg);
+      color: var(--preview-text);
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      overflow: hidden;
+      min-height: 700px;
+      border: 8px solid #1E293B;
+    }
+    .preview-viewport-frame.device-desktop { width: 100%; max-width: 1024px; }
+    .preview-viewport-frame.device-tablet { width: 768px; }
+    .preview-viewport-frame.device-mobile { width: 375px; }
+
+    /* Public Page Elements inside Preview */
+    .pub-header {
+      padding: 30px 20px 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--preview-border);
+    }
+    .pub-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      background: #CBD5E1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 24px;
+      color: white;
+    }
+    .pub-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .pub-bio { font-size: 13px; color: var(--text-muted); max-width: 500px; margin: 0 auto 12px; }
+
+    /* Public Search & Categories */
+    .pub-controls {
+      padding: 16px 20px;
+      background: var(--preview-surface);
+      border-bottom: 1px solid var(--preview-border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .pub-search {
+      width: 100%;
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--preview-border);
+      font-size: 13px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .pub-categories {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .pub-cat-chip {
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #F1F5F9;
+      color: var(--text);
+      cursor: pointer;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .pub-cat-chip.active {
+      background: var(--preview-primary);
+      color: white;
+    }
+
+    /* Product Grid Layout */
+    .pub-products-container {
+      padding: 20px;
+    }
+    .pub-grid {
+      display: grid;
+      gap: 16px;
+    }
+    .pub-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .pub-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .pub-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .pub-grid.cols-1 { grid-template-columns: 1fr; }
+
+    /* Product Card */
+    .pub-card {
+      background: var(--preview-surface);
+      border: 1px solid var(--preview-border);
+      border-radius: var(--preview-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s;
+    }
+    .pub-card:hover { transform: translateY(-2px); }
+    .pub-card-img-wrap {
+      position: relative;
+      background: #F1F5F9;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    .pub-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: #DC2626;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .pub-card-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .pub-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .pub-card-price-row {
+      margin-top: auto;
+      padding-top: 6px;
+      margin-bottom: 10px;
+    }
+    .pub-price { font-size: 15px; font-weight: 700; color: #DC2626; }
+    .pub-original-price { font-size: 11px; text-decoration: line-through; color: var(--text-muted); margin-left: 6px; }
+    .pub-price-note { font-size: 10px; color: var(--text-muted); display: block; }
+    .pub-cta-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 8px 12px;
+      background: var(--preview-primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Modal for Quick Add URL */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-box {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      width: 90%;
+      max-width: 560px;
+      box-shadow: var(--shadow-md);
+    }
+    .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+
+    /* Helper Badges */
+    .platform-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .platform-shopee { background: #F97316; color: white; }
+    .platform-lazada { background: #3B82F6; color: white; }
+    .platform-tiktok { background: #000000; color: white; }
+
+    /* View Switcher Bar */
+    .views-nav-bar {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .views-nav-btn {
+      border: 1px solid var(--border);
+      background: #F8FAFC;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .views-nav-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Application Bar -->
+  <header class="app-nav">
+    <div class="brand">
+      <span>🍀 ToanNX Page System</span>
+      <span class="brand-badge">Template-Based Architecture</span>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab-btn active" onclick="switchAppMode('workspace')">Màn hình Soạn thảo (Editor & Live Preview)</button>
+      <button class="nav-tab-btn" onclick="switchAppMode('gallery')">Bộ sưu tập Template</button>
+      <button class="nav-tab-btn" onclick="switchAppMode('pagelist')">Danh sách Trang Quản trị</button>
+    </div>
+    <div>
+      <button class="btn btn-primary btn-sm" onclick="alert('Bản demo mô phỏng: Cấu hình hợp lệ và sẵn sàng xuất bản!')">🚀 Xuất bản trang</button>
+    </div>
+  </header>
+
+  <main class="app-body">
+
+    <!-- Sub-views quick navigator for 23 requested screens -->
+    <div class="views-nav-bar">
+      <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-right: 6px;">Xem nhanh 23 màn hình:</span>
+      <button class="views-nav-btn active" onclick="selectTemplate('affiliate_grid')">14. Affiliate Grid (Public)</button>
+      <button class="views-nav-btn" onclick="selectTemplate('affiliate_list')">15. Affiliate List (Public)</button>
+      <button class="views-nav-btn" onclick="selectTemplate('affiliate_links')">16. Minimal Links (Public)</button>
+      <button class="views-nav-btn" onclick="selectTemplate('bio_public')">19. Bio Public</button>
+      <button class="views-nav-btn" onclick="selectTemplate('donation_public')">21. Donation Public</button>
+      <button class="views-nav-btn" onclick="openQuickAddModal()">6. Modal Add Product by URL</button>
+      <button class="views-nav-btn" onclick="switchTab('categories')">9. Quản lý Danh mục</button>
+      <button class="views-nav-btn" onclick="switchTab('theme')">11. Cấu hình Theme</button>
+      <button class="views-nav-btn" onclick="switchTab('responsive')">13. Cấu hình Responsive</button>
+    </div>
+
+    <!-- Main Workspace Split Screen -->
+    <div class="workspace" id="view-workspace">
+
+      <!-- LEFT COLUMN: Form Configuration Tabs -->
+      <section class="panel-form">
+        <div class="form-tabs">
+          <div class="form-tab-item active" onclick="switchTab('content')">📦 1. Sản phẩm & Link</div>
+          <div class="form-tab-item" onclick="switchTab('categories')">🗂️ 2. Danh mục</div>
+          <div class="form-tab-item" onclick="switchTab('theme')">🎨 3. Giao diện (Theme)</div>
+          <div class="form-tab-item" onclick="switchTab('layout')">📐 4. Bố cục (Layout)</div>
+          <div class="form-tab-item" onclick="switchTab('responsive')">📱 5. Responsive</div>
+        </div>
+
+        <div class="form-content">
+
+          <!-- TAB 1: Content (Products) -->
+          <div id="tab-content" class="tab-pane">
+            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+              <button class="btn btn-primary btn-sm" style="flex: 1;" onclick="openQuickAddModal()">⚡ Thêm nhanh bằng Link URL</button>
+              <button class="btn btn-outline btn-sm" onclick="addNewProductManual()">+ Thêm thủ công</button>
+            </div>
+
+            <div class="form-group">
+              <label>Danh sách sản phẩm trong trang (<span id="prod-count-badge">4</span> sản phẩm):</label>
+              <div id="admin-product-list" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- Product Items populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: Categories -->
+          <div id="tab-categories" class="tab-pane" style="display: none;">
+            <div class="form-group">
+              <label>Thêm danh mục mới:</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="new-cat-input" class="form-control" placeholder="Tên danh mục (vd: Thiết bị quay)">
+                <button class="btn btn-primary btn-sm" onclick="addCategory()">Thêm</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Danh mục hiện có:</label>
+              <div id="admin-cat-list" style="display: flex; flex-direction: column; gap: 6px;">
+                <!-- Categories populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: Theme -->
+          <div id="tab-theme" class="tab-pane" style="display: none;">
+            <div class="form-group">
+              <label>Bộ màu dựng sẵn (Theme Presets):</label>
+              <div class="presets-grid">
+                <div class="preset-card active" onclick="applyPreset('forest_green', '#3D812E', '#FFFFFF', '#0F172A')">
+                  <div class="preset-swatch" style="background: #3D812E;"></div>
+                  Forest Green
+                </div>
+                <div class="preset-card" onclick="applyPreset('minimal_white', '#0F172A', '#FFFFFF', '#0F172A')">
+                  <div class="preset-swatch" style="background: #0F172A;"></div>
+                  Minimal White
+                </div>
+                <div class="preset-card" onclick="applyPreset('dark_slate', '#38BDF8', '#0F172A', '#F8FAFC')">
+                  <div class="preset-swatch" style="background: #0F172A; border: 1px solid #38BDF8;"></div>
+                  Dark Slate
+                </div>
+                <div class="preset-card" onclick="applyPreset('ocean_blue', '#2563EB', '#F0F9FF', '#0F172A')">
+                  <div class="preset-swatch" style="background: #2563EB;"></div>
+                  Ocean Blue
+                </div>
+                <div class="preset-card" onclick="applyPreset('warm_beige', '#D97706', '#FEF3C7', '#451A03')">
+                  <div class="preset-swatch" style="background: #D97706;"></div>
+                  Warm Beige
+                </div>
+                <div class="preset-card" onclick="applyPreset('soft_pastel', '#8B5CF6', '#FAF5FF', '#2E1065')">
+                  <div class="preset-swatch" style="background: #8B5CF6;"></div>
+                  Soft Pastel
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Màu chủ đạo (Primary Color):</label>
+              <input type="color" id="primary-color-picker" class="form-control" value="#3D812E" onchange="updatePrimaryColor(this.value)">
+            </div>
+
+            <div class="form-group">
+              <label>Bo góc thẻ sản phẩm (Card Radius):</label>
+              <select class="form-control" onchange="updateCardRadius(this.value)">
+                <option value="4px">Góc vuông nhẹ (4px)</option>
+                <option value="12px" selected>Bo góc vừa (12px)</option>
+                <option value="20px">Bo tròn lớn (20px)</option>
+                <option value="0px">Vuông phẳng (0px)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- TAB 4: Layout -->
+          <div id="tab-layout" class="tab-pane" style="display: none;">
+            <div class="form-group">
+              <label>Bố cục hiển thị:</label>
+              <select class="form-control" id="layout-select" onchange="updateLayout(this.value)">
+                <option value="grid">Dạng Lưới (Product Grid)</option>
+                <option value="list">Dạng Danh sách hàng ngang (Product List)</option>
+                <option value="links">Dạng Nút liên kết (Minimal Links)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label><input type="checkbox" id="toggle-search" checked onchange="toggleSearch(this.checked)"> Bật thanh tìm kiếm công khai</label>
+            </div>
+            <div class="form-group">
+              <label><input type="checkbox" id="toggle-price" checked onchange="togglePrice(this.checked)"> Hiển thị giá sản phẩm</label>
+            </div>
+            <div class="form-group">
+              <label><input type="checkbox" id="toggle-image" checked onchange="toggleImage(this.checked)"> Hiển thị ảnh sản phẩm</label>
+            </div>
+          </div>
+
+          <!-- TAB 5: Responsive -->
+          <div id="tab-responsive" class="tab-pane" style="display: none;">
+            <div class="form-group">
+              <label>Số cột trên Desktop (≥ 1024px):</label>
+              <select class="form-control" onchange="updateDesktopCols(this.value)">
+                <option value="4" selected>4 Cột (Mặc định chuẩn TMĐT)</option>
+                <option value="3">3 Cột (Thẻ rộng)</option>
+                <option value="2">2 Cột</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Số cột trên Tablet (768px – 1023px):</label>
+              <select class="form-control" onchange="updateTabletCols(this.value)">
+                <option value="3" selected>3 Cột</option>
+                <option value="2">2 Cột</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Số cột trên Mobile (< 640px):</label>
+              <select class="form-control" onchange="updateMobileCols(this.value)">
+                <option value="2" selected>2 Cột (Hiển thị được nhiều sản phẩm)</option>
+                <option value="1">1 Cột (Thẻ lớn toàn màn hình)</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Interactive Live Preview with Device Switcher -->
+      <section class="panel-preview">
+        <div class="preview-toolbar">
+          <div style="font-weight: 700; font-size: 13px; color: var(--text);">
+            👁️ Xem trước trực tiếp (Live Preview)
+          </div>
+          <div class="device-switcher">
+            <button class="device-btn active" onclick="setDevice('desktop')">🖥️ Desktop</button>
+            <button class="device-btn" onclick="setDevice('tablet')">📱 Tablet</button>
+            <button class="device-btn" onclick="setDevice('mobile')">📲 Mobile</button>
+          </div>
+        </div>
+
+        <!-- Realistic Viewport Frame -->
+        <div class="preview-viewport-frame device-desktop" id="viewport-frame">
+          
+          <!-- Public Store Header -->
+          <div class="pub-header" id="pub-header-block">
+            <div class="pub-avatar" id="pub-avatar-block" style="background: var(--preview-primary);">TN</div>
+            <h1 class="pub-title" id="pub-title-text">Góc Đồ Công Nghệ Của Toàn</h1>
+            <p class="pub-bio" id="pub-bio-text">Tổng hợp các thiết bị quay dựng, bàn phím cơ và đồ decor bàn làm việc mình dùng thực tế.</p>
+          </div>
+
+          <!-- Public Controls: Search & Category Chips -->
+          <div class="pub-controls">
+            <input type="text" class="pub-search" id="pub-search-input" placeholder="🔍 Tìm kiếm sản phẩm (ví dụ: bàn phím, micro)..." oninput="handlePublicSearch(this.value)">
+            <div class="pub-categories" id="pub-category-chips">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Product Grid/List Container -->
+          <div class="pub-products-container">
+            <div class="pub-grid cols-4" id="pub-products-grid">
+              <!-- Rendered via JS -->
+            </div>
+            <div id="no-products-msg" style="display: none; text-align: center; padding: 40px; color: var(--text-muted);">
+              Không tìm thấy sản phẩm nào phù hợp với tìm kiếm của bạn.
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Quick Add Modal (Simulated URL Metadata Fetch) -->
+    <div class="modal-overlay" id="quick-add-modal">
+      <div class="modal-box">
+        <div class="modal-title">⚡ Thêm nhanh Sản phẩm từ Link URL</div>
+        
+        <div class="form-group">
+          <label>Chọn link mẫu thử nghiệm (hoặc dán link bất kỳ):</label>
+          <select class="form-control" onchange="selectMockUrl(this.value)">
+            <option value="shopee_rain75">Shopee: Bàn phím cơ Rain75 nhôm CNC</option>
+            <option value="lazada_shure">Lazada: Micro thu âm Shure MV7X Podcast</option>
+            <option value="tiktok_gundam">TikTok Shop: Mô hình Gundam RG RX-78-2 Ver 2.0</option>
+            <option value="custom">Tùy biến dán URL ngoài</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>URL sản phẩm:</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="modal-url-input" class="form-control" value="https://s.shopee.vn/rain75-keyboard">
+            <button class="btn btn-primary" onclick="simulateFetchMetadata()">Lấy thông tin</button>
+          </div>
+        </div>
+
+        <!-- Simulated Metadata Result Box -->
+        <div id="metadata-result-box" style="border: 1px dashed var(--border); border-radius: 8px; padding: 12px; margin-bottom: 16px; background: #F8FAFC;">
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <div id="meta-thumb-preview" style="width: 60px; height: 60px; background: #CBD5E1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 24px;">⌨️</div>
+            <div style="flex: 1;">
+              <span id="meta-platform-badge" class="platform-badge platform-shopee">SHOPEE</span>
+              <div id="meta-title-preview" style="font-size: 13px; font-weight: 600; margin-top: 4px;">Bàn phím cơ Rain75 nhôm CNC Anode 3 mode</div>
+              <div id="meta-price-preview" style="font-size: 12px; color: #DC2626; font-weight: 700;">2.150.000 ₫ (Giá tham khảo)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Gán vào danh mục:</label>
+          <select class="form-control" id="modal-category-select">
+            <option value="cat-keyboard">Bàn phím cơ</option>
+            <option value="cat-audio">Thiết bị âm thanh</option>
+            <option value="cat-gundam">Mô hình Gundam</option>
+          </select>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="btn btn-outline" onclick="closeQuickAddModal()">Hủy</button>
+          <button class="btn btn-primary" onclick="confirmAddProduct()">+ Thêm vào danh sách</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // In-memory data store for the prototype
+    let currentCategory = "all";
+    let searchQuery = "";
+    let showPrice = true;
+    let showImage = true;
+    let desktopColumns = "4";
+    let currentLayout = "grid";
+
+    let categories = [
+      { id: "all", name: "Tất cả" },
+      { id: "cat-keyboard", name: "Bàn phím cơ" },
+      { id: "cat-audio", name: "Thiết bị âm thanh" },
+      { id: "cat-gundam", name: "Mô hình Gundam" }
+    ];
+
+    let products = [
+      {
+        id: "p1",
+        title: "Bàn phím cơ Rain75 nhôm CNC",
+        price: "2.150.000 ₫",
+        originalPrice: "2.400.000 ₫",
+        badge: "Khuyên dùng",
+        platform: "shopee",
+        category: "cat-keyboard",
+        icon: "⌨️",
+        url: "https://s.shopee.vn/rain75"
+      },
+      {
+        id: "p2",
+        title: "Micro thu âm Shure MV7X Dynamic",
+        price: "4.890.000 ₫",
+        originalPrice: "5.500.000 ₫",
+        badge: "HOT",
+        platform: "lazada",
+        category: "cat-audio",
+        icon: "🎙️",
+        url: "https://s.lazada.vn/shure-mv7x"
+      },
+      {
+        id: "p3",
+        title: "Mô hình Gundam RG RX-78-2 Ver 2.0",
+        price: "850.000 ₫",
+        originalPrice: "950.000 ₫",
+        badge: "Mới",
+        platform: "tiktok",
+        category: "cat-gundam",
+        icon: "🤖",
+        url: "https://vt.tiktok.com/gundam-rg"
+      },
+      {
+        id: "p4",
+        title: "Tai nghe kiểm âm Sony MDR-7506",
+        price: "2.300.000 ₫",
+        originalPrice: "",
+        badge: "",
+        platform: "shopee",
+        category: "cat-audio",
+        icon: "🎧",
+        url: "https://s.shopee.vn/sony-7506"
+      }
+    ];
+
+    // Helper: Normalize Vietnamese Diacritics
+    function normalizeVi(str) {
+      return (str || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d")
+        .replace(/Đ/g, "D")
+        .toLowerCase()
+        .trim();
+    }
+
+    // Render Admin Product List
+    function renderAdminProductList() {
+      const container = document.getElementById("admin-product-list");
+      document.getElementById("prod-count-badge").innerText = products.length;
+      container.innerHTML = products.map((p, idx) => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: #F8FAFC;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">${p.icon}</span>
+            <div>
+              <div style="font-weight: 600; font-size: 13px;">${p.title}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">${p.price} · <span class="platform-badge platform-${p.platform}">${p.platform}</span></div>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-outline btn-sm" style="color: #DC2626;" onclick="deleteProduct('${p.id}')">Xóa</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // Render Public Preview
+    function renderPublicPreview() {
+      // Categories Chips
+      const chipsContainer = document.getElementById("pub-category-chips");
+      chipsContainer.innerHTML = categories.map(c => `
+        <button class="pub-cat-chip ${c.id === currentCategory ? 'active' : ''}" onclick="selectCategory('${c.id}')">${c.name}</button>
+      `).join("");
+
+      // Filter products
+      const filtered = products.filter(p => {
+        const matchCategory = currentCategory === "all" || p.category === currentCategory;
+        const normQuery = normalizeVi(searchQuery);
+        const matchSearch = !normQuery || normalizeVi(p.title).includes(normQuery);
+        return matchCategory && matchSearch;
+      });
+
+      const grid = document.getElementById("pub-products-grid");
+      const noMsg = document.getElementById("no-products-msg");
+
+      if (filtered.length === 0) {
+        grid.style.display = "none";
+        noMsg.style.display = "block";
+        return;
+      }
+
+      grid.style.display = "grid";
+      noMsg.style.display = "none";
+
+      if (currentLayout === "links") {
+        grid.className = "pub-grid cols-1";
+        grid.innerHTML = filtered.map(p => `
+          <div class="pub-card" style="padding: 12px 16px; flex-direction: row; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 24px;">${p.icon}</span>
+              <div>
+                <div style="font-weight: 600; font-size: 14px;">${p.title}</div>
+                <div style="font-size: 11px; color: var(--text-muted);">${showPrice ? p.price : ''} · Nền tảng ${p.platform.toUpperCase()}</div>
+              </div>
+            </div>
+            <a href="${p.url}" target="_blank" class="pub-cta-btn" style="width: auto; padding: 6px 16px;">Xem ngay ↗</a>
+          </div>
+        `).join("");
+      } else if (currentLayout === "list") {
+        grid.className = "pub-grid cols-1";
+        grid.innerHTML = filtered.map(p => `
+          <div class="pub-card" style="flex-direction: row; padding: 12px; gap: 16px;">
+            ${showImage ? `<div style="width: 90px; height: 90px; background: #F1F5F9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 36px; shrink: 0;">${p.icon}</div>` : ''}
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <div class="pub-card-title">${p.title}</div>
+              ${showPrice ? `
+                <div class="pub-card-price-row">
+                  <span class="pub-price">${p.price}</span>
+                  ${p.originalPrice ? `<span class="pub-original-price">${p.originalPrice}</span>` : ''}
+                  <span class="pub-price-note">Giá tham khảo</span>
+                </div>
+              ` : ''}
+              <div style="margin-top: auto; display: flex; justify-content: flex-end;">
+                <a href="${p.url}" target="_blank" class="pub-cta-btn" style="width: auto; padding: 6px 18px;">Mua tại ${p.platform.toUpperCase()} ↗</a>
+              </div>
+            </div>
+          </div>
+        `).join("");
+      } else {
+        grid.className = `pub-grid cols-${desktopColumns}`;
+        grid.innerHTML = filtered.map(p => `
+          <div class="pub-card">
+            ${showImage ? `
+              <div class="pub-card-img-wrap">
+                ${p.badge ? `<span class="pub-badge">${p.badge}</span>` : ''}
+                <span>${p.icon}</span>
+              </div>
+            ` : ''}
+            <div class="pub-card-body">
+              <div class="pub-card-title">${p.title}</div>
+              ${showPrice ? `
+                <div class="pub-card-price-row">
+                  <span class="pub-price">${p.price}</span>
+                  ${p.originalPrice ? `<span class="pub-original-price">${p.originalPrice}</span>` : ''}
+                  <span class="pub-price-note">Giá tham khảo</span>
+                </div>
+              ` : ''}
+              <a href="${p.url}" target="_blank" class="pub-cta-btn">Mua tại ${p.platform.toUpperCase()} ↗</a>
+            </div>
+          </div>
+        `).join("");
+      }
+    }
+
+    // Interactivity Handlers
+    function selectCategory(catId) {
+      currentCategory = catId;
+      renderPublicPreview();
+    }
+
+    function handlePublicSearch(val) {
+      searchQuery = val;
+      renderPublicPreview();
+    }
+
+    function setDevice(device) {
+      document.querySelectorAll(".device-btn").forEach(b => b.classList.remove("active"));
+      event.target.classList.add("active");
+      const frame = document.getElementById("viewport-frame");
+      frame.className = `preview-viewport-frame device-${device}`;
+    }
+
+    function updateLayout(layout) {
+      currentLayout = layout;
+      renderPublicPreview();
+    }
+
+    function togglePrice(val) {
+      showPrice = val;
+      renderPublicPreview();
+    }
+
+    function toggleImage(val) {
+      showImage = val;
+      renderPublicPreview();
+    }
+
+    function toggleSearch(val) {
+      document.getElementById("pub-search-input").style.display = val ? "block" : "none";
+    }
+
+    function updateDesktopCols(cols) {
+      desktopColumns = cols;
+      renderPublicPreview();
+    }
+
+    function updatePrimaryColor(color) {
+      document.documentElement.style.setProperty("--preview-primary", color);
+      document.getElementById("pub-avatar-block").style.background = color;
+      renderPublicPreview();
+    }
+
+    function updateCardRadius(radius) {
+      document.documentElement.style.setProperty("--preview-radius", radius);
+      renderPublicPreview();
+    }
+
+    function applyPreset(preset, primary, bg, text) {
+      document.querySelectorAll(".preset-card").forEach(c => c.classList.remove("active"));
+      event.currentTarget.classList.add("active");
+      document.documentElement.style.setProperty("--preview-primary", primary);
+      document.documentElement.style.setProperty("--preview-bg", bg);
+      document.documentElement.style.setProperty("--preview-text", text);
+      document.getElementById("primary-color-picker").value = primary;
+      renderPublicPreview();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".form-tab-item").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".tab-pane").forEach(p => p.style.display = "none");
+      event.target.classList.add("active");
+      document.getElementById(`tab-${tabId}`).style.display = "block";
+    }
+
+    // Modal Quick Add
+    function openQuickAddModal() {
+      document.getElementById("quick-add-modal").style.display = "flex";
+    }
+    function closeQuickAddModal() {
+      document.getElementById("quick-add-modal").style.display = "none";
+    }
+    function selectMockUrl(val) {
+      const urlInput = document.getElementById("modal-url-input");
+      if (val === "shopee_rain75") urlInput.value = "https://s.shopee.vn/rain75-keyboard";
+      else if (val === "lazada_shure") urlInput.value = "https://s.lazada.vn/shure-mv7x";
+      else if (val === "tiktok_gundam") urlInput.value = "https://vt.tiktok.com/gundam-rg";
+      else urlInput.value = "https://example.com/product-link";
+      simulateFetchMetadata();
+    }
+    function simulateFetchMetadata() {
+      const url = document.getElementById("modal-url-input").value;
+      const titleBox = document.getElementById("meta-title-preview");
+      const thumb = document.getElementById("meta-thumb-preview");
+      const badge = document.getElementById("meta-platform-badge");
+
+      if (url.includes("shopee")) {
+        titleBox.innerText = "Bàn phím cơ Rain75 nhôm CNC Anode 3 mode";
+        thumb.innerText = "⌨️";
+        badge.innerText = "SHOPEE";
+        badge.className = "platform-badge platform-shopee";
+      } else if (url.includes("lazada")) {
+        titleBox.innerText = "Micro Thu Âm Shure MV7X Dynamic Podcast XLR";
+        thumb.innerText = "🎙️";
+        badge.innerText = "LAZADA";
+        badge.className = "platform-badge platform-lazada";
+      } else if (url.includes("tiktok")) {
+        titleBox.innerText = "Mô hình Bandai RG RX-78-2 Gundam Ver 2.0 Chính Hãng";
+        thumb.innerText = "🤖";
+        badge.innerText = "TIKTOK SHOP";
+        badge.className = "platform-badge platform-tiktok";
+      } else {
+        titleBox.innerText = "Sản phẩm công nghệ chọn lọc";
+        thumb.innerText = "📦";
+        badge.innerText = "WEBSITE";
+        badge.className = "platform-badge platform-shopee";
+      }
+    }
+    function confirmAddProduct() {
+      const title = document.getElementById("meta-title-preview").innerText;
+      const thumb = document.getElementById("meta-thumb-preview").innerText;
+      const cat = document.getElementById("modal-category-select").value;
+      const url = document.getElementById("modal-url-input").value;
+
+      products.push({
+        id: "p_" + Date.now(),
+        title: title,
+        price: "1.250.000 ₫",
+        originalPrice: "",
+        badge: "Mới",
+        platform: url.includes("lazada") ? "lazada" : url.includes("tiktok") ? "tiktok" : "shopee",
+        category: cat,
+        icon: thumb,
+        url: url
+      });
+
+      closeQuickAddModal();
+      renderAdminProductList();
+      renderPublicPreview();
+    }
+
+    function deleteProduct(id) {
+      products = products.filter(p => p.id !== id);
+      renderAdminProductList();
+      renderPublicPreview();
+    }
+
+    function selectTemplate(tmpl) {
+      if (tmpl === "affiliate_grid") {
+        currentLayout = "grid";
+        desktopColumns = "4";
+        document.getElementById("pub-title-text").innerText = "Góc Đồ Công Nghệ Của Toàn";
+        document.getElementById("pub-bio-text").innerText = "Tổng hợp các thiết bị quay dựng, bàn phím cơ và đồ decor bàn làm việc.";
+      } else if (tmpl === "affiliate_list") {
+        currentLayout = "list";
+        document.getElementById("pub-title-text").innerText = "Danh Sách Đồ Review Chi Tiết";
+      } else if (tmpl === "affiliate_links") {
+        currentLayout = "links";
+        document.getElementById("pub-title-text").innerText = "ToanNX — Các Liên Kết Quan Trọng";
+      } else if (tmpl === "bio_public") {
+        currentLayout = "links";
+        document.getElementById("pub-title-text").innerText = "Nguyễn Xuân Toàn (ToanNX)";
+        document.getElementById("pub-bio-text").innerText = "Software Engineer & Content Creator. Khám phá các dự án và kênh của mình bên dưới.";
+      } else if (tmpl === "donation_public") {
+        currentLayout = "list";
+        document.getElementById("pub-title-text").innerText = "Ủng Hộ Dự Án (Donation / VietQR)";
+        document.getElementById("pub-bio-text").innerText = "Quét mã VietQR chuyển khoản nhanh NAPAS247 để ủng hộ mình duy trì hệ thống nhé!";
+      }
+      renderPublicPreview();
+    }
+
+    // Initial render
+    renderAdminProductList();
+    renderPublicPreview();
+  </script>
+</body>
+</html>

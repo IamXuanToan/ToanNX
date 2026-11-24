@@ -1,0 +1,30 @@
+# Bảng rà theo phần code thay đổi
+
+Đọc cùng source, `docs/rules/` và test. Đánh dấu *không áp dụng* cho mục không liên quan; chỉ báo lỗi có bằng chứng. Không biến bảng này thành lý do chạy mọi test hoặc sửa cả repo.
+
+| Vùng | Câu hỏi kiểm | Bằng chứng cần tìm |
+| --- | --- | --- |
+| Contract & dữ liệu | Input/output, status, envelope, lỗi, phân trang, lọc/sắp xếp còn khớp BE–FE? OpenAPI và kiểu sinh đã cập nhật? | Route, serializer, schema, service FE, test contract; kiểm `pnpm api:types` khi có đổi. |
+| Kiến trúc BE | Mọi điểm vào chỉ gọi service? Service dùng repository; ORM/query nằm đúng repository; phụ thuộc có trong `__init__`? | Đường gọi trong source, `docs/rules/backend.md`; xem cả task/command/signal/middleware/auth/permission. |
+| Kiến trúc FE | `page → view → component/hook → service` đúng? View chỉ dùng hook cho phép; API tải ở Client qua React Query và `apiClient`, có `signal`? | Page, view, hook, service, request trên Network; `docs/rules/frontend.md`. |
+| Common & cấu trúc | Có tạo bản sao của common đã có? Một class/component/hook một file, nhóm theo model? Catalog đã cập nhật nếu common đổi? | `docs/common-catalog.md`, import và file nguồn, test convention. |
+| Quyền & bảo mật | 401/403/404 đúng? Owner isolation, `manage_all`, `read_private`, bulk, rate limit, CSRF/XSS/SSRF/path traversal, webhook signature, file riêng tư và secret đúng? | Permission class, service, test nhánh từ chối, cấu hình; `docs/features/permission-scope.md`, `attachment-visibility.md`, rule bảo mật. |
+| Quyền BE–FE | Mỗi class quyền BE có file quyền FE tương ứng? `MEMBER` đúng phạm vi? Menu, View, nút Sửa/Xóa, bảng và thao tác hàng loạt ẩn/khóa theo đúng ba tầng? | Permission catalog, `module.py`, hằng FE, `ForbiddenView`, `useEditMode`, `can`, test quyền. |
+| Route & module | URL quản trị có tiền tố module và bản vi/en đúng? Module mới có đăng ký navigation, i18n, quyền, event, webhook/callback và tài liệu? | `routes.ts`, `navigation.ts`, routing, `ModuleDescriptor`, test module registry. |
+| Dịch vụ ngoài | Request có gọi SMTP/FCM/Telegram trực tiếp? Thông báo đi qua `NotificationService.notify`/outbox, webhook có xác thực, mọi request ngoài có timeout và retry hợp lý? | Service, task, webhook, `docs/guides/` liên quan; không gửi thật khi chỉ review. |
+| Bí mật & file | Biến mới có `.env.example` chú thích và guide production? Secret nội bộ dẫn xuất đúng, token người dùng mã hóa, URL file riêng tư không lộ, ảnh công khai có quyền truy cập? | Settings, env example (không đọc secret thật), `SecretCipher`, API response, `docs/features/attachment-visibility.md`. |
+| i18n | Mọi chuỗi hiển thị, lỗi, aria/tooltip có khóa vi/en? Placeholder, số, ngày, tiền và URL theo locale? Không hardcode tiếng Việt/Anh trong UI? | `messages/vi.json`, `en.json`, component, `next-intl`, kiểm trang khi có môi trường. |
+| UI primitive | Nút, input, checkbox, select, dialog, card dùng `@/shares/components/ui/`? Ảnh dùng `next/image`, link dùng `Link`, SVG ở `public/`? | JSX, import, asset paths; ngoại lệ chỉ theo `docs/rules/frontend.md`. |
+| Tailwind & theme | Utility có sẵn được ưu tiên? Màu ngữ nghĩa có token `--color-*`; dark mode, spacing, dialog, bulk bar đúng convention? | Class, `globals.css`, test theme, screenshot desktop/mobile. |
+| UX & accessibility | Có loading/empty/error/forbidden/success rõ? Bàn phím, focus, label, `aria-label`, tooltip quyền, mobile 375px và không tràn ngang? | Component, test tương tác, snapshot/screenshot trên UI thật khi được. |
+| Bảng/form | Hành động Xem/Sửa/Xóa + `can`, bulk delete/status, form tạo/sửa/xem, edit mode mặc định, validation/feedback đúng? | Bảng, form, hooks, `docs/features/table-actions.md`, `permission-ui.md`. |
+| Hiệu năng BE | Có N+1, queryset không giới hạn, index thiếu cho truy vấn nóng, cache sai phạm vi, gọi DB/Redis/R2/cron dư? | Query-count/EXPLAIN hoặc số đo phù hợp; xem hạ tầng free tier trước khi đề xuất. |
+| Hiệu năng FE | Request nối tiếp/trùng, bundle lớn, render lặp, ảnh/font chưa tối ưu, `useQuery` key/signal sai? | Network/Profiler/Lighthouse khi có, source và test; phân biệt đo thực với suy đoán. |
+| Test endpoint | Mỗi endpoint/action mới có file test riêng? Đã phủ dữ liệu đủ/tối thiểu/sai, 401/403, owner, status và envelope; list có query-count? | Test API theo endpoint, `test_endpoint_access.py`, `test_list_query_count.py` khi áp dụng. |
+| Test FE & tài liệu | Test liên quan phủ loading/error/forbidden/hồi quy? Module/feature docs, `.env.example`, deployment guide, API types khớp code? | Vitest/E2E đúng luồng, `docs/README.md` và tài liệu liên quan, diff; không dùng test phản chiếu implementation. |
+| Đồng bộ thay đổi phụ | Đổi rule `docs/rules/` có cập nhật `.agents/rules/`, chạy script sync, sửa `AGENTS.md`/`CLAUDE.md`/`prompt.md` theo rule? Common/env/feature/route đổi đã có docs tương ứng? | Diff rule và file sinh, `scripts/sync-ai-rules.py --check`, catalog, `.env.example`, docs module/feature. |
+| Mẫu lỗi im lặng | Query bị nuốt lỗi, empty state giả, optimistic update không rollback, request hủy sai, cache stale, exception bị che? | Source nhánh lỗi, React Query mutation, transaction/outbox, test lỗi mạng và trạng thái người dùng. |
+| Kiểm trên giao diện thật | Luồng chính có hoạt động ở vi/en, desktop/mobile, keyboard; console/Network có lỗi hoặc API ngầm SSR? | Playwright/browser với URL local, ảnh chụp, console và Network; nếu không chạy được ghi rõ chưa kiểm. |
+| Bàn giao Git | Diff có nhiều mục đích độc lập, secret/build output, thay đổi có sẵn trước task? Message có subject/body đúng rule và mô tả đúng diff? | `git status`/diff chỉ đọc, `docs/rules/git.md`; mỗi commit là khối văn bản thuần để dán VS Code. |
+
+Sau khi sửa, quay lại chính các hàng từng có phát hiện để xác nhận lỗi đã hết. Nếu công cụ hoặc môi trường không cho kiểm giao diện/hiệu năng thật, báo giới hạn đó thay vì ghi “đã đạt”.

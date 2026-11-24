@@ -22,6 +22,7 @@ export function ImageUpload({
   shape = "circle",
   fallback,
   hint,
+  hideHint = false,
   disabled,
   onChoose,
   chooseLabel,
@@ -33,6 +34,8 @@ export function ImageUpload({
   /** Nội dung khi chưa có ảnh (chữ viết tắt tên…); mặc định icon ảnh. */
   fallback?: React.ReactNode;
   hint?: string;
+  /** Ẩn dòng chữ gợi ý bên dưới nếu đã có tooltip hoặc không cần hiển thị lộ thiên. */
+  hideHint?: boolean;
   disabled?: boolean;
   /** Bộ chọn ảnh ngoài component; common không biết module hoặc API thư viện. */
   onChoose?: () => void;
@@ -84,7 +87,9 @@ export function ImageUpload({
           ) : null}
         </div>
       </div>
-      <p className="text-muted-foreground text-xs">{hint ?? t("hint")}</p>
+      {!hideHint && (hint ?? t("hint")) ? (
+        <p className="text-muted-foreground text-xs">{hint ?? t("hint")}</p>
+      ) : null}
     </div>
   );
 }

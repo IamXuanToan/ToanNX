@@ -14,15 +14,40 @@ kiểm thử), `docs/guides/` (triển khai, R2, OAuth, thông báo, tài chính
 module), `docs/features/` (mô tả từng chức năng: phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác, sidebar, file
 công khai/riêng tư, Web Push). Lý do của các chuẩn: [docs/plans/system-standardization-plan.md](docs/plans/system-standardization-plan.md).
 
-Mẫu prompt giao việc cho agent: [prompt.md](prompt.md).
+Ba skill workflow đã chứa quy trình giao việc: Claude Code gọi `/start-task`, `/fix`, `/review-code`; Codex gọi
+`$start-task`, `$fix`, `$review-code`, hoặc chỉ chat thường để AI tự chọn. [prompt.md](prompt.md) là bản tra cứu tùy chọn,
+không cần dán khi gọi skill. Rule cho AI (tóm tắt, có trigger): [.agents/rules/](.agents/rules/);
+sinh bản cho Claude Code: `python scripts/sync-ai-rules.py` (kiểm lệch: `--check`).
+
+**Mỗi lượt chat trong repo**: tự đọc `.agents/rules/00-core.md`, `01-workflow.md`, `90-done-checklist.md`;
+chọn các rule `model_decision` theo nghĩa yêu cầu và đọc chúng; khi mở hoặc sửa file thì đọc rule `glob` có mẫu
+khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills/*/SKILL.md` và bảng ở `01-workflow.md`;
+đọc skill đã chọn trước khi làm. Nếu một skill cần dùng chưa có trong project, cài vào cả `.agents/skills/` và
+`.claude/skills/`, rồi kiểm trigger trước khi dùng. Người dùng chỉ cần giao việc bằng chat thường.
 
 ## Quy tắc cốt lõi
 
 - **Đồng bộ `AGENTS.md` ↔ `CLAUDE.md`**: sửa file này thì sửa luôn phần tương ứng trong `CLAUDE.md` (và ngược
   lại) trong cùng lần đó; nội dung rule hai file phải khớp. Đổi rule trong `docs/rules/` có tóm tắt ở đây thì
   cập nhật cả hai.
+- **Rule AI: nguồn duy nhất là `.agents/rules/`, bản rule Claude được sinh tự động**: mỗi `.agents/rules/<số>-<tên>.md` có
+  frontmatter `trigger` (`always_on` luôn nạp, `model_decision` AI tự chọn theo `description`, `glob` nạp khi file
+  khớp `globs`, `manual` chỉ khi gọi) và tóm tắt `docs/rules/` (vẫn là nguồn đầy đủ, thắng khi lệch).
+  `python scripts/sync-ai-rules.py` sinh `.claude/rules/` (always_on, glob → `paths:`), `.claude/skills/rule-<tên>/`
+  (model_decision, gồm `rule-rule-audit`) và `.claude/commands/<tên>.md` (chỉ cho rule `manual`); checklist là
+  `always_on`, không sửa tay file
+  sinh ra. Đổi rule trong `docs/rules/` (hoặc quy trình/bảng kiểm) thì sửa rule AI tương ứng, chạy lại script, và
+  cập nhật `CLAUDE.md`, `AGENTS.md`, `prompt.md` trong cùng lần; `--check` chạy trong `scripts/check-all.*`
+  (rule chung mục 4).
+- **Skill project**: `start-task` cho việc mới, `fix` cho lỗi, `review-code` cho lượt rà cuối do người dùng yêu
+  cầu; mỗi skill đọc source, `docs/` và rule liên quan trước khi sửa. Skill nội bộ ở `.agents/skills/` được liên
+  kết sang `.claude/skills/`; skill ngoài cài qua CLI có nguồn/commit ở `skills-lock.json`. Chỉ
+  `.claude/skills/rule-*/` do script rule sinh; chọn theo `.agents/rules/01-workflow.md`, ưu tiên `docs/rules/`.
+  Đổi ba skill workflow thì chạy `python scripts/check-workflow-skills.py` để kiểm trigger và bản Claude.
 - **Không tự thao tác git**: không tạo nhánh, commit, push, merge, xóa nhánh khi chưa được yêu cầu rõ; làm trên
-  nhánh hiện tại, chỉ gợi ý câu commit khi được hỏi.
+  nhánh hiện tại. Sau mỗi task, đọc Git status/diff và trả nội dung commit theo [docs/rules/git.md](docs/rules/git.md)
+  cho toàn bộ thay đổi chưa commit, kể cả thay đổi có sẵn: mỗi commit có tiêu đề + body trong khối `text` để dán
+  vào VS Code, không phải câu lệnh Git. Không tự stage hay commit.
 - **Một file một đơn vị**: mỗi class, component, hook một file (kể cả phần không export). Ngoại lệ: file APIView
   chứa `XxxView` + `XxxObjectView`; file model chứa model + enum của chính model đó; `shares/components/ui/*` của
   shadcn; export đặc biệt của Next trong `page.tsx`/`layout.tsx`. Class lồng trong class cha (`Meta`, enum trong
@@ -107,18 +132,34 @@ Mẫu prompt giao việc cho agent: [prompt.md](prompt.md).
   `test_<resource>_<action>_api.py`, FE đúng file Vitest/spec E2E của luồng). Chạy toàn bộ (`scripts/check-all.*`,
   `pnpm e2e` đầy đủ, `uv run pytest`/`pnpm test` không chỉ định file) chỉ khi người dùng yêu cầu, kể cả khi sửa
   nhiều file (rule chung mục 7).
+- **Chọn workflow theo câu chat**: task/tính năng mới → `start-task`; sửa lỗi/regression/test fail → `fix`;
+  người dùng yêu cầu review code cuối → `review-code` (tự sửa lỗi xác nhận được và kiểm lại, rồi trả commit đúng
+  `docs/rules/git.md`). Chỉ một workflow chính; thêm skill chuyên môn theo phần việc. Yêu cầu audit bảo mật/code
+  an toàn → `security-best-practices`; rà hiệu năng Django
+  → `django-perf-review`; đo tốc độ trang/Core Web Vitals → `web-perf`; viết/sửa unit test FE → `vitest`;
+  viết/sửa E2E spec → `playwright-best-practices`;
+  mở UI thật → `playwright-cli`. Khi sửa xác thực, quyền, webhook, URL ngoài hoặc file riêng tư, kiểm ranh giới
+  tin cậy và test nhánh từ chối liên quan. Khi sửa đường nóng, đo query/request/cache trước khi kết luận hiệu năng.
+  Skill ngoài không ghi đè `docs/rules/` và không cho phép chạy toàn bộ test khi chưa được yêu cầu.
+- **Xác minh UI sau khi sửa**: dùng `ui-ux` khi phân tích/thiết kế, `web-design-guidelines` để rà
+  accessibility/UX, `vercel-react-best-practices` khi viết/review React/Next.js; tạo hoặc cập nhật test liên quan.
+  Dùng `playwright-cli` mở UI thật, chụp ảnh và xem lại, kiểm responsive, trạng thái, tương tác, console và network.
+  Nếu không mở được UI thì báo rõ phần chưa kiểm; không chạy toàn bộ E2E nếu chưa được yêu cầu.
 - **Chạy test Backend trên PostgreSQL local**: khi chạy test backend (`pytest`), `DATABASE_URL` bắt buộc trỏ về
   PostgreSQL local (`postgresql://postgress:123456@localhost:5432/toannx?sslmode=prefer`, user `postgress`, pass `123456`),
   không trỏ tới DB cloud/server (Neon) để tránh quá lâu và timeout; luôn chạy với `--reuse-db`
   (`uv run pytest --reuse-db ...`).
 - Làm đúng phạm vi, không thêm dependency khi chưa được đồng ý; docstring/comment tiếng Việt.
-- **Trả lời người dùng bằng tiếng Việt có dấu** (cả báo cáo cuối); chưa kiểm được trên giao diện thật thì nói rõ.
+- **Mọi phản hồi cho người dùng bằng tiếng Việt có dấu**: cập nhật, câu hỏi, lỗi và báo cáo cuối, kể cả khi skill
+  viết tiếng Anh; giữ nguyên tên file, mã, API và lệnh. Chưa kiểm được trên giao diện thật thì nói rõ.
 - **Màu và dialog**: class màu ngữ nghĩa phải có token `--color-<tên>` trong `globals.css`
   (`tests/unit/theme-tokens.test.ts`); ưu tiên thang Tailwind thay giá trị tùy ý; `DialogContent p-0` thì
   `DialogFooter` thêm `mx-0 mb-0`; dialog có tab cao cố định, chỉ thân cuộn (rule frontend §3.1.1, §4.0).
 - **Hủy request**: truyền `signal` của React Query cho `apiClient`, không tự abort `fetch` (rule frontend mục 5).
 - **ViewSet chỉ đọc mở `post` cho bulk** thì khai `"create": DENY`; xoá model không có `deleted_at` bằng
   `hard_delete` có lý do; field unique ngắn dùng `UniqueConstraint` có điều kiện (rule backend mục 9).
+- **Chuẩn Next.js và primitive shadcn**: hiển thị ảnh bắt buộc dùng `<Image />` từ `next/image` (cấm `<img>` trần); thẻ liên kết bắt buộc dùng `<Link />` từ `next/link` hoặc `@/i18n/navigation` (cấm `<a>` trần, kể cả link ngoài); mọi UI primitive (`Button`, `Checkbox`, `Input`, `Label`...) lấy từ `@/shares/components/ui/`; cấm toàn bộ thẻ HTML trần tương tác (`<button>`, `<input>`, `<select>`, `<textarea>`, `<a>`, `<img>`).
+- **Tải dữ liệu 100% phía Client (cấm gọi API ngầm ở SSR)**: mọi trang (kể cả trang công khai như link rút gọn `/s/[slug]`, custom page `/p/[slug]`) bắt buộc gọi API lấy dữ liệu ở phía Client thông qua React Query (`useQuery`) + `service` + `apiClient`. Cấm dùng Server Component gọi API ngầm (`serverApiGet`/`backendFetch`/`fetch` ngầm ở server Next.js) để render trang; `page.tsx` chỉ nhận params và render View. Bắt buộc có API call hiển thị trực tiếp trên tab Network của DevTools trình duyệt để phục vụ việc debug lỗi, đồng thời tránh lỗi mạng/WAF/Cloudflare chặn giữa các serverless functions (rule frontend §1, §5).
 - **`graphify update .` chỉ chạy khi thay đổi lớn** (thêm/xóa/gộp module, đổi cấu trúc thư mục, di chuyển/đổi tên
   khoảng 10 file trở lên, refactor kiến trúc) **hoặc graph đã cũ** (`graphify-out/graph.json` quá 7 ngày, hay
   `graphify query` trả về file/symbol không còn). Sửa nhỏ thì không chạy.
@@ -188,6 +229,7 @@ Frontend:
    Lịch sử thay đổi: page truyền `<RecordHistoryView path=".../{id}/history" fieldPrefix="links.fields" />`.
 6. Quy chuẩn UI & Tối ưu:
    - Hiển thị ảnh bắt buộc dùng `<Image />` từ `next/image` (không dùng thẻ `<img>` trần).
+   - Thẻ liên kết bắt buộc dùng component `<Link />` từ `next/link` (hoặc `@/i18n/navigation` cho link nội bộ), hoặc bọc bằng `<Button asChild><Link href="...">...</Link></Button>`; tuyệt đối không dùng thẻ `<a>` trần (kể cả liên kết ngoài `target="_blank"`).
    - Mọi UI primitive (`Button`, `Checkbox`, `Label`, `Input`, `Dialog`, `Card`...) bắt buộc dùng từ `@/shares/components/ui/` (nếu thiếu thì tải bằng `pnpm dlx shadcn@latest add <name>`, không tự chế; không bọc button/checkbox vào thẻ `<label>`).
    - Tên tệp đính kèm (`original_name` / `alt_text`) phải cho phép người dùng đổi tên và cấu hình alt text.
    - Thanh thao tác hàng loạt (`TableBulkBar` / bulk bar chọn nhiều): bắt buộc thiết kế trên 1 dòng duy nhất (`min-h-12 w-full flex items-center justify-between gap-3 rounded-xl border px-3.5 py-1.5`), tuyệt đối không dùng container flex-col hoặc bọc trong thẻ `Card` gây tách 2 tầng và căn giữa; bên trái là badge số lượng + vạch chia + nút Bỏ chọn, bên phải là cụm nút hành động.

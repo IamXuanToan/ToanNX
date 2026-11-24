@@ -6,6 +6,7 @@ import { HOME_PATHNAMES } from "@/modules/home/constants/routes";
 import { NOVEL_PATHNAMES } from "@/modules/novel/constants/routes";
 import { UTILITIES_PATHNAMES } from "@/modules/utilities/constants/routes";
 import { FINANCE_PATHNAMES } from "@/modules/finance/constants/routes";
+import { PORTAL_PATHNAMES } from "@/modules/portal/constants/routes";
 
 export const LOCALES = ["vi", "en"] as const;
 export type AppLocale = (typeof LOCALES)[number];
@@ -24,6 +25,7 @@ export const routing = defineRouting({
     ...NOVEL_PATHNAMES,
     ...UTILITIES_PATHNAMES,
     ...FINANCE_PATHNAMES,
+    ...PORTAL_PATHNAMES,
   },
 });
 

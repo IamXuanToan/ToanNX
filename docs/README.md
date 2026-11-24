@@ -6,6 +6,8 @@ ra sao và cách vận hành nó.
 | Thư mục | Chứa gì | Đọc khi |
 | --- | --- | --- |
 | [rules/](rules/) | Rule bắt buộc: `common`, `backend`, `frontend`, `git` | Trước khi viết bất kỳ dòng code nào |
+| [../.agents/rules/](../.agents/rules/) | Rule cho AI: bản tóm tắt của `rules/` có `trigger` (`always_on`/`model_decision`/`glob`/`manual`); `.claude/` sinh tự động bằng `scripts/sync-ai-rules.py` | Sửa rule trong `rules/` (sửa luôn bản AI) |
+| [../.agents/skills/](../.agents/skills/) | Skill project: `start-task`, `fix`, `review-code` và skill chuyên môn; Claude dùng bản liên kết trong `.claude/skills/` | Khi bắt đầu việc mới, sửa lỗi hoặc rà code cuối |
 | [common-catalog.md](common-catalog.md) | Danh mục common BE + FE đang có | Trước khi viết code (tránh viết lại thứ đã có) |
 | [architecture/](architecture/) | Kiến trúc tổng, xác thực, phân quyền, i18n, kiểm thử, đối chiếu tham chiếu, [hạ tầng và hạn mức gói free](architecture/infrastructure.md) | Sửa phần nền, cần hiểu luồng chung; thêm việc tốn DB/Redis/R2/function |
 | [guides/](guides/) | Hướng dẫn cài đặt, vận hành: triển khai, Cloudflare R2, OAuth, thông báo, tài chính | Cài môi trường, cấu hình dịch vụ ngoài |

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import NextLink from "next/link";
 import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
@@ -28,6 +29,23 @@ import { ERROR_CORRECTION_LEVELS, QR_TYPES, type QrCodeDetail } from "../../type
 import { useQrCodeForm } from "./hooks/use-qr-code-form";
 
 const LOGO_CONTENT_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+
+const POPULAR_BANKS = [
+  { shortName: "MBBank", bin: "970422" },
+  { shortName: "Vietcombank", bin: "970436" },
+  { shortName: "Techcombank", bin: "970407" },
+  { shortName: "BIDV", bin: "970418" },
+  { shortName: "ACB", bin: "970416" },
+  { shortName: "VPBank", bin: "970432" },
+  { shortName: "Agribank", bin: "970405" },
+  { shortName: "TPBank", bin: "970423" },
+];
+
+const URL_PRESETS = [
+  { label: "Ví MoMo", prefix: "https://nhantien.momo.vn/" },
+  { label: "PayPal", prefix: "https://paypal.me/" },
+  { label: "ZaloPay", prefix: "https://zalopay.me/" },
+];
 
 /**
  * Form mã QR **một form cho tạo, sửa, xem**: bố cục Studio Split cân đối 55/45.
@@ -92,23 +110,23 @@ export function QrCodeForm({
               <div className="flex flex-wrap items-center gap-2">
                 {code ? (
                   <Button asChild variant="outline" className="flex-1">
-                    <a
+                    <NextLink
                       href={code.image.url}
                       download={`${code.name}.png`}
                       target="_blank"
                       rel="noreferrer"
                     >
                       <Download className="mr-1.5 size-4" />
-                      PNG
-                    </a>
+                      <span>{t("downloadPng")}</span>
+                    </NextLink>
                   </Button>
                 ) : null}
                 {svg ? (
                   <Button asChild variant="outline" className="flex-1">
-                    <a href={svg} download={`${form.getValues("name") || "qr-code"}.svg`}>
+                    <NextLink href={svg} download={`${form.getValues("name") || "qr-code"}.svg`}>
                       <Download className="mr-1.5 size-4" />
-                      SVG
-                    </a>
+                      <span>{t("downloadSvg")}</span>
+                    </NextLink>
                   </Button>
                 ) : null}
               </div>
@@ -151,23 +169,59 @@ export function QrCodeForm({
           />
           {qrType === "BANK_TRANSFER" ? (
             <div className="grid gap-5 sm:grid-cols-2">
-              <FormField control={form.control} name="bankBin" label={t("fields.bank")} required>
-                {(field) => (
-                  <SelectField
-                    id={field.id}
-                    value={field.value || undefined}
-                    onValueChange={field.onChange}
-                    searchable
-                    disabled={locked || state.banks.isPending}
-                    invalid={field["aria-invalid"]}
-                    options={(state.banks.data ?? []).map((bank) => ({
-                      value: bank.bin,
-                      label: bank.shortName,
-                      description: bank.name,
-                    }))}
-                  />
-                )}
-              </FormField>
+              <div className="space-y-1.5 sm:col-span-2">
+                <FormField control={form.control} name="bankBin" label={t("fields.bank")} required>
+                  {(field) => (
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-1 pb-1">
+                        <span className="text-muted-foreground mr-1 text-[11px] font-medium">
+                          Phổ biến:
+                        </span>
+                        {POPULAR_BANKS.map((b) => (
+                          <Button
+                            key={b.bin}
+                            type="button"
+                            variant={form.watch("bankBin") === b.bin ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              form.setValue("bankBin", b.bin, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                              });
+                              if (
+                                !form.getValues("name") ||
+                                POPULAR_BANKS.some((p) => p.shortName === form.getValues("name"))
+                              ) {
+                                form.setValue("name", b.shortName, {
+                                  shouldValidate: true,
+                                  shouldDirty: true,
+                                });
+                              }
+                            }}
+                            disabled={locked}
+                            className="h-6 px-2 text-[11px] font-normal"
+                          >
+                            {b.shortName}
+                          </Button>
+                        ))}
+                      </div>
+                      <SelectField
+                        id={field.id}
+                        value={field.value || undefined}
+                        onValueChange={field.onChange}
+                        searchable
+                        disabled={locked || state.banks.isPending}
+                        invalid={field["aria-invalid"]}
+                        options={(state.banks.data ?? []).map((bank) => ({
+                          value: bank.bin,
+                          label: bank.shortName,
+                          description: bank.name,
+                        }))}
+                      />
+                    </div>
+                  )}
+                </FormField>
+              </div>
               <FormField
                 control={form.control}
                 name="accountNumber"
@@ -210,23 +264,54 @@ export function QrCodeForm({
               </div>
             </div>
           ) : qrType === "URL" ? (
-            <FormField
-              control={form.control}
-              name="url"
-              label={t("fields.url")}
-              description={t("fields.urlHint")}
-              required
-            >
-              {(field) => (
-                <Input
-                  {...field}
-                  type="url"
-                  placeholder="https://"
-                  maxLength={2048}
-                  disabled={locked}
-                />
-              )}
-            </FormField>
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-1.5 pb-1">
+                <span className="text-muted-foreground mr-1 text-[11px] font-medium">
+                  Mẫu ví / dịch vụ nhanh:
+                </span>
+                {URL_PRESETS.map((preset) => (
+                  <Button
+                    key={preset.label}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      form.setValue("url", preset.prefix, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                      if (!form.getValues("name")) {
+                        form.setValue("name", preset.label, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
+                      }
+                    }}
+                    disabled={locked}
+                    className="h-6 px-2 text-[11px] font-normal"
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
+              </div>
+              <FormField
+                control={form.control}
+                name="url"
+                label={t("fields.url")}
+                description={t("fields.urlHint")}
+                required
+              >
+                {(field) => (
+                  <Input
+                    {...field}
+                    type="url"
+                    placeholder="https://"
+                    maxLength={2048}
+                    disabled={locked}
+                  />
+                )}
+              </FormField>
+            </div>
           ) : (
             <FormField control={form.control} name="text" label={t("fields.text")} required>
               {(field) => <Textarea {...field} rows={4} maxLength={1000} disabled={locked} />}

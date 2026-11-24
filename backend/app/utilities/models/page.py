@@ -9,9 +9,9 @@ from app.core.tracking.journal_tracker import JournalTracker
 
 
 class Page(JournalTracker, CoreModel):
-    """Trang của owner; nội dung soạn bằng Tiptap, lưu JSON (không lưu HTML)."""
+    """Trang của owner; hỗ trợ cả trang Template hiện đại lẫn trang Tiptap cũ."""
 
-    journal_excluded_fields = ("content",)
+    journal_excluded_fields = ("content", "content_config")
 
     class Status(models.TextChoices):
         """Trạng thái xuất bản."""
@@ -19,6 +19,17 @@ class Page(JournalTracker, CoreModel):
         DRAFT = "DRAFT", "Bản nháp"
         PUBLISHED = "PUBLISHED", "Công khai"
         UNPUBLISHED = "UNPUBLISHED", "Ngừng công khai"
+
+    class PageType(models.TextChoices):
+        """Loại trang template hoặc trang soạn thảo tự do."""
+
+        AFFILIATE = "AFFILIATE", "Tiếp thị liên kết"
+        BIO = "BIO", "Liên kết cá nhân (Bio)"
+        DONATION = "DONATION", "Ủng hộ / Quyên góp"
+        PRODUCT_CATALOG = "PRODUCT_CATALOG", "Danh mục sản phẩm số"
+        PORTFOLIO = "PORTFOLIO", "Hồ sơ năng lực"
+        LANDING = "LANDING", "Trang đích sự kiện"
+        LEGACY_PAGE = "LEGACY_PAGE", "Trang bài viết tự do (Tiptap cũ)"
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -97,6 +108,48 @@ class Page(JournalTracker, CoreModel):
         help_text="Theme có cấu trúc, không chứa CSS/JS tùy ý.",
         db_comment="Cấu hình theme",
     )
+    page_type = models.CharField(
+        max_length=32,
+        choices=PageType.choices,
+        default=PageType.LEGACY_PAGE,
+        verbose_name="Loại trang",
+        help_text="Xác định nhóm nghiệp vụ và template tương ứng.",
+        db_comment="Loại trang template",
+    )
+    template_key = models.CharField(
+        max_length=64,
+        default="blank",
+        verbose_name="Mã template",
+        help_text="Key của System Template được chọn.",
+        db_comment="Mã template hệ thống",
+    )
+    template_version = models.PositiveIntegerField(
+        default=1,
+        verbose_name="Phiên bản template",
+        help_text="Dùng để tự động migrate config khi template nâng cấp.",
+        db_comment="Phiên bản cấu hình template",
+    )
+    content_config = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="Cấu hình nội dung",
+        help_text="Dữ liệu danh mục, sản phẩm, liên kết theo schema của template.",
+        db_comment="Dữ liệu nội dung theo template",
+    )
+    style_config = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="Cấu hình giao diện",
+        help_text="Màu sắc, typography, kiểu thẻ, nút bấm, bo góc.",
+        db_comment="Cấu hình giao diện và phong cách",
+    )
+    responsive_config = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="Cấu hình responsive",
+        help_text="Số cột, khoảng cách, ẩn/hiện trên desktop/tablet/mobile.",
+        db_comment="Cấu hình bố cục theo thiết bị",
+    )
     avatar = models.ForeignKey(
         "system.Attachment",
         null=True,
@@ -128,6 +181,20 @@ class Page(JournalTracker, CoreModel):
             models.CheckConstraint(
                 condition=models.Q(status__in=["DRAFT", "PUBLISHED", "UNPUBLISHED"]),
                 name="utilities_page_status_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    page_type__in=[
+                        "AFFILIATE",
+                        "BIO",
+                        "DONATION",
+                        "PRODUCT_CATALOG",
+                        "PORTFOLIO",
+                        "LANDING",
+                        "LEGACY_PAGE",
+                    ]
+                ),
+                name="utilities_page_type_valid",
             ),
         ]
         indexes = [

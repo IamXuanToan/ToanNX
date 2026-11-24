@@ -1,6 +1,6 @@
 ---
 name: ui-ux
-description: Gu UI/UX cho app — dashboard, danh sách, bảng, form, cài đặt, modal, trang lướt để chọn, và app điện thoại (bản mẫu HTML trong khung máy). Mặc định như một designer - brief, 2–3 wireframe, người dùng chọn rồi mới dựng. Lối khác khi đề nói rõ - soi UI đang có ("xem giúp", "review"), phân tích sản phẩm chưa dựng ("phân tích sản phẩm", "nên thiết kế ra sao"), soi luồng ("soi luồng onboarding"), so bản mới với bản gốc ("có gì hơn"), dựng lại giữ brand ("giữ brand", "keep the brand") hay theo gu skill ("bỏ style cũ"), refactor giữ nguyên hình, dựng luôn ("dựng luôn", "just build it"), design system trước ("UI kit", "component library"), logo đơn giản ("làm logo"), sửa một component. Mặc định flat; làm được glass, gradient, nổi, nền tối, nhiều màu. Landing page, cửa hàng online, blog chưa được dạy - vẫn làm, báo trước. Dùng khi dựng, làm lại, sửa giao diện app, xem ảnh hay link app, hoặc nhắc "làm UI cho đẹp", "dựng màn", "thiết kế", "làm lại UX", "nhìn rối", "build a page", "design this screen", "redesign", "make it look good", "ecommerce", "app mobile", "app điện thoại", "iOS", "Android", "mobile app", "ui-ux", "evon".
+description: Thiết kế, dựng hoặc sửa UI/UX cho app, dashboard, bảng, form, modal và app mobile. Dùng khi người dùng muốn làm giao diện đẹp hơn, thiết kế màn, review UI/UX, soi luồng, giữ brand, dựng luôn, tạo UI kit hoặc sửa một component. Mặc định phân tích brief và đưa 2–3 wireframe để chọn; nếu yêu cầu dựng luôn thì triển khai ngay theo phạm vi đã giao.
 ---
 
 # UI/UX cho hệ thống dashboard

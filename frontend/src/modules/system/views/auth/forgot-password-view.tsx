@@ -15,7 +15,14 @@ export function ForgotPasswordView({ homeHref }: { homeHref: AppPathname }) {
   const t = useTranslations("system.auth.forgotPassword");
 
   return (
-    <AuthShell homeHref={homeHref} title={t("title")}>
+    <AuthShell
+      homeHref={homeHref}
+      title={t("title")}
+      description={t("subtitle")}
+      heroTitle={t("heroTitle")}
+      heroSubtitle={t("heroSubtitle")}
+      heroDescription={t("heroDescription")}
+    >
       <ForgotPasswordForm />
     </AuthShell>
   );

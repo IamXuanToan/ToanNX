@@ -13,6 +13,8 @@
     "description": "Your account has no permission for any module yet. Contact an administrator."
   },
   "shell": {
-    "backToModules": "Back to modules"
+    "backToModules": "Back to modules",
+    "portalStudio": "Personal Studio",
+    "portalStudioTooltip": "Switch to Personal Studio"
   }
 }

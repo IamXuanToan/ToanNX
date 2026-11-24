@@ -3,6 +3,7 @@ import { createCrudService } from "@/shares/lib/api/create-crud-service";
 
 import { UTILITIES_API_ENDPOINTS } from "../constants/api-endpoints";
 import type {
+  PublicShortLink,
   ShortLink,
   ShortLinkDetail,
   ShortLinkFilters,
@@ -26,6 +27,21 @@ export const shortLinkService = {
   create(input: ShortLinkInput): Promise<ShortLinkDetail> {
     const { slug, ...rest } = input;
     return crud.create(slug ? input : rest);
+  },
+
+  /**
+   * Lấy thông tin công khai của link rút gọn qua slug.
+   *
+   * @param slug - Slug của link.
+   * @param signal - Tín hiệu hủy.
+   * @returns Thông tin công khai của link.
+   */
+  async resolve(slug: string, signal?: AbortSignal): Promise<PublicShortLink> {
+    const response = await apiClient.get<PublicShortLink>(
+      UTILITIES_API_ENDPOINTS.shortLinkResolve(slug),
+      { signal },
+    );
+    return response.data;
   },
 
   /** @param slug - Slug công khai. @param password - Mật khẩu người xem nhập. @returns URL đích. */

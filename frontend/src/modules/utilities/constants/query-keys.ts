@@ -4,7 +4,11 @@ import { createResourceKeys } from "@/shares/lib/api/resource-keys";
 const SCOPE = "utilities";
 
 /** Query key của link rút gọn. */
-export const shortLinkKeys = createResourceKeys(SCOPE, "short-links");
+const baseShortLinkKeys = createResourceKeys(SCOPE, "short-links");
+export const shortLinkKeys = {
+  ...baseShortLinkKeys,
+  resolve: (slug: string) => [SCOPE, "short-links", "resolve", slug] as const,
+};
 
 const qrCodes = createResourceKeys(SCOPE, "qr-codes");
 
@@ -19,4 +23,8 @@ export const qrCodeKeys = {
 export const pagePathKeys = createResourceKeys(SCOPE, "page-paths");
 
 /** Query key của trang. */
-export const pageKeys = createResourceKeys(SCOPE, "pages");
+const basePageKeys = createResourceKeys(SCOPE, "pages");
+export const pageKeys = {
+  ...basePageKeys,
+  public: (segment: string, slug: string) => [SCOPE, "pages", "public", segment, slug] as const,
+};

@@ -9,7 +9,7 @@
  */
 
 type ConvertOptions = {
-  /** Khóa (đã ở dạng đích) mà giá trị của nó được giữ nguyên, không chuyển đổi bên trong. */
+  /** Khóa (dạng camelCase hoặc snake_case) mà giá trị của nó được giữ nguyên, không chuyển đổi bên trong. */
   opaqueKeys?: readonly string[];
 };
 
@@ -39,6 +39,11 @@ export function toCamelKey(key: string): string {
   return key.replace(/_([a-z0-9])/g, (_, char: string) => char.toUpperCase());
 }
 
+function isOpaqueKey(key: string, nextKey: string, opaqueKeys?: readonly string[]): boolean {
+  if (!opaqueKeys || opaqueKeys.length === 0) return false;
+  return opaqueKeys.includes(key) || opaqueKeys.includes(nextKey);
+}
+
 function convertKeys(
   value: unknown,
   convert: (key: string) => string,
@@ -49,7 +54,7 @@ function convertKeys(
   const result: Record<string, unknown> = {};
   for (const [key, item] of Object.entries(value)) {
     const nextKey = convert(key);
-    result[nextKey] = options.opaqueKeys?.includes(nextKey)
+    result[nextKey] = isOpaqueKey(key, nextKey, options.opaqueKeys)
       ? item
       : convertKeys(item, convert, options);
   }

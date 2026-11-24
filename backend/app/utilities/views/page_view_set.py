@@ -29,15 +29,22 @@ from app.utilities.serializers.responses.page_detail_response_serializer import 
 from app.utilities.serializers.responses.page_list_response_serializer import (
     PageListResponseSerializer,
 )
+from app.utilities.serializers.responses.page_metadata_response_serializer import (
+    PageMetadataResponseSerializer,
+)
 from app.utilities.serializers.validates.page_bulk_update_validate_serializer import (
     PageBulkUpdateValidateSerializer,
 )
 from app.utilities.serializers.validates.page_create_validate_serializer import (
     PageCreateValidateSerializer,
 )
+from app.utilities.serializers.validates.page_fetch_metadata_validate_serializer import (
+    PageFetchMetadataValidateSerializer,
+)
 from app.utilities.serializers.validates.page_update_validate_serializer import (
     PageUpdateValidateSerializer,
 )
+from app.utilities.services.link_metadata_service import LinkMetadataService
 from app.utilities.services.page_service import PageService
 
 
@@ -46,6 +53,13 @@ class PageViewSet(CoreModelViewSet[Page]):
 
     service_class = PageService
     service: PageService
+    link_metadata_service: LinkMetadataService
+
+    def __init__(self, **kwargs: Any) -> None:
+        """Khởi tạo service theo đúng quy chuẩn kiến trúc."""
+        super().__init__(**kwargs)
+        self.link_metadata_service = LinkMetadataService()
+
     filterset_class = PageFilter
     search_fields = ("title", "slug", "description")
     ordering_fields = ("title", "slug", "status", "created_at", "updated_at", "published_at")
@@ -57,7 +71,11 @@ class PageViewSet(CoreModelViewSet[Page]):
     bulk_update_serializer_class = PageBulkUpdateValidateSerializer
     bulk_delete_enabled = True
     history_enabled = True
-    action_rate_limits = {"create": "utilities.page.create", "duplicate": "utilities.page.create"}
+    action_rate_limits = {
+        "create": "utilities.page.create",
+        "duplicate": "utilities.page.create",
+        "fetch_metadata": "utilities.page.create",
+    }
     action_permissions = {
         "list": permission_rule(P.READ),
         "retrieve": permission_rule(P.READ),
@@ -68,6 +86,7 @@ class PageViewSet(CoreModelViewSet[Page]):
         "bulk_delete": permission_rule(P.DELETE),
         "duplicate": permission_rule(P.CREATE, P.READ, require_all=True),
         "history": permission_rule(P.READ),
+        "fetch_metadata": permission_rule(P.CREATE, P.UPDATE),
     }
 
     @extend_schema(request=None, responses=PageDetailResponseSerializer)
@@ -76,3 +95,12 @@ class PageViewSet(CoreModelViewSet[Page]):
         """Nhân bản trang thành bản nháp của người thực hiện."""
         copy = self.service.duplicate(self.get_actor(request), pk)
         return CoreResponse(self.serialize_detail(self.get_object_for_actor(copy.pk)), status=201)
+
+    @extend_schema(request=PageFetchMetadataValidateSerializer, responses=PageMetadataResponseSerializer)
+    @action(detail=False, methods=["post"], url_path="fetch-metadata")
+    def fetch_metadata(self, request: Request) -> CoreResponse:
+        """Đọc thông tin metadata từ URL sản phẩm/liên kết (bảo vệ SSRF)."""
+        serializer = PageFetchMetadataValidateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = self.link_metadata_service.fetch_metadata(serializer.validated_data["url"])
+        return CoreResponse(PageMetadataResponseSerializer(data).data)

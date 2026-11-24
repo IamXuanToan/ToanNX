@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
 import { cache } from "react";
 
 import { UTILITIES_API_ENDPOINTS } from "@/modules/utilities/constants/api-endpoints";
@@ -15,7 +14,7 @@ const loadPage = cache(async (segment: string, slug: string): Promise<PublicPage
   const result = await serverApiGet<PublicPage>(
     UTILITIES_API_ENDPOINTS.pagePublic(segment, slug),
     await headers(),
-    { opaqueKeys: ["content"] },
+    { opaqueKeys: ["content", "contentConfig", "styleConfig", "responsiveConfig"] },
   );
   return result.data;
 });
@@ -41,13 +40,12 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 /**
  * Route nội bộ của trang công khai; người xem mở `toannx.com/<segment>/<slug>` và `proxy.ts` rewrite sang đây.
+ * Dữ liệu trang được fetch trực tiếp phía client qua React Query để hiển thị rõ ràng trên tab Network.
  *
  * @param props - Tham số route.
- * @returns Trang công khai hoặc 404.
+ * @returns Trang công khai.
  */
 export default async function PublicCustomPage({ params }: { params: Promise<Params> }) {
   const { segment, slug } = await params;
-  const page = await loadPage(segment, slug);
-  if (!page) notFound();
-  return <PublicPageView page={page} />;
+  return <PublicPageView segment={segment} slug={slug} />;
 }

@@ -1,6 +1,9 @@
 # MẪU PROMPT GIAO VIỆC — toannx.com
 
-> Cách dùng: chép toàn bộ file này, điền phần **8. YÊU CẦU** ở cuối rồi gửi cho agent. Các mục 0–7 giữ nguyên.
+> Cách dùng: chỉ cần giao việc bằng chat thường hoặc gọi `/start-task`, `/fix`, `/review-code` trong Claude Code
+> (`$start-task`, `$fix`, `$review-code` trong Codex). Ba skill đã có quy trình, mốc skill chuyên môn và bảng kiểm;
+> mẫu này dùng để tra cứu
+> hoặc khi muốn mô tả việc thật chi tiết, không cần chép toàn bộ vào mỗi cuộc trò chuyện.
 > Đây là bản tóm tắt; chi tiết và ngoại lệ nằm ở `docs/rules/`. Khi hai bên lệch nhau thì `docs/rules/` thắng.
 
 ## 0. VAI TRÒ VÀ BỐI CẢNH
@@ -17,6 +20,9 @@ trước khi viết code Next.
 
 - `CLAUDE.md`, `AGENTS.md`, `SYSTEM_CONTEXT.md`.
 - `docs/rules/` (`common.md`, `backend.md`, `frontend.md`, `git.md`).
+- `.agents/rules/`: rule cho AI (bản tóm tắt có `trigger`). Mỗi lượt chat nạp `always_on`, chọn `model_decision`
+  theo ngữ nghĩa yêu cầu, nạp `glob` khi đường dẫn file khớp. Claude Code dùng bản sinh trong `.claude/`;
+  checklist chạy tự động trước khi báo xong; yêu cầu rà rule toàn hệ thống tự chọn `rule-audit` theo ngữ nghĩa.
 - **`docs/common-catalog.md`**: danh mục common BE + FE đang có. Đọc trước khi viết bất kỳ code nào.
 - `docs/README.md` (mục lục), rồi theo việc:
   - làm trong module nào → `docs/modules/<module>/README.md`;
@@ -31,11 +37,22 @@ trước khi viết code Next.
 
 - Làm đúng phạm vi yêu cầu. Không tự ý thêm tính năng, dependency, module, hay sửa phần ngoài phạm vi.
 - **Không tự thao tác git**: không tạo nhánh, commit, push, merge, xóa nhánh khi chưa được yêu cầu rõ.
-  Làm thẳng trên nhánh hiện tại. Chỉ gợi ý câu commit khi được hỏi.
+  Làm thẳng trên nhánh hiện tại. Sau mỗi task, đọc Git status/diff và đưa nội dung commit theo
+  `docs/rules/git.md` cho toàn bộ thay đổi chưa commit, kể cả phần có sẵn: tiêu đề + body trong khối `text`
+  để dán thẳng vào VS Code, không phải câu lệnh Git. Không tự stage hay commit.
 - Gặp xung đột giữa yêu cầu và rule: báo và đề xuất hướng xử lý trước khi làm.
 - Tool/skill/tài liệu không có hoặc không chạy được: báo rõ, không giả định là đã làm.
 - Sửa `AGENTS.md` thì sửa luôn `CLAUDE.md` và ngược lại, nội dung rule phải khớp nhau.
-- **Trả lời người dùng bằng tiếng Việt có dấu** (cả báo cáo cuối), kể cả khi skill viết tiếng Anh.
+- **Rule AI đồng bộ với `docs/rules/`**: đổi rule hoặc quy trình thì sửa file tương ứng trong `.agents/rules/`
+  (frontmatter `trigger`: `always_on` | `model_decision` | `glob` + `globs` | `manual`, có `description`), rồi chạy
+  `python scripts/sync-ai-rules.py` để sinh lại `.claude/rules/`, `.claude/skills/rule-*/`, `.claude/commands/`.
+  Không sửa tay file trong `.claude/` có dòng "Sinh tự động". Cách viết: `.agents/rules/40-docs-and-rules.md`.
+- Skill workflow của project: `start-task` (việc mới), `fix` (lỗi), `review-code` (rà cuối theo yêu cầu, tự sửa lỗi
+  xác nhận được). Các skill ở `.agents/skills/`, liên kết vào `.claude/skills/`; skill ngoài ghi nguồn/commit ở
+  `skills-lock.json`. Chỉ `.claude/skills/rule-*/` do script rule sinh; `docs/rules/` thắng skill. Đổi ba skill
+  workflow thì chạy `python scripts/check-workflow-skills.py` để kiểm metadata và bản Claude.
+- **Mọi phản hồi cho người dùng bằng tiếng Việt có dấu**: cập nhật, câu hỏi, lỗi, báo cáo cuối, kể cả khi skill viết
+  tiếng Anh; giữ nguyên tên file, mã, API và lệnh.
 - Chưa kiểm được trên giao diện thật thì nói rõ, không tuyên bố đã chạy đúng.
 
 ### 2.2 Tổ chức code (BE + FE)
@@ -147,6 +164,7 @@ Chi tiết: `docs/features/permission-scope.md`, `docs/features/permission-ui.md
 - Luồng: `page → View → component (+ hook riêng) → hook module (React Query) → service → apiClient`.
 - `page.tsx`/`layout.tsx` chỉ khai metadata và render View của module. View chỉ ghép component và kiểm quyền
   (chỉ gọi `usePermission`, `useTranslations`, `useEditMode`; không query, state, `useRouter`, `useEffect`).
+- **Tải dữ liệu 100% phía Client**: mọi trang (kể cả link rút gọn `/s/[slug]`, custom page `/p/[slug]` công khai) bắt buộc gọi API lấy dữ liệu qua React Query + `apiClient` ở phía Client để hiển thị trên DevTools Network tab, phục vụ debug trực tiếp; cấm Server Component gọi API ngầm ở server Next.js (`serverApiGet`/`backendFetch`) để render nội dung.
 - **Chia theo model**: component đặt ở `modules/<m>/components/<model>/<tên>.tsx`, hook của nó ở
   `components/<model>/hooks/use-<tên>.ts`, view ở `views/<model>/<tên>-view.tsx`. `<model>` trùng tên file service
   (`user`, `role`, `short-link`...); màn không gắn model thì theo chức năng (`auth`, `current-user`, `reader`,
@@ -185,7 +203,7 @@ Chi tiết: rule frontend §3.1 (chuẩn giao diện), §3.2 (shadcn), §4.0 (m�
 - Mọi primitive (`Button`, `Input`, `Textarea`, `Checkbox`, `Switch`, `Label`, `Dialog`, `Sheet`, `Popover`,
   `DropdownMenu`, `Tabs`, `Tooltip`, `Card`, `Badge`, `Skeleton`, `Table`…) lấy từ `@/shares/components/ui/*`.
   Thiếu thì cài bằng `pnpm dlx shadcn@latest add <tên>`, không tự viết bản thay thế.
-- Cấm thẻ trần thay cho primitive: `<button>`, `<input>`, `<select>`, `<textarea>`, `<dialog>` tự style. Ô chọn dùng
+- Cấm thẻ trần thay cho primitive: `<button>`, `<input>`, `<select>`, `<textarea>`, `<dialog>` tự style, và không thẻ `<a>` trần (kể cả link ngoài `target="_blank"`), không `<img>` trần. Liên kết dùng `Link` từ `next/link` hoặc `@/i18n/navigation`, hoặc `<Button asChild><Link href="...">...</Link></Button>`. Ảnh dùng `<Image />` từ `next/image`. Ô chọn dùng
   `SelectField`, bảng dùng `DataTable`, form dùng `FormPage`/`FormField` (catalog mục 4).
 - Kiểu dáng qua `variant`/`size` sẵn có (`variant="outline" | "ghost" | "destructive"`, `size="icon"`); không đè
   `className` để giả một variant khác. Không sửa file trong `components/ui/*` trừ khi chỉnh cho khớp token, có ghi lý do.
@@ -228,6 +246,8 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
   trong cùng lần.
 - Đổi cách một chức năng chạy → sửa `docs/features/<chức-năng>.md`; chức năng dùng chung mới → thêm file + dòng
   mục lục ở `docs/README.md`. Thêm module → thêm `docs/modules/<module>/README.md`.
+- Đổi rule trong `docs/rules/`, quy trình hay bảng kiểm → sửa rule AI trong `.agents/rules/`, chạy
+  `python scripts/sync-ai-rules.py`, cập nhật `CLAUDE.md`, `AGENTS.md`, `prompt.md` cùng lần.
 - Tài liệu lệch với code coi như việc chưa xong.
 
 ## 3. NGUYÊN TẮC BẮT BUỘC
@@ -237,11 +257,20 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
 3. Code clean, dễ đọc, dễ bảo trì (SOLID, DRY, KISS). Tái sử dụng component, hook, service, utility có sẵn;
    không duplicate logic, không over-engineering.
 4. Frontend tuân thủ shadcn/ui, Tailwind CSS v4, design token, responsive, accessibility, i18n (mục 2.5.1).
-5. Việc liên quan UI/UX: bắt buộc dùng skill `ui-ux` để phân tích và thiết kế trước khi làm.
+5. Việc liên quan UI/UX: dùng skill `ui-ux` để phân tích và thiết kế trước khi làm; `web-design-guidelines`
+   để rà accessibility/UX trên file đã sửa; `vercel-react-best-practices` khi viết/review React/Next.js; dùng
+   `playwright-cli` để kiểm giao diện thật sau khi dựng. Skill không được ghi đè `docs/rules/`.
 6. **Mở file nào thì kiểm rule file đó và sửa luôn** (bảng kiểm mục 5). Áp dụng cho mọi file đã mở để đọc
    hoặc sửa trong lần làm việc này, không chỉ file của tính năng. Ngoại lệ phải báo trước khi sửa: sửa kéo
    theo đổi contract API/migration, hoặc lan sang khoảng 10 file trở lên.
 7. Không tắt lint/typecheck, không bỏ test, không dùng giải pháp tạm để che lỗi.
+8. Chọn một workflow chính bằng câu chat: `start-task` khi giao việc mới; `fix` khi báo lỗi; `review-code` khi
+   yêu cầu rà cuối, tự sửa lỗi xác nhận được và kiểm lại. Cả ba đọc source, `docs/` và rule liên quan trước khi
+   sửa. Nạp skill chuyên môn theo phần việc: `security-best-practices` khi yêu cầu audit bảo mật/code an toàn;
+   `django-perf-review` khi rà hiệu năng Django; `web-perf` khi đo tốc độ trang/Core Web Vitals;
+   `vitest` khi viết/sửa unit test FE;
+   `playwright-best-practices` khi viết/sửa E2E spec; `playwright-cli` khi mở UI thật. Skill ngoài không
+   ghi đè `docs/rules/` hoặc cho phép chạy toàn bộ test khi chưa được yêu cầu.
 
 ## 4. QUY TRÌNH THỰC HIỆN
 
@@ -264,15 +293,24 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
    - **Cấm** khi chưa được yêu cầu: `scripts/check-all.*`, `pnpm e2e` đầy đủ, `uv run pytest` / `pnpm test` /
      `pnpm lint` không chỉ định file. Sửa vùng nền (`app/core`, `shares/`, `apiClient`, settings) thì vẫn chỉ chạy
      test liên quan, rồi báo để người dùng quyết định có chạy toàn bộ không.
-7. Dùng skill `playwright-cli` để kiểm tra UI và luồng tương tác: responsive, console, network, các trạng thái
-   loading/empty/error/success; việc đụng quyền thì kiểm với tài khoản `_VIEWER`, `_MEMBER`, `_MANAGER`.
-   Không kết luận chạy đúng khi chưa kiểm tra thực tế.
+   - Luồng nhạy cảm: kiểm đầu vào, quyền/owner và test nhánh từ chối. Đường nóng: đo số query/request, cache
+     hit/miss và chi phí gói free liên quan; chỉ nhận cải thiện khi có bằng chứng trước/sau.
+7. Với UI/luồng đã sửa, tạo hoặc cập nhật **test liên quan** cho những case bị ảnh hưởng và chạy đúng file test.
+   Dùng skill `playwright-cli` mở UI thật, chụp ảnh rồi xem lại để phân tích bố cục; kiểm desktop/mobile (375px),
+   tương tác bàn phím, console, network, các trạng thái loading/empty/error/success; việc đụng quyền thì kiểm
+   với tài khoản `_VIEWER`, `_MEMBER`, `_MANAGER`. Không chạy toàn bộ suite khi chưa được yêu cầu. Nếu không mở
+   được UI, ghi rõ phần chưa kiểm; không kết luận đã xác minh giao diện.
 8. Sửa lỗi và kiểm tra lại đến khi đạt.
-9. Cập nhật tài liệu theo mục 2.7 và `docs/common-catalog.md` nếu đổi common.
+9. Cập nhật tài liệu theo mục 2.7 và `docs/common-catalog.md` nếu đổi common. Đổi rule/quy trình thì sửa
+   `.agents/rules/` và chạy `python scripts/sync-ai-rules.py` (kiểm: `--check`).
 10. Chỉ chạy `graphify update .` khi có **thay đổi lớn**: thêm/xóa/gộp module, đổi cấu trúc thư mục, di chuyển
     hoặc đổi tên nhiều file (khoảng 10 file trở lên), refactor kiến trúc. Hoặc khi graph đã cũ: `graphify-out/graph.json`
     không cập nhật hơn 7 ngày, hay `graphify query` trả về file/symbol không còn tồn tại. Sửa nhỏ thì không chạy.
-11. Báo cáo theo mục 6.
+11. Đọc `git status`/`git diff` ở chế độ chỉ đọc; đưa nội dung commit theo `docs/rules/git.md` cho **toàn bộ thay
+    đổi chưa commit trong project**, kể cả thay đổi có sẵn trước task. Mỗi commit gồm tiêu đề, dòng trống, body
+    giải thích thay đổi/lý do/tác động trong khối `text` để dán vào VS Code, không phải lệnh Git. Nhiều mục đích
+    độc lập thì tách commit. Không tự stage, commit hoặc push.
+12. Báo cáo theo mục 6.
 
 ## 5. BẢNG KIỂM KHI MỞ MỘT FILE
 
@@ -299,6 +337,8 @@ Backend:
 - [ ] Bí mật tự tạo/tự kiểm dẫn xuất từ `DJANGO_SECRET_KEY`; bí mật bên thứ ba dùng biến riêng; `.env.example` không chứa giá trị bí mật thật.
 - [ ] Biến môi trường mới/đổi đã có trong `.env.example` kèm chú thích tiếng Việt (và `docs/guides/deployment.md` nếu production).
 - [ ] Chạy test backend trên PostgreSQL local: `DATABASE_URL` trỏ `postgresql://postgress:123456@localhost:5432/toannx?sslmode=prefer` với cờ `--reuse-db` (không dùng cloud DB).
+- [ ] Luồng nhạy cảm đã kiểm ranh giới tin cậy, quyền/owner và nhánh từ chối; đường nóng có số đo/test hiệu năng
+      liên quan, truy vấn đặt đúng repository, không tăng chi phí gói free vô cớ.
 - [ ] Không tự viết lại thứ đã có trong `docs/common-catalog.md` mục 1–3 (filter, exception, tiện ích, base...).
 
 Frontend:
@@ -307,9 +347,11 @@ Frontend:
 - [ ] File mới nằm đúng `components/<model>/` (+ `hooks/`) và `views/<model>/`; không `views/hooks/`, không nhóm
       `shared`/`common`; `tests/unit/module-structure.test.ts` đạt.
 - [ ] Đúng lớp: page chỉ metadata + View; View không fetch; component không gọi service/apiClient trực tiếp.
+- [ ] Trang tải dữ liệu 100% ở Client qua React Query → service → `apiClient`; `page.tsx` không gọi API ngầm
+      trong Server Component; API call hiển thị trong Network của trình duyệt.
 - [ ] Dùng component chung (`DataTable`, `SelectField`, `FilterSelect`, `FormPage`...), control `h-10`, `<Image>`, chuỗi qua i18n.
 - [ ] Primitive lấy từ `@/shares/components/ui/*` (thiếu thì `pnpm dlx shadcn@latest add`); không `<button>`/`<input>`/
-      `<select>` trần; kiểu dáng qua `variant`/`size`; nút chỉ icon có `aria-label`.
+      `<select>`/`<a>`/`<img>` trần; liên kết dùng `Link` từ `next/link` hoặc `@/i18n/navigation`; ảnh dùng `<Image />`; kiểu dáng qua `variant`/`size`; nút chỉ icon có `aria-label`.
 - [ ] Chỉ Tailwind utility + `cn()`; không `style={{}}` tĩnh, không hex/`bg-blue-500` cho màu thương hiệu; mobile-first,
       375px không cuộn ngang; dark mode đúng nhờ token.
 - [ ] View kiểm quyền: `ForbiddenView` khi thiếu quyền trang; trang chi tiết dùng `useEditMode` + `EditModeProvider`.
@@ -328,10 +370,14 @@ Frontend:
 - [ ] Đã thêm/đổi common (BE hoặc FE) thì `docs/common-catalog.md` đã cập nhật.
 - [ ] Đổi thứ đi vào OpenAPI (kể cả docstring view/method) thì đã chạy `pnpm api:types`, `api-schema.gen.ts` đi cùng commit.
 - [ ] `tests/unit/one-unit-per-file.test.ts` và `app/core/tests/test_one_class_per_file.py` đạt (một đơn vị một file).
+- [ ] Với UI/luồng đã sửa: có test liên quan, Playwright mở UI thật; ảnh chụp đã được xem, responsive, trạng thái,
+      tương tác, console và network đã được kiểm; nếu chưa thì ghi rõ lý do.
 
 Tài liệu:
 
 - [ ] `docs/modules/<module>/README.md` và `docs/features/*.md` liên quan khớp với code sau khi sửa.
+- [ ] Đổi `docs/rules/` hoặc quy trình → `.agents/rules/` đã sửa, `python scripts/sync-ai-rules.py --check` đạt,
+      `CLAUDE.md` ↔ `AGENTS.md` khớp.
 
 ## 6. BÁO CÁO
 
@@ -342,6 +388,9 @@ Ngắn gọn, đủ các ý:
 3. Vi phạm rule đã sửa thêm ở file nào.
 4. Lệnh kiểm tra đã chạy và kết quả (số test pass/fail); phần nào **chưa** kiểm và lý do.
 5. Vi phạm thấy mà chưa sửa (kèm lý do), việc còn tồn.
+6. Đưa nội dung commit đúng `docs/rules/git.md` cho toàn bộ thay đổi chưa commit theo Git status/diff: mỗi khối
+   `text` có tiêu đề + body dán được vào VS Code, không có câu lệnh; phân biệt thay đổi có sẵn với thay đổi của
+   task. Không có thay đổi thì không gợi ý.
 
 ## 7. NHẮC LẠI
 
@@ -353,26 +402,3 @@ Ngắn gọn, đủ các ý:
 - LUÔN nhất quán với hệ thống hiện tại.
 
 # 8. YÊU CẦU
-
-**Mục tiêu:** [Một câu: cần đạt được gì, cho ai]
-
-**Module / màn hình liên quan:** [ví dụ `finance` → `/quan-tri/tai-chinh/thu-nhap`]
-
-**Mô tả chi tiết:**
-
-- [Hành vi mong muốn, dữ liệu, quyền nào được làm gì]
-
-**Phạm vi:**
-
-- [Được sửa những phần nào]
-
-**Ngoài phạm vi (không làm):**
-
-- [Những phần không được đụng]
-
-**Tiêu chí hoàn thành:**
-
-- [ ] [Điều kiện kiểm được, ví dụ: tài khoản `_VIEWER` xem được nhưng nút Sửa mờ]
-- [ ] Test liên quan pass; tài liệu `docs/modules`/`docs/features` đã cập nhật
-
-**Ghi chú / tài liệu tham khảo:** [link, ảnh chụp, quyết định đã chốt]

@@ -6,6 +6,20 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { UserMenu } from "@/modules/system/components/current-user/user-menu";
 import type { AuthUser } from "@/modules/system/types/auth.types";
 
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({
+    children,
+    href,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+  useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
+  usePathname: () => "/admin",
+}));
+
 const mockLogout = vi.fn();
 const mockLogoutAll = vi.fn();
 

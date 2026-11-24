@@ -13,6 +13,7 @@ export const UTILITIES_API_ENDPOINTS = {
   qrCodeBanks: "/utilities/qr-codes/banks",
   pagePaths: "/utilities/page-paths",
   pages: "/utilities/pages",
+  pageFetchMetadata: "/utilities/pages/fetch-metadata",
   /**
    * Nội dung trang công khai `/<segment>/<slug>`.
    *

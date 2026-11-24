@@ -1,14 +1,15 @@
 "use client";
 
+import type { ComponentProps } from "react";
 import { Copy } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Link } from "@/i18n/navigation";
-import { TableStatusSwitch } from "@/shares/components/common/table-status-switch";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
+import { TableStatusSwitch } from "@/shares/components/common/table-status-switch";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 
@@ -16,28 +17,42 @@ import { UTILITIES_ROUTES } from "../../constants/routes";
 import type { ShortLink } from "../../types/short-link.types";
 import { useShortLinkTable } from "./hooks/use-short-link-table";
 
+type DetailRouteFn = (id: string) => { pathname: string; params: Record<string, string> };
+
 /**
  * Bảng link rút gọn: tên + URL ngắn (sao chép), URL đích, cách mở, hạn, trạng thái (công tắc),
  * cột Chủ sở hữu khi xem được của mọi người; thao tác Sửa, Xóa, hàng loạt bật/tắt và xóa.
+ * Hỗ trợ truyền detailRoute và ownerId cho Client Portal.
  *
- * @param props - Quyền sửa/xóa và có hiện cột chủ sở hữu.
+ * @param props - Quyền sửa/xóa, cờ hiện chủ sở hữu và các tùy biến điều hướng.
  * @returns Bảng.
  */
 export function ShortLinkTable({
   canUpdate,
   canDelete,
   showOwner,
+  ownerOnly,
+  ownerId,
+  detailRoute,
 }: {
   canUpdate: boolean;
   canDelete: boolean;
   showOwner: boolean;
+  ownerOnly?: boolean;
+  ownerId?: string;
+  detailRoute?: DetailRouteFn;
 }) {
   const t = useTranslations("utilities.shortLinks");
   const tStatus = useTranslations("common.status");
   const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
-  const state = useShortLinkTable();
+  const state = useShortLinkTable({ ownerOnly, ownerId, detailRoute });
   const { table, query } = state;
+
+  const getTargetHref = (id: string): ComponentProps<typeof Link>["href"] =>
+    (detailRoute ? detailRoute(id) : UTILITIES_ROUTES.shortLinkDetail(id)) as ComponentProps<
+      typeof Link
+    >["href"];
 
   const columns: DataTableColumn<ShortLink>[] = [
     {
@@ -49,7 +64,7 @@ export function ShortLinkTable({
       cell: (link) => (
         <div className="min-w-0">
           <Link
-            href={UTILITIES_ROUTES.shortLinkDetail(link.id)}
+            href={getTargetHref(link.id)}
             className="hover:text-primary block truncate font-medium underline-offset-4 hover:underline"
           >
             {link.name}
@@ -92,35 +107,6 @@ export function ShortLinkTable({
               : t("landing.autoSeconds", { seconds: link.autoRedirectSeconds })}
           </Badge>
           {link.hasPassword ? <Badge variant="outline">{t("fields.password")}</Badge> : null}
-        </div>
-      ),
-    },
-    {
-      id: "stats",
-      header: t("columns.stats"),
-      sortKey: "visitors_count",
-      cell: (link) => (
-        <div
-          className="flex flex-col text-xs leading-relaxed"
-          title={
-            link.lastAccessedAt
-              ? `${t("fields.lastAccessedAt")}: ${format.dateTime(new Date(link.lastAccessedAt), {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                })}`
-              : undefined
-          }
-        >
-          <span className="text-foreground font-medium">
-            {t("statsSummary", { visitors: link.visitorsCount, clicks: link.clicksCount })}
-          </span>
-          {link.lastAccessedAt ? (
-            <span className="text-muted-foreground text-[11px]">
-              {format.relativeTime(new Date(link.lastAccessedAt), now)}
-            </span>
-          ) : (
-            <span className="text-muted-foreground text-[11px]">—</span>
-          )}
         </div>
       ),
     },
@@ -183,18 +169,16 @@ export function ShortLinkTable({
       search={{ ...table.search, placeholder: t("searchPlaceholder") }}
       onClearFilters={table.hasFilters ? table.clearFilters : undefined}
       filters={
-        <>
-          <FilterSelect
-            label={t("columns.status")}
-            value={table.getFilterValues("status")}
-            onValueChange={(values) => table.setFilterValues("status", values)}
-            options={[
-              { value: "ACTIVE", label: tStatus("active") },
-              { value: "INACTIVE", label: t("inactive") },
-              { value: "EXPIRED", label: t("expired") },
-            ]}
-          />
-        </>
+        <FilterSelect
+          label={t("columns.status")}
+          value={table.getFilterValues("status")}
+          onValueChange={(values) => table.setFilterValues("status", values)}
+          options={[
+            { value: "ACTIVE", label: tStatus("active") },
+            { value: "INACTIVE", label: t("inactive") },
+            { value: "EXPIRED", label: t("expired") },
+          ]}
+        />
       }
       ordering={table.ordering}
       onOrderingChange={table.onOrderingChange}

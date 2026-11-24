@@ -20,7 +20,7 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' https://cloud.umami.is https://static.cloudflareinsights.com${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' https: data: blob:",
+  `img-src 'self' https: data: blob:${isDev ? " http:" : ""}`,
   "media-src 'self' https: blob:",
   "font-src 'self' data:",
   `connect-src 'self' ${apiOrigin} https://api.open-meteo.com https://fcmregistrations.googleapis.com https://firebaseinstallations.googleapis.com https://cloud.umami.is https://gateway.umami.is https://cloudflareinsights.com`,
@@ -37,7 +37,16 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
   images: {
+    dangerouslyAllowLocalIP: true,
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "api.qrserver.com",
+      },
+      {
+        protocol: "https",
+        hostname: "img.vietqr.io",
+      },
       {
         protocol: "https",
         hostname: "media.toannx.com",
@@ -47,8 +56,48 @@ const nextConfig: NextConfig = {
         hostname: "**.r2.dev",
       },
       {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.google.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.gstatic.com",
+      },
+      {
+        protocol: "https",
+        hostname: "icons.duckduckgo.com",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
+        port: "8001",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "8000",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "8001",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "8000",
       },
       {
         protocol: "http",

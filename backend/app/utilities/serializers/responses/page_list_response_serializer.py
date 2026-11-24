@@ -2,7 +2,8 @@
 
 from rest_framework import serializers
 
-from app.core.utils.url import build_absolute_url
+from app.core.context.user_context import get_current_request
+from app.system.utils.frontend_url import get_frontend_origin
 from app.utilities.models.page import Page
 from app.utilities.serializers.responses.page_owner_response_serializer import (
     PageOwnerResponseSerializer,
@@ -26,6 +27,8 @@ class PageListResponseSerializer(serializers.ModelSerializer[Page]):
             "title",
             "slug",
             "status",
+            "page_type",
+            "template_key",
             "path",
             "public_url",
             "owner",
@@ -36,5 +39,6 @@ class PageListResponseSerializer(serializers.ModelSerializer[Page]):
         read_only_fields: tuple[str, ...] = fields
 
     def get_public_url(self, obj: Page) -> str:
-        """URL theo domain hiện tại."""
-        return build_absolute_url(f"/{obj.path.segment}/{obj.slug}")
+        """URL công khai trên frontend."""
+        request = get_current_request()
+        return f"{get_frontend_origin(request)}/{obj.path.segment}/{obj.slug}"

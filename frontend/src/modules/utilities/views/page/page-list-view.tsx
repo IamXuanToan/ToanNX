@@ -1,18 +1,16 @@
 "use client";
 
-import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Link } from "@/i18n/navigation";
 import { PermissionGate } from "@/modules/system/components/permission/permission-gate";
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { PageHeader } from "@/shares/components/common/page-header";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
-import { Button } from "@/shares/components/ui/button";
 
+import { PageCreateButton } from "../../components/page/page-create-button";
 import { PageTable } from "../../components/page/page-table";
+import { PAGE_PATH_PERMISSIONS } from "../../permissions/page-path-permission";
 import { PAGE_PERMISSIONS } from "../../permissions/page-permission";
-import { UTILITIES_ROUTES } from "../../constants/routes";
 
 /** Trang danh sách trang công khai. */
 export function PageListView() {
@@ -22,19 +20,18 @@ export function PageListView() {
   const canUpdate = usePermission(PAGE_PERMISSIONS.update);
   const canDelete = usePermission(PAGE_PERMISSIONS.delete);
   const canManageAll = usePermission(PAGE_PERMISSIONS.manageAll);
+  const canCreatePath = usePermission(PAGE_PATH_PERMISSIONS.create);
+  const canUpdatePath = usePermission(PAGE_PATH_PERMISSIONS.update);
+
   if (!canRead) return <ForbiddenView />;
+
   return (
     <div className="space-y-6">
       <PageHeader
         title={t("title")}
         actions={
           <PermissionGate permission={PAGE_PERMISSIONS.create}>
-            <Button asChild>
-              <Link href={UTILITIES_ROUTES.pageCreate}>
-                <Plus />
-                {t("create")}
-              </Link>
-            </Button>
+            <PageCreateButton canCreatePath={canCreatePath} canUpdatePath={canUpdatePath} />
           </PermissionGate>
         }
       />

@@ -11,9 +11,10 @@ class PageFilter(django_filters.FilterSet):
     """Trạng thái, đường dẫn giữa, chủ sở hữu (chỉ có tác dụng với manage_all)."""
 
     status = CoreChoiceInFilter(choices=Page.Status.choices, help_text="Nhiều giá trị.")
+    page_type = CoreChoiceInFilter(choices=Page.PageType.choices, help_text="Lọc loại trang, nhiều giá trị.")
     path = CoreUUIDInFilter(field_name="path_id", help_text="Id đường dẫn giữa, nhiều giá trị.")
     owner = CoreUUIDInFilter(field_name="owner_id", help_text="Id chủ sở hữu, nhiều giá trị.")
 
     class Meta:
         model = Page
-        fields = ("status", "path", "owner")
+        fields = ("status", "page_type", "path", "owner")

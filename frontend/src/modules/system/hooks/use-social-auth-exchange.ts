@@ -14,9 +14,9 @@ export function useSocialAuthExchange() {
   const exchange = useCallback(
     async (mode: string, provider: string, code: string, redirectUri: string) => {
       if (mode === "link") {
-        await authService.linkSocialAccount(provider, code, redirectUri);
+        return await authService.linkSocialAccount(provider, code, redirectUri);
       } else {
-        await authService.socialLogin(provider, code, redirectUri);
+        return await authService.socialLogin(provider, code, redirectUri);
       }
     },
     [],

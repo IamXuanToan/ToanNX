@@ -8,7 +8,7 @@ from app.core.exceptions.validation_error import ValidationError
 
 SLUG_PATTERN = re.compile(r"^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$")
 RESERVED_SLUGS = frozenset(
-    {"admin", "api", "login", "register", "system", "settings", "new", "edit", "create"}
+    {"admin", "api", "login", "register", "system", "settings", "new", "edit", "create", "demo"}
 )
 MIN_SLUG_LENGTH = 3
 MAX_SLUG_LENGTH = 64

@@ -1,19 +1,32 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
+import {
+  ExternalLink,
+  Eye,
+  EyeOff,
+  FileText,
+  FolderTree,
+  Heart,
+  Package,
+  Palette,
+  Settings,
+  ShoppingBag,
+  Sparkles,
+  UserCheck,
+} from "lucide-react";
+import NextLink from "next/link";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Controller } from "react-hook-form";
 
 import { Link } from "@/i18n/navigation";
 import { AttachmentImageUploadView } from "@/modules/system/views/attachment/attachment-image-upload-view";
 import { AttachmentTiptapImagePlugin } from "@/modules/system/views/attachment/attachment-tiptap-image-plugin";
-import { ColorInput } from "@/shares/components/common/color-input";
 import { Form } from "@/shares/components/common/form";
-import { FormField } from "@/shares/components/common/form-field";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormField } from "@/shares/components/common/form-field";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
-import { FormLayout } from "@/shares/components/common/form-layout";
 import { RadioGroupField } from "@/shares/components/common/radio-group-field";
 import { SelectField } from "@/shares/components/common/select-field";
 import { SlugInput } from "@/shares/components/common/slug-input";
@@ -22,48 +35,119 @@ import {
   useTiptapPluginRegistry,
 } from "@/shares/components/common/hooks/use-tiptap-plugins";
 import { TiptapEditor } from "@/shares/components/common/tiptap-editor";
+import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui/tabs";
 import { Textarea } from "@/shares/components/ui/textarea";
 
+import { PAGE_TYPE } from "../../constants/page-constants";
 import { UTILITIES_ROUTES } from "../../constants/routes";
+import { PAGE_EXTENSIONS } from "../../extensions/page-extensions";
+import { PAGE_STATUSES, PAGE_TYPES, type PageDetail } from "../../types/page.types";
 import { QrCodeTiptapPlugin } from "../../views/qr-code/qr-code-tiptap-plugin";
 import { ShortLinkTiptapPlugin } from "../../views/short-link/short-link-tiptap-plugin";
-import { PAGE_EXTENSIONS } from "../../extensions/page-extensions";
-import { PAGE_STATUSES, PAGE_TEMPLATES, type PageDetail } from "../../types/custom-pages.types";
-import { PageButtonDialog } from "./page-button-dialog";
 import { PagePathSelect } from "../page-path/page-path-select";
 import { usePageForm } from "./hooks/use-page-form";
+import { PageAffiliateCategoriesEditor } from "./page-affiliate-categories-editor";
+import { PageAffiliateItemsEditor } from "./page-affiliate-items-editor";
+import { PageBioEditor } from "./page-bio-editor";
+import { PageDonationEditor } from "./page-donation-editor";
+import { PageButtonDialog } from "./page-button-dialog";
+import { PagePreviewFrame } from "./page-preview-frame";
+import { PageThemeEditor, THEME_PRESETS, type ThemePreset } from "./page-theme-editor";
+import { QuickAddModal } from "./quick-add-modal";
 
 /**
- * Form trang **một form cho tạo, sửa và xem**. Tạo: đường dẫn giữa (tạo/sửa nhanh bằng dialog), slug, tiêu đề,
- * mô tả, mẫu bắt đầu. Sửa: tab Nội dung (Tiptap + node riêng + plugin chèn ảnh Thư viện, mã QR, nút link rút gọn), Giao
- * diện, SEO, Cài đặt; lưu một lần.
+ * Form trang **một form cho tạo, sửa và xem**:
+ * - Hỗ trợ cả Template-Based Website System (Affiliate Storefront, Link-in-Bio, Donation VietQR)
+ * - Tương thích 100% trang Tiptap Rich-Text cũ (Legacy Page).
+ * - Split-Screen Workspace: biên tập nội dung bên trái, xem trước trực tiếp (Live Preview) bên phải.
+ * - Hỗ trợ Quick Add dán link tự bóc tách ảnh/tên/giá qua API SSRF-safe.
  *
- * @param props - Trang (khi sửa), quyền đường dẫn giữa, hàm tải lại khi lệch phiên bản.
- * @returns Form.
+ * @param props - Trang (khi sửa), cờ vô hiệu hóa, quyền đường dẫn giữa và hàm tải lại khi xung đột phiên bản.
+ * @returns Form trang.
  */
 export function PageForm({
   page,
   disabled = false,
   canCreatePath,
   canUpdatePath,
+  backHref,
+  onCreated,
   onReload,
 }: {
   page?: PageDetail;
   disabled?: boolean;
   canCreatePath: boolean;
   canUpdatePath: boolean;
+  backHref?: string;
+  onCreated?: (saved: PageDetail) => void;
   onReload?: () => unknown;
 }) {
   const t = useTranslations("utilities.customPages.pages");
   const tCommon = useTranslations("common.actions");
-  const state = usePageForm({ page, onReload });
+  const state = usePageForm({ page, onReload, onCreated });
   const registry = useTiptapPluginRegistry();
+  const [showLivePreview, setShowLivePreview] = useState(true);
+
   const { form, insertItems } = state;
   const locked = disabled || state.isSubmitting;
   const rootError = form.formState.errors.root?.message;
+  const isAffiliate =
+    state.pageType === PAGE_TYPE.AFFILIATE || state.pageType === PAGE_TYPE.PRODUCT_CATALOG;
+  const isBio = state.pageType === PAGE_TYPE.BIO || state.pageType === PAGE_TYPE.PORTFOLIO;
+  const isDonation = state.pageType === PAGE_TYPE.DONATION;
+  const isLegacy = state.pageType === PAGE_TYPE.LEGACY_PAGE;
+
+  const getFirstTabForType = (type: string) => {
+    switch (type) {
+      case PAGE_TYPE.AFFILIATE:
+      case PAGE_TYPE.PRODUCT_CATALOG:
+        return "products";
+      case PAGE_TYPE.BIO:
+      case PAGE_TYPE.PORTFOLIO:
+        return "bio";
+      case PAGE_TYPE.DONATION:
+        return "donation";
+      case PAGE_TYPE.LEGACY_PAGE:
+        return "content";
+      default:
+        return "design";
+    }
+  };
+
+  const pageTypeKey = `${page?.id ?? "new"}-${state.pageType}`;
+  const [prevPageTypeKey, setPrevPageTypeKey] = useState(pageTypeKey);
+  const [activeTab, setActiveTab] = useState(() => getFirstTabForType(state.pageType));
+
+  // Tự động đồng bộ focus tab đầu tiên khi vào màn hình sửa trang hoặc khi đổi loại trang
+  if (prevPageTypeKey !== pageTypeKey) {
+    setPrevPageTypeKey(pageTypeKey);
+    setActiveTab(getFirstTabForType(state.pageType));
+  }
+
+  const handleApplyPreset = (preset: ThemePreset) => {
+    form.setValue("primaryColor", preset.primary, { shouldDirty: true, shouldValidate: true });
+    form.setValue("backgroundColor", preset.bg, { shouldDirty: true, shouldValidate: true });
+    form.setValue("textColor", preset.text, { shouldDirty: true, shouldValidate: true });
+    form.setValue("buttonStyle", preset.buttonStyle, { shouldDirty: true, shouldValidate: true });
+    if (preset.mode) {
+      form.setValue("themeMode", preset.mode, { shouldDirty: true, shouldValidate: true });
+    }
+    const currentStyleConfig = form.getValues("styleConfig") ?? {};
+    form.setValue(
+      "styleConfig",
+      {
+        ...currentStyleConfig,
+        themePreset: preset.name.toLowerCase().replace(/\s+/g, "_"),
+        primaryColor: preset.primary,
+        backgroundColor: preset.bg,
+        textColor: preset.text,
+      },
+      { shouldDirty: true },
+    );
+  };
 
   const settings = (
     <FormSection title={t("sections.settings")}>
@@ -104,9 +188,9 @@ export function PageForm({
             value={field.value}
             onValueChange={field.onChange}
             disabled={locked}
-            options={PAGE_STATUSES.map((status) => ({
-              value: status,
-              label: t(`statuses.${status}`),
+            options={PAGE_STATUSES.map((s) => ({
+              value: s,
+              label: t(`statuses.${s}`),
             }))}
           />
         )}
@@ -114,17 +198,26 @@ export function PageForm({
       {page ? null : (
         <Controller
           control={form.control}
-          name="template"
+          name="pageType"
           render={({ field }) => (
             <RadioGroupField
-              legend={t("fields.template")}
+              legend={t("fields.pageType")}
               value={field.value}
-              onChange={field.onChange}
+              onChange={(nextType) => {
+                field.onChange(nextType);
+                if (nextType === PAGE_TYPE.AFFILIATE) {
+                  handleApplyPreset(THEME_PRESETS[0]);
+                } else if (nextType === PAGE_TYPE.BIO) {
+                  handleApplyPreset(THEME_PRESETS[1]);
+                } else if (nextType === PAGE_TYPE.DONATION) {
+                  handleApplyPreset(THEME_PRESETS[2]);
+                }
+              }}
               disabled={locked}
-              options={PAGE_TEMPLATES.map((template) => ({
-                value: template,
-                label: t(`templates.${template}`),
-                description: t(`templates.${template}Hint`),
+              options={PAGE_TYPES.map((pt) => ({
+                value: pt,
+                label: t(`pageTypes.${pt}`),
+                description: t(`pageTypes.${pt}Hint`),
               }))}
             />
           )}
@@ -151,167 +244,287 @@ export function PageForm({
           </Button>
         </div>
       ) : null}
-      {page ? (
-        <Tabs defaultValue="content">
-          <TabsList>
-            <TabsTrigger value="content">{t("tabs.content")}</TabsTrigger>
-            <TabsTrigger value="design">{t("tabs.design")}</TabsTrigger>
-            <TabsTrigger value="seo">{t("tabs.seo")}</TabsTrigger>
-            <TabsTrigger value="settings">{t("tabs.settings")}</TabsTrigger>
-          </TabsList>
-          <TabsContent value="content" className="space-y-3">
-            {state.draft ? (
-              <div className="bg-muted/60 flex flex-wrap items-center gap-3 rounded-xl border p-3">
-                <p className="flex-1 text-sm">{t("draftFound")}</p>
-                <Button type="button" variant="outline" onClick={state.discardDraft}>
-                  {t("draftDiscard")}
-                </Button>
-                <Button type="button" onClick={state.restoreDraft}>
-                  {t("draftRestore")}
-                </Button>
-              </div>
+
+      <div className="space-y-4">
+        <div className="border-border bg-card flex flex-wrap items-center justify-between gap-3 rounded-xl border p-3 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="gap-1.5 px-2.5 py-1 text-xs font-semibold">
+              {state.pageType === PAGE_TYPE.AFFILIATE ? (
+                <ShoppingBag className="text-primary size-3.5" />
+              ) : state.pageType === PAGE_TYPE.BIO ? (
+                <UserCheck className="text-primary size-3.5" />
+              ) : state.pageType === PAGE_TYPE.DONATION ? (
+                <Heart className="text-destructive size-3.5" />
+              ) : (
+                <FileText className="text-muted-foreground size-3.5" />
+              )}
+              <span>{t(`pageTypes.${state.pageType}`)}</span>
+            </Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            {!page ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                asChild
+                className="h-8 gap-1.5 text-xs font-medium"
+              >
+                <Link href={UTILITIES_ROUTES.demo} target="_blank">
+                  <Sparkles className="text-primary size-3.5" />
+                  <span>{t("viewLiveDemo")}</span>
+                </Link>
+              </Button>
             ) : null}
-            <TiptapPluginContext.Provider value={registry}>
-              <AttachmentTiptapImagePlugin />
-              <QrCodeTiptapPlugin />
-              <ShortLinkTiptapPlugin />
-              <Controller
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <TiptapEditor
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    label={t("tabs.content")}
-                    disabled={locked}
-                    extensions={PAGE_EXTENSIONS}
-                    insertItems={insertItems}
-                  />
-                )}
-              />
-            </TiptapPluginContext.Provider>
-            <PageButtonDialog editor={state.buttonEditor} onClose={state.closeButtonDialog} />
-          </TabsContent>
-          <TabsContent value="design">
-            <FormLayout
-              aside={
-                <FormSection title={t("sections.images")}>
-                  <FormField control={form.control} name="avatar" label={t("fields.avatar")}>
-                    {(field) => (
-                      <AttachmentImageUploadView
-                        value={field.value}
-                        onChange={field.onChange}
-                        disabled={locked}
-                        aria-label={t("fields.avatar")}
-                      />
-                    )}
-                  </FormField>
-                  <FormField control={form.control} name="cover" label={t("fields.cover")}>
-                    {(field) => (
-                      <AttachmentImageUploadView
-                        value={field.value}
-                        onChange={field.onChange}
-                        shape="square"
-                        disabled={locked}
-                        aria-label={t("fields.cover")}
-                      />
-                    )}
-                  </FormField>
-                </FormSection>
-              }
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={() => setShowLivePreview(!showLivePreview)}
+              className="text-muted-foreground hover:text-foreground h-8 gap-1.5 text-xs"
             >
-              <FormSection title={t("sections.theme")}>
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <FormField control={form.control} name="themeMode" label={t("fields.themeMode")}>
-                    {(field) => (
-                      <SelectField
-                        id={field.id}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        disabled={locked}
-                        options={(["system", "light", "dark"] as const).map((mode) => ({
-                          value: mode,
-                          label: t(`themeModes.${mode}`),
-                        }))}
-                      />
-                    )}
-                  </FormField>
-                  <FormField
-                    control={form.control}
-                    name="buttonStyle"
-                    label={t("fields.buttonStyle")}
-                  >
-                    {(field) => (
-                      <SelectField
-                        id={field.id}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        disabled={locked}
-                        options={(["rounded", "square", "pill"] as const).map((style) => ({
-                          value: style,
-                          label: t(`buttonStyles.${style}`),
-                        }))}
-                      />
-                    )}
-                  </FormField>
-                  {(["primaryColor", "backgroundColor", "textColor"] as const).map((name) => (
-                    <FormField
-                      key={name}
-                      control={form.control}
-                      name={name}
-                      label={t(`fields.${name}`)}
+              {showLivePreview ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+              <span className="hidden sm:inline">
+                {showLivePreview ? t("togglePreview.hide") : t("togglePreview.show")}
+              </span>
+            </Button>
+          </div>
+        </div>
+
+        <div className={`grid gap-6 ${showLivePreview ? "xl:grid-cols-12" : "grid-cols-1"}`}>
+          {/* Form Section bên trái */}
+          <div className={showLivePreview ? "xl:col-span-6 2xl:col-span-7" : ""}>
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="mb-4 w-full justify-start">
+                {isAffiliate ? (
+                  <>
+                    <TabsTrigger
+                      value="products"
+                      className="gap-1.5 px-3 py-1.5 text-xs font-medium"
                     >
-                      {(field) => (
-                        <ColorInput
-                          value={field.value}
-                          onChange={field.onChange}
-                          pickerLabel={t(`fields.${name}`)}
-                          disabled={locked}
-                          invalid={field["aria-invalid"]}
-                        />
-                      )}
-                    </FormField>
-                  ))}
-                </div>
-              </FormSection>
-            </FormLayout>
-          </TabsContent>
-          <TabsContent value="seo">
-            <FormSection title={t("sections.seo")}>
-              <FormField
-                control={form.control}
-                name="seoTitle"
-                label={t("fields.seoTitle")}
-                description={t("fields.seoTitleHint")}
-              >
-                {(field) => <Input {...field} maxLength={160} disabled={locked} />}
-              </FormField>
-              <FormField
-                control={form.control}
-                name="seoDescription"
-                label={t("fields.seoDescription")}
-              >
-                {(field) => <Textarea {...field} rows={3} maxLength={300} disabled={locked} />}
-              </FormField>
-            </FormSection>
-          </TabsContent>
-          <TabsContent value="settings">{settings}</TabsContent>
-        </Tabs>
-      ) : (
-        settings
-      )}
+                      <Package className="size-3.5" />
+                      <span>{t("tabs.products")}</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="categories"
+                      className="gap-1.5 px-3 py-1.5 text-xs font-medium"
+                    >
+                      <FolderTree className="size-3.5" />
+                      <span>{t("tabs.categories")}</span>
+                    </TabsTrigger>
+                  </>
+                ) : null}
+                {isBio ? (
+                  <TabsTrigger value="bio" className="gap-1.5 px-3 py-1.5 text-xs font-medium">
+                    <UserCheck className="size-3.5" />
+                    <span>{t("tabs.bio")}</span>
+                  </TabsTrigger>
+                ) : null}
+                {isDonation ? (
+                  <TabsTrigger value="donation" className="gap-1.5 px-3 py-1.5 text-xs font-medium">
+                    <Heart className="size-3.5" />
+                    <span>{t("tabs.donation")}</span>
+                  </TabsTrigger>
+                ) : null}
+                {isLegacy ? (
+                  <TabsTrigger value="content" className="gap-1.5 px-3 py-1.5 text-xs font-medium">
+                    <FileText className="size-3.5" />
+                    <span>{t("tabs.content")}</span>
+                  </TabsTrigger>
+                ) : null}
+                <TabsTrigger value="design" className="gap-1.5 px-3 py-1.5 text-xs font-medium">
+                  <Palette className="size-3.5" />
+                  <span>{t("tabs.design")}</span>
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="gap-1.5 px-3 py-1.5 text-xs font-medium">
+                  <Settings className="size-3.5" />
+                  <span>{t("tabs.settings")}</span>
+                </TabsTrigger>
+              </TabsList>
+
+              <div className="border-border bg-card rounded-xl border p-4 shadow-2xs">
+                {isAffiliate ? (
+                  <>
+                    <TabsContent value="products">
+                      <PageAffiliateItemsEditor
+                        items={state.affiliateItems}
+                        categories={state.affiliateCategories}
+                        onRemoveItem={state.removeAffiliateProduct}
+                        onEditItem={state.openEditProduct}
+                        onReorderItems={state.reorderAffiliateProducts}
+                        onOpenAddManual={state.openAddProduct}
+                        onOpenQuickAdd={state.openQuickAdd}
+                        onImportItems={state.importAffiliateProducts}
+                        showPrice={state.showPrice}
+                        onToggleShowPrice={state.toggleShowPrice}
+                        disabled={locked}
+                      />
+                    </TabsContent>
+                    <TabsContent value="categories">
+                      <PageAffiliateCategoriesEditor
+                        categories={state.affiliateCategories}
+                        onAddCategory={state.addCategory}
+                        onRemoveCategory={state.removeCategory}
+                        onUpdateCategory={state.updateCategory}
+                        onReorderCategories={state.reorderCategories}
+                        disabled={locked}
+                      />
+                    </TabsContent>
+                  </>
+                ) : null}
+
+                {isBio ? (
+                  <TabsContent value="bio">
+                    <PageBioEditor
+                      config={state.bioConfig}
+                      onChange={state.updateBioConfig}
+                      disabled={locked}
+                    />
+                  </TabsContent>
+                ) : null}
+
+                {isDonation ? (
+                  <TabsContent value="donation">
+                    <PageDonationEditor
+                      config={state.donationConfig}
+                      onChange={state.updateDonationConfig}
+                      disabled={locked}
+                    />
+                  </TabsContent>
+                ) : null}
+
+                {isLegacy ? (
+                  <TabsContent value="content" className="space-y-3">
+                    {state.draft ? (
+                      <div className="bg-muted/60 flex flex-wrap items-center gap-3 rounded-xl border p-3">
+                        <p className="flex-1 text-sm">{t("draftFound")}</p>
+                        <Button type="button" variant="outline" onClick={state.discardDraft}>
+                          {t("draftDiscard")}
+                        </Button>
+                        <Button type="button" onClick={state.restoreDraft}>
+                          {t("draftRestore")}
+                        </Button>
+                      </div>
+                    ) : null}
+                    <TiptapPluginContext.Provider value={registry}>
+                      <AttachmentTiptapImagePlugin />
+                      <QrCodeTiptapPlugin />
+                      <ShortLinkTiptapPlugin />
+                      <Controller
+                        control={form.control}
+                        name="content"
+                        render={({ field }) => (
+                          <TiptapEditor
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            label={t("tabs.content")}
+                            disabled={locked}
+                            extensions={PAGE_EXTENSIONS}
+                            insertItems={insertItems}
+                          />
+                        )}
+                      />
+                    </TiptapPluginContext.Provider>
+                    <PageButtonDialog
+                      editor={state.buttonEditor}
+                      onClose={state.closeButtonDialog}
+                    />
+                  </TabsContent>
+                ) : null}
+
+                <TabsContent value="design" className="space-y-6">
+                  <FormSection title={t("sections.images")}>
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <FormField
+                        control={form.control}
+                        name="avatar"
+                        label={t("fields.avatar")}
+                        tooltip={t("fields.avatarTooltip")}
+                      >
+                        {(field) => (
+                          <AttachmentImageUploadView
+                            value={field.value}
+                            onChange={field.onChange}
+                            disabled={locked}
+                            hideHint
+                            aria-label={t("fields.avatar")}
+                          />
+                        )}
+                      </FormField>
+                      <FormField
+                        control={form.control}
+                        name="cover"
+                        label={t("fields.cover")}
+                        tooltip={t("fields.coverTooltip")}
+                      >
+                        {(field) => (
+                          <AttachmentImageUploadView
+                            value={field.value}
+                            onChange={field.onChange}
+                            shape="square"
+                            disabled={locked}
+                            hideHint
+                            aria-label={t("fields.cover")}
+                          />
+                        )}
+                      </FormField>
+                    </div>
+                  </FormSection>
+
+                  <PageThemeEditor
+                    control={form.control}
+                    setValue={form.setValue}
+                    disabled={locked}
+                    onApplyPreset={handleApplyPreset}
+                  />
+                </TabsContent>
+
+                <TabsContent value="settings">{settings}</TabsContent>
+              </div>
+            </Tabs>
+          </div>
+
+          {/* Live Preview Frame bên phải */}
+          {showLivePreview ? (
+            <div className="xl:col-span-6 2xl:col-span-5">
+              <div className="sticky top-6">
+                <PagePreviewFrame
+                  page={state.livePreviewData}
+                  device={state.previewDevice}
+                  onDeviceChange={state.setPreviewDevice}
+                />
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      {/* Modal Thêm & Sửa sản phẩm bằng URL hoặc tải ảnh */}
+      <QuickAddModal
+        open={state.quickAddOpen}
+        initialMode={state.productModalMode}
+        categories={state.affiliateCategories}
+        editingItem={state.editingProduct}
+        onAdd={state.addAffiliateProduct}
+        onSave={state.updateAffiliateProduct}
+        onClose={() => {
+          state.setQuickAddOpen(false);
+          state.setEditingProduct(null);
+        }}
+      />
+
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
-        {page ? (
-          <Button type="button" variant="outline" asChild>
-            <a href={page.publicUrl} target="_blank" rel="noreferrer">
-              <ExternalLink />
-              {t("view")}
-            </a>
+        {page?.publicUrl ? (
+          <Button type="button" variant="outline" asChild className="gap-1.5">
+            <NextLink href={page.publicUrl} target="_blank" rel="noreferrer">
+              <ExternalLink className="size-3.5" />
+              <span>{t("view")}</span>
+            </NextLink>
           </Button>
         ) : null}
         <Button type="button" variant="outline" asChild>
-          <Link href={UTILITIES_ROUTES.pages}>
+          <Link href={(backHref ?? UTILITIES_ROUTES.pages) as never}>
             {disabled ? tCommon("back") : tCommon("cancel")}
           </Link>
         </Button>

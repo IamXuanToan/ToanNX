@@ -59,18 +59,27 @@ export function useLoginForm(redirectTo: AppPathname) {
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
+    let currentUser;
     try {
-      await login.mutateAsync(values);
+      currentUser = await login.mutateAsync(values);
     } catch (error) {
       form.setError("root", { message: errorMessage(error) });
       return;
     }
+    const isStaffUser = Boolean(currentUser.user?.isStaff || currentUser.user?.isSuperuser);
     const next = sanitizeNextPath(searchParams.get("redirect") || searchParams.get("next"));
     if (next) {
-      // `next` là URL đã có locale do proxy tạo ra.
-      window.location.assign(next);
+      // Người dùng thường không được chuyển vào trang quản trị: đưa vào client portal
+      const isAdminTarget = next.includes("/admin") || next.includes("/quan-tri");
+      if (!isStaffUser && isAdminTarget) {
+        router.replace("/portal" as never);
+      } else {
+        window.location.assign(next);
+      }
     } else {
-      router.replace(redirectTo as never);
+      // Người dùng có is_staff=True thì vào trang admin, không thì vào client portal
+      const destination = isStaffUser ? redirectTo : ("/portal" as AppPathname);
+      router.replace(destination as never);
     }
   });
 

@@ -1,3 +1,5 @@
+import type { DemoTemplateTypeValue } from "./page-constants";
+
 /**
  * Route nội bộ của module Tiện ích (link rút gọn, mã QR, trang, đường dẫn giữa).
  * Route động là hàm trả `{ pathname, params }` cho `Link`/`router` của `@/i18n/navigation`.
@@ -22,6 +24,12 @@ export const UTILITIES_ROUTES = {
   pagePathDetail: (id: string) => ({
     pathname: "/admin/page-paths/[id]" as const,
     params: { id },
+  }),
+  /** Trang xem trước trực tiếp các mẫu template công khai. */
+  demo: "/demo",
+  demoType: (type: DemoTemplateTypeValue) => ({
+    pathname: "/demo/[type]" as const,
+    params: { type },
   }),
 } as const;
 
@@ -67,6 +75,8 @@ export const UTILITIES_PATHNAMES = {
     vi: "/quan-tri/tien-ich/duong-dan/[id]",
     en: "/admin/utilities/page-paths/[id]",
   },
+  "/demo": { vi: "/demo", en: "/demo" },
+  "/demo/[type]": { vi: "/demo/[type]", en: "/demo/[type]" },
 } as const;
 
 /**
@@ -91,5 +101,8 @@ export const RESERVED_SEGMENTS = new Set([
   "favicon",
   "lien-ket-khong-kha-dung",
   "link-unavailable",
+  "demo",
+  "portal",
+  "ca-nhan",
   PUBLIC_PAGE_ROUTE_PREFIX,
 ]);

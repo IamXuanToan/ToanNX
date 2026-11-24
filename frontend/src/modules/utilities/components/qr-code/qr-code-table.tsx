@@ -1,5 +1,6 @@
 "use client";
 
+import type { ComponentProps } from "react";
 import Image from "next/image";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 
@@ -13,26 +14,40 @@ import { UTILITIES_ROUTES } from "../../constants/routes";
 import { QR_TYPES, type QrCode } from "../../types/qr-code.types";
 import { useQrCodeTable } from "./hooks/use-qr-code-table";
 
+type DetailRouteFn = (id: string) => { pathname: string; params: Record<string, string> };
+
 /**
  * Bảng mã QR: ảnh nhỏ + tên, loại, chủ sở hữu (khi xem được của mọi người), cập nhật; Sửa, Xóa, xóa hàng loạt.
+ * Hỗ trợ truyền detailRoute và ownerId cho Client Portal.
  *
- * @param props - Quyền sửa/xóa và có hiện cột chủ sở hữu.
+ * @param props - Quyền sửa/xóa, cờ hiện chủ sở hữu và các tùy biến điều hướng.
  * @returns Bảng.
  */
 export function QrCodeTable({
   canUpdate,
   canDelete,
   showOwner,
+  ownerOnly,
+  ownerId,
+  detailRoute,
 }: {
   canUpdate: boolean;
   canDelete: boolean;
   showOwner: boolean;
+  ownerOnly?: boolean;
+  ownerId?: string;
+  detailRoute?: DetailRouteFn;
 }) {
   const t = useTranslations("utilities.qrCodes");
   const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
-  const state = useQrCodeTable();
+  const state = useQrCodeTable({ ownerOnly, ownerId, detailRoute });
   const { table, query } = state;
+
+  const getTargetHref = (id: string): ComponentProps<typeof Link>["href"] =>
+    (detailRoute ? detailRoute(id) : UTILITIES_ROUTES.qrCodeDetail(id)) as ComponentProps<
+      typeof Link
+    >["href"];
 
   const columns: DataTableColumn<QrCode>[] = [
     {
@@ -53,7 +68,7 @@ export function QrCodeTable({
             />
           </div>
           <Link
-            href={UTILITIES_ROUTES.qrCodeDetail(code.id)}
+            href={getTargetHref(code.id)}
             className="hover:text-primary truncate font-medium underline-offset-4 hover:underline"
           >
             {code.name}
@@ -107,7 +122,10 @@ export function QrCodeTable({
           label={t("columns.qrType")}
           value={table.getFilterValues("qrType")}
           onValueChange={(values) => table.setFilterValues("qrType", values)}
-          options={QR_TYPES.map((value) => ({ value, label: t(`types.${value}`) }))}
+          options={QR_TYPES.map((type) => ({
+            value: type,
+            label: t(`types.${type}`),
+          }))}
         />
       }
       ordering={table.ordering}
