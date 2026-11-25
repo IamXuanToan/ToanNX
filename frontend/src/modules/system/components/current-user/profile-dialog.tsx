@@ -164,7 +164,7 @@ export function ProfileDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="flex h-[min(85vh,760px)] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl"
+        className="flex h-[min(85vh,620px)] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl md:max-w-4xl lg:max-w-5xl"
         data-testid="profile-dialog"
       >
         <DialogHeader className="border-border/60 border-b px-6 py-4">
@@ -178,11 +178,10 @@ export function ProfileDialog({
         </DialogHeader>
 
         {/* Hai cột từ md (trái: thẻ người dùng rộng cố định, phải: tabs), dưới md xếp chồng. Thân cuộn riêng
-            (header/footer đứng yên); cột phải `flex-1 min-w-0` để bảng rộng trong tab Thông báo cuộn ngang trong
-            khung của nó thay vì đẩy cả dialog tràn ra ngoài. */}
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row">
+            (header/footer đứng yên); bỏ justify-between để cột trái không bị kéo dãn khoảng trống ở màn hình lớn. */}
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
           {/* CỘT TRÁI: Thẻ định danh người dùng, vai trò và thông tin hoạt động */}
-          <div className="border-border/60 bg-muted/25 flex flex-col justify-between space-y-6 border-b p-5 sm:p-6 md:w-72 md:shrink-0 md:border-r md:border-b-0 lg:w-80">
+          <div className="border-border/60 bg-muted/25 flex flex-col space-y-4 border-b p-5 sm:p-6 md:w-72 md:shrink-0 md:overflow-y-auto md:border-r md:border-b-0 lg:w-80">
             <div className="space-y-4">
               {/* Vùng Avatar và các nút thao tác ảnh */}
               <div className="flex flex-col items-center text-center">
@@ -346,15 +345,13 @@ export function ProfileDialog({
           </div>
 
           {/* CỘT PHẢI: Tabs thao tác (Thông tin cá nhân & Đổi mật khẩu) */}
-          <div className="flex min-w-0 flex-1 flex-col justify-between p-5 sm:p-6">
+          <div className="flex min-w-0 flex-1 flex-col p-5 sm:p-6 md:overflow-y-auto">
             <Tabs
               value={activeTab}
               onValueChange={(val) => setActiveTab(val as ProfileTab)}
               className="w-full"
             >
-              <TabsList
-                className={canNotifications ? "grid w-full grid-cols-4" : "grid w-full grid-cols-3"}
-              >
+              <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1">
                 <TabsTrigger value="info" className="min-w-0">
                   <User className="size-4" aria-hidden />
                   <span className="truncate">{t("tabs.info")}</span>

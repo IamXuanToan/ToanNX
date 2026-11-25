@@ -44,16 +44,20 @@ export function useProfileDialog({
   user,
   roles = [],
   open,
+  urlMode = "dialog",
 }: {
   user: AuthUser | undefined;
   roles?: AuthRole[];
   open: boolean;
+  urlMode?: "dialog" | "page";
 }) {
   const t = useTranslations("system.auth.profile");
   const searchParams = useSearchParams();
   const isProfileOpenInUrl =
+    urlMode === "page" ||
     searchParams?.get(PROFILE_DIALOG_QUERY.openParam) === PROFILE_DIALOG_QUERY.openValue;
-  const tabParam = isProfileOpenInUrl ? searchParams?.get(PROFILE_DIALOG_QUERY.tabParam) : null;
+  const rawTabParam = isProfileOpenInUrl ? searchParams?.get(PROFILE_DIALOG_QUERY.tabParam) : null;
+  const tabParam = rawTabParam === "password" ? "security" : rawTabParam;
   const validTab =
     tabParam === "security" ||
     tabParam === "social" ||
@@ -75,7 +79,9 @@ export function useProfileDialog({
     setSelectedTab(tab);
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
-      url.searchParams.set(PROFILE_DIALOG_QUERY.openParam, PROFILE_DIALOG_QUERY.openValue);
+      if (urlMode === "dialog") {
+        url.searchParams.set(PROFILE_DIALOG_QUERY.openParam, PROFILE_DIALOG_QUERY.openValue);
+      }
       url.searchParams.set(PROFILE_DIALOG_QUERY.tabParam, tab);
       window.history.replaceState(null, "", `${url.pathname}${url.search}`);
     }
