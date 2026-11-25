@@ -8,13 +8,13 @@ Tiện ích: link rút gọn `/s/{slug}`, mã QR (VietQR, liên kết, văn bả
 
 ## Model
 
-`ShortLink` (lưu trữ `clicks_count` - tổng lượt truy cập, `visitors_count` - số người vào duy nhất, `last_accessed_at` - truy cập gần nhất), `QrCode`, `Page`, `PagePath` (đường dẫn giữa dùng chung cho nhiều trang).
+`ShortLink` (lưu trữ `clicks_count` - tổng lượt truy cập, `visitors_count` - số người vào duy nhất, `last_accessed_at` - truy cập gần nhất), `QrCode`, `Page`, `PagePath` (đường dẫn giữa dùng chung cho nhiều trang), `DonationTransaction` (giao dịch quyên góp SePay gắn với trang Donate).
 
 `Page` hỗ trợ hệ thống **Template-Based Website System** thông qua các trường:
 - `page_type`: loại trang (`AFFILIATE`, `BIO`, `DONATION`, `PRODUCT_CATALOG`, `PORTFOLIO`, `LANDING`, `LEGACY_PAGE`).
 - `template_key`: mã template giao diện (ví dụ `product_grid`, `product_list`, `minimal_links`, `vietqr_donate`).
 - `template_version`: phiên bản template (mặc định 1).
-- `content_config`: JSON dữ liệu chuyên biệt theo từng loại trang (sản phẩm, danh mục, liên kết, tài khoản ngân hàng).
+- `content_config`: JSON dữ liệu chuyên biệt theo từng loại trang (sản phẩm, danh mục, liên kết, tài khoản ngân hàng, cấu hình webhook donate cho từng mã QR, ẩn hiện số tiền, số ngày vinh danh leaderboard).
 - `style_config`: cấu hình giao diện (theme preset, màu sắc, bo góc, ẩn/hiện giá/ảnh).
 - `responsive_config`: cấu hình hiển thị theo thiết bị (số cột trên desktop, tablet, mobile).
 - `content`: Tiptap JSON giữ lại cho các trang kiểu tự do (`LEGACY_PAGE`) đảm bảo tương thích ngược 100%.
@@ -27,11 +27,16 @@ Tiện ích: link rút gọn `/s/{slug}`, mã QR (VietQR, liên kết, văn bả
 | `QrCodePermission` | `qr_code` (+ `manage_all`) | read, create, update, delete |
 | `PagePermission` | `page` (+ `manage_all`) | read, create, update, delete |
 | `PagePathPermission` | `page_path` | read |
+| `DonationPermission` | `donation` (+ `manage_all`, `export`) | read, update, export |
 
 ## Màn quản trị
 
-Một cụm (4 mục): Link rút gọn (`link-rut-gon`) · Mã QR (`ma-qr`) · Trang (`trang`) · Đường dẫn (`duong-dan`).
-Mỗi màn có danh sách, tạo mới, chi tiết (chỉ xem, `?mode=edit` để sửa).
+Chia 3 cụm chuẩn:
+- **Tổng quan (`overview`)**: Tổng quan module Tiện ích (`/quan-tri/tien-ich`) - Dashboard trung tâm tích hợp 4 tab theo dõi toàn bộ lưu lượng toàn sàn: Tổng quan KPI, Quyên góp & SePay, Link rút gọn & QR, Trang tùy chỉnh.
+- **Nội dung (`content`)**: Trang (`trang`) · Đường dẫn (`duong-dan`) · Quyên góp (`quyen-gop` - Lịch sử ủng hộ toàn sàn, lọc bảng vinh danh, trạng thái kiểm duyệt, xuất báo cáo CSV).
+- **Công cụ (`tools`)**: Link rút gọn (`link-rut-gon`) · Mã QR (`ma-qr`).
+
+Ngoài ra, Client Portal bổ sung màn hình **Quyên góp & Ủng hộ** (`/ca-nhan/quyen-gop`) dành riêng cho từng chủ trang: theo dõi thống kê cá nhân (1 người), quản lý ẩn/hiện comment và xuất báo cáo CSV.
 
 ## Trang công khai
 
@@ -47,7 +52,14 @@ Mỗi màn có danh sách, tạo mới, chi tiết (chỉ xem, `?mode=edit` đ�
     + Chống click ảo / spam: debounce 3 giây bỏ qua double-click hoặc reload tức thì; trong vòng 24 giờ, cùng một người
       chỉ được tính là 1 visitor (`visitors_count`), các lần truy cập tiếp theo chỉ tăng tổng số click (`clicks_count`).
 - `/<đường dẫn>/<slug>`: trang tùy chỉnh công khai.
-  - Tự động điều hướng hiển thị (`PageRendererDispatcher`): trang Affiliate Storefront, Bio Link, Donation VietQR (hỗ trợ đa phương thức VietQR ngân hàng, MoMo, ZaloPay, PayPal, tùy biến màu sắc, logo giữa mã QR, chế độ đơn/đa mã) hoặc Legacy Tiptap.
+  - Tự động điều hướng hiển thị (`PageRendererDispatcher`): trang Affiliate Storefront, Bio Link, Donation VietQR hoặc Legacy Tiptap.
+  - **Trang Donate SePay**:
+    + Live Ticker Marquee hiển thị lời tri ân chạy ngang cập nhật tự động mỗi 15 giây.
+    + Bảng Vinh danh phân hạng 4 cấp (Đồng ≥100k, Bạc ≥200k, Vàng ≥500k, Kim Cương ≥1M) với đồng hồ đếm ngược trực tiếp (Live Countdown) theo số ngày cấu hình.
+    + Quy đổi quà tặng hóm hỉnh (ly cà phê, gói mì tôm, bữa sáng, cuốn sách, nồi lẩu...).
+    + Switch ẩn/hiện số tiền cho từng mã QR (giữ bí mật số tiền khi cần thiết).
+    + Bộ lọc Regex tự động kiểm duyệt các từ ngữ bạo lực, khủng bố, chửi thề tục tĩu (cả teencode), tự động thay thế bằng lời cảm ơn an toàn trên trang public và cảnh báo đỏ trên dashboard.
+    + Thống kê Dashboard quyên góp (`GET /api/v1/utilities/donations/stats`): tổng tiền, lượt ủng hộ, kiểm duyệt, bình luận ẩn, cơ cấu quà tặng `by_gift` và biến động theo ngày `daily_trend` phục vụ biểu đồ trực quan phía client/portal.
   - Ảnh trong trang hiển thị tối ưu (với e-commerce CDN bên ngoài sử dụng `unoptimized` để không tốn quota Next.js Image optimization).
 - `POST /api/v1/utilities/pages/fetch-metadata`: trích xuất metadata sản phẩm/liên kết từ URL (OpenGraph, Twitter Card, JSON-LD, platform detector) phục vụ chức năng Quick Add trong quản trị. Được bảo vệ bởi bộ lọc an toàn 7 lớp chống SSRF (`SafeHttpClient`) và cache Redis 7 ngày.
 - Cache Redis (`constants/public_cache.py`, namespace `utilities:public`): link công khai và trang **đã xuất bản**
@@ -58,7 +70,7 @@ Mỗi màn có danh sách, tạo mới, chi tiết (chỉ xem, `?mode=edit` đ�
 
 ## Sự kiện, webhook, callback
 
-Không có.
+- Webhook SePay theo mã QR: `POST /api/v1/utilities/donations/webhook/{webhook_token}` (khai báo `WebhookDefinition` trong `ModuleDescriptor`). Bất kỳ người dùng nào (kể cả không có quyền `is_staff`) đều cấu hình được trực tiếp khi tạo mã QR donate.
 
 ## Chức năng liên quan
 

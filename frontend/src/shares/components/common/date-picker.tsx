@@ -113,15 +113,22 @@ export function DatePicker({
           ]}
           onSelect={select}
         />
-        <div className="flex items-center justify-between gap-2 border-t p-1">
-          <Button type="button" variant="ghost" onClick={() => select(new Date())}>
+        <div className="flex items-center justify-between gap-2 border-t px-3 py-2">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-xs font-medium"
+            onClick={() => select(new Date())}
+          >
             {t("today")}
           </Button>
           {clearable ? (
             <Button
               type="button"
               variant="ghost"
-              className="text-muted-foreground"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground text-xs font-medium"
               disabled={!value}
               onClick={() => {
                 onChange("");

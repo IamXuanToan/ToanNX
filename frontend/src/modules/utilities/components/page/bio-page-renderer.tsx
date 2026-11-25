@@ -3,19 +3,12 @@
 import {
   ArrowUpRight,
   Briefcase,
-  Camera,
   FolderGit2,
   Globe,
   GraduationCap,
   Mail,
   MapPin,
-  MessageCircle,
-  Music,
-  Send,
-  Share2,
-  ShoppingBag,
   Sparkles,
-  Video,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,56 +20,7 @@ import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 
 import type { BioSkill, PublicPage } from "../../types/page.types";
-
-/**
- * Nhận diện loại liên kết và chọn icon phù hợp theo chuẩn mạng xã hội / nền tảng.
- */
-function getLinkPlatformIcon(url: string, title: string) {
-  const target = `${url} ${title}`.toLowerCase();
-
-  if (target.includes("youtube.com") || target.includes("youtu.be")) {
-    return { icon: Video, color: "text-red-500", bg: "bg-red-500/10" };
-  }
-  if (target.includes("tiktok.com")) {
-    return {
-      icon: Music,
-      color: "text-neutral-900 dark:text-neutral-100",
-      bg: "bg-neutral-500/10",
-    };
-  }
-  if (target.includes("instagram.com")) {
-    return { icon: Camera, color: "text-pink-500", bg: "bg-pink-500/10" };
-  }
-  if (target.includes("facebook.com") || target.includes("fb.me")) {
-    return { icon: Share2, color: "text-blue-600", bg: "bg-blue-500/10" };
-  }
-  if (target.includes("github.com")) {
-    return {
-      icon: FolderGit2,
-      color: "text-neutral-800 dark:text-neutral-200",
-      bg: "bg-neutral-500/10",
-    };
-  }
-  if (target.includes("t.me") || target.includes("telegram")) {
-    return { icon: Send, color: "text-sky-500", bg: "bg-sky-500/10" };
-  }
-  if (target.includes("zalo") || target.includes("chat")) {
-    return { icon: MessageCircle, color: "text-blue-500", bg: "bg-blue-500/10" };
-  }
-  if (
-    target.includes("shopee") ||
-    target.includes("lazada") ||
-    target.includes("store") ||
-    target.includes("shop")
-  ) {
-    return { icon: ShoppingBag, color: "text-orange-500", bg: "bg-orange-500/10" };
-  }
-  if (target.includes("mailto:") || target.includes("@")) {
-    return { icon: Mail, color: "text-emerald-500", bg: "bg-emerald-500/10" };
-  }
-
-  return { icon: Globe, color: "text-primary", bg: "bg-primary/10" };
-}
+import { BioLinkIcon, getLinkPlatformIcon } from "./bio-link-icon";
 
 /**
  * Hiển thị trang Hồ sơ năng lực (Bio & Portfolio) theo phong cách Bento Grid hiện đại,
@@ -110,6 +54,7 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
       url: String(l.url ?? ""),
       title: String(l.title ?? ""),
       description: l.description ? String(l.description) : undefined,
+      iconUrl: l.iconUrl ? String(l.iconUrl) : l.icon_url ? String(l.icon_url) : undefined,
       highlight: Boolean(l.highlight),
       isVisible: true,
     }));
@@ -313,7 +258,6 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
           <section className="mb-10 flex flex-col gap-3">
             {links.map((link) => {
               const platform = getLinkPlatformIcon(link.url, link.title);
-              const IconComponent = platform.icon;
 
               return (
                 <Button
@@ -331,11 +275,17 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
                     <div className="flex min-w-0 items-center gap-3.5 pr-2">
                       <div
                         className={cn(
-                          "flex size-11 shrink-0 items-center justify-center rounded-xl transition-colors duration-200 group-hover:scale-105",
+                          "flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl p-2.5 transition-colors duration-200 group-hover:scale-105",
                           platform.bg,
                         )}
                       >
-                        <IconComponent className={cn("size-5", platform.color)} />
+                        <BioLinkIcon
+                          url={link.url}
+                          title={link.title}
+                          iconUrl={link.iconUrl}
+                          size={24}
+                          className="size-6 object-contain"
+                        />
                       </div>
                       <div className="min-w-0">
                         <div className="text-foreground group-hover:text-primary truncate text-sm font-semibold transition-colors">

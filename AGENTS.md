@@ -154,7 +154,7 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   viết tiếng Anh; giữ nguyên tên file, mã, API và lệnh. Chưa kiểm được trên giao diện thật thì nói rõ.
 - **Màu và dialog**: class màu ngữ nghĩa phải có token `--color-<tên>` trong `globals.css`
   (`tests/unit/theme-tokens.test.ts`); ưu tiên thang Tailwind thay giá trị tùy ý; `DialogContent p-0` thì
-  `DialogFooter` thêm `mx-0 mb-0`; dialog có tab cao cố định, chỉ thân cuộn (rule frontend §3.1.1, §4.0).
+  `DialogFooter` thêm `mx-0 mb-0`; dialog có tab cao cố định, chỉ thân cuộn (rule frontend §3.1.1, §4.0). Form/trang có Tab chính (`PageForm`, `PortalProfile`...): đồng bộ URL query param `?tab=...` qua `useTabState` (`window.history.replaceState`). Bảng/danh sách/bộ lọc: bắt buộc lưu toàn bộ phân trang (`page`, `pageSize`), tìm kiếm (`search`), sắp xếp (`ordering`), bộ lọc (`filterKeys`) và khoảng ngày/năm vào URL query params qua `useTableState` hoặc `window.history.replaceState` (F5 không mất filter/trang). Slug công khai (`Page`, `ShortLink`) hỗ trợ giữ nguyên chữ hoa chữ thường kiểu `ToanToChill` (`preserveCase: true`).
 - **Hủy request**: truyền `signal` của React Query cho `apiClient`, không tự abort `fetch` (rule frontend mục 5).
 - **ViewSet chỉ đọc mở `post` cho bulk** thì khai `"create": DENY`; xoá model không có `deleted_at` bằng
   `hard_delete` có lý do; field unique ngắn dùng `UniqueConstraint` có điều kiện (rule backend mục 9).

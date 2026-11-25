@@ -138,7 +138,7 @@ export function PageCreateDialog({
   const handleTitleChange = (val: string) => {
     setTitle(val);
     if (!slugEdited) {
-      setSlug(sanitizeSlugInput(val));
+      setSlug(sanitizeSlugInput(val, { preserveCase: true }));
     }
   };
 
@@ -333,6 +333,7 @@ export function PageCreateDialog({
                   id="create-page-slug"
                   value={slug}
                   onChange={handleSlugChange}
+                  preserveCase
                   placeholder={tCreate("slugPlaceholder")}
                   className="h-9 text-xs"
                 />

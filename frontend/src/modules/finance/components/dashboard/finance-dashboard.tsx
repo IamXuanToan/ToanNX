@@ -7,7 +7,7 @@ import { PageHeader } from "@/shares/components/common/page-header";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import { FinanceCountChart } from "./finance-count-chart";
 import { FinanceCumulativeChart } from "./finance-cumulative-chart";
 import { FinanceGrowthChart } from "./finance-growth-chart";
@@ -31,9 +31,10 @@ export function FinanceDashboard() {
   const format = useFormatter();
   const router = useRouter();
   const state = useFinanceDashboard();
+  const routes = useFinanceRoutes();
   const openMonth = (month: number) =>
     router.push({
-      pathname: FINANCE_ROUTES.reports,
+      pathname: routes.reports,
       query: { year: String(state.year), month: String(month) },
     });
   const monthLabel = (month: number) =>

@@ -7,7 +7,9 @@
     "shortLinks": "Short links",
     "qrCodes": "QR codes",
     "pages": "Pages",
-    "pagePaths": "Page paths"
+    "pagePaths": "Page paths",
+    "dashboard": "Dashboard",
+    "donations": "Donations"
   },
   "shortLinks": {
     "title": "Short links",
@@ -262,7 +264,22 @@
         "show": "Show Preview",
         "hide": "Hide Preview"
       },
+      "copied": "Link copied to clipboard.",
+      "copy": "Copy {url}",
+      "quickLink": "Public Page Link",
+      "quickLinkHint": "Copy public URL to share with readers and visitors",
+      "openLink": "Open page",
+      "copyLink": "Copy link",
       "presets": "Theme Presets",
+      "presetsAll": "All ({count})",
+      "presetsLight": "Light Themes ({count})",
+      "presetsDark": "Dark Themes ({count})",
+      "presetsSearchPlaceholder": "Search presets (e.g. emerald, ocean, dark, neon...)",
+      "presetsLightSection": "Light Themes",
+      "presetsLightSectionDesc": "Bright, clean, elegant themes optimized for daytime reading",
+      "presetsDarkSection": "Dark Themes",
+      "presetsDarkSectionDesc": "Modern, sleek themes with deep contrast and tech aesthetic",
+      "presetsEmpty": "No matching presets found",
       "maximizePreview": "Fullscreen preview",
       "livePreviewTitle": "Live Preview: {title}",
       "bioEditor": {
@@ -329,6 +346,10 @@
         "linkDescription": "Description (optional)",
         "linkDescriptionPlaceholder": "Tech tutorials and coding tips…",
         "linkHighlight": "Highlight (Special border effect)",
+        "linkIcon": "Icon",
+        "linkIconPlaceholder": "Paste custom icon image URL...",
+        "autoIconHint": "Automatically fetch Google Favicon from domain if left empty.",
+        "previewIcon": "Preview",
         "linkVisible": "Publicly visible",
         "highlightBadge": "Featured",
         "visible": "Visible",
@@ -358,6 +379,16 @@
         "editAmount": "Edit Amount",
         "saveAmount": "Save Changes",
         "removeAmount": "Remove Amount",
+        "amountDialogAddTitle": "Add Suggested Amount",
+        "amountDialogEditTitle": "Edit Suggested Amount",
+        "amountDialogDescription": "Configure the amount, display label, and illustration icon for quick donation buttons.",
+        "amountLabel": "Donation Amount (VND)",
+        "amountLabelHelp": "Amount supporters will transfer when choosing this preset.",
+        "labelFieldLabel": "Display Label",
+        "labelFieldHelp": "e.g. 1 coffee, 1 breakfast... Leave blank to show the formatted amount.",
+        "iconFieldLabel": "Illustration Icon",
+        "previewSuggestedButton": "Button Live Preview",
+        "emptySuggestedAmounts": "No suggested amounts yet. Add preset amounts for supporters to pick quickly.",
         "minAmountLabel": "Minimum Donation Amount (VND)",
         "minAmountPlaceholder": "e.g. 10000",
         "minAmountHint": "Minimum amount when supporters enter custom amount (default: 10,000 ₫)",
@@ -400,7 +431,7 @@
         "tabAccount": "Account",
         "tabDesign": "Style & Logo",
         "qrNote": "Default Transfer Note",
-        "qrNotePlaceholder": "e.g. Donate to ToanNX",
+        "qrNotePlaceholder": "e.g. Donate to support",
         "designSection": "Custom QR Code Style",
         "qrColor": "QR Foreground Color",
         "bgColor": "Background Color",
@@ -725,7 +756,7 @@
       "minAmountWarning": "Minimum donation amount is {min} ₫",
       "clearAmount": "Clear amount",
       "transferNoteLabel": "Transfer message (note):",
-      "transferNotePlaceholder": "e.g. Toan supports you",
+      "transferNotePlaceholder": "e.g. support you",
       "transferNotePrefixHint": "QR code will automatically prefix with donate",
       "transferNote": "Description",
       "copyNote": "Copy transfer message",
@@ -748,5 +779,10 @@
       "createPage": "Create Page Now",
       "livePreviewTitle": "Live Preview: {title}"
     }
+  },
+  "navSections": {
+    "overview": "Overview",
+    "content": "Content & Pages",
+    "tools": "Link & QR Tools"
   }
 }

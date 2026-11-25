@@ -1,6 +1,18 @@
 "use client";
 
-import { FileText, Images, LayoutDashboard, Link2, QrCode } from "lucide-react";
+import {
+  BarChart3,
+  FileText,
+  HeartHandshake,
+  Images,
+  Landmark,
+  LayoutDashboard,
+  Link2,
+  ListFilter,
+  QrCode,
+  Receipt,
+  Store,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link, usePathname } from "@/i18n/navigation";
@@ -48,6 +60,15 @@ export function PortalSidebar() {
           icon: LayoutDashboard,
           active: pathname === PORTAL_ROUTES.dashboard || (pathname as string) === "/ca-nhan",
         },
+        {
+          key: "donations",
+          title: t("donations"),
+          href: PORTAL_ROUTES.donations,
+          icon: HeartHandshake,
+          active:
+            pathname.startsWith(PORTAL_ROUTES.donations) ||
+            (pathname as string).startsWith("/ca-nhan/quyen-gop"),
+        },
       ],
     },
     {
@@ -80,6 +101,75 @@ export function PortalSidebar() {
           active:
             pathname.startsWith(PORTAL_ROUTES.qrCodes) ||
             (pathname as string).startsWith("/ca-nhan/ma-qr"),
+        },
+      ],
+    },
+    {
+      key: "finance",
+      label: t("sections.finance"),
+      items: [
+        {
+          key: "financeDashboard",
+          title: t("financeDashboard"),
+          href: PORTAL_ROUTES.financeDashboard,
+          icon: LayoutDashboard,
+          active:
+            pathname === PORTAL_ROUTES.financeDashboard ||
+            (pathname as string) === "/ca-nhan/tai-chinh",
+        },
+        {
+          key: "financeIncomes",
+          title: t("financeIncomes"),
+          href: PORTAL_ROUTES.financeIncomes,
+          icon: Receipt,
+          active:
+            pathname.startsWith(PORTAL_ROUTES.financeIncomes) ||
+            (pathname as string).startsWith("/ca-nhan/tai-chinh/thu-nhap"),
+        },
+        {
+          key: "financeInvoices",
+          title: t("financeInvoices"),
+          href: PORTAL_ROUTES.financeInvoices,
+          icon: FileText,
+          active:
+            pathname.startsWith(PORTAL_ROUTES.financeInvoices) ||
+            (pathname as string).startsWith("/ca-nhan/tai-chinh/hoa-don"),
+        },
+        {
+          key: "financePlatforms",
+          title: t("financePlatforms"),
+          href: PORTAL_ROUTES.financePlatforms,
+          icon: Store,
+          active:
+            pathname.startsWith(PORTAL_ROUTES.financePlatforms) ||
+            (pathname as string).startsWith("/ca-nhan/tai-chinh/nen-tang"),
+        },
+        {
+          key: "financeRules",
+          title: t("financeRules"),
+          href: PORTAL_ROUTES.financeRules,
+          icon: ListFilter,
+          active:
+            pathname.startsWith(PORTAL_ROUTES.financeRules) ||
+            (pathname as string).startsWith("/ca-nhan/tai-chinh/quy-tac"),
+        },
+        {
+          key: "financeReports",
+          title: t("financeReports"),
+          href: PORTAL_ROUTES.financeReports,
+          icon: BarChart3,
+          active:
+            pathname.startsWith(PORTAL_ROUTES.financeReports) ||
+            (pathname as string).startsWith("/ca-nhan/tai-chinh/bao-cao"),
+        },
+        {
+          key: "financeSepay",
+          title: t("financeSepay"),
+          href: PORTAL_ROUTES.financeSepay,
+          icon: Landmark,
+          active:
+            pathname.startsWith(PORTAL_ROUTES.financeSepay) ||
+            (pathname as string).startsWith("/ca-nhan/tai-chinh/ket-noi-sepay"),
         },
       ],
     },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormatter, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { useReportMonthly } from "../../../hooks/use-report-monthly";
@@ -16,7 +17,24 @@ import { buildMonthSeries, buildPlatformSeries, changePercent } from "../../../l
 export function useFinanceDashboard() {
   const t = useTranslations("finance.dashboard");
   const format = useFormatter();
-  const [year, setYear] = useState(() => new Date().getFullYear());
+  const searchParams = useSearchParams();
+  const urlYear = Number.parseInt(searchParams.get("year") ?? "", 10);
+  const currentYear = new Date().getFullYear();
+  const initialYear = Number.isFinite(urlYear) && urlYear > 2000 ? urlYear : currentYear;
+
+  const [year, setYearState] = useState(initialYear);
+
+  const setYear = (nextYear: number) => {
+    setYearState(nextYear);
+    const params = new URLSearchParams(window.location.search);
+    if (nextYear === currentYear) {
+      params.delete("year");
+    } else {
+      params.set("year", String(nextYear));
+    }
+    const query = params.toString();
+    window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+  };
   const monthly = useReportMonthly(year);
   const summary = useReportSummary(year, null);
   const monthLabel = (month: number) =>

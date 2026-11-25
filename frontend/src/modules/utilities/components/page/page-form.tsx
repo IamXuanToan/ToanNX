@@ -1,11 +1,13 @@
 "use client";
 
 import {
+  Copy,
   ExternalLink,
   Eye,
   EyeOff,
   FileText,
   FolderTree,
+  Globe,
   Heart,
   Package,
   Palette,
@@ -16,8 +18,9 @@ import {
 } from "lucide-react";
 import NextLink from "next/link";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Controller } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Link } from "@/i18n/navigation";
 import { AttachmentImageUploadView } from "@/modules/system/views/attachment/attachment-image-upload-view";
@@ -30,6 +33,7 @@ import { FormSubmitButton } from "@/shares/components/common/form-submit-button"
 import { RadioGroupField } from "@/shares/components/common/radio-group-field";
 import { SelectField } from "@/shares/components/common/select-field";
 import { SlugInput } from "@/shares/components/common/slug-input";
+import { useTabState } from "@/shares/hooks/use-tab-state";
 import {
   TiptapPluginContext,
   useTiptapPluginRegistry,
@@ -100,8 +104,8 @@ export function PageForm({
   const isDonation = state.pageType === PAGE_TYPE.DONATION;
   const isLegacy = state.pageType === PAGE_TYPE.LEGACY_PAGE;
 
-  const getFirstTabForType = (type: string) => {
-    switch (type) {
+  const defaultTab = useMemo(() => {
+    switch (state.pageType) {
       case PAGE_TYPE.AFFILIATE:
       case PAGE_TYPE.PRODUCT_CATALOG:
         return "products";
@@ -115,17 +119,21 @@ export function PageForm({
       default:
         return "design";
     }
-  };
+  }, [state.pageType]);
 
-  const pageTypeKey = `${page?.id ?? "new"}-${state.pageType}`;
-  const [prevPageTypeKey, setPrevPageTypeKey] = useState(pageTypeKey);
-  const [activeTab, setActiveTab] = useState(() => getFirstTabForType(state.pageType));
+  const validTabs = useMemo(() => {
+    const tabs = ["design", "settings"];
+    if (isAffiliate) tabs.unshift("products");
+    else if (isBio) tabs.unshift("bio");
+    else if (isDonation) tabs.unshift("donation");
+    else if (isLegacy) tabs.unshift("content");
+    return tabs;
+  }, [isAffiliate, isBio, isDonation, isLegacy]);
 
-  // Tự động đồng bộ focus tab đầu tiên khi vào màn hình sửa trang hoặc khi đổi loại trang
-  if (prevPageTypeKey !== pageTypeKey) {
-    setPrevPageTypeKey(pageTypeKey);
-    setActiveTab(getFirstTabForType(state.pageType));
-  }
+  const [activeTab, setActiveTab] = useTabState({
+    validTabs,
+    defaultTab,
+  });
 
   const handleApplyPreset = (preset: ThemePreset) => {
     form.setValue("primaryColor", preset.primary, { shouldDirty: true, shouldValidate: true });
@@ -175,7 +183,9 @@ export function PageForm({
           label={t("fields.slug")}
           description={page ? t("fields.slugChangeHint") : t("fields.slugHint")}
         >
-          {(field) => <SlugInput {...field} placeholder="donate" disabled={locked} />}
+          {(field) => (
+            <SlugInput {...field} preserveCase placeholder="ToanToChill" disabled={locked} />
+          )}
         </FormField>
       </div>
       <FormField control={form.control} name="description" label={t("fields.description")}>
@@ -223,6 +233,51 @@ export function PageForm({
           )}
         />
       )}
+      {page ? (
+        <div className="border-border bg-card/60 mt-4 space-y-2 rounded-xl border p-4 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Globe className="text-primary size-4" />
+              <span className="text-xs font-semibold">{t("quickLink")}</span>
+            </div>
+            <span className="text-muted-foreground text-[11px]">{t("quickLinkHint")}</span>
+          </div>
+          <div className="border-border bg-background flex flex-col gap-2 rounded-lg border p-2.5 sm:flex-row sm:items-center sm:justify-between">
+            <span
+              className="text-foreground min-w-0 truncate font-mono text-xs font-medium"
+              title={page.publicUrl}
+            >
+              {page.publicUrl}
+            </span>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  void navigator.clipboard.writeText(page.publicUrl);
+                  toast.success(t("copied"));
+                }}
+                className="h-8 gap-1.5 px-2.5 text-xs font-medium"
+              >
+                <Copy className="size-3.5" />
+                <span>{t("copyLink")}</span>
+              </Button>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="h-8 gap-1.5 px-2.5 text-xs font-medium"
+              >
+                <NextLink href={page.publicUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="size-3.5" />
+                  <span>{t("openLink")}</span>
+                </NextLink>
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </FormSection>
   );
 

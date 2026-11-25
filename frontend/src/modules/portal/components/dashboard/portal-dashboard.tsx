@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
+  Coins,
   ExternalLink,
   FileText,
   Heart,
@@ -18,13 +19,17 @@ import { toast } from "sonner";
 
 import { Link } from "@/i18n/navigation";
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
+import { donationService } from "@/modules/utilities/services/donation.service";
 import { pageService } from "@/modules/utilities/services/page.service";
 import { shortLinkService } from "@/modules/utilities/services/short-link.service";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shares/components/ui/card";
+import { Skeleton } from "@/shares/components/ui/skeleton";
 
 import { PORTAL_ROUTES } from "../../constants/routes";
+import { PortalDonationTrendChart } from "./portal-donation-trend-chart";
+import { PortalLinkClicksChart } from "./portal-link-clicks-chart";
 
 /**
  * Component Tổng quan không gian cá nhân (Portal Dashboard).
@@ -50,6 +55,14 @@ export function PortalDashboard() {
     queryFn: () => shortLinkService.list({ owner: userId ? [userId] : undefined, pageSize: 5 }),
     enabled: Boolean(userId),
   });
+
+  const donationStatsQuery = useQuery({
+    queryKey: ["portal-dashboard-donations", userId],
+    queryFn: () => donationService.stats({ owner: userId }),
+    enabled: Boolean(userId),
+  });
+
+  const donationStats = donationStatsQuery.data;
 
   const pages = (pagesQuery.data?.items ?? []).filter((p) => !userId || p.owner.id === userId);
   const totalPages = pages.length;
@@ -81,53 +94,93 @@ export function PortalDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* 1. Tổng tiền ủng hộ */}
         <Card className="border-border bg-card shadow-2xs">
           <CardContent className="flex items-center gap-4 p-5">
-            <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-2xl">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500">
+              <Coins className="size-6" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-muted-foreground truncate text-xs font-medium">
+                {t("stats.totalDonations")}
+              </p>
+              <h3 className="text-foreground text-xl font-extrabold sm:text-2xl">
+                {donationStats ? (
+                  `${donationStats.totalAmount.toLocaleString("vi-VN")} ₫`
+                ) : (
+                  <Skeleton className="h-7 w-24" />
+                )}
+              </h3>
+              <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
+                {t("stats.totalDonationsHint")}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 2. Tổng số trang */}
+        <Card className="border-border bg-card shadow-2xs">
+          <CardContent className="flex items-center gap-4 p-5">
+            <div className="bg-primary/10 text-primary flex size-12 shrink-0 items-center justify-center rounded-2xl">
               <FileText className="size-6" />
             </div>
-            <div>
-              <p className="text-muted-foreground text-xs font-medium">{t("stats.totalPages")}</p>
-              <h3 className="text-foreground text-2xl font-extrabold">{totalPages}</h3>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
+            <div className="min-w-0 flex-1">
+              <p className="text-muted-foreground truncate text-xs font-medium">
+                {t("stats.totalPages")}
+              </p>
+              <h3 className="text-foreground text-xl font-extrabold sm:text-2xl">{totalPages}</h3>
+              <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
                 {t("stats.totalPagesHint")}
               </p>
             </div>
           </CardContent>
         </Card>
 
+        {/* 3. Link rút gọn */}
         <Card className="border-border bg-card shadow-2xs">
           <CardContent className="flex items-center gap-4 p-5">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-500">
               <Link2 className="size-6" />
             </div>
-            <div>
-              <p className="text-muted-foreground text-xs font-medium">
+            <div className="min-w-0 flex-1">
+              <p className="text-muted-foreground truncate text-xs font-medium">
                 {t("stats.totalShortLinks")}
               </p>
-              <h3 className="text-foreground text-2xl font-extrabold">{totalLinks}</h3>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
+              <h3 className="text-foreground text-xl font-extrabold sm:text-2xl">{totalLinks}</h3>
+              <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
                 {t("stats.totalShortLinksHint")}
               </p>
             </div>
           </CardContent>
         </Card>
 
+        {/* 4. Tổng click link */}
         <Card className="border-border bg-card shadow-2xs">
           <CardContent className="flex items-center gap-4 p-5">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
               <MousePointerClick className="size-6" />
             </div>
-            <div>
-              <p className="text-muted-foreground text-xs font-medium">{t("stats.totalClicks")}</p>
-              <h3 className="text-foreground text-2xl font-extrabold">{totalClicks}</h3>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
+            <div className="min-w-0 flex-1">
+              <p className="text-muted-foreground truncate text-xs font-medium">
+                {t("stats.totalClicks")}
+              </p>
+              <h3 className="text-foreground text-xl font-extrabold sm:text-2xl">{totalClicks}</h3>
+              <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
                 {t("stats.totalClicksHint")}
               </p>
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <PortalDonationTrendChart
+          data={donationStats?.dailyTrend}
+          isLoading={donationStatsQuery.isLoading}
+        />
+        <PortalLinkClicksChart links={links} isLoading={linksQuery.isLoading} />
       </div>
 
       {/* Quick Actions */}

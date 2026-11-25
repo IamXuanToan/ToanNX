@@ -162,7 +162,7 @@ into both `.agents/skills/` and `.claude/skills/` and verify its trigger. The us
 - **Colors and dialogs**: every semantic color class needs a `--color-<name>` token in `globals.css`
   (`tests/unit/theme-tokens.test.ts`); prefer the Tailwind scale over arbitrary values; with `DialogContent p-0`,
   `DialogFooter` gets `mx-0 mb-0`; tabbed dialogs have a fixed height and only the body scrolls (rule frontend
-  §3.1.1, §4.0).
+  §3.1.1, §4.0). Form/page with main Tabs (`PageForm`, `PortalProfile`...): persist active tab in URL query param `?tab=...` via `useTabState` (`window.history.replaceState`). Tables/lists/filters: must persist all pagination (`page`, `pageSize`), search, ordering, filter keys, and date/year ranges in URL query params via `useTableState` or `window.history.replaceState` (F5 preserves state). Public slugs (`Page`, `ShortLink`) preserve case like `ToanToChill` (`preserveCase: true`).
 - **Request cancellation**: pass React Query's `signal` to `apiClient`, never abort `fetch` yourself (rule frontend §5).
 - **A read-only ViewSet that opens `post` for bulk** declares `"create": DENY`; deleting a model without
   `deleted_at` uses `hard_delete` with a reason; short unique text fields use a conditional `UniqueConstraint`

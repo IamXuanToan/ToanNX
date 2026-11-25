@@ -6,7 +6,7 @@ import { FormPage } from "@/shares/components/common/form-page";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import { usePlatform } from "../../hooks/use-platform";
 import { PlatformForm } from "./platform-form";
 import { PlatformTaxRatesSection } from "./platform-tax-rates-section";
@@ -26,6 +26,7 @@ export function PlatformProfile({
   canUpdate: boolean;
   history?: ReactNode;
 }) {
+  const routes = useFinanceRoutes();
   const query = usePlatform(id);
   if (query.isPending) return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
   if (query.isError)
@@ -33,7 +34,7 @@ export function PlatformProfile({
       <QueryErrorState
         error={query.error}
         onRetry={() => query.refetch()}
-        backHref={FINANCE_ROUTES.platforms}
+        backHref={routes.platforms}
       />
     );
   return (

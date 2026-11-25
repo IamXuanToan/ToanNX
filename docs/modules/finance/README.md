@@ -4,7 +4,8 @@ Theo dõi khoản thu, hóa đơn/chứng từ, nền tảng thu tiền và thu�
 SePay nhận biến động số dư. Phụ thuộc `system` (tiền tệ, file riêng tư).
 
 - BE: `backend/app/finance/` · FE: `frontend/src/modules/finance/`
-- URL quản trị: `/quan-tri/tai-chinh/...` · nhóm `finance`
+- URL quản trị: `/quan-tri/tai-chinh/...` · nhóm `finance` (Tổng quan, Báo cáo, Thu nhập, Hóa đơn toàn sàn)
+- URL cá nhân (Portal): `/ca-nhan/tai-chinh/...` (Dashboard, Báo cáo, Thu nhập, Hóa đơn, Nền tảng, Quy tắc phân loại, Kết nối SePay riêng của tài khoản)
 - Cài đặt SePay: [../../guides/finance-setup.md](../../guides/finance-setup.md)
 
 ## Model
@@ -23,13 +24,22 @@ SePay nhận biến động số dư. Phụ thuộc `system` (tiền tệ, file 
 | `ReportPermission` | `report` | read |
 | `SepayPermission` | `sepay` | manage |
 
-## Màn quản trị
+## Màn quản trị (Admin)
 
 | Cụm | Màn | Route |
 | --- | --- | --- |
 | Tổng quan | Dashboard · Báo cáo | `tai-chinh`, `bao-cao` |
 | Giao dịch | Khoản thu · Hóa đơn | `thu-nhap`, `hoa-don` |
-| Cấu hình | Nền tảng · Quy tắc · SePay | `nen-tang`, `quy-tac`, `ket-noi-sepay` |
+
+## Màn cá nhân (Client Portal)
+
+Tất cả người dùng cá nhân tự quản lý tài chính và cấu hình phân loại riêng tại `/ca-nhan/tai-chinh/...`:
+
+| Cụm | Màn | Route |
+| --- | --- | --- |
+| Tổng quan | Dashboard · Báo cáo | `tai-chinh`, `bao-cao` |
+| Giao dịch | Khoản thu · Hóa đơn | `thu-nhap`, `hoa-don` |
+| Cấu hình cá nhân | Nền tảng · Quy tắc phân loại · Kết nối SePay | `nen-tang`, `quy-tac`, `ket-noi-sepay` |
 
 ## Sự kiện thông báo
 

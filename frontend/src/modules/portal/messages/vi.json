@@ -3,16 +3,25 @@
     "sections": {
       "overview": "Tổng quan",
       "utilities": "Tiện ích",
+      "finance": "Tài chính",
       "media": "Tệp tin"
     },
     "dashboard": "Tổng quan",
+    "financeDashboard": "Tổng quan tài chính",
+    "financeIncomes": "Thu nhập",
+    "financeInvoices": "Hóa đơn",
+    "financePlatforms": "Nền tảng",
+    "financeRules": "Quy tắc phân loại",
+    "financeReports": "Báo cáo",
+    "financeSepay": "Kết nối SePay",
     "pages": "Trang của tôi",
     "shortLinks": "Link rút gọn",
     "qrCodes": "Mã QR",
     "files": "Thư viện",
     "profile": "Hồ sơ cá nhân",
     "goToAdmin": "Trang quản trị (Admin)",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "donations": "Quyên góp & Ủng hộ"
   },
   "dashboard": {
     "title": "Không gian cá nhân",
@@ -24,7 +33,22 @@
       "totalShortLinks": "Link rút gọn",
       "totalShortLinksHint": "Đang hoạt động",
       "totalClicks": "Tổng lượt click",
-      "totalClicksHint": "Từ link rút gọn"
+      "totalClicksHint": "Từ link rút gọn",
+      "totalDonations": "Tổng tiền ủng hộ",
+      "totalDonationsHint": "Nhận qua SePay VietQR"
+    },
+    "charts": {
+      "donationTrendTitle": "Biến động Quyên góp & Ủng hộ",
+      "donationTrendDesc": "Doanh thu và lượt ủng hộ nhận được theo thời gian",
+      "linkClicksTitle": "Top Liên kết nhiều lượt Click",
+      "linkClicksDesc": "So sánh lưu lượng truy cập giữa các link rút gọn",
+      "giftBreakdownTitle": "Cơ cấu Quà tặng Quy đổi",
+      "giftBreakdownDesc": "Tỷ lệ các món quà tri ân nhận được",
+      "amount": "Số tiền (₫)",
+      "count": "Lượt ủng hộ",
+      "clicks": "Lượt click",
+      "noTrendData": "Chưa có dữ liệu biến động ủng hộ trong khoảng thời gian này.",
+      "noLinksData": "Chưa có liên kết rút gọn nào có lượt click."
     },
     "quickActions": {
       "title": "Tạo nhanh",

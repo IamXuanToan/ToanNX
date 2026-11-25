@@ -29,7 +29,7 @@ export function pageSchema(t: Translate) {
   return z.object({
     pathId: z.string().min(1, t("required")),
     title: z.string().trim().min(1, t("required")).max(150),
-    slug: slugField(t("slug"), { required: false }),
+    slug: slugField(t("slug"), { required: false, preserveCase: true }),
     description: z.string().max(1000),
     status: z.enum(PAGE_STATUSES),
     template: z.enum(PAGE_TEMPLATES),

@@ -18,7 +18,7 @@ import { SelectField } from "@/shares/components/common/select-field";
 import { Button } from "@/shares/components/ui/button";
 import { Textarea } from "@/shares/components/ui/textarea";
 
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import type { Income } from "../../types/income.types";
 import { useIncomeForm } from "./hooks/use-income-form";
 import { MoneyText } from "./money-text";
@@ -34,6 +34,7 @@ import { TaxStatusBadge } from "./tax-status-badge";
 export function IncomeForm({ income, disabled = false }: { income?: Income; disabled?: boolean }) {
   const t = useTranslations("finance.incomes");
   const tCommon = useTranslations("common.actions");
+  const routes = useFinanceRoutes();
   const state = useIncomeForm(income);
   const { form, preview } = state;
   const locked = disabled || state.isSubmitting;
@@ -308,9 +309,7 @@ export function IncomeForm({ income, disabled = false }: { income?: Income; disa
       </FormLayout>
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
         <Button type="button" variant="outline" asChild>
-          <Link href={FINANCE_ROUTES.incomes}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
-          </Link>
+          <Link href={routes.incomes}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
         </Button>
         {disabled ? null : (
           <FormSubmitButton

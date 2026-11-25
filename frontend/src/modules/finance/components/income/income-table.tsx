@@ -13,7 +13,7 @@ import { Button } from "@/shares/components/ui/button";
 
 import { FINANCE_API_ENDPOINTS } from "../../constants/api-endpoints";
 import { INCOME_SOURCES, TAX_STATUSES } from "../../constants/finance-enums";
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import type { Income, IncomeFilters } from "../../types/income.types";
 import { useIncomeTable } from "./hooks/use-income-table";
 import { MoneyText } from "./money-text";
@@ -59,6 +59,7 @@ export function IncomeTable({
   const t = useTranslations("finance.incomes");
   const tTax = useTranslations("finance.taxStatus");
   const format = useFormatter();
+  const routes = useFinanceRoutes();
   const state = useIncomeTable(scope);
   const { table, query } = state;
   const columns: DataTableColumn<Income>[] = [
@@ -69,7 +70,7 @@ export function IncomeTable({
       mobile: "title",
       cell: (income) => (
         <Link
-          href={FINANCE_ROUTES.incomeDetail(income.id)}
+          href={routes.incomeDetail(income.id)}
           className="hover:text-primary font-medium underline-offset-4 hover:underline"
         >
           {format.dateTime(new Date(income.receivedAt), { dateStyle: "short", timeStyle: "short" })}

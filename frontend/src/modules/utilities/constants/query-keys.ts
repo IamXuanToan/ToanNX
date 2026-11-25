@@ -28,3 +28,12 @@ export const pageKeys = {
   ...basePageKeys,
   public: (segment: string, slug: string) => [SCOPE, "pages", "public", segment, slug] as const,
 };
+
+/** Query key của quyên góp và ủng hộ (Donations). */
+const baseDonationKeys = createResourceKeys(SCOPE, "donations");
+export const donationKeys = {
+  ...baseDonationKeys,
+  stats: (params?: object) => [SCOPE, "donations", "stats", params] as const,
+  feed: (pageId: string) => [SCOPE, "donations", "feed", pageId] as const,
+  leaderboard: (pageId: string) => [SCOPE, "donations", "leaderboard", pageId] as const,
+};

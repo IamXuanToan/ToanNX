@@ -7,7 +7,9 @@
     "shortLinks": "Link rút gọn",
     "qrCodes": "Mã QR",
     "pages": "Trang",
-    "pagePaths": "Đường dẫn giữa"
+    "pagePaths": "Đường dẫn giữa",
+    "dashboard": "Thống kê",
+    "donations": "Quyên góp"
   },
   "shortLinks": {
     "title": "Link rút gọn",
@@ -262,7 +264,22 @@
         "show": "Hiện xem trước",
         "hide": "Ẩn xem trước"
       },
+      "copied": "Đã sao chép liên kết vào clipboard.",
+      "copy": "Sao chép {url}",
+      "quickLink": "Đường dẫn trang công khai",
+      "quickLinkHint": "Sao chép liên kết để chia sẻ đến độc giả và khách hàng",
+      "openLink": "Mở trang",
+      "copyLink": "Sao chép liên kết",
       "presets": "Bộ màu có sẵn (Presets)",
+      "presetsAll": "Tất cả ({count})",
+      "presetsLight": "Giao diện sáng ({count})",
+      "presetsDark": "Giao diện tối ({count})",
+      "presetsSearchPlaceholder": "Tìm bộ màu (ví dụ: emerald, ocean, dark, neon...)",
+      "presetsLightSection": "Giao diện sáng (Light Themes)",
+      "presetsLightSectionDesc": "Tông màu tươi sáng, trang nhã, tối ưu cho môi trường ánh sáng ban ngày",
+      "presetsDarkSection": "Giao diện tối (Dark Themes)",
+      "presetsDarkSectionDesc": "Tông màu trầm sang trọng, phong cách công nghệ và tương phản cao",
+      "presetsEmpty": "Không tìm thấy bộ màu phù hợp",
       "maximizePreview": "Phóng to xem trước",
       "livePreviewTitle": "Xem trước giao diện: {title}",
       "bioEditor": {
@@ -329,6 +346,10 @@
         "linkDescription": "Mô tả phụ (tùy chọn)",
         "linkDescriptionPlaceholder": "Kênh chia sẻ kiến thức công nghệ và lập trình…",
         "linkHighlight": "Ghim nổi bật (Hiệu ứng viền đặc biệt)",
+        "linkIcon": "Biểu tượng (Icon)",
+        "linkIconPlaceholder": "Dán liên kết ảnh biểu tượng tùy chọn (URL)...",
+        "autoIconHint": "Tự động lấy Favicon Google từ tên miền của liên kết nếu để trống.",
+        "previewIcon": "Xem trước",
         "linkVisible": "Hiển thị công khai",
         "highlightBadge": "Nổi bật",
         "visible": "Đang hiện",
@@ -358,6 +379,16 @@
         "editAmount": "Sửa mức tiền",
         "saveAmount": "Lưu thay đổi",
         "removeAmount": "Xóa mức tiền",
+        "amountDialogAddTitle": "Thêm mức tiền gợi ý",
+        "amountDialogEditTitle": "Chỉnh sửa mức tiền gợi ý",
+        "amountDialogDescription": "Cấu hình số tiền, nhãn hiển thị và biểu tượng minh họa cho nút chọn nhanh trên trang.",
+        "amountLabel": "Số tiền ủng hộ (VNĐ)",
+        "amountLabelHelp": "Nhập số tiền người ủng hộ sẽ chuyển khi bấm chọn mức này.",
+        "labelFieldLabel": "Nhãn hiển thị",
+        "labelFieldHelp": "Ví dụ: 1 ly cà phê, 1 bữa sáng... Nếu để trống sẽ hiển thị số tiền.",
+        "iconFieldLabel": "Biểu tượng minh họa",
+        "previewSuggestedButton": "Xem trước nút hiển thị",
+        "emptySuggestedAmounts": "Chưa có mức tiền gợi ý nào. Hãy thêm mức tiền để người ủng hộ chọn nhanh.",
         "minAmountLabel": "Số tiền ủng hộ tối thiểu (VND)",
         "minAmountPlaceholder": "Ví dụ: 10000",
         "minAmountHint": "Mức tiền tối thiểu khi người ủng hộ tự nhập số tiền tùy ý (mặc định: 10.000 ₫)",
@@ -400,7 +431,7 @@
         "tabAccount": "Tài khoản",
         "tabDesign": "Kiểu dáng & Logo",
         "qrNote": "Lời nhắn mặc định khi quét",
-        "qrNotePlaceholder": "Ví dụ: Ung ho ToanNX",
+        "qrNotePlaceholder": "Ví dụ: Ung ho ban",
         "designSection": "Tùy biến kiểu dáng mã QR",
         "qrColor": "Màu mã QR",
         "bgColor": "Màu nền",
@@ -475,8 +506,8 @@
         "AFFILIATEHint": "Trang tổng hợp danh sách sản phẩm, gian hàng, liên kết mua hàng và tiếp thị liên kết.",
         "BIO": "Link-in-Bio",
         "BIOHint": "Trang hồ sơ cá nhân, giới thiệu bản thân và các liên kết mạng xã hội.",
-        "DONATION": "Ủng hộ / Quyên góp",
-        "DONATIONHint": "Trang ủng hộ tài chính với mã VietQR quét tự động.",
+        "DONATION": "Ủng hộ / Quyên góp (Donate)",
+        "DONATIONHint": "Trang nhận ủng hộ tài chính với mã VietQR quét tự động và vinh danh người donate.",
         "PRODUCT_CATALOG": "Trang sản phẩm",
         "PRODUCT_CATALOGHint": "Trưng bày danh sách sản phẩm và dịch vụ.",
         "PORTFOLIO": "Hồ sơ năng lực",
@@ -504,8 +535,8 @@
         "link_in_bioHint": "Lời chào, nút liên kết, mạng xã hội.",
         "about": "Giới thiệu",
         "aboutHint": "Giới thiệu bản thân và liên hệ.",
-        "donate": "Ủng hộ",
-        "donateHint": "Lời ngỏ ủng hộ; chèn mã QR chuyển khoản của bạn."
+        "donate": "Ủng hộ / Donate",
+        "donateHint": "Lời ngỏ ủng hộ; chèn mã QR chuyển khoản và kết nối webhook SePay."
       },
       "themeModes": {
         "system": "Theo hệ thống",
@@ -574,9 +605,9 @@
             "description": "Trang hồ sơ cá nhân, giới thiệu bản thân và các liên kết mạng xã hội."
           },
           "donation": {
-            "label": "Ủng hộ / Quyên góp",
+            "label": "Ủng hộ / Quyên góp (Donate)",
             "badge": "VietQR tự động",
-            "description": "Trang nhận ủng hộ tài chính với mã VietQR quét nhanh qua mọi ứng dụng ngân hàng."
+            "description": "Trang nhận ủng hộ tài chính với mã VietQR quét nhanh, kết nối SePay và bảng vinh danh."
           },
           "legacy": {
             "label": "Trang soạn thảo tự do",
@@ -725,7 +756,7 @@
       "minAmountWarning": "Số tiền ủng hộ tối thiểu là {min} ₫",
       "clearAmount": "Xóa số tiền",
       "transferNoteLabel": "Nội dung chuyển khoản (lời nhắn):",
-      "transferNotePlaceholder": "Ví dụ: Toan ung ho ban",
+      "transferNotePlaceholder": "Ví dụ: ung ho ban",
       "transferNotePrefixHint": "Mã QR sẽ tự động kèm tiền tố donate",
       "transferNote": "Nội dung",
       "copyNote": "Sao chép nội dung chuyển khoản",
@@ -748,5 +779,10 @@
       "createPage": "Tạo trang ngay",
       "livePreviewTitle": "Live Preview: {title}"
     }
+  },
+  "navSections": {
+    "overview": "Tổng quan",
+    "content": "Nội dung & Trang",
+    "tools": "Công cụ liên kết"
   }
 }

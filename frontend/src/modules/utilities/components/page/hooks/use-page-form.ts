@@ -87,7 +87,7 @@ export function usePageForm({
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [productModalMode, setProductModalMode] = useState<"quick" | "manual">("manual");
   const [editingProduct, setEditingProduct] = useState<AffiliateItem | null>(null);
-  const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("mobile");
+  const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
 
   const form = useForm<PageFormValues>({
     resolver: zodResolver(schema),
@@ -380,9 +380,10 @@ export function usePageForm({
 
   const livePreviewData: PublicPage = useMemo(
     () => ({
-      segment: "p",
-      slug: slug || "demo",
-      status: status || "DRAFT",
+      id: page?.id,
+      segment: page?.path?.segment ?? "p",
+      slug: slug || page?.slug || "demo",
+      status: status || page?.status || "DRAFT",
       preview: true,
       title: title || "Tiêu đề trang",
       description: description || "",
@@ -417,6 +418,7 @@ export function usePageForm({
       content: content || { type: "doc", content: [{ type: "paragraph" }] },
     }),
     [
+      page,
       slug,
       status,
       title,

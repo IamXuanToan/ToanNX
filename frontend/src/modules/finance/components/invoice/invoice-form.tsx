@@ -20,7 +20,7 @@ import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
 
 import { DOC_TYPES } from "../../constants/finance-enums";
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import type { Invoice } from "../../types/invoice.types";
 import { useInvoiceForm } from "./hooks/use-invoice-form";
 import { InvoiceAttachmentsField } from "./invoice-attachments-field";
@@ -42,6 +42,7 @@ export function InvoiceForm({
 }) {
   const t = useTranslations("finance.invoices");
   const tCommon = useTranslations("common.actions");
+  const routes = useFinanceRoutes();
   const format = useFormatter();
   const state = useInvoiceForm(invoice);
   const { form } = state;
@@ -301,9 +302,7 @@ export function InvoiceForm({
       </FormLayout>
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
         <Button type="button" variant="outline" asChild>
-          <Link href={FINANCE_ROUTES.invoices}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
-          </Link>
+          <Link href={routes.invoices}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
         </Button>
         {disabled ? null : (
           <FormSubmitButton

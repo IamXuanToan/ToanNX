@@ -1,17 +1,14 @@
 "use client";
 
-import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Link } from "@/i18n/navigation";
 import { PermissionGate } from "@/modules/system/components/permission/permission-gate";
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { PageHeader } from "@/shares/components/common/page-header";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
-import { Button } from "@/shares/components/ui/button";
 
+import { IncomeCreateButton } from "../../components/income/income-create-button";
 import { IncomeTable } from "../../components/income/income-table";
-import { FINANCE_ROUTES } from "../../constants/routes";
 import { INCOME_PERMISSIONS } from "../../permissions/income-permission";
 
 /** Trang danh sách (finance.incomes). */
@@ -27,12 +24,7 @@ export function IncomeListView() {
         title={t("title")}
         actions={
           <PermissionGate permission={INCOME_PERMISSIONS.create}>
-            <Button asChild>
-              <Link href={FINANCE_ROUTES.incomeCreate}>
-                <Plus />
-                {t("create")}
-              </Link>
-            </Button>
+            <IncomeCreateButton />
           </PermissionGate>
         }
       />

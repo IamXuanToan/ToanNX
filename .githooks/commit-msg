@@ -7,10 +7,10 @@ case "$first_line" in
   Merge\ *|fixup!\ *|squash!\ *|amend!\ *) exit 0 ;;
 esac
 
-pattern='^(feat|fix|ref|docs|test|perf|style|build|ci|chore|revert)(\([a-z0-9][a-z0-9-]*\))?!?: [^A-Z].+[^.]$'
+pattern='^(feat|fix|ref|docs|test|perf|style|build|ci|chore|revert)(\([a-z0-9][a-z0-9-]*(,\s*[a-z0-9][a-z0-9-]*)*\))?!?: [^A-Z].+[^.]$'
 if ! printf '%s' "$first_line" | grep -Eq "$pattern"; then
   echo "Commit message sai chuẩn (docs/rules/git.md)." >&2
-  echo "  Mẫu: <type>(<scope>): <mo-ta>   vd: feat(short-links): add public redirects" >&2
+  echo "  Mẫu: <type>(<scope>): <mo-ta>   vd: feat(short-links): add public redirects hoặc feat(utilities, finance): ..." >&2
   echo "  Type: feat fix ref docs test perf style build ci chore revert" >&2
   echo "  Nhận được: $first_line" >&2
   exit 1

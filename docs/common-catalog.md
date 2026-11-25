@@ -274,6 +274,7 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | `useResourceMutation` | `use-resource-mutation.ts` | **Mọi** mutation: toast chuẩn + invalidate khóa đã khai |
 | `useTableState` | `use-table-state.ts` | State bảng trên URL: `search`, `page`, `pageSize`, `ordering`, bộ lọc |
 | `useBulkActions` | `use-bulk-actions.ts` | Hook bảng: `bulkDelete(rows)` / `bulkUpdate(rows, patch)` chuẩn (toast + invalidate); thay mọi `useBulkDeleteXxx` riêng |
+| `useTabState` | `use-tab-state.ts` | Quản lý active tab đồng bộ 2 chiều với URL query param (`?tab=...`), lưu URL không reload |
 | `useEditMode` | `use-edit-mode.ts` | View trang chi tiết: `useEditMode(canUpdate)` = có quyền **và** URL `?mode=edit`; truyền kết quả xuống form |
 | `useApiErrorMessage` | `use-api-error-message.ts` | Dịch lỗi API theo mã |
 | `useMessage` | `use-message.ts` | Dịch khóa đầy đủ do module khai (`system.account.nav.users`) |

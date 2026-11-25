@@ -3,7 +3,7 @@
 import { ExternalLink, Laptop, Maximize2, Smartphone, Tablet, X } from "lucide-react";
 import NextLink from "next/link";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { cn } from "cn";
 
 import { Button } from "@/shares/components/ui/button";
@@ -30,29 +30,7 @@ export function PagePreviewFrame({
 }) {
   const t = useTranslations("utilities.customPages.pages");
   const tCommon = useTranslations("common.actions");
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(500);
   const [fullModalOpen, setFullModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.contentRect.width > 0) {
-          setContainerWidth(entry.contentRect.width);
-        }
-      }
-    });
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  // Tính tỷ lệ scale cho khung Desktop và Tablet để hiển thị layout chuẩn
-  const desktopWidth = 1000;
-  const desktopScale = Math.min(1, Math.max(0.4, (containerWidth - 24) / desktopWidth));
-
-  const tabletWidth = 680;
-  const tabletScale = Math.min(1, Math.max(0.5, (containerWidth - 24) / tabletWidth));
 
   const rawTheme = (page.theme ?? {}) as Record<string, unknown>;
   const styleConfig = (page.styleConfig ?? {}) as Record<string, unknown>;
@@ -76,20 +54,17 @@ export function PagePreviewFrame({
 
   return (
     <>
-      <div
-        ref={containerRef}
-        className="border-border bg-muted/30 flex flex-col rounded-2xl border p-3.5 shadow-2xs"
-      >
+      <div className="border-border bg-muted/30 flex flex-col rounded-2xl border p-3.5 shadow-2xs">
         {/* Thanh điều khiển Canvas */}
         <div className="border-border/60 mb-3 flex items-center justify-between gap-2 border-b pb-3">
           <div className="flex items-center gap-2">
             <span className="text-foreground text-xs font-semibold">{t("tabs.preview")}</span>
             <span className="bg-muted text-muted-foreground rounded-md px-1.5 py-0.5 font-mono text-[10px] font-medium">
               {device === "mobile"
-                ? "375px"
+                ? "Mobile (390px)"
                 : device === "tablet"
-                  ? `${Math.round(tabletWidth * tabletScale)}px`
-                  : `${Math.round(desktopWidth * desktopScale)}px`}
+                  ? "Tablet (640px)"
+                  : "Desktop (100%)"}
             </span>
           </div>
 
@@ -161,58 +136,56 @@ export function PagePreviewFrame({
           </div>
         </div>
 
-        {/* Vùng Canvas hiển thị Mockup */}
+        {/* Vùng Canvas hiển thị Mockup - Tỉ lệ chuẩn 100%, không co rúm scale */}
         <div className="flex w-full items-center justify-center overflow-x-hidden py-2">
           {device === "mobile" ? (
             /* Mockup Điện thoại iPhone */
             <div
               className={cn(
-                "bg-background @container relative mx-auto flex w-[375px] max-w-full flex-col overflow-hidden rounded-[2.5rem] border-[8px] border-neutral-900 shadow-2xl transition-all duration-300 dark:border-neutral-800",
+                "bg-background relative mx-auto flex h-[720px] w-[390px] max-w-full flex-col overflow-hidden rounded-[2.5rem] border-[8px] border-neutral-900 shadow-2xl transition-all duration-300 dark:border-neutral-800",
                 isDark ? "dark" : "light",
               )}
             >
               <div className="pointer-events-none absolute top-2 left-1/2 z-20 h-3.5 w-24 -translate-x-1/2 rounded-full bg-neutral-900 dark:bg-neutral-800" />
-              <div className={cn("h-[640px] overflow-y-auto", page.coverUrl ? "pt-0" : "pt-6")}>
+              <div className="h-full overflow-y-auto">
                 <PublicPage page={page} />
               </div>
-              <div className="bg-background/80 relative flex h-3.5 w-full items-center justify-center backdrop-blur-xs">
+              <div className="bg-background/80 relative flex h-3.5 w-full shrink-0 items-center justify-center backdrop-blur-xs">
                 <div className="bg-foreground/20 h-1 w-24 rounded-full" />
               </div>
             </div>
           ) : device === "tablet" ? (
-            /* Mockup Tablet iPad với tỷ lệ co dãn */
-            <div className="flex w-full flex-col items-center overflow-hidden">
+            /* Mockup Tablet iPad */
+            <div className="flex w-full flex-col items-center">
               <div
                 className={cn(
-                  "bg-background @container relative overflow-hidden rounded-2xl border-[8px] border-neutral-900 shadow-xl dark:border-neutral-800",
+                  "border-border bg-background relative flex h-[720px] w-full max-w-[640px] flex-col overflow-hidden rounded-2xl border shadow-xl transition-all duration-300",
                   isDark ? "dark" : "light",
                 )}
-                style={{
-                  width: tabletWidth,
-                  transform: `scale(${tabletScale})`,
-                  transformOrigin: "top center",
-                  height: 640 / tabletScale,
-                }}
               >
-                <div className="h-full overflow-y-auto">
+                <div className="border-border bg-muted/60 flex shrink-0 items-center gap-1.5 border-b px-4 py-2">
+                  <div className="size-2.5 rounded-full bg-red-400/80" />
+                  <div className="size-2.5 rounded-full bg-amber-400/80" />
+                  <div className="size-2.5 rounded-full bg-emerald-400/80" />
+                  <div className="bg-background/80 text-muted-foreground mx-auto max-w-xs truncate rounded-md px-3 py-0.5 text-center font-mono text-[11px]">
+                    {page.canonicalUrl
+                      ? page.canonicalUrl.replace(/^https?:\/\//, "")
+                      : `toannx.com/p/${page.slug}`}
+                  </div>
+                </div>
+                <div className="flex-1 overflow-y-auto">
                   <PublicPage page={page} />
                 </div>
               </div>
             </div>
           ) : (
-            /* Mockup Desktop Browser với tỷ lệ co dãn mượt mà */
-            <div className="flex w-full flex-col items-center overflow-hidden">
+            /* Mockup Desktop Browser với tỷ lệ chuẩn 100% không bóp méo */
+            <div className="flex w-full flex-col items-center">
               <div
                 className={cn(
-                  "border-border bg-background @container relative flex flex-col overflow-hidden rounded-xl border shadow-md",
+                  "border-border bg-background relative flex h-[720px] w-full flex-col overflow-hidden rounded-xl border shadow-md transition-all duration-300",
                   isDark ? "dark" : "light",
                 )}
-                style={{
-                  width: desktopWidth,
-                  transform: `scale(${desktopScale})`,
-                  transformOrigin: "top center",
-                  height: 660 / desktopScale,
-                }}
               >
                 {/* Thanh tiêu đề cửa sổ browser */}
                 <div className="border-border bg-muted/60 flex shrink-0 items-center gap-1.5 border-b px-4 py-2">

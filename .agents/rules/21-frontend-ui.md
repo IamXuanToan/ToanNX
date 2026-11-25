@@ -33,6 +33,7 @@ accessibility/UX trên file đã sửa, rồi `playwright-cli` để kiểm UI t
   bắt buộc `FormField required`. Danh sách chọn dùng `ChoiceList`/`ChoiceGroups`.
 - Dialog `DialogContent p-0` thì `DialogFooter` thêm `mx-0 mb-0`; dialog có tab cao cố định, chỉ thân cuộn; nút lưu ở
   footer (`<Form id>` + `form={…_FORM_ID}`).
+- Form/trang có Tab chính (`PageForm`, `PortalProfile`...): đồng bộ URL query param `?tab=...` qua `useTabState` (`window.history.replaceState`). Bảng/danh sách/bộ lọc: bắt buộc lưu toàn bộ phân trang (`page`, `pageSize`), tìm kiếm (`search`), sắp xếp (`ordering`), bộ lọc (`filterKeys`) và khoảng ngày/năm vào URL query params qua `useTableState` hoặc `window.history.replaceState` (F5 không mất filter/trang). Slug công khai (`Page`, `ShortLink`) hỗ trợ giữ nguyên chữ hoa chữ thường kiểu `ToanToChill` (`preserveCase: true`).
 - Lỗi tải bản ghi dùng `QueryErrorState`; soạn thảo dùng `TiptapEditor`/`TiptapContent`.
 
 ## Quyền trên UI (ba tầng)

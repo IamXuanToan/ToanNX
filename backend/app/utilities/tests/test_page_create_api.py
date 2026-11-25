@@ -56,6 +56,21 @@ class TestPageCreateApi(BaseApiTestCase):
         assert len(data["slug"]) > 0
         assert data["status"] == "DRAFT"
 
+    def test_create_preserve_case_slug(self, user: Any, login: Any) -> None:
+        """Slug giữ nguyên chữ hoa chữ thường kiểu ToanToChill."""
+        grant(user, P.CREATE)
+        p_path = get_seeded_path("p")
+        api = login(user)
+
+        payload = {
+            "path_id": str(p_path.pk),
+            "title": "Toan To Chill",
+            "slug": "ToanToChill",
+        }
+        res = api.post(URL, payload, format="json")
+        data = self.assert_success(res, 201)
+        assert data["slug"] == "ToanToChill"
+
     def test_create_duplicate_slug_same_path_conflict(self, user: Any, login: Any) -> None:
         """Trùng slug trên cùng 1 đường dẫn giữa bị 409 CONFLICT."""
         grant(user, P.CREATE)

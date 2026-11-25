@@ -127,6 +127,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
                 cover_url = raw_cover
 
         return {
+            "id": str(page.id),
             "segment": page.path.segment,
             "slug": page.slug,
             "status": page.status,
@@ -161,7 +162,9 @@ class PageService(CoreCrudService[Page, PageRepository]):
         """Tạo trang (owner = actor), nội dung từ `content` hoặc mẫu `template`."""
         fields = dict(data)
         fields["path"] = self._active_path(fields.pop("path_id"))
-        fields["slug"] = normalize_slug(fields["slug"]) if fields.get("slug") else generate_slug()
+        fields["slug"] = (
+            normalize_slug(fields["slug"], preserve_case=True) if fields.get("slug") else generate_slug()
+        )
         template = fields.pop("template", "blank")
         fields["content"] = self._checked_content(
             actor, fields.get("content") or PAGE_TEMPLATES[template], actor=actor
@@ -194,7 +197,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
             if str(path_id) != str(page.path_id):
                 fields["path"] = self._active_path(path_id)
         if "slug" in fields:
-            fields["slug"] = normalize_slug(fields["slug"])
+            fields["slug"] = normalize_slug(fields["slug"], preserve_case=True)
         self._prepare(page.owner, fields, current_status=page.status, actor=actor)
         try:
             updated = self.repository.update(page, actor=actor, **fields)

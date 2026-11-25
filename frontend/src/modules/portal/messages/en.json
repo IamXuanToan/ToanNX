@@ -3,16 +3,25 @@
     "sections": {
       "overview": "Overview",
       "utilities": "Utilities",
+      "finance": "Finance",
       "media": "Media"
     },
     "dashboard": "Dashboard",
+    "financeDashboard": "Finance Dashboard",
+    "financeIncomes": "Incomes",
+    "financeInvoices": "Invoices",
+    "financePlatforms": "Platforms",
+    "financeRules": "Classification Rules",
+    "financeReports": "Reports",
+    "financeSepay": "SePay Connection",
     "pages": "My Pages",
     "shortLinks": "Short Links",
     "qrCodes": "QR Codes",
     "files": "Library",
     "profile": "Profile",
     "goToAdmin": "Admin Console",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "donations": "Donations & Support"
   },
   "dashboard": {
     "title": "Creator Studio",
@@ -24,7 +33,22 @@
       "totalShortLinks": "Short Links",
       "totalShortLinksHint": "Active links",
       "totalClicks": "Total Clicks",
-      "totalClicksHint": "From short links"
+      "totalClicksHint": "From short links",
+      "totalDonations": "Total Donations",
+      "totalDonationsHint": "Received via SePay"
+    },
+    "charts": {
+      "donationTrendTitle": "Donation & Support Trends",
+      "donationTrendDesc": "Revenue and transaction count over time",
+      "linkClicksTitle": "Top Links by Clicks",
+      "linkClicksDesc": "Compare traffic engagement across short links",
+      "giftBreakdownTitle": "Gift Distribution",
+      "giftBreakdownDesc": "Ratio of appreciation gifts received",
+      "amount": "Amount (₫)",
+      "count": "Donations",
+      "clicks": "Clicks",
+      "noTrendData": "No donation activity recorded in this period.",
+      "noLinksData": "No short links with clicks yet."
     },
     "quickActions": {
       "title": "Quick Actions",

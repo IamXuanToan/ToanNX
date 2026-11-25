@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Check, Edit2, QrCode, Star, Trash2 } from "lucide-react";
+import { Check, Edit2, QrCode, Star, Trash2, Zap } from "lucide-react";
 
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
@@ -90,6 +90,23 @@ export function PageDonationQrItemCard({
               >
                 <Check className="size-2.5" />
                 <span>Mặc định</span>
+              </Badge>
+            )}
+            {item.webhookEnabled && (
+              <Badge
+                variant="outline"
+                className="border-amber-500/40 text-amber-600 dark:text-amber-400 h-5 gap-1 px-1.5 text-[10px]"
+              >
+                <Zap className="size-2.5" />
+                <span>Webhook</span>
+              </Badge>
+            )}
+            {item.hideAmount && (
+              <Badge
+                variant="outline"
+                className="text-muted-foreground h-5 gap-1 px-1.5 text-[10px]"
+              >
+                <span>Ẩn tiền</span>
               </Badge>
             )}
           </div>

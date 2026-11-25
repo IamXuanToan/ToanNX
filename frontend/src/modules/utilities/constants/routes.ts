@@ -5,6 +5,8 @@ import type { DemoTemplateTypeValue } from "./page-constants";
  * Route động là hàm trả `{ pathname, params }` cho `Link`/`router` của `@/i18n/navigation`.
  */
 export const UTILITIES_ROUTES = {
+  dashboard: "/admin/utilities",
+  donations: "/admin/donations",
   shortLinks: "/admin/short-links",
   shortLinkCreate: "/admin/short-links/new",
   shortLinkDetail: (id: string) => ({
@@ -41,6 +43,14 @@ export const PUBLIC_PAGE_ROUTE_PREFIX = "page-view";
 
 /** Pathname theo ngôn ngữ của module Tiện ích (gộp vào `routing.pathnames`). */
 export const UTILITIES_PATHNAMES = {
+  "/admin/utilities": {
+    vi: "/quan-tri/tien-ich",
+    en: "/admin/utilities",
+  },
+  "/admin/donations": {
+    vi: "/quan-tri/tien-ich/quyen-gop",
+    en: "/admin/utilities/donations",
+  },
   "/admin/short-links": {
     vi: "/quan-tri/tien-ich/link-rut-gon",
     en: "/admin/utilities/short-links",

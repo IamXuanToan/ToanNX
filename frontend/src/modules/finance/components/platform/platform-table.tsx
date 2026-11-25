@@ -11,7 +11,7 @@ import { StatusBadge } from "@/shares/components/common/status-badge";
 import { Button } from "@/shares/components/ui/button";
 
 import { createBooleanBulkStatus } from "@/shares/lib/bulk-status";
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import type { Platform } from "../../types/platform.types";
 import { usePlatformTable } from "./hooks/use-platform-table";
 
@@ -32,6 +32,7 @@ export function PlatformTable({
 }) {
   const t = useTranslations("finance.platforms");
   const tStatus = useTranslations("common.status");
+  const routes = useFinanceRoutes();
   const state = usePlatformTable();
   const { table, query } = state;
   const columns: DataTableColumn<Platform>[] = [
@@ -43,7 +44,7 @@ export function PlatformTable({
       className: "md:w-full",
       cell: (platform) => (
         <Link
-          href={FINANCE_ROUTES.platformDetail(platform.id)}
+          href={routes.platformDetail(platform.id)}
           className="hover:text-primary font-medium underline-offset-4 hover:underline"
         >
           {platform.name}

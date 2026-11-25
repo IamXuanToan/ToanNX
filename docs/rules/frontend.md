@@ -299,9 +299,12 @@ CommonDataTable của LoveMe, chạy trên `@tanstack/react-table`). Không dự
 - Cột đầu là link tới trang chi tiết (`font-medium`, hover gạch chân); dòng phụ (email, mã) `text-xs text-muted-foreground`.
 - Hộp xác nhận dùng `ConfirmDialog` (`shares/components/common/confirm-dialog`), không dùng `confirm()`.
 
-**State bảng.** Hook của component bảng dùng `useTableState` (`shares/hooks/use-table-state.ts`), không tự viết
-`useState` cho từ khóa/trang/sắp xếp. State đồng bộ lên URL (`search`, `page`, `pageSize`, `ordering`; giá trị
-mặc định không ghi) nên tải lại hay gửi link vẫn giữ nguyên. Đổi từ khóa, sắp xếp, số dòng thì về trang 1.
+- **State bảng và lưu URL bắt buộc (URL State Persistence)**. Hook của component bảng bắt buộc dùng `useTableState`
+  (`shares/hooks/use-table-state.ts`), tuyệt đối không tự viết `useState` cục bộ cho từ khóa (`search`), trang (`page`),
+  số dòng (`pageSize`), sắp xếp (`ordering`) hay các bộ lọc tùy chọn (`filterKeys`, `dateRange`, `tier`, `status`...).
+  Toàn bộ state phải được đồng bộ 2 chiều lên URL query parameters qua `window.history.replaceState` (giá trị mặc định không ghi)
+  để khi người dùng chuyển trang, lọc dữ liệu, tải lại (F5) hay gửi link chia sẻ, giao diện vẫn giữ nguyên chính xác trạng thái đó.
+  Đổi từ khóa, sắp xếp, số dòng hay bộ lọc thì về trang 1.
 
 ```ts
 export function useUserTable() {
@@ -334,6 +337,8 @@ export function useUserTable() {
   cuộn ngang trong khung, không đẩy cả khối tràn ra ngoài; dưới `md` xếp chồng.
 - **Nút lưu của mọi tab nằm ở footer dialog**, không nằm trong nội dung tab: nội dung bọc `<Form id={…_FORM_ID}>`
   (id khai ở `constants/`), nút footer `type="submit" form={…_FORM_ID}`, chỉ hiện ở tab đang mở và khi có quyền sửa.
+- **Đồng bộ Tab với URL (Tab State Persistence)**: Mọi trang hoặc form có cấu trúc Tabs chính (`PageForm`, `PortalProfile`...) bắt buộc phải đồng bộ tab đang chọn với URL query param (`?tab=...`) bằng hook `useTabState` (`shares/hooks/use-tab-state.ts`). Trạng thái tab được lưu vào lịch sử bằng `window.history.replaceState` (không kích hoạt router reload) để khi người dùng reload trang hoặc sao chép liên kết URL, ứng dụng tự động mở đúng tab đó.
+- **Slug định dạng tùy biến (preserveCase)**: Với các tài nguyên công khai như trang tùy chỉnh (`Page`) và link rút gọn (`ShortLink`), slug cho phép giữ nguyên chữ hoa chữ thường (ví dụ: `ToanToChill`) qua cờ `preserveCase: true` trong `slugField`, `SlugInput` và `normalize_slug`, đồng thời kiểm tra trùng lặp không phân biệt hoa thường trong DB (`Lower("slug")`).
 
 ## 3.2 Chuẩn Next.js (Image, Link) và Shadcn UI (bắt buộc)
 

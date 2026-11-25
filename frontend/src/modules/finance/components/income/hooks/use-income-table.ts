@@ -4,7 +4,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTableState } from "@/shares/hooks/use-table-state";
 import { withEditMode } from "@/shares/lib/edit-mode";
 
-import { FINANCE_ROUTES } from "../../../constants/routes";
+import { useFinanceRoutes } from "../../../hooks/use-finance-routes";
 import { useBulkDeleteIncomes } from "../../../hooks/use-bulk-delete-incomes";
 import { useDeleteIncome } from "../../../hooks/use-delete-income";
 import { useIncomes } from "../../../hooks/use-incomes";
@@ -33,6 +33,7 @@ const FILTER_KEYS = [
  */
 export function useIncomeTable(scope: IncomeFilters = {}) {
   const router = useRouter();
+  const routes = useFinanceRoutes();
   const table = useTableState({ ordering: "-received_at", filterKeys: FILTER_KEYS });
   const extra = table.extraFilters;
   const filters: IncomeFilters = {
@@ -62,8 +63,8 @@ export function useIncomeTable(scope: IncomeFilters = {}) {
       value: platform.id,
       label: platform.name,
     })),
-    view: (income: Income) => router.push(FINANCE_ROUTES.incomeDetail(income.id)),
-    edit: (income: Income) => router.push(withEditMode(FINANCE_ROUTES.incomeDetail(income.id))),
+    view: (income: Income) => router.push(routes.incomeDetail(income.id)),
+    edit: (income: Income) => router.push(withEditMode(routes.incomeDetail(income.id))),
     remove: (income: Income) => remove.mutateAsync(income.id),
     bulkDelete: (rows: Income[]) => bulkDelete.mutateAsync(ids(rows)),
     reclassify: (rows: Income[]) => reclassify.mutateAsync(ids(rows)),

@@ -9,7 +9,7 @@ import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Button } from "@/shares/components/ui/button";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import { useIncome } from "../../hooks/use-income";
 import { useRecalculateIncomeTax } from "../../hooks/use-recalculate-income-tax";
 import { useRefreshIncomeRate } from "../../hooks/use-refresh-income-rate";
@@ -31,6 +31,7 @@ export function IncomeProfile({
   history?: ReactNode;
 }) {
   const t = useTranslations("finance.incomes");
+  const routes = useFinanceRoutes();
   const query = useIncome(id);
   const recalculate = useRecalculateIncomeTax();
   const refreshRate = useRefreshIncomeRate();
@@ -40,7 +41,7 @@ export function IncomeProfile({
       <QueryErrorState
         error={query.error}
         onRetry={() => query.refetch()}
-        backHref={FINANCE_ROUTES.incomes}
+        backHref={routes.incomes}
       />
     );
   const income = query.data;

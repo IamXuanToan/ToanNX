@@ -7,7 +7,7 @@ import { FormPage } from "@/shares/components/common/form-page";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import { useInvoice } from "../../hooks/use-invoice";
 import { InvoiceForm } from "./invoice-form";
 
@@ -22,6 +22,7 @@ export function InvoiceProfile({
   history?: ReactNode;
 }) {
   const t = useTranslations("finance.invoices");
+  const routes = useFinanceRoutes();
   const query = useInvoice(id);
   if (query.isPending) return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
   if (query.isError)
@@ -29,7 +30,7 @@ export function InvoiceProfile({
       <QueryErrorState
         error={query.error}
         onRetry={() => query.refetch()}
-        backHref={FINANCE_ROUTES.invoices}
+        backHref={routes.invoices}
       />
     );
   return (

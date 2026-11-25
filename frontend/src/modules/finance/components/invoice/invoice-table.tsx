@@ -8,7 +8,7 @@ import type { DataTableColumn } from "@/shares/components/common/data-table.type
 import { FilterSelect } from "@/shares/components/common/filter-select";
 
 import { DOC_TYPES } from "../../constants/finance-enums";
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import type { Invoice } from "../../types/invoice.types";
 import { useInvoiceTable } from "./hooks/use-invoice-table";
 import { MoneyText } from "../income/money-text";
@@ -17,6 +17,7 @@ import { MoneyText } from "../income/money-text";
 export function InvoiceTable({ canUpdate, canDelete }: { canUpdate: boolean; canDelete: boolean }) {
   const t = useTranslations("finance.invoices");
   const format = useFormatter();
+  const routes = useFinanceRoutes();
   const state = useInvoiceTable();
   const { table, query } = state;
   const columns: DataTableColumn<Invoice>[] = [
@@ -27,7 +28,7 @@ export function InvoiceTable({ canUpdate, canDelete }: { canUpdate: boolean; can
       className: "md:w-full",
       cell: (invoice) => (
         <Link
-          href={FINANCE_ROUTES.invoiceDetail(invoice.id)}
+          href={routes.invoiceDetail(invoice.id)}
           className="hover:text-primary font-medium underline-offset-4 hover:underline"
         >
           {invoice.issuer}

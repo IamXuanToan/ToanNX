@@ -9,7 +9,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 
-import { FINANCE_ROUTES } from "../../../constants/routes";
+import { useFinanceRoutes } from "../../../hooks/use-finance-routes";
 import { usePlatformOptions } from "../../../hooks/use-platform-options";
 import { useSaveClassificationRule } from "../../../hooks/use-save-classification-rule";
 import {
@@ -31,6 +31,7 @@ const EMPTY: ClassificationRuleFormValues = {
 export function useClassificationRuleForm(rule?: ClassificationRule) {
   const t = useTranslations("finance.validation");
   const router = useRouter();
+  const routes = useFinanceRoutes();
   const save = useSaveClassificationRule(rule?.id);
   const errorMessage = useApiErrorMessage();
   const platforms = usePlatformOptions();
@@ -51,7 +52,7 @@ export function useClassificationRuleForm(rule?: ClassificationRule) {
   const onSubmit = form.handleSubmit(async (values) => {
     try {
       const saved = await save.mutateAsync({ ...values, priority: Number(values.priority) });
-      if (!rule) router.push(FINANCE_ROUTES.ruleDetail(saved.id));
+      if (!rule) router.push(routes.ruleDetail(saved.id));
     } catch (error) {
       const fields = isApiError(error) ? error.fieldErrors() : {};
       const matched = RULE_FORM_FIELDS.filter((name) => fields[name]);

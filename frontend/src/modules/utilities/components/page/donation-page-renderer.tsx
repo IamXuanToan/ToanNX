@@ -12,6 +12,7 @@ import { normalizeMediaUrl } from "@/shares/lib/asset-paths";
 
 import type { DonationQrItem, PublicPage } from "../../types/page.types";
 import { useDonationPageRenderer } from "./hooks/use-donation-page-renderer";
+import { DonationPublicFeed } from "./donation-public-feed";
 import { PresetAmountIcon } from "./preset-amount-icon";
 
 /**
@@ -345,7 +346,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
         </div>
       ) : null}
 
-      <div className={cn("w-full max-w-md", coverUrl && "px-4 pt-4")}>
+      <div className={cn("w-full max-w-xl sm:max-w-2xl", coverUrl && "px-4 pt-4")}>
         {/* 2. Header Lời nhắn & Avatar / Logo */}
         <header className="mb-6 text-center">
           {avatarUrl ? (
@@ -544,21 +545,23 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                     ) : null}
                   </div>
 
-                  <div className="relative flex items-center">
-                    <span className="bg-primary/10 text-primary border-primary/20 pointer-events-none absolute left-1.5 flex h-7 items-center rounded-lg border px-2 font-mono text-xs font-bold">
-                      donate
-                    </span>
-                    <Input
-                      value={customNote}
-                      onChange={(e) => handleCustomNoteChange(e.target.value)}
-                      placeholder={t("transferNotePlaceholder")}
-                      maxLength={25}
-                      className="h-9 pl-18 text-xs font-semibold shadow-2xs"
-                    />
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-primary/10 text-primary border-primary/20 inline-flex h-9 shrink-0 items-center rounded-lg border px-3 font-mono text-xs font-bold shadow-2xs">
+                        donate
+                      </span>
+                      <Input
+                        value={customNote}
+                        onChange={(e) => handleCustomNoteChange(e.target.value)}
+                        placeholder={t("transferNotePlaceholder")}
+                        maxLength={60}
+                        className="h-9 flex-1 text-xs font-semibold shadow-2xs"
+                      />
+                    </div>
+                    <p className="text-muted-foreground text-[10px] leading-tight">
+                      {t("transferNotePrefixHint")}
+                    </p>
                   </div>
-                  <p className="text-muted-foreground text-[10px] leading-tight">
-                    {t("transferNotePrefixHint")}
-                  </p>
                 </div>
 
                 {/* Ô nhập số tiền tùy chọn */}
@@ -666,6 +669,18 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
             </p>
           </div>
         </div>
+
+        {/* 4. Dòng tin Tri ân & Bảng Vinh danh đếm ngược */}
+        <DonationPublicFeed
+          pageId={page.id ?? ""}
+          preview={Boolean(page.preview)}
+          hideAmount={Boolean(
+            config?.hideAmount ??
+            config?.hide_amount ??
+            activeQr?.hideAmount ??
+            qrCodes.some((q) => (q as unknown as Record<string, unknown>).hideAmount),
+          )}
+        />
       </div>
     </main>
   );
