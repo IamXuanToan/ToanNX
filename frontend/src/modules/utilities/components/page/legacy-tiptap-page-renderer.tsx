@@ -1,32 +1,21 @@
-"use client";
-
 import Image from "next/image";
 import { cn } from "cn";
 
 import { TiptapContent } from "@/shares/components/common/tiptap-content";
 
 import { PAGE_EXTENSIONS } from "../../extensions/page-extensions";
-import { useResolvedPageTheme } from "../../hooks/use-resolved-page-theme";
 import type { PublicPage } from "../../types/page.types";
 
 /**
  * Hiển thị trang soạn thảo tự do (`LEGACY_PAGE` / custom) dùng chung đúng hệ màu & định dạng
- * với `TiptapEditor` (không ghi đè bảng màu nút/nền).
+ * với `TiptapEditor` (không ghi đè bảng màu nút/nền, tự ăn theo Light/Dark của hệ thống).
  *
  * @param props - Dữ liệu trang công khai.
  * @returns Giao diện bài viết Tiptap đồng nhất với trình soạn thảo.
  */
 export function LegacyTiptapPageRenderer({ page }: { page: PublicPage }) {
-  const { isDark, customStyle } = useResolvedPageTheme(page);
-
   return (
-    <main
-      style={customStyle}
-      className={cn(
-        "bg-background text-foreground min-h-svh transition-colors duration-200",
-        isDark ? "dark" : "light",
-      )}
-    >
+    <main className="bg-background text-foreground min-h-svh transition-colors duration-200">
       {page.coverUrl ? (
         <div className="relative h-48 w-full overflow-hidden sm:h-64">
           <Image
