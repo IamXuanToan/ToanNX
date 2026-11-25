@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
   images: {
-    dangerouslyAllowLocalIP: true,
+    dangerouslyAllowLocalIP: isDev,
     remotePatterns: [
       {
         protocol: "https",
@@ -75,34 +75,38 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "icons.duckduckgo.com",
       },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "8001",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "8000",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
-      },
-      {
-        protocol: "http",
-        hostname: "127.0.0.1",
-        port: "8001",
-      },
-      {
-        protocol: "http",
-        hostname: "127.0.0.1",
-        port: "8000",
-      },
-      {
-        protocol: "http",
-        hostname: "127.0.0.1",
-      },
+      ...(isDev
+        ? [
+            {
+              protocol: "http" as const,
+              hostname: "localhost",
+              port: "8001",
+            },
+            {
+              protocol: "http" as const,
+              hostname: "localhost",
+              port: "8000",
+            },
+            {
+              protocol: "http" as const,
+              hostname: "localhost",
+            },
+            {
+              protocol: "http" as const,
+              hostname: "127.0.0.1",
+              port: "8001",
+            },
+            {
+              protocol: "http" as const,
+              hostname: "127.0.0.1",
+              port: "8000",
+            },
+            {
+              protocol: "http" as const,
+              hostname: "127.0.0.1",
+            },
+          ]
+        : []),
     ],
   },
   turbopack: {

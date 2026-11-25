@@ -42,9 +42,11 @@ class FinanceReportService:
         """Khởi tạo phụ thuộc."""
         self.income_service = income_service or IncomeService()
 
-    def summary(self, actor: Any, year: int, month: int | None) -> dict[str, Any]:
+    def summary(
+        self, actor: Any, year: int, month: int | None, owner_ids: list[Any] | None = None
+    ) -> dict[str, Any]:
         """Thẻ tổng + theo nền tảng (dòng con theo %) + theo tháng + theo tiền tệ."""
-        scoped = self._period(actor, year, month)
+        scoped = self._period(actor, year, month, owner_ids)
         ok = scoped.filter(amount_status=Income.AmountStatus.OK)
         totals = ok.aggregate(**_totals())
         totals["needs_review"] = scoped.filter(NEEDS_REVIEW).count()
@@ -81,10 +83,10 @@ class FinanceReportService:
             ],
         }
 
-    def monthly(self, actor: Any, year: int) -> dict[str, Any]:
+    def monthly(self, actor: Any, year: int, owner_ids: list[Any] | None = None) -> dict[str, Any]:
         """12 tháng năm chọn và năm trước + thu theo nền tảng từng tháng (dashboard)."""
-        current = self._period(actor, year, None).filter(amount_status=Income.AmountStatus.OK)
-        previous = self._period(actor, year - 1, None).filter(amount_status=Income.AmountStatus.OK)
+        current = self._period(actor, year, None, owner_ids).filter(amount_status=Income.AmountStatus.OK)
+        previous = self._period(actor, year - 1, None, owner_ids).filter(amount_status=Income.AmountStatus.OK)
         platforms = (
             current.annotate(month=ExtractMonth("received_date"))
             .values("month", "platform__name")
@@ -101,8 +103,12 @@ class FinanceReportService:
             ],
         }
 
-    def _period(self, actor: Any, year: int, month: int | None) -> QuerySet[Income]:
+    def _period(
+        self, actor: Any, year: int, month: int | None, owner_ids: list[Any] | None = None
+    ) -> QuerySet[Income]:
         queryset = self.income_service.get_queryset_for(actor).filter(received_date__year=year)
+        if owner_ids:
+            queryset = queryset.filter(owner_id__in=owner_ids)
         return queryset.filter(received_date__month=month) if month else queryset
 
     def _months(self, queryset: QuerySet[Income]) -> list[dict[str, Any]]:

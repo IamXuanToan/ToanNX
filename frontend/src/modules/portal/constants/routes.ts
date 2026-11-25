@@ -25,6 +25,37 @@ export const PORTAL_ROUTES = {
   library: "/portal/library",
   files: "/portal/library",
   profile: "/portal/profile",
+  donations: "/portal/donations",
+
+  // ---- Module Tài chính cá nhân ----
+  finance: "/portal/finance",
+  financeDashboard: "/portal/finance",
+  financeIncomes: "/portal/finance/incomes",
+  financeIncomeCreate: "/portal/finance/incomes/new",
+  financeIncomeDetail: (id: string) => ({
+    pathname: "/portal/finance/incomes/[id]" as const,
+    params: { id },
+  }),
+  financeInvoices: "/portal/finance/invoices",
+  financeInvoiceCreate: "/portal/finance/invoices/new",
+  financeInvoiceDetail: (id: string) => ({
+    pathname: "/portal/finance/invoices/[id]" as const,
+    params: { id },
+  }),
+  financePlatforms: "/portal/finance/platforms",
+  financePlatformCreate: "/portal/finance/platforms/new",
+  financePlatformDetail: (id: string) => ({
+    pathname: "/portal/finance/platforms/[id]" as const,
+    params: { id },
+  }),
+  financeRules: "/portal/finance/rules",
+  financeRuleCreate: "/portal/finance/rules/new",
+  financeRuleDetail: (id: string) => ({
+    pathname: "/portal/finance/rules/[id]" as const,
+    params: { id },
+  }),
+  financeReports: "/portal/finance/reports",
+  financeSepay: "/portal/finance/sepay",
 } as const;
 
 /** Pathname theo ngôn ngữ của Client Portal (gộp vào `routing.pathnames`). */
@@ -80,5 +111,71 @@ export const PORTAL_PATHNAMES = {
   "/portal/profile": {
     vi: "/ca-nhan/ho-so",
     en: "/portal/profile",
+  },
+  "/portal/donations": {
+    vi: "/ca-nhan/quyen-gop",
+    en: "/portal/donations",
+  },
+
+  // ---- Pathname tiếng Việt/Anh cho Tài chính cá nhân ----
+  "/portal/finance": {
+    vi: "/ca-nhan/tai-chinh",
+    en: "/portal/finance",
+  },
+  "/portal/finance/incomes": {
+    vi: "/ca-nhan/tai-chinh/thu-nhap",
+    en: "/portal/finance/incomes",
+  },
+  "/portal/finance/incomes/new": {
+    vi: "/ca-nhan/tai-chinh/thu-nhap/tao-moi",
+    en: "/portal/finance/incomes/new",
+  },
+  "/portal/finance/incomes/[id]": {
+    vi: "/ca-nhan/tai-chinh/thu-nhap/[id]",
+    en: "/portal/finance/incomes/[id]",
+  },
+  "/portal/finance/invoices": {
+    vi: "/ca-nhan/tai-chinh/hoa-don",
+    en: "/portal/finance/invoices",
+  },
+  "/portal/finance/invoices/new": {
+    vi: "/ca-nhan/tai-chinh/hoa-don/tao-moi",
+    en: "/portal/finance/invoices/new",
+  },
+  "/portal/finance/invoices/[id]": {
+    vi: "/ca-nhan/tai-chinh/hoa-don/[id]",
+    en: "/portal/finance/invoices/[id]",
+  },
+  "/portal/finance/platforms": {
+    vi: "/ca-nhan/tai-chinh/nen-tang",
+    en: "/portal/finance/platforms",
+  },
+  "/portal/finance/platforms/new": {
+    vi: "/ca-nhan/tai-chinh/nen-tang/tao-moi",
+    en: "/portal/finance/platforms/new",
+  },
+  "/portal/finance/platforms/[id]": {
+    vi: "/ca-nhan/tai-chinh/nen-tang/[id]",
+    en: "/portal/finance/platforms/[id]",
+  },
+  "/portal/finance/rules": {
+    vi: "/ca-nhan/tai-chinh/quy-tac",
+    en: "/portal/finance/rules",
+  },
+  "/portal/finance/rules/new": {
+    vi: "/ca-nhan/tai-chinh/quy-tac/tao-moi",
+    en: "/portal/finance/rules/new",
+  },
+  "/portal/finance/rules/[id]": {
+    vi: "/ca-nhan/tai-chinh/quy-tac/[id]",
+    en: "/portal/finance/rules/[id]",
+  },
+  "/portal/finance/reports": {
+    vi: "/ca-nhan/tai-chinh/bao-cao",
+    en: "/portal/finance/reports",
+  },
+  "/portal/finance/sepay": {
+    vi: "/ca-nhan/tai-chinh/ket-noi-sepay",
+    en: "/portal/finance/sepay",
   },
 } as const;

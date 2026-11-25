@@ -12,14 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/shares/components/ui/dropdown-menu";
 import { Input } from "@/shares/components/ui/input";
+import { PAGE_SIZE_OPTIONS } from "@/shares/constants/pagination";
 import type { Pagination } from "@/shares/types/api.types";
 
-import { getPageRange, parseJumpPage, useDataPagination } from "./hooks/use-data-pagination";
-
-/** Lựa chọn số dòng mỗi trang mặc định. */
-export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
-
-export { getPageRange, parseJumpPage };
+import { useDataPagination } from "./hooks/use-data-pagination";
 
 /**
  * Phân trang chuẩn của mọi danh sách: "1–20 trong 132" bên trái; bên phải là số dòng mỗi trang,

@@ -1,5 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
+import type { ReactNode } from "react";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { AttachmentVideoPlayer } from "@/modules/system/components/attachment/attachment-video-player";
@@ -7,6 +9,15 @@ import {
   MEDIA_PLAYER_MUTED_KEY,
   MEDIA_PLAYER_VOLUME_KEY,
 } from "@/modules/system/constants/media-player";
+import systemVi from "@/modules/system/messages/vi.json";
+
+function renderWithIntl(ui: ReactNode) {
+  return render(
+    <NextIntlClientProvider locale="vi" messages={{ system: systemVi }}>
+      {ui}
+    </NextIntlClientProvider>,
+  );
+}
 
 beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {
@@ -29,7 +40,7 @@ describe("AttachmentVideoPlayer", () => {
     localStorage.setItem(MEDIA_PLAYER_VOLUME_KEY, "0.65");
     localStorage.setItem(MEDIA_PLAYER_MUTED_KEY, "false");
 
-    render(<AttachmentVideoPlayer src="https://example.com/demo.mp4" title="Demo Video" />);
+    renderWithIntl(<AttachmentVideoPlayer src="https://example.com/demo.mp4" title="Demo Video" />);
 
     const slider = screen.getByRole("slider", { name: "Điều chỉnh âm lượng" });
     expect(slider.getAttribute("aria-valuenow")).toBe("0.65");
@@ -40,7 +51,7 @@ describe("AttachmentVideoPlayer", () => {
   });
 
   it("có thể bật tắt tiếng và lưu cờ tắt tiếng vào localStorage", () => {
-    render(<AttachmentVideoPlayer src="https://example.com/demo.mp4" title="Demo Video" />);
+    renderWithIntl(<AttachmentVideoPlayer src="https://example.com/demo.mp4" title="Demo Video" />);
 
     const muteBtn = screen.getByLabelText("Tắt tiếng");
     fireEvent.click(muteBtn);

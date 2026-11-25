@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, Maximize, Minimize, Pause, Play, Volume1, Volume2, VolumeX } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "cn";
 
 import { Button } from "@/shares/components/ui/button";
@@ -32,6 +33,7 @@ export function AttachmentVideoPlayer({
   onError,
   className,
 }: AttachmentVideoPlayerProps) {
+  const t = useTranslations("system.attachment");
   const {
     videoRef,
     containerRef,
@@ -103,7 +105,7 @@ export function AttachmentVideoPlayer({
           variant="default"
           size="icon"
           onClick={togglePlay}
-          aria-label="Phát video"
+          aria-label={t("playVideoAria")}
           className="absolute size-14 rounded-full shadow-lg backdrop-blur-md transition-transform duration-200 hover:scale-110 active:scale-95"
         >
           <Play className="ml-0.5 size-6 fill-current" />
@@ -125,7 +127,7 @@ export function AttachmentVideoPlayer({
             max={100}
             step={0.1}
             onValueChange={([val]) => val !== undefined && handleSeek(val)}
-            aria-label="Tiến độ phát video"
+            aria-label={t("seekVideoAria")}
             className="[&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:border-primary cursor-pointer py-1 [&_[data-slot=slider-thumb]]:bg-white [&_[data-slot=slider-track]]:bg-white/30"
           />
         </div>
@@ -139,7 +141,7 @@ export function AttachmentVideoPlayer({
               variant="ghost"
               size="icon"
               onClick={togglePlay}
-              aria-label={isPlaying ? "Tạm dừng" : "Phát"}
+              aria-label={isPlaying ? t("pauseAria") : t("playAria")}
               className="size-8 text-white hover:bg-white/10 hover:text-white"
             >
               {isPlaying ? (
@@ -156,7 +158,7 @@ export function AttachmentVideoPlayer({
                 variant="ghost"
                 size="icon"
                 onClick={toggleMute}
-                aria-label={isMuted ? "Bật tiếng" : "Tắt tiếng"}
+                aria-label={isMuted ? t("unmuteAria") : t("muteAria")}
                 className="size-8 text-white hover:bg-white/10 hover:text-white"
               >
                 {isMuted || volume === 0 ? (
@@ -174,7 +176,7 @@ export function AttachmentVideoPlayer({
                 max={1}
                 step={0.05}
                 onValueChange={([val]) => val !== undefined && handleVolumeChange(val)}
-                aria-label="Điều chỉnh âm lượng"
+                aria-label={t("volumeAria")}
                 className="[&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:border-primary w-16 cursor-pointer sm:w-20 [&_[data-slot=slider-thumb]]:bg-white [&_[data-slot=slider-track]]:bg-white/30"
               />
             </div>
@@ -192,7 +194,7 @@ export function AttachmentVideoPlayer({
               variant="ghost"
               size="icon"
               onClick={toggleFullscreen}
-              aria-label={isFullscreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
+              aria-label={isFullscreen ? t("exitFullscreenAria") : t("fullscreenAria")}
               className="size-8 text-white hover:bg-white/10 hover:text-white"
             >
               {isFullscreen ? <Minimize className="size-4" /> : <Maximize className="size-4" />}

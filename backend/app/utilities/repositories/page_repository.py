@@ -1,5 +1,7 @@
 """Repository trang tùy chỉnh."""
 
+from typing import Any
+
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 
@@ -15,6 +17,14 @@ class PageRepository(CoreRepository[Page]):
     def get_queryset(self) -> QuerySet[Page]:
         """Trang còn tồn tại."""
         return super().get_queryset().select_related("path", "owner", "avatar", "cover")
+
+    def list_active_donation_pages(self) -> QuerySet[Page]:
+        """Danh sách trang DONATION chưa xóa mềm dùng để tra cứu webhook token."""
+        return self.filter(page_type=Page.PageType.DONATION)
+
+    def find_published_by_id(self, page_id: Any) -> Page | None:
+        """Trang đang công khai theo UUID."""
+        return self.find_one(id=page_id, status=Page.Status.PUBLISHED)
 
     def find_by_url(self, segment: str, slug: str) -> Page | None:
         """Trang theo URL công khai `/<segment>/<slug>` (không phân biệt hoa thường).

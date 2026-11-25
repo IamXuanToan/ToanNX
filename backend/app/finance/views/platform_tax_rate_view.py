@@ -53,7 +53,7 @@ class PlatformTaxRateView(CoreApiView):
         """Thêm mốc; trả giao dịch bị ảnh hưởng."""
         actor = self.get_actor(request)
         entry, affected = self.platform_tax_rate_service.create(
-            actor, self.platform_service.get_usable(actor, pk), validated_data
+            actor, self.platform_service.get_for_write(actor, pk), validated_data
         )
         return CoreResponse(
             PlatformTaxRateMutationResponseSerializer({"entry": entry, "affected_income_ids": affected}).data,
@@ -76,7 +76,7 @@ class PlatformTaxRateObjectView(CoreApiView):
     def patch(self, request: Request, pk: Any, rate_id: Any, validated_data: dict[str, Any]) -> CoreResponse:
         """Sửa mốc."""
         actor = self.get_actor(request)
-        platform = self.platform_service.get_usable(actor, pk)
+        platform = self.platform_service.get_for_write(actor, pk)
         entry, affected = self.platform_tax_rate_service.update(actor, platform, rate_id, validated_data)
         return CoreResponse(
             PlatformTaxRateMutationResponseSerializer({"entry": entry, "affected_income_ids": affected}).data
@@ -88,7 +88,7 @@ class PlatformTaxRateObjectView(CoreApiView):
         """Xóa mốc."""
         actor = self.get_actor(request)
         affected = self.platform_tax_rate_service.delete(
-            actor, self.platform_service.get_usable(actor, pk), rate_id
+            actor, self.platform_service.get_for_write(actor, pk), rate_id
         )
         return CoreResponse(
             PlatformTaxRateMutationResponseSerializer({"entry": None, "affected_income_ids": affected}).data

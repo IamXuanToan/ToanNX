@@ -10,17 +10,20 @@ import { parseDateTimeLocal } from "@/shares/lib/date-time-input";
 
 import { SYSTEM_ROUTES } from "../../../constants/routes";
 import { useCreateAnnouncement } from "../../../hooks/use-create-announcement";
+import { usePermission } from "../../../hooks/use-permission";
 import { useRoleOptions } from "../../../hooks/use-role-options";
+import { IAM_PERMISSIONS } from "../../../permissions/iam-permission";
 import {
   announcementSchema,
   type AnnouncementFormValues,
 } from "../../../schemas/announcement.schema";
 
-/** @returns Form gửi thông báo hệ thống + lựa chọn vai trò. */
+/** @returns Form gửi thông báo hệ thống + lựa chọn vai trò (khi có quyền xem vai trò). */
 export function useAnnouncementForm() {
   const t = useTranslations("system.notifications.announcements.validation");
   const router = useRouter();
   const create = useCreateAnnouncement();
+  const canReadRoles = usePermission(IAM_PERMISSIONS.roleRead);
   const roles = useRoleOptions();
   const schema = useMemo(() => announcementSchema(t), [t]);
   const form = useForm<AnnouncementFormValues>({
@@ -40,5 +43,5 @@ export function useAnnouncementForm() {
     await create.mutateAsync({ ...values, expiresAt: expires ? expires.toISOString() : null });
     router.push(SYSTEM_ROUTES.announcements);
   });
-  return { form, onSubmit, isSubmitting: create.isPending, roleOptions: roles };
+  return { form, onSubmit, isSubmitting: create.isPending, roleOptions: roles, canReadRoles };
 }

@@ -34,7 +34,7 @@ canSelectRow={(row) => !row.isBase}
 ```
 
 Hiện có hàng loạt: người dùng, vai trò, phiên, nhật ký thay đổi, nhật ký gửi thông báo, cài đặt, tiền tệ (+bật/tắt), tỷ giá (dòng nhập tay), thông báo chung,
-link rút gọn, mã QR, trang, đường dẫn (+bật/tắt), truyện (+xuất bản), chương (+xuất bản), tác giả, thể loại, tag,
+link rút gọn, mã QR, trang, đường dẫn (+bật/tắt), quyên góp (+ẩn/hiện), truyện (+xuất bản), chương (+xuất bản), tác giả, thể loại, tag,
 khoản thu, hóa đơn, nền tảng (+bật/tắt), quy tắc (+bật/tắt). `tests/unit/table-conventions.test.ts` kiểm.
 
 ## Cách dùng
@@ -70,6 +70,7 @@ Chỉ bỏ handler khi **nghiệp vụ không có** thao tác đó (không có A
 | Tỷ giá (`exchange-rate-table`) | Xóa, Xóa hàng loạt (chỉ dòng nhập tay) | FE chưa có trang chi tiết/sửa tỷ giá (API đã có `PATCH`); thêm trang thì bỏ ngoại lệ này |
 | Nhật ký thay đổi (`journal-table`) | Xem, Xóa, Xóa hàng loạt | Lịch sử không sửa được; xóa là xóa hẳn (model không có `deleted_at`), quyền `system.journal_entry.delete` |
 | Nhật ký gửi thông báo (`notification-delivery-table`) | Xóa, Xóa hàng loạt, Gửi lại | Không có trang chi tiết, không sửa; quyền `system.notification_delivery.delete` |
+| Quyên góp (`donation-table`) | Ẩn/hiện (switch + hàng loạt), Xóa, Xóa hàng loạt | Giao dịch đến từ webhook SePay, không có trang chi tiết hay form sửa |
 | Cài đặt (`setting-table`) | Xem, Sửa (dialog), Xóa, Xóa hàng loạt | Sửa giá trị bằng dialog thay cho trang chi tiết; xóa = quay về giá trị mặc định trong code |
 | Thư mục tệp (`attachment-folder-manager`) | Sửa, Xóa (hỏi giữ hay xóa tệp) | Xóa thư mục cần chọn cách xử lý tệp bên trong nên chưa có xóa hàng loạt |
 | Thư viện file | Lưới riêng (`AttachmentLibrary`), không dùng `DataTable` | Thao tác nằm ở panel chi tiết file |

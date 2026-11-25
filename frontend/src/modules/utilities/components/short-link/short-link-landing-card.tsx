@@ -164,7 +164,7 @@ export function ShortLinkLandingCard({
               </div>
               <div className="text-left">
                 <p className="text-foreground text-xs leading-tight font-bold">ToanNX</p>
-                <p className="text-muted-foreground text-[10px] font-medium">Safe Gateway</p>
+                <p className="text-muted-foreground text-[10px] font-medium">{t("safeGateway")}</p>
               </div>
             </div>
 
@@ -183,7 +183,7 @@ export function ShortLinkLandingCard({
                 <p className="text-foreground max-w-[80px] truncate font-mono text-xs leading-tight font-bold sm:max-w-[130px]">
                   {state.destinationDomain || "URL"}
                 </p>
-                <p className="text-muted-foreground text-[10px] font-medium">Verified Link</p>
+                <p className="text-muted-foreground text-[10px] font-medium">{t("verifiedLink")}</p>
               </div>
               <div className="border-primary/20 bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-xl border shadow-xs sm:size-9">
                 <DestinationFavicon

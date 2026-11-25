@@ -305,6 +305,13 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         with transaction.atomic():
             attachment = self.get_for_write(actor, pk)
             source_visibility = attachment.visibility
+            if (
+                attachment.is_private
+                and visibility != attachment.visibility
+                and attachment.created_by_id != actor.pk
+                and not actor.has_perm(AttachmentPermission.FILE_READ_PRIVATE.code)
+            ):
+                raise NotFoundError()
             old_name = attachment.file.name
             if source_visibility == visibility:
                 return attachment

@@ -8,7 +8,7 @@
 
 import { ArrowLeft, BookOpen, Clock, Loader2, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/shares/components/ui/button";
@@ -34,6 +34,7 @@ import { useReadingHistory } from "./hooks/use-reading-history";
  */
 export function ReadingHistory() {
   const t = useTranslations("novel.history");
+  const format = useFormatter();
   const {
     historyList,
     isLoading,
@@ -137,7 +138,15 @@ export function ReadingHistory() {
 
                   <div className="text-muted-foreground/80 flex items-center gap-1 text-[11px]">
                     <Clock className="h-3 w-3" />
-                    <span>{new Date(item.lastReadAt).toLocaleString()}</span>
+                    <span>
+                      {format.dateTime(new Date(item.lastReadAt), {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
                   </div>
                 </div>
               </div>

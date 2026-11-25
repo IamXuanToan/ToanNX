@@ -25,8 +25,14 @@ import { useAnnouncementForm } from "./hooks/use-announcement-form";
 export function AnnouncementForm() {
   const t = useTranslations("system.notifications.announcements");
   const tCommon = useTranslations("common.actions");
-  const { form, onSubmit, isSubmitting, roleOptions } = useAnnouncementForm();
+  const { form, onSubmit, isSubmitting, roleOptions, canReadRoles } = useAnnouncementForm();
   const target = useWatch({ control: form.control, name: "target" });
+  const targetOptions = canReadRoles
+    ? [
+        { value: "ALL", label: t("target.ALL") },
+        { value: "ROLES", label: t("target.ROLES") },
+      ]
+    : [{ value: "ALL", label: t("target.ALL") }];
   return (
     <Form onSubmit={onSubmit} className="space-y-6">
       <FormLayout
@@ -40,14 +46,11 @@ export function AnnouncementForm() {
                   legend={t("fields.target")}
                   value={field.value}
                   onChange={field.onChange}
-                  options={[
-                    { value: "ALL", label: t("target.ALL") },
-                    { value: "ROLES", label: t("target.ROLES") },
-                  ]}
+                  options={targetOptions}
                 />
               )}
             />
-            {target === "ROLES" ? (
+            {canReadRoles && target === "ROLES" ? (
               <Controller
                 control={form.control}
                 name="roleIds"

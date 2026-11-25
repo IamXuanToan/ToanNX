@@ -1,11 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { useQrBanks } from "../../../hooks/use-qr-banks";
 import type { DonationQrItem, QrAccountType } from "../../../types/page.types";
 
 const PREVIEW_DELAY_MS = 250;
+
+/**
+ * Sinh token ngẫu nhiên mật mã học cho webhook SePay (không dùng timestamp dễ đoán).
+ */
+function generateSecureWebhookToken(): string {
+  if (typeof crypto !== "undefined") {
+    if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+    if (typeof crypto.getRandomValues === "function") {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+    }
+  }
+  return "";
+}
 
 export interface UsePageDonationQrDialogProps {
   initialItem?: DonationQrItem | null;
@@ -15,14 +32,15 @@ export interface UsePageDonationQrDialogProps {
 
 /**
  * Hook quản lý trạng thái cho Dialog tạo / sửa mã QR trong trang Quyên góp (Donation):
- * Hỗ trợ phương thức VietQR tự động và phương thức Tùy chỉnh (người dùng tải ảnh mã QR lên),
- * tự động đồng bộ danh sách ngân hàng và xem trước mã QR SVG realtime như ở Admin.
+ * Hỗ trợ phương thức VietQR tự động, phương thức Tùy chỉnh (tải ảnh),
+ * cấu hình Webhook SePay trực tiếp cho mã QR và tùy chọn ẩn số tiền nhận được.
  */
 export function usePageDonationQrDialog({
   initialItem,
   onSave,
   onClose,
 }: UsePageDonationQrDialogProps) {
+  const t = useTranslations("utilities.customPages.pages.donationEditor");
   const banks = useQrBanks();
 
   const [type, setType] = useState<QrAccountType>(initialItem?.type ?? "BANK_TRANSFER");
@@ -33,6 +51,14 @@ export function usePageDonationQrDialog({
   const [accountHolder, setAccountHolder] = useState(initialItem?.accountHolder ?? "");
   const [note, setNote] = useState(initialItem?.note ?? "");
   const [isDefault, setIsDefault] = useState(initialItem?.isDefault ?? false);
+
+  // Cấu hình riêng tư & Webhook SePay trực tiếp theo mã QR
+  const [hideAmount, setHideAmount] = useState(initialItem?.hideAmount ?? false);
+  const [webhookEnabled, setWebhookEnabled] = useState(initialItem?.webhookEnabled ?? false);
+  const [webhookToken, setWebhookToken] = useState<string>(() => {
+    if (initialItem?.webhookToken) return initialItem.webhookToken;
+    return generateSecureWebhookToken();
+  });
 
   // Cấu hình kiểu dáng QR
   const [foreground, setForeground] = useState(initialItem?.design?.foreground ?? "#000000");
@@ -56,6 +82,33 @@ export function usePageDonationQrDialog({
   const [previewSvg, setPreviewSvg] = useState<string>(initialItem?.previewSvg ?? "");
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
+  // Tính toán Webhook URL hoàn chỉnh
+  const webhookUrl = useMemo(() => {
+    if (!webhookToken) return "";
+    const origin =
+      typeof window !== "undefined" && window.location.origin
+        ? window.location.origin
+        : "https://api.toannx.com";
+    return `${origin}/api/v1/utilities/donations/webhook/${webhookToken}`;
+  }, [webhookToken]);
+
+  const handleCopyWebhookUrl = async () => {
+    if (!webhookUrl) return;
+    try {
+      await navigator.clipboard.writeText(webhookUrl);
+      toast.success(t("webhookCopied"));
+    } catch {
+      toast.error(t("webhookCopyError"));
+    }
+  };
+
+  const handleToggleWebhook = (enabled: boolean) => {
+    setWebhookEnabled(enabled);
+    if (enabled && !webhookToken) {
+      setWebhookToken(generateSecureWebhookToken());
+    }
+  };
+
   // Tự động điều chỉnh tiêu đề khi đổi loại
   const handleTypeChange = (newType: QrAccountType) => {
     setType(newType);
@@ -63,7 +116,7 @@ export function usePageDonationQrDialog({
       if (newType === "BANK_TRANSFER") {
         setTitle(bankName || "MBBank");
       } else if (newType === "CUSTOM") {
-        setTitle("Ví MoMo");
+        setTitle(t("momoFallback"));
       }
     }
   };
@@ -83,7 +136,6 @@ export function usePageDonationQrDialog({
   // Tự động xem trước mã QR SVG realtime
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Chuẩn bị số tài khoản / URL hợp lệ để BE luôn tạo được ảnh preview thật
       const cleanAcc = accountNumber.trim();
       const validAcc = cleanAcc && /^[0-9A-Za-z]{4,19}$/.test(cleanAcc) ? cleanAcc : "9999999999";
       const validHolder = accountHolder.trim() || "CHU TAI KHOAN";
@@ -141,13 +193,16 @@ export function usePageDonationQrDialog({
     const savedItem: DonationQrItem = {
       id: initialItem?.id ?? `qr-${Date.now()}`,
       type,
-      title: title.trim() || (type === "BANK_TRANSFER" ? bankName : "Mã QR"),
+      title: title.trim() || (type === "BANK_TRANSFER" ? bankName : t("qrFallback")),
       bankBin: type === "BANK_TRANSFER" ? bankBin : undefined,
       bankName: type === "BANK_TRANSFER" ? bankName : undefined,
       accountNumber: accountNumber.trim(),
       accountHolder: accountHolder.trim().toUpperCase(),
       note: note.trim() || undefined,
       isDefault,
+      hideAmount,
+      webhookEnabled,
+      webhookToken: webhookEnabled ? webhookToken : undefined,
       design:
         type === "BANK_TRANSFER"
           ? {
@@ -187,6 +242,13 @@ export function usePageDonationQrDialog({
     setNote,
     isDefault,
     setIsDefault,
+    hideAmount,
+    setHideAmount,
+    webhookEnabled,
+    handleToggleWebhook,
+    webhookToken,
+    webhookUrl,
+    handleCopyWebhookUrl,
     foreground,
     setForeground,
     background,

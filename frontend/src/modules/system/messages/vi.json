@@ -254,7 +254,25 @@
     "watermarkFontSizeValue": "{percent}% chiều rộng",
     "watermarkColorWhite": "Trắng",
     "watermarkColorBlack": "Đen",
-    "watermarkColorPicker": "Chọn màu chữ"
+    "watermarkColorPicker": "Chọn màu chữ",
+    "viewModeGroupAria": "Chế độ hiển thị",
+    "playVideoAria": "Phát video",
+    "seekVideoAria": "Tiến độ phát video",
+    "playAria": "Phát",
+    "pauseAria": "Tạm dừng",
+    "muteAria": "Tắt tiếng",
+    "unmuteAria": "Bật tiếng",
+    "volumeAria": "Điều chỉnh âm lượng",
+    "fullscreenAria": "Toàn màn hình",
+    "exitFullscreenAria": "Thoát toàn màn hình",
+    "cropHandleNw": "Kéo góc trên trái",
+    "cropHandleNe": "Kéo góc trên phải",
+    "cropHandleSw": "Kéo góc dưới trái",
+    "cropHandleSe": "Kéo góc dưới phải",
+    "cropHandleN": "Kéo cạnh trên",
+    "cropHandleS": "Kéo cạnh dưới",
+    "cropHandleW": "Kéo cạnh trái",
+    "cropHandleE": "Kéo cạnh phải"
   },
   "auth": {
     "login": {
@@ -381,7 +399,7 @@
     },
     "validation": {
       "passwordRequired": "Vui lòng nhập mật khẩu.",
-      "identifierRequired": "Vui lòng nhập email hoặc tên người dùng.",
+      "identifierRequired": "Vui lòng nhập email hoặc tên đăng nhập.",
       "emailRequired": "Vui lòng nhập email.",
       "emailInvalid": "Email không hợp lệ.",
       "passwordMin": "Mật khẩu phải có ít nhất 8 ký tự.",
@@ -696,7 +714,9 @@
       "googleDesc": "Cho phép người dùng đăng nhập hoặc liên kết bằng tài khoản Google.",
       "githubTitle": "Đăng nhập GitHub",
       "githubDesc": "Cho phép người dùng đăng nhập hoặc liên kết bằng tài khoản GitHub.",
-      "updatedSuccess": "Đã cập nhật cấu hình thành công."
+      "updatedSuccess": "Đã cập nhật cấu hình thành công.",
+      "enabledBadge": "Đang bật",
+      "disabledBadge": "Tạm khóa"
     },
     "table": {
       "title": "Danh sách tham số cấu hình",
@@ -752,7 +772,8 @@
       "hint": "Hiện popup kể cả khi đã đóng tab.",
       "granted": "Đã bật trên trình duyệt này.",
       "denied": "Trình duyệt đang chặn thông báo; mở lại quyền trong cài đặt trang.",
-      "unsupported": "Trình duyệt chưa hỗ trợ hoặc hệ thống chưa cấu hình Firebase."
+      "unsupported": "Trình duyệt chưa hỗ trợ hoặc hệ thống chưa cấu hình Firebase.",
+      "browserFallback": "Trình duyệt"
     },
     "telegramBot": {
       "title": "Bot Telegram của bạn",

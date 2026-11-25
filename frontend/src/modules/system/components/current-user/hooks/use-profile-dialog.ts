@@ -11,8 +11,14 @@ import { useForm } from "react-hook-form";
 
 import { getUserDisplayName, getUserInitials } from "@/shares/components/common/user-avatar";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 import { toast } from "sonner";
 
+import {
+  OAUTH_MODE,
+  OAUTH_STORAGE_KEYS,
+  PROFILE_DIALOG_QUERY,
+} from "../../../constants/auth-storage";
 import { authKeys } from "../../../constants/query-keys";
 import { useUpdateProfile } from "../../../hooks/use-update-profile";
 import {
@@ -45,7 +51,9 @@ export function useProfileDialog({
 }) {
   const t = useTranslations("system.auth.profile");
   const searchParams = useSearchParams();
-  const tabParam = searchParams?.get("tab");
+  const isProfileOpenInUrl =
+    searchParams?.get(PROFILE_DIALOG_QUERY.openParam) === PROFILE_DIALOG_QUERY.openValue;
+  const tabParam = isProfileOpenInUrl ? searchParams?.get(PROFILE_DIALOG_QUERY.tabParam) : null;
   const validTab =
     tabParam === "security" ||
     tabParam === "social" ||
@@ -67,8 +75,8 @@ export function useProfileDialog({
     setSelectedTab(tab);
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
-      url.searchParams.set("profile", "open");
-      url.searchParams.set("tab", tab);
+      url.searchParams.set(PROFILE_DIALOG_QUERY.openParam, PROFILE_DIALOG_QUERY.openValue);
+      url.searchParams.set(PROFILE_DIALOG_QUERY.tabParam, tab);
       window.history.replaceState(null, "", `${url.pathname}${url.search}`);
     }
   };
@@ -91,7 +99,7 @@ export function useProfileDialog({
     refetch: refetchSocials,
   } = useQuery({
     queryKey: authKeys.socialAccounts(),
-    queryFn: () => authService.listSocialAccounts(),
+    queryFn: ({ signal }) => authService.listSocialAccounts(signal),
     enabled: open,
   });
 
@@ -124,11 +132,16 @@ export function useProfileDialog({
     setConnectingProvider(provider);
     try {
       const state = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      sessionStorage.setItem("oauth_state", state);
-      sessionStorage.setItem("oauth_mode", "link");
+      sessionStorage.setItem(OAUTH_STORAGE_KEYS.state, state);
+      sessionStorage.setItem(OAUTH_STORAGE_KEYS.mode, OAUTH_MODE.link);
       const redirectUri = `${window.location.origin}/auth/callback/${provider}`;
       const res = await authService.getSocialAuthUrl(provider, state, redirectUri);
-      window.location.href = res.authorizationUrl;
+      const safeAuthUrl = toSafeHttpUrl(res.authorizationUrl, { allowRelative: false });
+      if (!safeAuthUrl) {
+        setConnectingProvider(null);
+        return;
+      }
+      window.location.href = safeAuthUrl;
     } catch (error) {
       toast.error(errorMessage(error));
       setConnectingProvider(null);

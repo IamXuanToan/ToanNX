@@ -47,6 +47,9 @@ PUBLIC_VIEWS = frozenset(
         "SocialLoginView",
         "PublicSettingView",
         "SepayWebhookView",
+        "DonationWebhookView",
+        "DonationPublicFeedView",
+        "DonationPublicLeaderboardView",
         "NotificationDispatchView",
     }
 )

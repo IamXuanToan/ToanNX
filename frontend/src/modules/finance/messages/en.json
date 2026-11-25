@@ -139,6 +139,7 @@
       "isTaxManualHint": "From a certificate; not recalculated when history changes.",
       "taxWithheld": "Tax was withheld",
       "receivedAt": "Received at",
+      "owner": "User",
       "platform": "Platform",
       "platformHint": "Leave empty to detect by rules.",
       "currency": "Currency",
@@ -178,6 +179,7 @@
       "SEPAY": "SePay"
     },
     "filters": {
+      "year": "Year",
       "review": "Review",
       "needsReview": "Needs review",
       "invoice": "Document",
@@ -214,6 +216,7 @@
       "issuer": "Issuer",
       "issuerTaxCode": "Issuer tax code",
       "issuedOn": "Issued on",
+      "owner": "User",
       "platform": "Platform",
       "periodFrom": "Period from",
       "periodTo": "Period to",
@@ -224,6 +227,9 @@
       "exchangeRate": "Exchange rate",
       "note": "Note",
       "links": "Transactions · files"
+    },
+    "filters": {
+      "year": "Year"
     },
     "docType": {
       "WITHHOLDING_CERTIFICATE": "Withholding certificate",
@@ -267,6 +273,8 @@
   },
   "report": {
     "title": "Income report",
+    "owner": "User",
+    "allOwners": "All users",
     "year": "Year",
     "month": "Month",
     "allMonths": "Whole year",
@@ -339,7 +347,13 @@
         "CHANGED": "Changed",
         "INVALID": "Invalid amount"
       }
-    }
+    },
+    "purposeTitle": "Purpose of personal SePay connection",
+    "purposeIntro": "Connecting SePay here enables",
+    "purposeHighlight": "automatic balance change notifications from your personal bank account",
+    "purposeOutro": "and automatic detection and classification of income entries (contracts, salary, freelance, affiliate commissions...) into this personal finance ledger.",
+    "privacyTitle": "Isolated & Private",
+    "privacyDesc": "This token and webhook apply only to your account and are never shared with other users."
   },
   "notifications": {
     "incomeReceived": "Received {amount} ₫ · {platform}",

@@ -6,7 +6,24 @@
  * Input (`number-input.ts`) và hiển thị read-only/table dùng cùng quy ước.
  */
 
-export const APP_NUMBER_LOCALE = "vi-VN";
+import { CURRENCY_CODES, CURRENCY_SYMBOLS } from "@/shares/constants/currency";
+import {
+  APP_NUMBER_LOCALE,
+  ENGLISH_LOCALE_CODE,
+  NUMBER_LOCALE_BY_LOCALE,
+} from "@/shares/constants/locale";
+
+export { APP_NUMBER_LOCALE };
+
+/**
+ * Trả về locale chuẩn `Intl` (`vi-VN` hoặc `en-US`) tương ứng với mã ngôn ngữ giao diện.
+ *
+ * @param locale - Mã ngôn ngữ app hiện tại (`vi` hoặc `en`).
+ * @returns Locale định dạng số (`vi-VN` / `en-US`).
+ */
+export function getNumberLocale(locale: string): string {
+  return locale === ENGLISH_LOCALE_CODE ? NUMBER_LOCALE_BY_LOCALE.en : NUMBER_LOCALE_BY_LOCALE.vi;
+}
 
 export type NumberSeparators = {
   group: string;
@@ -84,8 +101,37 @@ export function formatDisplayMoney(value: unknown, options?: FormatDisplayMoneyO
   const locale = options?.locale ?? APP_NUMBER_LOCALE;
   return new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: options?.currency ?? "VND",
+    currency: options?.currency ?? CURRENCY_CODES.VND,
     minimumFractionDigits: options?.minimumFractionDigits,
-    maximumFractionDigits: options?.maximumFractionDigits ?? (options?.currency === "USD" ? 2 : 0),
+    maximumFractionDigits:
+      options?.maximumFractionDigits ?? (options?.currency === CURRENCY_CODES.USD ? 2 : 0),
+  }).format(number);
+}
+
+/**
+ * Định dạng tiền VNĐ kèm khoảng trắng chuẩn + ký hiệu `₫` (dùng cho thẻ/preset/tooltip giữ định dạng `50.000 ₫`).
+ *
+ * @param value - Giá trị số.
+ * @param locale - Locale định dạng số (mặc định `vi-VN`).
+ * @returns Chuỗi tiền tệ `50.000 ₫`.
+ */
+export function formatVndText(value: unknown, locale = APP_NUMBER_LOCALE): string {
+  return `${formatDisplayNumber(value, { locale })} ${CURRENCY_SYMBOLS.VND}`;
+}
+
+/**
+ * Định dạng số rút gọn cho nhãn trục biểu đồ (ví dụ `120 Tr`, `1,2 Tỷ`), giữ tooltip nguyên số.
+ *
+ * @param value - Giá trị số.
+ * @param locale - Locale hiện tại (mặc định `vi-VN`).
+ * @returns Chuỗi ngắn gọn.
+ */
+export function formatCompactDisplayNumber(value: unknown, locale = APP_NUMBER_LOCALE): string {
+  const number = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(number)) return String(value ?? "");
+
+  return new Intl.NumberFormat(locale, {
+    notation: "compact",
+    maximumFractionDigits: 1,
   }).format(number);
 }

@@ -24,6 +24,7 @@ from app.finance.models.sepay_connection import SepayConnection
 from app.finance.services.income_service import IncomeService
 from app.finance.services.sepay_connection_service import SepayConnectionService
 from app.finance.services.sepay_transaction_parser import SepayTransactionParser
+from app.system.constants.notification_level import NotificationLevel
 from app.system.services.notification_service import NotificationService
 from app.system.types.notification_payload import NotificationPayload
 
@@ -114,7 +115,7 @@ class SepayWebhookService:
                 title="Webhook SePay bị từ chối",
                 body=f"Lý do: {reason}. Kiểm tra secret và giờ máy chủ.",
                 link=SEPAY_PAGE_PATH,
-                level="ERROR",
+                level=NotificationLevel.ERROR,
                 message_key="finance.notifications.webhookAuthFailed",
                 params={"reason": reason},
                 details=(

@@ -42,7 +42,7 @@ Gốc: `backend/app/core/`. Core không import module nghiệp vụ (trừ `TYPE
 | `ModuleRegistry` | `registry/module_registry.py` | Tra danh sách module đã cài (không tự đăng ký tay); `notification_event_definitions()`, `find_notification_event(code)`, `validate_notification_permissions()` (gọi khi khởi động) |
 | `WebhookDefinition` | `registry/webhook_definition.py` | Một webhook bên thứ ba gọi vào (`path` sau `/api/v1`, mô tả, `auth`, `setup`) khai trong `webhooks`; hiện ở Hệ thống → Webhook |
 | `CallbackDefinition` | `registry/callback_definition.py` | Một URL callback trên FE (OAuth...) khai trong `callbacks` (`path`, `setup`, `setting` báo đã cấu hình); hiện ở Hệ thống → Callback |
-| `NotificationEventDefinition` | `registry/notification_event_definition.py` | Một sự kiện thông báo `<module>.<resource>.<event>` khai trong `notification_events`: `scope` (PERSONAL/SYSTEM), `audience` (OWNER/SUBSCRIBERS), `permission`, `default_level` (INFO/WARNING/ERROR), `default_channels`, `kind` business/technical; `validate()` |
+| `NotificationEventDefinition` | `registry/notification_event_definition.py` | Một sự kiện thông báo `<module>.<resource>.<event>` khai trong `notification_events`: `scope` (`NOTIFICATION_SCOPE_*`), `audience` (`NOTIFICATION_AUDIENCE_*`), `permission`, `default_level` (`NOTIFICATION_LEVEL_*`), `default_channels` (`NOTIFICATION_CHANNEL_*`), `kind` business/technical; `validate()` |
 | `PermissionCatalog` | `registry/permission_catalog.py` | Gốc danh mục quyền `permissions/<model>_permission.py`; `.all()`; `MEMBER = (...)` + `.member()` khai quyền của vai trò thành viên |
 | `PermissionDefinition` | `registry/permission_definition.py` | Một quyền `<module>.<resource>.<action>` có name + description |
 
@@ -107,9 +107,11 @@ Gốc: `backend/app/core/`. Core không import module nghiệp vụ (trừ `TYPE
 | Export | File | Dùng khi |
 | --- | --- | --- |
 | `to_ascii`, `ascii_slug` | `utils/text.py` | Bỏ dấu ở Python (`anyascii`); không tự viết bảng bỏ dấu |
+| `sanitize_csv_cell`, `sanitize_csv_row` | `utils/csv_safety.py` | Trung hòa chuỗi `= + - @ \t \r \n` khi xuất CSV để chống công thức DDE |
 | `normalize_slug`, `generate_slug` | `utils/slug.py` | Slug URL công khai (link rút gọn, trang, đoạn đường dẫn) |
 | `validate_public_url`, `build_absolute_url`, `build_backend_url` | `utils/url.py` | Kiểm URL người dùng nhập; dựng URL tuyệt đối theo request; `build_backend_url` = URL theo Host backend thật (webhook bên thứ ba gọi thẳng) |
 | `CoreValidator` | `validators/core_validator.py` | Quy tắc validate dùng lại giữa các module |
+| `DEFAULT_LOCALE`, `ENGLISH_LOCALE`, `SUPPORTED_LOCALES`, `DEFAULT_TIMEZONE`, `DEFAULT_CURRENCY_CODE`, `DEFAULT_HTTP_ACCEPT_LANGUAGE`, `DEFAULT_HTTP_ENCODING`, `CONTENT_TYPE_JSON`, `CONTENT_TYPE_CSV` | `constants/defaults.py` | Hằng số mặc định dùng chung toàn backend (locale, timezone, tiền tệ, mã hóa, Content-Type) |
 
 ---
 
@@ -143,7 +145,7 @@ repository của `system`.
 | `CurrencyService` | `system/services/currency_service.py` | Danh mục tiền tệ (seed VND gốc, USD): `base()`, `get_active(pk)`; khóa ngoại tới `system.Currency` |
 | `ExchangeRateService` | `system/services/exchange_rate_service.py` | Tỷ giá quy về VNĐ: `resolve(currency, date)` (cache DB → Vietcombank, lùi tối đa 7 ngày), `resolve_by_id`, `refetch`; tỷ giá nhập tay ưu tiên hơn API |
 | `SettingService` / `SettingKey` | `system/services/setting_service.py`, `system/constants/setting_key.py` | Đọc/ghi `system.Setting` (`get_setting_value`, `set_setting_value(key, value, *, ...)`); khóa dùng trong code khai ở `SettingKey`, không viết chuỗi trực tiếp |
-| `get_frontend_origin` | `system/utils/frontend_url.py` | Origin FE để dựng link (email, link công khai) |
+| `get_frontend_origin`, `trusted_frontend_origins`, `is_trusted_frontend_origin` | `system/utils/frontend_url.py` | Origin FE tin cậy (allowlist) để dựng link và kiểm `redirect_uri` |
 | `detect_content_type` | `system/utils/file_signature.py` | Nhận loại file thật theo chữ ký byte khi nhận upload |
 | `looks_like_svg`, `find_svg_problem` | `system/utils/svg_inspector.py` | Kiểm SVG an toàn trước khi lưu |
 | `PasswordValidator` | `system/validators/password_validator.py` | Luật mật khẩu |
@@ -210,7 +212,7 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | `CheckboxField` | `checkbox-field.tsx` | Một checkbox có nhãn/mô tả |
 | `SwitchField` | `switch-field.tsx` | Công tắc bật/tắt thiết lập trong form |
 | `RadioGroupField`, `RadioOption` | `radio-group-field.tsx` | 2–5 lựa chọn dạng thẻ cần mô tả |
-| `SearchInput` | `search-input.tsx` | Ô tìm (Enter mới áp dụng) |
+| `SearchInput` | `search-input.tsx` | Ô tìm (Enter mới áp dụng, tự chặn từ khóa vượt 5 từ / 100 ký tự) |
 | `EmailInput` | `email-input.tsx` | Ô email |
 | `PasswordInput` | `password-input.tsx` | Ô mật khẩu có nút hiện/ẩn |
 | `NumberInput` | `number-input.tsx` | Ô số theo định dạng vi-VN |
@@ -225,12 +227,16 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | `DateTimePicker` | `date-time-picker.tsx` | Chọn ngày + giờ |
 | `MonthSelect`, `normalizeMonthValue` | `month-select.tsx` | Chọn tháng 1–12 |
 | `ImageUpload`, `UploadedFile` | `image-upload.tsx`, `image-upload.types.ts` | Ảnh đại diện/logo chọn từ Thư viện (module truyền callback; `hideHint` ẩn dòng gợi ý lộ thiên) |
-| `TiptapEditor` | `tiptap-editor.tsx` | Editor soạn thảo **duy nhất** (giá trị JSON) |
-| `TiptapContent` | `tiptap-content.tsx` | Hiển thị JSON Tiptap chỉ đọc (chạy được ở server) |
-| `TiptapToolbar` | `tiptap-toolbar.tsx` | Thanh công cụ của `TiptapEditor` (không dùng riêng) |
-| `TiptapToggle`, `UrlPopover` | `tiptap-toggle.tsx`, `url-popover.tsx` | Nút bật/tắt định dạng và ô nhập link bên trong `TiptapToolbar` (không dùng riêng) |
-| `createBaseExtensions`, `LibraryImage`, `LINK_PROTOCOLS` | `tiptap-extensions.ts` | Extension chung của editor và nội dung |
-| `TiptapDocument`, `TiptapImage`, `TiptapInsertItem`, `TiptapEditorProps` | `tiptap-editor.types.ts` | Kiểu của editor |
+| `TiptapEditor` | `tiptap-editor.tsx` | **Bộ 1 (Full Editor)**: hợp nhất Simple Sticky Toolbar + Notion-like (kéo thả dòng `⠿`, `/` chèn khối, Bubble Menu, ảnh tương tác; tùy biến `showToolbar`, `notion`, `showStats`) |
+| `TiptapBasicEditor` | `tiptap-basic-editor.tsx` | **Bộ 2 (Basic Editor)**: tối giản cho mô tả ngắn (chỉ Đậm, Nghiêng, tùy chọn Gạch chân, Hoàn tác/Làm lại, đếm ký tự `maxLength`) |
+| `TiptapCommentEditor` | `tiptap-comment-editor.tsx` | **Bộ 3 (Comment Editor)**: khung bình luận gọn (định dạng đáy, `replyingTo`, Hủy/Gửi, phím tắt `Ctrl+Enter`, `clearOnSubmit`) |
+| `TiptapContent` | `tiptap-content.tsx` | Hiển thị JSON Tiptap chỉ đọc (chạy được ở server, đồng bộ kích thước/căn lề ảnh và `taskItem`) |
+| `TiptapToolbar`, `TiptapBlockHandle`, `TiptapBubbleToolbar`, `TiptapSlashMenu`, `TiptapNotionUrlDialog` | `tiptap-toolbar.tsx`, `tiptap-block-handle.tsx`, `tiptap-bubble-toolbar.tsx`, `tiptap-slash-menu.tsx`, `tiptap-notion-url-dialog.tsx` | Thành phần trong của `TiptapEditor` (thanh công cụ sticky, kéo thả khối `⠿`, menu bôi đen, `/` chèn khối, hộp thoại URL) |
+| `TiptapToggle`, `UrlPopover` | `tiptap-toggle.tsx`, `url-popover.tsx` | Nút bật/tắt định dạng và ô nhập link/URL dùng trong toolbar/comment (không dùng riêng) |
+| `TiptapImageNodeView` | `tiptap-image-node-view.tsx` | NodeView ảnh tương tác (kéo kích thước 15%–100%, căn trái/giữa/phải/toàn rộng, alt, xóa) |
+| `createBaseExtensions`, `createBasicExtensions`, `createCommentExtensions`, `LibraryImage`, `TIPTAP_SLASH_COMMANDS`, `LINK_PROTOCOLS`, `formatTiptapImageWidth`, `getTiptapImageWrapperAlignClass`, `getTiptapImageElementAlignClass` | `tiptap-extensions.ts` | Bộ extension theo từng preset (Full/Basic/Comment), danh sách slash & helper server-safe cho `TiptapContent` |
+| `InteractiveLibraryImage`, `createEditorBaseExtensions`, `createTiptapPlaceholderExtension` | `tiptap-editor-extensions.ts` | Extension phía Client gắn `TiptapImageNodeView` và placeholder |
+| `TiptapDocument`, `TiptapImage`, `TiptapInsertItem`, `TiptapEditorProps`, `TiptapBasicEditorProps`, `TiptapCommentEditorProps`, `TiptapSlashCommandId` | `tiptap-editor.types.ts` | Kiểu dữ liệu cho cả 3 bộ editor và slash menu |
 
 ### 4.4 Bảng và danh sách — `components/common/`
 
@@ -238,7 +244,7 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | --- | --- | --- |
 | `DataTable` | `data-table.tsx` | **Mọi** bảng: chọn dòng, ẩn/hiện, ghim, resize cột, card mobile dưới `md`, `onView`/`onEdit`/`onDelete` + `can` (luôn hiện, thiếu quyền thì mờ), `rowActions`, `bulkActions`, `pagination` |
 | `DataTableColumn`, `DataTableRowAction`, `DataTableBulkAction`, `DataTableProps`... | `data-table.types.ts` | Khai cột và thao tác của bảng |
-| `DataPagination`, `PAGE_SIZE_OPTIONS` | `data-pagination.tsx` | Phân trang (truyền qua prop `pagination` của `DataTable`) |
+| `DataPagination` | `data-pagination.tsx` | Phân trang (truyền qua prop `pagination` của `DataTable`; dùng `PAGE_SIZE_OPTIONS` từ `constants/pagination.ts`) |
 | `TableToolbar` | `table-toolbar.tsx` | Ô tìm + bộ lọc + Tải lại + menu cột |
 | `TableBulkBar` | `table-bulk-bar.tsx` | Thanh thao tác hàng loạt đơn dòng chuẩn Linear/Vercel khi chọn dòng (trái: badge số lượng + vạch chia + Bỏ chọn, phải: Đổi trạng thái, thao tác riêng, Xóa) |
 | `TableRowActions` | `table-row-actions.tsx` | Cột Xem → Sửa → Sao chép → Xóa (nút mờ + tooltip lý do khi thiếu quyền/dòng khóa) + thao tác riêng |
@@ -274,6 +280,7 @@ component trong `common/` bên dưới; chỉ dùng thẳng `ui/*` khi `common/`
 | `useResourceMutation` | `use-resource-mutation.ts` | **Mọi** mutation: toast chuẩn + invalidate khóa đã khai |
 | `useTableState` | `use-table-state.ts` | State bảng trên URL: `search`, `page`, `pageSize`, `ordering`, bộ lọc |
 | `useBulkActions` | `use-bulk-actions.ts` | Hook bảng: `bulkDelete(rows)` / `bulkUpdate(rows, patch)` chuẩn (toast + invalidate); thay mọi `useBulkDeleteXxx` riêng |
+| `useTabState` | `use-tab-state.ts` | Quản lý active tab đồng bộ 2 chiều với URL query param (`?tab=...`), lưu URL không reload |
 | `useEditMode` | `use-edit-mode.ts` | View trang chi tiết: `useEditMode(canUpdate)` = có quyền **và** URL `?mode=edit`; truyền kết quả xuống form |
 | `useApiErrorMessage` | `use-api-error-message.ts` | Dịch lỗi API theo mã |
 | `useMessage` | `use-message.ts` | Dịch khóa đầy đủ do module khai (`system.account.nav.users`) |
@@ -307,15 +314,21 @@ Hook trong `components/common/hooks/` còn lại là hook riêng của từng co
 | `createPageMetadata`, `buildAlternates` | `lib/seo.ts` | Metadata trong `page.tsx`/`layout.tsx` |
 | `createQueryClient` | `lib/query-client.ts` | QueryClient (không retry 4xx) |
 | `emailField`, `passwordField`, `slugField`, `moneyField` | `lib/field-schemas.ts` | Field zod dùng lại trong `schemas/` |
-| `formatDisplayNumber`, `formatDisplayMoney`, `getNumberSeparators`, `APP_NUMBER_LOCALE` | `lib/number-format.ts` | Hiển thị số/tiền |
+| `formatDisplayNumber`, `formatDisplayMoney`, `formatVndText`, `formatCompactDisplayNumber`, `getNumberLocale`, `getNumberSeparators`, `APP_NUMBER_LOCALE` | `lib/number-format.ts` | Chuẩn hóa locale số (`vi-VN`/`en-US`) và định dạng số/tiền |
+| `isLocalizedRouteExact`, `startsWithLocalizedRoute` | `lib/localized-route.ts` | Kiểm tra active/prefix của route hiện tại theo `<M>_PATHNAMES` (tránh hardcode đường dẫn `/vi/...`) |
+| `DEFAULT_LOCALE_CODE`, `ENGLISH_LOCALE_CODE`, `DEFAULT_TIMEZONE`, `APP_NUMBER_LOCALE`, `EN_NUMBER_LOCALE`, `CHINESE_LUNAR_LOCALE`, `NUMBER_LOCALE_BY_LOCALE` | `constants/locale.ts` | Hằng số locale và timezone chuẩn dùng chung toàn FE |
+| `DEFAULT_CURRENCY`, `CURRENCY_CODES`, `CURRENCY_SYMBOLS`, `MoneyCurrency` | `constants/currency.ts` | Hằng số mã tiền tệ (`VND`/`USD`) và ký hiệu tiền tệ (`₫`/`$`) |
+| `PAGE_SIZE_OPTIONS` | `constants/pagination.ts` | Danh sách kích thước trang tiêu chuẩn cho phân trang |
+| `SESSION_EXPIRED_TOAST_ID`, `LOGOUT_SUCCESS_TOAST_ID` | `constants/auth-session.ts` | ID toast chống trùng cho sự kiện hết hạn phiên / đăng xuất |
 | `parseIsoDate`, `formatIsoDate`, `toInputDate`, `toInputDateTime`, `mergeDateAndTime`, `parseTimeString`, `formatTimeString`, `parseDateTimeLocal`, `formatDateTimeLocal`, `snapMinuteToStep`, `HOUR_OPTIONS`, `MINUTE_OPTIONS` | `lib/date-time-input.ts` | Chuyển đổi giá trị ngày/giờ |
 | `getDateFnsLocale`, `getDateDisplayFormat` | `lib/date-fns-locale.ts` | Locale và định dạng ngày theo ngôn ngữ |
-| `normalizeSearchText`, `filterOptionsByKeyword` | `lib/search-text.ts` | Tìm không dấu, không phân biệt hoa thường ở FE |
+| `normalizeSearchText`, `filterOptionsByKeyword`, `SEARCH_MAX_LENGTH`, `SEARCH_MAX_TERMS`, `splitSearchTerms`, `isSearchQueryTooLong`, `clampSearchQuery` | `lib/search-text.ts` | Tìm không dấu ở FE và chuẩn hoá/kiểm giới hạn từ khóa khớp backend |
 | `sanitizeCodeInput`, `sanitizeSlugInput`, `isValidCodeValue`, `isValidSlugValue`, `CODE_VALUE_REGEX`, `SLUG_VALUE_REGEX` | `lib/code-slug-input.ts` | Lọc/kiểm mã và slug |
 | `isOnline`, `ONLINE_WINDOW_MS` | `lib/presence.ts` | Người dùng đang trực tuyến |
 | `createBooleanBulkStatus` | `lib/bulk-status.ts` | `bulkStatus` của `DataTable` cho cờ boolean (đang dùng/tắt, xuất bản/ẩn) |
 | `EDIT_MODE_PARAM`, `EDIT_MODE_VALUE`, `withEditMode` | `lib/edit-mode.ts` | Hook bảng: `edit` → `withEditMode(<M>_ROUTES.xxxDetail(id))` mở thẳng chế độ sửa |
 | `ICON_PATHS`, `normalizeMediaUrl`, `isUnoptimizedImage` | `lib/asset-paths.ts` | Đường dẫn tài nguyên tĩnh SVG trong `public/` và chuẩn hóa URL media backend cho Next rewrite / CSP |
+| `toSafeHttpUrl`, `toSafeImageSrc` | `lib/safe-url.ts` | Chặn `javascript:`, `vbscript:`, `data:text/html`, ký tự điều khiển ở link và nguồn ảnh người dùng nhập |
 | `env` | `config/env.ts` | **Chỗ duy nhất** đọc `process.env` (gồm `apiBaseUrl`, `siteUrl`, `NEXT_PUBLIC_FIREBASE_*`) |
 | `isPushSupported`, `getPushToken`, `deletePushToken`, `NOTIFICATION_SW_PATH` | `lib/firebase-messaging.ts` | Lấy/xóa token FCM (đăng ký `public/notification-sw.js`); chỉ dùng qua hook push của `system` |
 

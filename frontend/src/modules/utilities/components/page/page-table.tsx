@@ -1,8 +1,9 @@
 "use client";
 
 import type { ComponentProps } from "react";
-import { ExternalLink } from "lucide-react";
+import { Copy, ExternalLink } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 import { Link } from "@/i18n/navigation";
 import { DataTable } from "@/shares/components/common/data-table";
@@ -10,6 +11,8 @@ import type { DataTableColumn } from "@/shares/components/common/data-table.type
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge } from "@/shares/components/common/status-badge";
 import { Badge } from "@/shares/components/ui/badge";
+import { Button } from "@/shares/components/ui/button";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { PAGE_STATUSES, PAGE_TYPES, type Page } from "../../types/page.types";
@@ -70,9 +73,20 @@ export function PageTable({
           >
             {page.title}
           </Link>
-          <p className="text-muted-foreground truncate text-xs">
-            {page.publicUrl.replace(/^https?:\/\//, "")}
-          </p>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground inline-flex h-auto max-w-full items-center gap-1 truncate p-0 text-xs hover:bg-transparent"
+            onClick={() => {
+              void navigator.clipboard.writeText(page.publicUrl);
+              toast.success(t("copied"));
+            }}
+            aria-label={t("copy", { url: page.publicUrl })}
+          >
+            <span className="truncate">{page.publicUrl.replace(/^https?:\/\//, "")}</span>
+            <Copy aria-hidden className="size-3 shrink-0" />
+          </Button>
         </div>
       ),
     },
@@ -185,10 +199,13 @@ export function PageTable({
       can={{ update: canUpdate, create: canCreate, delete: canDelete }}
       rowActions={[
         {
-          key: "view",
+          key: "openPublic",
           label: t("view"),
           icon: ExternalLink,
-          onClick: (page) => window.open(page.publicUrl, "_blank", "noopener,noreferrer"),
+          onClick: (page) => {
+            const safeUrl = toSafeHttpUrl(page.publicUrl);
+            if (safeUrl) window.open(safeUrl, "_blank", "noopener,noreferrer");
+          },
         },
       ]}
       bulkStatus={

@@ -6,8 +6,9 @@ from rest_framework import serializers
 
 
 class PagePublicResponseSerializer(serializers.Serializer[Any]):
-    """Dữ liệu an toàn để FE render (không có id, owner, attachment id thô)."""
+    """Dữ liệu an toàn để FE render (không có owner, attachment id thô)."""
 
+    id = serializers.UUIDField(help_text="Id trang.")
     segment = serializers.CharField(help_text="Đường dẫn giữa.")
     slug = serializers.CharField(help_text="Slug.")
     status = serializers.CharField(help_text="Trạng thái hiện tại.")

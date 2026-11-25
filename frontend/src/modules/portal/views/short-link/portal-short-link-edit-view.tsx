@@ -2,12 +2,14 @@
 
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { SHORT_LINK_PERMISSIONS } from "@/modules/utilities/permissions/short-link-permission";
+import { EditModeProvider } from "@/shares/components/common/edit-mode-provider";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
+import { useEditMode } from "@/shares/hooks/use-edit-mode";
 
 import { PortalShortLinkEdit } from "../../components/short-link/portal-short-link-edit";
 
 /**
- * View sửa link rút gọn trong Client Portal.
+ * View chi tiết và sửa link rút gọn trong Client Portal.
  *
  * @param props - Id liên kết.
  * @returns Giao diện view.
@@ -15,10 +17,16 @@ import { PortalShortLinkEdit } from "../../components/short-link/portal-short-li
 export function PortalShortLinkEditView({ id }: { id: string }) {
   const canRead = usePermission(SHORT_LINK_PERMISSIONS.read);
   const canUpdate = usePermission(SHORT_LINK_PERMISSIONS.update);
+  const canManageAll = usePermission(SHORT_LINK_PERMISSIONS.manageAll);
+  const isEditing = useEditMode(canUpdate);
 
   if (!canRead) {
     return <ForbiddenView />;
   }
 
-  return <PortalShortLinkEdit id={id} canUpdate={canUpdate} />;
+  return (
+    <EditModeProvider canEdit={canUpdate}>
+      <PortalShortLinkEdit id={id} canUpdate={isEditing} canManageAll={canManageAll} />
+    </EditModeProvider>
+  );
 }

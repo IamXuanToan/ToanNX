@@ -93,3 +93,18 @@ class PlatformService(CoreCrudService[Platform, PlatformRepository]):
             )
             created += 1
         return created
+
+    @transaction.atomic
+    def get_or_create_sepay_donation_platform(self, owner: Any) -> Platform:
+        """Lấy hoặc tạo nền tảng `sepay_donation` mặc định cho chủ trang Donate."""
+        existing = self.repository.find_one(owner=owner, code="sepay_donation")
+        if existing is not None:
+            return existing
+        currency = self.currency_service.base()
+        return self.repository.create(
+            actor=owner,
+            owner=owner,
+            code="sepay_donation",
+            name="Ủng hộ & Quyên góp SePay",
+            default_currency=currency,
+        )

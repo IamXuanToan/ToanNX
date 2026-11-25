@@ -14,8 +14,8 @@ class ClassificationRuleRepository(CoreRepository[ClassificationRule]):
     model = ClassificationRule
 
     def get_queryset(self) -> QuerySet[ClassificationRule]:
-        """Kèm nền tảng."""
-        return super().get_queryset().select_related("platform")
+        """Kèm chủ sở hữu và nền tảng."""
+        return super().get_queryset().select_related("owner", "platform")
 
     def active_for(self, owner_id: Any) -> list[ClassificationRule]:
         """Quy tắc đang bật của một người theo thứ tự ưu tiên."""

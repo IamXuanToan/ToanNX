@@ -13,9 +13,7 @@ import {
   DONATION_SUGGESTED_ICONS,
   type DonationSuggestedIconKey,
 } from "../../constants/page-constants";
-import { DonationAmountIcon, getDonationLucideIcon } from "./donation-amount-icon";
-
-export { DonationAmountIcon, getDonationLucideIcon };
+import { DonationAmountIcon } from "./donation-amount-icon";
 
 /**
  * Bộ chọn biểu tượng trực quan (Icon Picker Popover) cho các mốc số tiền ủng hộ gợi ý.
@@ -50,7 +48,7 @@ export function DonationAmountIconPicker({
         >
           <DonationAmountIcon iconKey={value} className="text-primary size-4 shrink-0" />
           <span className="hidden max-w-[80px] truncate sm:inline">
-            {currentOption?.label ?? t("selectIcon")}
+            {currentOption ? t(`icons.${currentOption.value}`) : t("selectIcon")}
           </span>
           <ChevronDown className="text-muted-foreground size-3 shrink-0 opacity-70" />
         </Button>
@@ -94,7 +92,7 @@ export function DonationAmountIconPicker({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="text-xs">
-                  {item.label}
+                  {t(`icons.${item.value}`)}
                 </TooltipContent>
               </Tooltip>
             );

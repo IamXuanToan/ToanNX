@@ -15,11 +15,11 @@ class IncomeRepository(CoreRepository[Income]):
     model = Income
 
     def get_queryset(self) -> QuerySet[Income]:
-        """Kèm nền tảng, tiền tệ, quy tắc (không N+1 khi liệt kê)."""
+        """Kèm chủ sở hữu, nền tảng, tiền tệ, quy tắc (không N+1 khi liệt kê)."""
         return (
             super()
             .get_queryset()
-            .select_related("platform", "currency", "matched_rule")
+            .select_related("owner", "platform", "currency", "matched_rule")
             .prefetch_related("invoices")
         )
 

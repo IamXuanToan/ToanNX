@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  AlertCircle,
-  Check,
-  Heart,
-  MessageSquare,
-  Pencil,
-  Plus,
-  QrCode,
-  Trash2,
-  X,
-} from "lucide-react";
+import { AlertCircle, Heart, MessageSquare, Pencil, Plus, QrCode, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { cn } from "cn";
@@ -24,9 +14,12 @@ import { Label } from "@/shares/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shares/components/ui/radio-group";
 import { Textarea } from "@/shares/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
+import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
+import { formatDisplayNumber, formatVndText } from "@/shares/lib/number-format";
 
 import type { DonationContentConfig, DonationQrItem } from "../../types/page.types";
-import { DonationAmountIcon, DonationAmountIconPicker } from "./donation-amount-icon-picker";
+import { DonationAmountIcon } from "./donation-amount-icon";
+import { PageDonationAmountDialog, type SuggestedAmountItem } from "./page-donation-amount-dialog";
 import { PageDonationQrDialog } from "./page-donation-qr-dialog";
 import { PageDonationQrItemCard } from "./page-donation-qr-item-card";
 
@@ -109,26 +102,43 @@ export function PageDonationEditor({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<DonationQrItem | null>(null);
 
-  // Suggested Amounts Form State
-  const [newAmount, setNewAmount] = useState("");
-  const [newAmountLabel, setNewAmountLabel] = useState("");
-  const [newAmountIcon, setNewAmountIcon] = useState<string>("coffee");
+  // Suggested Amount Dialog State
+  const [isAmountDialogOpen, setIsAmountDialogOpen] = useState(false);
   const [editingAmountIndex, setEditingAmountIndex] = useState<number | null>(null);
+  const [editingAmountItem, setEditingAmountItem] = useState<SuggestedAmountItem | null>(null);
 
-  const startEditAmount = (index: number) => {
+  const openAddAmountDialog = () => {
+    if (disabled) return;
+    setEditingAmountIndex(null);
+    setEditingAmountItem(null);
+    setIsAmountDialogOpen(true);
+  };
+
+  const openEditAmountDialog = (index: number) => {
+    if (disabled) return;
     const item = suggestedAmounts[index];
     if (!item) return;
     setEditingAmountIndex(index);
-    setNewAmount(String(item.amount));
-    setNewAmountLabel(item.label);
-    setNewAmountIcon(item.icon ?? "coffee");
+    setEditingAmountItem(item);
+    setIsAmountDialogOpen(true);
   };
 
-  const cancelEditAmount = () => {
+  const handleSaveAmount = (item: SuggestedAmountItem) => {
+    if (editingAmountIndex !== null && editingAmountIndex >= 0) {
+      const updated = [...suggestedAmounts];
+      updated[editingAmountIndex] = item;
+      onChange({
+        ...config,
+        suggestedAmounts: updated,
+      });
+    } else {
+      onChange({
+        ...config,
+        suggestedAmounts: [...suggestedAmounts, item],
+      });
+    }
     setEditingAmountIndex(null);
-    setNewAmount("");
-    setNewAmountLabel("");
-    setNewAmountIcon("coffee");
+    setEditingAmountItem(null);
   };
 
   const updateQrCodes = (newQrCodes: DonationQrItem[]) => {
@@ -185,30 +195,6 @@ export function PageDonationEditor({
         [field]: value,
       },
     });
-  };
-
-  const handleAddAmount = () => {
-    const num = Number(newAmount.replace(/\D/g, ""));
-    if (!num || num <= 0) return;
-    const label = newAmountLabel.trim() || `${num.toLocaleString("vi-VN")} ₫`;
-
-    if (editingAmountIndex !== null && editingAmountIndex >= 0) {
-      const updated = [...suggestedAmounts];
-      updated[editingAmountIndex] = { amount: num, label, icon: newAmountIcon };
-      onChange({
-        ...config,
-        suggestedAmounts: updated,
-      });
-      setEditingAmountIndex(null);
-    } else {
-      onChange({
-        ...config,
-        suggestedAmounts: [...suggestedAmounts, { amount: num, label, icon: newAmountIcon }],
-      });
-    }
-    setNewAmount("");
-    setNewAmountLabel("");
-    setNewAmountIcon("coffee");
   };
 
   const handleRemoveAmount = (amount: number) => {
@@ -428,7 +414,7 @@ export function PageDonationEditor({
 
       {/* 3. Các mốc số tiền ủng hộ gợi ý */}
       <Card className="border-border bg-card rounded-xl border shadow-2xs">
-        <CardHeader className="pb-3">
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold">
             <Heart className="text-primary size-4" />
             <span>{t("suggestedAmountsTitle", { count: suggestedAmounts.length })}</span>
@@ -448,80 +434,47 @@ export function PageDonationEditor({
               </TooltipContent>
             </Tooltip>
           </CardTitle>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={openAddAmountDialog}
+            disabled={disabled}
+            className="h-8 gap-1.5 text-xs font-medium"
+          >
+            <Plus className="size-3.5" />
+            <span>{t("addAmount")}</span>
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <Input
-              placeholder={t("amountPlaceholder")}
-              value={newAmount}
-              onChange={(e) => setNewAmount(e.target.value)}
-              disabled={disabled}
-              className="h-9 flex-1 text-xs"
-            />
-            <Input
-              placeholder={t("labelPlaceholder")}
-              value={newAmountLabel}
-              onChange={(e) => setNewAmountLabel(e.target.value)}
-              disabled={disabled}
-              className="h-9 flex-1 text-xs"
-            />
-            <DonationAmountIconPicker
-              value={newAmountIcon}
-              onChange={setNewAmountIcon}
-              disabled={disabled}
-            />
-            <div className="flex shrink-0 items-center gap-1.5">
+          {suggestedAmounts.length === 0 ? (
+            <div className="border-border/60 bg-muted/20 flex flex-col items-center justify-center rounded-xl border border-dashed py-6 text-center">
+              <p className="text-muted-foreground text-xs">{t("emptySuggestedAmounts")}</p>
               <Button
                 type="button"
-                variant={editingAmountIndex !== null ? "default" : "outline"}
+                variant="ghost"
                 size="sm"
-                onClick={handleAddAmount}
-                disabled={disabled || !newAmount}
-                className="h-9 gap-1 text-xs"
+                onClick={openAddAmountDialog}
+                disabled={disabled}
+                className="text-primary hover:text-primary mt-2 h-8 gap-1 text-xs"
               >
-                {editingAmountIndex !== null ? (
-                  <>
-                    <Check className="size-3.5" />
-                    <span>{t("saveAmount")}</span>
-                  </>
-                ) : (
-                  <>
-                    <Plus className="size-3.5" />
-                    <span>{t("addAmount")}</span>
-                  </>
-                )}
+                <Plus className="size-3.5" />
+                <span>{t("addAmount")}</span>
               </Button>
-              {editingAmountIndex !== null ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={cancelEditAmount}
-                  className="text-muted-foreground h-9 px-2 text-xs"
-                >
-                  <X className="size-3.5" />
-                </Button>
-              ) : null}
             </div>
-          </div>
-
-          <SortableList
-            items={suggestedAmounts}
-            onReorder={handleReorderAmounts}
-            disabled={disabled}
-            dragHandlePosition="left"
-            keyExtractor={(opt, index) => `suggested-amount-${opt.amount}-${index}`}
-            className="space-y-2"
-            renderItem={(opt, { index }) => {
-              const isItemEditing = editingAmountIndex === index;
-
-              return (
+          ) : (
+            <SortableList
+              items={suggestedAmounts}
+              onReorder={handleReorderAmounts}
+              disabled={disabled}
+              dragHandlePosition="left"
+              keyExtractor={(opt, index) => `suggested-amount-${opt.amount}-${index}`}
+              className="space-y-2"
+              renderItem={(opt, { index }) => (
                 <div
                   key={`${opt.amount}-${index}`}
-                  className={cn(
-                    "group border-border bg-card hover:border-primary/40 flex w-full items-center justify-between gap-3 rounded-xl border p-2.5 text-xs shadow-2xs transition-all hover:shadow-xs",
-                    isItemEditing && "border-primary bg-primary/5 ring-primary/40 ring-1",
-                  )}
+                  className="group border-border bg-card hover:border-primary/40 flex w-full items-center justify-between gap-3 rounded-xl border p-2.5 text-xs shadow-2xs transition-all hover:shadow-xs"
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-2.5">
                     <span className="bg-muted text-muted-foreground inline-flex size-6 shrink-0 items-center justify-center rounded-md font-mono text-[11px] font-bold">
@@ -533,7 +486,7 @@ export function PageDonationEditor({
                     <div className="min-w-0 flex-1">
                       <div className="text-foreground truncate font-semibold">{opt.label}</div>
                       <div className="text-primary font-mono text-[11px] font-bold">
-                        {opt.amount.toLocaleString("vi-VN")} ₫
+                        {formatVndText(opt.amount)}
                       </div>
                     </div>
                   </div>
@@ -542,7 +495,7 @@ export function PageDonationEditor({
                       type="button"
                       variant="ghost"
                       size="icon-xs"
-                      onClick={() => startEditAmount(index)}
+                      onClick={() => openEditAmountDialog(index)}
                       disabled={disabled}
                       className="text-muted-foreground hover:bg-muted hover:text-foreground size-7.5 rounded-lg transition-colors"
                       title={t("editAmount")}
@@ -564,9 +517,9 @@ export function PageDonationEditor({
                     </Button>
                   </div>
                 </div>
-              );
-            }}
-          />
+              )}
+            />
+          )}
 
           {/* Cấu hình tự nhập số tiền tùy ý và mức tối thiểu */}
           <div className="border-border bg-muted/20 space-y-3 rounded-xl border p-3.5">
@@ -591,7 +544,9 @@ export function PageDonationEditor({
                   <Input
                     inputMode="numeric"
                     value={
-                      config.minAmount ? Number(config.minAmount).toLocaleString("vi-VN") : "10.000"
+                      config.minAmount
+                        ? formatDisplayNumber(Number(config.minAmount))
+                        : formatDisplayNumber(10000)
                     }
                     onChange={(e) => {
                       const num = Number(e.target.value.replace(/\D/g, ""));
@@ -602,12 +557,35 @@ export function PageDonationEditor({
                     className="h-8 pr-8 text-xs font-medium"
                   />
                   <span className="text-muted-foreground pointer-events-none absolute right-2.5 text-xs font-semibold">
-                    ₫
+                    {CURRENCY_SYMBOLS.VND}
                   </span>
                 </div>
                 <p className="text-muted-foreground text-[11px]">{t("minAmountHint")}</p>
               </div>
             ) : null}
+
+            {/* Cấu hình thời hạn Bảng Vinh danh đếm ngược */}
+            <div className="space-y-1 pt-2">
+              <Label className="text-xs font-medium">{t("leaderboardDaysLabel")}</Label>
+              <div className="relative flex max-w-xs items-center">
+                <Input
+                  type="number"
+                  min={1}
+                  max={30}
+                  value={config.leaderboardDays ?? 7}
+                  onChange={(e) => {
+                    const days = Math.min(30, Math.max(1, Number(e.target.value) || 7));
+                    onChange({ ...config, leaderboardDays: days });
+                  }}
+                  disabled={disabled}
+                  className="h-8 pr-12 text-xs font-medium"
+                />
+                <span className="text-muted-foreground pointer-events-none absolute right-2.5 text-xs font-semibold">
+                  {t("leaderboardDaysUnit")}
+                </span>
+              </div>
+              <p className="text-muted-foreground text-[11px]">{t("leaderboardDaysHint")}</p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -621,6 +599,14 @@ export function PageDonationEditor({
           onSave={handleSaveQrItem}
         />
       )}
+
+      {/* Dialog tạo / sửa mức tiền gợi ý */}
+      <PageDonationAmountDialog
+        open={isAmountDialogOpen}
+        onOpenChange={setIsAmountDialogOpen}
+        initialItem={editingAmountItem}
+        onSave={handleSaveAmount}
+      />
     </div>
   );
 }

@@ -42,10 +42,16 @@ const BACKEND_FIELDS: Record<string, keyof QrCodeFormValues> = {
  * State form mã QR **dùng chung cho tạo và sửa**: xem trước trực tiếp (gọi BE sau 300 ms ngừng gõ, SVG do BE vẽ
  * nên khớp ảnh lưu), lưu xong tạo → sang trang chi tiết.
  *
- * @param params - Mã QR đang sửa.
+ * @param params - Mã QR đang sửa và cờ khóa sửa.
  * @returns Form, ngân hàng, xem trước, submit.
  */
-export function useQrCodeForm({ code }: { code?: QrCodeDetail }) {
+export function useQrCodeForm({
+  code,
+  disabled = false,
+}: {
+  code?: QrCodeDetail;
+  disabled?: boolean;
+}) {
   const t = useTranslations("utilities.qrCodes.validation");
   const router = useRouter();
   const create = useCreateQrCode();
@@ -64,6 +70,7 @@ export function useQrCodeForm({ code }: { code?: QrCodeDetail }) {
 
   // Chỉ xem trước khi dữ liệu hợp lệ; chờ người dùng ngừng gõ để không gọi BE mỗi phím.
   useEffect(() => {
+    if (disabled) return;
     const timer = setTimeout(() => {
       const parsed = schema.safeParse({ ...watched, name: watched.name || "preview" });
       if (!parsed.success) return;
@@ -71,8 +78,8 @@ export function useQrCodeForm({ code }: { code?: QrCodeDetail }) {
       setPreviewInput({ qrType, content, design, logoId });
     }, PREVIEW_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [watched, schema]);
-  const preview = useQrPreview(previewInput);
+  }, [watched, schema, disabled]);
+  const preview = useQrPreview(previewInput, !disabled);
 
   const onSubmit = form.handleSubmit(async (values) => {
     let saved: QrCodeDetail;

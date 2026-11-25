@@ -1,4 +1,7 @@
 import { z } from "zod";
+
+import { CURRENCY_CODES, type MoneyCurrency } from "@/shares/constants/currency";
+
 import { sanitizeSlugInput, SLUG_INPUT_MAX_LENGTH, SLUG_VALUE_REGEX } from "./code-slug-input";
 /** Schema email chung; thông báo do namespace i18n của form cung cấp. */
 export function emailField(invalid: string, required?: string) {
@@ -27,14 +30,14 @@ export function slugField(
     );
 }
 /** Tiền không âm: VND nguyên, USD tối đa hai số lẻ, giới hạn trong vùng số an toàn JS. */
-export function moneyField(currency: "VND" | "USD", message: string) {
+export function moneyField(currency: MoneyCurrency, message: string) {
   return z
     .number({ error: message })
     .nonnegative(message)
     .max(Number.MAX_SAFE_INTEGER, message)
     .refine(
       (value) =>
-        currency === "VND"
+        currency === CURRENCY_CODES.VND
           ? Number.isInteger(value)
           : Math.abs(value * 100 - Math.round(value * 100)) < 1e-6,
       { message },

@@ -12,7 +12,7 @@ import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 import { formatDateTimeLocal, parseDateTimeLocal } from "@/shares/lib/date-time-input";
 
-import { FINANCE_ROUTES } from "../../../constants/routes";
+import { useFinanceRoutes } from "../../../hooks/use-finance-routes";
 import { usePlatformOptions } from "../../../hooks/use-platform-options";
 import { usePlatformTaxRateResolve } from "../../../hooks/use-platform-tax-rate-resolve";
 import { useSaveIncome } from "../../../hooks/use-save-income";
@@ -53,6 +53,7 @@ function fromIncome(income: Income): IncomeFormValues {
 export function useIncomeForm(income?: Income) {
   const t = useTranslations("finance.validation");
   const router = useRouter();
+  const routes = useFinanceRoutes();
   const save = useSaveIncome(income?.id);
   const errorMessage = useApiErrorMessage();
   const currencies = useCurrencyOptions();
@@ -149,7 +150,7 @@ export function useIncomeForm(income?: Income) {
     }
     try {
       const saved = await save.mutateAsync(input);
-      if (!income) router.push(FINANCE_ROUTES.incomeDetail(saved.id));
+      if (!income) router.push(routes.incomeDetail(saved.id));
     } catch (error) {
       const fields = isApiError(error) ? error.fieldErrors() : {};
       const matched = INCOME_FORM_FIELDS.filter((name) => fields[name]);

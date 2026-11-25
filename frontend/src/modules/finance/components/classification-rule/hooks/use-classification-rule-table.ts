@@ -7,7 +7,7 @@ import { withEditMode } from "@/shares/lib/edit-mode";
 import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
 import { financeKeys } from "../../../constants/query-keys";
 import { classificationRuleService } from "../../../services/classification-rule.service";
-import { FINANCE_ROUTES } from "../../../constants/routes";
+import { useFinanceRoutes } from "../../../hooks/use-finance-routes";
 import { useClassificationRules } from "../../../hooks/use-classification-rules";
 import { useDeleteClassificationRule } from "../../../hooks/use-delete-classification-rule";
 import { usePlatformOptions } from "../../../hooks/use-platform-options";
@@ -16,6 +16,7 @@ import type { ClassificationRule } from "../../../types/classification-rule.type
 /** @returns State bảng quy tắc (lọc theo nền tảng). */
 export function useClassificationRuleTable() {
   const router = useRouter();
+  const routes = useFinanceRoutes();
   const table = useTableState({ ordering: "-priority", filterKeys: ["platform"] });
   const query = useClassificationRules({ ...table.filters, platform: table.extraFilters.platform });
   const platforms = usePlatformOptions();
@@ -34,9 +35,8 @@ export function useClassificationRuleTable() {
       value: platform.id,
       label: platform.name,
     })),
-    view: (rule: ClassificationRule) => router.push(FINANCE_ROUTES.ruleDetail(rule.id)),
-    edit: (rule: ClassificationRule) =>
-      router.push(withEditMode(FINANCE_ROUTES.ruleDetail(rule.id))),
+    view: (rule: ClassificationRule) => router.push(routes.ruleDetail(rule.id)),
+    edit: (rule: ClassificationRule) => router.push(withEditMode(routes.ruleDetail(rule.id))),
     remove: (rule: ClassificationRule) => remove.mutateAsync(rule.id),
   };
 }

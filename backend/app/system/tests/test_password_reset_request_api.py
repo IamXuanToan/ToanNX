@@ -32,10 +32,11 @@ class TestPasswordResetRequestApi(BaseApiTestCase):
         assert "uid=" in sent.body
         assert "token=" in sent.body
 
-    def test_request_reset_dynamic_origin(self, client: APIClient, user: Any) -> None:
-        """Link đặt lại mật khẩu tự động lấy theo Origin của frontend gửi request (không hardcode)."""
+    def test_request_reset_dynamic_origin(self, client: APIClient, user: Any, settings: Any) -> None:
+        """Link đặt lại mật khẩu chấp nhận Origin khi nằm trong danh sách origin tin cậy."""
         mail.outbox.clear()
         custom_origin = "https://custom-fe.example.com"
+        settings.CORS_ALLOWED_ORIGINS = [custom_origin]
         res = client.post(
             URL,
             {"email": user.email, "locale": "vi"},
@@ -46,15 +47,43 @@ class TestPasswordResetRequestApi(BaseApiTestCase):
         assert len(mail.outbox) == 1
         assert custom_origin in mail.outbox[0].body
 
+    def test_request_reset_ignores_untrusted_origin_and_referer_poisoning(
+        self, client: APIClient, user: Any, settings: Any
+    ) -> None:
+        """Từ chối Origin/Referer giả mạo không nằm trong allowlist để chống cướp token đặt lại mật khẩu."""
+        mail.outbox.clear()
+        settings.FRONTEND_URL = "https://toannx.com"
+        settings.CORS_ALLOWED_ORIGINS = ["https://toannx.com"]
+        settings.CSRF_TRUSTED_ORIGINS = ["https://toannx.com"]
+        res = client.post(
+            URL,
+            {"email": user.email, "locale": "vi"},
+            format="json",
+            HTTP_ORIGIN="https://evil-attacker.test",
+            HTTP_REFERER="https://evil-phish.test/steal",
+        )
+        self.assert_success(res)
+        assert len(mail.outbox) == 1
+        assert "evil-attacker.test" not in mail.outbox[0].body
+        assert "evil-phish.test" not in mail.outbox[0].body
+        assert "https://toannx.com/" in mail.outbox[0].body
+
     def test_frontend_origin_resolution(self, settings: Any) -> None:
-        """Hàm get_frontend_origin tự động giải quyết các header khác nhau."""
+        """Hàm get_frontend_origin chỉ tin Origin/Referer thuộc allowlist; không thì fallback an toàn."""
         settings.FRONTEND_URL = "http://localhost:3000"
+        settings.CORS_ALLOWED_ORIGINS = ["https://dashboard.site.vn", "http://localhost:3005"]
+        settings.CSRF_TRUSTED_ORIGINS = []
         factory = RequestFactory()
         req_origin = factory.post(URL, HTTP_ORIGIN="https://dashboard.site.vn")
         assert get_frontend_origin(req_origin) == "https://dashboard.site.vn"
 
         req_referer = factory.post(URL, HTTP_REFERER="http://localhost:3005/vi/quen-mat-khau")
         assert get_frontend_origin(req_referer) == "http://localhost:3005"
+
+        req_evil = factory.post(
+            URL, HTTP_ORIGIN="https://evil.example.com", HTTP_REFERER="https://evil.example.com"
+        )
+        assert get_frontend_origin(req_evil, prefer_configured=True) == "http://localhost:3000"
 
         assert get_frontend_origin(None) == "http://localhost:3000"
 

@@ -9,6 +9,7 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 import { SYSTEM_ROUTES } from "@/modules/system/constants/routes";
 import { canAccessAdmin, hasPermission } from "@/modules/system/services/current-user.service";
+import { SESSION_EXPIRED_TOAST_ID } from "@/shares/constants/auth-session";
 import { useMediaQuery } from "@/shares/hooks/use-media-query";
 import { useMessage } from "@/shares/hooks/use-message";
 import { isApiError } from "@/shares/lib/api/api-error";
@@ -71,7 +72,7 @@ export function useAdminShell() {
     if (isLoggingOut) return;
     if (!sessionExpired && !unauthenticated) return;
     if (sessionExpired) {
-      toast.warning(t("expired"), { id: "session-expired" });
+      toast.warning(t("expired"), { id: SESSION_EXPIRED_TOAST_ID });
     }
     queryClient.clear();
     resetSession();
@@ -85,9 +86,13 @@ export function useAdminShell() {
   const groups = useMemo<AdminGroup[]>(() => {
     const modulesByGroup = new Map<string, AdminModule[]>();
     for (const navigation of ADMIN_MODULE_NAVIGATION) {
-      const items = navigation.items.filter(
-        (item) => !item.permission || hasPermission(current.data, item.permission),
-      );
+      const items = navigation.items.filter((item) => {
+        if (!item.permission) return true;
+        if (typeof item.permission === "string") {
+          return hasPermission(current.data, item.permission);
+        }
+        return item.permission.some((code) => hasPermission(current.data, code));
+      });
       if (items.length === 0) continue;
       const entry: AdminModule = {
         code: navigation.module,
@@ -122,6 +127,13 @@ export function useAdminShell() {
   const activeGroup = groups.find((group) =>
     group.modules.some((module) => module.code === activeModuleCode),
   );
+  // Cho phép vào route của module khi user có ít nhất 1 quyền thuộc module đó (kể cả chỉ có quyền create/assign mà thiếu quyền read trên menu),
+  // để View của từng trang tự kiểm tra và trả ForbiddenView nếu không hợp lệ.
+  const hasAnyModulePermission = Boolean(
+    activeModuleCode &&
+    (current.data?.user.isSuperuser ||
+      current.data?.permissions.some((code) => code.startsWith(`${activeModuleCode}.`))),
+  );
 
   return {
     status:
@@ -138,6 +150,7 @@ export function useAdminShell() {
     groups,
     /** Nhóm đang đứng; undefined khi URL thuộc module người dùng không vào được. */
     activeGroup,
+    canAccessCurrentRoute: Boolean(activeGroup) || hasAnyModulePermission,
     sidebarOpen,
     setSidebarOpen,
   } as const;

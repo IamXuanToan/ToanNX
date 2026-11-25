@@ -27,7 +27,9 @@ Chi tiết: `docs/rules/backend.md`, `docs/architecture/`, `docs/common-catalog.
 
 - Một class cấp module mỗi file, tên file snake_case theo class. Serializer, dataclass, exception không lẫn file khác.
 - Enum field của model lồng trong model hoặc cạnh model cùng file; enum dùng chung ở `constants/`.
-- Hằng số, kiểu, tiện ích ở `constants/`, `types/`, `utils/`. Không magic number/string, không `print`, không nuốt lỗi.
+- Hằng số, kiểu, tiện ích ở `constants/`, `types/`, `utils/` (hằng mặc định toàn BE ở
+  `app/core/constants/defaults.py`). Không magic number/string (locale, timezone, tiền tệ, Content-Type, mẫu
+  email, chuỗi thông báo lặp), không `print`, không nuốt lỗi.
 
 ## Module
 

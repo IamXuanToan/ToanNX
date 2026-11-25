@@ -6,8 +6,12 @@ import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.novel.models.reading_history import ReadingHistory
+from app.novel.permissions.chapter_permission import ChapterPermission
+from app.novel.permissions.novel_permission import NovelPermission
 from app.novel.tests.factories.chapter_factory import ChapterFactory
 from app.novel.tests.factories.novel_factory import NovelFactory
+from app.system.tests.factories.user_factory import UserFactory
+from app.system.tests.helpers.permission_helper import grant
 
 pytestmark = pytest.mark.django_db
 BASE_URL = "/api/v1/novel/client/chapters"
@@ -68,3 +72,22 @@ class TestNovelClientChapterApi(BaseApiTestCase):
         """Khách chưa đăng nhập bị 401."""
         res = client.get(f"{BASE_URL}/truyen/1")
         self.assert_unauthorized(res)
+
+    def test_client_chapter_staff_without_permission_cannot_read_unpublished(self, login: Any) -> None:
+        """Tài khoản chỉ gắn is_staff nhưng thiếu novel.chapter.read không đọc được chương nháp."""
+        staff = UserFactory(is_staff=True)
+        novel = NovelFactory(slug="truyen-nhap-ch-staff", is_published=True)
+        chapter = ChapterFactory(novel=novel, chapter_number=1, is_published=False)
+        res = login(staff).get(f"{BASE_URL}/{novel.slug}/{chapter.chapter_number}")
+        self.assert_error(res, 404, "NOT_FOUND")
+
+    def test_client_chapter_owner_with_read_permission_can_read_unpublished(
+        self, user: Any, login: Any
+    ) -> None:
+        """Chủ sở hữu có novel.chapter.read (và novel.novel.read nếu truyện nháp) xem được chương nháp."""
+        grant(user, NovelPermission.READ, ChapterPermission.READ)
+        novel = NovelFactory(slug="truyen-nhap-ch-owner", owner=user, is_published=False)
+        chapter = ChapterFactory(novel=novel, chapter_number=1, is_published=False)
+        res = login(user).get(f"{BASE_URL}/{novel.slug}/{chapter.chapter_number}")
+        data = self.assert_success(res, 200)
+        assert data["chapter_number"] == 1

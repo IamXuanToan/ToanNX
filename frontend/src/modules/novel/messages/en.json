@@ -153,7 +153,8 @@
     "emptyContent": "This chapter has no text content yet.",
     "chapterNotFoundTitle": "Chapter Not Found",
     "chapterNotFoundDescription": "The chapter you are looking for does not exist or has been unpublished.",
-    "chapterNotFoundDesc": "The chapter you are looking for does not exist or has been unpublished."
+    "chapterNotFoundDesc": "The chapter you are looking for does not exist or has been unpublished.",
+    "chapterNavAria": "Chapter navigation"
   },
   "history": {
     "title": "Reading History",

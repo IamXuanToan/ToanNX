@@ -6,7 +6,7 @@ import { useState } from "react";
 import { LINK_PROTOCOLS } from "../tiptap-extensions";
 import type { TiptapEditorProps } from "../tiptap-editor.types";
 
-/** Kiểu căn lề của đoạn/tiêu đề. */
+/** Kiểu căn lề của đoạn/tiêu đề/ảnh. */
 export type TextAlignValue = "left" | "center" | "right" | "justify";
 
 /** URL hợp lệ cho liên kết (http, https, mailto, tel). */
@@ -28,8 +28,8 @@ function isHttps(value: string): boolean {
 }
 
 /**
- * Trạng thái toolbar: mark/node đang bật, ô nhập liên kết/ảnh URL/video, chọn ảnh từ module.
- * Lỗi hiện trong popover (không dùng prompt/alert).
+ * Trạng thái toolbar: mark/node đang bật, ô nhập liên kết/ảnh URL/video, căn lề (cả đoạn văn lẫn ảnh)
+ * và chọn ảnh từ module. Lỗi hiện trong popover (không dùng prompt/alert).
  *
  * @param editor - Editor.
  * @param selectImage - Bộ chọn ảnh của module.
@@ -43,31 +43,50 @@ export function useTiptapToolbar(
   const [pending, setPending] = useState(false);
   const active = useEditorState({
     editor,
-    selector: ({ editor: current }) => ({
-      bold: current?.isActive("bold") ?? false,
-      italic: current?.isActive("italic") ?? false,
-      underline: current?.isActive("underline") ?? false,
-      strike: current?.isActive("strike") ?? false,
-      code: current?.isActive("code") ?? false,
-      highlight: current?.isActive("highlight") ?? false,
-      link: current?.isActive("link") ?? false,
-      bulletList: current?.isActive("bulletList") ?? false,
-      orderedList: current?.isActive("orderedList") ?? false,
-      taskList: current?.isActive("taskList") ?? false,
-      blockquote: current?.isActive("blockquote") ?? false,
-      block: current?.isActive("heading", { level: 1 })
-        ? "h1"
-        : current?.isActive("heading", { level: 2 })
-          ? "h2"
-          : current?.isActive("heading", { level: 3 })
-            ? "h3"
-            : "paragraph",
-      align: ((["center", "right", "justify"] as const).find((value) =>
+    selector: ({ editor: current }) => {
+      const isImageSelected = current?.isActive("image") ?? false;
+      const imageAlign = current?.getAttributes("image").align as string | undefined;
+      const textAlign = (["center", "right", "justify"] as const).find((value) =>
         current?.isActive({ textAlign: value }),
-      ) ?? "left") as TextAlignValue,
-      canUndo: current?.can().undo() ?? false,
-      canRedo: current?.can().redo() ?? false,
-    }),
+      );
+      const resolvedAlign: TextAlignValue = isImageSelected
+        ? imageAlign === "full"
+          ? "justify"
+          : imageAlign === "center" || imageAlign === "right"
+            ? imageAlign
+            : "left"
+        : (textAlign ?? "left");
+
+      return {
+        bold: current?.isActive("bold") ?? false,
+        italic: current?.isActive("italic") ?? false,
+        underline: current?.isActive("underline") ?? false,
+        strike: current?.isActive("strike") ?? false,
+        code: current?.isActive("code") ?? false,
+        highlight: current?.isActive("highlight") ?? false,
+        link: current?.isActive("link") ?? false,
+        bulletList: current?.isActive("bulletList") ?? false,
+        orderedList: current?.isActive("orderedList") ?? false,
+        taskList: current?.isActive("taskList") ?? false,
+        blockquote: current?.isActive("blockquote") ?? false,
+        codeBlock: current?.isActive("codeBlock") ?? false,
+        isImageSelected,
+        block: current?.isActive("heading", { level: 1 })
+          ? "h1"
+          : current?.isActive("heading", { level: 2 })
+            ? "h2"
+            : current?.isActive("heading", { level: 3 })
+              ? "h3"
+              : current?.isActive("blockquote")
+                ? "blockquote"
+                : current?.isActive("codeBlock")
+                  ? "codeBlock"
+                  : "paragraph",
+        align: resolvedAlign,
+        canUndo: current?.can().undo() ?? false,
+        canRedo: current?.can().redo() ?? false,
+      };
+    },
   });
   const chain = () => editor?.chain().focus();
 
@@ -78,10 +97,24 @@ export function useTiptapToolbar(
     clearError: () => setError(""),
     setBlock: (block: string) => {
       if (block === "paragraph") chain()?.setParagraph().run();
+      else if (block === "blockquote") chain()?.toggleBlockquote().run();
+      else if (block === "codeBlock") chain()?.toggleCodeBlock().run();
       else
         chain()
           ?.setHeading({ level: Number(block.slice(1)) as 1 | 2 | 3 })
           .run();
+    },
+    setAlign: (nextAlign: TextAlignValue) => {
+      if (editor?.isActive("image")) {
+        chain()
+          ?.updateAttributes("image", {
+            align: nextAlign === "justify" ? "full" : nextAlign,
+            ...(nextAlign === "justify" ? { width: "100%" } : {}),
+          })
+          .run();
+        return;
+      }
+      chain()?.setTextAlign(nextAlign).run();
     },
     setLink: (href: string, invalid: string) => {
       if (!href) {

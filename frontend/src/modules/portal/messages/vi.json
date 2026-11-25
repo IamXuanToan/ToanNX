@@ -3,16 +3,25 @@
     "sections": {
       "overview": "Tổng quan",
       "utilities": "Tiện ích",
+      "finance": "Tài chính",
       "media": "Tệp tin"
     },
     "dashboard": "Tổng quan",
+    "financeDashboard": "Tổng quan tài chính",
+    "financeIncomes": "Thu nhập",
+    "financeInvoices": "Hóa đơn",
+    "financePlatforms": "Nền tảng",
+    "financeRules": "Quy tắc phân loại",
+    "financeReports": "Báo cáo",
+    "financeSepay": "Kết nối SePay",
     "pages": "Trang của tôi",
     "shortLinks": "Link rút gọn",
     "qrCodes": "Mã QR",
     "files": "Thư viện",
     "profile": "Hồ sơ cá nhân",
     "goToAdmin": "Trang quản trị (Admin)",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "donations": "Quyên góp & Ủng hộ"
   },
   "dashboard": {
     "title": "Không gian cá nhân",
@@ -24,7 +33,28 @@
       "totalShortLinks": "Link rút gọn",
       "totalShortLinksHint": "Đang hoạt động",
       "totalClicks": "Tổng lượt click",
-      "totalClicksHint": "Từ link rút gọn"
+      "totalClicksHint": "Từ link rút gọn",
+      "totalDonations": "Tổng tiền ủng hộ",
+      "totalDonationsHint": "Nhận qua SePay VietQR"
+    },
+    "charts": {
+      "donationTrendTitle": "Biến động Quyên góp & Ủng hộ",
+      "donationTrendDesc": "Doanh thu và lượt ủng hộ nhận được theo thời gian",
+      "linkClicksTitle": "Top Liên kết nhiều lượt Click",
+      "linkClicksDesc": "So sánh lưu lượng truy cập giữa các link rút gọn",
+      "giftBreakdownTitle": "Cơ cấu Quà tặng Quy đổi",
+      "giftBreakdownDesc": "Tỷ lệ các món quà tri ân nhận được",
+      "amount": "Số tiền (₫)",
+      "count": "Lượt ủng hộ",
+      "clicks": "Lượt click",
+      "clickCount": "{count} lượt click",
+      "noTrendData": "Chưa có dữ liệu biến động ủng hộ trong khoảng thời gian này.",
+      "noLinksData": "Chưa có liên kết rút gọn nào có lượt click.",
+      "filterAll": "Tất cả",
+      "filterAmount": "Số tiền",
+      "filterCount": "Lượt ủng hộ",
+      "noGiftsData": "Chưa có quà tặng quy đổi nào",
+      "giftCount": "{count} lượt"
     },
     "quickActions": {
       "title": "Tạo nhanh",
@@ -147,5 +177,27 @@
     "description": "Bạn cần đăng nhập vào tài khoản để truy cập không gian cá nhân.",
     "loginButton": "Đến trang Đăng nhập"
   },
-  "mobileNavAria": "Thanh điều hướng di động"
+  "mobileNavAria": "Thanh điều hướng di động",
+  "donations": {
+    "badge": "Khu vực Cá nhân",
+    "title": "Thống kê Quyên góp & Ủng hộ của bạn",
+    "subtitle": "Theo dõi các khoản ủng hộ từ bạn bè, độc giả và người hâm mộ gửi qua mã QR SePay trên các trang Donate của bạn.",
+    "totalReceivedLabel": "Tổng tiền nhận được",
+    "totalReceivedHint": "{count} lượt ủng hộ từ mọi người",
+    "successCountLabel": "Lượt ủng hộ thành công",
+    "hiddenCommentsHint": "{count} bình luận bạn đã ẩn",
+    "activeLeaderboardLabel": "Đang trên Bảng Vinh danh",
+    "activeLeaderboardHint": "Đồng, Bạc, Vàng đang đếm ngược",
+    "dateRangeLabel": "Khoảng thời gian:",
+    "rangeAll": "Tất cả",
+    "rangeToday": "Hôm nay",
+    "range7d": "7 ngày qua",
+    "range30d": "30 ngày qua",
+    "rangeCustom": "Tùy chọn",
+    "fromDateLabel": "Từ ngày:",
+    "fromDatePlaceholder": "Chọn từ ngày",
+    "toDateLabel": "Đến ngày:",
+    "toDatePlaceholder": "Chọn đến ngày",
+    "resetRange": "Đặt lại"
+  }
 }

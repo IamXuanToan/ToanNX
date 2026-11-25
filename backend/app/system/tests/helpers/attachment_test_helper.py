@@ -25,6 +25,18 @@ UNSAFE_SVGS = {
         b'<?xml version="1.0"?><!DOCTYPE svg [<!ENTITY x "y">]>'
         b'<svg xmlns="http://www.w3.org/2000/svg">&x;</svg>'
     ),
+    "smil_set_javascript": (
+        b'<svg xmlns="http://www.w3.org/2000/svg">'
+        b'<a href="#ok"><set attributeName="href" to="javascript:alert(1)"/></a></svg>'
+    ),
+    "smil_animate_event": (b'<svg xmlns="http://www.w3.org/2000/svg"><animate onbegin="alert(1)"/></svg>'),
+    "css_behavior": (
+        b'<svg xmlns="http://www.w3.org/2000/svg"><style>svg{-moz-binding:url(#x)}</style></svg>'
+    ),
+    "data_html_value": (
+        b'<svg xmlns="http://www.w3.org/2000/svg">'
+        b'<circle data-src="data:text/html,<script>1</script>"/></svg>'
+    ),
 }
 
 

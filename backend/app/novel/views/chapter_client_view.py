@@ -9,6 +9,8 @@ from app.core.exceptions.not_found_error import NotFoundError
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.novel.permissions.chapter_permission import ChapterPermission
+from app.novel.permissions.novel_permission import NovelPermission
 from app.novel.serializers.responses.chapter_detail_response_serializer import (
     ChapterDetailResponseSerializer,
 )
@@ -59,11 +61,21 @@ class ChapterClientView(CoreApiView):
         """
         actor = self.get_actor(request)
         novel = self.novel_service.find_by_slug(novel_slug)
-        if novel is None or (not novel.is_published and not getattr(actor, "is_staff", False)):
+        can_access_novel = (
+            novel is not None
+            and actor.has_perm(NovelPermission.READ.code)
+            and self.novel_service.can_access(actor, novel)
+        )
+        if novel is None or (not novel.is_published and not can_access_novel):
             raise NotFoundError("Không tìm thấy truyện.")
 
         chapter = self.chapter_service.find_by_novel_and_number(novel.pk, chapter_number)
-        if chapter is None or (not chapter.is_published and not getattr(actor, "is_staff", False)):
+        can_access_chapter = (
+            chapter is not None
+            and actor.has_perm(ChapterPermission.READ.code)
+            and self.novel_service.can_access(actor, novel)
+        )
+        if chapter is None or (not chapter.is_published and not can_access_chapter):
             raise NotFoundError("Không tìm thấy chương truyện.")
 
         # Tăng lượt xem chương và truyện

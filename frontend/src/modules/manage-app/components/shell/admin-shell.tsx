@@ -24,8 +24,16 @@ import { WorkspaceSkeleton } from "./workspace-skeleton";
  * @returns Khung quản trị.
  */
 export function AdminShell({ children }: { children: ReactNode }) {
-  const { status, refetch, isLauncher, groups, activeGroup, sidebarOpen, setSidebarOpen } =
-    useAdminShell();
+  const {
+    status,
+    refetch,
+    isLauncher,
+    groups,
+    activeGroup,
+    canAccessCurrentRoute,
+    sidebarOpen,
+    setSidebarOpen,
+  } = useAdminShell();
   const logout = useLogout();
   const t = useTranslations("system.auth.userMenu");
 
@@ -56,6 +64,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       ) : (
         <WorkspaceLayout
           activeGroup={activeGroup}
+          canAccessCurrentRoute={canAccessCurrentRoute}
           groups={groups}
           sidebarOpen={sidebarOpen}
           onSidebarOpenChange={setSidebarOpen}

@@ -58,4 +58,27 @@ describe("SearchInput", () => {
     expect((screen.getByRole("searchbox") as HTMLInputElement).value).toBe("từ URL");
     expect(changed).not.toHaveBeenCalled();
   });
+
+  it("chặn gửi và báo lỗi khi vượt quá 5 từ hoặc 100 ký tự", async () => {
+    const user = userEvent.setup();
+    const changed = vi.fn();
+    render(<SearchInput value="" onValueChange={changed} placeholder="Tìm" />, {
+      wrapper: Provider,
+    });
+    const input = screen.getByRole("searchbox") as HTMLInputElement;
+    expect(input.maxLength).toBe(100);
+    await user.type(input, "Nguyễn Xuân Toàn kiểm thử 🚀");
+    await user.keyboard("{Enter}");
+    expect(changed).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert").textContent).toContain("Từ khóa tối đa 5 từ và 100 ký tự.");
+
+    fireEvent.change(input, { target: { value: "a".repeat(101) } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(changed).not.toHaveBeenCalled();
+
+    fireEvent.change(input, { target: { value: "Nguyễn Xuân Toàn" } });
+    await user.keyboard("{Enter}");
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(changed).toHaveBeenCalledExactlyOnceWith("Nguyễn Xuân Toàn");
+  });
 });

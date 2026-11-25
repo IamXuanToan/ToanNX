@@ -15,6 +15,7 @@ from django.utils import timezone
 
 from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.services.core_crud_service import CoreCrudService
+from app.core.utils.csv_safety import sanitize_csv_row
 from app.finance.constants.finance_choices import RateSource
 from app.finance.constants.finance_defaults import NOTIFICATION_CONTENT_MAX
 from app.finance.constants.finance_error_code import FinanceErrorCode
@@ -33,6 +34,7 @@ from app.finance.types.tax_result import TaxResult
 from app.finance.utils.money_format import format_money
 from app.finance.utils.vn_time import vn_date
 from app.system.constants.currency_error_code import CurrencyErrorCode
+from app.system.constants.notification_level import NotificationLevel
 from app.system.models.currency import Currency
 from app.system.services.currency_service import CurrencyService
 from app.system.services.exchange_rate_service import ExchangeRateService
@@ -309,34 +311,38 @@ class IncomeService(CoreCrudService[Income, IncomeRepository]):
         """CSV đúng bộ lọc (dấu chấm thập phân, có dòng tổng)."""
         buffer = io.StringIO()
         writer = csv.writer(buffer)
-        writer.writerow(CSV_HEADER)
+        writer.writerow(sanitize_csv_row(CSV_HEADER))
         total = Decimal(0)
         tax_total = Decimal(0)
         for item in queryset:
             total += item.amount or 0
             tax_total += item.tax_amount or 0 if item.tax_withheld else 0
             writer.writerow(
-                (
-                    item.received_date.isoformat(),
-                    item.get_source_display(),
-                    item.platform.name if item.platform else "",
-                    item.content,
-                    item.original_amount if item.original_amount is not None else "",
-                    item.currency.code,
-                    item.exchange_rate,
-                    item.get_rate_source_display(),
-                    item.amount if item.amount is not None else "",
-                    "Có" if item.tax_withheld else "Không",
-                    item.tax_rate,
-                    item.tax_amount if item.tax_amount is not None else "",
-                    item.gross_amount if item.gross_amount is not None else "",
-                    item.get_tax_status_display(),
-                    item.reference_code,
-                    item.note,
+                sanitize_csv_row(
+                    (
+                        item.received_date.isoformat(),
+                        item.get_source_display(),
+                        item.platform.name if item.platform else "",
+                        item.content,
+                        item.original_amount if item.original_amount is not None else "",
+                        item.currency.code,
+                        item.exchange_rate,
+                        item.get_rate_source_display(),
+                        item.amount if item.amount is not None else "",
+                        "Có" if item.tax_withheld else "Không",
+                        item.tax_rate,
+                        item.tax_amount if item.tax_amount is not None else "",
+                        item.gross_amount if item.gross_amount is not None else "",
+                        item.get_tax_status_display(),
+                        item.reference_code,
+                        item.note,
+                    )
                 )
             )
         writer.writerow(
-            ("Tổng", "", "", "", "", "", "", "", total, "", "", tax_total, total + tax_total, "", "", "")
+            sanitize_csv_row(
+                ("Tổng", "", "", "", "", "", "", "", total, "", "", tax_total, total + tax_total, "", "", "")
+            )
         )
         return buffer.getvalue()
 
@@ -501,7 +507,7 @@ class IncomeService(CoreCrudService[Income, IncomeRepository]):
                 title=title,
                 body=income.content[:NOTIFICATION_CONTENT_MAX],
                 link=INCOME_PATH.format(pk=income.pk),
-                level="WARNING" if needs_review else None,
+                level=NotificationLevel.WARNING if needs_review else None,
                 message_key="finance.notifications.incomeNeedsReview"
                 if needs_review
                 else "finance.notifications.incomeReceived",
@@ -535,3 +541,37 @@ class IncomeService(CoreCrudService[Income, IncomeRepository]):
             )
             rows.append(("⚠️ Cần xử lý", reason))
         return tuple(rows)
+
+    @transaction.atomic
+    def record_donation_income(
+        self,
+        owner: Any,
+        sepay_id: str,
+        received_at: Any,
+        content: str,
+        amount: Decimal,
+    ) -> Income:
+        """Đồng bộ giao dịch quyên góp sang bảng Thu nhập của chủ trang."""
+        currency = self.currency_service.base()
+        platform = self.platform_service.get_or_create_sepay_donation_platform(owner)
+        day = vn_date(received_at)
+        fields: dict[str, Any] = {
+            "source": Income.Source.SEPAY,
+            "received_at": received_at,
+            "received_date": day,
+            "content": content,
+            "currency": currency,
+            "original_amount": amount,
+            "amount": amount,
+            "exchange_rate": Decimal("1.0"),
+            "platform": platform,
+            "tax_withheld": False,
+            "tax_rate": Decimal("0.0"),
+            "tax_amount": Decimal("0.0"),
+            "amount_status": AmountStatus.OK,
+            "tax_status": Status.NOT_WITHHELD,
+        }
+        existing = self.repository.find_by_sepay_id(owner.pk, sepay_id)
+        if existing is not None:
+            return self.repository.update(existing, actor=owner, **fields)
+        return self.repository.create(actor=owner, owner=owner, sepay_id=sepay_id, **fields)

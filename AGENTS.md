@@ -40,10 +40,11 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   cập nhật `CLAUDE.md`, `AGENTS.md`, `prompt.md` trong cùng lần; `--check` chạy trong `scripts/check-all.*`
   (rule chung mục 4).
 - **Skill project**: `start-task` cho việc mới, `fix` cho lỗi, `review-code` cho lượt rà cuối do người dùng yêu
-  cầu; mỗi skill đọc source, `docs/` và rule liên quan trước khi sửa. Skill nội bộ ở `.agents/skills/` được liên
-  kết sang `.claude/skills/`; skill ngoài cài qua CLI có nguồn/commit ở `skills-lock.json`. Chỉ
+  cầu, cùng các skill hỗ trợ `test`, `refactor`, `review-security`, `i18n-audit`, `permission-audit`,
+  `db-migration`; mỗi skill đọc source, `docs/` và rule liên quan trước khi sửa. Skill nội bộ ở `.agents/skills/`
+  được liên kết sang `.claude/skills/`; skill ngoài cài qua CLI có nguồn/commit ở `skills-lock.json`. Chỉ
   `.claude/skills/rule-*/` do script rule sinh; chọn theo `.agents/rules/01-workflow.md`, ưu tiên `docs/rules/`.
-  Đổi ba skill workflow thì chạy `python scripts/check-workflow-skills.py` để kiểm trigger và bản Claude.
+  Đổi các skill project hoặc chuyên môn thì chạy `python scripts/check-workflow-skills.py` để kiểm trigger và bản Claude.
 - **Không tự thao tác git**: không tạo nhánh, commit, push, merge, xóa nhánh khi chưa được yêu cầu rõ; làm trên
   nhánh hiện tại. Sau mỗi task, đọc Git status/diff và trả nội dung commit theo [docs/rules/git.md](docs/rules/git.md)
   cho toàn bộ thay đổi chưa commit, kể cả thay đổi có sẵn: mỗi commit có tiêu đề + body trong khối `text` để dán
@@ -134,8 +135,10 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   nhiều file (rule chung mục 7).
 - **Chọn workflow theo câu chat**: task/tính năng mới → `start-task`; sửa lỗi/regression/test fail → `fix`;
   người dùng yêu cầu review code cuối → `review-code` (tự sửa lỗi xác nhận được và kiểm lại, rồi trả commit đúng
-  `docs/rules/git.md`). Chỉ một workflow chính; thêm skill chuyên môn theo phần việc. Yêu cầu audit bảo mật/code
-  an toàn → `security-best-practices`; rà hiệu năng Django
+  `docs/rules/git.md`). Yêu cầu tự tạo test/chụp ảnh Playwright/monkey test → `test`; tái cấu trúc code → `refactor`;
+  audit bảo mật kèm giả lập tấn công và file xác nhận trong `docs/` → `review-security`; rà thiếu i18n → `i18n-audit`;
+  rà ma trận quyền BE–FE → `permission-audit`; thiết kế model/migration → `db-migration`. Chỉ một workflow chính; thêm
+  skill chuyên môn theo phần việc. Yêu cầu audit bảo mật/code an toàn → `security-best-practices`; rà hiệu năng Django
   → `django-perf-review`; đo tốc độ trang/Core Web Vitals → `web-perf`; viết/sửa unit test FE → `vitest`;
   viết/sửa E2E spec → `playwright-best-practices`;
   mở UI thật → `playwright-cli`. Khi sửa xác thực, quyền, webhook, URL ngoài hoặc file riêng tư, kiểm ranh giới
@@ -154,11 +157,11 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   viết tiếng Anh; giữ nguyên tên file, mã, API và lệnh. Chưa kiểm được trên giao diện thật thì nói rõ.
 - **Màu và dialog**: class màu ngữ nghĩa phải có token `--color-<tên>` trong `globals.css`
   (`tests/unit/theme-tokens.test.ts`); ưu tiên thang Tailwind thay giá trị tùy ý; `DialogContent p-0` thì
-  `DialogFooter` thêm `mx-0 mb-0`; dialog có tab cao cố định, chỉ thân cuộn (rule frontend §3.1.1, §4.0).
+  `DialogFooter` thêm `mx-0 mb-0`; dialog có tab cao cố định, chỉ thân cuộn (rule frontend §3.1.1, §4.0). Form/trang có Tab chính (`PageForm`, `PortalProfile`...): đồng bộ URL query param `?tab=...` qua `useTabState` (`window.history.replaceState`). Bảng/danh sách/bộ lọc: bắt buộc lưu toàn bộ phân trang (`page`, `pageSize`), tìm kiếm (`search`), sắp xếp (`ordering`), bộ lọc (`filterKeys`) và khoảng ngày/năm vào URL query params qua `useTableState` hoặc `window.history.replaceState` (F5 không mất filter/trang). Slug công khai (`Page`, `ShortLink`) hỗ trợ giữ nguyên chữ hoa chữ thường kiểu `ToanToChill` (`preserveCase: true`).
 - **Hủy request**: truyền `signal` của React Query cho `apiClient`, không tự abort `fetch` (rule frontend mục 5).
 - **ViewSet chỉ đọc mở `post` cho bulk** thì khai `"create": DENY`; xoá model không có `deleted_at` bằng
   `hard_delete` có lý do; field unique ngắn dùng `UniqueConstraint` có điều kiện (rule backend mục 9).
-- **Chuẩn Next.js và primitive shadcn**: hiển thị ảnh bắt buộc dùng `<Image />` từ `next/image` (cấm `<img>` trần); thẻ liên kết bắt buộc dùng `<Link />` từ `next/link` hoặc `@/i18n/navigation` (cấm `<a>` trần, kể cả link ngoài); mọi UI primitive (`Button`, `Checkbox`, `Input`, `Label`...) lấy từ `@/shares/components/ui/`; cấm toàn bộ thẻ HTML trần tương tác (`<button>`, `<input>`, `<select>`, `<textarea>`, `<a>`, `<img>`).
+- **Chuẩn Next.js và primitive shadcn**: hiển thị ảnh bắt buộc dùng `<Image />` từ `next/image` (cấm `<img>` trần); thẻ liên kết bắt buộc dùng `<Link />` từ `@/i18n/navigation` (kể cả link ngoài với `href={url as never}`; `next/link` chỉ dùng ngoài `[locale]` như `app/not-found.tsx`; cấm `<a>` trần); hằng số dùng chung (locale, timezone, tiền tệ, phân trang, ID toast) lấy từ `shares/constants/` và `shares/lib/number-format.ts` (`tests/unit/code-conventions.test.ts`); mọi UI primitive (`Button`, `Checkbox`, `Input`, `Label`...) lấy từ `@/shares/components/ui/`; cấm toàn bộ thẻ HTML trần tương tác (`<button>`, `<input>`, `<select>`, `<textarea>`, `<a>`, `<img>`).
 - **Tải dữ liệu 100% phía Client (cấm gọi API ngầm ở SSR)**: mọi trang (kể cả trang công khai như link rút gọn `/s/[slug]`, custom page `/p/[slug]`) bắt buộc gọi API lấy dữ liệu ở phía Client thông qua React Query (`useQuery`) + `service` + `apiClient`. Cấm dùng Server Component gọi API ngầm (`serverApiGet`/`backendFetch`/`fetch` ngầm ở server Next.js) để render trang; `page.tsx` chỉ nhận params và render View. Bắt buộc có API call hiển thị trực tiếp trên tab Network của DevTools trình duyệt để phục vụ việc debug lỗi, đồng thời tránh lỗi mạng/WAF/Cloudflare chặn giữa các serverless functions (rule frontend §1, §5).
 - **`graphify update .` chỉ chạy khi thay đổi lớn** (thêm/xóa/gộp module, đổi cấu trúc thư mục, di chuyển/đổi tên
   khoảng 10 file trở lên, refactor kiến trúc) **hoặc graph đã cũ** (`graphify-out/graph.json` quá 7 ngày, hay
@@ -229,7 +232,7 @@ Frontend:
    Lịch sử thay đổi: page truyền `<RecordHistoryView path=".../{id}/history" fieldPrefix="links.fields" />`.
 6. Quy chuẩn UI & Tối ưu:
    - Hiển thị ảnh bắt buộc dùng `<Image />` từ `next/image` (không dùng thẻ `<img>` trần).
-   - Thẻ liên kết bắt buộc dùng component `<Link />` từ `next/link` (hoặc `@/i18n/navigation` cho link nội bộ), hoặc bọc bằng `<Button asChild><Link href="...">...</Link></Button>`; tuyệt đối không dùng thẻ `<a>` trần (kể cả liên kết ngoài `target="_blank"`).
+   - Thẻ liên kết bắt buộc dùng component `<Link />` từ `@/i18n/navigation` (kể cả liên kết ngoài `target="_blank"` với `href={url as never}`), hoặc bọc bằng `<Button asChild><Link href="...">...</Link></Button>`; tuyệt đối không dùng thẻ `<a>` trần hay import `next/link` trong module.
    - Mọi UI primitive (`Button`, `Checkbox`, `Label`, `Input`, `Dialog`, `Card`...) bắt buộc dùng từ `@/shares/components/ui/` (nếu thiếu thì tải bằng `pnpm dlx shadcn@latest add <name>`, không tự chế; không bọc button/checkbox vào thẻ `<label>`).
    - Tên tệp đính kèm (`original_name` / `alt_text`) phải cho phép người dùng đổi tên và cấu hình alt text.
    - Thanh thao tác hàng loạt (`TableBulkBar` / bulk bar chọn nhiều): bắt buộc thiết kế trên 1 dòng duy nhất (`min-h-12 w-full flex items-center justify-between gap-3 rounded-xl border px-3.5 py-1.5`), tuyệt đối không dùng container flex-col hoặc bọc trong thẻ `Card` gây tách 2 tầng và căn giữa; bên trái là badge số lượng + vạch chia + nút Bỏ chọn, bên phải là cụm nút hành động.

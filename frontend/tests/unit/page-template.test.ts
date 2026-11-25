@@ -18,7 +18,11 @@ import {
   DEMO_TEMPLATE_TYPES,
   isDemoTemplateType,
 } from "@/modules/utilities/constants/page-constants";
-import { THEME_PRESETS } from "@/modules/utilities/components/page/page-theme-editor";
+import { THEME_PRESETS } from "@/modules/utilities/constants/page-theme-presets";
+import {
+  extractCleanDomain,
+  getLinkPlatformIcon,
+} from "@/modules/utilities/components/page/bio-link-icon";
 import { parsePresetAmount } from "@/modules/utilities/components/page/donation-page-renderer";
 import { useDonationPageRenderer } from "@/modules/utilities/components/page/hooks/use-donation-page-renderer";
 import { fromPage, pageSchema, toPageInput } from "@/modules/utilities/schemas/page.schema";
@@ -378,5 +382,40 @@ describe("Hệ thống Template Trang (Page Template System)", () => {
     expect(result.current.selectedAmount).toBeNull();
     expect(result.current.customNote).toBe("");
     expect(result.current.transferNote).toBe("donate");
+  });
+
+  it("BioLinkIcon: extractCleanDomain chuẩn hóa domain từ link", () => {
+    expect(extractCleanDomain("https://facebook.com/toannx")).toBe("facebook.com");
+    expect(extractCleanDomain("http://www.youtube.com/@channel")).toBe("youtube.com");
+    expect(extractCleanDomain("github.com/torvalds")).toBe("github.com");
+    expect(extractCleanDomain("https://sub.domain.vn:8080/path?query=1")).toBe("sub.domain.vn");
+    expect(extractCleanDomain("")).toBe("");
+    expect(extractCleanDomain(null)).toBe("");
+  });
+
+  it("BioLinkIcon: getLinkPlatformIcon nhận diện chính xác nền tảng xã hội", () => {
+    expect(getLinkPlatformIcon("https://youtube.com/watch?v=123", "Video").color).toBe(
+      "text-red-500",
+    );
+    expect(getLinkPlatformIcon("https://tiktok.com/@user", "TikTok").color).toContain("neutral");
+    expect(getLinkPlatformIcon("https://instagram.com/photo", "IG").color).toBe("text-pink-500");
+    expect(getLinkPlatformIcon("https://facebook.com/me", "FB").color).toBe("text-blue-600");
+    expect(getLinkPlatformIcon("https://github.com/toan", "Mã nguồn").color).toContain("neutral");
+    expect(getLinkPlatformIcon("https://t.me/toan", "Telegram").color).toBe("text-sky-500");
+    expect(getLinkPlatformIcon("https://shopee.vn/item", "Shop").color).toBe("text-orange-500");
+    expect(getLinkPlatformIcon("mailto:toan@toannx.com", "Email").color).toBe("text-emerald-500");
+    expect(getLinkPlatformIcon("https://myblog.com", "Blog").color).toBe("text-primary");
+  });
+
+  it("THEME_PRESETS: phân cụm sáng (19) và tối (15) rõ ràng, không trùng tên", () => {
+    const lightPresets = THEME_PRESETS.filter((p) => p.mode === "light");
+    const darkPresets = THEME_PRESETS.filter((p) => p.mode === "dark");
+
+    expect(lightPresets.length).toBe(19);
+    expect(darkPresets.length).toBe(15);
+    expect(THEME_PRESETS.length).toBe(34);
+
+    const names = new Set(THEME_PRESETS.map((p) => p.name.toLowerCase()));
+    expect(names.size).toBe(THEME_PRESETS.length);
   });
 });

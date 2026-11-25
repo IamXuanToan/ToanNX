@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shares/components/ui/card";
@@ -12,7 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/shares/components/ui/chart";
-import { formatDisplayNumber } from "@/shares/lib/number-format";
+import { formatCompactDisplayNumber, getNumberLocale } from "@/shares/lib/number-format";
 
 import { chartColor } from "../../constants/chart-colors";
 
@@ -27,6 +27,8 @@ export function FinancePlatformAreaChart({
   monthLabel: (month: number) => string;
 }) {
   const t = useTranslations("finance.dashboard");
+  const locale = useLocale();
+  const numberLocale = getNumberLocale(locale);
   const keys = platforms.map((_, index) => `p${index}`);
   const config = Object.fromEntries(
     platforms.map((name, index) => [keys[index], { label: name, color: chartColor(index) }]),
@@ -48,10 +50,8 @@ export function FinancePlatformAreaChart({
             <YAxis
               tickLine={false}
               axisLine={false}
-              width={64}
-              tickFormatter={(value: number) =>
-                formatDisplayNumber(value, { maximumFractionDigits: 0 })
-              }
+              width={56}
+              tickFormatter={(value: number) => formatCompactDisplayNumber(value, numberLocale)}
             />
             <ChartTooltip content={<ChartTooltipContent />} />
             <ChartLegend content={<ChartLegendContent />} />

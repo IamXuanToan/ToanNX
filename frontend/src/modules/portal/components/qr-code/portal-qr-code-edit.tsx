@@ -1,56 +1,64 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 import { qrCodeService } from "@/modules/utilities/services/qr-code.service";
+import { FormPage } from "@/shares/components/common/form-page";
+import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
+import { QueryErrorState } from "@/shares/components/errors/query-error-state";
+import { Skeleton } from "@/shares/components/ui/skeleton";
+
+import { PORTAL_ROUTES } from "../../constants/routes";
 import { PortalQrCodeForm } from "./portal-qr-code-form";
 
 /**
- * Component chỉnh sửa mã QR trong Client Portal.
+ * Component chi tiết và chỉnh sửa mã QR trong Client Portal.
  *
- * @param props - ID mã QR và cờ quyền sửa.
- * @returns Giao diện chỉnh sửa mã QR.
+ * @param props - ID mã QR, cờ đang sửa và quyền quản lý mọi bản ghi.
+ * @returns Giao diện chi tiết / chỉnh sửa mã QR.
  */
-export function PortalQrCodeEdit({ id, canUpdate }: { id: string; canUpdate: boolean }) {
+export function PortalQrCodeEdit({
+  id,
+  canUpdate,
+  canManageAll = false,
+}: {
+  id: string;
+  canUpdate: boolean;
+  canManageAll?: boolean;
+}) {
   const t = useTranslations("portal.qrCodes");
+  const { data: currentUser, isPending: isUserPending } = useCurrentUser();
 
   const {
     data: code,
     isLoading,
     isError,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ["portal-qr-code-detail", id],
-    queryFn: () => qrCodeService.get(id),
+    queryFn: ({ signal }) => qrCodeService.get(id, signal),
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader2 className="text-primary size-8 animate-spin" />
-      </div>
-    );
+  if (isLoading || isUserPending) {
+    return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
   }
 
   if (isError || !code) {
     return (
-      <div className="border-destructive/20 bg-destructive/5 rounded-xl border p-6 text-center">
-        <p className="text-destructive text-sm font-medium">{t("notFound")}</p>
-      </div>
+      <QueryErrorState error={error} onRetry={() => refetch()} backHref={PORTAL_ROUTES.qrCodes} />
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="border-border border-b pb-4">
-        <h1 className="text-foreground text-xl font-bold tracking-tight sm:text-2xl">
-          {t("editTitle", { name: code.name })}
-        </h1>
-        <p className="text-muted-foreground mt-1 text-xs sm:text-sm">{t("editDescription")}</p>
-      </div>
+  if (code.ownerId !== currentUser?.user.id && !canManageAll) {
+    return <ForbiddenView />;
+  }
 
+  return (
+    <FormPage title={t("editTitle", { name: code.name })}>
       <PortalQrCodeForm code={code} disabled={!canUpdate} />
-    </div>
+    </FormPage>
   );
 }

@@ -3,7 +3,11 @@
 import { FileText, Paperclip, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { Link } from "@/i18n/navigation";
+
 import { AttachmentPicker } from "@/modules/system/components/attachment/attachment-picker";
+import { usePermission } from "@/modules/system/hooks/use-permission";
+import { ATTACHMENT_PERMISSIONS } from "@/modules/system/permissions/attachment-permission";
 import type { Attachment } from "@/modules/system/types/attachment.types";
 import { Button } from "@/shares/components/ui/button";
 
@@ -30,6 +34,7 @@ export function InvoiceAttachmentsField({
   error?: string;
 }) {
   const t = useTranslations("finance.invoices");
+  const canReadAttachments = usePermission(ATTACHMENT_PERMISSIONS.read);
   const state = useInvoiceAttachmentsField();
   const toFile = (file: Attachment): InvoiceAttachment => ({
     id: file.id,
@@ -45,14 +50,14 @@ export function InvoiceAttachmentsField({
         {files.map((file) => (
           <li key={file.id} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm">
             <FileText className="text-muted-foreground size-4 shrink-0" aria-hidden />
-            <a
-              href={file.url}
+            <Link
+              href={file.url as never}
               target="_blank"
               rel="noreferrer"
               className="min-w-0 flex-1 truncate underline-offset-4 hover:underline"
             >
               {file.originalName || file.id}
-            </a>
+            </Link>
             {disabled ? null : (
               <Button
                 type="button"
@@ -67,7 +72,7 @@ export function InvoiceAttachmentsField({
           </li>
         ))}
       </ul>
-      {disabled ? null : (
+      {disabled || !canReadAttachments ? null : (
         <Button type="button" variant="outline" onClick={() => state.setOpen(true)}>
           <Paperclip />
           {t("addFiles")}

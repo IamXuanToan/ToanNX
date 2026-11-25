@@ -56,14 +56,16 @@ export function RoleForm({
     role,
     defaults,
     defaultPermissionIds,
+    canUpdateInfo: !disabled,
     canReadPermissions,
-    canAssignPermissions: canAssignPermissions && !disabled,
+    canAssignPermissions,
     onSaved,
   });
   const { form, isSubmitting, permissions } = state;
   const { errors } = form.formState;
   const locked = disabled || isSubmitting;
-  const permissionsLocked = locked || !canAssignPermissions;
+  const permissionsLocked = isSubmitting || !canAssignPermissions;
+  const canSave = !disabled || canAssignPermissions;
   const showPermissions = Boolean(role) || (canReadPermissions && canAssignPermissions);
 
   return (
@@ -167,12 +169,12 @@ export function RoleForm({
         </section>
       ) : null}
 
-      <FormActions start={!disabled && role && state.isDirty ? tCommon("unsaved") : null}>
+      <FormActions start={canSave && role && state.isDirty ? tCommon("unsaved") : null}>
         {/* Hủy là lối quay lại danh sách; chỉ xem thì nút này ghi "Quay lại". */}
         <Button asChild variant="outline">
-          <Link href={SYSTEM_ROUTES.roles}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
+          <Link href={SYSTEM_ROUTES.roles}>{canSave ? tCommon("cancel") : tCommon("back")}</Link>
         </Button>
-        {!disabled ? (
+        {canSave ? (
           <FormSubmitButton isSubmitting={isSubmitting} disabled={Boolean(role) && !state.isDirty}>
             {role ? tCommon("save") : tCommon("create")}
           </FormSubmitButton>

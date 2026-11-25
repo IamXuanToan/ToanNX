@@ -29,7 +29,8 @@ kèm lý do. Bản đầy đủ: `prompt.md` mục 5.
 - [ ] View chỉ `usePermission`/`useTranslations`/`useEditMode`; component không gọi service/`apiClient` trực tiếp.
 - [ ] Primitive shadcn, control `h-10`, `SelectField`/`FilterSelect`/`DataTable`/`FormPage`, chuỗi qua i18n.
 - [ ] Trang tải dữ liệu ở Client qua React Query → service → `apiClient`; `page.tsx` không gọi API ngầm ở server.
-- [ ] Link dùng `<Link />`, ảnh dùng `<Image />`; không `<a>`/`<img>` trần.
+- [ ] Link dùng `<Link />` từ `@/i18n/navigation` (không `next/link` trong module), ảnh dùng `<Image />`; không
+      `<a>`/`<img>` trần; không hardcode locale/timezone/tiền tệ/toast ngoài `constants/` (`code-conventions.test.ts`).
 - [ ] Request React Query truyền `signal` xuống `apiClient`; loading/error/empty/forbidden có trạng thái đúng.
 - [ ] Bảng đủ `onView`/`onEdit`/`onDelete` + `can`; có Xóa → bulk delete; cờ boolean → `bulkStatus`.
 - [ ] Màu có token `--color-*`; dialog `p-0` → footer `mx-0 mb-0`; SVG trong `public/`.

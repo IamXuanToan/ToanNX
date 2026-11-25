@@ -3,16 +3,25 @@
     "sections": {
       "overview": "Overview",
       "utilities": "Utilities",
+      "finance": "Finance",
       "media": "Media"
     },
     "dashboard": "Dashboard",
+    "financeDashboard": "Finance Dashboard",
+    "financeIncomes": "Incomes",
+    "financeInvoices": "Invoices",
+    "financePlatforms": "Platforms",
+    "financeRules": "Classification Rules",
+    "financeReports": "Reports",
+    "financeSepay": "SePay Connection",
     "pages": "My Pages",
     "shortLinks": "Short Links",
     "qrCodes": "QR Codes",
     "files": "Library",
     "profile": "Profile",
     "goToAdmin": "Admin Console",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "donations": "Donations & Support"
   },
   "dashboard": {
     "title": "Creator Studio",
@@ -24,7 +33,28 @@
       "totalShortLinks": "Short Links",
       "totalShortLinksHint": "Active links",
       "totalClicks": "Total Clicks",
-      "totalClicksHint": "From short links"
+      "totalClicksHint": "From short links",
+      "totalDonations": "Total Donations",
+      "totalDonationsHint": "Received via SePay"
+    },
+    "charts": {
+      "donationTrendTitle": "Donation & Support Trends",
+      "donationTrendDesc": "Revenue and transaction count over time",
+      "linkClicksTitle": "Top Links by Clicks",
+      "linkClicksDesc": "Compare traffic engagement across short links",
+      "giftBreakdownTitle": "Gift Distribution",
+      "giftBreakdownDesc": "Ratio of appreciation gifts received",
+      "amount": "Amount (₫)",
+      "count": "Donations",
+      "clicks": "Clicks",
+      "clickCount": "{count} clicks",
+      "noTrendData": "No donation activity recorded in this period.",
+      "noLinksData": "No short links with clicks yet.",
+      "filterAll": "All",
+      "filterAmount": "Amount",
+      "filterCount": "Donations",
+      "noGiftsData": "No appreciation gifts recorded yet.",
+      "giftCount": "{count} donations"
     },
     "quickActions": {
       "title": "Quick Actions",
@@ -147,5 +177,27 @@
     "description": "Please sign in to your account to access your personal workspace.",
     "loginButton": "Go to Sign In"
   },
-  "mobileNavAria": "Mobile navigation bar"
+  "mobileNavAria": "Mobile navigation bar",
+  "donations": {
+    "badge": "Personal Area",
+    "title": "Your Donations & Support Analytics",
+    "subtitle": "Track donations from friends, readers, and supporters via SePay QR codes on your Donate pages.",
+    "totalReceivedLabel": "Total received",
+    "totalReceivedHint": "{count} donations from supporters",
+    "successCountLabel": "Completed donations",
+    "hiddenCommentsHint": "{count} comments hidden by you",
+    "activeLeaderboardLabel": "Active on Leaderboard",
+    "activeLeaderboardHint": "Bronze, Silver, Gold tiers counting down",
+    "dateRangeLabel": "Date range:",
+    "rangeAll": "All time",
+    "rangeToday": "Today",
+    "range7d": "Last 7 days",
+    "range30d": "Last 30 days",
+    "rangeCustom": "Custom",
+    "fromDateLabel": "From:",
+    "fromDatePlaceholder": "Pick start date",
+    "toDateLabel": "To:",
+    "toDatePlaceholder": "Pick end date",
+    "resetRange": "Reset"
+  }
 }

@@ -17,19 +17,22 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+import { Link } from "@/i18n/navigation";
 import { SortableList } from "@/shares/components/common/sortable-list";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shares/components/ui/card";
+import { Checkbox } from "@/shares/components/ui/checkbox";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { Textarea } from "@/shares/components/ui/textarea";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import type { BioContentConfig, BioExperience, BioProject, BioSkill } from "../../types/page.types";
+import { BioLinkIcon } from "./bio-link-icon";
 
 /**
  * Trình biên tập nội dung trang Hồ sơ năng lực (Bio & Portfolio):
@@ -243,6 +246,7 @@ export function PageBioEditor({
     title: string;
     url: string;
     description?: string;
+    iconUrl?: string;
     highlight?: boolean;
     sortOrder: number;
     isVisible: boolean;
@@ -253,6 +257,7 @@ export function PageBioEditor({
     title: "",
     url: "",
     description: "",
+    iconUrl: "",
     highlight: false,
   });
   const [showAddLink, setShowAddLink] = useState(false);
@@ -264,6 +269,7 @@ export function PageBioEditor({
     title: string;
     url: string;
     description?: string;
+    iconUrl?: string;
     highlight?: boolean;
     sortOrder: number;
     isVisible: boolean;
@@ -276,6 +282,7 @@ export function PageBioEditor({
       title: newLink.title.trim(),
       url: newLink.url.trim(),
       description: newLink.description.trim() || undefined,
+      iconUrl: newLink.iconUrl.trim() || undefined,
       highlight: newLink.highlight,
       sortOrder: links.length + 1,
       isVisible: true,
@@ -284,7 +291,7 @@ export function PageBioEditor({
       ...config,
       links: [...links, item],
     });
-    setNewLink({ title: "", url: "", description: "", highlight: false });
+    setNewLink({ title: "", url: "", description: "", iconUrl: "", highlight: false });
     setShowAddLink(false);
   };
 
@@ -1020,14 +1027,18 @@ export function PageBioEditor({
                     <div className="min-w-0 pr-4">
                       <div className="flex items-center gap-2">
                         <span className="text-foreground text-xs font-semibold">{proj.title}</span>
-                        {proj.url ? (
+                        {toSafeHttpUrl(proj.url, { allowRelative: false }) ? (
                           <Button
                             asChild
                             variant="ghost"
                             size="icon-xs"
                             className="text-primary size-5 p-0"
                           >
-                            <Link href={proj.url} target="_blank" rel="noopener noreferrer">
+                            <Link
+                              href={toSafeHttpUrl(proj.url, { allowRelative: false }) as never}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               <ExternalLink className="size-3" />
                             </Link>
                           </Button>
@@ -1145,19 +1156,46 @@ export function PageBioEditor({
                   className="h-8 text-xs"
                 />
               </div>
-              <div className="flex items-center justify-between pt-1">
-                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium">
-                  <input
-                    type="checkbox"
-                    checked={newLink.highlight}
-                    onChange={(e) => setNewLink({ ...newLink, highlight: e.target.checked })}
-                    className="accent-primary rounded"
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs">{t("linkIcon")}</Label>
+                  <span className="text-muted-foreground text-[11px]">{t("autoIconHint")}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="border-border bg-card flex size-8 shrink-0 items-center justify-center rounded-lg border p-1 shadow-2xs">
+                    <BioLinkIcon
+                      url={newLink.url}
+                      title={newLink.title}
+                      iconUrl={newLink.iconUrl}
+                      size={20}
+                      className="size-5"
+                    />
+                  </div>
+                  <Input
+                    placeholder={t("linkIconPlaceholder")}
+                    value={newLink.iconUrl}
+                    onChange={(e) => setNewLink({ ...newLink, iconUrl: e.target.value })}
+                    className="h-8 flex-1 text-xs"
                   />
-                  <span className="flex items-center gap-1">
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="bio-add-link-highlight"
+                    checked={newLink.highlight}
+                    onCheckedChange={(checked) =>
+                      setNewLink({ ...newLink, highlight: Boolean(checked) })
+                    }
+                  />
+                  <Label
+                    htmlFor="bio-add-link-highlight"
+                    className="flex cursor-pointer items-center gap-1 text-xs font-medium"
+                  >
                     <Sparkles className="size-3 text-amber-500" />
                     <span>{t("linkHighlight")}</span>
-                  </span>
-                </label>
+                  </Label>
+                </div>
                 <div className="flex gap-2">
                   <Button
                     type="button"
@@ -1246,21 +1284,50 @@ export function PageBioEditor({
                         className="h-8 text-xs"
                       />
                     </div>
-                    <div className="flex items-center justify-between pt-1">
-                      <label className="flex cursor-pointer items-center gap-2 text-xs font-medium">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(editingLink.highlight)}
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">{t("linkIcon")}</Label>
+                        <span className="text-muted-foreground text-[11px]">
+                          {t("autoIconHint")}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="border-border bg-card flex size-8 shrink-0 items-center justify-center rounded-lg border p-1 shadow-2xs">
+                          <BioLinkIcon
+                            url={editingLink.url}
+                            title={editingLink.title}
+                            iconUrl={editingLink.iconUrl}
+                            size={20}
+                            className="size-5"
+                          />
+                        </div>
+                        <Input
+                          placeholder={t("linkIconPlaceholder")}
+                          value={editingLink.iconUrl ?? ""}
                           onChange={(e) =>
-                            setEditingLink({ ...editingLink, highlight: e.target.checked })
+                            setEditingLink({ ...editingLink, iconUrl: e.target.value })
                           }
-                          className="accent-primary rounded"
+                          className="h-8 flex-1 text-xs"
                         />
-                        <span className="flex items-center gap-1">
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id={`bio-edit-link-highlight-${editingLink.id}`}
+                          checked={Boolean(editingLink.highlight)}
+                          onCheckedChange={(checked) =>
+                            setEditingLink({ ...editingLink, highlight: Boolean(checked) })
+                          }
+                        />
+                        <Label
+                          htmlFor={`bio-edit-link-highlight-${editingLink.id}`}
+                          className="flex cursor-pointer items-center gap-1 text-xs font-medium"
+                        >
                           <Sparkles className="size-3 text-amber-500" />
                           <span>{t("linkHighlight")}</span>
-                        </span>
-                      </label>
+                        </Label>
+                      </div>
                       <div className="flex gap-2">
                         <Button
                           type="button"
@@ -1288,37 +1355,56 @@ export function PageBioEditor({
                   </div>
                 ) : (
                   <div key={link.id} className="flex items-start justify-between py-3">
-                    <div className="min-w-0 pr-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-foreground text-xs font-semibold">{link.title}</span>
-                        {link.highlight ? (
-                          <Badge
-                            variant="outline"
-                            className="gap-1 border-amber-500/40 bg-amber-500/10 px-1.5 py-0 text-[10px] text-amber-600 dark:text-amber-400"
-                          >
-                            <Sparkles className="size-2.5" />
-                            <span>{t("highlightBadge")}</span>
-                          </Badge>
-                        ) : null}
-                        <Button
-                          asChild
-                          variant="ghost"
-                          size="icon-xs"
-                          className="text-primary size-5 p-0"
-                        >
-                          <Link href={link.url} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="size-3" />
-                          </Link>
-                        </Button>
+                    <div className="flex min-w-0 items-start gap-3 pr-4">
+                      <div className="border-border bg-muted/40 mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg border p-1 shadow-2xs">
+                        <BioLinkIcon
+                          url={link.url}
+                          title={link.title}
+                          iconUrl={link.iconUrl}
+                          size={20}
+                          className="size-5"
+                        />
                       </div>
-                      {link.description ? (
-                        <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
-                          {link.description}
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-foreground text-xs font-semibold">
+                            {link.title}
+                          </span>
+                          {link.highlight ? (
+                            <Badge
+                              variant="outline"
+                              className="gap-1 border-amber-500/40 bg-amber-500/10 px-1.5 py-0 text-[10px] text-amber-600 dark:text-amber-400"
+                            >
+                              <Sparkles className="size-2.5" />
+                              <span>{t("highlightBadge")}</span>
+                            </Badge>
+                          ) : null}
+                          {toSafeHttpUrl(link.url, { allowRelative: false }) ? (
+                            <Button
+                              asChild
+                              variant="ghost"
+                              size="icon-xs"
+                              className="text-primary size-5 p-0"
+                            >
+                              <Link
+                                href={toSafeHttpUrl(link.url, { allowRelative: false }) as never}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <ExternalLink className="size-3" />
+                              </Link>
+                            </Button>
+                          ) : null}
+                        </div>
+                        {link.description ? (
+                          <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
+                            {link.description}
+                          </p>
+                        ) : null}
+                        <p className="text-muted-foreground/80 mt-0.5 truncate font-mono text-[11px]">
+                          {link.url}
                         </p>
-                      ) : null}
-                      <p className="text-muted-foreground/80 mt-0.5 truncate font-mono text-[11px]">
-                        {link.url}
-                      </p>
+                      </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-1.5">
                       <Button

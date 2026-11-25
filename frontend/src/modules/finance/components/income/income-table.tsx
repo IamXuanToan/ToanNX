@@ -10,10 +10,11 @@ import type { DataTableColumn } from "@/shares/components/common/data-table.type
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge } from "@/shares/components/common/status-badge";
 import { Button } from "@/shares/components/ui/button";
+import { DEFAULT_CURRENCY } from "@/shares/constants/currency";
 
 import { FINANCE_API_ENDPOINTS } from "../../constants/api-endpoints";
 import { INCOME_SOURCES, TAX_STATUSES } from "../../constants/finance-enums";
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import type { Income, IncomeFilters } from "../../types/income.types";
 import { useIncomeTable } from "./hooks/use-income-table";
 import { MoneyText } from "./money-text";
@@ -25,6 +26,7 @@ function exportHref(filters: IncomeFilters): string {
   const map: Record<string, unknown> = {
     year: filters.year,
     month: filters.month,
+    owner: filters.owner,
     platform: filters.platform,
     tax_status: filters.taxStatus,
     source: filters.source,
@@ -59,6 +61,7 @@ export function IncomeTable({
   const t = useTranslations("finance.incomes");
   const tTax = useTranslations("finance.taxStatus");
   const format = useFormatter();
+  const routes = useFinanceRoutes();
   const state = useIncomeTable(scope);
   const { table, query } = state;
   const columns: DataTableColumn<Income>[] = [
@@ -69,7 +72,7 @@ export function IncomeTable({
       mobile: "title",
       cell: (income) => (
         <Link
-          href={FINANCE_ROUTES.incomeDetail(income.id)}
+          href={routes.incomeDetail(income.id)}
           className="hover:text-primary font-medium underline-offset-4 hover:underline"
         >
           {format.dateTime(new Date(income.receivedAt), { dateStyle: "short", timeStyle: "short" })}
@@ -82,6 +85,23 @@ export function IncomeTable({
       cell: (income) =>
         income.platformName ?? <StatusBadge tone="warning">{tTax("UNCLASSIFIED")}</StatusBadge>,
     },
+    ...(state.canManageAll
+      ? [
+          {
+            id: "owner",
+            header: t("fields.owner"),
+            hideBelow: "xl" as const,
+            cell: (income: Income) => (
+              <span
+                className="text-muted-foreground block max-w-44 truncate"
+                title={income.ownerEmail}
+              >
+                {income.ownerName || income.ownerEmail}
+              </span>
+            ),
+          },
+        ]
+      : []),
     {
       id: "content",
       header: t("fields.content"),
@@ -99,7 +119,7 @@ export function IncomeTable({
       align: "end",
       hideBelow: "xl",
       cell: (income) =>
-        income.currencyCode === "VND" ? (
+        income.currencyCode === DEFAULT_CURRENCY ? (
           <span className="text-muted-foreground">—</span>
         ) : (
           <span
@@ -159,6 +179,22 @@ export function IncomeTable({
       onClearFilters={table.hasFilters ? table.clearFilters : undefined}
       filters={
         <>
+          {state.canFilterOwner && !scope?.owner ? (
+            <FilterSelect
+              label={t("fields.owner")}
+              value={table.getFilterValues("owner")}
+              onValueChange={(values) => table.setFilterValues("owner", values)}
+              options={state.ownerOptions}
+            />
+          ) : null}
+          {!scope?.year ? (
+            <FilterSelect
+              label={t("filters.year")}
+              value={table.getFilterValues("year")}
+              onValueChange={(values) => table.setFilterValues("year", values.slice(-1))}
+              options={state.yearOptions}
+            />
+          ) : null}
           <FilterSelect
             label={t("fields.platform")}
             value={table.getFilterValues("platform")}
@@ -199,10 +235,10 @@ export function IncomeTable({
       }
       toolbar={
         <Button type="button" variant="outline" asChild>
-          <a href={exportHref(state.filters)}>
+          <Link href={exportHref(state.filters) as never}>
             <Download />
             {t("actions.export")}
-          </a>
+          </Link>
         </Button>
       }
       ordering={table.ordering}

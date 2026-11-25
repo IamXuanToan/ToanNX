@@ -7,7 +7,9 @@
     "shortLinks": "Link rút gọn",
     "qrCodes": "Mã QR",
     "pages": "Trang",
-    "pagePaths": "Đường dẫn giữa"
+    "pagePaths": "Đường dẫn giữa",
+    "dashboard": "Thống kê",
+    "donations": "Quyên góp"
   },
   "shortLinks": {
     "title": "Link rút gọn",
@@ -94,7 +96,9 @@
       "previewNotice": "Chế độ xem trước — nút mở liên kết không chuyển trang.",
       "invalidPassword": "Mật khẩu không đúng. Vui lòng thử lại.",
       "unlockError": "Không thể mở liên kết. Vui lòng thử lại sau.",
-      "safeShield": "Bảo vệ bởi ToanNX · Kiểm duyệt an toàn"
+      "safeShield": "Bảo vệ bởi ToanNX · Kiểm duyệt an toàn",
+      "safeGateway": "Cổng an toàn",
+      "verifiedLink": "Liên kết xác thực"
     },
     "unavailable": {
       "home": "Về trang chủ",
@@ -210,7 +214,10 @@
       "message": "Tối đa 25 ký tự, chỉ chữ, số và khoảng trắng.",
       "color": "Màu dạng #RRGGBB.",
       "logoFormat": "Logo phải là ảnh PNG, JPEG, WebP hoặc GIF."
-    }
+    },
+    "popularLabel": "Phổ biến:",
+    "quickPresetsLabel": "Mẫu ví / dịch vụ nhanh:",
+    "momoLabel": "Ví MoMo"
   },
   "customPages": {
     "validation": {
@@ -262,7 +269,22 @@
         "show": "Hiện xem trước",
         "hide": "Ẩn xem trước"
       },
+      "copied": "Đã sao chép liên kết vào clipboard.",
+      "copy": "Sao chép {url}",
+      "quickLink": "Đường dẫn trang công khai",
+      "quickLinkHint": "Sao chép liên kết để chia sẻ đến độc giả và khách hàng",
+      "openLink": "Mở trang",
+      "copyLink": "Sao chép liên kết",
       "presets": "Bộ màu có sẵn (Presets)",
+      "presetsAll": "Tất cả ({count})",
+      "presetsLight": "Giao diện sáng ({count})",
+      "presetsDark": "Giao diện tối ({count})",
+      "presetsSearchPlaceholder": "Tìm bộ màu (ví dụ: emerald, ocean, dark, neon...)",
+      "presetsLightSection": "Giao diện sáng (Light Themes)",
+      "presetsLightSectionDesc": "Tông màu tươi sáng, trang nhã, tối ưu cho môi trường ánh sáng ban ngày",
+      "presetsDarkSection": "Giao diện tối (Dark Themes)",
+      "presetsDarkSectionDesc": "Tông màu trầm sang trọng, phong cách công nghệ và tương phản cao",
+      "presetsEmpty": "Không tìm thấy bộ màu phù hợp",
       "maximizePreview": "Phóng to xem trước",
       "livePreviewTitle": "Xem trước giao diện: {title}",
       "bioEditor": {
@@ -329,6 +351,10 @@
         "linkDescription": "Mô tả phụ (tùy chọn)",
         "linkDescriptionPlaceholder": "Kênh chia sẻ kiến thức công nghệ và lập trình…",
         "linkHighlight": "Ghim nổi bật (Hiệu ứng viền đặc biệt)",
+        "linkIcon": "Biểu tượng (Icon)",
+        "linkIconPlaceholder": "Dán liên kết ảnh biểu tượng tùy chọn (URL)...",
+        "autoIconHint": "Tự động lấy Favicon Google từ tên miền của liên kết nếu để trống.",
+        "previewIcon": "Xem trước",
         "linkVisible": "Hiển thị công khai",
         "highlightBadge": "Nổi bật",
         "visible": "Đang hiện",
@@ -358,6 +384,16 @@
         "editAmount": "Sửa mức tiền",
         "saveAmount": "Lưu thay đổi",
         "removeAmount": "Xóa mức tiền",
+        "amountDialogAddTitle": "Thêm mức tiền gợi ý",
+        "amountDialogEditTitle": "Chỉnh sửa mức tiền gợi ý",
+        "amountDialogDescription": "Cấu hình số tiền, nhãn hiển thị và biểu tượng minh họa cho nút chọn nhanh trên trang.",
+        "amountLabel": "Số tiền ủng hộ (VNĐ)",
+        "amountLabelHelp": "Nhập số tiền người ủng hộ sẽ chuyển khi bấm chọn mức này.",
+        "labelFieldLabel": "Nhãn hiển thị",
+        "labelFieldHelp": "Ví dụ: 1 ly cà phê, 1 bữa sáng... Nếu để trống sẽ hiển thị số tiền.",
+        "iconFieldLabel": "Biểu tượng minh họa",
+        "previewSuggestedButton": "Xem trước nút hiển thị",
+        "emptySuggestedAmounts": "Chưa có mức tiền gợi ý nào. Hãy thêm mức tiền để người ủng hộ chọn nhanh.",
         "minAmountLabel": "Số tiền ủng hộ tối thiểu (VND)",
         "minAmountPlaceholder": "Ví dụ: 10000",
         "minAmountHint": "Mức tiền tối thiểu khi người ủng hộ tự nhập số tiền tùy ý (mặc định: 10.000 ₫)",
@@ -400,7 +436,7 @@
         "tabAccount": "Tài khoản",
         "tabDesign": "Kiểu dáng & Logo",
         "qrNote": "Lời nhắn mặc định khi quét",
-        "qrNotePlaceholder": "Ví dụ: Ung ho ToanNX",
+        "qrNotePlaceholder": "Ví dụ: Ung ho ban",
         "designSection": "Tùy biến kiểu dáng mã QR",
         "qrColor": "Màu mã QR",
         "bgColor": "Màu nền",
@@ -415,7 +451,51 @@
         "selectIcon": "Chọn biểu tượng",
         "selectIconTooltip": "Chọn biểu tượng minh họa cho mốc tiền này",
         "iconPopoverTitle": "Chọn biểu tượng minh họa",
-        "iconPopoverSubtitle": "Biểu tượng sẽ hiển thị cạnh số tiền trên nút bấm"
+        "iconPopoverSubtitle": "Biểu tượng sẽ hiển thị cạnh số tiền trên nút bấm",
+        "leaderboardDaysLabel": "Thời gian vinh danh trên Bảng xếp hạng",
+        "leaderboardDaysUnit": "ngày",
+        "leaderboardDaysHint": "Thời hạn hiển thị và đếm ngược của người ủng hộ trên Bảng Đồng, Bạc, Vàng (từ 1 đến 30 ngày).",
+        "defaultCoffeeAmountLabel": "1 ly cà phê",
+        "hideAmountLabel": "Ẩn số tiền ủng hộ trên trang công khai",
+        "hideAmountHint": "Chỉ hiển thị tên người ủng hộ và món quà (ví dụ: Ly cà phê, Gói mì tôm), không để lộ số tiền cụ thể.",
+        "isDefaultLabel": "Đặt làm phương thức thanh toán mặc định",
+        "webhookAutoLabel": "Tự động nhận Webhook SePay cho mã QR này",
+        "webhookCopied": "Đã sao chép Webhook URL SePay vào bộ nhớ tạm!",
+        "webhookCopyError": "Không thể sao chép URL",
+        "webhookCopyInstruction": "Sao chép URL bên dưới và dán vào mục Webhooks trên trang quản trị my.sepay.vn:",
+        "copyButton": "Sao chép",
+        "webhookGuideTitle": "💡 Hướng dẫn cấu hình nhanh:",
+        "webhookGuideStep1": "1. Vào my.sepay.vn › Webhooks › Bấm Thêm webhook",
+        "webhookGuideStep2": "2. Dán Webhook URL ở trên vào ô URL Webhook",
+        "webhookGuideStep3": "3. Chọn Sự kiện: Chỉ tiền vào và chọn tài khoản ngân hàng tương ứng.",
+        "webhookDisabledHint": "Bật tính năng này để hệ thống tự động ghi nhận giao dịch ủng hộ vào trang khi có người chuyển khoản.",
+        "customQrEmpty": "Chưa có ảnh mã QR",
+        "eWalletFallback": "Ví điện tử",
+        "qrFallback": "Mã QR",
+        "momoFallback": "Ví MoMo",
+        "notePrefix": "Nội dung:",
+        "customType": "Tùy chỉnh",
+        "defaultBadge": "Mặc định",
+        "webhookBadge": "Webhook",
+        "hideAmountBadge": "Ẩn tiền",
+        "setDefaultTooltip": "Đặt làm mã nhận tiền mặc định",
+        "setDefaultAction": "Đặt mặc định",
+        "editAction": "Sửa",
+        "deleteMethodTooltip": "Xóa phương thức",
+        "icons": {
+          "coffee": "Cà phê / Trà",
+          "utensils": "Bữa ăn / Ẩm thực",
+          "heart": "Trái tim / Yêu thích",
+          "sparkles": "Tỏa sáng / Đặc biệt",
+          "beer": "Cốc bia / Giải khát",
+          "gift": "Hộp quà / Quà tặng",
+          "book": "Sách / Tri thức",
+          "server": "Máy chủ / Hạ tầng",
+          "zap": "Tia chớp / Năng lượng",
+          "smile": "Nụ cười / Vui vẻ",
+          "thumbs-up": "Ủng hộ / Like",
+          "award": "Huy hiệu / Cúp"
+        }
       },
       "categoriesEditor": {
         "title": "Danh mục sản phẩm",
@@ -475,8 +555,8 @@
         "AFFILIATEHint": "Trang tổng hợp danh sách sản phẩm, gian hàng, liên kết mua hàng và tiếp thị liên kết.",
         "BIO": "Link-in-Bio",
         "BIOHint": "Trang hồ sơ cá nhân, giới thiệu bản thân và các liên kết mạng xã hội.",
-        "DONATION": "Ủng hộ / Quyên góp",
-        "DONATIONHint": "Trang ủng hộ tài chính với mã VietQR quét tự động.",
+        "DONATION": "Ủng hộ / Quyên góp (Donate)",
+        "DONATIONHint": "Trang nhận ủng hộ tài chính với mã VietQR quét tự động và vinh danh người donate.",
         "PRODUCT_CATALOG": "Trang sản phẩm",
         "PRODUCT_CATALOGHint": "Trưng bày danh sách sản phẩm và dịch vụ.",
         "PORTFOLIO": "Hồ sơ năng lực",
@@ -504,8 +584,8 @@
         "link_in_bioHint": "Lời chào, nút liên kết, mạng xã hội.",
         "about": "Giới thiệu",
         "aboutHint": "Giới thiệu bản thân và liên hệ.",
-        "donate": "Ủng hộ",
-        "donateHint": "Lời ngỏ ủng hộ; chèn mã QR chuyển khoản của bạn."
+        "donate": "Ủng hộ / Donate",
+        "donateHint": "Lời ngỏ ủng hộ; chèn mã QR chuyển khoản và kết nối webhook SePay."
       },
       "themeModes": {
         "system": "Theo hệ thống",
@@ -574,9 +654,9 @@
             "description": "Trang hồ sơ cá nhân, giới thiệu bản thân và các liên kết mạng xã hội."
           },
           "donation": {
-            "label": "Ủng hộ / Quyên góp",
+            "label": "Ủng hộ / Quyên góp (Donate)",
             "badge": "VietQR tự động",
-            "description": "Trang nhận ủng hộ tài chính với mã VietQR quét nhanh qua mọi ứng dụng ngân hàng."
+            "description": "Trang nhận ủng hộ tài chính với mã VietQR quét nhanh, kết nối SePay và bảng vinh danh."
           },
           "legacy": {
             "label": "Trang soạn thảo tự do",
@@ -584,7 +664,8 @@
             "description": "Soạn thảo bài viết, tài liệu tùy biến với trình soạn thảo văn bản Tiptap."
           }
         }
-      }
+      },
+      "defaultTitleFallback": "Tiêu đề trang"
     },
     "paths": {
       "title": "Đường dẫn giữa",
@@ -692,7 +773,27 @@
       "badgeBgColor": "Màu nền nhãn:",
       "badgeTextColor": "Màu chữ nhãn:",
       "pickBadgeBg": "Chọn màu nền nhãn",
-      "pickBadgeText": "Chọn màu chữ nhãn"
+      "pickBadgeText": "Chọn màu chữ nhãn",
+      "platformCustom": "Khác / Trực tiếp",
+      "imagePreviewAlt": "Xem trước ảnh sản phẩm",
+      "badgePresets": {
+        "recommended": "Khuyên dùng",
+        "featured": "Nổi bật",
+        "bestSeller": "Bán chạy",
+        "sale": "Sale",
+        "hotDeal": "Hot Deal",
+        "newest": "Mới nhất",
+        "discount50": "Giảm 50%"
+      },
+      "colorPresets": {
+        "red": "Đỏ",
+        "orange": "Cam",
+        "green": "Xanh lá",
+        "blue": "Xanh dương",
+        "purple": "Tím",
+        "black": "Đen",
+        "light": "Sáng"
+      }
     },
     "storefront": {
       "searchPlaceholder": "Tìm kiếm sản phẩm theo tên, mô tả…",
@@ -725,11 +826,42 @@
       "minAmountWarning": "Số tiền ủng hộ tối thiểu là {min} ₫",
       "clearAmount": "Xóa số tiền",
       "transferNoteLabel": "Nội dung chuyển khoản (lời nhắn):",
-      "transferNotePlaceholder": "Ví dụ: Toan ung ho ban",
+      "transferNotePlaceholder": "Ví dụ: ung ho ban",
       "transferNotePrefixHint": "Mã QR sẽ tự động kèm tiền tố donate",
       "transferNote": "Nội dung",
       "copyNote": "Sao chép nội dung chuyển khoản",
-      "copyNoteSuccess": "Đã sao chép nội dung chuyển khoản!"
+      "copyNoteSuccess": "Đã sao chép nội dung chuyển khoản!",
+      "accountFallback": "Tài khoản",
+      "customType": "Tùy chỉnh",
+      "qrAlt": "Mã QR",
+      "notePrefix": "Lời nhắn:",
+      "countdownExpired": "Đã hết hạn",
+      "countdownDaysHours": "Còn {days} ngày {hours} giờ",
+      "countdownHoursMinutes": "Còn {hours} giờ {minutes} phút",
+      "countdownMinutes": "Còn {minutes} phút",
+      "leaderboardTab": "Bảng Vinh danh",
+      "recentTab": "Ủng hộ gần đây",
+      "leaderboardEmpty": "Chưa có ai trên Bảng Vinh danh. Hãy là người đầu tiên ủng hộ nhé!",
+      "tierGold": "🥇 Vàng",
+      "tierSilver": "🥈 Bạc",
+      "tierBronze": "🥉 Đồng",
+      "loadingMore": "Đang tải thêm lượt ủng hộ...",
+      "demoFooterHint": "Dữ liệu mẫu xem trước trực quan",
+      "endOfFeedHint": "Đã hiển thị toàn bộ các lượt ủng hộ",
+      "demoFeed": {
+        "goldDonor": "Soái ca hào phóng",
+        "goldGift": "Tài trợ máy chủ 1 tháng",
+        "goldMessage": "Ủng hộ tác giả duy trì máy chủ và phát triển thêm tính năng mới!",
+        "silverDonor": "Nàng thơ xinh đẹp",
+        "silverGift": "Bữa lẩu ấm cúng",
+        "silverMessage": "Cảm ơn bạn vì những công cụ tiện ích rất tuyệt vời!",
+        "bronzeDonor": "Người hâm mộ bí ẩn",
+        "bronzeGift": "1 cuốn sách công nghệ",
+        "bronzeMessage": "Chúc bạn luôn giữ vững đam mê và nhiều sức khỏe!",
+        "coffeeDonor": "Bạn dev ẩn danh",
+        "coffeeGift": "1 ly cà phê muối",
+        "coffeeMessage": "Mời bạn ly cafe sáng làm việc cho tỉnh táo nhé!"
+      }
     },
     "bio": {
       "experiences": "Kinh nghiệm làm việc",
@@ -746,7 +878,280 @@
       "desktop": "Máy tính",
       "fullscreen": "Xem toàn màn hình",
       "createPage": "Tạo trang ngay",
-      "livePreviewTitle": "Live Preview: {title}"
+      "livePreviewTitle": "Live Preview: {title}",
+      "showcase": {
+        "affiliate": {
+          "title": "Toan Tech Setup & Gear",
+          "description": "Tuyển tập những thiết bị công nghệ, bàn phím cơ và đồ decor góc làm việc mình tâm đắc nhất.",
+          "catAll": "Tất cả",
+          "catKeyboard": "Bàn phím cơ & Chuột",
+          "catAudio": "Tai nghe & Âm thanh",
+          "catAccessories": "Phụ kiện góc setup",
+          "item1Title": "Bàn phím cơ không dây NuPhy Air75 V2",
+          "item1Desc": "Bàn phím low-profile gõ cực êm, kết nối đa thiết bị Bluetooth 5.1 và 2.4Ghz.",
+          "item1Btn": "Mua trên Shopee",
+          "item1Badge": "YÊU THÍCH",
+          "item2Title": "Chuột không dây Logitech MX Master 3S",
+          "item2Desc": "Chuột công thái học cuộn vô cực siêu êm, độ nhạy 8000 DPI cho dân lập trình.",
+          "item2Btn": "Mua trên Lazada",
+          "item2Badge": "GIẢM 15%",
+          "item3Title": "Tai nghe chống ồn Sony WH-1000XM5",
+          "item3Desc": "Khử tiếng ồn đỉnh cao, thời lượng pin 30 giờ, đàm thoại trong trẻo.",
+          "item3Btn": "Xem tại Tiki",
+          "item4Title": "Đèn treo màn hình chống mỏi mắt BenQ ScreenBar",
+          "item4Desc": "Cảm biến ánh sáng tự động, không gây chói mắt và tiết kiệm diện tích bàn.",
+          "item4Btn": "Mua ngay"
+        },
+        "bio": {
+          "title": "Nguyễn Xuân Toàn",
+          "description": "Senior Fullstack Engineer & Open-source Enthusiast",
+          "headline": "Senior Fullstack Engineer & Tech Lead",
+          "bioText": "Hơn 6 năm kinh nghiệm thiết kế kiến trúc và phát triển các hệ thống web quy mô lớn bằng Python, Django, Next.js và Cloud Native.",
+          "location": "Hà Nội, Việt Nam",
+          "exp1Period": "2023 - Hiện tại",
+          "exp1Desc": "Chịu trách nhiệm thiết kế nền tảng microservices, tối ưu hóa cơ sở dữ liệu và AI Agent.",
+          "exp2Desc": "Phát triển các ứng dụng trải nghiệm cao cho hàng triệu người dùng hoạt động hàng ngày.",
+          "levelAdvanced": "Chuyên sâu",
+          "levelProficient": "Thành thạo",
+          "proj1Desc": "Monorepo fullstack tích hợp quản trị phân quyền đa tầng, link rút gọn, mã QR và website template.",
+          "proj2Desc": "Bộ tác tử thông minh tự động hóa phân tích codebase và thực thi luồng làm việc kỹ thuật cao.",
+          "link1Title": "Dự án mã nguồn mở trên GitHub",
+          "link1Desc": "Khám phá các thư viện và dự án mình đang phát triển công khai.",
+          "link2Title": "Kết nối trên LinkedIn",
+          "link2Desc": "Mạng lưới nghề nghiệp và cơ hội hợp tác kỹ thuật."
+        },
+        "donation": {
+          "title": "Ủng hộ dự án mã nguồn mở",
+          "description": "Tiếp thêm năng lượng để duy trì máy chủ và phát triển thêm nhiều công cụ miễn phí cho cộng đồng lập trình.",
+          "creatorName": "Nguyễn Xuân Toàn",
+          "message": "Nếu các sản phẩm, tài liệu hoặc công cụ của mình giúp ích cho công việc của bạn, hãy mời mình một ly cafe nhé!",
+          "thankYouMessage": "Cảm ơn bạn rất nhiều vì sự đồng hành quý báu này!",
+          "amountCoffee": "1 ly cafe ({amount})",
+          "amountBreakfast": "1 bữa sáng ({amount})",
+          "amountBook": "1 cuốn sách ({amount})",
+          "amountServer": "Tài trợ máy chủ 1 tháng"
+        }
+      },
+      "notionEditor": "Notion Editor"
+    },
+    "notionDemo": {
+      "badge": "Bản thử nghiệm Notion-like",
+      "backToDemos": "Xem mẫu trang",
+      "defaultTitle": "ToanNX Workspace — Demo Editor kiểu Notion",
+      "titlePlaceholder": "Tiêu đề tài liệu không tên...",
+      "emptyPlaceholder": "Nhập nội dung hoặc gõ '/' để chèn khối...",
+      "editMode": "Soạn thảo",
+      "previewMode": "Xem trước",
+      "lightCanvas": "Nền sáng",
+      "darkCanvas": "Nền tối",
+      "resetSample": "Đặt lại mẫu",
+      "viewJson": "Xem JSON",
+      "jsonTitle": "Cấu trúc tài liệu Tiptap JSON",
+      "jsonDescription": "Dữ liệu lưu theo đúng schema Tiptap chuẩn của hệ thống (tương thích hoàn toàn với backend).",
+      "copiedJson": "Đã sao chép JSON tài liệu.",
+      "copyJson": "Sao chép JSON",
+      "close": "Đóng",
+      "toggleCover": "Đổi ảnh bìa",
+      "removeCover": "Ẩn ảnh bìa",
+      "pickIcon": "Đổi biểu tượng",
+      "stats": "{words} từ · {chars} ký tự · {blocks} khối",
+      "slashTitle": "Chèn khối mới",
+      "slashEmpty": "Không tìm thấy khối phù hợp.",
+      "slashHint": "↑↓ chọn · Enter chèn · Esc đóng",
+      "slashGroupBasic": "Khối cơ bản",
+      "slashGroupMedia": "Nâng cao & Media",
+      "addBlockHint": "Nhấp để thêm khối bên dưới",
+      "dragHandleHint": "Kéo hoặc mở menu thao tác khối",
+      "moveUp": "Di chuyển lên",
+      "moveDown": "Di chuyển xuống",
+      "duplicateBlock": "Nhân bản khối",
+      "deleteBlock": "Xóa khối",
+      "turnInto": "Chuyển đổi thành",
+      "textColor": "Màu chữ & Tô sáng",
+      "resetColor": "Mặc định",
+      "insertImageTitle": "Chèn hình ảnh từ URL",
+      "insertYoutubeTitle": "Chèn video YouTube",
+      "urlPlaceholder": "https://...",
+      "insertUrlAction": "Chèn vào tài liệu",
+      "invalidHttpsUrl": "Vui lòng nhập URL https:// hợp lệ.",
+      "invalidYoutubeUrl": "Vui lòng nhập liên kết YouTube hợp lệ (https://).",
+      "slashItems": {
+        "paragraph": {
+          "label": "Đoạn văn",
+          "desc": "Văn bản thường để viết nội dung"
+        },
+        "h1": {
+          "label": "Tiêu đề 1",
+          "desc": "Tiêu đề mục lớn"
+        },
+        "h2": {
+          "label": "Tiêu đề 2",
+          "desc": "Tiêu đề phần vừa"
+        },
+        "h3": {
+          "label": "Tiêu đề 3",
+          "desc": "Tiêu đề mục nhỏ"
+        },
+        "bulletList": {
+          "label": "Danh sách đầu dòng",
+          "desc": "Liệt kê các ý đơn giản"
+        },
+        "orderedList": {
+          "label": "Danh sách đánh số",
+          "desc": "Danh sách thứ tự 1, 2, 3"
+        },
+        "taskList": {
+          "label": "Danh sách việc cần làm",
+          "desc": "Các ô đánh dấu hoàn thành"
+        },
+        "blockquote": {
+          "label": "Trích dẫn",
+          "desc": "Làm nổi bật một câu nói hoặc ghi chú"
+        },
+        "callout": {
+          "label": "Khối nhấn mạnh",
+          "desc": "Hộp thông báo nổi bật kiểu Notion"
+        },
+        "codeBlock": {
+          "label": "Khối mã (Code)",
+          "desc": "Đoạn mã lập trình với font monospace"
+        },
+        "table": {
+          "label": "Bảng 3×3",
+          "desc": "Bảng dữ liệu có hàng tiêu đề"
+        },
+        "horizontalRule": {
+          "label": "Đường phân cách",
+          "desc": "Chia tách các phần nội dung"
+        },
+        "spacer": {
+          "label": "Khoảng trống dọc",
+          "desc": "Tạo khoảng thở giữa các khối"
+        },
+        "imageUrl": {
+          "label": "Hình ảnh (URL)",
+          "desc": "Chèn ảnh tương tác có kéo nhỏ & căn lề"
+        },
+        "youtube": {
+          "label": "Video YouTube",
+          "desc": "Nhúng video phát trực tiếp"
+        }
+      },
+      "suiteLabel": "Bộ Editor tách riêng",
+      "suiteFullTitle": "1. Bản Full (Simple + Notion-like)",
+      "suiteFullDesc": "Kết hợp thanh công cụ sticky quen thuộc với gõ '/', chọn chữ nổi và kéo thả dòng ⠿.",
+      "suiteBasicTitle": "2. Bản Basic (Mô tả)",
+      "suiteBasicDesc": "Siêu gọn cho ô mô tả, chỉ có In đậm và In nghiêng (giới hạn ký tự, không rối mắt).",
+      "suiteCommentTitle": "3. Bản Comment (Bình luận)",
+      "suiteCommentDesc": "Khung bình luận gọn gàng với định dạng nhẹ, đếm ký tự và phím tắt Ctrl+Enter gửi nhanh.",
+      "commentPosted": "Đã gửi bình luận thử nghiệm ({words} từ).",
+      "commentSampleReply": "ToanNX",
+      "showToolbarLabel": "Hiện thanh công cụ",
+      "hideToolbarLabel": "Ẩn thanh công cụ (chế độ Notion thuần)"
+    }
+  },
+  "navSections": {
+    "overview": "Tổng quan",
+    "content": "Nội dung & Trang",
+    "tools": "Công cụ liên kết"
+  },
+  "dashboard": {
+    "badge": "Thống kê Quản trị Toàn sàn",
+    "title": "Tổng quan Module Tiện ích",
+    "subtitle": "Theo dõi lưu lượng link rút gọn, quyên góp ủng hộ SePay, mã QR và các trang tùy chỉnh toàn hệ thống.",
+    "kpiDonationsTitle": "Tổng tiền quyên góp",
+    "kpiDonationsHint": "{count} lượt ủng hộ thành công",
+    "kpiClicksTitle": "Lượt click link ngắn",
+    "kpiClicksHint": "{count} liên kết đang chạy",
+    "kpiPagesTitle": "Trang tùy chỉnh",
+    "kpiPagesHint": "Bio, Donate, Tiếp thị...",
+    "kpiQrTitle": "Mã QR đã tạo",
+    "kpiQrHint": "VietQR & Mã tùy chỉnh",
+    "tabs": {
+      "overview": "Tổng quan chung",
+      "donations": "Quyên góp & SePay",
+      "links": "Link rút gọn",
+      "pages": "Trang tùy chỉnh"
+    },
+    "topLinksTitle": "Top Link rút gọn nhiều click",
+    "viewAll": "Xem tất cả",
+    "emptyLinks": "Chưa có liên kết nào",
+    "recentPagesTitle": "Trang tùy chỉnh gần đây",
+    "managePages": "Quản lý trang",
+    "emptyPages": "Chưa có trang nào",
+    "ownerLabel": "Chủ: {owner}",
+    "statusPublished": "Công khai",
+    "statusDraft": "Bản nháp",
+    "recentQrTitle": "Mã QR gần đây",
+    "emptyQr": "Chưa có mã QR nào",
+    "giftBreakdownTitle": "Cơ cấu Quà tặng Quy đổi",
+    "giftBreakdownDesc": "Tỷ lệ các mốc quà ủng hộ (ly cà phê, gói mì tôm, bữa sáng...)",
+    "giftCount": "{count} lượt",
+    "emptyDonations": "Chưa có giao dịch quyên góp nào",
+    "censoredTitle": "Bình luận cần rà soát kiểm duyệt",
+    "censoredDesc": "Các lời nhắn bị bộ lọc Regex tự động đánh dấu vi phạm từ ngữ",
+    "noCensoredComments": "Không có bình luận nào vi phạm từ ngữ",
+    "censoredBadge": "Vi phạm từ ngữ",
+    "originalContent": "Nội dung gốc: “{content}”",
+    "viewAllDonations": "Xem toàn bộ lịch sử quyên góp",
+    "linksTabTitle": "Quản lý Link rút gọn",
+    "linksTabDesc": "Toàn bộ liên kết ngắn trên hệ thống",
+    "viewLinksList": "Xem danh sách link",
+    "pagesTabTitle": "Quản lý Trang tùy chỉnh",
+    "pagesTabDesc": "Trang Bio, Donate, Tiếp thị liên kết",
+    "viewPagesList": "Xem danh sách trang"
+  },
+  "donations": {
+    "title": "Lịch sử Quyên góp & Ủng hộ",
+    "subtitle": "Quản lý toàn bộ giao dịch quyên góp SePay từ tất cả các trang Donate toàn hệ thống.",
+    "tiers": {
+      "NORMAL": "Thường",
+      "BRONZE": "Bảng Đồng",
+      "SILVER": "Bảng Bạc",
+      "GOLD": "Bảng Vàng",
+      "DIAMOND": "Kim Cương"
+    },
+    "tierOptions": {
+      "BRONZE": "Bảng Đồng (≥100k)",
+      "SILVER": "Bảng Bạc (≥200k)",
+      "GOLD": "Bảng Vàng (≥500k)",
+      "DIAMOND": "Bảng Kim Cương (≥1M)",
+      "NORMAL": "Bình thường (<100k)"
+    },
+    "toast": {
+      "shown": "Đã hiện bình luận",
+      "hidden": "Đã ẩn bình luận",
+      "updateError": "Không thể cập nhật trạng thái bình luận",
+      "deleted": "Đã xóa lượt quyên góp",
+      "deleteError": "Không thể xóa lượt quyên góp"
+    },
+    "columns": {
+      "time": "Thời gian",
+      "page": "Trang nhận",
+      "donor": "Danh xưng tri ân",
+      "amount": "Số tiền",
+      "tier": "Bảng vinh danh",
+      "message": "Lời nhắn",
+      "status": "Trạng thái"
+    },
+    "censoredHidden": "Đã che vi phạm từ ngữ",
+    "censoredBadge": "Vi phạm từ ngữ",
+    "originalPrefix": "Gốc: {content}",
+    "visibleLabel": "Hiển thị",
+    "hiddenLabel": "Đã ẩn",
+    "showCommentAria": "Hiển thị lời nhắn",
+    "hideCommentAria": "Ẩn lời nhắn",
+    "filters": {
+      "tier": "Bảng vinh danh",
+      "status": "Trạng thái",
+      "statusCensored": "Bị kiểm duyệt từ xấu",
+      "statusHidden": "Chủ trang đã ẩn"
+    },
+    "exportCsv": "Xuất báo cáo CSV",
+    "searchPlaceholder": "Tìm kiếm người ủng hộ, nội dung...",
+    "bulk": {
+      "show": "Hiển thị bình luận",
+      "hide": "Ẩn bình luận"
     }
   }
 }

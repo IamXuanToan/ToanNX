@@ -67,6 +67,27 @@ def _qr_codes(owner: Any, count: int) -> None:
         )
 
 
+def _donations(owner: Any, count: int) -> None:
+    from app.utilities.models.donation_transaction import DonationTransaction
+    from app.utilities.models.page import Page
+
+    path, _ = PagePath.objects.get_or_create(segment="p", defaults={"name": "Trang"})
+    page, _ = Page.objects.get_or_create(
+        slug="donate-qc",
+        path=path,
+        defaults={"owner": owner, "title": "Trang Donate", "page_type": Page.PageType.DONATION},
+    )
+    for _ in range(count):
+        DonationTransaction.objects.create(
+            page=page,
+            owner=owner,
+            sepay_id=f"qc-sepay-{uuid.uuid4().hex[:12]}",
+            amount=50000,
+            donor_title="Anh chị em đẹp zai",
+            received_at=timezone.now(),
+        )
+
+
 def _sessions(owner: Any, count: int) -> None:
     expires = timezone.now() + timedelta(days=1)
     AuthSession.objects.bulk_create(
@@ -287,6 +308,7 @@ CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/utilities/pages", _pages),
     ("/api/v1/utilities/page-paths", lambda owner, n: None),
     ("/api/v1/utilities/qr-codes", _qr_codes),
+    ("/api/v1/utilities/donations", _donations),
     ("/api/v1/system/auth/admin-sessions", _sessions),
     ("/api/v1/system/permissions", _permissions),
     ("/api/v1/system/attachments/folders", _folders),

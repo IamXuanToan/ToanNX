@@ -10,6 +10,7 @@ import { PasswordInput } from "@/shares/components/common/password-input";
 import { Button } from "@/shares/components/ui/button";
 import { FieldGroup } from "@/shares/components/ui/field";
 
+import { SYSTEM_ROUTES } from "../../constants/routes";
 import { useResetPasswordForm } from "./hooks/use-reset-password-form";
 
 /**
@@ -50,7 +51,7 @@ export function ResetPasswordForm() {
             size="lg"
             className="bg-primary text-primary-foreground shadow-primary/25 hover:bg-primary-hover h-10.5 w-full rounded-xl font-semibold shadow-md"
           >
-            <Link href="/forgot-password">
+            <Link href={SYSTEM_ROUTES.forgotPassword}>
               <KeyRound className="mr-2 size-4" />
               {t("requestNewLink")}
             </Link>
@@ -61,7 +62,7 @@ export function ResetPasswordForm() {
             size="sm"
             className="text-muted-foreground hover:text-primary w-full text-xs"
           >
-            <Link href="/login">
+            <Link href={SYSTEM_ROUTES.login}>
               <ArrowLeft className="mr-1.5 size-3.5" />
               {t("backToLogin")}
             </Link>
@@ -88,7 +89,7 @@ export function ResetPasswordForm() {
             size="lg"
             className="bg-primary text-primary-foreground shadow-primary/25 hover:bg-primary-hover h-10.5 w-full rounded-xl font-semibold shadow-md"
           >
-            <Link href="/login">{t("backToLogin")}</Link>
+            <Link href={SYSTEM_ROUTES.login}>{t("backToLogin")}</Link>
           </Button>
         </div>
       </div>
@@ -143,7 +144,7 @@ export function ResetPasswordForm() {
 
       <div className="pt-2 text-center">
         <Link
-          href="/login"
+          href={SYSTEM_ROUTES.login}
           className="text-muted-foreground hover:text-primary inline-flex items-center text-xs font-medium transition-colors hover:underline"
         >
           <ArrowLeft className="mr-1.5 size-3.5" />

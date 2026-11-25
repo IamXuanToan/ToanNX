@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shares/components/ui/dialog";
+import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shares/components/ui/radio-group";
 import { Textarea } from "@/shares/components/ui/textarea";
@@ -226,11 +227,13 @@ export function PageAffiliateImportDialog({
 
         <div className="space-y-4 py-2">
           {/* Nút chọn file từ máy */}
-          <div
+          <Button
+            type="button"
+            variant="outline"
             onClick={() => fileInputRef.current?.click()}
-            className="border-border bg-muted/20 hover:bg-muted/40 hover:border-primary/50 flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed py-6 text-center transition-all"
+            className="border-border bg-muted/20 hover:bg-muted/40 hover:border-primary/50 flex h-auto w-full flex-col items-center justify-center rounded-xl border-dashed py-6 text-center font-normal whitespace-normal transition-all"
           >
-            <input
+            <Input
               ref={fileInputRef}
               type="file"
               accept=".json,application/json"
@@ -242,7 +245,7 @@ export function PageAffiliateImportDialog({
             </div>
             <p className="text-xs font-semibold">{t("dropzoneTitle")}</p>
             <p className="text-muted-foreground mt-0.5 text-[11px]">{t("dropzoneSubtitle")}</p>
-          </div>
+          </Button>
 
           <div className="relative flex items-center justify-center">
             <div className="border-border w-full border-t" />

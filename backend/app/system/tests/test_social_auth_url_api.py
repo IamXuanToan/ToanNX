@@ -65,3 +65,15 @@ class TestSocialAuthUrlApi(BaseApiTestCase):
     def test_missing_params(self, client: APIClient) -> None:
         response = client.get("/api/v1/system/auth/social/google/url")
         self.assert_error(response, 400, "VALIDATION_ERROR")
+
+    @override_settings(
+        GOOGLE_OAUTH_CLIENT_ID="mock-google-client-id",
+        GOOGLE_OAUTH_CLIENT_SECRET="mock-secret",
+    )
+    def test_untrusted_redirect_uri_rejected(self, client: APIClient) -> None:
+        """Từ chối redirect_uri không thuộc domain Frontend được phép để chặn Open Redirect OAuth."""
+        response = client.get(
+            "/api/v1/system/auth/social/google/url",
+            {"redirect_uri": "https://evil-attacker.test/callback", "state": "s"},
+        )
+        self.assert_error(response, 400, "VALIDATION_ERROR")

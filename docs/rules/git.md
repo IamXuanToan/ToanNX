@@ -33,7 +33,8 @@ commit hoặc push chỉ vì đã gợi ý.
 
 ## Commit
 
-Mẫu tiêu đề: `<type>(<scope>): <mo-ta-ngan>`. Có thể bỏ `(<scope>)` khi thay đổi không thuộc một phần cụ thể.
+Mẫu tiêu đề: `<type>(<scope>): <mo-ta-ngan>`. Có thể bỏ `(<scope>)` khi thay đổi không thuộc một phần cụ thể, hoặc
+kết hợp nhiều scope phân tách bằng dấu phẩy nếu thay đổi liên quan đến nhiều khu vực (ví dụ: `feat(utilities, finance): ...`).
 Viết tiêu đề bằng tiếng Anh, ở dạng mệnh lệnh, không viết hoa chữ đầu và không có dấu chấm cuối; tối đa
 72 ký tự. **Mỗi gợi ý phải có body** sau một dòng trống: nêu cụ thể đã đổi gì, vì sao cần đổi, và tác động/
 migration/API/test nếu liên quan. Body viết tiếng Anh, ngắn gọn, chỉ dựa trên diff đã xem; không liệt kê file
@@ -69,7 +70,7 @@ Preserve existing URLs so published links continue to work.
 
 ### Scope
 
-Scope là tên module hoặc khu vực, chữ thường, gạch ngang thay cho gạch dưới:
+Scope là tên module hoặc khu vực, chữ thường, gạch ngang thay cho gạch dưới. Cho phép nhiều scope phân tách bằng dấu phẩy (kèm khoảng trắng tùy chọn, ví dụ `utilities, finance`):
 
 | Khu vực | Scope |
 | --- | --- |

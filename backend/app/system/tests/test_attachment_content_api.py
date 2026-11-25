@@ -8,7 +8,7 @@ import pytest
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.system.permissions.attachment_permission import AttachmentPermission
 from app.system.tests.factories.user_factory import UserFactory
-from app.system.tests.helpers.attachment_test_helper import CSV_BYTES, PNG_BYTES, upload_file
+from app.system.tests.helpers.attachment_test_helper import CSV_BYTES, PNG_BYTES, SAFE_SVG, upload_file
 from app.system.tests.helpers.permission_helper import grant
 
 pytestmark = pytest.mark.django_db
@@ -46,11 +46,20 @@ class TestAttachmentContentApi(BaseApiTestCase):
         assert res["Content-Type"] == "image/png"
 
     def test_csv_is_download_only(self, owner: Any, login: Any) -> None:
-        """CSV/XLSX/XML luôn tải về, không hiển thị trong trình duyệt."""
+        """CSV/XLSX/XML/SVG luôn tải về, không hiển thị inline trong trình duyệt khi mở qua API."""
         api = login(owner)
         data = _upload(api, "sao-ke.csv", CSV_BYTES, "private")
         res = api.get(_url(data["id"]))
         assert res.status_code == 200
+        assert res["Content-Disposition"].startswith("attachment;")
+
+    def test_svg_is_download_only(self, owner: Any, login: Any) -> None:
+        """File SVG riêng tư phục vụ với Content-Disposition: attachment để chặn thực thi inline."""
+        api = login(owner)
+        data = _upload(api, "icon.svg", SAFE_SVG, "private")
+        res = api.get(_url(data["id"]))
+        assert res.status_code == 200
+        assert res["Content-Type"] == "image/svg+xml"
         assert res["Content-Disposition"].startswith("attachment;")
 
     def test_other_user_gets_same_404_as_missing(self, owner: Any, login: Any) -> None:

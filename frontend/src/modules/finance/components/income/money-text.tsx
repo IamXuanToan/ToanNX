@@ -1,3 +1,4 @@
+import { DEFAULT_CURRENCY } from "@/shares/constants/currency";
 import { formatDisplayMoney } from "@/shares/lib/number-format";
 
 /**
@@ -8,7 +9,7 @@ import { formatDisplayMoney } from "@/shares/lib/number-format";
  */
 export function MoneyText({
   value,
-  currency = "VND",
+  currency = DEFAULT_CURRENCY,
   decimals,
   className,
 }: {

@@ -3228,6 +3228,157 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/utilities/donations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["utilities_donations_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["utilities_donations_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/donations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["utilities_donations_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["utilities_donations_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["utilities_donations_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/utilities/donations/{id}/toggle-hidden": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Đổi trạng thái ẩn/hiện bình luận
+     * @description Chủ trang hoặc Admin có quyền MANAGE_ALL ẩn hoặc hiện bình luận.
+     */
+    post: operations["utilities_donations_toggle_hidden_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/donations/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["utilities_donations_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/donations/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["utilities_donations_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/donations/export": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Xuất báo cáo quyên góp CSV
+     * @description Xuất danh sách quyên góp đã lọc ra file CSV UTF-8 có dấu.
+     */
+    get: operations["utilities_donations_export_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/donations/stats": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Thống kê tổng hợp quyên góp
+     * @description Lấy số liệu thống kê quyên góp (1 người vs tất cả).
+     */
+    get: operations["utilities_donations_stats_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/donations/webhook/{webhook_token}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Webhook nhận biến động số dư SePay
+     * @description SePay gọi đến khi có giao dịch tiền vào khớp mã QR.
+     */
+    post: operations["utilities_donations_webhook_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/utilities/page-paths": {
     parameters: {
       query?: never;
@@ -3328,6 +3479,46 @@ export interface paths {
     put?: never;
     /** @description Tạo bản ghi (201). */
     post: operations["utilities_pages_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/pages/{page_id}/donations/feed": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Danh sách lượt ủng hộ công khai
+     * @description Lấy danh sách lượt quyên góp gần nhất đã kiểm duyệt, hỗ trợ phân trang cuộn tiếp.
+     */
+    get: operations["utilities_pages_donations_feed_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/pages/{page_id}/donations/leaderboard": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Bảng vinh danh ủng hộ công khai
+     * @description Lấy top người ủng hộ Bảng Đồng, Bạc, Vàng còn hạn đếm ngược.
+     */
+    get: operations["utilities_pages_donations_leaderboard_list"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -4533,6 +4724,219 @@ export interface components {
      * @enum {string}
      */
     DocTypeEnum: "WITHHOLDING_CERTIFICATE" | "INVOICE" | "STATEMENT" | "CONTRACT" | "OTHER";
+    /** @description Cập nhật cờ `is_hidden` của nhiều bản ghi quyên góp cùng lúc. */
+    DonationBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      /** @description Cờ ẩn hoặc hiện bình luận trên trang công khai. */
+      is_hidden: boolean;
+    };
+    /** @description Một dòng tin ủng hộ trên trang công khai. */
+    DonationPublicFeedResponse: {
+      /** @description ID giao dịch. */
+      id: string;
+      /** @description Danh xưng tri ân (Anh chị em đẹp zai...). */
+      donor_title: string;
+      /** @description Số tiền ủng hộ (ẩn nếu QR bật hide_amount). */
+      amount: number | null;
+      /** @description Cờ ẩn số tiền. */
+      hide_amount: boolean;
+      /** @description Mã loại quà tặng. */
+      gift_type: string;
+      /** @description Nhãn quà tặng (Ly cà phê, Gói mì tôm...). */
+      gift_label: string;
+      /** @description Cấp bậc vinh danh. */
+      tier: string;
+      /**
+       * Format: date-time
+       * @description Thời điểm hết hạn vinh danh.
+       */
+      tier_expires_at: string | null;
+      /** @description Lời nhắn ủng hộ. */
+      message: string;
+      /**
+       * Format: date-time
+       * @description Thời gian nhận tiền.
+       */
+      received_at: string;
+    };
+    /** @description Một mục trên Bảng Vinh danh (Đồng, Bạc, Vàng). */
+    DonationPublicLeaderboardResponse: {
+      /** @description ID giao dịch. */
+      id: string;
+      /** @description Danh xưng tri ân. */
+      donor_title: string;
+      /** @description Số tiền ủng hộ (None nếu ẩn số tiền). */
+      amount: number | null;
+      /**
+       * @description Cờ ẩn số tiền.
+       * @default false
+       */
+      hide_amount: boolean;
+      /** @description Món quà quy đổi. */
+      gift_label: string;
+      /** @description Bậc vinh danh (BRONZE, SILVER, GOLD, DIAMOND). */
+      tier: string;
+      /**
+       * Format: date-time
+       * @description Thời điểm hết hạn đếm ngược.
+       */
+      tier_expires_at: string | null;
+      /** @description Lời nhắn. */
+      message: string;
+      /**
+       * Format: date-time
+       * @description Thời gian nhận tiền.
+       */
+      received_at: string;
+    };
+    /** @description Thống kê tổng hợp quyên góp. */
+    DonationStatsResponse: {
+      /** @description Tổng số tiền ủng hộ (VNĐ). */
+      total_amount: number;
+      /** @description Tổng số lượt ủng hộ. */
+      total_count: number;
+      /** @description Số lượt bị kiểm duyệt từ ngữ xấu. */
+      censored_count: number;
+      /** @description Số lượt chủ trang ẩn bình luận. */
+      hidden_count: number;
+      /** @description Thống kê cơ cấu quà tặng. */
+      by_gift: {
+        [key: string]: unknown;
+      }[];
+      /** @description Số lượng người đang trên từng bảng vinh danh. */
+      active_tier_counts: {
+        [key: string]: unknown;
+      };
+      /** @description Thống kê biến động ủng hộ theo ngày. */
+      daily_trend?: {
+        [key: string]: unknown;
+      }[];
+    };
+    /** @description Đổi trạng thái ẩn/hiện bình luận. */
+    DonationToggleValidateRequest: {
+      /** @description Trạng thái ẩn (True) hoặc hiện (False). */
+      is_hidden: boolean;
+    };
+    /** @description Chi tiết giao dịch quyên góp. */
+    DonationTransactionResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Format: uuid
+       * @description ID trang nhận.
+       */
+      page_id: string;
+      /** @description Tiêu đề trang. */
+      page_title: string;
+      /**
+       * Mã phương thức QR
+       * @description ID của mã QR trong cấu hình trang.
+       */
+      readonly qr_item_id: string;
+      /**
+       * Mã giao dịch SePay
+       * @description Mã giao dịch chống trùng lặp từ SePay.
+       */
+      readonly sepay_id: string;
+      /**
+       * Số tiền
+       * @description Số tiền ủng hộ (VNĐ).
+       */
+      readonly amount: number;
+      /**
+       * Danh xưng tri ân
+       * @description Danh xưng hiển thị (Anh chị em đẹp zai xinh gái...).
+       */
+      readonly donor_title: string;
+      /**
+       * Lời nhắn
+       * @description Lời nhắn ủng hộ hiển thị ra công khai.
+       */
+      readonly message: string;
+      /**
+       * Nội dung chuyển khoản gốc
+       * @description Toàn bộ nội dung memo từ SePay.
+       */
+      readonly original_content: string;
+      /**
+       * Loại quà tặng
+       * @description Loại quà quy đổi theo số tiền.
+       *
+       *     * `NOODLE` - Gói mì tôm
+       *     * `COFFEE` - Ly cà phê
+       *     * `BREAKFAST` - Bữa sáng
+       *     * `BOOK` - Cuốn sách
+       *     * `HOTPOT` - Bữa lẩu
+       *     * `SPECIAL` - Món quà đặc biệt
+       *     * `CUSTOM` - Tùy chỉnh
+       */
+      readonly gift_type: components["schemas"]["GiftTypeEnum"];
+      /**
+       * Nhãn quà tặng
+       * @description Nhãn hiển thị món quà.
+       */
+      readonly gift_label: string;
+      /**
+       * Bậc vinh danh
+       * @description Bậc xếp hạng trên Bảng Vinh danh.
+       *
+       *     * `NORMAL` - Bình thường
+       *     * `BRONZE` - Bảng Đồng
+       *     * `SILVER` - Bảng Bạc
+       *     * `GOLD` - Bảng Vàng
+       *     * `DIAMOND` - Bảng Kim Cương
+       */
+      readonly tier: components["schemas"]["TierEnum"];
+      /**
+       * Hết hạn vinh danh lúc
+       * Format: date-time
+       * @description Thời điểm hết hạn đếm ngược trên Bảng vinh danh.
+       */
+      readonly tier_expires_at: string | null;
+      /**
+       * Chủ trang ẩn
+       * @description Chủ trang chủ động ẩn bình luận này khỏi trang công khai.
+       */
+      readonly is_hidden: boolean;
+      /**
+       * Hệ thống kiểm duyệt
+       * @description Tự động đánh dấu khi nội dung chứa từ ngữ xấu/khủng bố/chửi tục.
+       */
+      readonly is_censored: boolean;
+      /**
+       * Thời gian nhận tiền
+       * Format: date-time
+       * @description Thời gian giao dịch phát sinh từ ngân hàng.
+       */
+      readonly received_at: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Chi tiết giao dịch quyên góp. */
+    DonationTransactionResponseRequest: {
+      /**
+       * Format: uuid
+       * @description ID trang nhận.
+       */
+      page_id: string;
+      /** @description Tiêu đề trang. */
+      page_title: string;
+    };
     /** @description Body xác minh email chứa token. */
     EmailVerificationValidateRequest: {
       /** @description Token xác minh nhận được qua email. */
@@ -4747,6 +5151,17 @@ export interface components {
       /** @description Mô tả thể loại. */
       description?: string;
     };
+    /**
+     * @description * `NOODLE` - Gói mì tôm
+     *     * `COFFEE` - Ly cà phê
+     *     * `BREAKFAST` - Bữa sáng
+     *     * `BOOK` - Cuốn sách
+     *     * `HOTPOT` - Bữa lẩu
+     *     * `SPECIAL` - Món quà đặc biệt
+     *     * `CUSTOM` - Tùy chỉnh
+     * @enum {string}
+     */
+    GiftTypeEnum: "NOODLE" | "COFFEE" | "BREAKFAST" | "BOOK" | "HOTPOT" | "SPECIAL" | "CUSTOM";
     /** @description Trạng thái tiến trình. */
     HealthResponse: {
       /** @description Luôn là `ok` khi tiến trình phản hồi. */
@@ -4782,6 +5197,19 @@ export interface components {
        * @description Định danh UUID do hệ thống sinh, không đổi.
        */
       readonly id: string;
+      /**
+       * Chủ
+       * Format: uuid
+       * @description Người dùng sở hữu.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
       /**
        * Nguồn
        * @description MANUAL / SEPAY.
@@ -5051,6 +5479,19 @@ export interface components {
        * @description Định danh UUID do hệ thống sinh, không đổi.
        */
       readonly id: string;
+      /**
+       * Chủ
+       * Format: uuid
+       * @description Người dùng sở hữu.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
       /**
        * Loại
        * @description Loại chứng từ.
@@ -6329,8 +6770,13 @@ export interface components {
        */
       readonly name: string;
     };
-    /** @description Dữ liệu an toàn để FE render (không có id, owner, attachment id thô). */
+    /** @description Dữ liệu an toàn để FE render (không có owner, attachment id thô). */
     PagePublicResponse: {
+      /**
+       * Format: uuid
+       * @description Id trang.
+       */
+      id: string;
       /** @description Đường dẫn giữa. */
       segment: string;
       /** @description Slug. */
@@ -6601,6 +7047,31 @@ export interface components {
       /** @description Luôn true với response thành công. */
       success: boolean;
       data: components["schemas"]["CurrencyResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedDonationTransactionResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["DonationTransactionResponse"][];
       meta: {
         /** @description Id request (khớp header X-Request-ID). */
         request_id: string;
@@ -7195,6 +7666,16 @@ export interface components {
       is_active?: boolean;
       /** @description Thứ tự. */
       position?: number;
+    };
+    /** @description Chi tiết giao dịch quyên góp. */
+    PatchedDonationTransactionResponseRequest: {
+      /**
+       * Format: uuid
+       * @description ID trang nhận.
+       */
+      page_id?: string;
+      /** @description Tiêu đề trang. */
+      page_title?: string;
     };
     /** @description Chỉ đổi số và ghi chú. */
     PatchedExchangeRateUpdateValidateRequest: {
@@ -9326,6 +9807,15 @@ export interface components {
      * @enum {string}
      */
     TemplateEnum: "blank" | "link_in_bio" | "about" | "donate";
+    /**
+     * @description * `NORMAL` - Bình thường
+     *     * `BRONZE` - Bảng Đồng
+     *     * `SILVER` - Bảng Bạc
+     *     * `GOLD` - Bảng Vàng
+     *     * `DIAMOND` - Bảng Kim Cương
+     * @enum {string}
+     */
+    TierEnum: "NORMAL" | "BRONZE" | "SILVER" | "GOLD" | "DIAMOND";
     /** @description Khóa/mở nhiều tài khoản cùng lúc. */
     UserBulkUpdateValidateRequest: {
       /** @description Id các bản ghi cần thao tác (tối đa 100). */
@@ -9653,6 +10143,8 @@ export interface operations {
         needs_review?: unknown;
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -9865,6 +10357,8 @@ export interface operations {
         needs_review?: unknown;
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -10111,6 +10605,8 @@ export interface operations {
         doc_type?: ("CONTRACT" | "INVOICE" | "OTHER" | "STATEMENT" | "WITHHOLDING_CERTIFICATE")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -10281,6 +10777,8 @@ export interface operations {
         doc_type?: ("CONTRACT" | "INVOICE" | "OTHER" | "STATEMENT" | "WITHHOLDING_CERTIFICATE")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -10358,6 +10856,8 @@ export interface operations {
         is_active?: ("false" | "true")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -10521,6 +11021,8 @@ export interface operations {
         is_active?: ("false" | "true")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -10822,6 +11324,8 @@ export interface operations {
   finance_reports_monthly_retrieve: {
     parameters: {
       query: {
+        /** @description Lọc theo người dùng sở hữu (nhiều UUID phân tách dấu phẩy). */
+        owner?: string;
         /** @description Năm. */
         year: number;
       };
@@ -10859,6 +11363,8 @@ export interface operations {
       query: {
         /** @description Tháng. */
         month?: number | null;
+        /** @description Lọc theo người dùng sở hữu (nhiều UUID phân tách dấu phẩy). */
+        owner?: string;
         /** @description Năm. */
         year: number;
       };
@@ -10903,6 +11409,8 @@ export interface operations {
         is_active?: ("false" | "true")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -11068,6 +11576,8 @@ export interface operations {
         is_active?: ("false" | "true")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -17756,6 +18266,399 @@ export interface operations {
       };
     };
   };
+  utilities_donations_list: {
+    parameters: {
+      query?: {
+        /** @description Từ ngày nhận. */
+        date_from?: string;
+        /** @description Đến ngày nhận. */
+        date_to?: string;
+        /** @description Lọc theo cờ kiểm duyệt. */
+        is_censored?: boolean;
+        /** @description Lọc theo cờ ẩn/hiện. */
+        is_hidden?: boolean;
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ trang (cho manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description ID trang nhận, nhiều giá trị. */
+        page_id?: string[];
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Bậc vinh danh.
+         *
+         *     * `NORMAL` - Bình thường
+         *     * `BRONZE` - Bảng Đồng
+         *     * `SILVER` - Bảng Bạc
+         *     * `GOLD` - Bảng Vàng
+         *     * `DIAMOND` - Bảng Kim Cương
+         */
+        tier?: ("BRONZE" | "DIAMOND" | "GOLD" | "NORMAL" | "SILVER")[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedDonationTransactionResponseList"];
+        };
+      };
+    };
+  };
+  utilities_donations_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DonationTransactionResponseRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["DonationTransactionResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_donations_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["DonationTransactionResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_donations_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  utilities_donations_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedDonationTransactionResponseRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["DonationTransactionResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_donations_toggle_hidden_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DonationToggleValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["DonationTransactionResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_donations_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_donations_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DonationBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_donations_export_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: string;
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_donations_stats_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["DonationStatsResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_donations_webhook_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        webhook_token: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description {"success": true} */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Body hỏng hoặc thiếu id. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không tìm thấy cấu hình mã QR. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Lỗi DB, SePay gửi lại. */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   utilities_page_paths_list: {
     parameters: {
       query?: {
@@ -18110,6 +19013,74 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["PageDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_pages_donations_feed_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        page_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["DonationPublicFeedResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_pages_donations_leaderboard_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        page_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["DonationPublicLeaderboardResponse"][];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;

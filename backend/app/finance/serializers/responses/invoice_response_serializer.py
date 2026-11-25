@@ -15,6 +15,10 @@ from app.system.serializers.responses.attachment_detail_response_serializer impo
 class InvoiceResponseSerializer(serializers.ModelSerializer[Invoice]):
     """Chứng từ + file + giao dịch gắn + đối chiếu (tính từ dữ liệu đã prefetch, không kết luận đúng/sai)."""
 
+    owner_email = serializers.CharField(source="owner.email", read_only=True, help_text="Email chủ sở hữu.")
+    owner_name = serializers.CharField(
+        source="owner.full_name", read_only=True, default="", help_text="Tên chủ sở hữu."
+    )
     platform_name = serializers.CharField(
         source="platform.name", read_only=True, default=None, help_text="Nền tảng."
     )
@@ -48,6 +52,9 @@ class InvoiceResponseSerializer(serializers.ModelSerializer[Invoice]):
         model = Invoice
         fields = (
             "id",
+            "owner_id",
+            "owner_email",
+            "owner_name",
             "doc_type",
             "number",
             "issuer",

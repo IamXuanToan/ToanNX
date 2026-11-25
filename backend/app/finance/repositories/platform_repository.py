@@ -13,11 +13,11 @@ class PlatformRepository(CoreRepository[Platform]):
     model = Platform
 
     def get_queryset(self) -> QuerySet[Platform]:
-        """Kèm tiền tệ mặc định."""
+        """Kèm chủ sở hữu và tiền tệ mặc định."""
         return (
             super()
             .get_queryset()
-            .select_related("default_currency")
+            .select_related("owner", "default_currency")
             .prefetch_related(
                 Prefetch("tax_rates", queryset=PlatformTaxRate.objects.filter(deleted_at__isnull=True))
             )

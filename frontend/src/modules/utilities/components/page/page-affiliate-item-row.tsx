@@ -2,11 +2,14 @@
 
 import { ExternalLink, Package, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 
+import { Link } from "@/i18n/navigation";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
+import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
+import { formatDisplayNumber, formatVndText } from "@/shares/lib/number-format";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import type { AffiliateItem } from "../../types/page.types";
 
@@ -38,7 +41,7 @@ export function PageAffiliateItemRow({
 }) {
   const t = useTranslations("utilities.customPages.pages.itemsEditor");
   const displayPrice = item.priceConfig?.amount
-    ? `${item.priceConfig.amount.toLocaleString("vi-VN")} ${item.priceConfig.currency || "₫"}`
+    ? `${formatDisplayNumber(item.priceConfig.amount)} ${item.priceConfig.currency || CURRENCY_SYMBOLS.VND}`
     : item.priceConfig?.priceNote;
 
   const platformBadgeClass =
@@ -96,7 +99,7 @@ export function PageAffiliateItemRow({
             ) : null}
             {item.priceConfig?.originalAmount ? (
               <span className="text-muted-foreground text-[11px] line-through">
-                {item.priceConfig.originalAmount.toLocaleString("vi-VN")} ₫
+                {formatVndText(item.priceConfig.originalAmount)}
               </span>
             ) : null}
             {item.categoryId ? (
@@ -107,15 +110,22 @@ export function PageAffiliateItemRow({
           </div>
 
           <div className="text-muted-foreground flex items-center gap-1.5 text-[11px]">
-            <Link
-              href={item.destinationUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="hover:text-primary inline-flex items-center gap-1 hover:underline"
-            >
-              <ExternalLink className="size-3" />
-              <span className="max-w-[220px] truncate sm:max-w-xs">{item.destinationUrl}</span>
-            </Link>
+            {toSafeHttpUrl(item.destinationUrl, { allowRelative: false }) ? (
+              <Link
+                href={toSafeHttpUrl(item.destinationUrl, { allowRelative: false }) as never}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="hover:text-primary inline-flex items-center gap-1 hover:underline"
+              >
+                <ExternalLink className="size-3" />
+                <span className="max-w-[220px] truncate sm:max-w-xs">{item.destinationUrl}</span>
+              </Link>
+            ) : (
+              <span className="inline-flex items-center gap-1">
+                <ExternalLink className="size-3" />
+                <span className="max-w-[220px] truncate sm:max-w-xs">{item.destinationUrl}</span>
+              </span>
+            )}
           </div>
         </div>
       </div>

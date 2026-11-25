@@ -4,7 +4,12 @@ from typing import Any
 
 from django.db.models import QuerySet
 
+from app.core.exceptions.not_found_error import NotFoundError
 from app.novel.models.reading_history import ReadingHistory
+from app.novel.permissions.chapter_permission import ChapterPermission
+from app.novel.permissions.novel_permission import NovelPermission
+from app.novel.repositories.chapter_repository import ChapterRepository
+from app.novel.repositories.novel_repository import NovelRepository
 from app.novel.repositories.reading_history_repository import (
     ReadingHistoryRepository,
 )
@@ -13,13 +18,22 @@ from app.novel.repositories.reading_history_repository import (
 class ReadingHistoryService:
     """Service nghiệp vụ lưu trữ, tra cứu và làm sạch lịch sử đọc truyện."""
 
-    def __init__(self, repository: ReadingHistoryRepository | None = None) -> None:
+    def __init__(
+        self,
+        repository: ReadingHistoryRepository | None = None,
+        novel_repository: NovelRepository | None = None,
+        chapter_repository: ChapterRepository | None = None,
+    ) -> None:
         """Khởi tạo ReadingHistoryService.
 
         Args:
             repository: ReadingHistoryRepository tùy chọn, mặc định khởi tạo mới.
+            novel_repository: NovelRepository tùy chọn để kiểm tra quyền truy cập truyện.
+            chapter_repository: ChapterRepository tùy chọn để kiểm tra chương thuộc truyện.
         """
         self.repository = repository or ReadingHistoryRepository()
+        self.novel_repository = novel_repository or NovelRepository()
+        self.chapter_repository = chapter_repository or ChapterRepository()
 
     def list_for_user(self, user_id: Any) -> QuerySet[ReadingHistory]:
         """Lấy toàn bộ lịch sử đọc truyện của một người dùng cụ thể.
@@ -43,7 +57,18 @@ class ReadingHistoryService:
         Returns:
             ReadingHistory: Bản ghi lịch sử đọc vừa được ghi nhận.
         """
-        return self.repository.record_read(actor, novel_id, chapter_id)
+        novel = self.novel_repository.find_by_id(novel_id)
+        chapter = self.chapter_repository.find_by_id(chapter_id)
+        if novel is None or chapter is None or chapter.novel_id != novel.pk:
+            raise NotFoundError("Không tìm thấy truyện hoặc chương.")
+        is_owner_or_manager = novel.owner_id == actor.pk or actor.has_perm(NovelPermission.MANAGE_ALL.code)
+        can_access_novel = is_owner_or_manager and actor.has_perm(NovelPermission.READ.code)
+        can_access_chapter = is_owner_or_manager and actor.has_perm(ChapterPermission.READ.code)
+        if (not novel.is_published and not can_access_novel) or (
+            not chapter.is_published and not can_access_chapter
+        ):
+            raise NotFoundError("Không tìm thấy truyện hoặc chương.")
+        return self.repository.record_read(actor, novel.pk, chapter.pk)
 
     def get_read_chapter_ids(self, user_id: Any, novel_id: Any) -> set[Any]:
         """Lấy tập hợp các ID chương mà người dùng đã đọc trong một tiểu thuyết.

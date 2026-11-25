@@ -1,13 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter as useNextRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { useRouter } from "@/i18n/navigation";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { ICON_PATHS } from "@/shares/lib/asset-paths";
 
+import {
+  AUTH_WORKSPACE_PATHS,
+  OAUTH_MODE,
+  OAUTH_STORAGE_KEYS,
+  PROFILE_DIALOG_QUERY,
+} from "../../../constants/auth-storage";
 import { useSocialAuthExchange } from "../../../hooks/use-social-auth-exchange";
 import type { CurrentUser } from "../../../types/auth.types";
 
@@ -36,6 +42,7 @@ function getProviderIconPath(provider: string): string | null {
 export function useSocialAuthCallback(provider: string) {
   const t = useTranslations("system.auth.login");
   const router = useRouter();
+  const nextRouter = useNextRouter();
   const searchParams = useSearchParams();
   const errorMessage = useApiErrorMessage();
   const { exchange, sanitizeNext } = useSocialAuthExchange();
@@ -45,7 +52,9 @@ export function useSocialAuthCallback(provider: string) {
   const [isNotLinked, setIsNotLinked] = useState(false);
   const [redirectTarget, setRedirectTarget] = useState<string | null>(null);
   const [authMode, setAuthMode] = useState<string>("login");
+  const [isStaffTarget, setIsStaffTarget] = useState(false);
   const executedRef = useRef(false);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const providerName = getProviderDisplayName(provider);
   const providerIcon = getProviderIconPath(provider);
@@ -72,9 +81,9 @@ export function useSocialAuthCallback(provider: string) {
         return;
       }
 
-      const storedState = sessionStorage.getItem("oauth_state");
-      const mode = sessionStorage.getItem("oauth_mode") || "login";
-      const next = sanitizeNext(sessionStorage.getItem("oauth_next"));
+      const storedState = sessionStorage.getItem(OAUTH_STORAGE_KEYS.state);
+      const mode = sessionStorage.getItem(OAUTH_STORAGE_KEYS.mode) || OAUTH_MODE.login;
+      const next = sanitizeNext(sessionStorage.getItem(OAUTH_STORAGE_KEYS.next));
       setAuthMode(mode);
 
       if (!storedState || storedState !== state) {
@@ -88,48 +97,57 @@ export function useSocialAuthCallback(provider: string) {
       try {
         const exchangeResult = await exchange(mode, provider, code, redirectUri);
         const currentUser =
-          mode !== "link" ? (exchangeResult as CurrentUser | undefined) : undefined;
+          mode !== OAUTH_MODE.link ? (exchangeResult as CurrentUser | undefined) : undefined;
         const isStaffUser = Boolean(currentUser?.user?.isStaff || currentUser?.user?.isSuperuser);
 
-        sessionStorage.removeItem("oauth_state");
-        sessionStorage.removeItem("oauth_mode");
-        sessionStorage.removeItem("oauth_next");
+        sessionStorage.removeItem(OAUTH_STORAGE_KEYS.state);
+        sessionStorage.removeItem(OAUTH_STORAGE_KEYS.mode);
+        sessionStorage.removeItem(OAUTH_STORAGE_KEYS.next);
 
         // Xác định đường dẫn chuyển tiếp đích
         let targetUrl: string | null = null;
         if (next) {
           const separator = next.includes("?") ? "&" : "?";
-          targetUrl = mode === "link" ? `${next}${separator}profile=open&tab=social` : next;
+          targetUrl =
+            mode === OAUTH_MODE.link
+              ? `${next}${separator}${PROFILE_DIALOG_QUERY.openParam}=${PROFILE_DIALOG_QUERY.openValue}&${PROFILE_DIALOG_QUERY.tabParam}=${PROFILE_DIALOG_QUERY.socialTab}`
+              : next;
           // Người dùng thường không được chuyển vào trang quản trị: đưa vào client portal
-          const isAdminTarget = targetUrl.includes("/admin") || targetUrl.includes("/quan-tri");
-          if (!isStaffUser && isAdminTarget && mode !== "link") {
+          const isAdminTarget =
+            targetUrl.includes(AUTH_WORKSPACE_PATHS.admin) ||
+            targetUrl.includes(AUTH_WORKSPACE_PATHS.adminViPrefix);
+          if (!isStaffUser && isAdminTarget && mode !== OAUTH_MODE.link) {
             targetUrl = null;
           }
         }
+        setIsStaffTarget(isStaffUser);
         setRedirectTarget(targetUrl);
         setStatus("success");
 
         // Tự động chuyển hướng sau 1000ms để người dùng cảm nhận được visual feedback thành công
-        const timer = setTimeout(() => {
+        redirectTimerRef.current = setTimeout(() => {
           if (targetUrl) {
-            router.replace(targetUrl as never);
+            nextRouter.replace(targetUrl);
           } else {
-            if (mode === "link") {
+            if (mode === OAUTH_MODE.link) {
               router.replace({
-                pathname: "/admin",
-                query: { profile: "open", tab: "social" },
+                pathname: AUTH_WORKSPACE_PATHS.admin,
+                query: {
+                  [PROFILE_DIALOG_QUERY.openParam]: PROFILE_DIALOG_QUERY.openValue,
+                  [PROFILE_DIALOG_QUERY.tabParam]: PROFILE_DIALOG_QUERY.socialTab,
+                },
               });
             } else {
-              router.replace(isStaffUser ? "/admin" : ("/portal" as never));
+              router.replace(
+                isStaffUser ? AUTH_WORKSPACE_PATHS.admin : (AUTH_WORKSPACE_PATHS.portal as never),
+              );
             }
           }
         }, 1000);
-
-        return () => clearTimeout(timer);
       } catch (err: unknown) {
-        sessionStorage.removeItem("oauth_state");
-        sessionStorage.removeItem("oauth_mode");
-        sessionStorage.removeItem("oauth_next");
+        sessionStorage.removeItem(OAUTH_STORAGE_KEYS.state);
+        sessionStorage.removeItem(OAUTH_STORAGE_KEYS.mode);
+        sessionStorage.removeItem(OAUTH_STORAGE_KEYS.next);
 
         setStatus("error");
         const msg = errorMessage(err);
@@ -142,25 +160,36 @@ export function useSocialAuthCallback(provider: string) {
     }
 
     void processCallback();
-  }, [provider, searchParams, t, errorMessage, router, exchange, sanitizeNext]);
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+        redirectTimerRef.current = null;
+      }
+    };
+  }, [provider, searchParams, t, errorMessage, router, nextRouter, exchange, sanitizeNext]);
 
   const handleRedirectNow = () => {
     if (redirectTarget) {
-      router.replace(redirectTarget as never);
+      nextRouter.replace(redirectTarget);
     } else {
-      if (authMode === "link") {
+      if (authMode === OAUTH_MODE.link) {
         router.replace({
-          pathname: "/admin",
-          query: { profile: "open", tab: "social" },
+          pathname: AUTH_WORKSPACE_PATHS.admin,
+          query: {
+            [PROFILE_DIALOG_QUERY.openParam]: PROFILE_DIALOG_QUERY.openValue,
+            [PROFILE_DIALOG_QUERY.tabParam]: PROFILE_DIALOG_QUERY.socialTab,
+          },
         });
       } else {
-        router.replace("/admin");
+        router.replace(
+          isStaffTarget ? AUTH_WORKSPACE_PATHS.admin : (AUTH_WORKSPACE_PATHS.portal as never),
+        );
       }
     }
   };
 
   // Xác định tiêu đề và mô tả của Card header
-  const isLinkMode = authMode === "link";
+  const isLinkMode = authMode === OAUTH_MODE.link;
   const shellTitle =
     status === "processing"
       ? t("callbackTitle")

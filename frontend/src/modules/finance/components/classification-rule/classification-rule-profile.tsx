@@ -6,7 +6,7 @@ import { FormPage } from "@/shares/components/common/form-page";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import { useClassificationRule } from "../../hooks/use-classification-rule";
 import { ClassificationRuleForm } from "./classification-rule-form";
 
@@ -20,6 +20,7 @@ export function ClassificationRuleProfile({
   canUpdate: boolean;
   history?: ReactNode;
 }) {
+  const routes = useFinanceRoutes();
   const query = useClassificationRule(id);
   if (query.isPending) return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
   if (query.isError)
@@ -27,7 +28,7 @@ export function ClassificationRuleProfile({
       <QueryErrorState
         error={query.error}
         onRetry={() => query.refetch()}
-        backHref={FINANCE_ROUTES.rules}
+        backHref={routes.rules}
       />
     );
   return (

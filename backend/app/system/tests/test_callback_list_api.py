@@ -16,9 +16,10 @@ class TestCallbackListApi(BaseApiTestCase):
     def test_lists_google_github_with_frontend_origin(
         self, superuser: Any, login: Any, settings: Any
     ) -> None:
-        """Origin lấy từ request (Referer của trang FE), không hardcode domain."""
+        """Origin lấy từ request (Referer của trang FE nằm trong allowlist), không hardcode domain."""
         settings.GOOGLE_OAUTH_CLIENT_ID = "id"
         settings.GITHUB_OAUTH_CLIENT_ID = ""
+        settings.CORS_ALLOWED_ORIGINS = ["https://site-khac.test"]
         api = login(superuser)
         data = self.assert_success(
             api.get(URL, HTTP_REFERER="https://site-khac.test/vi/quan-tri/he-thong/callback")

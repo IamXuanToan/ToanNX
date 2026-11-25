@@ -27,7 +27,8 @@ export function NotificationSettingsTab() {
 
   const canPreference = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.read);
   const canPreferenceUpdate = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.update);
-  const canPush = usePermission(PUSH_DEVICE_PERMISSIONS.create);
+  const canPushRead = usePermission(PUSH_DEVICE_PERMISSIONS.read);
+  const canPushCreate = usePermission(PUSH_DEVICE_PERMISSIONS.create);
   const hasBotPermission = usePermission(TELEGRAM_BOT_PERMISSIONS.read);
   const canBot = isSuperuser && hasBotPermission;
   const canBotUpdate = usePermission(TELEGRAM_BOT_PERMISSIONS.update);
@@ -36,15 +37,20 @@ export function NotificationSettingsTab() {
   const canBotDelete = usePermission(TELEGRAM_BOT_PERMISSIONS.delete);
   const canChats = usePermission(TELEGRAM_CHAT_PERMISSIONS.read);
   const canChatCreate = usePermission(TELEGRAM_CHAT_PERMISSIONS.create);
+  const canChatUpdate = usePermission(TELEGRAM_CHAT_PERMISSIONS.update);
   const canChatDelete = usePermission(TELEGRAM_CHAT_PERMISSIONS.delete);
   const bot = useTelegramBot(canBot);
   return (
     <div className="space-y-4">
       <p className="text-muted-foreground text-sm">{t("hint")}</p>
-      {canPush ? <PushDeviceCard canCreate={canPush} /> : null}
+      {canPushRead ? <PushDeviceCard canCreate={canPushCreate} /> : null}
       {canBot ? <TelegramBotCard canWrite={canBotWrite} canDelete={canBotDelete} /> : null}
       {canBot && canChats && bot.data ? (
-        <TelegramChatList canCreate={canChatCreate} canDelete={canChatDelete} />
+        <TelegramChatList
+          canCreate={canChatCreate}
+          canUpdate={canChatUpdate}
+          canDelete={canChatDelete}
+        />
       ) : null}
       {canPreference ? (
         <NotificationPreferenceMatrix

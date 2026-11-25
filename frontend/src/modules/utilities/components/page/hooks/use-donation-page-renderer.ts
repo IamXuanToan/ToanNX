@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { formatDisplayNumber } from "@/shares/lib/number-format";
+
 import type { DonationQrItem } from "../../../types/page.types";
 
 /**
@@ -112,7 +114,7 @@ export function useDonationPageRenderer(
       }
     } else {
       setSelectedAmount(amount);
-      setCustomAmountText(amount.toLocaleString("vi-VN"));
+      setCustomAmountText(formatDisplayNumber(amount));
       if (!isNoteManuallyEdited) {
         setCustomNote(presetTitle ?? "");
       }
@@ -127,7 +129,7 @@ export function useDonationPageRenderer(
       return;
     }
     const num = Number(digits);
-    setCustomAmountText(num.toLocaleString("vi-VN"));
+    setCustomAmountText(formatDisplayNumber(num));
     if (num >= minAmount) {
       setSelectedAmount(num);
     } else {

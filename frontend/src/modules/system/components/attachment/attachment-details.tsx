@@ -3,9 +3,11 @@
 import { Check, Copy, ExternalLink, FolderInput, Pencil, Trash2, X } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/shares/components/ui/button";
 import { Card } from "@/shares/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import { formatAttachmentSize } from "../../services/attachment.service";
 import type { Attachment } from "../../types/attachment.types";
@@ -209,10 +211,14 @@ export function AttachmentDetails({
           <span className="truncate">{t("copyUrl")}</span>
         </Button>
         <Button asChild variant="outline" className="h-10 rounded-xl px-2.5 text-xs font-medium">
-          <a href={file.url} target="_blank" rel="noopener noreferrer">
+          <Link
+            href={(toSafeHttpUrl(file.url) ?? "#") as never}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <ExternalLink className="size-3.5" />
             <span className="truncate">{t("openFile")}</span>
-          </a>
+          </Link>
         </Button>
         {onMove ? (
           <Button

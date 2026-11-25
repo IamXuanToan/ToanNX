@@ -91,3 +91,36 @@ def test_platform_of_other_user_is_rejected(login: Any, superuser: Any) -> None:
     }
     response = login(owner).post(URL, data, format="json")
     assert response.status_code == 422 and response.json()["error"]["code"] == "FINANCE_PLATFORM_INVALID"
+
+
+def test_filter_by_owner_respects_manage_all(login: Any, superuser: Any) -> None:
+    """Admin có manage_all lọc được theo owner; member truyền owner khác vẫn chỉ thấy 0 bản ghi."""
+    owner_a, owner_b = UserFactory(), UserFactory()
+    grant(owner_a, *MEMBER)
+    grant(owner_b, *MEMBER)
+    vnd = str(currency("VND").pk)
+    data = {"currency_id": vnd, "received_at": "2026-12-15T10:00:00+07:00", "original_amount": "1000000"}
+    api_a, api_b = login(owner_a), login(owner_b)
+    api_a.post(URL, data, format="json")
+    api_b.post(URL, data, format="json")
+    admin_rows = login(superuser).get(URL, {"owner": str(owner_a.pk)}).json()["data"]
+    assert len(admin_rows) == 1 and admin_rows[0]["owner_id"] == str(owner_a.pk)
+    assert api_b.get(URL, {"owner": str(owner_a.pk)}).json()["data"] == []
+    assert (
+        api_b.get("/api/v1/finance/reports/summary", {"year": 2026, "owner": str(owner_a.pk)}).json()["data"][
+            "totals"
+        ]["total"]
+        == "0"
+    )
+    admin_totals = (
+        login(superuser)
+        .get("/api/v1/finance/reports/summary", {"year": 2026, "owner": str(owner_a.pk)})
+        .json()["data"]["totals"]
+    )
+    assert admin_totals["total"] == "1000000"
+    multi_totals = (
+        login(superuser)
+        .get("/api/v1/finance/reports/summary", {"year": 2026, "owner": f"{owner_a.pk},{owner_b.pk}"})
+        .json()["data"]["totals"]
+    )
+    assert multi_totals["total"] == "2000000"

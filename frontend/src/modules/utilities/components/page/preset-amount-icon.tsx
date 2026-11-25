@@ -29,8 +29,11 @@ export function PresetAmountIcon({
   if (
     lower.includes("cà phê") ||
     lower.includes("cafe") ||
+    lower.includes("coffee") ||
     lower.includes("trà") ||
-    lower.includes("nước")
+    lower.includes("tea") ||
+    lower.includes("nước") ||
+    lower.includes("drink")
   ) {
     return <Coffee className={className} />;
   }
@@ -40,7 +43,11 @@ export function PresetAmountIcon({
     lower.includes("cơm") ||
     lower.includes("bánh") ||
     lower.includes("trưa") ||
-    lower.includes("tối")
+    lower.includes("tối") ||
+    lower.includes("breakfast") ||
+    lower.includes("lunch") ||
+    lower.includes("dinner") ||
+    lower.includes("meal")
   ) {
     return <Utensils className={className} />;
   }
@@ -48,7 +55,10 @@ export function PresetAmountIcon({
     lower.includes("sách") ||
     lower.includes("tài liệu") ||
     lower.includes("học") ||
-    lower.includes("khóa")
+    lower.includes("khóa") ||
+    lower.includes("book") ||
+    lower.includes("study") ||
+    lower.includes("course")
   ) {
     return <BookOpen className={className} />;
   }
@@ -65,7 +75,9 @@ export function PresetAmountIcon({
     lower.includes("ủng hộ") ||
     lower.includes("yêu thích") ||
     lower.includes("tài trợ") ||
-    lower.includes("donate")
+    lower.includes("donate") ||
+    lower.includes("support") ||
+    lower.includes("sponsor")
   ) {
     return <Heart className={className} />;
   }

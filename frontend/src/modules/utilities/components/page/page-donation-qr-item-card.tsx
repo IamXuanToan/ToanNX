@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { Check, Edit2, QrCode, Star, Trash2 } from "lucide-react";
+import { Check, Edit2, QrCode, Star, Trash2, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
@@ -28,6 +29,7 @@ export function PageDonationQrItemCard({
   onSetDefault,
   disabled = false,
 }: PageDonationQrItemCardProps) {
+  const t = useTranslations("utilities.customPages.pages.donationEditor");
   const getBadgeVariant = (type: DonationQrItem["type"]) => {
     switch (type) {
       case "BANK_TRANSFER":
@@ -44,7 +46,7 @@ export function PageDonationQrItemCard({
       case "BANK_TRANSFER":
         return "VietQR";
       case "CUSTOM":
-        return "Tùy chỉnh";
+        return t("customType");
       default:
         return "QR";
     }
@@ -89,7 +91,24 @@ export function PageDonationQrItemCard({
                 className="border-primary/40 text-primary h-5 gap-1 px-1.5 text-[10px]"
               >
                 <Check className="size-2.5" />
-                <span>Mặc định</span>
+                <span>{t("defaultBadge")}</span>
+              </Badge>
+            )}
+            {item.webhookEnabled && (
+              <Badge
+                variant="outline"
+                className="h-5 gap-1 border-amber-500/40 px-1.5 text-[10px] text-amber-600 dark:text-amber-400"
+              >
+                <Zap className="size-2.5" />
+                <span>{t("webhookBadge")}</span>
+              </Badge>
+            )}
+            {item.hideAmount && (
+              <Badge
+                variant="outline"
+                className="text-muted-foreground h-5 gap-1 px-1.5 text-[10px]"
+              >
+                <span>{t("hideAmountBadge")}</span>
               </Badge>
             )}
           </div>
@@ -116,10 +135,10 @@ export function PageDonationQrItemCard({
             onClick={onSetDefault}
             disabled={disabled}
             className="text-muted-foreground hover:text-foreground h-8 gap-1 px-2 text-[11px]"
-            title="Đặt làm mã nhận tiền mặc định"
+            title={t("setDefaultTooltip")}
           >
             <Star className="size-3" />
-            <span className="hidden sm:inline">Đặt mặc định</span>
+            <span className="hidden sm:inline">{t("setDefaultAction")}</span>
           </Button>
         )}
 
@@ -132,7 +151,7 @@ export function PageDonationQrItemCard({
           className="h-8 px-2.5 text-xs"
         >
           <Edit2 className="mr-1 size-3" />
-          <span>Sửa</span>
+          <span>{t("editAction")}</span>
         </Button>
 
         <Button
@@ -142,7 +161,7 @@ export function PageDonationQrItemCard({
           onClick={onDelete}
           disabled={disabled}
           className="text-muted-foreground hover:text-destructive h-8 w-8"
-          title="Xóa phương thức"
+          title={t("deleteMethodTooltip")}
         >
           <Trash2 className="size-3.5" />
         </Button>

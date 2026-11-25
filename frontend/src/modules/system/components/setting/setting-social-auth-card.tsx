@@ -90,7 +90,7 @@ export function SettingSocialAuthCard({ canUpdate }: SettingSocialAuthCardProps)
                       : "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
                   }
                 >
-                  {isGoogleChecked ? "Đang bật" : "Tạm khóa"}
+                  {isGoogleChecked ? t("enabledBadge") : t("disabledBadge")}
                 </Badge>
               </div>
               <p className="text-muted-foreground text-xs">{t("googleDesc")}</p>
@@ -132,7 +132,7 @@ export function SettingSocialAuthCard({ canUpdate }: SettingSocialAuthCardProps)
                       : "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
                   }
                 >
-                  {isGithubChecked ? "Đang bật" : "Tạm khóa"}
+                  {isGithubChecked ? t("enabledBadge") : t("disabledBadge")}
                 </Badge>
               </div>
               <p className="text-muted-foreground text-xs">{t("githubDesc")}</p>

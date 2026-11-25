@@ -9,7 +9,7 @@ import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge } from "@/shares/components/common/status-badge";
 
 import { createBooleanBulkStatus } from "@/shares/lib/bulk-status";
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import type { ClassificationRule } from "../../types/classification-rule.types";
 import { useClassificationRuleTable } from "./hooks/use-classification-rule-table";
 
@@ -23,6 +23,7 @@ export function ClassificationRuleTable({
 }) {
   const t = useTranslations("finance.rules");
   const tStatus = useTranslations("common.status");
+  const routes = useFinanceRoutes();
   const state = useClassificationRuleTable();
   const { table, query } = state;
   const columns: DataTableColumn<ClassificationRule>[] = [
@@ -34,7 +35,7 @@ export function ClassificationRuleTable({
       className: "md:w-full",
       cell: (rule) => (
         <Link
-          href={FINANCE_ROUTES.ruleDetail(rule.id)}
+          href={routes.ruleDetail(rule.id)}
           className="hover:text-primary font-medium underline-offset-4 hover:underline"
         >
           {rule.name}

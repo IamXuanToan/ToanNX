@@ -11,6 +11,7 @@ import { Button } from "@/shares/components/ui/button";
 import { FieldGroup } from "@/shares/components/ui/field";
 import { Input } from "@/shares/components/ui/input";
 
+import { SYSTEM_ROUTES } from "../../constants/routes";
 import { useInvitationForm } from "./hooks/use-invitation-form";
 
 /**
@@ -45,7 +46,7 @@ export function InvitationForm() {
 
         <div className="pt-2">
           <Button asChild size="lg" className="w-full rounded-xl">
-            <Link href="/login">
+            <Link href={SYSTEM_ROUTES.login}>
               <ArrowLeft className="mr-1.5 size-4" />
               {t("backToLogin")}
             </Link>

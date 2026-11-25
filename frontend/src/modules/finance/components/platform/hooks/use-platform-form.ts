@@ -10,7 +10,7 @@ import { useCurrencyOptions } from "@/modules/system/hooks/use-currency-options"
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 
-import { FINANCE_ROUTES } from "../../../constants/routes";
+import { useFinanceRoutes } from "../../../hooks/use-finance-routes";
 import { useSavePlatform } from "../../../hooks/use-save-platform";
 import {
   PLATFORM_FORM_FIELDS,
@@ -28,6 +28,7 @@ import type { Platform } from "../../../types/platform.types";
 export function usePlatformForm(platform?: Platform) {
   const t = useTranslations("finance.validation");
   const router = useRouter();
+  const routes = useFinanceRoutes();
   const save = useSavePlatform(platform?.id);
   const errorMessage = useApiErrorMessage();
   const currencies = useCurrencyOptions();
@@ -57,7 +58,7 @@ export function usePlatformForm(platform?: Platform) {
   const onSubmit = form.handleSubmit(async (values) => {
     try {
       const saved = await save.mutateAsync(values);
-      if (!platform) router.push(FINANCE_ROUTES.platformDetail(saved.id));
+      if (!platform) router.push(routes.platformDetail(saved.id));
     } catch (error) {
       const fields = isApiError(error) ? error.fieldErrors() : {};
       const matched = PLATFORM_FORM_FIELDS.filter((name) => fields[name]);

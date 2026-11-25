@@ -111,3 +111,15 @@ class TestAttachmentVisibilityApi(BaseApiTestCase):
         attachment = _upload(api, "private")
         res = api.patch("/api/v1/system/auth/me", {"avatar_id": str(attachment.pk)}, format="json")
         self.assert_error(res, 400, "ATTACHMENT_MUST_BE_PUBLIC")
+
+    def test_manage_all_without_read_private_cannot_publish_foreign_private(
+        self, owner: Any, login: Any
+    ) -> None:
+        """manage_all thiếu FILE_READ_PRIVATE không được chuyển file riêng tư của người khác → 404."""
+        attachment = _upload(login(owner), "private")
+        manager = UserFactory()
+        grant(manager, AttachmentPermission.FILE_UPDATE, AttachmentPermission.FILE_MANAGE_ALL)
+        res = login(manager).post(_url(attachment.pk), {"visibility": "public"}, format="json")
+        self.assert_error(res, 404)
+        attachment.refresh_from_db()
+        assert attachment.visibility == "private"

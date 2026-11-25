@@ -9,6 +9,9 @@ export type DocType = (typeof DOC_TYPES)[number];
 /** Hóa đơn / chứng từ (BE `InvoiceResponseSerializer`). */
 export type Invoice = {
   id: string;
+  ownerId: string;
+  ownerEmail: string;
+  ownerName: string;
   docType: DocType;
   number: string;
   issuer: string;
@@ -44,7 +47,12 @@ export type Invoice = {
   updatedAt: string;
 };
 
-export type InvoiceFilters = ListParams & { year?: number; docType?: string; platform?: string };
+export type InvoiceFilters = ListParams & {
+  year?: number;
+  owner?: string;
+  docType?: string;
+  platform?: string;
+};
 
 /** Dữ liệu tạo/sửa (BE `InvoiceValidateSerializer`). */
 export type InvoiceInput = {

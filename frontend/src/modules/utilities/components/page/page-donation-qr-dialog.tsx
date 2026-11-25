@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Check, Copy, CreditCard, Palette, QrCode } from "lucide-react";
+import { Check, Copy, CreditCard, Palette, QrCode, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { cn } from "cn";
@@ -10,6 +10,7 @@ import { AttachmentImageUploadView } from "@/modules/system/views/attachment/att
 import { ColorInput } from "@/shares/components/common/color-input";
 import { SelectField } from "@/shares/components/common/select-field";
 import { Button } from "@/shares/components/ui/button";
+import { Checkbox } from "@/shares/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -299,7 +300,7 @@ export function PageDonationQrDialog({
                         ? {
                             id: state.customImageId,
                             url: state.customImageUrl ?? "",
-                            name: "Mã QR",
+                            name: t("qrFallback"),
                             contentType: "image/png",
                           }
                         : null
@@ -347,6 +348,90 @@ export function PageDonationQrDialog({
                 </div>
               </div>
             )}
+
+            {/* 3. Cài đặt hiển thị & Webhook SePay */}
+            <div className="border-border/60 bg-muted/20 space-y-3.5 rounded-xl border p-3">
+              {/* Checkbox ẩn số tiền */}
+              <div className="flex items-start gap-2.5">
+                <Checkbox
+                  id="qr-hide-amount"
+                  checked={state.hideAmount}
+                  onCheckedChange={(checked) => state.setHideAmount(Boolean(checked))}
+                  className="mt-0.5"
+                />
+                <div className="space-y-0.5">
+                  <Label htmlFor="qr-hide-amount" className="cursor-pointer text-xs font-medium">
+                    {t("hideAmountLabel")}
+                  </Label>
+                  <p className="text-muted-foreground text-[11px]">{t("hideAmountHint")}</p>
+                </div>
+              </div>
+
+              {/* Checkbox phương thức mặc định */}
+              <div className="flex items-center gap-2.5">
+                <Checkbox
+                  id="qr-is-default"
+                  checked={state.isDefault}
+                  onCheckedChange={(checked) => state.setIsDefault(Boolean(checked))}
+                />
+                <Label htmlFor="qr-is-default" className="cursor-pointer text-xs font-medium">
+                  {t("isDefaultLabel")}
+                </Label>
+              </div>
+
+              {/* Khối cấu hình Webhook SePay */}
+              <div className="border-border/60 bg-card space-y-2 rounded-lg border p-2.5 shadow-2xs">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Zap className="size-4 text-amber-500" />
+                    <Label
+                      htmlFor="qr-webhook-enabled"
+                      className="cursor-pointer text-xs font-semibold"
+                    >
+                      {t("webhookAutoLabel")}
+                    </Label>
+                  </div>
+                  <Checkbox
+                    id="qr-webhook-enabled"
+                    checked={state.webhookEnabled}
+                    onCheckedChange={(checked) => state.handleToggleWebhook(Boolean(checked))}
+                  />
+                </div>
+
+                {state.webhookEnabled ? (
+                  <div className="space-y-2 pt-1 text-xs">
+                    <p className="text-muted-foreground text-[11px]">
+                      {t("webhookCopyInstruction")}
+                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <Input
+                        value={state.webhookUrl}
+                        readOnly
+                        className="text-muted-foreground h-8 font-mono text-[11px]"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={state.handleCopyWebhookUrl}
+                        className="h-8 shrink-0 gap-1 px-2.5 text-xs"
+                      >
+                        <Copy className="size-3.5" />
+                        <span>{t("copyButton")}</span>
+                      </Button>
+                    </div>
+                    <div className="bg-muted/40 text-muted-foreground space-y-0.5 rounded-md p-2 text-[11px]">
+                      <p className="text-foreground font-medium">{t("webhookGuideTitle")}</p>
+                      <p>{t("webhookGuideStep1")}</p>
+                      <p>{t("webhookGuideStep2")}</p>
+                      <p>{t("webhookGuideStep3")}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-[11px]">{t("webhookDisabledHint")}</p>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Cột phải: Live Preview mô phỏng màn hình thật */}
@@ -369,7 +454,7 @@ export function PageDonationQrDialog({
                     [{state.type === "BANK_TRANSFER" ? "VietQR" : t("livePreviewBadgeCustom")}]
                   </span>
                   <span className="max-w-[140px] truncate">
-                    {state.title || (state.type === "BANK_TRANSFER" ? "MBBank" : "Ví MoMo")}
+                    {state.title || (state.type === "BANK_TRANSFER" ? "MBBank" : t("momoFallback"))}
                   </span>
                 </span>
               </div>
@@ -399,7 +484,7 @@ export function PageDonationQrDialog({
                   <div className="text-muted-foreground flex flex-col items-center justify-center gap-1.5 p-3 text-center text-xs">
                     <QrCode className="text-muted-foreground/60 size-16 stroke-1" />
                     <span className="text-muted-foreground text-[11px] leading-tight">
-                      {state.type === "CUSTOM" ? "Chưa có ảnh mã QR" : t("vietQrHint")}
+                      {state.type === "CUSTOM" ? t("customQrEmpty") : t("vietQrHint")}
                     </span>
                   </div>
                 )}
@@ -414,7 +499,7 @@ export function PageDonationQrDialog({
                   </span>
                   <span className="text-foreground max-w-[145px] truncate font-semibold">
                     {state.title ||
-                      (state.type === "BANK_TRANSFER" ? state.bankName : "Ví điện tử")}
+                      (state.type === "BANK_TRANSFER" ? state.bankName : t("eWalletFallback"))}
                   </span>
                 </div>
 
@@ -448,7 +533,7 @@ export function PageDonationQrDialog({
                 {/* Hàng 4: Lời nhắn (nếu có) */}
                 {state.note ? (
                   <div className="border-border text-muted-foreground truncate border-t pt-1.5 text-[11px] italic">
-                    Nội dung: &ldquo;
+                    {t("notePrefix")} &ldquo;
                     {state.type === "BANK_TRANSFER" &&
                     !state.note.toLowerCase().startsWith("donate")
                       ? `donate ${state.note}`

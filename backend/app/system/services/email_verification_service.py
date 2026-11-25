@@ -7,8 +7,10 @@ from django.db import transaction
 from django.http import HttpRequest
 from django.utils import timezone
 
+from app.core.constants.defaults import DEFAULT_LOCALE
 from app.core.exceptions.validation_error import ValidationError
 from app.system.constants.account_error_code import AccountErrorCode
+from app.system.constants.auth_frontend_routes import AUTH_VERIFY_EMAIL_PATH_SEGMENT, resolve_auth_locale
 from app.system.models.user import User
 from app.system.services.email_service import EmailService
 from app.system.services.user_service import UserService
@@ -50,7 +52,7 @@ class EmailVerificationService:
         payload = f"{user.pk}:{user.email}:{user.is_verified}"
         return self.signer.sign(payload)
 
-    def build_verification_url(self, request: HttpRequest, token: str, locale: str = "vi") -> str:
+    def build_verification_url(self, request: HttpRequest, token: str, locale: str = DEFAULT_LOCALE) -> str:
         """Tạo URL xác minh dẫn về Frontend Next.js.
 
         Args:
@@ -61,16 +63,16 @@ class EmailVerificationService:
         Returns:
             URL tuyệt đối.
         """
-        lang = "en" if locale == "en" else "vi"
-        frontend_origin = get_frontend_origin(request)
-        path = f"/{lang}/verify-email"
+        lang = resolve_auth_locale(locale)
+        frontend_origin = get_frontend_origin(request, prefer_configured=True)
+        path = f"/{lang}/{AUTH_VERIFY_EMAIL_PATH_SEGMENT}"
         return f"{frontend_origin}{path}?token={token}"
 
     def send_verification_email(
         self,
         request: HttpRequest,
         user: User,
-        locale: str = "vi",
+        locale: str = DEFAULT_LOCALE,
         *,
         async_send: bool | None = None,
     ) -> str:

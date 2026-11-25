@@ -29,7 +29,7 @@ export function UrlPopover({
   onOpen: () => void;
 }) {
   const t = useTranslations("common.editor");
-  const { open, value, setValue, handleOpenChange, handleSubmit } = useUrlPopover({
+  const { open, value, setValue, handleOpenChange, applyValue, handleKeyDown } = useUrlPopover({
     initial,
     onApply,
     onOpen,
@@ -40,26 +40,31 @@ export function UrlPopover({
       <PopoverTrigger asChild>
         <Button
           type="button"
-          size="icon"
+          size="icon-sm"
           variant="ghost"
           aria-label={label}
           title={label}
           disabled={disabled}
+          className="rounded-lg"
         >
           {icon}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 space-y-2 rounded-xl">
-        <form className="flex gap-2" onSubmit={handleSubmit}>
+      <PopoverContent className="w-80 space-y-2 rounded-xl" align="start">
+        <div className="flex gap-2" role="group" aria-label={label}>
           <Input
             aria-label={label}
             value={value}
             onChange={(event) => setValue(event.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="https://"
             autoFocus
+            className="h-9"
           />
-          <Button type="submit">{t("apply")}</Button>
-        </form>
+          <Button type="button" size="sm" onClick={applyValue} className="h-9 shrink-0">
+            {t("apply")}
+          </Button>
+        </div>
         <FieldError>{error}</FieldError>
       </PopoverContent>
     </Popover>

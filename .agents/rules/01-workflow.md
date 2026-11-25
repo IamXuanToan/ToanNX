@@ -33,6 +33,12 @@ thông tin tối thiểu cần thiết và tiếp tục khảo sát phần độ
 | Bắt đầu và triển khai task/tính năng mới | `start-task`; đọc source, rule và `docs/` liên quan trước khi viết |
 | Sửa bug, regression, test fail hoặc hành vi sai | `fix`; tái hiện, tìm nguyên nhân gốc, sửa và kiểm hồi quy |
 | Người dùng yêu cầu review code cuối task | `review-code`; rà toàn diện phần việc, tự sửa lỗi xác nhận được và kiểm lại |
+| Tự tạo test FE/BE, chạy Playwright chụp ảnh sửa lỗi UI và monkey test | `test`; soi ảnh chụp, bóc bug bằng thao tác hỗn loạn, sửa và khóa regression test |
+| Tái cấu trúc code BE/FE sạch mà giữ nguyên contract | `refactor`; tách lớp, một đơn vị/file, tái sử dụng `docs/common-catalog.md` |
+| Audit bảo mật chủ động, giả lập tấn công và lưu file tái xác nhận | `review-security`; chạy exploit giả lập local, vá kèm test âm, ghi `docs/reports/security-verification.md` |
+| Rà soát và sửa thiếu i18n `vi`/`en` toàn FE | `i18n-audit`; quét chuỗi cứng, đối chiếu JSON, BE error code và kiểm `/vi`/`/en` |
+| Kiểm toán và lập ma trận phân quyền BE–FE ba tầng | `permission-audit`; đối chiếu `MEMBER`, owner, Admin/Portal và `seed_test_accounts` |
+| Thiết kế model và Django migration an toàn cho PostgreSQL/Neon | `db-migration`; kiểm `UniqueConstraint` xóa mềm, index, `sqlmigrate` và migrate local |
 | Hỏi về cấu trúc, quan hệ file/symbol hoặc nội dung codebase | `graphify`; query graph hiện có trước khi đọc rộng, chỉ update theo điều kiện của `AGENTS.md` |
 | Tích hợp/tra dữ liệu SePay, chuyển khoản, VietQR, webhook thanh toán, hóa đơn | `sepay`; đọc trước khi gọi công cụ SePay |
 | Người dùng yêu cầu audit bảo mật / code an toàn | `security-best-practices`; xem rule `security-review` |

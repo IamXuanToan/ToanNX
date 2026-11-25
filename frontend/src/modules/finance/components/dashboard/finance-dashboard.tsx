@@ -3,11 +3,12 @@
 import { useFormatter, useTranslations } from "next-intl";
 
 import { useRouter } from "@/i18n/navigation";
+import { FilterSelect } from "@/shares/components/common/filter-select";
 import { PageHeader } from "@/shares/components/common/page-header";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import { FinanceCountChart } from "./finance-count-chart";
 import { FinanceCumulativeChart } from "./finance-cumulative-chart";
 import { FinanceGrowthChart } from "./finance-growth-chart";
@@ -28,13 +29,19 @@ import { YearSelect } from "./year-select";
  */
 export function FinanceDashboard() {
   const t = useTranslations("finance.dashboard");
+  const tReport = useTranslations("finance.report");
   const format = useFormatter();
   const router = useRouter();
   const state = useFinanceDashboard();
+  const routes = useFinanceRoutes();
   const openMonth = (month: number) =>
     router.push({
-      pathname: FINANCE_ROUTES.reports,
-      query: { year: String(state.year), month: String(month) },
+      pathname: routes.reports,
+      query: {
+        year: String(state.year),
+        month: String(month),
+        ...(state.owner.length ? { owner: state.owner.join(",") } : {}),
+      },
     });
   const monthLabel = (month: number) =>
     format.dateTime(new Date(state.year, month - 1, 1), { month: "short" });
@@ -42,7 +49,19 @@ export function FinanceDashboard() {
     <div className="space-y-6">
       <PageHeader
         title={t("title")}
-        actions={<YearSelect value={state.year} years={state.years} onChange={state.setYear} />}
+        actions={
+          <div className="flex flex-wrap gap-2">
+            {state.canFilterOwner ? (
+              <FilterSelect
+                label={tReport("owner")}
+                options={state.ownerOptions}
+                value={state.owner}
+                onValueChange={state.setOwner}
+              />
+            ) : null}
+            <YearSelect value={state.year} years={state.years} onChange={state.setYear} />
+          </div>
+        }
       />
       {state.monthly.isPending ? (
         <Skeleton className="h-96 w-full rounded-xl" />

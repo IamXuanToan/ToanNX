@@ -9,6 +9,7 @@ from app.core.exceptions.authentication_error import AuthenticationError
 from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
+from app.core.exceptions.validation_error import ValidationError
 from app.system.constants.account_error_code import AccountErrorCode
 from app.system.models.user import User
 from app.system.models.user_social_account import UserSocialAccount
@@ -19,6 +20,7 @@ from app.system.services.google_oauth_service import GoogleOAuthService
 from app.system.services.oauth_provider_service import OAuthProviderService
 from app.system.services.setting_service import SettingService
 from app.system.types.auth_result import AuthResult
+from app.system.utils.frontend_url import is_trusted_frontend_origin
 
 
 class OAuthService:
@@ -80,11 +82,19 @@ class OAuthService:
         Args:
             provider: Tên nền tảng.
             state: Chuỗi state bảo vệ CSRF.
-            redirect_uri: Callback URL của client.
+            redirect_uri: Callback URL của client (phải thuộc origin Frontend tin cậy).
 
         Returns:
             URL xác thực đầy đủ.
+
+        Raises:
+            ValidationError: Nếu `redirect_uri` không thuộc origin được phép.
         """
+        if not is_trusted_frontend_origin(redirect_uri):
+            raise ValidationError(
+                "Redirect URI không thuộc domain được phép.",
+                details={"redirect_uri": ["Redirect URI không thuộc domain được phép."]},
+            )
         return self.get_provider(provider).get_authorization_url(state, redirect_uri)
 
     def login(self, request: HttpRequest, provider: str, code: str, redirect_uri: str) -> AuthResult:

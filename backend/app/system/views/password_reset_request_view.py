@@ -6,6 +6,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 
+from app.core.constants.defaults import DEFAULT_LOCALE
 from app.core.decorators.rate_limit import rate_limit
 from app.core.decorators.validate_request import validate_request
 from app.core.permissions.csrf_protected import CsrfProtected
@@ -51,6 +52,6 @@ class PasswordResetRequestView(CoreApiView):
         message = self.password_reset_service.request_password_reset(
             request._request,
             validated_data["email"],
-            locale=validated_data.get("locale", "vi"),
+            locale=validated_data.get("locale", DEFAULT_LOCALE),
         )
         return CoreResponse({"detail": message})

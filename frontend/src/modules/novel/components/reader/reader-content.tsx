@@ -4,6 +4,8 @@
 
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import type { ChapterDetail } from "../../types/chapter.types";
 import type { ReaderSettings } from "../../types/reader-settings.types";
 import { useReaderContent } from "./hooks/use-reader-content";
@@ -22,6 +24,7 @@ export type ReaderContentProps = {
  * @returns Khối nội dung văn bản chương.
  */
 export function ReaderContent({ chapter, settings }: ReaderContentProps) {
+  const t = useTranslations("novel.reader");
   const { paragraphs, fontClass, widthClass } = useReaderContent({ chapter, settings });
 
   return (
@@ -34,10 +37,10 @@ export function ReaderContent({ chapter, settings }: ReaderContentProps) {
     >
       <div className="mb-8 border-b pb-4 text-center">
         <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
-          Chương {chapter.chapterNumber}: {chapter.title}
+          {t("chapterPrefix", { number: chapter.chapterNumber })}: {chapter.title}
         </h2>
         <div className="text-muted-foreground mt-2 flex items-center justify-center gap-4 text-xs">
-          <span>{chapter.wordCount} chữ</span>
+          <span>{t("wordCount", { count: chapter.wordCount ?? 0 })}</span>
           <span>•</span>
           <span>{chapter.novelTitle}</span>
         </div>

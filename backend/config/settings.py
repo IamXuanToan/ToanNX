@@ -311,6 +311,7 @@ RATE_LIMITS: dict[str, tuple[int, int, str]] = {
     "utilities.page_path.create": (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
     "utilities.qr_code.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
     "utilities.qr_code.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
+    "utilities.donation.webhook": (env.int("RL_DONATION_WEBHOOK", default=120), 60, "ip"),
     "system.client_error.create": (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
     "system.attachment.content": (env.int("RL_ATTACHMENT_CONTENT", default=120), 60, "user"),
     "finance.sepay.call": (env.int("RL_SEPAY_CALL", default=10), 60, "user"),

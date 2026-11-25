@@ -34,19 +34,28 @@ class TestShortLinkDetailApi(BaseApiTestCase):
         assert data["visitors_count"] == 0
         assert data["last_accessed_at"] is None
 
-    def test_detail_short_url_uses_frontend_origin(self, user: Any, login: Any) -> None:
-        """Link ngắn (short_url) lấy theo domain của frontend (qua Referer/Origin) thay vì domain BE."""
+    def test_detail_short_url_uses_frontend_origin(self, user: Any, login: Any, settings: Any) -> None:
+        """Link ngắn lấy theo domain frontend tin cậy thay vì domain BE, bỏ qua Referer lạ."""
         grant(user, P.READ)
+        settings.CORS_ALLOWED_ORIGINS = ["https://www.toannx.com"]
         link = ShortLinkFactory(owner=user, slug="toan-chill")
         api = login(user)
 
-        # Khi frontend gọi lên kèm Referer của web frontend
+        # Khi frontend tin cậy gọi lên kèm Referer của web frontend
         res = api.get(
             f"{BASE_URL}/{link.pk}",
             HTTP_REFERER="https://www.toannx.com/vi/quan-tri/tien-ich/link-rut-gon",
         )
         data = self.assert_success(res, 200)
         assert data["short_url"] == "https://www.toannx.com/s/toan-chill"
+
+        # Referer ngoài danh sách tin cậy bị bỏ qua
+        evil_res = api.get(
+            f"{BASE_URL}/{link.pk}",
+            HTTP_REFERER="https://evil-attacker.test/phish",
+        )
+        evil_data = self.assert_success(evil_res, 200)
+        assert "evil-attacker.test" not in evil_data["short_url"]
 
     def test_detail_owner_isolation_other_user_404(self, user: Any, login: Any) -> None:
         """Không thể xem chi tiết link của người khác (trả về 404 NOT_FOUND bảo mật)."""

@@ -2,7 +2,6 @@
 
 import { Check, KeyRound, Loader2, Mail, Shield, User } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -15,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/shares/compone
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui/tabs";
+import { useTabState } from "@/shares/hooks/use-tab-state";
 
 type ProfileInfoForm = {
   fullName: string;
@@ -39,7 +39,10 @@ export function PortalProfile() {
 
   const user = currentUser?.user;
 
-  const [activeTab, setActiveTab] = useState("info");
+  const [activeTab, setActiveTab] = useTabState({
+    validTabs: ["info", "password"] as const,
+    defaultTab: "info",
+  });
 
   const {
     register: registerInfo,

@@ -22,6 +22,7 @@ class IncomeFilter(django_filters.FilterSet):
     month = django_filters.NumberFilter(field_name="received_date", lookup_expr="month", help_text="Tháng.")
     date = django_filters.DateFilter(field_name="received_date", help_text="Ngày (kiểm trùng khi nhập tay).")
     amount = django_filters.NumberFilter(field_name="amount", help_text="VNĐ thực nhận (kiểm trùng).")
+    owner = CoreUUIDInFilter(field_name="owner_id", help_text="Người dùng sở hữu; nhiều giá trị.")
     platform = CoreUUIDInFilter(field_name="platform_id", help_text="Nền tảng; nhiều giá trị.")
     currency = CoreUUIDInFilter(field_name="currency_id", help_text="Tiền tệ; nhiều giá trị.")
     tax_status = CoreChoiceInFilter(
@@ -40,6 +41,7 @@ class IncomeFilter(django_filters.FilterSet):
         fields = (
             "year",
             "month",
+            "owner",
             "platform",
             "currency",
             "tax_status",

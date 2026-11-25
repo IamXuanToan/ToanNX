@@ -1,23 +1,11 @@
-import {
-  BarChart3,
-  FileText,
-  Landmark,
-  LayoutDashboard,
-  ListFilter,
-  Receipt,
-  Store,
-  Wallet,
-} from "lucide-react";
+import { BarChart3, FileText, LayoutDashboard, Receipt, Wallet } from "lucide-react";
 
 import type { AdminModuleNavigation } from "@/shares/types/navigation.types";
 
 import { FINANCE_ROUTES } from "./constants/routes";
 import { INCOME_PERMISSIONS } from "./permissions/income-permission";
 import { INVOICE_PERMISSIONS } from "./permissions/invoice-permission";
-import { PLATFORM_PERMISSIONS } from "./permissions/platform-permission";
 import { REPORT_PERMISSIONS } from "./permissions/report-permission";
-import { RULE_PERMISSIONS } from "./permissions/rule-permission";
-import { SEPAY_PERMISSIONS } from "./permissions/sepay-permission";
 
 /** Điều hướng module Tài chính (mã BE `finance`) trong nhóm `finance`; mục chỉ hiện khi có quyền. */
 export const financeNavigation: AdminModuleNavigation = {
@@ -54,27 +42,6 @@ export const financeNavigation: AdminModuleNavigation = {
       icon: FileText,
       permission: INVOICE_PERMISSIONS.read,
       section: "finance.navSections.transactions",
-    },
-    {
-      labelKey: "finance.nav.platforms",
-      href: FINANCE_ROUTES.platforms,
-      icon: Store,
-      permission: PLATFORM_PERMISSIONS.read,
-      section: "finance.navSections.configuration",
-    },
-    {
-      labelKey: "finance.nav.rules",
-      href: FINANCE_ROUTES.rules,
-      icon: ListFilter,
-      permission: RULE_PERMISSIONS.read,
-      section: "finance.navSections.configuration",
-    },
-    {
-      labelKey: "finance.nav.sepay",
-      href: FINANCE_ROUTES.sepay,
-      icon: Landmark,
-      permission: SEPAY_PERMISSIONS.manage,
-      section: "finance.navSections.configuration",
     },
   ],
 };

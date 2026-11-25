@@ -5,10 +5,8 @@ import type { ComponentProps } from "react";
 import { NumericFormat } from "react-number-format";
 
 import { Input } from "@/shares/components/ui/input";
+import { CURRENCY_CODES, DEFAULT_CURRENCY, type MoneyCurrency } from "@/shares/constants/currency";
 import { formatDisplayMoney } from "@/shares/lib/number-format";
-
-export type MoneyCurrency = "VND" | "USD";
-export const DEFAULT_CURRENCY: MoneyCurrency = "VND";
 
 /** Props tiền tệ: giá trị thô, không chứa dấu phân cách hoặc ký hiệu tiền. */
 export type MoneyInputProps = Omit<
@@ -51,12 +49,12 @@ export function MoneyInput({
       getInputRef={ref}
       customInput={Input}
       type="text"
-      inputMode={currency === "VND" ? "numeric" : "decimal"}
+      inputMode={currency === CURRENCY_CODES.VND ? "numeric" : "decimal"}
       value={value ?? ""}
       valueIsNumericString
-      thousandSeparator={currency === "VND" ? "." : ","}
-      decimalSeparator={currency === "VND" ? "," : "."}
-      decimalScale={currency === "VND" ? 0 : 2}
+      thousandSeparator={currency === CURRENCY_CODES.VND ? "." : ","}
+      decimalSeparator={currency === CURRENCY_CODES.VND ? "," : "."}
+      decimalScale={currency === CURRENCY_CODES.VND ? 0 : 2}
       allowNegative={false}
       suffix={` ${currency}`}
       className={cn("tabular-nums", className)}

@@ -215,18 +215,22 @@ export function NovelForm({
 
         <FormActions>
           {onCancel ? (
-            <Button type="button" variant="outline" onClick={onCancel} disabled={locked}>
-              {tActions("cancel")}
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+              {disabled ? tActions("back") : tActions("cancel")}
             </Button>
           ) : (
-            <Button asChild variant="outline" disabled={locked}>
-              <Link href={NOVEL_ROUTES.adminNovels}>{tActions("cancel")}</Link>
+            <Button asChild variant="outline">
+              <Link href={NOVEL_ROUTES.adminNovels}>
+                {disabled ? tActions("back") : tActions("cancel")}
+              </Link>
             </Button>
           )}
 
-          <FormSubmitButton isSubmitting={isSubmitting}>
-            {novel ? tActions("save") : tActions("create")}
-          </FormSubmitButton>
+          {!disabled ? (
+            <FormSubmitButton isSubmitting={isSubmitting}>
+              {novel ? tActions("save") : tActions("create")}
+            </FormSubmitButton>
+          ) : null}
         </FormActions>
       </FormLayout>
     </Form>

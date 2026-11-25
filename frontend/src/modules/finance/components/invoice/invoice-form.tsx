@@ -18,9 +18,10 @@ import { SelectField } from "@/shares/components/common/select-field";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
+import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
 
 import { DOC_TYPES } from "../../constants/finance-enums";
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import type { Invoice } from "../../types/invoice.types";
 import { useInvoiceForm } from "./hooks/use-invoice-form";
 import { InvoiceAttachmentsField } from "./invoice-attachments-field";
@@ -42,6 +43,7 @@ export function InvoiceForm({
 }) {
   const t = useTranslations("finance.invoices");
   const tCommon = useTranslations("common.actions");
+  const routes = useFinanceRoutes();
   const format = useFormatter();
   const state = useInvoiceForm(invoice);
   const { form } = state;
@@ -274,7 +276,7 @@ export function InvoiceForm({
                 items={state.incomes.map((income) => ({
                   value: income.id,
                   label: `${income.receivedDate} · ${income.platformName ?? "?"}`,
-                  description: `${format.number(Number(income.amount ?? 0))} ₫ · ${income.content}`,
+                  description: `${format.number(Number(income.amount ?? 0))} ${CURRENCY_SYMBOLS.VND} · ${income.content}`,
                 }))}
                 value={field.value}
                 onToggle={(value, checked) =>
@@ -301,9 +303,7 @@ export function InvoiceForm({
       </FormLayout>
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
         <Button type="button" variant="outline" asChild>
-          <Link href={FINANCE_ROUTES.invoices}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
-          </Link>
+          <Link href={routes.invoices}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
         </Button>
         {disabled ? null : (
           <FormSubmitButton

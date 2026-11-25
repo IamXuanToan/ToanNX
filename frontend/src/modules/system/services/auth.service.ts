@@ -24,7 +24,15 @@ import type {
  * @returns Đường dẫn nội bộ hợp lệ đã chuẩn hóa hoặc null.
  */
 export function sanitizeNextPath(next: string | null | undefined): string | null {
-  if (!next || !next.startsWith("/") || next.startsWith("//") || next.includes("\\")) return null;
+  if (!next || typeof next !== "string") return null;
+  if (next !== next.trim() || /[\u0000-\u001f\u007f\\]/.test(next)) return null;
+  if (!next.startsWith("/") || next.startsWith("//")) return null;
+  try {
+    const parsed = new URL(next, "https://app.invalid");
+    if (parsed.origin !== "https://app.invalid") return null;
+  } catch {
+    return null;
+  }
   let cleaned = next;
   while (/^\/(vi|en)\/(?:vi|en)(\/.*|$)/.test(cleaned)) {
     cleaned = cleaned.replace(/^\/(vi|en)\/(?:vi|en)(\/.*|$)/, "/$1$2");
@@ -115,10 +123,14 @@ export const authService = {
   },
 
   /** Kiểm tra token lời mời tham gia hệ thống. */
-  async validateInvitationToken(token: string): Promise<InvitationValidateResponse> {
+  async validateInvitationToken(
+    token: string,
+    signal?: AbortSignal,
+  ): Promise<InvitationValidateResponse> {
     return (
       await apiClient.get<InvitationValidateResponse>(SYSTEM_API_ENDPOINTS.invitation, {
         query: { token },
+        signal,
       })
     ).data;
   },
@@ -152,9 +164,12 @@ export const authService = {
   },
 
   /** Danh sách trạng thái liên kết tài khoản mạng xã hội của người dùng hiện tại. */
-  async listSocialAccounts(): Promise<UserSocialAccountSummary[]> {
-    return (await apiClient.get<UserSocialAccountSummary[]>(SYSTEM_API_ENDPOINTS.socialAccounts))
-      .data;
+  async listSocialAccounts(signal?: AbortSignal): Promise<UserSocialAccountSummary[]> {
+    return (
+      await apiClient.get<UserSocialAccountSummary[]>(SYSTEM_API_ENDPOINTS.socialAccounts, {
+        signal,
+      })
+    ).data;
   },
 
   /** Liên kết tài khoản mạng xã hội vào người dùng hiện tại bằng mã code OAuth. */

@@ -2,6 +2,8 @@
 
 from typing import Any
 
+from django.db import transaction
+
 from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.services.core_crud_service import CoreCrudService
 from app.finance.constants.finance_error_code import FinanceErrorCode
@@ -37,9 +39,11 @@ class ClassificationRuleService(CoreCrudService[ClassificationRule, Classificati
         return super().create(actor, data)
 
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> ClassificationRule:
-        """Như tạo."""
-        self._check(actor, data)
-        return super().update(actor, pk, data)
+        """Kiểm tra quyền/owner trước khi kiểm dữ liệu để trả 404 thay vì 422 với bản ghi người khác."""
+        with transaction.atomic():
+            self.get_for_write(actor, pk)
+            self._check(actor, data)
+            return super().update(actor, pk, data)
 
     def test(self, actor: Any, content: str, pattern: str | None) -> dict[str, Any]:
         """Thử một nội dung: với `pattern` thì chỉ so regex đó, không thì chạy mọi quy tắc của actor."""

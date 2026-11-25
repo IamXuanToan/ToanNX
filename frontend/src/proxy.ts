@@ -93,7 +93,13 @@ export default function proxy(request: NextRequest) {
 function matchPublicPage(pathname: string): { segment: string; slug: string } | null {
   const parts = pathname.split("/").filter(Boolean);
   if (parts.length !== 2) return null;
-  const [segment, slug] = parts.map((part) => decodeURIComponent(part).toLowerCase());
+  let segment: string;
+  let slug: string;
+  try {
+    [segment, slug] = parts.map((part) => decodeURIComponent(part).toLowerCase());
+  } catch {
+    return null;
+  }
   if (RESERVED_SEGMENTS.has(segment) || (routing.locales as readonly string[]).includes(segment))
     return null;
   return /^[a-z0-9-]{1,64}$/.test(segment) && /^[a-z0-9-]{1,64}$/.test(slug)

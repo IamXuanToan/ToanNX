@@ -9,7 +9,24 @@ NotificationAudience = Literal["OWNER", "SUBSCRIBERS"]
 NotificationLevel = Literal["INFO", "WARNING", "ERROR"]
 NotificationChannel = Literal["IN_APP", "PUSH", "EMAIL", "TELEGRAM"]
 
-NOTIFICATION_CHANNELS: tuple[NotificationChannel, ...] = ("IN_APP", "PUSH", "EMAIL", "TELEGRAM")
+NOTIFICATION_SCOPE_PERSONAL: NotificationScope = "PERSONAL"
+NOTIFICATION_SCOPE_SYSTEM: NotificationScope = "SYSTEM"
+NOTIFICATION_AUDIENCE_OWNER: NotificationAudience = "OWNER"
+NOTIFICATION_AUDIENCE_SUBSCRIBERS: NotificationAudience = "SUBSCRIBERS"
+NOTIFICATION_LEVEL_INFO: NotificationLevel = "INFO"
+NOTIFICATION_LEVEL_WARNING: NotificationLevel = "WARNING"
+NOTIFICATION_LEVEL_ERROR: NotificationLevel = "ERROR"
+NOTIFICATION_CHANNEL_IN_APP: NotificationChannel = "IN_APP"
+NOTIFICATION_CHANNEL_PUSH: NotificationChannel = "PUSH"
+NOTIFICATION_CHANNEL_EMAIL: NotificationChannel = "EMAIL"
+NOTIFICATION_CHANNEL_TELEGRAM: NotificationChannel = "TELEGRAM"
+
+NOTIFICATION_CHANNELS: tuple[NotificationChannel, ...] = (
+    NOTIFICATION_CHANNEL_IN_APP,
+    NOTIFICATION_CHANNEL_PUSH,
+    NOTIFICATION_CHANNEL_EMAIL,
+    NOTIFICATION_CHANNEL_TELEGRAM,
+)
 
 
 @dataclass(frozen=True)

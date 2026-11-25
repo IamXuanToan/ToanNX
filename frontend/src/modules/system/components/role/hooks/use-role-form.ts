@@ -34,6 +34,7 @@ export function useRoleForm({
   role,
   defaults,
   defaultPermissionIds,
+  canUpdateInfo = true,
   canReadPermissions,
   canAssignPermissions,
   onSaved,
@@ -41,6 +42,7 @@ export function useRoleForm({
   role?: RoleDetail;
   defaults?: Partial<RoleFormValues>;
   defaultPermissionIds?: string[];
+  canUpdateInfo?: boolean;
   canReadPermissions: boolean;
   canAssignPermissions: boolean;
   onSaved?: (role: RoleDetail) => unknown;
@@ -78,9 +80,13 @@ export function useRoleForm({
   const onSubmit = form.handleSubmit(async ({ code, ...values }) => {
     let saved: RoleDetail;
     try {
-      saved = role
-        ? await update.mutateAsync(values)
-        : await create.mutateAsync({ code, ...values });
+      if (!role) {
+        saved = await create.mutateAsync({ code, ...values });
+      } else if (canUpdateInfo && form.formState.isDirty) {
+        saved = await update.mutateAsync(values);
+      } else {
+        saved = role;
+      }
     } catch (error) {
       const fields = isApiError(error) ? error.fieldErrors() : {};
       let hasFieldError = false;

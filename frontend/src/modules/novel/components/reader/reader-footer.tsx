@@ -27,7 +27,7 @@ export function ReaderFooter({ chapter }: ReaderFooterProps) {
   const t = useTranslations("novel.reader");
 
   return (
-    <nav className="border-t px-4 py-8" aria-label="Điều hướng chương">
+    <nav className="border-t px-4 py-8" aria-label={t("chapterNavAria")}>
       <div className="container flex max-w-3xl items-center justify-between gap-3">
         {/* Nút chuyển chương trước */}
         {chapter.prevChapterNumber ? (

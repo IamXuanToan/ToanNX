@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import type { AppPathname } from "@/i18n/routing";
 import { Button } from "@/shares/components/ui/button";
 
+import { SYSTEM_ROUTES } from "../../constants/routes";
 import { AuthShell } from "./auth-shell";
 import { useVerifyEmail } from "./hooks/use-verify-email";
 
@@ -74,7 +75,7 @@ export function VerifyEmailStatus({ homeHref }: { homeHref: AppPathname }) {
                 {t("retry")}
               </Button>
               <Button asChild variant="ghost" size="sm" className="w-full text-xs">
-                <Link href="/login">
+                <Link href={SYSTEM_ROUTES.login}>
                   <LogIn className="mr-1.5 size-3.5" />
                   {t("backToLogin")}
                 </Link>

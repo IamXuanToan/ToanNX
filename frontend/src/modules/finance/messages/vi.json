@@ -139,6 +139,7 @@
       "isTaxManualHint": "Theo chứng từ; không tự tính lại khi đổi lịch sử thuế.",
       "taxWithheld": "Đã bị khấu trừ thuế",
       "receivedAt": "Thời điểm nhận",
+      "owner": "Người dùng",
       "platform": "Nền tảng",
       "platformHint": "Để trống thì tự nhận diện theo quy tắc.",
       "currency": "Tiền tệ",
@@ -178,6 +179,7 @@
       "SEPAY": "SePay"
     },
     "filters": {
+      "year": "Năm",
       "review": "Xử lý",
       "needsReview": "Cần xử lý",
       "invoice": "Chứng từ",
@@ -214,6 +216,7 @@
       "issuer": "Bên phát hành",
       "issuerTaxCode": "Mã số thuế bên phát hành",
       "issuedOn": "Ngày lập",
+      "owner": "Người dùng",
       "platform": "Nền tảng",
       "periodFrom": "Kỳ từ",
       "periodTo": "Kỳ đến",
@@ -224,6 +227,9 @@
       "exchangeRate": "Tỷ giá",
       "note": "Ghi chú",
       "links": "Giao dịch · file"
+    },
+    "filters": {
+      "year": "Năm"
     },
     "docType": {
       "WITHHOLDING_CERTIFICATE": "Chứng từ khấu trừ thuế",
@@ -267,6 +273,8 @@
   },
   "report": {
     "title": "Báo cáo thu nhập",
+    "owner": "Người dùng",
+    "allOwners": "Tất cả người dùng",
     "year": "Năm",
     "month": "Tháng",
     "allMonths": "Cả năm",
@@ -339,7 +347,13 @@
         "CHANGED": "Khác",
         "INVALID": "Lỗi số tiền"
       }
-    }
+    },
+    "purposeTitle": "Mục đích kết nối SePay cá nhân",
+    "purposeIntro": "Kết nối SePay tại đây dùng để",
+    "purposeHighlight": "tự động nhận biến động số dư tài khoản ngân hàng của riêng bạn",
+    "purposeOutro": "và tự động nhận diện, phân loại các khoản thu nhập (thanh toán hợp đồng, tiền lương, freelance, hoa hồng tiếp thị liên kết...) vào sổ theo dõi tài chính cá nhân này.",
+    "privacyTitle": "Độc lập & Bảo mật riêng tư",
+    "privacyDesc": "Token và webhook này chỉ dùng cho tài khoản của bạn, không chia sẻ với người dùng khác."
   },
   "notifications": {
     "incomeReceived": "Tiền vào {amount} ₫ · {platform}",

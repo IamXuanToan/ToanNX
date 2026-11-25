@@ -252,43 +252,43 @@ export function AttachmentImageEditor({ file, onSaved, onCancel }: AttachmentIma
                     <div
                       onPointerDown={(e) => handleResizeStart(e, "nw")}
                       className="border-primary pointer-events-auto absolute top-0 left-0 size-3.5 -translate-x-1/2 -translate-y-1/2 cursor-nwse-resize touch-none rounded-xs border-2 bg-white shadow-md hover:scale-125"
-                      title="Kéo góc trên trái"
+                      title={t("cropHandleNw")}
                     />
                     <div
                       onPointerDown={(e) => handleResizeStart(e, "ne")}
                       className="border-primary pointer-events-auto absolute top-0 right-0 size-3.5 translate-x-1/2 -translate-y-1/2 cursor-nesw-resize touch-none rounded-xs border-2 bg-white shadow-md hover:scale-125"
-                      title="Kéo góc trên phải"
+                      title={t("cropHandleNe")}
                     />
                     <div
                       onPointerDown={(e) => handleResizeStart(e, "sw")}
                       className="border-primary pointer-events-auto absolute bottom-0 left-0 size-3.5 -translate-x-1/2 translate-y-1/2 cursor-nesw-resize touch-none rounded-xs border-2 bg-white shadow-md hover:scale-125"
-                      title="Kéo góc dưới trái"
+                      title={t("cropHandleSw")}
                     />
                     <div
                       onPointerDown={(e) => handleResizeStart(e, "se")}
                       className="border-primary pointer-events-auto absolute right-0 bottom-0 size-3.5 translate-x-1/2 translate-y-1/2 cursor-nwse-resize touch-none rounded-xs border-2 bg-white shadow-md hover:scale-125"
-                      title="Kéo góc dưới phải"
+                      title={t("cropHandleSe")}
                     />
                     {/* 4 cạnh */}
                     <div
                       onPointerDown={(e) => handleResizeStart(e, "n")}
                       className="border-primary pointer-events-auto absolute top-0 left-1/2 h-2.5 w-6 -translate-x-1/2 -translate-y-1/2 cursor-ns-resize touch-none rounded-xs border bg-white shadow-sm hover:scale-110"
-                      title="Kéo cạnh trên"
+                      title={t("cropHandleN")}
                     />
                     <div
                       onPointerDown={(e) => handleResizeStart(e, "s")}
                       className="border-primary pointer-events-auto absolute bottom-0 left-1/2 h-2.5 w-6 -translate-x-1/2 translate-y-1/2 cursor-ns-resize touch-none rounded-xs border bg-white shadow-sm hover:scale-110"
-                      title="Kéo cạnh dưới"
+                      title={t("cropHandleS")}
                     />
                     <div
                       onPointerDown={(e) => handleResizeStart(e, "w")}
                       className="border-primary pointer-events-auto absolute top-1/2 left-0 h-6 w-2.5 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize touch-none rounded-xs border bg-white shadow-sm hover:scale-110"
-                      title="Kéo cạnh trái"
+                      title={t("cropHandleW")}
                     />
                     <div
                       onPointerDown={(e) => handleResizeStart(e, "e")}
                       className="border-primary pointer-events-auto absolute top-1/2 right-0 h-6 w-2.5 translate-x-1/2 -translate-y-1/2 cursor-ew-resize touch-none rounded-xs border bg-white shadow-sm hover:scale-110"
-                      title="Kéo cạnh phải"
+                      title={t("cropHandleE")}
                     />
                   </div>,
                   cropAreaEl,

@@ -4,13 +4,14 @@
 
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 
 import { createBooleanBulkStatus } from "@/shares/lib/bulk-status";
+import { formatDisplayNumber, getNumberLocale } from "@/shares/lib/number-format";
 import { NOVEL_ROUTES } from "../../constants/routes";
 import type { ChapterListItem } from "../../types/chapter.types";
 import { useChapterTable } from "./hooks/use-chapter-table";
@@ -32,6 +33,7 @@ export function ChapterTable({
 }) {
   const t = useTranslations("novel.chapters");
   const tPublish = useTranslations("novel.novelForm.fields");
+  const numberLocale = getNumberLocale(useLocale());
   const state = useChapterTable({ novelId });
   const { table, query } = state;
 
@@ -71,7 +73,7 @@ export function ChapterTable({
       header: t("fields.wordCount"),
       cell: (chapter) => (
         <span className="text-muted-foreground font-mono text-xs">
-          {chapter.wordCount?.toLocaleString() ?? 0}
+          {formatDisplayNumber(chapter.wordCount ?? 0, { locale: numberLocale })}
         </span>
       ),
     },
@@ -80,7 +82,7 @@ export function ChapterTable({
       header: t("fields.viewsCount"),
       cell: (chapter) => (
         <span className="text-muted-foreground font-mono text-xs">
-          {chapter.viewsCount?.toLocaleString() ?? 0}
+          {formatDisplayNumber(chapter.viewsCount ?? 0, { locale: numberLocale })}
         </span>
       ),
     },

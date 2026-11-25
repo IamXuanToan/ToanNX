@@ -3601,7 +3601,11 @@ export function useWeatherCanvas({
 
         ctx.fillStyle = "#1d3557";
         ctx.font = "bold 9.5px sans-serif";
-        ctx.fillText("Mưa chill quá ☕", porchGuyX - 20, porchGuyY - 46);
+        ctx.fillText(
+          localeRef.current === "en" ? "Cozy rain ☕" : "Mưa chill quá ☕",
+          porchGuyX - 20,
+          porchGuyY - 46,
+        );
       } else {
         // --- 3. BAN ĐÊM TRỜI QUANG: BẠN NAM NGỒI GHẾ GỖ HIÊN NHÀ NGẮM SAO ---
         const nightGuyX = cottageX + 26;

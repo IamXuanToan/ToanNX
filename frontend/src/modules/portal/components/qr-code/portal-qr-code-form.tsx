@@ -2,7 +2,6 @@
 
 import { Download, QrCode as QrCodeIcon } from "lucide-react";
 import Image from "next/image";
-import NextLink from "next/link";
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
@@ -47,12 +46,13 @@ export function PortalQrCodeForm({
 }) {
   const t = useTranslations("utilities.qrCodes");
   const tCommon = useTranslations("common.actions");
-  const state = usePortalQrCodeForm({ code });
+  const state = usePortalQrCodeForm({ code, disabled });
   const { form, preview, qrType, banks } = state;
 
   const locked = disabled || state.isSubmitting;
   const rootError = form.formState.errors.root?.message;
   const svg = preview.data?.svg;
+  const previewSrc = svg || (disabled ? code?.image?.url : undefined);
 
   return (
     <Form onSubmit={state.onSubmit} className="space-y-6">
@@ -303,9 +303,9 @@ export function PortalQrCodeForm({
               </div>
               <CardContent className="flex flex-col items-center justify-center p-6">
                 <div className="border-border bg-muted/20 relative flex aspect-square w-full max-w-[280px] items-center justify-center overflow-hidden rounded-2xl border p-4 shadow-inner">
-                  {svg ? (
+                  {previewSrc ? (
                     <Image
-                      src={svg}
+                      src={previewSrc}
                       alt={t("previewAlt")}
                       fill
                       sizes="280px"
@@ -326,23 +326,26 @@ export function PortalQrCodeForm({
                 <div className="mt-4 flex w-full flex-wrap gap-2">
                   {code?.image?.url ? (
                     <Button asChild variant="outline" size="sm" className="flex-1 text-xs">
-                      <NextLink
-                        href={code.image.url}
+                      <Link
+                        href={code.image.url as never}
                         download={`${code.name || "qr-code"}.png`}
                         target="_blank"
                         rel="noreferrer"
                       >
                         <Download className="mr-1.5 size-3.5" />
                         <span>{t("downloadPng")}</span>
-                      </NextLink>
+                      </Link>
                     </Button>
                   ) : null}
                   {svg ? (
                     <Button asChild variant="outline" size="sm" className="flex-1 text-xs">
-                      <NextLink href={svg} download={`${form.getValues("name") || "qr-code"}.svg`}>
+                      <Link
+                        href={svg as never}
+                        download={`${form.getValues("name") || "qr-code"}.svg`}
+                      >
                         <Download className="mr-1.5 size-3.5" />
                         <span>{t("downloadSvg")}</span>
-                      </NextLink>
+                      </Link>
                     </Button>
                   ) : null}
                 </div>

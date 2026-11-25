@@ -10,7 +10,7 @@ import { useCurrencyOptions } from "@/modules/system/hooks/use-currency-options"
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 
-import { FINANCE_ROUTES } from "../../../constants/routes";
+import { useFinanceRoutes } from "../../../hooks/use-finance-routes";
 import { useIncomeOptions } from "../../../hooks/use-income-options";
 import { usePlatformOptions } from "../../../hooks/use-platform-options";
 import { useSaveInvoice } from "../../../hooks/use-save-invoice";
@@ -52,6 +52,7 @@ function fromInvoice(invoice: Invoice): InvoiceFormValues {
 export function useInvoiceForm(invoice?: Invoice) {
   const t = useTranslations("finance.validation");
   const router = useRouter();
+  const routes = useFinanceRoutes();
   const save = useSaveInvoice(invoice?.id);
   const errorMessage = useApiErrorMessage();
   const currencies = useCurrencyOptions();
@@ -103,7 +104,7 @@ export function useInvoiceForm(invoice?: Invoice) {
     };
     try {
       const saved = await save.mutateAsync(input);
-      if (!invoice) router.push(FINANCE_ROUTES.invoiceDetail(saved.id));
+      if (!invoice) router.push(routes.invoiceDetail(saved.id));
     } catch (error) {
       const fields = isApiError(error) ? error.fieldErrors() : {};
       const matched = INVOICE_FORM_FIELDS.filter((name) => fields[name]);

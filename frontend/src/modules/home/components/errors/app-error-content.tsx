@@ -78,14 +78,14 @@ export function AppErrorContent({ error, retry }: { error: unknown; retry: () =>
                   size="xs"
                   onClick={handleCopy}
                   className="border-destructive/30 bg-background/80 hover:bg-destructive/20 hover:text-destructive h-7 gap-1.5 text-xs font-medium"
-                  title="Sao chép toàn bộ chi tiết lỗi và Stack Trace"
+                  title={t("copyDetailsTitle")}
                 >
                   {copied ? (
                     <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
                   ) : (
                     <Copy className="size-3" />
                   )}
-                  <span>{copied ? "Đã sao chép chi tiết" : "Sao chép toàn bộ lỗi"}</span>
+                  <span>{copied ? t("copiedDetails") : t("copyDetails")}</span>
                 </Button>
               </div>
 

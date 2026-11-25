@@ -58,3 +58,39 @@ class TestPageDuplicateApi(BaseApiTestCase):
         api = login(user)
         res = api.post(f"{BASE_URL}/{page.pk}/duplicate")
         self.assert_forbidden(res)
+
+    def test_duplicate_strips_sepay_webhook_token_from_qr_codes(self, user: Any, login: Any) -> None:
+        """Nhân bản trang không sao chép webhookToken / webhook_token của SePay QR."""
+        grant(user, P.CREATE, P.READ)
+        path = get_seeded_path("p")
+        page = Page.objects.create(
+            owner=user,
+            path=path,
+            title="Trang Quyên Góp",
+            slug="trang-quyen-gop-dup",
+            status=Page.Status.PUBLISHED,
+            content_config={
+                "qrCodes": [
+                    {
+                        "id": "qr-1",
+                        "label": "MBBank",
+                        "webhookToken": "secret-token-camel",
+                        "webhook_token": "secret-token-snake",
+                    }
+                ],
+                "qr_codes": [
+                    {
+                        "id": "qr-2",
+                        "webhookToken": "secret-token-2",
+                    }
+                ],
+            },
+        )
+
+        res = login(user).post(f"{BASE_URL}/{page.pk}/duplicate")
+        copy = self.assert_success(res, 201)
+        duplicated = Page.objects.get(pk=copy["id"])
+        assert "webhookToken" not in duplicated.content_config["qrCodes"][0]
+        assert "webhook_token" not in duplicated.content_config["qrCodes"][0]
+        assert "webhookToken" not in duplicated.content_config["qr_codes"][0]
+        assert duplicated.content_config["qrCodes"][0]["label"] == "MBBank"

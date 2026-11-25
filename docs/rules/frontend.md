@@ -109,8 +109,9 @@ component, không khai hook, không `createContext`.
   (giống nhóm `table-*` của `DataTable` trong `common/`).
 - Hai component cùng chủ đề vẫn là hai file: `Logo` → `logo.tsx`, `LogoMark` → `logo-mark.tsx`.
 - File component chỉ export component đó và kiểu props của nó (`<Tên>Props`). Không export kèm hằng số
-  (`PAGE_SIZE_OPTIONS`, `DEFAULT_CURRENCY`), hàm tiện ích hay re-export helper: hằng số → `constants/`, hàm →
-  `lib/` (shares) hoặc `utils` của module, kiểu dùng chung → `types/` hoặc `<tên>.types.ts`.
+  (`PAGE_SIZE_OPTIONS`, `DEFAULT_CURRENCY`, `THEME_PRESETS`, `BADGE_PRESETS`), hàm tiện ích hay re-export helper:
+  hằng số → `constants/`, hàm → `lib/` (shares) hoặc `utils` của module, kiểu dùng chung → `types/` hoặc
+  `<tên>.types.ts`. (`tests/unit/code-conventions.test.ts` chặn `export const UPPER_CASE` trong `.tsx`).
 
 **Hook** (`.ts`):
 
@@ -299,9 +300,12 @@ CommonDataTable của LoveMe, chạy trên `@tanstack/react-table`). Không dự
 - Cột đầu là link tới trang chi tiết (`font-medium`, hover gạch chân); dòng phụ (email, mã) `text-xs text-muted-foreground`.
 - Hộp xác nhận dùng `ConfirmDialog` (`shares/components/common/confirm-dialog`), không dùng `confirm()`.
 
-**State bảng.** Hook của component bảng dùng `useTableState` (`shares/hooks/use-table-state.ts`), không tự viết
-`useState` cho từ khóa/trang/sắp xếp. State đồng bộ lên URL (`search`, `page`, `pageSize`, `ordering`; giá trị
-mặc định không ghi) nên tải lại hay gửi link vẫn giữ nguyên. Đổi từ khóa, sắp xếp, số dòng thì về trang 1.
+- **State bảng và lưu URL bắt buộc (URL State Persistence)**. Hook của component bảng bắt buộc dùng `useTableState`
+  (`shares/hooks/use-table-state.ts`), tuyệt đối không tự viết `useState` cục bộ cho từ khóa (`search`), trang (`page`),
+  số dòng (`pageSize`), sắp xếp (`ordering`) hay các bộ lọc tùy chọn (`filterKeys`, `dateRange`, `tier`, `status`...).
+  Toàn bộ state phải được đồng bộ 2 chiều lên URL query parameters qua `window.history.replaceState` (giá trị mặc định không ghi)
+  để khi người dùng chuyển trang, lọc dữ liệu, tải lại (F5) hay gửi link chia sẻ, giao diện vẫn giữ nguyên chính xác trạng thái đó.
+  Đổi từ khóa, sắp xếp, số dòng hay bộ lọc thì về trang 1.
 
 ```ts
 export function useUserTable() {
@@ -334,6 +338,8 @@ export function useUserTable() {
   cuộn ngang trong khung, không đẩy cả khối tràn ra ngoài; dưới `md` xếp chồng.
 - **Nút lưu của mọi tab nằm ở footer dialog**, không nằm trong nội dung tab: nội dung bọc `<Form id={…_FORM_ID}>`
   (id khai ở `constants/`), nút footer `type="submit" form={…_FORM_ID}`, chỉ hiện ở tab đang mở và khi có quyền sửa.
+- **Đồng bộ Tab với URL (Tab State Persistence)**: Mọi trang hoặc form có cấu trúc Tabs chính (`PageForm`, `PortalProfile`...) bắt buộc phải đồng bộ tab đang chọn với URL query param (`?tab=...`) bằng hook `useTabState` (`shares/hooks/use-tab-state.ts`). Trạng thái tab được lưu vào lịch sử bằng `window.history.replaceState` (không kích hoạt router reload) để khi người dùng reload trang hoặc sao chép liên kết URL, ứng dụng tự động mở đúng tab đó.
+- **Slug định dạng tùy biến (preserveCase)**: Với các tài nguyên công khai như trang tùy chỉnh (`Page`) và link rút gọn (`ShortLink`), slug cho phép giữ nguyên chữ hoa chữ thường (ví dụ: `ToanToChill`) qua cờ `preserveCase: true` trong `slugField`, `SlugInput` và `normalize_slug`, đồng thời kiểm tra trùng lặp không phân biệt hoa thường trong DB (`Lower("slug")`).
 
 ## 3.2 Chuẩn Next.js (Image, Link) và Shadcn UI (bắt buộc)
 
@@ -345,11 +351,13 @@ export function useUserTable() {
 - Với khung chứa linh hoạt theo tỷ lệ (aspect-square, avatar, preview), container cha đặt `relative`, thẻ `<Image />` sử dụng `fill`, `className="object-cover"` (hoặc `object-contain`), và khai báo prop `sizes` phù hợp (ví dụ `sizes="80px"` hoặc `sizes="(max-width: 768px) 100vw, 33vw"`).
 - Khi ảnh là chuỗi data URI (`data:image/...`) hoặc blob URL cục bộ từ browser: thêm prop `unoptimized`.
 
-**Chuẩn liên kết với Next.js Link (bắt buộc).**
+**Chuẩn liên kết với Navigation Link (bắt buộc).**
 
-- Mọi liên kết chuyển trang hoặc mở URL trong project **bắt buộc sử dụng component `<Link />` từ `next/link` (hoặc `@/i18n/navigation` cho liên kết nội bộ có tiền tố ngôn ngữ)** hoặc bọc bằng `<Button asChild><Link href="...">...</Link></Button>`.
+- Mọi liên kết chuyển trang hoặc mở URL trong module và cây `[locale]` **bắt buộc sử dụng `<Link />` từ
+  `@/i18n/navigation`** (kể cả liên kết ngoài `target="_blank"` và link tải trực tiếp `data:`/`http(s):` với `href={url as never}` — `next-intl` tự bỏ qua prefix cho URL có scheme), hoặc bọc bằng `<Button asChild><Link href="...">...</Link></Button>`.
+- Ngoại lệ duy nhất là file ngoài cây `[locale]` như `src/app/not-found.tsx` dùng `next/link` (`tests/unit/code-conventions.test.ts` kiểm tự động).
 - **Tuyệt đối không dùng thẻ `<a>` trần** ở bất kỳ đâu trong component `.tsx`.
-- Với liên kết ngoài (external URL như shopee, lazada, mạng xã hội, tài liệu...): bắt buộc sử dụng `<Link href={url} target="_blank" rel="noopener noreferrer">` từ `next/link`.
+- Với liên kết ngoài (external URL như shopee, lazada, mạng xã hội, tài liệu...): dùng `<Link href={url as never} target="_blank" rel="noopener noreferrer">` từ `@/i18n/navigation`.
 - Khi liên kết đóng vai trò là nút bấm, hành động (CTA), hoặc item có tương tác: bắt buộc kết hợp component `Button` của shadcn với prop `asChild`:
   ```tsx
   <Button asChild variant="outline">
@@ -479,7 +487,13 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 
 - Đa ngôn ngữ: Next.js 16 tự nhận diện locale qua `next/root-params` trong `src/i18n/request.ts`; **không** gọi `setRequestLocale` (deprecated) trong `page.tsx` hay `layout.tsx`.
 - Không hardcode path API, route, query key: lấy từ `constants/` của module.
-- Điều hướng: `Link`/`useRouter`/`redirect` từ `@/i18n/navigation` (không dùng `next/link`).
+- Hằng số dùng chung toàn FE (locale, timezone, tiền tệ, tùy chọn phân trang, ID toast phiên) lấy từ
+  `shares/constants/` và helper `shares/lib/number-format.ts` (`getNumberLocale`, `formatVndText`,
+  `formatDisplayNumber`), `shares/lib/localized-route.ts` (`isLocalizedRouteExact`, `startsWithLocalizedRoute`);
+  không lặp `locale === "en" ? "en-US" : "vi-VN"`, `.toLocaleString("vi-VN")` hay key phiên/OAuth rải rác
+  (`tests/unit/code-conventions.test.ts` kiểm tự động).
+- Điều hướng: `<Link />`/`useRouter`/`redirect` từ `@/i18n/navigation` (không dùng `next/link` trong module hay cây
+  `[locale]`, kể cả link ngoài `href={url as never}`; ngoại lệ duy nhất là `src/app/not-found.tsx`).
 - Mọi text qua next-intl; message theo module; thêm khóa phải thêm đủ vi + en.
 - Schema Zod là factory nhận hàm dịch (`createLoginSchema(t)`).
 - Màu dùng token semantic (`bg-primary`, `text-muted-foreground`, `bg-canvas`); không hardcode màu (xem §4.0).

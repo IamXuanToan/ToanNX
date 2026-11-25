@@ -17,7 +17,7 @@ import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
 
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import type { Platform } from "../../types/platform.types";
 import { usePlatformForm } from "./hooks/use-platform-form";
 
@@ -36,6 +36,7 @@ export function PlatformForm({
 }) {
   const t = useTranslations("finance.platforms");
   const tCommon = useTranslations("common.actions");
+  const routes = useFinanceRoutes();
   const { form, onSubmit, isSubmitting, currencyOptions } = usePlatformForm(platform);
   const locked = disabled || isSubmitting;
   const rootError = form.formState.errors.root?.message;
@@ -96,9 +97,7 @@ export function PlatformForm({
       </FormLayout>
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
         <Button type="button" variant="outline" asChild>
-          <Link href={FINANCE_ROUTES.platforms}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
-          </Link>
+          <Link href={routes.platforms}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
         </Button>
         {disabled ? null : (
           <FormSubmitButton

@@ -1,4 +1,3 @@
-import { PreviewNotice } from "../../components/page/preview-notice";
 import { PublicPage } from "../../components/page/public-page";
 import type { PublicPage as PublicPageData } from "../../types/page.types";
 
@@ -17,10 +16,5 @@ export function PublicPageView({
   segment?: string;
   slug?: string;
 }) {
-  return (
-    <>
-      <PublicPage page={page} segment={segment} slug={slug} />
-      {page?.preview ? <PreviewNotice status={page.status} /> : null}
-    </>
-  );
+  return <PublicPage page={page} segment={segment} slug={slug} showPreviewNotice />;
 }

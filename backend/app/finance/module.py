@@ -1,7 +1,14 @@
 """Đăng ký module Tài chính."""
 
 from app.core.registry.module_descriptor import ModuleDescriptor
-from app.core.registry.notification_event_definition import NotificationEventDefinition
+from app.core.registry.notification_event_definition import (
+    NOTIFICATION_CHANNEL_EMAIL,
+    NOTIFICATION_CHANNEL_IN_APP,
+    NOTIFICATION_CHANNEL_PUSH,
+    NOTIFICATION_LEVEL_ERROR,
+    NOTIFICATION_LEVEL_WARNING,
+    NotificationEventDefinition,
+)
 from app.core.registry.webhook_definition import WebhookDefinition
 from app.finance.constants.finance_notification_event import FinanceNotificationEvent as E
 from app.finance.permissions.income_permission import IncomePermission
@@ -67,7 +74,7 @@ MODULE = ModuleDescriptor(
             "Có tiền vào",
             "Webhook SePay hoặc lấy thủ công ghi nhận một khoản thu nhập.",
             permission="finance.income.read",
-            default_channels=("IN_APP", "PUSH"),
+            default_channels=(NOTIFICATION_CHANNEL_IN_APP, NOTIFICATION_CHANNEL_PUSH),
             icon="💰",
         ),
         NotificationEventDefinition(
@@ -75,8 +82,8 @@ MODULE = ModuleDescriptor(
             "Thu nhập cần xử lý",
             "Không rõ số tiền, chưa nhận diện nền tảng hoặc nền tảng chưa có mốc thuế.",
             permission="finance.income.read",
-            default_level="WARNING",
-            default_channels=("IN_APP", "PUSH"),
+            default_level=NOTIFICATION_LEVEL_WARNING,
+            default_channels=(NOTIFICATION_CHANNEL_IN_APP, NOTIFICATION_CHANNEL_PUSH),
             icon="🧾",
         ),
         NotificationEventDefinition(
@@ -84,8 +91,12 @@ MODULE = ModuleDescriptor(
             "Webhook SePay sai chữ ký",
             "Request tới webhook SePay của bạn bị từ chối vì sai/thiếu chữ ký (gom theo giờ).",
             permission="finance.sepay.manage",
-            default_level="ERROR",
-            default_channels=("IN_APP", "PUSH", "EMAIL"),
+            default_level=NOTIFICATION_LEVEL_ERROR,
+            default_channels=(
+                NOTIFICATION_CHANNEL_IN_APP,
+                NOTIFICATION_CHANNEL_PUSH,
+                NOTIFICATION_CHANNEL_EMAIL,
+            ),
             kind="technical",
             icon="🚫",
         ),

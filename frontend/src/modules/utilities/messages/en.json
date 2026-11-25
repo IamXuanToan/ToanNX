@@ -7,7 +7,9 @@
     "shortLinks": "Short links",
     "qrCodes": "QR codes",
     "pages": "Pages",
-    "pagePaths": "Page paths"
+    "pagePaths": "Page paths",
+    "dashboard": "Dashboard",
+    "donations": "Donations"
   },
   "shortLinks": {
     "title": "Short links",
@@ -94,7 +96,9 @@
       "previewNotice": "Preview mode — destination button will not navigate.",
       "invalidPassword": "Incorrect password. Please try again.",
       "unlockError": "Unable to unlock link. Please try again later.",
-      "safeShield": "Protected by ToanNX · Safe & Verified"
+      "safeShield": "Protected by ToanNX · Safe & Verified",
+      "safeGateway": "Safe Gateway",
+      "verifiedLink": "Verified Link"
     },
     "unavailable": {
       "home": "Back to home",
@@ -210,7 +214,10 @@
       "message": "Up to 25 characters: letters, digits and spaces.",
       "color": "Use a #RRGGBB color.",
       "logoFormat": "Logo must be a PNG, JPEG, WebP or GIF image."
-    }
+    },
+    "popularLabel": "Popular:",
+    "quickPresetsLabel": "Quick wallet presets:",
+    "momoLabel": "MoMo Wallet"
   },
   "customPages": {
     "validation": {
@@ -262,7 +269,22 @@
         "show": "Show Preview",
         "hide": "Hide Preview"
       },
+      "copied": "Link copied to clipboard.",
+      "copy": "Copy {url}",
+      "quickLink": "Public Page Link",
+      "quickLinkHint": "Copy public URL to share with readers and visitors",
+      "openLink": "Open page",
+      "copyLink": "Copy link",
       "presets": "Theme Presets",
+      "presetsAll": "All ({count})",
+      "presetsLight": "Light Themes ({count})",
+      "presetsDark": "Dark Themes ({count})",
+      "presetsSearchPlaceholder": "Search presets (e.g. emerald, ocean, dark, neon...)",
+      "presetsLightSection": "Light Themes",
+      "presetsLightSectionDesc": "Bright, clean, elegant themes optimized for daytime reading",
+      "presetsDarkSection": "Dark Themes",
+      "presetsDarkSectionDesc": "Modern, sleek themes with deep contrast and tech aesthetic",
+      "presetsEmpty": "No matching presets found",
       "maximizePreview": "Fullscreen preview",
       "livePreviewTitle": "Live Preview: {title}",
       "bioEditor": {
@@ -329,6 +351,10 @@
         "linkDescription": "Description (optional)",
         "linkDescriptionPlaceholder": "Tech tutorials and coding tips…",
         "linkHighlight": "Highlight (Special border effect)",
+        "linkIcon": "Icon",
+        "linkIconPlaceholder": "Paste custom icon image URL...",
+        "autoIconHint": "Automatically fetch Google Favicon from domain if left empty.",
+        "previewIcon": "Preview",
         "linkVisible": "Publicly visible",
         "highlightBadge": "Featured",
         "visible": "Visible",
@@ -358,6 +384,16 @@
         "editAmount": "Edit Amount",
         "saveAmount": "Save Changes",
         "removeAmount": "Remove Amount",
+        "amountDialogAddTitle": "Add Suggested Amount",
+        "amountDialogEditTitle": "Edit Suggested Amount",
+        "amountDialogDescription": "Configure the amount, display label, and illustration icon for quick donation buttons.",
+        "amountLabel": "Donation Amount (VND)",
+        "amountLabelHelp": "Amount supporters will transfer when choosing this preset.",
+        "labelFieldLabel": "Display Label",
+        "labelFieldHelp": "e.g. 1 coffee, 1 breakfast... Leave blank to show the formatted amount.",
+        "iconFieldLabel": "Illustration Icon",
+        "previewSuggestedButton": "Button Live Preview",
+        "emptySuggestedAmounts": "No suggested amounts yet. Add preset amounts for supporters to pick quickly.",
         "minAmountLabel": "Minimum Donation Amount (VND)",
         "minAmountPlaceholder": "e.g. 10000",
         "minAmountHint": "Minimum amount when supporters enter custom amount (default: 10,000 ₫)",
@@ -400,7 +436,7 @@
         "tabAccount": "Account",
         "tabDesign": "Style & Logo",
         "qrNote": "Default Transfer Note",
-        "qrNotePlaceholder": "e.g. Donate to ToanNX",
+        "qrNotePlaceholder": "e.g. Donate to support",
         "designSection": "Custom QR Code Style",
         "qrColor": "QR Foreground Color",
         "bgColor": "Background Color",
@@ -415,7 +451,51 @@
         "selectIcon": "Select icon",
         "selectIconTooltip": "Select an icon for this preset amount",
         "iconPopoverTitle": "Choose Display Icon",
-        "iconPopoverSubtitle": "The icon will be displayed alongside the amount on the button"
+        "iconPopoverSubtitle": "The icon will be displayed alongside the amount on the button",
+        "leaderboardDaysLabel": "Leaderboard display duration",
+        "leaderboardDaysUnit": "days",
+        "leaderboardDaysHint": "How long donors remain on Bronze, Silver, and Gold tiers (1 to 30 days).",
+        "defaultCoffeeAmountLabel": "1 cup of coffee",
+        "hideAmountLabel": "Hide donation amounts on public page",
+        "hideAmountHint": "Show only donor title and appreciation gift without revealing exact transfer amounts.",
+        "isDefaultLabel": "Set as default payment method",
+        "webhookAutoLabel": "Automatically receive SePay Webhook for this QR code",
+        "webhookCopied": "Copied SePay Webhook URL to clipboard!",
+        "webhookCopyError": "Could not copy URL",
+        "webhookCopyInstruction": "Copy the URL below and paste it into Webhooks in my.sepay.vn dashboard:",
+        "copyButton": "Copy",
+        "webhookGuideTitle": "💡 Quick setup guide:",
+        "webhookGuideStep1": "1. Open my.sepay.vn › Webhooks › Add webhook",
+        "webhookGuideStep2": "2. Paste the Webhook URL above into the URL field",
+        "webhookGuideStep3": "3. Select Event: Money In only and choose the matching bank account.",
+        "webhookDisabledHint": "Enable this to automatically record incoming transfers on this page.",
+        "customQrEmpty": "No QR image uploaded yet",
+        "eWalletFallback": "E-Wallet",
+        "qrFallback": "QR Code",
+        "momoFallback": "MoMo Wallet",
+        "notePrefix": "Note:",
+        "customType": "Custom",
+        "defaultBadge": "Default",
+        "webhookBadge": "Webhook",
+        "hideAmountBadge": "Amount hidden",
+        "setDefaultTooltip": "Set as default payment QR",
+        "setDefaultAction": "Set default",
+        "editAction": "Edit",
+        "deleteMethodTooltip": "Delete method",
+        "icons": {
+          "coffee": "Coffee / Tea",
+          "utensils": "Meal / Food",
+          "heart": "Heart / Favorite",
+          "sparkles": "Sparkles / Special",
+          "beer": "Beer / Drink",
+          "gift": "Gift / Present",
+          "book": "Book / Knowledge",
+          "server": "Server / Infra",
+          "zap": "Zap / Energy",
+          "smile": "Smile / Fun",
+          "thumbs-up": "Thumbs up / Like",
+          "award": "Award / Trophy"
+        }
       },
       "categoriesEditor": {
         "title": "Product Categories",
@@ -584,7 +664,8 @@
             "description": "Rich text documents and customizable content powered by Tiptap editor."
           }
         }
-      }
+      },
+      "defaultTitleFallback": "Page title"
     },
     "paths": {
       "title": "Page paths",
@@ -692,7 +773,27 @@
       "badgeBgColor": "Badge background color:",
       "badgeTextColor": "Badge text color:",
       "pickBadgeBg": "Select badge background color",
-      "pickBadgeText": "Select badge text color"
+      "pickBadgeText": "Select badge text color",
+      "platformCustom": "Other / Direct",
+      "imagePreviewAlt": "Product image preview",
+      "badgePresets": {
+        "recommended": "Recommended",
+        "featured": "Featured",
+        "bestSeller": "Best Seller",
+        "sale": "Sale",
+        "hotDeal": "Hot Deal",
+        "newest": "Newest",
+        "discount50": "50% Off"
+      },
+      "colorPresets": {
+        "red": "Red",
+        "orange": "Orange",
+        "green": "Green",
+        "blue": "Blue",
+        "purple": "Purple",
+        "black": "Black",
+        "light": "Light"
+      }
     },
     "storefront": {
       "searchPlaceholder": "Search products by name, description…",
@@ -725,11 +826,42 @@
       "minAmountWarning": "Minimum donation amount is {min} ₫",
       "clearAmount": "Clear amount",
       "transferNoteLabel": "Transfer message (note):",
-      "transferNotePlaceholder": "e.g. Toan supports you",
+      "transferNotePlaceholder": "e.g. support you",
       "transferNotePrefixHint": "QR code will automatically prefix with donate",
       "transferNote": "Description",
       "copyNote": "Copy transfer message",
-      "copyNoteSuccess": "Transfer message copied to clipboard!"
+      "copyNoteSuccess": "Transfer message copied to clipboard!",
+      "accountFallback": "Account",
+      "customType": "Custom",
+      "qrAlt": "QR Code",
+      "notePrefix": "Message:",
+      "countdownExpired": "Expired",
+      "countdownDaysHours": "{days}d {hours}h left",
+      "countdownHoursMinutes": "{hours}h {minutes}m left",
+      "countdownMinutes": "{minutes}m left",
+      "leaderboardTab": "Leaderboard",
+      "recentTab": "Recent Donations",
+      "leaderboardEmpty": "No supporters on the leaderboard yet. Be the first to donate!",
+      "tierGold": "🥇 Gold",
+      "tierSilver": "🥈 Silver",
+      "tierBronze": "🥉 Bronze",
+      "loadingMore": "Loading more donations...",
+      "demoFooterHint": "Preview sample data",
+      "endOfFeedHint": "All donations loaded",
+      "demoFeed": {
+        "goldDonor": "Generous Patron",
+        "goldGift": "1-month server sponsorship",
+        "goldMessage": "Supporting server hosting and upcoming open-source features!",
+        "silverDonor": "Kind Supporter",
+        "silverGift": "Cozy hotpot meal",
+        "silverMessage": "Thank you for building such helpful utilities and tools!",
+        "bronzeDonor": "Mystery Fan",
+        "bronzeGift": "1 tech book",
+        "bronzeMessage": "Wishing you endless passion and great health!",
+        "coffeeDonor": "Anonymous Dev",
+        "coffeeGift": "1 salted iced coffee",
+        "coffeeMessage": "Here is a morning coffee to keep you energized!"
+      }
     },
     "bio": {
       "experiences": "Work Experience",
@@ -746,7 +878,280 @@
       "desktop": "Desktop",
       "fullscreen": "View Fullscreen",
       "createPage": "Create Page Now",
-      "livePreviewTitle": "Live Preview: {title}"
+      "livePreviewTitle": "Live Preview: {title}",
+      "showcase": {
+        "affiliate": {
+          "title": "Toan Tech Setup & Gear",
+          "description": "A curated collection of my favorite tech gear, mechanical keyboards, and workspace accessories.",
+          "catAll": "All",
+          "catKeyboard": "Keyboards & Mice",
+          "catAudio": "Audio & Headphones",
+          "catAccessories": "Desk Accessories",
+          "item1Title": "NuPhy Air75 V2 Wireless Mechanical Keyboard",
+          "item1Desc": "Smooth low-profile typing experience with tri-mode Bluetooth 5.1 and 2.4GHz connectivity.",
+          "item1Btn": "Buy on Shopee",
+          "item1Badge": "FAVORITE",
+          "item2Title": "Logitech MX Master 3S Wireless Mouse",
+          "item2Desc": "Ergonomic MagSpeed scrolling mouse with 8000 DPI sensor for developers.",
+          "item2Btn": "Buy on Lazada",
+          "item2Badge": "15% OFF",
+          "item3Title": "Sony WH-1000XM5 Noise Canceling Headphones",
+          "item3Desc": "Industry-leading noise cancellation, 30-hour battery life, crystal-clear calls.",
+          "item3Btn": "View on Tiki",
+          "item4Title": "BenQ ScreenBar Monitor Light Bar",
+          "item4Desc": "Auto-dimming asymmetric optics for zero screen glare and clean desk space.",
+          "item4Btn": "Buy Now"
+        },
+        "bio": {
+          "title": "Xuan Toan Nguyen",
+          "description": "Senior Fullstack Engineer & Open-source Enthusiast",
+          "headline": "Senior Fullstack Engineer & Tech Lead",
+          "bioText": "6+ years designing architectures and building scalable web platforms with Python, Django, Next.js, and Cloud Native.",
+          "location": "Hanoi, Vietnam",
+          "exp1Period": "2023 - Present",
+          "exp1Desc": "Designing microservices platforms, database performance tuning, and AI agent systems.",
+          "exp2Desc": "Built high-traffic consumer applications serving millions of daily active users.",
+          "levelAdvanced": "Expert",
+          "levelProficient": "Proficient",
+          "proj1Desc": "Fullstack monorepo with layered RBAC permissions, short links, QR codes, and customizable pages.",
+          "proj2Desc": "Intelligent agent suite automating codebase analysis and engineering workflows.",
+          "link1Title": "Open-source Projects on GitHub",
+          "link1Desc": "Explore libraries and tools I actively maintain in public.",
+          "link2Title": "Connect on LinkedIn",
+          "link2Desc": "Professional network and engineering collaboration."
+        },
+        "donation": {
+          "title": "Support Open-Source Projects",
+          "description": "Fuel server upkeep and help build more free tools for the developer community.",
+          "creatorName": "Xuan Toan Nguyen",
+          "message": "If my tools, guides, or open-source work help you out, feel free to buy me a coffee!",
+          "thankYouMessage": "Thank you so much for your generous support!",
+          "amountCoffee": "1 cup of coffee ({amount})",
+          "amountBreakfast": "1 breakfast ({amount})",
+          "amountBook": "1 book ({amount})",
+          "amountServer": "Sponsor 1-month server"
+        }
+      },
+      "notionEditor": "Notion Editor"
+    },
+    "notionDemo": {
+      "badge": "Notion-like Prototype",
+      "backToDemos": "Page demos",
+      "defaultTitle": "ToanNX Workspace — Notion-like Editor Demo",
+      "titlePlaceholder": "Untitled document...",
+      "emptyPlaceholder": "Write something or type '/' for commands...",
+      "editMode": "Edit",
+      "previewMode": "Preview",
+      "lightCanvas": "Light canvas",
+      "darkCanvas": "Dark canvas",
+      "resetSample": "Reset sample",
+      "viewJson": "Inspect JSON",
+      "jsonTitle": "Tiptap JSON Document",
+      "jsonDescription": "Live JSON structure matching the system Tiptap schema (100% compatible with backend).",
+      "copiedJson": "Document JSON copied.",
+      "copyJson": "Copy JSON",
+      "close": "Close",
+      "toggleCover": "Cycle cover",
+      "removeCover": "Hide cover",
+      "pickIcon": "Change icon",
+      "stats": "{words} words · {chars} chars · {blocks} blocks",
+      "slashTitle": "Insert block",
+      "slashEmpty": "No matching block found.",
+      "slashHint": "↑↓ navigate · Enter insert · Esc close",
+      "slashGroupBasic": "Basic blocks",
+      "slashGroupMedia": "Advanced & Media",
+      "addBlockHint": "Click to insert a block below",
+      "dragHandleHint": "Block actions menu",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "duplicateBlock": "Duplicate block",
+      "deleteBlock": "Delete block",
+      "turnInto": "Turn into",
+      "textColor": "Color & Highlight",
+      "resetColor": "Default",
+      "insertImageTitle": "Insert image from URL",
+      "insertYoutubeTitle": "Embed YouTube video",
+      "urlPlaceholder": "https://...",
+      "insertUrlAction": "Insert into document",
+      "invalidHttpsUrl": "Please enter a valid https:// URL.",
+      "invalidYoutubeUrl": "Please enter a valid YouTube link (https://).",
+      "slashItems": {
+        "paragraph": {
+          "label": "Text",
+          "desc": "Start writing plain paragraphs"
+        },
+        "h1": {
+          "label": "Heading 1",
+          "desc": "Big section heading"
+        },
+        "h2": {
+          "label": "Heading 2",
+          "desc": "Medium section heading"
+        },
+        "h3": {
+          "label": "Heading 3",
+          "desc": "Small subsection heading"
+        },
+        "bulletList": {
+          "label": "Bulleted list",
+          "desc": "Create a simple bulleted list"
+        },
+        "orderedList": {
+          "label": "Numbered list",
+          "desc": "Create a list with numbering"
+        },
+        "taskList": {
+          "label": "To-do list",
+          "desc": "Track tasks with checkboxes"
+        },
+        "blockquote": {
+          "label": "Quote",
+          "desc": "Capture a quote or highlight"
+        },
+        "callout": {
+          "label": "Callout",
+          "desc": "Highlighted Notion-style box"
+        },
+        "codeBlock": {
+          "label": "Code block",
+          "desc": "Monospace snippet block"
+        },
+        "table": {
+          "label": "Table (3×3)",
+          "desc": "Structured table with header row"
+        },
+        "horizontalRule": {
+          "label": "Divider",
+          "desc": "Visually divide blocks"
+        },
+        "spacer": {
+          "label": "Vertical spacer",
+          "desc": "Add breathing room between blocks"
+        },
+        "imageUrl": {
+          "label": "Image (URL)",
+          "desc": "Resizable & alignable interactive image"
+        },
+        "youtube": {
+          "label": "YouTube video",
+          "desc": "Embed a YouTube player"
+        }
+      },
+      "suiteLabel": "Standalone Editor Presets",
+      "suiteFullTitle": "1. Full Editor (Simple + Notion-like)",
+      "suiteFullDesc": "Combines the familiar sticky toolbar with '/' slash menu, bubble bar, and ⠿ line drag.",
+      "suiteBasicTitle": "2. Basic Editor (Description)",
+      "suiteBasicDesc": "Minimal description editor supporting only Bold and Italic with character counter.",
+      "suiteCommentTitle": "3. Comment Editor",
+      "suiteCommentDesc": "Compact comment composer with quick marks, character counter, and Ctrl+Enter submit.",
+      "commentPosted": "Demo comment posted ({words} words).",
+      "commentSampleReply": "ToanNX",
+      "showToolbarLabel": "Show toolbar",
+      "hideToolbarLabel": "Hide toolbar (pure Notion mode)"
+    }
+  },
+  "navSections": {
+    "overview": "Overview",
+    "content": "Content & Pages",
+    "tools": "Link & QR Tools"
+  },
+  "dashboard": {
+    "badge": "Platform-wide Admin Analytics",
+    "title": "Utilities Overview",
+    "subtitle": "Monitor short link traffic, SePay donations, QR codes, and custom pages across the system.",
+    "kpiDonationsTitle": "Total donations",
+    "kpiDonationsHint": "{count} completed donations",
+    "kpiClicksTitle": "Short link clicks",
+    "kpiClicksHint": "{count} active links",
+    "kpiPagesTitle": "Custom pages",
+    "kpiPagesHint": "Bio, Donate, Affiliate...",
+    "kpiQrTitle": "QR codes created",
+    "kpiQrHint": "VietQR & Custom QR codes",
+    "tabs": {
+      "overview": "Overview",
+      "donations": "Donations & SePay",
+      "links": "Short links",
+      "pages": "Custom pages"
+    },
+    "topLinksTitle": "Top Short Links by Clicks",
+    "viewAll": "View all",
+    "emptyLinks": "No links yet",
+    "recentPagesTitle": "Recent Custom Pages",
+    "managePages": "Manage pages",
+    "emptyPages": "No pages yet",
+    "ownerLabel": "Owner: {owner}",
+    "statusPublished": "Published",
+    "statusDraft": "Draft",
+    "recentQrTitle": "Recent QR Codes",
+    "emptyQr": "No QR codes yet",
+    "giftBreakdownTitle": "Appreciation Gift Breakdown",
+    "giftBreakdownDesc": "Distribution of donation gift tiers (coffee, instant noodles, breakfast...)",
+    "giftCount": "{count} times",
+    "emptyDonations": "No donations recorded yet",
+    "censoredTitle": "Comments Flagged for Moderation",
+    "censoredDesc": "Messages automatically flagged by the regex profanity filter",
+    "noCensoredComments": "No comments flagged for profanity",
+    "censoredBadge": "Flagged content",
+    "originalContent": "Original content: “{content}”",
+    "viewAllDonations": "View full donation history",
+    "linksTabTitle": "Short Links Management",
+    "linksTabDesc": "All short links across the platform",
+    "viewLinksList": "View short links list",
+    "pagesTabTitle": "Custom Pages Management",
+    "pagesTabDesc": "Bio, Donate, and Affiliate pages",
+    "viewPagesList": "View pages list"
+  },
+  "donations": {
+    "title": "Donations & Support History",
+    "subtitle": "Manage all SePay donation transactions across all Donate pages.",
+    "tiers": {
+      "NORMAL": "Standard",
+      "BRONZE": "Bronze Tier",
+      "SILVER": "Silver Tier",
+      "GOLD": "Gold Tier",
+      "DIAMOND": "Diamond"
+    },
+    "tierOptions": {
+      "BRONZE": "Bronze Tier (≥100k)",
+      "SILVER": "Silver Tier (≥200k)",
+      "GOLD": "Gold Tier (≥500k)",
+      "DIAMOND": "Diamond Tier (≥1M)",
+      "NORMAL": "Standard (<100k)"
+    },
+    "toast": {
+      "shown": "Comment shown",
+      "hidden": "Comment hidden",
+      "updateError": "Could not update comment visibility",
+      "deleted": "Donation entry deleted",
+      "deleteError": "Could not delete donation entry"
+    },
+    "columns": {
+      "time": "Time",
+      "page": "Page",
+      "donor": "Supporter",
+      "amount": "Amount",
+      "tier": "Leaderboard Tier",
+      "message": "Message",
+      "status": "Status"
+    },
+    "censoredHidden": "Flagged content masked",
+    "censoredBadge": "Flagged content",
+    "originalPrefix": "Original: {content}",
+    "visibleLabel": "Visible",
+    "hiddenLabel": "Hidden",
+    "showCommentAria": "Show message",
+    "hideCommentAria": "Hide message",
+    "filters": {
+      "tier": "Leaderboard tier",
+      "status": "Status",
+      "statusCensored": "Flagged by profanity filter",
+      "statusHidden": "Hidden by owner"
+    },
+    "exportCsv": "Export CSV report",
+    "searchPlaceholder": "Search donor, message...",
+    "bulk": {
+      "show": "Show comments",
+      "hide": "Hide comments"
     }
   }
 }

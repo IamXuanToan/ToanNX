@@ -116,6 +116,58 @@ class TestPageUpdateApi(BaseApiTestCase):
         res = client.patch(f"{BASE_URL}/00000000-0000-0000-0000-000000000000", {}, format="json")
         self.assert_unauthorized(res)
 
+    def test_update_content_image_size_and_align_supported(self, user: Any, login: Any) -> None:
+        """Cho phép lưu width và align (left/center/right/full) cho ảnh URL và Thư viện."""
+        grant(user, P.UPDATE)
+        attachment_id = create_qr_image(user)
+        path = get_seeded_path("p")
+        page = Page.objects.create(owner=user, path=path, title="Trang Ảnh Resize", slug="page-img-resize")
+        api = login(user)
+
+        content = make_doc(
+            {
+                "type": "image",
+                "attrs": {
+                    "src": "https://cdn.example.com/photo.jpg",
+                    "alt": "Ảnh URL",
+                    "width": "60%",
+                    "align": "center",
+                },
+            },
+            {
+                "type": "image",
+                "attrs": {
+                    "attachmentId": attachment_id,
+                    "alt": "Ảnh Thư viện",
+                    "width": 320,
+                    "align": "right",
+                },
+            },
+        )
+        res = api.patch(f"{BASE_URL}/{page.pk}", {"content": content, "content_version": 1}, format="json")
+        data = self.assert_success(res, 200)
+        nodes = data["content"]["content"]
+        assert nodes[0]["attrs"]["width"] == "60%"
+        assert nodes[0]["attrs"]["align"] == "center"
+        assert nodes[1]["attrs"]["width"] == 320
+        assert nodes[1]["attrs"]["align"] == "right"
+
+        # Từ chối align lạ hoặc width chứa CSS độc hại
+        bad_img = make_doc(
+            {
+                "type": "image",
+                "attrs": {
+                    "src": "https://cdn.example.com/photo.jpg",
+                    "width": "50%; background:red",
+                    "align": "diagonal",
+                },
+            }
+        )
+        res_bad = api.patch(
+            f"{BASE_URL}/{page.pk}", {"content": bad_img, "content_version": 2}, format="json"
+        )
+        self.assert_error(res_bad, 400, "VALIDATION_ERROR")
+
     def test_update_forbidden_without_permission(self, user: Any, login: Any) -> None:
         """Đã đăng nhập nhưng thiếu quyền utilities.page.update bị 403."""
         path = get_seeded_path("p")

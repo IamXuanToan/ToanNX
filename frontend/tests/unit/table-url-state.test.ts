@@ -35,6 +35,14 @@ describe("readTableUrlState", () => {
     expect(state.page).toBe(1);
     expect(state.pageSize).toBe(20);
   });
+
+  it("cắt gọn từ khóa tìm kiếm vượt giới hạn trên URL để tránh lỗi 400", () => {
+    const tooManyTerms = new URLSearchParams("search=mot+hai+ba+bon+nam+sau");
+    expect(readTableUrlState(tooManyTerms, DEFAULTS).search).toBe("mot hai ba bon nam");
+
+    const tooLong = new URLSearchParams(`search=${"x".repeat(150)}`);
+    expect(readTableUrlState(tooLong, DEFAULTS).search).toBe("x".repeat(100));
+  });
 });
 
 describe("writeTableUrlState", () => {

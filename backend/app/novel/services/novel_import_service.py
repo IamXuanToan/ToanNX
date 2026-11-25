@@ -8,6 +8,7 @@ from app.core.exceptions.app_exception import AppException
 from app.core.utils.text import ascii_slug as to_slug
 from app.novel.constants.novel_error_code import NovelErrorCode
 from app.novel.models.chapter import Chapter
+from app.novel.models.novel import NovelStatus
 from app.novel.repositories.author_repository import AuthorRepository
 from app.novel.repositories.chapter_repository import ChapterRepository
 from app.novel.repositories.genre_repository import GenreRepository
@@ -57,7 +58,7 @@ class NovelImportService:
                 "description": (
                     "Một thiếu niên bình thường xuất thân nghèo khó bước vào con đường tu tiên trắc trở..."
                 ),
-                "status": "COMPLETED",
+                "status": NovelStatus.COMPLETED.value,
                 "genres": ["Tiên Hiệp", "Huyền Huyễn", "Tu Chân"],
                 "tags": ["Phàm nhân", "Tu đạo", "Dài tập"],
                 "is_published": True,
@@ -149,7 +150,7 @@ class NovelImportService:
             "slug": slug,
             "original_title": str(novel_data.get("original_title") or "").strip(),
             "description": str(novel_data.get("description") or "").strip(),
-            "status": str(novel_data.get("status") or "ONGOING").upper(),
+            "status": str(novel_data.get("status") or NovelStatus.ONGOING.value).upper(),
             "is_published": bool(novel_data.get("is_published", True)),
             "author": author,
             "owner": actor,

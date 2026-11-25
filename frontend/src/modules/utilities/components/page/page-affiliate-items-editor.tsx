@@ -55,7 +55,7 @@ export function PageAffiliateItemsEditor({
 
   const handleExportJson = () => {
     if (items.length === 0) {
-      toast.error(t("exportEmpty") || "Danh sách sản phẩm đang trống, không thể xuất file");
+      toast.error(t("exportEmpty"));
       return;
     }
     const exportData = {
@@ -75,7 +75,7 @@ export function PageAffiliateItemsEditor({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast.success(t("exportSuccess") || "Đã xuất file JSON danh sách sản phẩm thành công");
+    toast.success(t("exportSuccess"));
   };
 
   return (
@@ -111,10 +111,10 @@ export function PageAffiliateItemsEditor({
             onClick={onOpenAddManual}
             disabled={disabled}
             className="h-8 gap-1.5 text-xs font-semibold shadow-2xs"
-            title={t("addProductTooltip") || "Thêm sản phẩm mới thủ công"}
+            title={t("addProductTooltip")}
           >
             <Plus className="size-3.5" />
-            <span>{t("addProduct") || "Thêm sản phẩm"}</span>
+            <span>{t("addProduct")}</span>
           </Button>
 
           {/* Nút Thêm nhanh bằng URL (nút phụ outline) */}
@@ -125,10 +125,7 @@ export function PageAffiliateItemsEditor({
             onClick={onOpenQuickAdd}
             disabled={disabled}
             className="h-8 gap-1.5 text-xs font-medium shadow-2xs"
-            title={
-              t("quickAddTooltip") ||
-              "Tự động lấy ảnh, tên, giá từ link sản phẩm Shopee, TikTok, Lazada..."
-            }
+            title={t("quickAddTooltip")}
           >
             <Sparkles className="text-primary size-3.5" />
             <span>{tPages("quickAdd")}</span>
@@ -142,10 +139,10 @@ export function PageAffiliateItemsEditor({
             onClick={handleExportJson}
             disabled={disabled || items.length === 0}
             className="h-8 gap-1.5 text-xs font-medium shadow-2xs"
-            title={t("exportTooltip") || "Xuất danh sách sản phẩm và danh mục ra file JSON"}
+            title={t("exportTooltip")}
           >
             <Download className="size-3.5" />
-            <span>{t("export") || "Xuất file"}</span>
+            <span>{t("export")}</span>
           </Button>
 
           {/* Nút Nhập file JSON */}
@@ -157,10 +154,10 @@ export function PageAffiliateItemsEditor({
               onClick={() => setImportDialogOpen(true)}
               disabled={disabled}
               className="h-8 gap-1.5 text-xs font-medium shadow-2xs"
-              title={t("importTooltip") || "Nhập danh sách sản phẩm từ file hoặc chuỗi JSON"}
+              title={t("importTooltip")}
             >
               <Upload className="size-3.5" />
-              <span>{t("import") || "Nhập file"}</span>
+              <span>{t("import")}</span>
             </Button>
           ) : null}
         </div>
@@ -185,7 +182,7 @@ export function PageAffiliateItemsEditor({
               className="gap-1.5"
             >
               <Plus className="h-3.5 w-3.5" />
-              <span>{t("addProduct") || "Thêm sản phẩm"}</span>
+              <span>{t("addProduct")}</span>
             </Button>
             <Button
               type="button"
@@ -208,7 +205,7 @@ export function PageAffiliateItemsEditor({
                 className="gap-1.5"
               >
                 <Upload className="h-3.5 w-3.5" />
-                <span>{t("import") || "Nhập file JSON"}</span>
+                <span>{t("import")}</span>
               </Button>
             ) : null}
           </div>

@@ -1,10 +1,35 @@
 "use client";
 
-import { FileText, Images, LayoutDashboard, Link2, QrCode } from "lucide-react";
+import {
+  BarChart3,
+  FileText,
+  HeartHandshake,
+  Images,
+  Landmark,
+  LayoutDashboard,
+  Link2,
+  ListFilter,
+  QrCode,
+  Receipt,
+  Store,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { ATTACHMENT_PERMISSIONS } from "@/modules/system/permissions/attachment-permission";
 import { UserMenu } from "@/modules/system/components/current-user/user-menu";
+import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
+import { hasPermission } from "@/modules/system/services/current-user.service";
+import { INCOME_PERMISSIONS } from "@/modules/finance/permissions/income-permission";
+import { INVOICE_PERMISSIONS } from "@/modules/finance/permissions/invoice-permission";
+import { PLATFORM_PERMISSIONS } from "@/modules/finance/permissions/platform-permission";
+import { REPORT_PERMISSIONS } from "@/modules/finance/permissions/report-permission";
+import { RULE_PERMISSIONS } from "@/modules/finance/permissions/rule-permission";
+import { SEPAY_PERMISSIONS } from "@/modules/finance/permissions/sepay-permission";
+import { DONATION_PERMISSIONS } from "@/modules/utilities/permissions/donation-permission";
+import { PAGE_PERMISSIONS } from "@/modules/utilities/permissions/page-permission";
+import { QR_CODE_PERMISSIONS } from "@/modules/utilities/permissions/qr-code-permission";
+import { SHORT_LINK_PERMISSIONS } from "@/modules/utilities/permissions/short-link-permission";
 import { LogoMark } from "@/shares/components/layout/logo-mark";
 import { Badge } from "@/shares/components/ui/badge";
 import {
@@ -18,8 +43,9 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/shares/components/ui/sidebar";
+import { isLocalizedRouteExact, startsWithLocalizedRoute } from "@/shares/lib/localized-route";
 
-import { PORTAL_ROUTES } from "../../constants/routes";
+import { PORTAL_PATHNAMES, PORTAL_ROUTES } from "../../constants/routes";
 
 const NAV_LINK_CLASS =
   "text-foreground/70 hover:bg-item-hover hover:text-foreground data-active:bg-primary-light data-active:text-primary data-active:hover:bg-primary-light data-active:hover:text-primary h-10 gap-2.5 rounded-xl px-3 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:p-3!";
@@ -33,10 +59,12 @@ const NAV_LINK_CLASS =
  */
 export function PortalSidebar() {
   const t = useTranslations("portal.navigation");
+  const tActions = useTranslations("common.actions");
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
+  const { data: currentUser } = useCurrentUser();
 
-  const sections = [
+  const rawSections = [
     {
       key: "overview",
       label: t("sections.overview"),
@@ -46,7 +74,16 @@ export function PortalSidebar() {
           title: t("dashboard"),
           href: PORTAL_ROUTES.dashboard,
           icon: LayoutDashboard,
-          active: pathname === PORTAL_ROUTES.dashboard || (pathname as string) === "/ca-nhan",
+          permission: undefined,
+          active: isLocalizedRouteExact(pathname, PORTAL_ROUTES.dashboard, PORTAL_PATHNAMES),
+        },
+        {
+          key: "donations",
+          title: t("donations"),
+          href: PORTAL_ROUTES.donations,
+          icon: HeartHandshake,
+          permission: DONATION_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.donations, PORTAL_PATHNAMES),
         },
       ],
     },
@@ -59,27 +96,102 @@ export function PortalSidebar() {
           title: t("pages"),
           href: PORTAL_ROUTES.pages,
           icon: FileText,
-          active:
-            pathname.startsWith(PORTAL_ROUTES.pages) ||
-            (pathname as string).startsWith("/ca-nhan/trang"),
+          permission: PAGE_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.pages, PORTAL_PATHNAMES),
         },
         {
           key: "shortLinks",
           title: t("shortLinks"),
           href: PORTAL_ROUTES.shortLinks,
           icon: Link2,
-          active:
-            pathname.startsWith(PORTAL_ROUTES.shortLinks) ||
-            (pathname as string).startsWith("/ca-nhan/link-rut-gon"),
+          permission: SHORT_LINK_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.shortLinks, PORTAL_PATHNAMES),
         },
         {
           key: "qrCodes",
           title: t("qrCodes"),
           href: PORTAL_ROUTES.qrCodes,
           icon: QrCode,
-          active:
-            pathname.startsWith(PORTAL_ROUTES.qrCodes) ||
-            (pathname as string).startsWith("/ca-nhan/ma-qr"),
+          permission: QR_CODE_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.qrCodes, PORTAL_PATHNAMES),
+        },
+      ],
+    },
+    {
+      key: "finance",
+      label: t("sections.finance"),
+      items: [
+        {
+          key: "financeDashboard",
+          title: t("financeDashboard"),
+          href: PORTAL_ROUTES.financeDashboard,
+          icon: LayoutDashboard,
+          permission: REPORT_PERMISSIONS.read,
+          active: isLocalizedRouteExact(pathname, PORTAL_ROUTES.financeDashboard, PORTAL_PATHNAMES),
+        },
+        {
+          key: "financeIncomes",
+          title: t("financeIncomes"),
+          href: PORTAL_ROUTES.financeIncomes,
+          icon: Receipt,
+          permission: INCOME_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(
+            pathname,
+            PORTAL_ROUTES.financeIncomes,
+            PORTAL_PATHNAMES,
+          ),
+        },
+        {
+          key: "financeInvoices",
+          title: t("financeInvoices"),
+          href: PORTAL_ROUTES.financeInvoices,
+          icon: FileText,
+          permission: INVOICE_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(
+            pathname,
+            PORTAL_ROUTES.financeInvoices,
+            PORTAL_PATHNAMES,
+          ),
+        },
+        {
+          key: "financePlatforms",
+          title: t("financePlatforms"),
+          href: PORTAL_ROUTES.financePlatforms,
+          icon: Store,
+          permission: PLATFORM_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(
+            pathname,
+            PORTAL_ROUTES.financePlatforms,
+            PORTAL_PATHNAMES,
+          ),
+        },
+        {
+          key: "financeRules",
+          title: t("financeRules"),
+          href: PORTAL_ROUTES.financeRules,
+          icon: ListFilter,
+          permission: RULE_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.financeRules, PORTAL_PATHNAMES),
+        },
+        {
+          key: "financeReports",
+          title: t("financeReports"),
+          href: PORTAL_ROUTES.financeReports,
+          icon: BarChart3,
+          permission: REPORT_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(
+            pathname,
+            PORTAL_ROUTES.financeReports,
+            PORTAL_PATHNAMES,
+          ),
+        },
+        {
+          key: "financeSepay",
+          title: t("financeSepay"),
+          href: PORTAL_ROUTES.financeSepay,
+          icon: Landmark,
+          permission: SEPAY_PERMISSIONS.manage,
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.financeSepay, PORTAL_PATHNAMES),
         },
       ],
     },
@@ -92,13 +204,21 @@ export function PortalSidebar() {
           title: t("files"),
           href: PORTAL_ROUTES.library,
           icon: Images,
-          active:
-            pathname.startsWith(PORTAL_ROUTES.library) ||
-            (pathname as string).startsWith("/ca-nhan/thu-vien"),
+          permission: ATTACHMENT_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.library, PORTAL_PATHNAMES),
         },
       ],
     },
   ];
+
+  const sections = rawSections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter(
+        (item) => !item.permission || hasPermission(currentUser, item.permission),
+      ),
+    }))
+    .filter((section) => section.items.length > 0);
 
   return (
     <Sidebar collapsible="icon">
@@ -163,7 +283,7 @@ export function PortalSidebar() {
       <SidebarFooter className="px-3 pt-2 pb-3">
         <UserMenu variant="sidebar" />
       </SidebarFooter>
-      <SidebarRail />
+      <SidebarRail toggleLabel={tActions("toggleSidebar")} />
     </Sidebar>
   );
 }

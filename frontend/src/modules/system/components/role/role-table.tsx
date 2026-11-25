@@ -24,10 +24,12 @@ import { useRoleTable } from "./hooks/use-role-table";
 export function RoleTable({
   canCreate,
   canUpdate,
+  canAssignPermissions = false,
   canDelete,
 }: {
   canCreate: boolean;
   canUpdate: boolean;
+  canAssignPermissions?: boolean;
   canDelete: boolean;
 }) {
   const t = useTranslations("system.iam.roles");
@@ -150,7 +152,11 @@ export function RoleTable({
       onEdit={edit}
       onCopy={copy}
       onDelete={remove}
-      can={{ update: canUpdate, create: canCreate, delete: canDelete }}
+      can={{
+        update: canUpdate || canAssignPermissions,
+        create: canCreate,
+        delete: canDelete,
+      }}
       canDeleteRow={(role) => !role.isSystem}
       canSelectRow={(role) => !role.isSystem}
       bulkStatus={

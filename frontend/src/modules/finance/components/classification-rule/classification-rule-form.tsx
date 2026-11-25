@@ -16,7 +16,7 @@ import { SelectField } from "@/shares/components/common/select-field";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 
-import { FINANCE_ROUTES } from "../../constants/routes";
+import { useFinanceRoutes } from "../../hooks/use-finance-routes";
 import type { ClassificationRule } from "../../types/classification-rule.types";
 import { useClassificationRuleForm } from "./hooks/use-classification-rule-form";
 import { RuleTester } from "./rule-tester";
@@ -36,6 +36,7 @@ export function ClassificationRuleForm({
 }) {
   const t = useTranslations("finance.rules");
   const tCommon = useTranslations("common.actions");
+  const routes = useFinanceRoutes();
   const { form, onSubmit, isSubmitting, platformOptions } = useClassificationRuleForm(rule);
   const pattern = useWatch({ control: form.control, name: "pattern" });
   const locked = disabled || isSubmitting;
@@ -121,7 +122,7 @@ export function ClassificationRuleForm({
       </FormLayout>
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
         <Button type="button" variant="outline" asChild>
-          <Link href={FINANCE_ROUTES.rules}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
+          <Link href={routes.rules}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
         </Button>
         {disabled ? null : (
           <FormSubmitButton

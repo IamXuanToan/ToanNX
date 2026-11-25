@@ -26,8 +26,10 @@ export const settingService = {
    *
    * @returns Cấu hình công khai (auth_google_enabled, auth_github_enabled...).
    */
-  async getPublicSettings(): Promise<PublicSettings> {
-    const res = await apiClient.get<PublicSettings>(SYSTEM_API_ENDPOINTS.publicSettings);
+  async getPublicSettings(signal?: AbortSignal): Promise<PublicSettings> {
+    const res = await apiClient.get<PublicSettings>(SYSTEM_API_ENDPOINTS.publicSettings, {
+      signal,
+    });
     return res.data;
   },
 };

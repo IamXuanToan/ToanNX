@@ -7,6 +7,7 @@ from rest_framework.request import Request
 
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.notification_scope import NotificationScope
 from app.system.decorators.require_permission import require_permission
 from app.system.permissions.notification_permission import NotificationPermission
 from app.system.serializers.responses.notification_unread_count_response_serializer import (
@@ -28,5 +29,8 @@ class NotificationUnreadCountView(CoreApiView):
     def get(self, request: Request) -> CoreResponse:
         """`{personal, system}`."""
         counts = self.notification_service.unread_counts(self.get_actor(request))
-        data = {"personal": counts["PERSONAL"], "system": counts["SYSTEM"]}
+        data = {
+            "personal": counts[NotificationScope.PERSONAL],
+            "system": counts[NotificationScope.SYSTEM],
+        }
         return CoreResponse(NotificationUnreadCountResponseSerializer(data).data)

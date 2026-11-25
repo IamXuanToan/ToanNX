@@ -12,7 +12,11 @@ import type { TiptapInsertItem } from "@/shares/components/common/tiptap-editor.
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 
-import { PAGE_TYPE } from "../../../constants/page-constants";
+import {
+  CUSTOM_PAGE_DRAFT_STORAGE_PREFIX,
+  PAGE_TYPE,
+  PAGE_VERSION_CONFLICT_CODE,
+} from "../../../constants/page-constants";
 import { UTILITIES_ROUTES } from "../../../constants/routes";
 import { useCreatePage } from "../../../hooks/use-create-page";
 import { usePagePathOptions } from "../../../hooks/use-page-path-options";
@@ -36,8 +40,8 @@ import type {
   PublicPage,
 } from "../../../types/page.types";
 
-const VERSION_CONFLICT = "UTILITIES_PAGE_VERSION_CONFLICT";
-const DRAFT_PREFIX = "custom-page-draft:";
+const VERSION_CONFLICT = PAGE_VERSION_CONFLICT_CODE;
+const DRAFT_PREFIX = CUSTOM_PAGE_DRAFT_STORAGE_PREFIX;
 
 /** Bản nội dung chưa lưu giữ tạm trong trình duyệt (mất mạng, đóng tab nhầm). Storage bị chặn thì bỏ qua. */
 function readDraft(id: string): PageFormValues["content"] | null {
@@ -75,6 +79,7 @@ export function usePageForm({
   onCreated?: (saved: PageDetail) => void;
 }) {
   const t = useTranslations("utilities.customPages.validation");
+  const tPages = useTranslations("utilities.customPages.pages");
   const tEditor = useTranslations("utilities.customPages.editor");
   const router = useRouter();
   const create = useCreatePage();
@@ -87,7 +92,7 @@ export function usePageForm({
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [productModalMode, setProductModalMode] = useState<"quick" | "manual">("manual");
   const [editingProduct, setEditingProduct] = useState<AffiliateItem | null>(null);
-  const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("mobile");
+  const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
 
   const form = useForm<PageFormValues>({
     resolver: zodResolver(schema),
@@ -334,9 +339,9 @@ export function usePageForm({
       qrCodes: (raw.qrCodes as DonationQrItem[]) ?? (raw.qr_codes as DonationQrItem[]) ?? [],
       suggestedAmounts: (raw.suggestedAmounts as DonationContentConfig["suggestedAmounts"]) ??
         (raw.suggested_amounts as DonationContentConfig["suggestedAmounts"]) ?? [
-          { amount: 30000, label: "1 ly cafe (30.000 ₫)", icon: "coffee" },
-          { amount: 50000, label: "1 bữa sáng (50.000 ₫)", icon: "utensils" },
-          { amount: 100000, label: "1 cuốn sách (100.000 ₫)", icon: "book" },
+          { amount: 30000, label: tPages("donationEditor.defaultCoffee"), icon: "coffee" },
+          { amount: 50000, label: tPages("donationEditor.defaultBreakfast"), icon: "utensils" },
+          { amount: 100000, label: tPages("donationEditor.defaultBook"), icon: "book" },
         ],
       minAmount:
         typeof raw.minAmount === "number"
@@ -352,7 +357,7 @@ export function usePageForm({
             : true,
       options: raw.options as DonationContentConfig["options"],
     };
-  }, [contentConfig]);
+  }, [contentConfig, tPages]);
 
   const updateDonationConfig = (next: DonationContentConfig) => {
     form.setValue("contentConfig", next as unknown as Record<string, unknown>, {
@@ -380,11 +385,12 @@ export function usePageForm({
 
   const livePreviewData: PublicPage = useMemo(
     () => ({
-      segment: "p",
-      slug: slug || "demo",
-      status: status || "DRAFT",
+      id: page?.id,
+      segment: page?.path?.segment ?? "p",
+      slug: slug || page?.slug || "demo",
+      status: status || page?.status || "DRAFT",
       preview: true,
-      title: title || "Tiêu đề trang",
+      title: title || tPages("defaultTitleFallback"),
       description: description || "",
       canonical_url: "",
       canonicalUrl: "",
@@ -417,6 +423,7 @@ export function usePageForm({
       content: content || { type: "doc", content: [{ type: "paragraph" }] },
     }),
     [
+      page,
       slug,
       status,
       title,
@@ -434,6 +441,7 @@ export function usePageForm({
       themeMode,
       buttonStyle,
       content,
+      tPages,
     ],
   );
 

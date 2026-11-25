@@ -142,6 +142,7 @@ export type BioContentConfig = {
     title: string;
     url: string;
     description?: string;
+    iconUrl?: string;
     highlight?: boolean;
     sortOrder: number;
     isVisible: boolean;
@@ -173,6 +174,9 @@ export type DonationQrItem = {
   previewSvg?: string;
   customImageId?: string | null;
   customImageUrl?: string;
+  webhookEnabled?: boolean;
+  webhookToken?: string;
+  hideAmount?: boolean;
 };
 
 /** Cấu hình nội dung trang Donation. */
@@ -196,6 +200,8 @@ export type DonationContentConfig = {
   }>;
   minAmount?: number;
   allowCustomAmount?: boolean;
+  leaderboardDays?: number;
+  showLiveFeed?: boolean;
   options?: {
     showBankDetails?: boolean;
     showCopyButton?: boolean;
@@ -308,6 +314,7 @@ export type PageInput = {
 
 /** Trang công khai (BE `PagePublicResponseSerializer`). */
 export type PublicPage = {
+  id?: string;
   segment: string;
   slug: string;
   status: PageStatus;

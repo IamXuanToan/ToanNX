@@ -9,22 +9,25 @@ import { keysToCamel } from "@/shares/lib/api/case-conversion";
 import { usePublicPage } from "../../hooks/use-public-page";
 import type { PublicPage as PublicPageData } from "../../types/page.types";
 import { PageRendererDispatcher } from "./page-renderer-dispatcher";
+import { PreviewNotice } from "./preview-notice";
 
 /**
  * Trang công khai đã render: tự động điều phối renderer theo `pageType`.
  * Hỗ trợ fetch trực tiếp phía client qua `usePublicPage` khi không truyền sẵn `initialPage`.
  *
- * @param props - Dữ liệu công khai hoặc segment + slug.
+ * @param props - Dữ liệu công khai hoặc segment + slug và cờ hiện thông báo bản nháp.
  * @returns Trang đã render.
  */
 export function PublicPage({
   page: initialPage,
   segment,
   slug,
+  showPreviewNotice = false,
 }: {
   page?: PublicPageData | null;
   segment?: string;
   slug?: string;
+  showPreviewNotice?: boolean;
 }) {
   const query = usePublicPage(segment ?? "", slug ?? "", !initialPage && Boolean(segment && slug));
   const rawPage = initialPage ?? query.data ?? null;
@@ -58,5 +61,10 @@ export function PublicPage({
     return null;
   }
 
-  return <PageRendererDispatcher page={page} />;
+  return (
+    <>
+      <PageRendererDispatcher page={page} />
+      {showPreviewNotice && page.preview ? <PreviewNotice status={page.status} /> : null}
+    </>
+  );
 }
