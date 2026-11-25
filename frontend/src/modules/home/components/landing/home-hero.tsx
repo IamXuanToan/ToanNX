@@ -25,6 +25,7 @@ export function HomeHero() {
 
   const {
     weatherState,
+    hasWeatherReady,
     thunderTrigger,
     handleWeatherChange,
     handleThunderStrike,
@@ -36,7 +37,9 @@ export function HomeHero() {
 
   return (
     <div
-      className={`relative flex min-h-svh w-full flex-col justify-between overflow-x-hidden transition-colors duration-1000 select-none ${
+      className={`relative flex min-h-svh w-full flex-col justify-between overflow-x-hidden select-none ${
+        hasWeatherReady ? "transition-colors duration-1000" : ""
+      } ${
         isStorm
           ? "dark bg-gradient-to-b from-[#0b0e17] via-[#0f1422] to-[#090c14] text-slate-100"
           : isNight

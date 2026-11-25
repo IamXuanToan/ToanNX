@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { DEFAULT_TIMEZONE } from "@/shares/constants/locale";
 import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
@@ -11,7 +11,11 @@ import {
   WEATHER_LOCATION_STORAGE_KEY,
   WEATHER_LOCATIONS,
 } from "../../../constants/weather-config";
-import { detectRainIntensity, detectWeatherCondition } from "../../../lib/weather-detection";
+import {
+  detectRainIntensity,
+  detectWeatherCondition,
+  isDaytimeBySchedule,
+} from "../../../lib/weather-detection";
 import {
   calculateAstronomicalMoonPhase,
   type LocationKey,
@@ -19,6 +23,10 @@ import {
   type WeatherData,
 } from "../../../store/weather-store";
 import type { RainIntensityType, WeatherEffectType } from "../weather-canvas";
+
+const subscribeNoop = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 export interface WeatherInfo {
   effect: WeatherEffectType;
@@ -50,12 +58,18 @@ export function useWeatherWidget({
   onWeatherChange,
   isDay: parentIsDay = true,
 }: UseWeatherWidgetProps) {
+  const isMounted = useSyncExternalStore(subscribeNoop, getClientSnapshot, getServerSnapshot);
   const [selectedLocation, setSelectedLocation] = useStoredPreference<LocationKey>(
     WEATHER_LOCATION_STORAGE_KEY,
     "danang",
     isLocationKey,
   );
-  const [weatherData, setWeatherData] = useState<WeatherData>(DEFAULT_WEATHER_FALLBACK.danang);
+  const [liveWeatherData, setLiveWeatherData] = useState<WeatherData | null>(null);
+  const fallbackWeather = DEFAULT_WEATHER_FALLBACK[selectedLocation];
+  const weatherData: WeatherData = liveWeatherData ?? {
+    ...fallbackWeather,
+    isDay: isMounted ? isDaytimeBySchedule(fallbackWeather.sunrise, fallbackWeather.sunset) : false,
+  };
   const [selectedEffect, setSelectedEffect] = useState<WeatherEffectType>("auto");
   const [rainIntensity, setRainIntensity] = useState<RainIntensityType>("medium");
   const [windMultiplier, setWindMultiplier] = useState<number>(1);
@@ -93,7 +107,10 @@ export function useWeatherWidget({
         const cached = getCachedWeather(selectedLocation);
         if (cached) {
           if (!isCancelled) {
-            setWeatherData(cached);
+            setLiveWeatherData({
+              ...cached,
+              isDay: isDaytimeBySchedule(cached.sunrise, cached.sunset),
+            });
             const intensity = detectRainIntensity(
               cached.weatherCode,
               cached.precipitation,
@@ -125,8 +142,13 @@ export function useWeatherWidget({
         const condKey = detectWeatherCondition(wCode, wGusts, wSpeed, sPressure, prec);
         const calculatedRainIntensity = detectRainIntensity(wCode, prec, condKey);
 
-        const sunriseStr = daily?.sunrise?.[0]?.split("T")[1] ?? "05:50";
-        const sunsetStr = daily?.sunset?.[0]?.split("T")[1] ?? "17:15";
+        const fallbackLoc = DEFAULT_WEATHER_FALLBACK[selectedLocation];
+        const sunriseStr = daily?.sunrise?.[0]?.split("T")[1] ?? fallbackLoc.sunrise;
+        const sunsetStr = daily?.sunset?.[0]?.split("T")[1] ?? fallbackLoc.sunset;
+        const resolvedIsDay =
+          typeof cur.is_day === "number"
+            ? cur.is_day === 1
+            : isDaytimeBySchedule(sunriseStr, sunsetStr);
 
         const now = new Date();
         const moonPhaseVal = calculateAstronomicalMoonPhase(now);
@@ -141,7 +163,7 @@ export function useWeatherWidget({
           cloudCover: Math.round(cur.cloud_cover ?? 30),
           visibility: 10000,
           precipitation: prec,
-          isDay: cur.is_day === 1,
+          isDay: resolvedIsDay,
           weatherCode: wCode,
           conditionKey: condKey,
           sunrise: sunriseStr,
@@ -150,14 +172,17 @@ export function useWeatherWidget({
         };
 
         if (!isCancelled) {
-          setWeatherData(parsedData);
+          setLiveWeatherData(parsedData);
           setRainIntensity(calculatedRainIntensity);
           setCachedWeather(selectedLocation, parsedData);
         }
       } catch {
         if (!isCancelled) {
           const fallback = DEFAULT_WEATHER_FALLBACK[selectedLocation];
-          setWeatherData(fallback);
+          setLiveWeatherData({
+            ...fallback,
+            isDay: isDaytimeBySchedule(fallback.sunrise, fallback.sunset),
+          });
           setRainIntensity(
             detectRainIntensity(
               fallback.weatherCode,
@@ -180,20 +205,30 @@ export function useWeatherWidget({
     };
   }, [selectedLocation, refreshTrigger, getCachedWeather, setCachedWeather, setIsUpdating]);
 
+  // Cập nhật tự động khi thời gian hệ thống vượt mốc bình minh/hoàng hôn mà không cần tải lại API
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLiveWeatherData((prev) => {
+        if (!prev) return prev;
+        const nextIsDay = isDaytimeBySchedule(prev.sunrise, prev.sunset);
+        return prev.isDay === nextIsDay ? prev : { ...prev, isDay: nextIsDay };
+      });
+    }, 60_000);
+    return () => clearInterval(timer);
+  }, []);
+
   // Đồng bộ thời tiết & gợi ý bản nhạc tương thích lên component cha HomeHero
   useEffect(() => {
     let resolvedEffect: WeatherEffectType = selectedEffect;
     if (resolvedEffect === "auto") {
-      if (!weatherData.isDay) {
-        resolvedEffect = "night";
-      } else if (weatherData.conditionKey === "storm") {
+      if (weatherData.conditionKey === "storm") {
         resolvedEffect = "storm";
       } else if (weatherData.conditionKey === "rain") {
         resolvedEffect = "rain";
       } else if (weatherData.conditionKey === "fog") {
         resolvedEffect = "fog";
       } else {
-        resolvedEffect = "sunny";
+        resolvedEffect = weatherData.isDay ? "sunny" : "night";
       }
     }
 

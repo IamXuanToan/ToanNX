@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from "react";
 
+import { DEFAULT_TIMEZONE } from "@/shares/constants/locale";
+
+import { getTimezoneClockMinutes, parseClockMinutes } from "../../../lib/weather-detection";
 import { calculateAstronomicalMoonPhase } from "../../../store/weather-store";
 
 export type WeatherEffectType = "auto" | "rain" | "storm" | "sunny" | "fog" | "night";
@@ -335,7 +338,7 @@ export function useWeatherCanvas({
   }, [locale]);
 
   const activeEffect: "rain" | "storm" | "sunny" | "fog" | "night" =
-    effect === "auto" ? (!isDay ? "night" : temperature > 24 ? "sunny" : "fog") : effect;
+    effect === "auto" ? (!isDay ? "night" : "sunny") : effect;
 
   const effectiveNight = activeEffect === "night" || !isDay;
   const effectiveDay = !effectiveNight;
@@ -791,18 +794,10 @@ export function useWeatherCanvas({
       // A. NỀN TRỜI & ÁNH SÁNG THIÊN THỂ (QUỸ ĐẠO THỰC TẾ)
       // ==========================================
       const now = new Date();
-      const currentMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+      const currentMinutes = getTimezoneClockMinutes(DEFAULT_TIMEZONE, now);
 
-      let sunriseMinutes = 5 * 60 + 50;
-      let sunsetMinutes = 17 * 60 + 15;
-      if (sunrise) {
-        const parts = sunrise.split("T")[1]?.split(":");
-        if (parts && parts.length >= 2) sunriseMinutes = Number(parts[0]) * 60 + Number(parts[1]);
-      }
-      if (sunset) {
-        const parts = sunset.split("T")[1]?.split(":");
-        if (parts && parts.length >= 2) sunsetMinutes = Number(parts[0]) * 60 + Number(parts[1]);
-      }
+      const sunriseMinutes = parseClockMinutes(sunrise) ?? 5 * 60 + 50;
+      const sunsetMinutes = parseClockMinutes(sunset) ?? 17 * 60 + 15;
 
       const isRealDayTime = currentMinutes >= sunriseMinutes && currentMinutes <= sunsetMinutes;
       let realSunProgress = 0.5;
@@ -856,11 +851,12 @@ export function useWeatherCanvas({
         ctx.fillStyle = nightGrad;
         ctx.fillRect(0, 0, width, height);
 
-        // Ngàn sao lấp lánh (160 Stars Twinkling)
+        // Ngàn sao lấp lánh (giảm độ sáng khi trời mưa/sương che phủ ban đêm)
+        const starDim = isRainMode ? 0.2 : isFogMode ? 0.38 : 1;
         for (let i = 0; i < stars.length; i++) {
           const st = stars[i];
           const twinkle = (Math.sin(time * st.twinkleSpeed + st.twinklePhase) + 1) / 2;
-          const alpha = st.baseAlpha * (0.35 + twinkle * 0.65);
+          const alpha = st.baseAlpha * (0.35 + twinkle * 0.65) * starDim;
 
           ctx.beginPath();
           ctx.arc(st.x, st.y, st.size, 0, Math.PI * 2);
@@ -927,10 +923,37 @@ export function useWeatherCanvas({
         drawRealisticMoon(ctx, moonX, moonY, 32, effectiveMoonPhase);
       } else {
         if (activeEffect === "sunny") {
+          const minutesToSunset = sunsetMinutes - currentMinutes;
+          const minutesFromSunrise = currentMinutes - sunriseMinutes;
+          const sunsetWarmth =
+            isRealDayTime && minutesToSunset >= 0 && minutesToSunset <= 50
+              ? 1 - minutesToSunset / 50
+              : 0;
+          const sunriseWarmth =
+            isRealDayTime && minutesFromSunrise >= 0 && minutesFromSunrise <= 50
+              ? 1 - minutesFromSunrise / 50
+              : 0;
+          const twilightRatio = Math.max(sunsetWarmth, sunriseWarmth);
+
           const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
-          skyGrad.addColorStop(0, "rgba(215, 238, 255, 0.45)");
-          skyGrad.addColorStop(0.6, "rgba(240, 248, 255, 0.2)");
-          skyGrad.addColorStop(1, "rgba(255, 250, 235, 0.35)");
+          skyGrad.addColorStop(
+            0,
+            twilightRatio > 0
+              ? `rgba(${Math.round(215 - twilightRatio * 45)}, ${Math.round(238 - twilightRatio * 68)}, ${Math.round(255 - twilightRatio * 55)}, 0.55)`
+              : "rgba(215, 238, 255, 0.45)",
+          );
+          skyGrad.addColorStop(
+            0.6,
+            twilightRatio > 0
+              ? `rgba(255, ${Math.round(248 - twilightRatio * 42)}, ${Math.round(255 - twilightRatio * 80)}, ${0.2 + twilightRatio * 0.2})`
+              : "rgba(240, 248, 255, 0.2)",
+          );
+          skyGrad.addColorStop(
+            1,
+            twilightRatio > 0
+              ? `rgba(255, ${Math.round(250 - twilightRatio * 65)}, ${Math.round(235 - twilightRatio * 95)}, ${0.35 + twilightRatio * 0.25})`
+              : "rgba(255, 250, 235, 0.35)",
+          );
           ctx.fillStyle = skyGrad;
           ctx.fillRect(0, 0, width, height);
 

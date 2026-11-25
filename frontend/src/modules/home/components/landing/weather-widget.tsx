@@ -1,6 +1,6 @@
 "use client";
 
-import { Droplets, Gauge, RotateCw, Wind, Zap } from "lucide-react";
+import { Droplets, Gauge, RotateCw, Sunrise, Sunset, Wind, Zap } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/shares/components/ui/badge";
@@ -146,10 +146,10 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
       </div>
 
       {/* 2. Nhiệt độ và biểu tượng */}
-      <div className="my-auto flex items-center justify-between py-3">
-        <div className="flex items-center gap-3">
+      <div className="my-auto flex items-center justify-between gap-3 py-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <WeatherIcon conditionKey={weatherData.conditionKey} isDay={effectiveIsDay} />
-          <div>
+          <div className="min-w-0">
             <div className="flex items-start">
               <span
                 className={`font-mono text-5xl font-black drop-shadow-sm sm:text-6xl ${
@@ -175,69 +175,105 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
         </div>
 
         {/* Cảm giác như */}
-        <div className="text-right">
-          <div className={`text-xs ${isDay ? "text-slate-500" : "text-slate-400"}`}>
+        <div className="shrink-0 text-right">
+          <div
+            className={`text-xs whitespace-nowrap ${isDay ? "text-slate-500" : "text-slate-400"}`}
+          >
             {t("weather.feelsLike")}
           </div>
           <div
-            className={`font-mono text-xl font-bold ${isDay ? "text-slate-800" : "text-slate-200"}`}
+            className={`font-mono text-xl font-bold whitespace-nowrap ${isDay ? "text-slate-800" : "text-slate-200"}`}
           >
             {weatherData.feelsLike}°C
           </div>
         </div>
       </div>
 
-      {/* 3. Dải thông số khí tượng tinh giản (Độ ẩm, Gió, Áp suất) */}
+      {/* 3. Dải thông số khí tượng tinh giản (Độ ẩm, Gió, Áp suất + Bình minh / Hoàng hôn) */}
       <div
-        className={`flex items-center justify-between border-t pt-3 text-[11px] sm:text-xs ${
+        className={`space-y-2 border-t pt-3 text-[11px] sm:text-xs ${
           isDay ? "border-slate-900/10 text-slate-600" : "border-white/10 text-slate-300"
         }`}
       >
-        <div
-          className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
-          title={t("weather.humidity")}
-        >
-          <Droplets className="size-3 text-sky-500 sm:size-3.5" />
-          <span>
-            {t("weather.humidity")}:{" "}
-            <strong className={isDay ? "text-slate-900" : "text-white"}>
-              {weatherData.humidity}%
-            </strong>
-          </span>
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+          <div
+            className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
+            title={t("weather.humidity")}
+          >
+            <Droplets className="size-3 text-sky-500 sm:size-3.5" />
+            <span>
+              {t("weather.humidity")}:{" "}
+              <strong className={isDay ? "text-slate-900" : "text-white"}>
+                {weatherData.humidity}%
+              </strong>
+            </span>
+          </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={toggleWind}
+            title={t("weather.windBoostTooltip")}
+            className="flex h-auto shrink-0 items-center gap-1 p-0 text-[11px] font-normal whitespace-nowrap transition-colors hover:bg-transparent hover:opacity-80 sm:gap-1.5 sm:text-xs"
+          >
+            <Wind
+              className={`size-3 sm:size-3.5 ${
+                windMultiplier > 1 ? "animate-pulse text-amber-500" : "text-teal-500"
+              }`}
+            />
+            <span>
+              {t("weather.wind")}:{" "}
+              <strong className={isDay ? "text-slate-900" : "text-white"}>
+                {Math.round(weatherData.windSpeed * windMultiplier)} km/h
+              </strong>
+            </span>
+          </Button>
+
+          <div
+            className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
+            title={t("weather.pressure")}
+          >
+            <Gauge className="size-3 text-indigo-400 sm:size-3.5" />
+            <span>
+              {t("weather.pressure")}:{" "}
+              <strong className={isDay ? "text-slate-900" : "text-white"}>
+                {weatherData.surfacePressure} hPa
+              </strong>
+            </span>
+          </div>
         </div>
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={toggleWind}
-          title={t("weather.windBoostTooltip")}
-          className="flex h-auto shrink-0 items-center gap-1 p-0 text-[11px] font-normal whitespace-nowrap transition-colors hover:bg-transparent hover:opacity-80 sm:gap-1.5 sm:text-xs"
-        >
-          <Wind
-            className={`size-3 sm:size-3.5 ${
-              windMultiplier > 1 ? "animate-pulse text-amber-500" : "text-teal-500"
-            }`}
-          />
-          <span>
-            {t("weather.wind")}:{" "}
-            <strong className={isDay ? "text-slate-900" : "text-white"}>
-              {Math.round(weatherData.windSpeed * windMultiplier)} km/h
-            </strong>
-          </span>
-        </Button>
-
         <div
-          className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
-          title={t("weather.pressure")}
+          className={`flex items-center justify-between gap-3 border-t pt-2 ${
+            isDay ? "border-slate-900/10" : "border-white/10"
+          }`}
         >
-          <Gauge className="size-3 text-indigo-400 sm:size-3.5" />
-          <span>
-            {t("weather.pressure")}:{" "}
-            <strong className={isDay ? "text-slate-900" : "text-white"}>
-              {weatherData.surfacePressure} hPa
-            </strong>
-          </span>
+          <div
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap"
+            title={t("weather.sunrise")}
+          >
+            <Sunrise className="size-3.5 text-amber-400" />
+            <span>
+              {t("weather.sunrise")}:{" "}
+              <strong className={`font-mono ${isDay ? "text-slate-900" : "text-white"}`}>
+                {weatherData.sunrise}
+              </strong>
+            </span>
+          </div>
+
+          <div
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap"
+            title={t("weather.sunset")}
+          >
+            <Sunset className="size-3.5 text-orange-400" />
+            <span>
+              {t("weather.sunset")}:{" "}
+              <strong className={`font-mono ${isDay ? "text-slate-900" : "text-white"}`}>
+                {weatherData.sunset}
+              </strong>
+            </span>
+          </div>
         </div>
       </div>
 
