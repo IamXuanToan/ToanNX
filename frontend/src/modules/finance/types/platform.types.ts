@@ -14,7 +14,7 @@ export type Platform = {
   updatedAt: string;
 };
 
-export type PlatformFilters = ListParams & { isActive?: string };
+export type PlatformFilters = ListParams & { owner?: string; isActive?: string };
 
 export type PlatformInput = {
   name?: string;

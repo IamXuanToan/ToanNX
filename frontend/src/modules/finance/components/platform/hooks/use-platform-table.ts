@@ -7,6 +7,7 @@ import { withEditMode } from "@/shares/lib/edit-mode";
 import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
 import { financeKeys } from "../../../constants/query-keys";
 import { platformService } from "../../../services/platform.service";
+import { useFinancePersonalScope } from "../../../hooks/use-finance-personal-scope";
 import { useFinanceRoutes } from "../../../hooks/use-finance-routes";
 import { useDeletePlatform } from "../../../hooks/use-delete-platform";
 import { usePlatforms } from "../../../hooks/use-platforms";
@@ -17,8 +18,16 @@ import type { Platform } from "../../../types/platform.types";
 export function usePlatformTable() {
   const router = useRouter();
   const routes = useFinanceRoutes();
+  const { personalOwnerId, scopeReady } = useFinancePersonalScope();
   const table = useTableState({ ordering: "name", filterKeys: ["isActive"] });
-  const query = usePlatforms({ ...table.filters, isActive: table.extraFilters.isActive });
+  const query = usePlatforms(
+    {
+      ...table.filters,
+      owner: personalOwnerId ?? undefined,
+      isActive: table.extraFilters.isActive,
+    },
+    { enabled: scopeReady },
+  );
   const remove = useDeletePlatform();
   const seed = useSeedPlatforms();
   const bulk = useBulkActions<Platform>({
