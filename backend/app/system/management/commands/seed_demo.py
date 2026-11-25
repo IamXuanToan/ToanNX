@@ -15,6 +15,8 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError, CommandParser
 
+from app.system.utils.frontend_url import get_frontend_origin
+
 DEFAULT_EMAIL = "nxtoan2k4@gmail.com"
 
 
@@ -72,9 +74,10 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("\n=================================================="))
         self.stdout.write(self.style.SUCCESS("  HOÀN TẤT NẠP TOÀN BỘ DỮ LIỆU SEED MẪU CHUẨN!   "))
         self.stdout.write(self.style.SUCCESS("=================================================="))
+        frontend_origin = get_frontend_origin()
         self.stdout.write("Các trang bạn có thể truy cập để kiểm tra thống kê và biểu đồ ngay:")
-        self.stdout.write("  • Thống kê quyên góp (Portal): http://localhost:3001/vi/ca-nhan/quyen-gop")
-        self.stdout.write("  • Tổng quan cá nhân (Portal):  http://localhost:3001/vi/ca-nhan")
-        self.stdout.write("  • Quản trị tài chính (Admin):  http://localhost:3001/vi/quan-tri/tai-chinh")
-        self.stdout.write("  • Quản trị tiện ích (Admin):   http://localhost:3001/vi/quan-tri/tien-ich")
-        self.stdout.write("  • Quản lý link rút gọn:        http://localhost:3001/vi/ca-nhan/link-rut-gon")
+        self.stdout.write(f"  • Thống kê quyên góp (Portal): {frontend_origin}/vi/ca-nhan/quyen-gop")
+        self.stdout.write(f"  • Tổng quan cá nhân (Portal):  {frontend_origin}/vi/ca-nhan")
+        self.stdout.write(f"  • Quản trị tài chính (Admin):  {frontend_origin}/vi/quan-tri/tai-chinh")
+        self.stdout.write(f"  • Quản trị tiện ích (Admin):   {frontend_origin}/vi/quan-tri/tien-ich")
+        self.stdout.write(f"  • Quản lý link rút gọn:        {frontend_origin}/vi/ca-nhan/link-rut-gon")

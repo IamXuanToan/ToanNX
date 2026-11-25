@@ -8,8 +8,10 @@ from django.http import HttpRequest
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
+from app.core.constants.defaults import DEFAULT_LOCALE
 from app.core.constants.error_codes import ErrorCode
 from app.core.exceptions.validation_error import ValidationError
+from app.system.constants.auth_frontend_routes import AUTH_RESET_PASSWORD_PATHS, resolve_auth_locale
 from app.system.models.user import User
 from app.system.services.email_service import EmailService
 from app.system.services.user_service import UserService
@@ -37,7 +39,9 @@ class PasswordResetService:
         self.email_service = email_service or EmailService()
         self.user_service = user_service or UserService()
 
-    def build_reset_url(self, request: HttpRequest, uidb64: str, token: str, locale: str = "vi") -> str:
+    def build_reset_url(
+        self, request: HttpRequest, uidb64: str, token: str, locale: str = DEFAULT_LOCALE
+    ) -> str:
         """Tạo đường dẫn đặt lại mật khẩu dẫn về Frontend Next.js.
 
         Tự động nhận diện origin của frontend từ request để hoạt động chính xác
@@ -52,16 +56,16 @@ class PasswordResetService:
         Returns:
             Đường dẫn tuyệt đối.
         """
-        lang = "en" if locale == "en" else "vi"
-        frontend_origin = get_frontend_origin(request)
-        path = f"/{lang}/reset-password" if lang == "en" else f"/{lang}/dat-lai-mat-khau"
+        lang = resolve_auth_locale(locale)
+        frontend_origin = get_frontend_origin(request, prefer_configured=True)
+        path = AUTH_RESET_PASSWORD_PATHS[lang]
         return f"{frontend_origin}{path}?uid={uidb64}&token={token}"
 
     def request_password_reset(
         self,
         request: HttpRequest,
         email: str,
-        locale: str = "vi",
+        locale: str = DEFAULT_LOCALE,
         *,
         async_send: bool | None = None,
     ) -> str:

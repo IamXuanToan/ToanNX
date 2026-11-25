@@ -9,6 +9,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from app.core.exceptions.business_rule_error import BusinessRuleError
+from app.core.exceptions.not_found_error import NotFoundError
 from app.core.services.core_crud_service import CoreCrudService
 from app.system.constants.notification_defaults import TELEGRAM_REGISTRATION_MINUTES
 from app.system.constants.notification_error_code import NotificationErrorCode
@@ -62,6 +63,8 @@ class TelegramChatService(CoreCrudService[TelegramChat, TelegramChatRepository])
     def verify(self, actor: Any, pk: Any) -> TelegramChat:
         """Tìm `/start <mã>` trong getUpdates của bot, xác minh quyền gửi, gửi tin thử."""
         chat = self.get_for_write(actor, pk)
+        if chat.owner_id != actor.pk:
+            raise NotFoundError()
         if chat.status != Status.PENDING or not chat.registration_code:
             return chat
         if chat.registration_expires_at and chat.registration_expires_at < timezone.now():
@@ -106,6 +109,8 @@ class TelegramChatService(CoreCrudService[TelegramChat, TelegramChatRepository])
     def send_test(self, actor: Any, pk: Any) -> TelegramChat:
         """Gửi tin thử và cập nhật trạng thái theo kết quả."""
         chat = self.get_by_id_for(actor, pk)
+        if chat.owner_id != actor.pk:
+            raise NotFoundError()
         if not chat.chat_id:
             raise BusinessRuleError("Chat chưa xác minh.", code=NotificationErrorCode.TELEGRAM_CHAT_INACTIVE)
         token = self.telegram_bot_service.token_of(chat.bot)

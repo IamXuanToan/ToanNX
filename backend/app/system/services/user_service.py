@@ -13,6 +13,7 @@ from typing import Any
 from django.db import transaction
 from django.utils import timezone
 
+from app.core.constants.defaults import DEFAULT_LOCALE
 from app.core.exceptions.authorization_error import AuthorizationError
 from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.exceptions.conflict_error import ConflictError
@@ -177,7 +178,7 @@ class UserService(CoreCrudService[User, UserRepository]):
         user.save(update_fields=["password"])
 
         if send_invitation and request is not None:
-            locale = getattr(request, "headers", {}).get("Accept-Language", "vi")[:2]
+            locale = getattr(request, "headers", {}).get("Accept-Language", DEFAULT_LOCALE)[:2]
             try:
                 self.invitation_service.send_invitation_email(request, user, locale=locale)
             except Exception:

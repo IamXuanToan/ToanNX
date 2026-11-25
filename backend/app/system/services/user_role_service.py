@@ -101,6 +101,8 @@ class UserRoleService:
                     code=IamErrorCode.IAM_PRIVILEGE_ESCALATION,
                     details={"permissions": sorted(missing)},
                 )
+            if role.is_system:
+                raise AuthorizationError(code=IamErrorCode.IAM_SYSTEM_ROLE_PROTECTED)
 
         if not self.repository.exists(user=target, role=role):
             self.repository.create(actor=actor, user=target, role=role)
@@ -171,6 +173,8 @@ class UserRoleService:
                     code=IamErrorCode.IAM_PRIVILEGE_ESCALATION,
                     details={"permissions": sorted(missing)},
                 )
+            if any(role.is_system for role in added):
+                raise AuthorizationError(code=IamErrorCode.IAM_SYSTEM_ROLE_PROTECTED)
         if added:
             self.repository.bulk_create((UserRole(user=target, role=role) for role in added), actor=actor)
         if removed_ids:

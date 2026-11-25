@@ -20,10 +20,35 @@ SVG_CONTENT_TYPE = "image/svg+xml"
 SVG_NAMESPACE = "http://www.w3.org/2000/svg"
 
 _FORBIDDEN_TAGS = frozenset(
-    {"script", "foreignobject", "iframe", "object", "embed", "audio", "video", "handler", "listener"}
+    {
+        "script",
+        "foreignobject",
+        "iframe",
+        "object",
+        "embed",
+        "audio",
+        "video",
+        "handler",
+        "listener",
+        "animate",
+        "animatetransform",
+        "animatemotion",
+        "set",
+        "discard",
+        "mpath",
+    }
 )
 _HREF_ATTRIBUTES = frozenset({"href", "{http://www.w3.org/1999/xlink}href"})
-_DANGEROUS_STYLE = re.compile(r"@import|expression\s*\(|javascript:|url\(\s*['\"]?(?!#)", re.IGNORECASE)
+_URL_ATTRIBUTES = frozenset({"href", "src", "from", "to", "values", "by", "action"})
+_DANGEROUS_STYLE = re.compile(
+    r"@import|expression\s*\(|-moz-binding|behavior\s*:|javascript:|vbscript:|url\(\s*['\"]?(?!#)",
+    re.IGNORECASE,
+)
+_DANGEROUS_VALUE = re.compile(
+    r"javascript:|vbscript:|data\s*:\s*(?:text/html|application/|image/svg\+xml)",
+    re.IGNORECASE,
+)
+_WHITESPACE_CONTROL = re.compile(r"[\s\x00-\x1f\x7f]+")
 _TEXT_SNIFF = re.compile(rb"^\s*(<\?xml[^>]*>\s*)?(<!--.*?-->\s*)*<svg[\s>]", re.DOTALL | re.IGNORECASE)
 _SNIFF_SIZE = 1024
 
@@ -64,8 +89,10 @@ def find_svg_problem(stream: IO[bytes]) -> str | None:
         tag = element.tag.rsplit("}", 1)[-1].lower() if isinstance(element.tag, str) else ""
         if tag in _FORBIDDEN_TAGS:
             return f"SVG không được chứa <{tag}>."
-        if tag == "style" and element.text and _DANGEROUS_STYLE.search(element.text):
-            return "SVG chứa CSS không an toàn."
+        if tag == "style" and element.text:
+            collapsed_css = _WHITESPACE_CONTROL.sub("", element.text)
+            if _DANGEROUS_STYLE.search(element.text) or _DANGEROUS_VALUE.search(collapsed_css):
+                return "SVG chứa CSS không an toàn."
         for name, value in element.attrib.items():
             local = name.rsplit("}", 1)[-1].lower()
             if local.startswith("on"):
@@ -74,6 +101,14 @@ def find_svg_problem(stream: IO[bytes]) -> str | None:
                 return "SVG chỉ được liên kết nội bộ (#id)."
             if local == "style" and _DANGEROUS_STYLE.search(value):
                 return "SVG chứa CSS không an toàn."
-            if "javascript:" in value.lower():
-                return "SVG chứa `javascript:`."
+            collapsed_value = _WHITESPACE_CONTROL.sub("", value)
+            if _DANGEROUS_VALUE.search(collapsed_value):
+                return "SVG chứa URI/script không an toàn."
+            if (
+                local in _URL_ATTRIBUTES
+                and value.strip()
+                and not value.strip().startswith("#")
+                and "://" in collapsed_value
+            ):
+                return f"SVG không được trỏ tài nguyên ngoài qua `{local}`."
     return None

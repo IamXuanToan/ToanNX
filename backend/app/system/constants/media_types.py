@@ -1,5 +1,7 @@
 """Danh mục loại và định dạng media đã được backend hỗ trợ."""
 
+from app.core.constants.defaults import CONTENT_TYPE_CSV
+
 MEDIA_KINDS = (("IMAGE", "Ảnh"), ("VIDEO", "Video"), ("DOCUMENT", "Tài liệu"))
 CONTENT_TYPES_BY_KIND = {
     "IMAGE": ("image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"),
@@ -7,7 +9,7 @@ CONTENT_TYPES_BY_KIND = {
     "DOCUMENT": (
         "application/pdf",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "text/csv",
+        CONTENT_TYPE_CSV,
         "application/xml",
     ),
 }

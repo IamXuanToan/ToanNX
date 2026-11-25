@@ -9,6 +9,14 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 
+from app.core.constants.defaults import DEFAULT_LOCALE
+from app.system.constants.auth_frontend_routes import (
+    EMAIL_SUBJECTS,
+    EMAIL_TEMPLATE_INVITATION,
+    EMAIL_TEMPLATE_PASSWORD_RESET,
+    EMAIL_TEMPLATE_VERIFICATION,
+    resolve_auth_locale,
+)
 from app.system.models.user import User
 
 logger = logging.getLogger("app.auth.email")
@@ -50,7 +58,7 @@ class EmailService:
         subject: str,
         recipient: str,
         context: dict[str, Any],
-        locale: str = "vi",
+        locale: str = DEFAULT_LOCALE,
         async_send: bool | None = None,
     ) -> bool:
         """Dựng email từ template theo ngôn ngữ rồi gửi.
@@ -66,7 +74,7 @@ class EmailService:
         Returns:
             True nếu đã gửi hoặc đã đưa vào hàng đợi; False nếu lỗi khi dựng/gửi.
         """
-        lang = "en" if locale == "en" else "vi"
+        lang = resolve_auth_locale(locale)
         full_context = {"current_year": timezone.now().year, **context}
         try:
             text_body = render_to_string(f"system/email/{template}_{lang}.txt", full_context)
@@ -93,7 +101,7 @@ class EmailService:
         self,
         user: User,
         reset_url: str,
-        locale: str = "vi",
+        locale: str = DEFAULT_LOCALE,
         *,
         async_send: bool | None = None,
     ) -> bool:
@@ -108,16 +116,17 @@ class EmailService:
         Returns:
             Kết quả của `send_template`.
         """
+        lang = resolve_auth_locale(locale)
         return self.send_template(
-            template="password_reset",
-            subject="Reset your ToanNX password" if locale == "en" else "Đặt lại mật khẩu tài khoản ToanNX",
+            template=EMAIL_TEMPLATE_PASSWORD_RESET,
+            subject=EMAIL_SUBJECTS[EMAIL_TEMPLATE_PASSWORD_RESET][lang],
             recipient=user.email,
             context={
                 **self._user_context(user),
                 "reset_url": reset_url,
                 "timeout_minutes": max(1, settings.PASSWORD_RESET_TIMEOUT // 60),
             },
-            locale=locale,
+            locale=lang,
             async_send=async_send,
         )
 
@@ -125,7 +134,7 @@ class EmailService:
         self,
         user: User,
         verification_url: str,
-        locale: str = "vi",
+        locale: str = DEFAULT_LOCALE,
         *,
         timeout_hours: int = 24,
         async_send: bool | None = None,
@@ -142,18 +151,17 @@ class EmailService:
         Returns:
             Kết quả của `send_template`.
         """
+        lang = resolve_auth_locale(locale)
         return self.send_template(
-            template="email_verification",
-            subject="Verify your email address · ToanNX"
-            if locale == "en"
-            else "Xác minh địa chỉ email · ToanNX",
+            template=EMAIL_TEMPLATE_VERIFICATION,
+            subject=EMAIL_SUBJECTS[EMAIL_TEMPLATE_VERIFICATION][lang],
             recipient=user.email,
             context={
                 **self._user_context(user),
                 "verification_url": verification_url,
                 "timeout_hours": timeout_hours,
             },
-            locale=locale,
+            locale=lang,
             async_send=async_send,
         )
 
@@ -161,7 +169,7 @@ class EmailService:
         self,
         user: User,
         invitation_url: str,
-        locale: str = "vi",
+        locale: str = DEFAULT_LOCALE,
         *,
         timeout_days: int = 7,
         async_send: bool | None = None,
@@ -178,18 +186,17 @@ class EmailService:
         Returns:
             Kết quả của `send_template`.
         """
+        lang = resolve_auth_locale(locale)
         return self.send_template(
-            template="invitation",
-            subject="Invitation to join ToanNX platform"
-            if locale == "en"
-            else "Lời mời tham gia hệ thống ToanNX",
+            template=EMAIL_TEMPLATE_INVITATION,
+            subject=EMAIL_SUBJECTS[EMAIL_TEMPLATE_INVITATION][lang],
             recipient=user.email,
             context={
                 **self._user_context(user),
                 "invitation_url": invitation_url,
                 "timeout_days": timeout_days,
             },
-            locale=locale,
+            locale=lang,
             async_send=async_send,
         )
 

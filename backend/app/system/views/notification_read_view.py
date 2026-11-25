@@ -8,6 +8,7 @@ from rest_framework.request import Request
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.notification_scope import NotificationScope
 from app.system.decorators.require_permission import require_permission
 from app.system.permissions.notification_permission import NotificationPermission
 from app.system.serializers.responses.notification_response_serializer import NotificationResponseSerializer
@@ -42,7 +43,10 @@ class NotificationReadView(CoreApiView):
 
     @staticmethod
     def _counts(counts: dict[str, int]) -> dict[str, int]:
-        return {"personal": counts["PERSONAL"], "system": counts["SYSTEM"]}
+        return {
+            "personal": counts[NotificationScope.PERSONAL],
+            "system": counts[NotificationScope.SYSTEM],
+        }
 
 
 class NotificationReadObjectView(CoreApiView):

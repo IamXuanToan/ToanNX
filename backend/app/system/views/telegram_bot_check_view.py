@@ -25,7 +25,7 @@ class TelegramBotCheckView(CoreApiView):
         self.telegram_bot_service = TelegramBotService()
 
     @extend_schema(request=None, responses=TelegramBotCheckResponseSerializer)
-    @require_permission(TelegramBotPermission.READ)
+    @require_permission(TelegramBotPermission.UPDATE)
     @rate_limit("system.telegram.call")
     def post(self, request: Request) -> CoreResponse:
         """Kết quả kiểm tra."""

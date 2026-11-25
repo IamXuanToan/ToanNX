@@ -5,6 +5,7 @@ from typing import Any
 from drf_spectacular.utils import extend_schema
 from rest_framework.request import Request
 
+from app.core.constants.defaults import DEFAULT_LOCALE
 from app.core.decorators.rate_limit import rate_limit
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
@@ -45,7 +46,7 @@ class SendVerificationEmailView(CoreApiView):
         Returns:
             Thông báo trạng thái.
         """
-        locale = request.headers.get("Accept-Language", "vi")[:2]
+        locale = request.headers.get("Accept-Language", DEFAULT_LOCALE)[:2]
         message = self.verification_service.send_verification_email(
             request._request,
             self.get_actor(request),

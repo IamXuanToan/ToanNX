@@ -24,6 +24,7 @@ DOWNLOAD_ONLY_CONTENT_TYPES = frozenset(
     {
         "text/csv",
         "application/xml",
+        "image/svg+xml",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     }
 )
