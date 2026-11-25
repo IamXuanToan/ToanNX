@@ -30,8 +30,16 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("qr-codes/preview", QrPreviewView.as_view(), name="qr-code-preview"),
     path("qr-codes/banks", QrBankView.as_view(), name="qr-code-banks"),
     path("pages/public/<str:segment>/<str:slug>", PagePublicView.as_view(), name="page-public"),
-    path("pages/<uuid:page_id>/donations/feed", DonationPublicFeedView.as_view(), name="donation-public-feed"),
-    path("pages/<uuid:page_id>/donations/leaderboard", DonationPublicLeaderboardView.as_view(), name="donation-public-leaderboard"),
+    path(
+        "pages/<uuid:page_id>/donations/feed",
+        DonationPublicFeedView.as_view(),
+        name="donation-public-feed",
+    ),
+    path(
+        "pages/<uuid:page_id>/donations/leaderboard",
+        DonationPublicLeaderboardView.as_view(),
+        name="donation-public-leaderboard",
+    ),
     path("donations/webhook/<str:webhook_token>", DonationWebhookView.as_view(), name="donation-webhook"),
     *router.urls,
 ]

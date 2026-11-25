@@ -43,7 +43,8 @@ MODULE = ModuleDescriptor(
             ),
             auth="Token bí mật trong URL: {webhook_token}",
             setup=(
-                "Trong cài đặt phương thức QR của trang Donate: Bật nhận Webhook SePay và sao chép Webhook URL.",
+                "Trong cài đặt phương thức QR của trang Donate: "
+                "Bật nhận Webhook SePay và sao chép Webhook URL.",
                 "my.sepay.vn → Webhooks → Thêm webhook, dán URL; sự kiện: Chỉ tiền vào.",
             ),
         ),

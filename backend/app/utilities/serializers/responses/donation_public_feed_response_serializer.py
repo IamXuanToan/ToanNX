@@ -8,7 +8,10 @@ class DonationPublicFeedResponseSerializer(serializers.Serializer):
 
     id = serializers.CharField(help_text="ID giao dịch.")
     donor_title = serializers.CharField(help_text="Danh xưng tri ân (Anh chị em đẹp zai...).")
-    amount = serializers.IntegerField(allow_null=True, help_text="Số tiền ủng hộ (ẩn nếu QR bật hide_amount).")
+    amount = serializers.IntegerField(
+        allow_null=True,
+        help_text="Số tiền ủng hộ (ẩn nếu QR bật hide_amount).",
+    )
     hide_amount = serializers.BooleanField(help_text="Cờ ẩn số tiền.")
     gift_type = serializers.CharField(help_text="Mã loại quà tặng.")
     gift_label = serializers.CharField(help_text="Nhãn quà tặng (Ly cà phê, Gói mì tôm...).")

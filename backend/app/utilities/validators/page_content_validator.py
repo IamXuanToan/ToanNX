@@ -28,6 +28,7 @@ _YOUTUBE_HOSTS = frozenset(
     }
 )
 _ALIGN = frozenset({"left", "center", "right", "justify"})
+_IMAGE_ALIGN = frozenset({"left", "center", "right", "full"})
 _TONES = frozenset({"info", "success", "warning", "danger"})
 _SOCIAL = frozenset(
     {"facebook", "instagram", "tiktok", "youtube", "x", "linkedin", "github", "zalo", "email", "website"}
@@ -57,7 +58,7 @@ _NODES: dict[str, tuple[frozenset[str], bool]] = {
     "tableRow": (frozenset(), True),
     "tableHeader": (frozenset({"colspan", "rowspan", "colwidth"}), True),
     "tableCell": (frozenset({"colspan", "rowspan", "colwidth"}), True),
-    "image": (frozenset({"src", "alt", "title", "attachmentId", "width", "height"}), False),
+    "image": (frozenset({"src", "alt", "title", "attachmentId", "width", "height", "align"}), False),
     "youtube": (frozenset({"src", "width", "height", "start"}), False),
     "button": (frozenset({"label", "href", "shortLinkId", "variant"}), False),
     "columns": (frozenset({"count"}), True),
@@ -114,6 +115,26 @@ def _color(value: Any, path: str) -> str:
     return str(value).lower()
 
 
+def _image_size(value: Any, key: str, path: str) -> int | str:
+    """Chuẩn hóa kích thước ảnh: số nguyên dương (px) hoặc chuỗi phần trăm/px an toàn."""
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        rounded = round(value)
+        if not 1 <= rounded <= 4000:
+            _fail(path, f"{key} phải từ 1 đến 4000.")
+        return int(rounded)
+    if isinstance(value, str):
+        cleaned = value.strip()
+        if cleaned.endswith("%") and cleaned[:-1].isdigit():
+            pct = int(cleaned[:-1])
+            if 10 <= pct <= 100:
+                return f"{pct}%"
+        if cleaned.endswith("px") and cleaned[:-2].isdigit():
+            px = int(cleaned[:-2])
+            if 1 <= px <= 4000:
+                return f"{px}px"
+    _fail(path, f"{key} không hợp lệ.")
+
+
 def _check_attrs(node_type: str, attrs: dict[str, Any], path: str, refs: PageContentRefs) -> dict[str, Any]:
     """Kiểm giá trị attr theo node; trả attr đã chuẩn hóa (bỏ attr null)."""
     attrs = {key: value for key, value in attrs.items() if value is not None}
@@ -129,6 +150,11 @@ def _check_attrs(node_type: str, attrs: dict[str, Any], path: str, refs: PageCon
             attrs["src"] = ""  # URL dựng lại lúc trả về theo attachment hiện tại
         else:
             attrs["src"] = _url(attrs.get("src"), path, frozenset({"https"}))
+        if "align" in attrs and attrs["align"] not in _IMAGE_ALIGN:
+            _fail(path, "align ảnh không hợp lệ.")
+        for key in ("width", "height"):
+            if key in attrs:
+                attrs[key] = _image_size(attrs[key], key, path)
         for key in ("alt", "title"):
             if key in attrs and (not isinstance(attrs[key], str) or len(attrs[key]) > 300):
                 _fail(path, f"{key} tối đa 300 ký tự.")

@@ -11,6 +11,7 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 from app.core.cache.cache_service import CacheService
+from app.core.constants.defaults import DEFAULT_CURRENCY_CODE
 from app.utilities.constants.affiliate_platform import (
     PLATFORM_DOMAIN_PATTERNS,
     AffiliatePlatform,
@@ -108,7 +109,7 @@ class LinkMetadataService:
             "platform": platform,
             "site_name": site_name,
             "price": price,
-            "currency": currency or "VND",
+            "currency": currency or DEFAULT_CURRENCY_CODE,
             "canonical_url": meta.get("og:url") or final_url,
             "destination_url": original_url,
         }

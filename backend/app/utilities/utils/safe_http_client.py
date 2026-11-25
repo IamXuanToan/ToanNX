@@ -15,9 +15,11 @@ from urllib.parse import urljoin, urlsplit
 
 import requests
 
+from app.core.constants.defaults import DEFAULT_HTTP_ACCEPT_LANGUAGE, DEFAULT_HTTP_ENCODING
 from app.core.exceptions.validation_error import ValidationError
+from app.utilities.utils.pinned_http_adapter import PinnedHttpAdapter
 
-# Các dải IP bị cấm truy cập tuyệt đối
+# Các dải IP bị cấm truy cập tuyệt đối (gồm IPv4-mapped IPv6 và NAT64)
 _BLOCKED_NETWORKS = (
     ipaddress.ip_network("0.0.0.0/8"),
     ipaddress.ip_network("10.0.0.0/8"),
@@ -29,6 +31,9 @@ _BLOCKED_NETWORKS = (
     ipaddress.ip_network("192.168.0.0/16"),
     ipaddress.ip_network("198.18.0.0/15"),
     ipaddress.ip_network("::1/128"),
+    ipaddress.ip_network("::ffff:0:0/96"),
+    ipaddress.ip_network("64:ff9b::/96"),
+    ipaddress.ip_network("64:ff9b:1::/48"),
     ipaddress.ip_network("fc00::/7"),
     ipaddress.ip_network("fe80::/10"),
 )
@@ -46,12 +51,57 @@ DEFAULT_USER_AGENT = (
 def is_ip_allowed(ip_str: str) -> bool:
     """Kiểm tra địa chỉ IP có an toàn hay thuộc dải private/internal/cloud metadata."""
     try:
-        ip = ipaddress.ip_address(ip_str)
-        if ip.is_loopback or ip.is_private or ip.is_reserved or ip.is_link_local:
+        ip = ipaddress.ip_address(ip_str.split("%", 1)[0])
+        if isinstance(ip, ipaddress.IPv6Address):
+            if ip.ipv4_mapped is not None:
+                return is_ip_allowed(str(ip.ipv4_mapped))
+            if ip.sixtofour is not None and not is_ip_allowed(str(ip.sixtofour)):
+                return False
+            if ip.teredo is not None and (
+                not is_ip_allowed(str(ip.teredo[0])) or not is_ip_allowed(str(ip.teredo[1]))
+            ):
+                return False
+        if (
+            ip.is_loopback
+            or ip.is_private
+            or ip.is_reserved
+            or ip.is_link_local
+            or ip.is_multicast
+            or ip.is_unspecified
+            or not ip.is_global
+        ):
             return False
         return not any(ip in net for net in _BLOCKED_NETWORKS)
     except ValueError:
         return False
+
+
+def resolve_safe_ips(url: str) -> tuple[str, list[str]]:
+    """Kiểm tra URL và phân giải ra danh sách IP công cộng an toàn để ghim kết nối."""
+    parts = urlsplit(url)
+    if parts.scheme not in ("http", "https"):
+        raise ValidationError(details={"url": ["Chỉ hỗ trợ giao thức http hoặc https."]})
+
+    hostname = parts.hostname
+    if not hostname:
+        raise ValidationError(details={"url": ["URL không có hostname hợp lệ."]})
+
+    try:
+        addr_info = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
+        ips: list[str] = []
+        for _, _, _, _, sockaddr in addr_info:
+            ip_str = str(sockaddr[0])
+            if not is_ip_allowed(ip_str):
+                raise ValidationError(details={"url": ["Địa chỉ đích không được phép truy cập."]})
+            if ip_str not in ips:
+                ips.append(ip_str)
+    except socket.gaierror as exc:
+        raise ValidationError(details={"url": ["Không thể phân giải tên miền."]}) from exc
+
+    if not ips:
+        raise ValidationError(details={"url": ["Không thể phân giải tên miền."]})
+
+    return hostname.lower(), ips
 
 
 def validate_url_safety(url: str) -> str:
@@ -66,23 +116,7 @@ def validate_url_safety(url: str) -> str:
     Raises:
         ValidationError: URL không hợp lệ hoặc trỏ tới mạng nội bộ.
     """
-    parts = urlsplit(url)
-    if parts.scheme not in ("http", "https"):
-        raise ValidationError(details={"url": ["Chỉ hỗ trợ giao thức http hoặc https."]})
-
-    hostname = parts.hostname
-    if not hostname:
-        raise ValidationError(details={"url": ["URL không có hostname hợp lệ."]})
-
-    try:
-        addr_info = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
-        for _, _, _, _, sockaddr in addr_info:
-            ip_str = str(sockaddr[0])
-            if not is_ip_allowed(ip_str):
-                raise ValidationError(details={"url": ["Địa chỉ đích không được phép truy cập."]})
-    except socket.gaierror as exc:
-        raise ValidationError(details={"url": ["Không thể phân giải tên miền."]}) from exc
-
+    resolve_safe_ips(url)
     return url
 
 
@@ -90,13 +124,18 @@ class SafeHttpClient:
     """Client thực hiện HTTP GET an toàn, ngăn chặn SSRF và giới hạn dung lượng tải về."""
 
     def __init__(self) -> None:
-        """Khởi tạo session với User-Agent chuẩn của trình duyệt."""
+        """Khởi tạo session với User-Agent chuẩn, tắt proxy env và gắn adapter ghim IP."""
+        self.pinned_ips: dict[str, str] = {}
         self.session = requests.Session()
+        self.session.trust_env = False
+        adapter = PinnedHttpAdapter(self.pinned_ips)
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
         self.session.headers.update(
             {
                 "User-Agent": DEFAULT_USER_AGENT,
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
+                "Accept-Language": DEFAULT_HTTP_ACCEPT_LANGUAGE,
             }
         )
 
@@ -116,7 +155,8 @@ class SafeHttpClient:
         hops = 0
 
         while hops <= MAX_REDIRECTS:
-            validate_url_safety(current_url)
+            hostname, safe_ips = resolve_safe_ips(current_url)
+            self.pinned_ips[hostname] = safe_ips[0]
 
             try:
                 response = self.session.get(
@@ -163,11 +203,11 @@ class SafeHttpClient:
                 chunks.append(chunk)
 
             raw_bytes = b"".join(chunks)
-            encoding = response.encoding or "utf-8"
+            encoding = response.encoding or DEFAULT_HTTP_ENCODING
             try:
                 html_text = raw_bytes.decode(encoding, errors="replace")
             except (LookupError, UnicodeDecodeError):
-                html_text = raw_bytes.decode("utf-8", errors="replace")
+                html_text = raw_bytes.decode(DEFAULT_HTTP_ENCODING, errors="replace")
 
             return html_text, current_url
 

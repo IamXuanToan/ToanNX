@@ -1,13 +1,14 @@
 """Service xử lý giao dịch quyên góp (DonationTransaction): ingest webhook, thống kê, kiểm duyệt, xuất CSV."""
 
 import csv
+import hmac
 import io
 import logging
 import re
-from datetime import timedelta
+from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any
-from zoneinfo import ZoneInfo
+from uuid import UUID
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError, transaction
@@ -18,15 +19,15 @@ from django.utils import timezone
 from app.core.exceptions.not_found_error import NotFoundError
 from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
-from app.finance.models.income import Income
-from app.finance.models.platform import Platform
+from app.core.utils.csv_safety import sanitize_csv_row
+from app.finance.services.income_service import IncomeService
 from app.finance.utils.vn_time import parse_sepay_datetime
-from app.system.models.currency import Currency
 from app.utilities.constants.donation_constants import DEFAULT_TIER_EXPIRY_DAYS
 from app.utilities.models.donation_transaction import DonationTransaction
 from app.utilities.models.page import Page
 from app.utilities.permissions.donation_permission import DonationPermission
 from app.utilities.repositories.donation_transaction_repository import DonationTransactionRepository
+from app.utilities.repositories.page_repository import PageRepository
 from app.utilities.services.donation_content_filter import DonationContentFilter
 from app.utilities.services.donation_gift_classifier import DonationGiftClassifier
 
@@ -43,11 +44,15 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
     def __init__(
         self,
         repository: DonationTransactionRepository | None = None,
+        page_repository: PageRepository | None = None,
+        income_service: IncomeService | None = None,
         content_filter: DonationContentFilter | None = None,
         gift_classifier: DonationGiftClassifier | None = None,
     ) -> None:
         """Khởi tạo phụ thuộc."""
         super().__init__(repository or DonationTransactionRepository())
+        self.page_repository = page_repository or PageRepository()
+        self.income_service = income_service or IncomeService()
         self.content_filter = content_filter or DonationContentFilter()
         self.gift_classifier = gift_classifier or DonationGiftClassifier()
 
@@ -57,10 +62,7 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
             return None
 
         # Quét các trang DONATION còn hoạt động
-        candidate_pages = Page.objects.filter(
-            deleted_at__isnull=True,
-            page_type=Page.PageType.DONATION,
-        ).select_related("owner")
+        candidate_pages = self.page_repository.list_active_donation_pages()
 
         for page in candidate_pages:
             config = page.content_config or {}
@@ -71,7 +73,7 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
                         continue
                     token = item.get("webhookToken") or item.get("webhook_token")
                     enabled = item.get("webhookEnabled") or item.get("webhook_enabled")
-                    if enabled and token and token == webhook_token:
+                    if enabled and token and hmac.compare_digest(str(token), str(webhook_token)):
                         return page, item
 
         return None
@@ -82,27 +84,35 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
 
         Raises:
             NotFoundError: Không tìm thấy trang hoặc mã QR có token này.
-            ValidationError: Payload thiếu thông tin bắt buộc.
+            ValidationError: Payload thiếu thông tin bắt buộc hoặc giao dịch không hợp lệ.
         """
         match = self.find_page_and_qr_by_token(webhook_token)
         if match is None:
             raise NotFoundError("Không tìm thấy cấu hình mã QR tương ứng với webhook token này.")
 
         page, qr_item = match
-        sepay_id = str(payload.get("id") or "")
+        sepay_id = str(payload.get("id") or "").strip()
         if not sepay_id:
             raise ValidationError("Payload SePay thiếu trường id giao dịch.")
 
-        # Kiểm tra chống ghi nhận trùng lặp
-        existing = DonationTransaction.objects.filter(sepay_id=sepay_id).first()
-        if existing is not None:
-            return existing, False
+        raw_transfer_type = str(payload.get("transferType") or "").strip().lower()
+        if raw_transfer_type and raw_transfer_type != "in":
+            raise ValidationError("Chỉ tiếp nhận giao dịch tiền vào.")
 
-        # Đọc dữ liệu giao dịch
+        # Đọc và kiểm tra số tiền dương trước khi ghi nhận
         try:
             amount = int(Decimal(str(payload.get("transferAmount") or 0)))
-        except (ValueError, TypeError):
-            amount = 0
+        except (ValueError, TypeError, ArithmeticError) as exc:
+            raise ValidationError("Số tiền giao dịch không hợp lệ.") from exc
+        if amount <= 0:
+            raise ValidationError("Số tiền giao dịch phải lớn hơn 0.")
+
+        # Kiểm tra chống ghi nhận trùng lặp (và chặn dùng lại sepay_id chéo trang)
+        existing = self.repository.find_by_sepay_id(sepay_id)
+        if existing is not None:
+            if existing.page_id != page.pk:
+                raise ValidationError("Mã giao dịch SePay không hợp lệ.")
+            return existing, False
 
         raw_content = str(payload.get("content") or payload.get("description") or "")
         received_at = parse_sepay_datetime(payload.get("transactionDate")) or timezone.now()
@@ -158,53 +168,20 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
     def _sync_to_finance_income(self, donation: DonationTransaction) -> None:
         """Đồng bộ giao dịch quyên góp SePay sang bản ghi Thu nhập (Income) của module Finance."""
         try:
-            currency = Currency.objects.filter(code="VND", deleted_at__isnull=True).first()
-            if not currency:
-                currency = Currency.objects.filter(is_base=True, deleted_at__isnull=True).first()
-            if not currency:
-                return
-
-            platform, _ = Platform.objects.get_or_create(
-                owner=donation.owner,
-                code="sepay_donation",
-                defaults={
-                    "name": "Ủng hộ & Quyên góp SePay",
-                    "default_currency": currency,
-                    "created_by": donation.owner,
-                },
-            )
-
-            vn_tz = ZoneInfo("Asia/Ho_Chi_Minh")
-            received_vn = donation.received_at.astimezone(vn_tz)
             content = donation.original_content or donation.message or f"Ủng hộ trang {donation.page.title}"
-
-            Income.objects.update_or_create(
+            self.income_service.record_donation_income(
                 owner=donation.owner,
                 sepay_id=donation.sepay_id,
-                defaults={
-                    "source": Income.Source.SEPAY,
-                    "received_at": donation.received_at,
-                    "received_date": received_vn.date(),
-                    "content": content,
-                    "currency": currency,
-                    "original_amount": Decimal(str(donation.amount)),
-                    "amount": Decimal(str(donation.amount)),
-                    "exchange_rate": Decimal("1.0"),
-                    "platform": platform,
-                    "tax_withheld": False,
-                    "tax_rate": Decimal("0.0"),
-                    "tax_amount": Decimal("0.0"),
-                    "amount_status": Income.AmountStatus.OK,
-                    "tax_status": Income.TaxStatus.NOT_WITHHELD,
-                    "created_by": donation.owner,
-                },
+                received_at=donation.received_at,
+                content=content,
+                amount=Decimal(str(donation.amount)),
             )
         except (DatabaseError, ObjectDoesNotExist, ValueError) as exc:
             logger.warning("Lỗi đồng bộ giao dịch quyên góp sang thu nhập tài chính: %s", exc)
 
     def list_public_feed(self, page_id: Any, limit: int = 20, page: int = 1) -> list[dict[str, Any]]:
         """Lấy danh sách các lượt ủng hộ công khai cho trang Donate (hỗ trợ phân trang cuộn)."""
-        page_obj = Page.objects.filter(id=page_id, deleted_at__isnull=True).first()
+        page_obj = self.page_repository.find_published_by_id(page_id)
         if not page_obj:
             return []
 
@@ -221,12 +198,7 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
                     hidden_amount_qr_ids.add(str(q.get("id") or ""))
 
         offset = max(0, (page - 1) * limit)
-        transactions = DonationTransaction.objects.filter(
-            page_id=page_id,
-            deleted_at__isnull=True,
-            is_hidden=False,
-            is_censored=False,
-        ).order_by("-received_at")[offset : offset + limit]
+        transactions = self.repository.list_public_feed_for_page(page_id, offset, limit)
 
         results = []
         for tx in transactions:
@@ -250,8 +222,10 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
 
     def list_public_leaderboard(self, page_id: Any) -> list[dict[str, Any]]:
         """Lấy danh sách Bảng Vinh danh (Đồng, Bạc, Vàng) còn hiệu lực đếm ngược."""
-        page_obj = Page.objects.filter(id=page_id, deleted_at__isnull=True).first()
-        config = (page_obj.content_config or {}) if page_obj else {}
+        page_obj = self.page_repository.find_published_by_id(page_id)
+        if not page_obj:
+            return []
+        config = page_obj.content_config or {}
         is_page_hidden = bool(config.get("hideAmount") or config.get("hide_amount"))
         qr_codes = config.get("qrCodes") or config.get("qr_codes") or []
         hidden_amount_qr_ids = set()
@@ -263,19 +237,7 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
                     hidden_amount_qr_ids.add(str(q.get("id") or ""))
 
         now = timezone.now()
-        transactions = DonationTransaction.objects.filter(
-            page_id=page_id,
-            deleted_at__isnull=True,
-            is_hidden=False,
-            is_censored=False,
-            tier__in=[
-                DonationTransaction.Tier.BRONZE,
-                DonationTransaction.Tier.SILVER,
-                DonationTransaction.Tier.GOLD,
-                DonationTransaction.Tier.DIAMOND,
-            ],
-            tier_expires_at__gt=now,
-        ).order_by("-amount", "-received_at")[:30]
+        transactions = self.repository.list_public_leaderboard_for_page(page_id, now, 30)
 
         results = []
         for tx in transactions:
@@ -300,8 +262,7 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
         """Chỉ cho phép cập nhật cờ is_hidden của giao dịch quyên góp."""
         donation = self.get_by_id_for(actor, pk)
         if "is_hidden" in data:
-            donation.is_hidden = bool(data["is_hidden"])
-            donation.save(update_fields=["is_hidden", "updated_at"])
+            return self.repository.update(donation, actor=actor, is_hidden=bool(data["is_hidden"]))
         return donation
 
     def toggle_hidden(self, actor: Any, pk: Any, is_hidden: bool) -> DonationTransaction:
@@ -319,13 +280,13 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
         """Thống kê doanh thu, số lượt donate theo phạm vi quyền (1 người vs tất cả)."""
         queryset = self.get_queryset_for(actor)
         if owner_id:
-            queryset = queryset.filter(owner_id=owner_id)
+            queryset = queryset.filter(owner_id=self._parse_uuid(owner_id, "owner"))
         if date_from:
-            queryset = queryset.filter(received_at__gte=date_from)
+            queryset = queryset.filter(received_at__gte=self._parse_datetime_filter(date_from, "date_from"))
         if date_to:
-            queryset = queryset.filter(received_at__lte=date_to)
+            queryset = queryset.filter(received_at__lte=self._parse_datetime_filter(date_to, "date_to"))
         if page_id:
-            queryset = queryset.filter(page_id=page_id)
+            queryset = queryset.filter(page_id=self._parse_uuid(page_id, "page_id"))
 
         aggregates = queryset.aggregate(
             total_amount=Sum("amount"),
@@ -383,18 +344,20 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
 
         writer = csv.writer(output)
         writer.writerow(
-            [
-                "Thời gian",
-                "Mã SePay",
-                "Trang nhận",
-                "Danh xưng",
-                "Số tiền (VNĐ)",
-                "Quà quy đổi",
-                "Bậc vinh danh",
-                "Lời nhắn",
-                "Nội dung gốc",
-                "Trạng thái",
-            ]
+            sanitize_csv_row(
+                [
+                    "Thời gian",
+                    "Mã SePay",
+                    "Trang nhận",
+                    "Danh xưng",
+                    "Số tiền (VNĐ)",
+                    "Quà quy đổi",
+                    "Bậc vinh danh",
+                    "Lời nhắn",
+                    "Nội dung gốc",
+                    "Trạng thái",
+                ]
+            )
         )
 
         for tx in scoped:
@@ -405,18 +368,40 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
                 status_text = "Chủ trang ẩn"
 
             writer.writerow(
-                [
-                    tx.received_at.strftime("%Y-%m-%d %H:%M:%S"),
-                    tx.sepay_id,
-                    tx.page.title,
-                    tx.donor_title,
-                    tx.amount,
-                    tx.gift_label,
-                    tx.get_tier_display(),
-                    tx.message,
-                    tx.original_content,
-                    status_text,
-                ]
+                sanitize_csv_row(
+                    [
+                        tx.received_at.strftime("%Y-%m-%d %H:%M:%S"),
+                        tx.sepay_id,
+                        tx.page.title,
+                        tx.donor_title,
+                        tx.amount,
+                        tx.gift_label,
+                        tx.get_tier_display(),
+                        tx.message,
+                        tx.original_content,
+                        status_text,
+                    ]
+                )
             )
 
         return output.getvalue()
+
+    @staticmethod
+    def _parse_uuid(value: Any, field: str) -> UUID:
+        """Kiểm tra tham số UUID hợp lệ trước khi lọc queryset."""
+        try:
+            return UUID(str(value).strip())
+        except (ValueError, TypeError) as exc:
+            raise ValidationError(details={field: ["Giá trị UUID không hợp lệ."]}) from exc
+
+    @staticmethod
+    def _parse_datetime_filter(value: Any, field: str) -> datetime | str:
+        """Kiểm tra tham số ngày/giờ ISO trước khi lọc queryset."""
+        if isinstance(value, datetime):
+            return value
+        raw = str(value).strip()
+        try:
+            datetime.fromisoformat(raw)
+        except ValueError as exc:
+            raise ValidationError(details={field: ["Định dạng ngày/giờ không hợp lệ (ISO 8601)."]}) from exc
+        return raw

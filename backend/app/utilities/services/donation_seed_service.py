@@ -16,6 +16,7 @@ from typing import Any
 from django.utils import timezone
 
 from app.system.repositories.user_repository import UserRepository
+from app.system.utils.frontend_url import get_frontend_origin
 from app.utilities.models.donation_transaction import DonationTransaction
 from app.utilities.models.page import Page
 from app.utilities.repositories.donation_transaction_repository import (
@@ -749,12 +750,13 @@ class DonationSeedService:
         total_tx = DonationTransaction.objects.filter(page=page).count()
         total_amount = sum(t["amount"] for t in sample_transactions)
 
+        frontend_origin = get_frontend_origin()
         return [
             f"✓ Đã nạp thành công {len(sample_transactions)} giao dịch quyên góp mẫu cho trang: {page.title}",
             f"  - Tạo mới: {created_count} | Cập nhật: {updated_count} | Tổng hiện tại: {total_tx}",
             f"  - Tổng số tiền mẫu: {total_amount:,.0f} ₫",
-            f"  - Trang Donate công khai: http://localhost:3001/p/{page.slug}",
-            "  - Thống kê cá nhân (Portal): http://localhost:3001/vi/ca-nhan/quyen-gop",
-            "  - Quản trị toàn sàn (Admin): http://localhost:3001/vi/quan-tri/tien-ich",
-            "  - Lịch sử giao dịch (Admin): http://localhost:3001/vi/quan-tri/tien-ich/quyen-gop",
+            f"  - Trang Donate công khai: {frontend_origin}/p/{page.slug}",
+            f"  - Thống kê cá nhân (Portal): {frontend_origin}/vi/ca-nhan/quyen-gop",
+            f"  - Quản trị toàn sàn (Admin): {frontend_origin}/vi/quan-tri/tien-ich",
+            f"  - Lịch sử giao dịch (Admin): {frontend_origin}/vi/quan-tri/tien-ich/quyen-gop",
         ]

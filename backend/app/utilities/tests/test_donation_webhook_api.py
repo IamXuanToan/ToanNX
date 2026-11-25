@@ -15,7 +15,9 @@ pytestmark = pytest.mark.django_db
 def donate_page(django_user_model: type[User]) -> tuple[Page, str]:
     """Tạo một trang Donate có cấu hình webhook cho mã QR."""
     user = django_user_model.objects.create(email="creator@example.com", is_active=True)
-    path, _ = PagePath.objects.get_or_create(segment="p", defaults={"name": "Trang cá nhân", "is_active": True})
+    path, _ = PagePath.objects.get_or_create(
+        segment="p", defaults={"name": "Trang cá nhân", "is_active": True}
+    )
     token = "qr-webhook-token-test-123"
     page = Page.objects.create(
         owner=user,
@@ -133,5 +135,79 @@ def test_webhook_invalid_token_returns_404() -> None:
     """Token không tồn tại trả 404."""
     client = APIClient()
     payload = {"id": 111, "transferAmount": 50000}
-    response = client.post("/api/v1/utilities/donations/webhook/invalid-token-xyz", data=payload, format="json")
+    response = client.post(
+        "/api/v1/utilities/donations/webhook/invalid-token-xyz", data=payload, format="json"
+    )
     assert response.status_code == 404
+
+
+def test_webhook_rejects_outgoing_transfer_type(donate_page: tuple[Page, str]) -> None:
+    """Không ghi nhận giao dịch tiền ra (transferType != 'in')."""
+    _, token = donate_page
+    client = APIClient()
+    payload = {
+        "id": 998880,
+        "transferType": "out",
+        "transferAmount": 100000,
+        "content": "rut tien",
+    }
+    response = client.post(f"/api/v1/utilities/donations/webhook/{token}", data=payload, format="json")
+    assert response.status_code == 400
+    assert not DonationTransaction.objects.filter(sepay_id="998880").exists()
+
+
+def test_webhook_rejects_non_positive_amount(donate_page: tuple[Page, str]) -> None:
+    """Số tiền âm hoặc bằng 0 bị từ chối 400 để tránh làm sai lệch quyên góp và thu nhập."""
+    _, token = donate_page
+    client = APIClient()
+    for bad_amount in (0, -100000):
+        response = client.post(
+            f"/api/v1/utilities/donations/webhook/{token}",
+            data={"id": f"bad-{bad_amount}", "transferType": "in", "transferAmount": bad_amount},
+            format="json",
+        )
+        assert response.status_code == 400
+        assert not DonationTransaction.objects.filter(sepay_id=f"bad-{bad_amount}").exists()
+
+
+def test_webhook_rejects_cross_page_sepay_id_reuse(
+    django_user_model: type[User], donate_page: tuple[Page, str]
+) -> None:
+    """Không cho phép dùng lại sepay_id đã ghi nhận ở trang khác để giả mạo phản hồi 200."""
+    _, victim_token = donate_page
+    attacker = django_user_model.objects.create(email="attacker-donate@example.com", is_active=True)
+    path = PagePath.objects.get(segment="p")
+    attacker_token = "attacker-secret-token-456"
+    Page.objects.create(
+        owner=attacker,
+        path=path,
+        title="Trang Attacker",
+        slug="attacker-donate",
+        page_type=Page.PageType.DONATION,
+        status=Page.Status.PUBLISHED,
+        content_config={
+            "qrCodes": [
+                {
+                    "id": "qr-att",
+                    "type": "BANK_TRANSFER",
+                    "webhookEnabled": True,
+                    "webhookToken": attacker_token,
+                }
+            ]
+        },
+    )
+    client = APIClient()
+    assert (
+        client.post(
+            f"/api/v1/utilities/donations/webhook/{attacker_token}",
+            data={"id": 777666, "transferType": "in", "transferAmount": 50000},
+            format="json",
+        ).status_code
+        == 200
+    )
+    replay = client.post(
+        f"/api/v1/utilities/donations/webhook/{victim_token}",
+        data={"id": 777666, "transferType": "in", "transferAmount": 50000},
+        format="json",
+    )
+    assert replay.status_code == 400

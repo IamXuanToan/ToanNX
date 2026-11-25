@@ -12,7 +12,9 @@ Gán chủ sở hữu (owner) cho user chỉ định theo email.
 
 from django.utils import timezone
 
+from app.core.constants.defaults import DEFAULT_CURRENCY_CODE
 from app.system.repositories.user_repository import UserRepository
+from app.system.utils.frontend_url import get_frontend_origin
 from app.utilities.models.page import Page
 from app.utilities.models.page_path import PagePath
 from app.utilities.repositories.page_path_repository import PagePathRepository
@@ -171,7 +173,7 @@ class PageSeedService:
                         "amount": 2350000,
                         "original_amount": 2690000,
                         "originalAmount": 2690000,
-                        "currency": "VND",
+                        "currency": DEFAULT_CURRENCY_CODE,
                         "price_note": "Giảm 15% khi áp voucher",
                         "priceNote": "Giảm 15% khi áp voucher",
                     },
@@ -179,7 +181,7 @@ class PageSeedService:
                         "mode": "fixed",
                         "amount": 2350000,
                         "originalAmount": 2690000,
-                        "currency": "VND",
+                        "currency": DEFAULT_CURRENCY_CODE,
                         "priceNote": "Giảm 15% khi áp voucher",
                     },
                     "button_config": {
@@ -226,7 +228,7 @@ class PageSeedService:
                         "amount": 1950000,
                         "original_amount": 2490000,
                         "originalAmount": 2490000,
-                        "currency": "VND",
+                        "currency": DEFAULT_CURRENCY_CODE,
                         "price_note": "Chính hãng bảo hành 12T",
                         "priceNote": "Chính hãng bảo hành 12T",
                     },
@@ -234,7 +236,7 @@ class PageSeedService:
                         "mode": "fixed",
                         "amount": 1950000,
                         "originalAmount": 2490000,
-                        "currency": "VND",
+                        "currency": DEFAULT_CURRENCY_CODE,
                         "priceNote": "Chính hãng bảo hành 12T",
                     },
                     "button_config": {
@@ -281,7 +283,7 @@ class PageSeedService:
                         "amount": 6790000,
                         "original_amount": 8490000,
                         "originalAmount": 8490000,
-                        "currency": "VND",
+                        "currency": DEFAULT_CURRENCY_CODE,
                         "price_note": "Tặng kèm bao da cao cấp",
                         "priceNote": "Tặng kèm bao da cao cấp",
                     },
@@ -289,7 +291,7 @@ class PageSeedService:
                         "mode": "fixed",
                         "amount": 6790000,
                         "originalAmount": 8490000,
-                        "currency": "VND",
+                        "currency": DEFAULT_CURRENCY_CODE,
                         "priceNote": "Tặng kèm bao da cao cấp",
                     },
                     "button_config": {
@@ -336,7 +338,7 @@ class PageSeedService:
                         "amount": 450000,
                         "original_amount": 590000,
                         "originalAmount": 590000,
-                        "currency": "VND",
+                        "currency": DEFAULT_CURRENCY_CODE,
                         "price_note": "Freeship toàn quốc",
                         "priceNote": "Freeship toàn quốc",
                     },
@@ -344,7 +346,7 @@ class PageSeedService:
                         "mode": "fixed",
                         "amount": 450000,
                         "originalAmount": 590000,
-                        "currency": "VND",
+                        "currency": DEFAULT_CURRENCY_CODE,
                         "priceNote": "Freeship toàn quốc",
                     },
                     "button_config": {
@@ -391,7 +393,7 @@ class PageSeedService:
                         "amount": 9890000,
                         "original_amount": 10990000,
                         "originalAmount": 10990000,
-                        "currency": "VND",
+                        "currency": DEFAULT_CURRENCY_CODE,
                         "price_note": "Bảo hành 36 tháng Dell VN",
                         "priceNote": "Bảo hành 36 tháng Dell VN",
                     },
@@ -399,7 +401,7 @@ class PageSeedService:
                         "mode": "fixed",
                         "amount": 9890000,
                         "originalAmount": 10990000,
-                        "currency": "VND",
+                        "currency": DEFAULT_CURRENCY_CODE,
                         "priceNote": "Bảo hành 36 tháng Dell VN",
                     },
                     "button_config": {
@@ -1119,10 +1121,11 @@ class PageSeedService:
             },
         )
 
+        frontend_origin = get_frontend_origin()
         return [
-            f"1. Affiliate Storefront:  http://localhost:3001/p/{page_affiliate.slug}",
-            f"2. Link-in-Bio:          http://localhost:3001/p/{page_bio.slug}",
-            f"3. Portfolio Showcase:   http://localhost:3001/p/{page_portfolio.slug}",
-            f"4. Donation VietQR:      http://localhost:3001/p/{page_donation.slug}",
-            f"5. Legacy Tiptap Page:   http://localhost:3001/p/{page_legacy.slug}",
+            f"1. Affiliate Storefront:  {frontend_origin}/p/{page_affiliate.slug}",
+            f"2. Link-in-Bio:          {frontend_origin}/p/{page_bio.slug}",
+            f"3. Portfolio Showcase:   {frontend_origin}/p/{page_portfolio.slug}",
+            f"4. Donation VietQR:      {frontend_origin}/p/{page_donation.slug}",
+            f"5. Legacy Tiptap Page:   {frontend_origin}/p/{page_legacy.slug}",
         ]

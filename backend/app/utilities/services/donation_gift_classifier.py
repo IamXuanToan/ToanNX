@@ -46,8 +46,7 @@ GIFT_KEYWORD_PATTERNS: Final[tuple[tuple[re.Pattern[str], str, str], ...]] = (
 class DonationGiftClassifier:
     """Xác định quà tặng quy đổi, cấp bậc vinh danh và danh xưng tri ân."""
 
-    @staticmethod
-    def classify_gift(amount: int, content: str) -> tuple[str, str]:
+    def classify_gift(self, amount: int, content: str) -> tuple[str, str]:
         """Quy đổi món quà dựa trên nội dung hoặc mốc số tiền.
 
         Returns:
@@ -67,12 +66,11 @@ class DonationGiftClassifier:
             return DonationTransaction.GiftType.BREAKFAST, "Bữa sáng"
         if amount < 200_000:
             return DonationTransaction.GiftType.BOOK, "Cuốn sách"
-        if amount < 50_0000:
+        if amount < 500_000:
             return DonationTransaction.GiftType.HOTPOT, "Bữa lẩu"
         return DonationTransaction.GiftType.SPECIAL, "Món quà đặc biệt"
 
-    @staticmethod
-    def classify_tier(amount: int) -> str:
+    def classify_tier(self, amount: int) -> str:
         """Xác định cấp bậc vinh danh trên Bảng Vinh danh.
 
         Returns:
@@ -88,8 +86,7 @@ class DonationGiftClassifier:
             return DonationTransaction.Tier.BRONZE
         return DonationTransaction.Tier.NORMAL
 
-    @staticmethod
-    def get_donor_title(sepay_id: str) -> str:
+    def get_donor_title(self, sepay_id: str) -> str:
         """Lấy danh xưng tri ân xoay vòng ngẫu nhiên theo mã giao dịch SePay."""
         if not sepay_id:
             return DONOR_HONORARY_TITLES[0]

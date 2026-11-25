@@ -143,7 +143,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
             "page_type": page.page_type,
             "template_key": page.template_key,
             "template_version": page.template_version,
-            "content_config": page.content_config or {},
+            "content_config": self._strip_qr_secrets(page.content_config),
             "style_config": page.style_config or {},
             "responsive_config": page.responsive_config or {},
             "content": self._resolve(page, public=True),
@@ -210,11 +210,12 @@ class PageService(CoreCrudService[Page, PageRepository]):
 
     @transaction.atomic
     def duplicate(self, actor: Any, pk: Any) -> Page:
-        """Nhân bản thành bản nháp của actor; ảnh/link rút gọn không thuộc actor bị bỏ khỏi bản sao."""
+        """Nhân bản thành bản nháp của actor; bỏ tham chiếu ngoại và token webhook bí mật khỏi bản sao."""
         source = super().get_by_id_for(actor, pk)
         content = source.content
         if source.owner_id != actor.pk:
             content = self._drop_foreign_refs(actor, content)
+        content_config = self._strip_qr_secrets(source.content_config)
         return self.create(
             actor,
             {
@@ -227,12 +228,31 @@ class PageService(CoreCrudService[Page, PageRepository]):
                 "page_type": source.page_type,
                 "template_key": source.template_key,
                 "template_version": source.template_version,
-                "content_config": source.content_config,
+                "content_config": content_config,
                 "style_config": source.style_config,
                 "responsive_config": source.responsive_config,
                 "content": content,
             },
         )
+
+    @staticmethod
+    def _strip_qr_secrets(config: Any) -> dict[str, Any]:
+        """Xóa token bí mật (`webhookToken`/`webhook_token`) của mã QR khi trả công khai hoặc nhân bản."""
+        if not isinstance(config, dict):
+            return {}
+        cloned = dict(config)
+        for key in ("qrCodes", "qr_codes"):
+            items = cloned.get(key)
+            if isinstance(items, list):
+                cleaned: list[Any] = []
+                for item in items:
+                    if isinstance(item, dict):
+                        entry = {k: v for k, v in item.items() if k not in ("webhookToken", "webhook_token")}
+                        cleaned.append(entry)
+                    else:
+                        cleaned.append(item)
+                cloned[key] = cleaned
+        return cloned
 
     # ==================================================================
     # Nội bộ

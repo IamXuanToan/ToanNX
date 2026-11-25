@@ -44,8 +44,10 @@ class TestPagePublicApi(BaseApiTestCase):
         assert data["preview"] is False
         assert res["Cache-Control"] == "public, max-age=60"
         assert data["canonical_url"] == "http://testserver/qr/ung-ho"
-        # Không để lộ thông tin nhạy cảm của owner hay id trang
-        assert "owner" not in data and "id" not in data
+        # Trả UUID trang cho feed công khai, không để lộ owner hay webhook token
+        assert data["id"] == str(page.id)
+        assert "owner" not in data
+        assert "webhook_token" not in str(data)
 
     def test_public_draft_hidden_from_anonymous_404(self, user: Any, client: Any) -> None:
         """Khách vãng lai không xem được trang ở trạng thái DRAFT (trả về 404 NOT_FOUND)."""
@@ -172,3 +174,38 @@ class TestPagePublicCache(BaseApiTestCase):
         with django_capture_on_commit_callbacks(execute=True):
             PageService().update(user, page.pk, {"title": "Đã sửa"})
         assert self.assert_success(client.get(f"{BASE_URL}/p/{page.slug}"), 200)["title"] == "Đã sửa"
+
+    def test_public_donation_page_strips_secret_webhook_tokens(self, user: Any, client: Any) -> None:
+        """Trang Donate công khai tuyệt đối không trả webhookToken / webhook_token của mã QR."""
+        page = Page.objects.create(
+            owner=user,
+            path=get_seeded_path("p"),
+            title="Donate Safe",
+            slug="donate-safe",
+            page_type=Page.PageType.DONATION,
+            status=Page.Status.PUBLISHED,
+            content_config={
+                "qrCodes": [
+                    {
+                        "id": "qr-1",
+                        "type": "BANK_TRANSFER",
+                        "bankName": "MBBank",
+                        "webhookEnabled": True,
+                        "webhookToken": "top-secret-camel",
+                    }
+                ],
+                "qr_codes": [
+                    {
+                        "id": "qr-2",
+                        "type": "BANK_TRANSFER",
+                        "webhookEnabled": True,
+                        "webhook_token": "top-secret-snake",
+                    }
+                ],
+            },
+        )
+        res = client.get(f"{BASE_URL}/p/{page.slug}")
+        data = self.assert_success(res, 200)
+        assert "webhookToken" not in data["content_config"]["qrCodes"][0]
+        assert "webhook_token" not in data["content_config"]["qr_codes"][0]
+        assert data["content_config"]["qrCodes"][0]["bankName"] == "MBBank"

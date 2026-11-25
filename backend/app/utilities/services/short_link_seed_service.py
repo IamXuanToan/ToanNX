@@ -4,7 +4,10 @@ Chỉ chạy khi DEBUG=True trên môi trường local/staging.
 Tạo danh sách các short link với số lượng click thực tế phục vụ biểu đồ so sánh trên Dashboard.
 """
 
+from typing import Any
+
 from app.system.repositories.user_repository import UserRepository
+from app.system.utils.frontend_url import get_frontend_origin
 from app.utilities.models.short_link import ShortLink
 
 
@@ -28,7 +31,7 @@ class ShortLinkSeedService:
         if not user:
             raise ValueError(f"Không tìm thấy người dùng có email: {email}.")
 
-        sample_links = [
+        sample_links: list[dict[str, Any]] = [
             {
                 "name": "Portfolio Cá Nhân ToanNX",
                 "slug": "portfolio",
@@ -101,9 +104,10 @@ class ShortLinkSeedService:
 
         total_links = ShortLink.objects.filter(owner=user).count()
 
+        frontend_origin = get_frontend_origin()
         return [
             f"✓ Đã tạo/cập nhật {len(sample_links)} link rút gọn mẫu cho user: {user.email}",
             f"  - Tạo mới: {created_count} | Cập nhật: {updated_count} | Tổng hiện tại: {total_links}",
-            "  - Dashboard cá nhân: http://localhost:3001/vi/ca-nhan",
-            "  - Quản lý link rút gọn: http://localhost:3001/vi/ca-nhan/link-rut-gon",
+            f"  - Dashboard cá nhân: {frontend_origin}/vi/ca-nhan",
+            f"  - Quản lý link rút gọn: {frontend_origin}/vi/ca-nhan/link-rut-gon",
         ]
