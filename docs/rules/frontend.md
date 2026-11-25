@@ -109,8 +109,9 @@ component, không khai hook, không `createContext`.
   (giống nhóm `table-*` của `DataTable` trong `common/`).
 - Hai component cùng chủ đề vẫn là hai file: `Logo` → `logo.tsx`, `LogoMark` → `logo-mark.tsx`.
 - File component chỉ export component đó và kiểu props của nó (`<Tên>Props`). Không export kèm hằng số
-  (`PAGE_SIZE_OPTIONS`, `DEFAULT_CURRENCY`), hàm tiện ích hay re-export helper: hằng số → `constants/`, hàm →
-  `lib/` (shares) hoặc `utils` của module, kiểu dùng chung → `types/` hoặc `<tên>.types.ts`.
+  (`PAGE_SIZE_OPTIONS`, `DEFAULT_CURRENCY`, `THEME_PRESETS`, `BADGE_PRESETS`), hàm tiện ích hay re-export helper:
+  hằng số → `constants/`, hàm → `lib/` (shares) hoặc `utils` của module, kiểu dùng chung → `types/` hoặc
+  `<tên>.types.ts`. (`tests/unit/code-conventions.test.ts` chặn `export const UPPER_CASE` trong `.tsx`).
 
 **Hook** (`.ts`):
 
@@ -350,11 +351,13 @@ export function useUserTable() {
 - Với khung chứa linh hoạt theo tỷ lệ (aspect-square, avatar, preview), container cha đặt `relative`, thẻ `<Image />` sử dụng `fill`, `className="object-cover"` (hoặc `object-contain`), và khai báo prop `sizes` phù hợp (ví dụ `sizes="80px"` hoặc `sizes="(max-width: 768px) 100vw, 33vw"`).
 - Khi ảnh là chuỗi data URI (`data:image/...`) hoặc blob URL cục bộ từ browser: thêm prop `unoptimized`.
 
-**Chuẩn liên kết với Next.js Link (bắt buộc).**
+**Chuẩn liên kết với Navigation Link (bắt buộc).**
 
-- Mọi liên kết chuyển trang hoặc mở URL trong project **bắt buộc sử dụng component `<Link />` từ `next/link` (hoặc `@/i18n/navigation` cho liên kết nội bộ có tiền tố ngôn ngữ)** hoặc bọc bằng `<Button asChild><Link href="...">...</Link></Button>`.
+- Mọi liên kết chuyển trang hoặc mở URL trong module và cây `[locale]` **bắt buộc sử dụng `<Link />` từ
+  `@/i18n/navigation`** (kể cả liên kết ngoài `target="_blank"` và link tải trực tiếp `data:`/`http(s):` với `href={url as never}` — `next-intl` tự bỏ qua prefix cho URL có scheme), hoặc bọc bằng `<Button asChild><Link href="...">...</Link></Button>`.
+- Ngoại lệ duy nhất là file ngoài cây `[locale]` như `src/app/not-found.tsx` dùng `next/link` (`tests/unit/code-conventions.test.ts` kiểm tự động).
 - **Tuyệt đối không dùng thẻ `<a>` trần** ở bất kỳ đâu trong component `.tsx`.
-- Với liên kết ngoài (external URL như shopee, lazada, mạng xã hội, tài liệu...): bắt buộc sử dụng `<Link href={url} target="_blank" rel="noopener noreferrer">` từ `next/link`.
+- Với liên kết ngoài (external URL như shopee, lazada, mạng xã hội, tài liệu...): dùng `<Link href={url as never} target="_blank" rel="noopener noreferrer">` từ `@/i18n/navigation`.
 - Khi liên kết đóng vai trò là nút bấm, hành động (CTA), hoặc item có tương tác: bắt buộc kết hợp component `Button` của shadcn với prop `asChild`:
   ```tsx
   <Button asChild variant="outline">
@@ -484,7 +487,13 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 
 - Đa ngôn ngữ: Next.js 16 tự nhận diện locale qua `next/root-params` trong `src/i18n/request.ts`; **không** gọi `setRequestLocale` (deprecated) trong `page.tsx` hay `layout.tsx`.
 - Không hardcode path API, route, query key: lấy từ `constants/` của module.
-- Điều hướng: `Link`/`useRouter`/`redirect` từ `@/i18n/navigation` (không dùng `next/link`).
+- Hằng số dùng chung toàn FE (locale, timezone, tiền tệ, tùy chọn phân trang, ID toast phiên) lấy từ
+  `shares/constants/` và helper `shares/lib/number-format.ts` (`getNumberLocale`, `formatVndText`,
+  `formatDisplayNumber`), `shares/lib/localized-route.ts` (`isLocalizedRouteExact`, `startsWithLocalizedRoute`);
+  không lặp `locale === "en" ? "en-US" : "vi-VN"`, `.toLocaleString("vi-VN")` hay key phiên/OAuth rải rác
+  (`tests/unit/code-conventions.test.ts` kiểm tự động).
+- Điều hướng: `<Link />`/`useRouter`/`redirect` từ `@/i18n/navigation` (không dùng `next/link` trong module hay cây
+  `[locale]`, kể cả link ngoài `href={url as never}`; ngoại lệ duy nhất là `src/app/not-found.tsx`).
 - Mọi text qua next-intl; message theo module; thêm khóa phải thêm đủ vi + en.
 - Schema Zod là factory nhận hàm dịch (`createLoginSchema(t)`).
 - Màu dùng token semantic (`bg-primary`, `text-muted-foreground`, `bg-canvas`); không hardcode màu (xem §4.0).

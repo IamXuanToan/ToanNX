@@ -17,7 +17,8 @@ Tiện ích: link rút gọn `/s/{slug}`, mã QR (VietQR, liên kết, văn bả
 - `content_config`: JSON dữ liệu chuyên biệt theo từng loại trang (sản phẩm, danh mục, liên kết, tài khoản ngân hàng, cấu hình webhook donate cho từng mã QR, ẩn hiện số tiền, số ngày vinh danh leaderboard).
 - `style_config`: cấu hình giao diện (theme preset, màu sắc, bo góc, ẩn/hiện giá/ảnh).
 - `responsive_config`: cấu hình hiển thị theo thiết bị (số cột trên desktop, tablet, mobile).
-- `content`: Tiptap JSON giữ lại cho các trang kiểu tự do (`LEGACY_PAGE`) đảm bảo tương thích ngược 100%.
+- `content`: Tiptap JSON giữ lại cho các trang kiểu tự do (`LEGACY_PAGE`, ẩn tab **Giao diện** trong form để chỉ nhập nội dung văn bản và đồng bộ 100% bảng màu với Editor ở Preview/trang công khai); node `image` hỗ trợ kích thước (`width` % / px) và căn lề (`align`: `left`, `center`, `right`, `full`) cho cả ảnh Thư viện và URL ngoài (`page_content_validator.py`).
+- Demo công khai `/demo/[type]` (`affiliate`, `bio`, `donation`) và trình diễn trọn bộ 3 Preset Editor dùng chung tại `/demo/editor` (`NotionDemoView` gồm `TiptapEditor` bản Full hợp nhất Simple Sticky Toolbar + Notion-like kéo thả dòng `⠿` / `/` / Bubble Toolbar, `TiptapBasicEditor` cho mô tả và `TiptapCommentEditor` cho bình luận).
 
 ## Quyền
 
@@ -54,8 +55,8 @@ Ngoài ra, Client Portal bổ sung màn hình **Quyên góp & Ủng hộ** (`/ca
 - `/<đường dẫn>/<slug>`: trang tùy chỉnh công khai.
   - Tự động điều hướng hiển thị (`PageRendererDispatcher`): trang Affiliate Storefront, Bio Link, Donation VietQR hoặc Legacy Tiptap.
   - **Trang Donate SePay**:
-    + Live Ticker Marquee hiển thị lời tri ân chạy ngang cập nhật tự động mỗi 15 giây.
     + Bảng Vinh danh phân hạng 4 cấp (Đồng ≥100k, Bạc ≥200k, Vàng ≥500k, Kim Cương ≥1M) với đồng hồ đếm ngược trực tiếp (Live Countdown) theo số ngày cấu hình.
+    + Danh sách Ủng hộ gần đây cập nhật tự động theo trang, bỏ thanh ticker chạy ngang.
     + Quy đổi quà tặng hóm hỉnh (ly cà phê, gói mì tôm, bữa sáng, cuốn sách, nồi lẩu...).
     + Switch ẩn/hiện số tiền cho từng mã QR (giữ bí mật số tiền khi cần thiết).
     + Bộ lọc Regex tự động kiểm duyệt các từ ngữ bạo lực, khủng bố, chửi thề tục tĩu (cả teencode), tự động thay thế bằng lời cảm ơn an toàn trên trang public và cảnh báo đỏ trên dashboard.

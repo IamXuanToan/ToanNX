@@ -443,6 +443,10 @@ class UserRoleView(CoreApiView):
 - Tên cookie, header, khóa setting, biến môi trường, claim JWT, khóa cache không có tiền tố `toannx` ở mọi dạng
   (`AUTH_ACCESS_COOKIE_NAME = "access_token"`, không `"toannx_access"`; không `TOANNX_*` trong `.env`)
   ([common.md](common.md) mục 3).
+- Hằng số mặc định toàn backend (locale `DEFAULT_LOCALE`/`ENGLISH_LOCALE`, timezone `DEFAULT_TIMEZONE`, tiền tệ
+  `DEFAULT_CURRENCY_CODE`, header/MIME mặc định) đặt tại `app/core/constants/defaults.py`; hằng số module đặt tại
+  `app/<m>/constants/` (`auth_frontend_routes.py`, `finance_defaults.py`...), không lặp lại chuỗi cấu hình rải rác
+  trong service/view/seed.
 - Password chỉ qua `set_password`/validators của Django.
 
 ## 12. Test

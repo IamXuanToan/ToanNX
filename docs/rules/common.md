@@ -56,6 +56,13 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 
   Chỉ dùng cho nghiệp vụ thực sự nhiều bước, không chèn vào hàm ngắn.
 - Không magic number/string: đặt hằng số có tên (constants, settings, enum).
+  - Các chuỗi/cấu hình dùng chung toàn app (locale, timezone, tiền tệ, mã hóa/header HTTP mặc định, mẫu email,
+    ID toast phiên, tùy chọn phân trang) khai **một chỗ duy nhất** ở `backend/app/core/constants/defaults.py` (BE)
+    hoặc `frontend/src/shares/constants/` (FE); hằng riêng của module đặt trong `constants/` của module (BE:
+    `auth_frontend_routes.py`, FE: `auth-storage.ts`, `page-constants.ts`, `page-theme-presets.ts`...).
+  - Tuyệt đối không lặp rải rác `locale === "en" ? "en-US" : "vi-VN"`, `"Asia/Ho_Chi_Minh"`, `"VND"`/`"₫"`, tên key
+    `localStorage`/`sessionStorage`/toast hoặc lời gọi `.toLocaleString("vi-VN")` trong component/hook/service; dùng
+    helper chuẩn (`getNumberLocale`, `formatVndText`, `formatDisplayNumber` ở `shares/lib/number-format.ts`).
 - **Không có tiền tố `toannx` trong tên kỹ thuật** (cả BE và FE), ở mọi dạng viết (`toannx_`, `toannx-`,
   `toannx:`, `toannx.`, `TOANNX_`, `toannxAuth`):
   - **Tên cookie**: `access_token`, `refresh_token`, `session_hint`, `csrftoken`; không `toannx_access`, `toannx-auth`.
@@ -122,15 +129,16 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
   `python scripts/sync-ai-rules.py`, không sửa tay; `--check` chạy trong `scripts/check-all.*`. Đổi một rule trong
   `docs/rules/` (hoặc quy trình/bảng kiểm) thì sửa rule AI tương ứng, `CLAUDE.md`, `AGENTS.md`, `prompt.md` trong cùng
   lần. Cách viết rule AI: `.agents/rules/40-docs-and-rules.md`.
-- **Skill quy trình của project**: `start-task` cho việc mới, `fix` cho lỗi đã có, `review-code` cho lượt rà cuối
-  có tự sửa lỗi xác nhận được. Chọn bằng ngữ nghĩa câu chat theo `.agents/rules/01-workflow.md`; `review-code`
-  không tự chạy sau mọi lần sửa. Cả ba phải đọc source thực, mục lục `docs/`, rule và tài liệu liên quan trước
-  khi sửa; kiểm đúng phạm vi rồi báo nội dung commit theo [git.md](git.md).
+- **Skill quy trình và hỗ trợ của project**: `start-task` cho việc mới, `fix` cho lỗi đã có, `review-code` cho lượt
+  rà cuối có tự sửa lỗi xác nhận được; cùng các skill hỗ trợ chuyên biệt `test`, `refactor`, `review-security`,
+  `i18n-audit`, `permission-audit`, `db-migration`. Chọn bằng ngữ nghĩa câu chat theo `.agents/rules/01-workflow.md`;
+  `review-code` không tự chạy sau mọi lần sửa. Các skill phải đọc source thực, mục lục `docs/`, rule và tài liệu
+  liên quan trước khi sửa; kiểm đúng phạm vi rồi báo nội dung commit theo [git.md](git.md).
 - Nguồn skill project ở `.agents/skills/<tên>/`; skill viết riêng cho repo được liên kết sang
   `.claude/skills/<tên>/`. Skill cài từ bên ngoài có nguồn/commit trong `skills-lock.json` và có thể được liên kết
   bằng CLI. Các thư mục này khác `.claude/skills/rule-*/` sinh từ rule; không sửa tay bản sinh, không để skill
-  ghi đè `docs/rules/`. `scripts/check-workflow-skills.py` kiểm tên, mô tả và bản Claude của ba skill workflow;
-  `scripts/check-all.*` gọi kiểm tra này khi chạy toàn bộ.
+  ghi đè `docs/rules/`. `scripts/check-workflow-skills.py` kiểm tên, mô tả và bản Claude của các skill project và
+  chuyên môn; `scripts/check-all.*` gọi kiểm tra này khi chạy toàn bộ.
 - **Tài liệu trong `docs/` cập nhật cùng lần sửa** (mục lục và cấu trúc ở [docs/README.md](../README.md)):
   - đổi model, quyền (`MEMBER`), route, sự kiện thông báo, webhook/callback của module → `docs/modules/<module>/README.md`;
   - đổi cách một chức năng chạy (phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác, sidebar, file công khai/riêng
@@ -169,7 +177,8 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 - Log không chứa dữ liệu nhạy cảm (mật khẩu, token, cookie, nội dung file); log kèm `request_id` để đối chiếu.
 - Thêm dependency phải được người yêu cầu đồng ý; chọn gói còn bảo trì, ghim version qua lockfile.
 - Khi sửa luồng xác thực, quyền/owner, webhook, URL bên ngoài, file riêng tư hoặc dữ liệu tài chính, kiểm tra
-  ranh giới tin cậy và thêm test hồi quy cho nhánh từ chối/lỗi liên quan. Skill `security-best-practices` dùng khi
+  ranh giới tin cậy và thêm test hồi quy cho nhánh từ chối/lỗi liên quan. Skill `security-best-practices` và
+  `review-security` (giả lập tấn công cục bộ + tạo/tái xác nhận `docs/reports/security-verification.md`) dùng khi
   người dùng yêu cầu rà soát bảo mật hoặc hướng dẫn viết code an toàn; không tự biến mọi task thành audit toàn repo.
 
 ## 5.1 Thời gian và số tiền

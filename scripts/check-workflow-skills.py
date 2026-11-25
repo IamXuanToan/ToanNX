@@ -8,10 +8,21 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 NAMES = ("start-task", "fix", "review-code")
-REFERENCES = {
+PROJECT_SKILLS = (
+    "test",
+    "refactor",
+    "review-security",
+    "i18n-audit",
+    "permission-audit",
+    "db-migration",
+)
+REFERENCES: dict[str, tuple[str, ...]] = {
     "start-task": ("references/acceptance-matrix.md",),
     "fix": ("references/regression-matrix.md",),
     "review-code": ("references/review-matrix.md",),
+    "test": ("references/test-patterns.md", "references/monkey-testing.md"),
+    "refactor": ("references/refactor-checklist.md",),
+    "review-security": ("references/attack-playbook.md", "references/report-template.md"),
 }
 SPECIALISTS = (
     "ui-ux",
@@ -25,7 +36,33 @@ SPECIALISTS = (
     "web-perf",
     "sepay",
 )
-FRONTMATTER = re.compile(r"\A---\n(?P<header>.*?)\n---\n(?P<body>.*)\Z", re.S)
+FRONTMATTER = re.compile(r"\A---\n(?P<header>.*?)\n---\n(?P<body>.*)\Z", re.DOTALL)
+
+
+def _check_skill_tree(name: str, source_dir: Path, mirror_dir: Path) -> list[str]:
+    """Kiểm mọi file con (references, scripts) của skill khớp byte giữa .agents và .claude."""
+    errors: list[str] = []
+    source_files = sorted(
+        p.relative_to(source_dir).as_posix()
+        for p in source_dir.rglob("*")
+        if p.is_file() and p.name != "SKILL.md" and "__pycache__" not in p.parts
+    )
+    mirror_files = sorted(
+        p.relative_to(mirror_dir).as_posix()
+        for p in mirror_dir.rglob("*")
+        if p.is_file() and p.name != "SKILL.md" and "__pycache__" not in p.parts
+    )
+    if source_files != mirror_files:
+        errors.append(
+            f"{name}: danh sách file phụ (.agents vs .claude) không khớp: {source_files} != {mirror_files}"
+        )
+        return errors
+    for rel in source_files:
+        src_bytes = (source_dir / rel).read_bytes().replace(b"\r\n", b"\n")
+        dst_bytes = (mirror_dir / rel).read_bytes().replace(b"\r\n", b"\n")
+        if src_bytes != dst_bytes:
+            errors.append(f"{name}: bản Claude của {rel} khác nguồn .agents")
+    return errors
 
 
 def check_skill(name: str) -> list[str]:
@@ -62,29 +99,36 @@ def check_skill(name: str) -> list[str]:
     policy = source.parent / "agents" / "openai.yaml"
     if policy.is_file() and "allow_implicit_invocation: false" in policy.read_text(encoding="utf-8"):
         errors.append(f"{name}: đang tắt kích hoạt tự động")
-    for relative in REFERENCES[name]:
+    for relative in REFERENCES.get(name, ()):
         resource = source.parent / relative
         claude_resource = mirror.parent / relative
         if relative not in match.group("body"):
             errors.append(f"{name}: chưa dẫn tới {relative}")
         if not resource.is_file() or not claude_resource.is_file():
             errors.append(f"{name}: thiếu {relative} ở .agents hoặc .claude")
-        elif resource.read_bytes() != claude_resource.read_bytes():
+        elif resource.read_bytes().replace(b"\r\n", b"\n") != claude_resource.read_bytes().replace(
+            b"\r\n", b"\n"
+        ):
             errors.append(f"{name}: bản Claude của {relative} khác nguồn .agents")
     return errors
 
 
 def main() -> int:
-    """Kiểm ba skill và bảng định tuyến trong rule AI."""
+    """Kiểm các skill project và bảng định tuyến trong rule AI."""
     for stream in (sys.stdout, sys.stderr):
         configure = getattr(stream, "reconfigure", None)
         if configure is not None:
             configure(encoding="utf-8")
-    errors = [error for name in NAMES for error in check_skill(name)]
+    errors = [error for name in (*NAMES, *PROJECT_SKILLS) for error in check_skill(name)]
     router = (ROOT / ".agents" / "rules" / "01-workflow.md").read_text(encoding="utf-8")
-    for name in NAMES:
+    for name in (*NAMES, *PROJECT_SKILLS):
         if not re.search(rf"(?m)^\|[^\n]*`{re.escape(name)}`[^\n]*\|$", router):
             errors.append(f"{name}: thiếu trong bảng chọn workflow")
+    for name in PROJECT_SKILLS:
+        source_dir = ROOT / ".agents" / "skills" / name
+        mirror_dir = ROOT / ".claude" / "skills" / name
+        if source_dir.is_dir() and mirror_dir.is_dir():
+            errors.extend(_check_skill_tree(name, source_dir, mirror_dir))
     for name in SPECIALISTS:
         source = ROOT / ".agents" / "skills" / name / "SKILL.md"
         mirror = ROOT / ".claude" / "skills" / name / "SKILL.md"
@@ -105,7 +149,11 @@ def main() -> int:
         sys.stderr.write(f"Lỗi: {error}\n")
     if errors:
         return 1
-    sys.stdout.write(f"Skill workflow khớp ở Codex/Claude ({len(NAMES)} skill).\n")
+    total = len(NAMES) + len(PROJECT_SKILLS)
+    sys.stdout.write(
+        f"Skill project khớp ở Codex/Claude ({total} skill: "
+        f"{len(NAMES)} workflow, {len(PROJECT_SKILLS)} hỗ trợ).\n"
+    )
     return 0
 
 

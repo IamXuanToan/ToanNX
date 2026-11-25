@@ -26,6 +26,8 @@ SePay nhận biến động số dư. Phụ thuộc `system` (tiền tệ, file 
 
 ## Màn quản trị (Admin)
 
+Quản trị viên có quyền `manage_all` và `system.user.read` có thể lọc Tổng quan, Báo cáo, Khoản thu, Hóa đơn theo từng người dùng (`?owner=`).
+
 | Cụm | Màn | Route |
 | --- | --- | --- |
 | Tổng quan | Dashboard · Báo cáo | `tai-chinh`, `bao-cao` |

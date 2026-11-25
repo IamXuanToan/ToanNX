@@ -47,10 +47,11 @@ trước khi viết code Next.
   (frontmatter `trigger`: `always_on` | `model_decision` | `glob` + `globs` | `manual`, có `description`), rồi chạy
   `python scripts/sync-ai-rules.py` để sinh lại `.claude/rules/`, `.claude/skills/rule-*/`, `.claude/commands/`.
   Không sửa tay file trong `.claude/` có dòng "Sinh tự động". Cách viết: `.agents/rules/40-docs-and-rules.md`.
-- Skill workflow của project: `start-task` (việc mới), `fix` (lỗi), `review-code` (rà cuối theo yêu cầu, tự sửa lỗi
-  xác nhận được). Các skill ở `.agents/skills/`, liên kết vào `.claude/skills/`; skill ngoài ghi nguồn/commit ở
-  `skills-lock.json`. Chỉ `.claude/skills/rule-*/` do script rule sinh; `docs/rules/` thắng skill. Đổi ba skill
-  workflow thì chạy `python scripts/check-workflow-skills.py` để kiểm metadata và bản Claude.
+- Skill của project: workflow chính (`start-task`, `fix`, `review-code`) và các skill hỗ trợ (`test`,
+  `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`) ở `.agents/skills/`, liên kết sang
+  `.claude/skills/`; skill ngoài ghi nguồn/commit ở `skills-lock.json`. Chỉ `.claude/skills/rule-*/` do script rule
+  sinh; `docs/rules/` thắng skill. Đổi skill project thì chạy `python scripts/check-workflow-skills.py` để kiểm
+  metadata và bản Claude.
 - **Mọi phản hồi cho người dùng bằng tiếng Việt có dấu**: cập nhật, câu hỏi, lỗi, báo cáo cuối, kể cả khi skill viết
   tiếng Anh; giữ nguyên tên file, mã, API và lệnh.
 - Chưa kiểm được trên giao diện thật thì nói rõ, không tuyên bố đã chạy đúng.
@@ -73,7 +74,10 @@ trước khi viết code Next.
   file, dùng khi nào, đúng nhóm). Common chưa vào danh mục coi như chưa xong.
 - Hằng số, enum, kiểu, hàm tiện ích không để lẫn trong file class/component/hook: đưa vào `constants/`,
   `types/`, `utils/` (BE) hoặc `lib/` (FE).
-- Không magic number/string; không `print`/`console.log`; không nuốt lỗi; không `any`/`type: ignore`/`noqa` không lý do.
+- Không magic number/string (locale, timezone, tiền tệ, Content-Type, mẫu email, ID toast, cấu hình phân trang
+  đặt tại `app/core/constants/defaults.py` / `shares/constants/` hoặc `constants/` của module; dùng helper
+  `getNumberLocale`/`formatVndText` thay `.toLocaleString("vi-VN")`); không `print`/`console.log`; không nuốt lỗi;
+  không `any`/`type: ignore`/`noqa` không lý do.
 - **Không tiền tố `toannx`** ở mọi dạng (`toannx_`, `toannx-`, `toannx:`, `TOANNX_`) trong: tên cookie, key
   localStorage/sessionStorage, tên biến/hằng giữ các key đó, header, query/cache key, biến môi trường.
   Đúng: `access_token`, `novel_reader_settings`, `READER_SETTINGS_KEY`. Sai: `toannx_access`, `toannx:draft`,
@@ -203,7 +207,7 @@ Chi tiết: rule frontend §3.1 (chuẩn giao diện), §3.2 (shadcn), §4.0 (m�
 - Mọi primitive (`Button`, `Input`, `Textarea`, `Checkbox`, `Switch`, `Label`, `Dialog`, `Sheet`, `Popover`,
   `DropdownMenu`, `Tabs`, `Tooltip`, `Card`, `Badge`, `Skeleton`, `Table`…) lấy từ `@/shares/components/ui/*`.
   Thiếu thì cài bằng `pnpm dlx shadcn@latest add <tên>`, không tự viết bản thay thế.
-- Cấm thẻ trần thay cho primitive: `<button>`, `<input>`, `<select>`, `<textarea>`, `<dialog>` tự style, và không thẻ `<a>` trần (kể cả link ngoài `target="_blank"`), không `<img>` trần. Liên kết dùng `Link` từ `next/link` hoặc `@/i18n/navigation`, hoặc `<Button asChild><Link href="...">...</Link></Button>`. Ảnh dùng `<Image />` từ `next/image`. Ô chọn dùng
+- Cấm thẻ trần thay cho primitive: `<button>`, `<input>`, `<select>`, `<textarea>`, `<dialog>` tự style, và không thẻ `<a>` trần (kể cả link ngoài `target="_blank"`), không `<img>` trần. Liên kết dùng `<Link />` từ `@/i18n/navigation` (URL ngoài dùng `href={url as never}`; `next/link` chỉ dùng ngoài `[locale]` như `src/app/not-found.tsx`), hoặc `<Button asChild><Link href="...">...</Link></Button>`. Ảnh dùng `<Image />` từ `next/image`. Ô chọn dùng
   `SelectField`, bảng dùng `DataTable`, form dùng `FormPage`/`FormField` (catalog mục 4).
 - Kiểu dáng qua `variant`/`size` sẵn có (`variant="outline" | "ghost" | "destructive"`, `size="icon"`); không đè
   `className` để giả một variant khác. Không sửa file trong `components/ui/*` trừ khi chỉnh cho khớp token, có ghi lý do.
@@ -265,7 +269,9 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
    theo đổi contract API/migration, hoặc lan sang khoảng 10 file trở lên.
 7. Không tắt lint/typecheck, không bỏ test, không dùng giải pháp tạm để che lỗi.
 8. Chọn một workflow chính bằng câu chat: `start-task` khi giao việc mới; `fix` khi báo lỗi; `review-code` khi
-   yêu cầu rà cuối, tự sửa lỗi xác nhận được và kiểm lại. Cả ba đọc source, `docs/` và rule liên quan trước khi
+   yêu cầu rà cuối, tự sửa lỗi xác nhận được và kiểm lại; dùng `test` (tạo test BE/FE + Playwright soi ảnh + monkey
+   test), `refactor`, `review-security` (giả lập tấn công + lưu `docs/reports/security-verification.md`), `i18n-audit`,
+   `permission-audit`, `db-migration` đúng mục tiêu. Cả nhóm đọc source, `docs/` và rule liên quan trước khi
    sửa. Nạp skill chuyên môn theo phần việc: `security-best-practices` khi yêu cầu audit bảo mật/code an toàn;
    `django-perf-review` khi rà hiệu năng Django; `web-perf` khi đo tốc độ trang/Core Web Vitals;
    `vitest` khi viết/sửa unit test FE;
@@ -351,7 +357,10 @@ Frontend:
       trong Server Component; API call hiển thị trong Network của trình duyệt.
 - [ ] Dùng component chung (`DataTable`, `SelectField`, `FilterSelect`, `FormPage`...), control `h-10`, `<Image>`, chuỗi qua i18n.
 - [ ] Primitive lấy từ `@/shares/components/ui/*` (thiếu thì `pnpm dlx shadcn@latest add`); không `<button>`/`<input>`/
-      `<select>`/`<a>`/`<img>` trần; liên kết dùng `Link` từ `next/link` hoặc `@/i18n/navigation`; ảnh dùng `<Image />`; kiểu dáng qua `variant`/`size`; nút chỉ icon có `aria-label`.
+      `<select>`/`<a>`/`<img>` trần; liên kết dùng `<Link />` từ `@/i18n/navigation` (không import `next/link` trong
+      module); ảnh dùng `<Image />`; không lặp `locale === "en" ? "en-US" : "vi-VN"`, `.toLocaleString("vi-VN")` hay
+      export hằng `UPPER_CASE` trong `.tsx` (`tests/unit/code-conventions.test.ts`); kiểu dáng qua `variant`/`size`; nút
+      chỉ icon có `aria-label`.
 - [ ] Chỉ Tailwind utility + `cn()`; không `style={{}}` tĩnh, không hex/`bg-blue-500` cho màu thương hiệu; mobile-first,
       375px không cuộn ngang; dark mode đúng nhờ token.
 - [ ] View kiểm quyền: `ForbiddenView` khi thiếu quyền trang; trang chi tiết dùng `useEditMode` + `EditModeProvider`.
