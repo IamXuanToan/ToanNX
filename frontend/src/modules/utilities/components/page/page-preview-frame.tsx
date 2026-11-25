@@ -9,7 +9,7 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/shares/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/shares/components/ui/dialog";
 
-import { PAGE_TYPE } from "../../constants/page-constants";
+import { useResolvedPageTheme } from "../../hooks/use-resolved-page-theme";
 import type { PublicPage as PublicPageType } from "../../types/page.types";
 import { PublicPage } from "./public-page";
 
@@ -33,26 +33,7 @@ export function PagePreviewFrame({
   const tCommon = useTranslations("common.actions");
   const [fullModalOpen, setFullModalOpen] = useState(false);
 
-  const rawTheme = (page.theme ?? {}) as Record<string, unknown>;
-  const styleConfig = (page.styleConfig ?? {}) as Record<string, unknown>;
-  const themeMode = (rawTheme.mode as string) ?? "system";
-  const bgRaw =
-    (rawTheme.backgroundColor as string) ??
-    (rawTheme.background_color as string) ??
-    (styleConfig?.backgroundColor as string) ??
-    (styleConfig?.background_color as string);
-
-  const isLightHex = (hex?: string) => {
-    if (!hex || !hex.startsWith("#") || hex.length < 7) return true;
-    const r = parseInt(hex.slice(1, 3), 16) || 0;
-    const g = parseInt(hex.slice(3, 5), 16) || 0;
-    const b = parseInt(hex.slice(5, 7), 16) || 0;
-    return (r * 299 + g * 587 + b * 114) / 1000 > 150;
-  };
-
-  const isDark =
-    page.pageType !== PAGE_TYPE.LEGACY_PAGE &&
-    (themeMode === "dark" || (themeMode !== "light" && bgRaw ? !isLightHex(bgRaw) : false));
+  const { isDark } = useResolvedPageTheme(page);
 
   return (
     <>

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Check, Copy, CreditCard, QrCode } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { type CSSProperties, useMemo } from "react";
+import { useMemo } from "react";
 import { cn } from "cn";
 
 import { Button } from "@/shares/components/ui/button";
@@ -18,6 +18,8 @@ import {
 } from "@/shares/lib/number-format";
 import { toSafeImageSrc } from "@/shares/lib/safe-url";
 
+import { useResolvedPageTheme } from "../../hooks/use-resolved-page-theme";
+import { isLightHexColor } from "../../lib/page-theme";
 import type { DonationQrItem, PublicPage } from "../../types/page.types";
 import { useDonationPageRenderer } from "./hooks/use-donation-page-renderer";
 import { DonationPublicFeed } from "./donation-public-feed";
@@ -220,68 +222,14 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
     handleCopyNote,
   } = useDonationPageRenderer(qrCodes, fallbackBank.accountNumber, minAmount, displayMode);
 
-  // Theme styling
-  const rawTheme = (page.theme ?? {}) as Record<string, unknown>;
-  const styleConfig = (page.styleConfig ?? {}) as Record<string, unknown>;
-  const primaryColor =
-    (rawTheme.primaryColor as string) ??
-    (rawTheme.primary_color as string) ??
-    (styleConfig.primaryColor as string) ??
-    (styleConfig.primary_color as string) ??
-    "#3D812E";
-  const buttonStyle =
-    (rawTheme.buttonStyle as string) ?? (rawTheme.button_style as string) ?? "rounded";
+  const { isDark, primaryColor, primaryForeground, buttonStyle, customStyle } =
+    useResolvedPageTheme(page);
   const buttonRadiusClass =
     buttonStyle === "square"
       ? "rounded-none"
       : buttonStyle === "pill"
         ? "rounded-full"
         : "rounded-2xl";
-
-  const themeMode = (rawTheme.mode as string) ?? "system";
-  const bgRaw =
-    (rawTheme.backgroundColor as string) ??
-    (rawTheme.background_color as string) ??
-    (styleConfig.backgroundColor as string) ??
-    (styleConfig.background_color as string);
-  const textRaw =
-    (rawTheme.textColor as string) ??
-    (rawTheme.text_color as string) ??
-    (styleConfig.textColor as string) ??
-    (styleConfig.text_color as string);
-
-  const isLightHex = (hex?: string) => {
-    if (!hex || !hex.startsWith("#") || hex.length < 7) return true;
-    const r = parseInt(hex.slice(1, 3), 16) || 0;
-    const g = parseInt(hex.slice(3, 5), 16) || 0;
-    const b = parseInt(hex.slice(5, 7), 16) || 0;
-    return (r * 299 + g * 587 + b * 114) / 1000 > 150;
-  };
-
-  const isDark =
-    themeMode === "dark" || (themeMode !== "light" && bgRaw ? !isLightHex(bgRaw) : false);
-
-  const resolvedBg = bgRaw || (isDark ? "#09090b" : "#ffffff");
-  const resolvedText = textRaw || (isDark ? "#f4f4f5" : "#0f172a");
-  const resolvedCardBg = isDark ? "#18181b" : "#ffffff";
-  const resolvedBorder = isDark ? "#27272a" : "#e2e8f0";
-  const resolvedMuted = isDark ? "#27272a" : "#f1f5f9";
-  const resolvedMutedForeground = isDark ? "#a1a1aa" : "#64748b";
-
-  const customStyle = {
-    "--primary": primaryColor,
-    "--page-primary": primaryColor,
-    colorScheme: isDark ? "dark" : "light",
-    backgroundColor: resolvedBg,
-    color: resolvedText,
-    "--background": resolvedBg,
-    "--foreground": resolvedText,
-    "--card": resolvedCardBg,
-    "--card-foreground": resolvedText,
-    "--border": resolvedBorder,
-    "--muted": resolvedMuted,
-    "--muted-foreground": resolvedMutedForeground,
-  } as CSSProperties;
 
   const rawCreator = (config?.creator ?? {}) as Record<string, unknown>;
   const creatorMessage = String(
@@ -414,7 +362,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                         isActive
                           ? {
                               backgroundColor: primaryColor,
-                              color: isLightHex(primaryColor) ? "#0f172a" : "#ffffff",
+                              color: isLightHexColor(primaryColor) ? "#0f172a" : "#ffffff",
                             }
                           : undefined
                       }
@@ -656,7 +604,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                               isSelected
                                 ? {
                                     backgroundColor: primaryColor,
-                                    color: isLightHex(primaryColor) ? "#0f172a" : "#ffffff",
+                                    color: primaryForeground,
                                   }
                                 : undefined
                             }
