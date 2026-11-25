@@ -15,32 +15,32 @@ SePay nhận biến động số dư. Phụ thuộc `system` (tiền tệ, file 
 
 ## Quyền
 
-| Class | Tài nguyên | `MEMBER` |
-| --- | --- | --- |
-| `IncomePermission` | `income` (+ `manage_all`) | read, create, update, delete |
-| `InvoicePermission` | `invoice` (+ `manage_all`) | read, create, update, delete |
+| Class                | Tài nguyên                  | `MEMBER`                     |
+| -------------------- | --------------------------- | ---------------------------- |
+| `IncomePermission`   | `income` (+ `manage_all`)   | read, create, update, delete |
+| `InvoicePermission`  | `invoice` (+ `manage_all`)  | read, create, update, delete |
 | `PlatformPermission` | `platform` (+ `manage_all`) | read, create, update, delete |
-| `RulePermission` | `rule` (+ `manage_all`) | read, create, update, delete |
-| `ReportPermission` | `report` | read |
-| `SepayPermission` | `sepay` | manage |
+| `RulePermission`     | `rule` (+ `manage_all`)     | read, create, update, delete |
+| `ReportPermission`   | `report`                    | read                         |
+| `SepayPermission`    | `sepay`                     | manage                       |
 
 ## Màn quản trị (Admin)
 
 Quản trị viên có quyền `manage_all` và `system.user.read` có thể lọc Tổng quan, Báo cáo, Khoản thu, Hóa đơn theo từng người dùng (`?owner=`).
 
-| Cụm | Màn | Route |
-| --- | --- | --- |
+| Cụm       | Màn                 | Route                  |
+| --------- | ------------------- | ---------------------- |
 | Tổng quan | Dashboard · Báo cáo | `tai-chinh`, `bao-cao` |
-| Giao dịch | Khoản thu · Hóa đơn | `thu-nhap`, `hoa-don` |
+| Giao dịch | Khoản thu · Hóa đơn | `thu-nhap`, `hoa-don`  |
 
 ## Màn cá nhân (Client Portal)
 
-Tất cả người dùng cá nhân tự quản lý tài chính và cấu hình phân loại riêng tại `/ca-nhan/tai-chinh/...`:
+Tất cả người dùng cá nhân tự quản lý tài chính và cấu hình phân loại riêng tại `/ca-nhan/tai-chinh/...` (luôn khóa dữ liệu theo tài khoản đang đăng nhập và ẩn bộ lọc/cột người dùng, kể cả khi người dùng có `manage_all`):
 
-| Cụm | Màn | Route |
-| --- | --- | --- |
-| Tổng quan | Dashboard · Báo cáo | `tai-chinh`, `bao-cao` |
-| Giao dịch | Khoản thu · Hóa đơn | `thu-nhap`, `hoa-don` |
+| Cụm              | Màn                                          | Route                                  |
+| ---------------- | -------------------------------------------- | -------------------------------------- |
+| Tổng quan        | Dashboard · Báo cáo                          | `tai-chinh`, `bao-cao`                 |
+| Giao dịch        | Khoản thu · Hóa đơn                          | `thu-nhap`, `hoa-don`                  |
 | Cấu hình cá nhân | Nền tảng · Quy tắc phân loại · Kết nối SePay | `nen-tang`, `quy-tac`, `ket-noi-sepay` |
 
 ## Sự kiện thông báo

@@ -7,6 +7,7 @@ import { withEditMode } from "@/shares/lib/edit-mode";
 import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
 import { financeKeys } from "../../../constants/query-keys";
 import { classificationRuleService } from "../../../services/classification-rule.service";
+import { useFinancePersonalScope } from "../../../hooks/use-finance-personal-scope";
 import { useFinanceRoutes } from "../../../hooks/use-finance-routes";
 import { useClassificationRules } from "../../../hooks/use-classification-rules";
 import { useDeleteClassificationRule } from "../../../hooks/use-delete-classification-rule";
@@ -17,8 +18,16 @@ import type { ClassificationRule } from "../../../types/classification-rule.type
 export function useClassificationRuleTable() {
   const router = useRouter();
   const routes = useFinanceRoutes();
+  const { personalOwnerId, scopeReady } = useFinancePersonalScope();
   const table = useTableState({ ordering: "-priority", filterKeys: ["platform"] });
-  const query = useClassificationRules({ ...table.filters, platform: table.extraFilters.platform });
+  const query = useClassificationRules(
+    {
+      ...table.filters,
+      owner: personalOwnerId ?? undefined,
+      platform: table.extraFilters.platform,
+    },
+    { enabled: scopeReady },
+  );
   const platforms = usePlatformOptions();
   const remove = useDeleteClassificationRule();
   const bulk = useBulkActions<ClassificationRule>({

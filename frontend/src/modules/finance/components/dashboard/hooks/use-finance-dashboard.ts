@@ -23,14 +23,19 @@ export function useFinanceDashboard() {
   const urlYear = Number.parseInt(searchParams.get("year") ?? "", 10);
   const currentYear = new Date().getFullYear();
   const initialYear = Number.isFinite(urlYear) && urlYear > 2000 ? urlYear : currentYear;
-  const initialOwner = (searchParams.get("owner") ?? "")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
+  const { isPortal, personalOwnerId, scopeReady, canFilterOwner, ownerOptions } =
+    useOwnerFilterOptions(INCOME_PERMISSIONS.manageAll);
+
+  const initialOwner = isPortal
+    ? []
+    : (searchParams.get("owner") ?? "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
 
   const [year, setYearState] = useState(initialYear);
-  const [owner, setOwnerState] = useState<string[]>(initialOwner);
-  const { canFilterOwner, ownerOptions } = useOwnerFilterOptions(INCOME_PERMISSIONS.manageAll);
+  const [ownerState, setOwnerState] = useState<string[]>(initialOwner);
+  const owner = isPortal ? [] : ownerState;
 
   const replaceUrl = (nextYear: number, nextOwner: string[]) => {
     const params = new URLSearchParams(window.location.search);
@@ -39,7 +44,7 @@ export function useFinanceDashboard() {
     } else {
       params.set("year", String(nextYear));
     }
-    if (nextOwner.length) {
+    if (!isPortal && nextOwner.length) {
       params.set("owner", nextOwner.join(","));
     } else {
       params.delete("owner");
@@ -53,12 +58,13 @@ export function useFinanceDashboard() {
     replaceUrl(nextYear, owner);
   };
   const setOwner = (nextOwner: string[]) => {
+    if (isPortal) return;
     setOwnerState(nextOwner);
     replaceUrl(year, nextOwner);
   };
-  const ownerQuery = owner.length ? owner.join(",") : null;
-  const monthly = useReportMonthly(year, ownerQuery);
-  const summary = useReportSummary(year, null, ownerQuery);
+  const ownerQuery = isPortal ? personalOwnerId : owner.length ? owner.join(",") : null;
+  const monthly = useReportMonthly(year, ownerQuery, { enabled: scopeReady });
+  const summary = useReportSummary(year, null, ownerQuery, { enabled: scopeReady });
   const monthLabel = (month: number) =>
     format.dateTime(new Date(year, month - 1, 1), { month: "short" });
   const points = monthly.data ? buildMonthSeries(monthly.data, monthLabel) : [];

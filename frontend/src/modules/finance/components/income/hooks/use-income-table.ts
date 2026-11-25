@@ -27,9 +27,12 @@ const FILTER_KEYS = [
   "month",
 ] as const;
 
+const PORTAL_FILTER_KEYS = FILTER_KEYS.filter((key) => key !== "owner");
+
 /**
  * State bảng giao dịch: lọc theo nền tảng/trạng thái thuế/nguồn/tiền tệ/cần xử lý/có chứng từ, năm/tháng
  * (báo cáo truyền sẵn `scope`), thao tác hàng loạt nhận diện lại, tính lại khấu trừ, xóa.
+ * Trong Client Portal luôn ẩn bộ lọc/cột người dùng và khóa truy vấn + CSV export theo `personalOwnerId`.
  *
  * @param scope - Bộ lọc cố định (báo cáo năm/tháng).
  * @returns Truy vấn, state bảng, handler.
@@ -37,11 +40,14 @@ const FILTER_KEYS = [
 export function useIncomeTable(scope: IncomeFilters = {}) {
   const router = useRouter();
   const routes = useFinanceRoutes();
-  const table = useTableState({ ordering: "-received_at", filterKeys: FILTER_KEYS });
+  const ownerFilter = useOwnerFilterOptions(INCOME_PERMISSIONS.manageAll);
+  const table = useTableState({
+    ordering: "-received_at",
+    filterKeys: ownerFilter.isPortal ? PORTAL_FILTER_KEYS : FILTER_KEYS,
+  });
   const extra = table.extraFilters;
   const filters: IncomeFilters = {
     ...table.filters,
-    owner: extra.owner,
     platform: extra.platform,
     taxStatus: extra.taxStatus,
     source: extra.source,
@@ -51,10 +57,12 @@ export function useIncomeTable(scope: IncomeFilters = {}) {
     year: extra.year ? Number(extra.year) : undefined,
     month: extra.month ? Number(extra.month) : undefined,
     ...scope,
+    owner: ownerFilter.isPortal
+      ? (ownerFilter.personalOwnerId ?? undefined)
+      : (scope.owner ?? extra.owner),
   };
-  const query = useIncomes(filters);
+  const query = useIncomes(filters, { enabled: ownerFilter.scopeReady });
   const platforms = usePlatformOptions();
-  const ownerFilter = useOwnerFilterOptions(INCOME_PERMISSIONS.manageAll);
   const remove = useDeleteIncome();
   const bulkDelete = useBulkDeleteIncomes();
   const reclassify = useReclassifyIncomes();

@@ -216,19 +216,13 @@ export function DonationPublicFeed({
       {/* Bảng Vinh danh & Lịch sử ủng hộ */}
       <div className="border-border/80 bg-card/80 rounded-2xl border p-3.5 shadow-sm backdrop-blur-xs sm:p-6">
         <Tabs defaultValue="leaderboard" className="w-full">
-          <TabsList className="bg-muted/50 grid h-10 w-full grid-cols-2 p-1">
-            <TabsTrigger
-              value="leaderboard"
-              className="min-w-0 gap-1.5 px-2 text-xs font-bold sm:gap-2 sm:text-sm"
-            >
-              <Trophy className="size-3.5 shrink-0 text-amber-500 sm:size-4" />
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="leaderboard" className="min-w-0">
+              <Trophy className="text-amber-500" aria-hidden />
               <span className="truncate">{t("leaderboardTab")}</span>
             </TabsTrigger>
-            <TabsTrigger
-              value="recent"
-              className="min-w-0 gap-1.5 px-2 text-xs font-bold sm:gap-2 sm:text-sm"
-            >
-              <Sparkles className="text-primary size-3.5 shrink-0 sm:size-4" />
+            <TabsTrigger value="recent" className="min-w-0">
+              <Sparkles className="text-primary" aria-hidden />
               <span className="truncate">{t("recentTab")}</span>
             </TabsTrigger>
           </TabsList>

@@ -13,23 +13,31 @@ import { usePlatformOptions } from "../../../hooks/use-platform-options";
 import { INVOICE_PERMISSIONS } from "../../../permissions/invoice-permission";
 import type { Invoice } from "../../../types/invoice.types";
 
-/** @returns State bảng hóa đơn (lọc người dùng, năm, loại, nền tảng). */
+const ADMIN_FILTER_KEYS = ["owner", "year", "docType", "platform"] as const;
+const PORTAL_FILTER_KEYS = ["year", "docType", "platform"] as const;
+
+/** @returns State bảng hóa đơn (lọc người dùng, năm, loại, nền tảng; Portal khóa theo user hiện tại). */
 export function useInvoiceTable() {
   const router = useRouter();
   const routes = useFinanceRoutes();
+  const ownerFilter = useOwnerFilterOptions(INVOICE_PERMISSIONS.manageAll);
   const table = useTableState({
     ordering: "-issued_on",
-    filterKeys: ["owner", "year", "docType", "platform"],
+    filterKeys: ownerFilter.isPortal ? PORTAL_FILTER_KEYS : ADMIN_FILTER_KEYS,
   });
-  const query = useInvoices({
-    ...table.filters,
-    owner: table.extraFilters.owner,
-    year: table.extraFilters.year ? Number(table.extraFilters.year) : undefined,
-    docType: table.extraFilters.docType,
-    platform: table.extraFilters.platform,
-  });
+  const query = useInvoices(
+    {
+      ...table.filters,
+      owner: ownerFilter.isPortal
+        ? (ownerFilter.personalOwnerId ?? undefined)
+        : table.extraFilters.owner,
+      year: table.extraFilters.year ? Number(table.extraFilters.year) : undefined,
+      docType: table.extraFilters.docType,
+      platform: table.extraFilters.platform,
+    },
+    { enabled: ownerFilter.scopeReady },
+  );
   const platforms = usePlatformOptions();
-  const ownerFilter = useOwnerFilterOptions(INVOICE_PERMISSIONS.manageAll);
   const remove = useDeleteInvoice();
   const bulkDelete = useBulkDeleteInvoices();
   return {

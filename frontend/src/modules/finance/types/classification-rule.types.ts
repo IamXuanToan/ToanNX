@@ -13,7 +13,11 @@ export type ClassificationRule = {
   updatedAt: string;
 };
 
-export type ClassificationRuleFilters = ListParams & { platform?: string; isActive?: string };
+export type ClassificationRuleFilters = ListParams & {
+  owner?: string;
+  platform?: string;
+  isActive?: string;
+};
 
 export type ClassificationRuleInput = {
   name?: string;

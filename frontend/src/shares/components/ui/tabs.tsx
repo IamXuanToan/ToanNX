@@ -58,20 +58,46 @@ function TabsList({
 }
 
 /** Nút chọn tab với màu nền active rõ ràng, bóng đổ tinh tế, trạng thái hover và focus chuẩn mực. */
-function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
+function TabsTrigger({
+  className,
+  onPointerDown,
+  onKeyDown,
+  onBlur,
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
+      onPointerDown={(event) => {
+        // Radix Tabs kích hoạt focus() khi click chuột khiến Chromium bật :focus-visible;
+        // đánh dấu nguồn chuột để chỉ hiển thị viền focus khi người dùng điều hướng bằng bàn phím.
+        event.currentTarget.dataset.pointerFocus = "true";
+        onPointerDown?.(event);
+      }}
+      onKeyDown={(event) => {
+        delete event.currentTarget.dataset.pointerFocus;
+        const list = event.currentTarget.closest('[data-slot="tabs-list"]');
+        if (list) {
+          for (const trigger of list.querySelectorAll<HTMLElement>('[data-slot="tabs-trigger"]')) {
+            delete trigger.dataset.pointerFocus;
+          }
+        }
+        onKeyDown?.(event);
+      }}
+      onBlur={(event) => {
+        delete event.currentTarget.dataset.pointerFocus;
+        onBlur?.(event);
+      }}
       className={cn(
         "relative inline-flex shrink-0 items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all duration-200 outline-none select-none sm:px-4 sm:text-sm",
-        "text-muted-foreground hover:text-foreground hover:bg-background/50 dark:hover:bg-muted/70",
-        "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50",
+        "text-muted-foreground hover:text-foreground hover:bg-card/60 dark:hover:bg-muted/70",
+        "[&:not([data-pointer-focus])]:focus-visible:ring-ring/75 disabled:pointer-events-none disabled:opacity-50 [&:not([data-pointer-focus])]:focus-visible:ring-2 [&:not([data-pointer-focus])]:focus-visible:ring-inset",
         "group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        // Trạng thái Active - Segmented Pill (variant=default)
-        "group-data-[variant=default]/tabs-list:data-[state=active]:bg-background group-data-[variant=default]/tabs-list:data-[state=active]:text-foreground group-data-[variant=default]/tabs-list:data-[state=active]:border-border/60 group-data-[variant=default]/tabs-list:data-[state=active]:border group-data-[variant=default]/tabs-list:data-[state=active]:font-semibold group-data-[variant=default]/tabs-list:data-[state=active]:shadow-xs",
+        // Trạng thái Active - Segmented Pill (variant=default): luôn dùng bg-card nổi bật trên mọi nền trang
+        "group-data-[variant=default]/tabs-list:data-[state=active]:bg-card group-data-[variant=default]/tabs-list:data-[state=active]:text-foreground group-data-[variant=default]/tabs-list:data-[state=active]:border-border/60 group-data-[variant=default]/tabs-list:data-[state=active]:border group-data-[variant=default]/tabs-list:data-[state=active]:font-semibold group-data-[variant=default]/tabs-list:data-[state=active]:shadow-xs",
         "dark:group-data-[variant=default]/tabs-list:data-[state=active]:bg-card dark:group-data-[variant=default]/tabs-list:data-[state=active]:text-foreground dark:group-data-[variant=default]/tabs-list:data-[state=active]:border-border/80 dark:group-data-[variant=default]/tabs-list:data-[state=active]:shadow-sm",
-        "group-data-[variant=default]/tabs-list:data-active:bg-background group-data-[variant=default]/tabs-list:data-active:text-foreground group-data-[variant=default]/tabs-list:data-active:border-border/60 group-data-[variant=default]/tabs-list:data-active:border group-data-[variant=default]/tabs-list:data-active:font-semibold group-data-[variant=default]/tabs-list:data-active:shadow-xs",
+        "group-data-[variant=default]/tabs-list:data-active:bg-card group-data-[variant=default]/tabs-list:data-active:text-foreground group-data-[variant=default]/tabs-list:data-active:border-border/60 group-data-[variant=default]/tabs-list:data-active:border group-data-[variant=default]/tabs-list:data-active:font-semibold group-data-[variant=default]/tabs-list:data-active:shadow-xs",
         "dark:group-data-[variant=default]/tabs-list:data-active:bg-card dark:group-data-[variant=default]/tabs-list:data-active:text-foreground dark:group-data-[variant=default]/tabs-list:data-active:border-border/80 dark:group-data-[variant=default]/tabs-list:data-active:shadow-sm",
         // Trạng thái Active - Underline (variant=line)
         "group-data-[variant=line]/tabs-list:rounded-none group-data-[variant=line]/tabs-list:border-b-2 group-data-[variant=line]/tabs-list:border-transparent group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:px-3 group-data-[variant=line]/tabs-list:py-2.5",

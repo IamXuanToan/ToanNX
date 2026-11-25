@@ -15,6 +15,7 @@ PROJECT_SKILLS = (
     "i18n-audit",
     "permission-audit",
     "db-migration",
+    "check-ci",
 )
 REFERENCES: dict[str, tuple[str, ...]] = {
     "start-task": ("references/acceptance-matrix.md",),
@@ -23,6 +24,7 @@ REFERENCES: dict[str, tuple[str, ...]] = {
     "test": ("references/test-patterns.md", "references/monkey-testing.md"),
     "refactor": ("references/refactor-checklist.md",),
     "review-security": ("references/attack-playbook.md", "references/report-template.md"),
+    "check-ci": ("references/ci-matrix.md",),
 }
 SPECIALISTS = (
     "ui-ux",

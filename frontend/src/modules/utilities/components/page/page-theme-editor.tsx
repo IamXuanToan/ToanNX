@@ -15,6 +15,7 @@ import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 
 import { THEME_PRESETS, type ThemePreset } from "../../constants/page-theme-presets";
+import { isLightHexColor } from "../../lib/page-theme";
 import type { PageFormValues } from "../../schemas/page.schema";
 
 /**
@@ -233,17 +234,10 @@ export function PageThemeEditor({
                   onValueChange={(val) => {
                     field.onChange(val);
                     if (setValue) {
-                      const isLightHex = (hex?: string) => {
-                        if (!hex || !hex.startsWith("#") || hex.length < 7) return true;
-                        const r = parseInt(hex.slice(1, 3), 16) || 0;
-                        const g = parseInt(hex.slice(3, 5), 16) || 0;
-                        const b = parseInt(hex.slice(5, 7), 16) || 0;
-                        return (r * 299 + g * 587 + b * 114) / 1000 > 150;
-                      };
-                      if (val === "dark" && isLightHex(currentBg)) {
+                      if (val === "dark" && isLightHexColor(currentBg)) {
                         setValue("backgroundColor", "#09090B", { shouldDirty: true });
                         setValue("textColor", "#F4F4F5", { shouldDirty: true });
-                      } else if (val === "light" && !isLightHex(currentBg)) {
+                      } else if (val === "light" && !isLightHexColor(currentBg)) {
                         setValue("backgroundColor", "#FFFFFF", { shouldDirty: true });
                         setValue("textColor", "#0F172A", { shouldDirty: true });
                       }

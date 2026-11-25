@@ -21,6 +21,7 @@ export function useFinanceRoutes() {
 
   if (isPortal) {
     return {
+      isPortal: true,
       dashboard: PORTAL_ROUTES.financeDashboard,
       reports: PORTAL_ROUTES.financeReports,
       sepay: PORTAL_ROUTES.financeSepay,
@@ -41,6 +42,7 @@ export function useFinanceRoutes() {
 
   return {
     ...FINANCE_ROUTES,
+    isPortal: false,
     platforms: PORTAL_ROUTES.financePlatforms,
     platformCreate: PORTAL_ROUTES.financePlatformCreate,
     platformDetail: PORTAL_ROUTES.financePlatformDetail,

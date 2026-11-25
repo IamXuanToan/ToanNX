@@ -49,6 +49,8 @@
         "gusts": "Gió giật",
         "clouds": "Mây",
         "pressure": "Áp suất",
+        "sunrise": "Bình minh",
+        "sunset": "Hoàng hôn",
         "reload": "Làm mới dữ liệu",
         "stormAlert": "Cảnh báo bão",
         "updating": "Đang cập nhật...",

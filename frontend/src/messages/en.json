@@ -49,6 +49,8 @@
         "gusts": "Gusts",
         "clouds": "Clouds",
         "pressure": "Pressure",
+        "sunrise": "Sunrise",
+        "sunset": "Sunset",
         "reload": "Refresh weather",
         "stormAlert": "Storm Alert",
         "updating": "Updating...",

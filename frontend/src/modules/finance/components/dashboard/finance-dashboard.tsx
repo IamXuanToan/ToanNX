@@ -40,7 +40,7 @@ export function FinanceDashboard() {
       query: {
         year: String(state.year),
         month: String(month),
-        ...(state.owner.length ? { owner: state.owner.join(",") } : {}),
+        ...(!routes.isPortal && state.owner.length ? { owner: state.owner.join(",") } : {}),
       },
     });
   const monthLabel = (month: number) =>

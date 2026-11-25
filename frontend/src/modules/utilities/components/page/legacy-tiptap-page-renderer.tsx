@@ -8,14 +8,14 @@ import type { PublicPage } from "../../types/page.types";
 
 /**
  * Hiển thị trang soạn thảo tự do (`LEGACY_PAGE` / custom) dùng chung đúng hệ màu & định dạng
- * với `TiptapEditor` (không ghi đè bảng màu nút/nền).
+ * với `TiptapEditor` (không ghi đè bảng màu nút/nền, tự ăn theo Light/Dark của hệ thống).
  *
  * @param props - Dữ liệu trang công khai.
  * @returns Giao diện bài viết Tiptap đồng nhất với trình soạn thảo.
  */
 export function LegacyTiptapPageRenderer({ page }: { page: PublicPage }) {
   return (
-    <main className="bg-background text-foreground min-h-svh">
+    <main className="bg-background text-foreground min-h-svh transition-colors duration-200">
       {page.coverUrl ? (
         <div className="relative h-48 w-full overflow-hidden sm:h-64">
           <Image
