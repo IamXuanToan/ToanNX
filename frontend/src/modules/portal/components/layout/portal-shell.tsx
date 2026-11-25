@@ -1,32 +1,28 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
-import { Link } from "@/i18n/navigation";
-import { SYSTEM_ROUTES } from "@/modules/system/constants/routes";
-import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
-import { Button } from "@/shares/components/ui/button";
+import { ErrorState } from "@/shares/components/errors/error-state";
 import { SidebarInset, SidebarProvider } from "@/shares/components/ui/sidebar";
 
+import { usePortalShell } from "./hooks/use-portal-shell";
 import { PortalBottomNav } from "./portal-bottom-nav";
 import { PortalHeader } from "./portal-header";
 import { PortalSidebar } from "./portal-sidebar";
 
 /**
  * Khung giao diện toàn diện cho Client Portal (Studio cá nhân):
- * Tự động kiểm tra phiên xác thực, tích hợp SidebarProvider chuẩn Admin với tính năng
- * thu gọn dải icon và drawer mobile, khu vực nội dung SidebarInset và thanh điều hướng dưới đáy.
+ * Tự động kiểm tra phiên xác thực, chuyển thẳng về trang đăng nhập nếu chưa đăng nhập hoặc hết phiên,
+ * tích hợp SidebarProvider chuẩn Admin với tính năng thu gọn dải icon và drawer mobile.
  *
  * @param props - Nội dung trang con.
  * @returns Khung Portal.
  */
 export function PortalShell({ children }: { children: ReactNode }) {
-  const t = useTranslations("portal");
-  const { data: currentUser, isLoading, isError } = useCurrentUser();
+  const { status, refetch } = usePortalShell();
 
-  if (isLoading) {
+  if (status === "loading") {
     return (
       <div className="bg-canvas flex h-svh w-full items-center justify-center p-6">
         <Loader2 className="text-primary size-10 animate-spin" />
@@ -34,18 +30,10 @@ export function PortalShell({ children }: { children: ReactNode }) {
     );
   }
 
-  if (isError || !currentUser?.user) {
+  if (status === "error") {
     return (
-      <div className="bg-canvas flex h-svh w-full flex-col items-center justify-center p-6 text-center">
-        <h2 className="text-foreground text-xl font-bold tracking-tight">
-          {t("authRequired.title")}
-        </h2>
-        <p className="text-muted-foreground mt-2 max-w-md text-sm">
-          {t("authRequired.description")}
-        </p>
-        <Button asChild className="mt-5 rounded-xl">
-          <Link href={SYSTEM_ROUTES.login}>{t("authRequired.loginButton")}</Link>
-        </Button>
+      <div className="mx-auto max-w-md p-6 pt-24">
+        <ErrorState onRetry={() => refetch()} />
       </div>
     );
   }

@@ -19,7 +19,9 @@ import {
 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 
+import { Link } from "@/i18n/navigation";
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 import { Button } from "@/shares/components/ui/button";
 import {
   DialogDescription,
@@ -355,10 +357,14 @@ export function AttachmentDetailContent({
                     className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
                     title={t("openFile")}
                   >
-                    <a href={shareUrl} target="_blank" rel="noopener noreferrer">
+                    <Link
+                      href={(toSafeHttpUrl(shareUrl) ?? "#") as never}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <ExternalLink className="size-3.5" />
                       <span>{t("openFile")}</span>
-                    </a>
+                    </Link>
                   </Button>
 
                   {canEdit && (

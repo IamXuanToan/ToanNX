@@ -47,8 +47,14 @@
       "amount": "Amount (₫)",
       "count": "Donations",
       "clicks": "Clicks",
+      "clickCount": "{count} clicks",
       "noTrendData": "No donation activity recorded in this period.",
-      "noLinksData": "No short links with clicks yet."
+      "noLinksData": "No short links with clicks yet.",
+      "filterAll": "All",
+      "filterAmount": "Amount",
+      "filterCount": "Donations",
+      "noGiftsData": "No appreciation gifts recorded yet.",
+      "giftCount": "{count} donations"
     },
     "quickActions": {
       "title": "Quick Actions",
@@ -171,5 +177,27 @@
     "description": "Please sign in to your account to access your personal workspace.",
     "loginButton": "Go to Sign In"
   },
-  "mobileNavAria": "Mobile navigation bar"
+  "mobileNavAria": "Mobile navigation bar",
+  "donations": {
+    "badge": "Personal Area",
+    "title": "Your Donations & Support Analytics",
+    "subtitle": "Track donations from friends, readers, and supporters via SePay QR codes on your Donate pages.",
+    "totalReceivedLabel": "Total received",
+    "totalReceivedHint": "{count} donations from supporters",
+    "successCountLabel": "Completed donations",
+    "hiddenCommentsHint": "{count} comments hidden by you",
+    "activeLeaderboardLabel": "Active on Leaderboard",
+    "activeLeaderboardHint": "Bronze, Silver, Gold tiers counting down",
+    "dateRangeLabel": "Date range:",
+    "rangeAll": "All time",
+    "rangeToday": "Today",
+    "range7d": "Last 7 days",
+    "range30d": "Last 30 days",
+    "rangeCustom": "Custom",
+    "fromDateLabel": "From:",
+    "fromDatePlaceholder": "Pick start date",
+    "toDateLabel": "To:",
+    "toDatePlaceholder": "Pick end date",
+    "resetRange": "Reset"
+  }
 }

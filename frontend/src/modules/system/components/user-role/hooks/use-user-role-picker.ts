@@ -32,7 +32,7 @@ export function useUserRolePicker({
 }) {
   const sourceId = userId ?? copyFrom ?? "";
   const roles = useRoleOptions({ enabled: canRead });
-  const assigned = useUserRoles(sourceId, { enabled: Boolean(sourceId) });
+  const assigned = useUserRoles(sourceId, { enabled: Boolean(sourceId) && (canRead || canAssign) });
   const target = useUser(userId ?? "", { enabled: Boolean(userId) });
   const sync = useSyncUserRoles();
   const baseIds = useMemo(() => (assigned.data ?? []).map((role) => role.id), [assigned.data]);

@@ -14,20 +14,28 @@ import { Skeleton } from "@/shares/components/ui/skeleton";
 import { PORTAL_ROUTES } from "../../constants/routes";
 
 /**
- * Component chỉnh sửa liên kết rút gọn trong Client Portal.
+ * Component chi tiết và chỉnh sửa liên kết rút gọn trong Client Portal.
  *
- * @param props - Id liên kết và cờ quyền sửa.
- * @returns Giao diện chỉnh sửa link rút gọn.
+ * @param props - Id liên kết, cờ đang sửa và quyền quản lý mọi bản ghi.
+ * @returns Giao diện chi tiết / chỉnh sửa link rút gọn.
  */
-export function PortalShortLinkEdit({ id, canUpdate }: { id: string; canUpdate: boolean }) {
+export function PortalShortLinkEdit({
+  id,
+  canUpdate,
+  canManageAll = false,
+}: {
+  id: string;
+  canUpdate: boolean;
+  canManageAll?: boolean;
+}) {
   const t = useTranslations("portal.shortLinks");
   const router = useRouter();
-  const { data: currentUser } = useCurrentUser();
+  const { data: currentUser, isPending: isUserPending } = useCurrentUser();
   const userId = currentUser?.user.id;
 
   const query = useShortLink(id);
 
-  if (query.isPending) {
+  if (query.isPending || isUserPending) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-10 w-48 rounded-lg" />
@@ -48,9 +56,9 @@ export function PortalShortLinkEdit({ id, canUpdate }: { id: string; canUpdate: 
 
   const link = query.data;
 
-  // Cô lập quyền sở hữu: người dùng chỉ được sửa link do chính mình tạo
+  // Cô lập quyền sở hữu: người dùng chỉ được xem/sửa link do chính mình tạo (trừ manage_all)
   const isOwner = link.ownerId === userId;
-  if (!isOwner || !canUpdate) {
+  if (!isOwner && !canManageAll) {
     return <ForbiddenView />;
   }
 
@@ -58,6 +66,7 @@ export function PortalShortLinkEdit({ id, canUpdate }: { id: string; canUpdate: 
     <FormPage title={t("editTitle", { name: link.name })}>
       <ShortLinkForm
         link={link}
+        disabled={!canUpdate}
         onSaved={() => {
           router.push(PORTAL_ROUTES.shortLinks);
         }}

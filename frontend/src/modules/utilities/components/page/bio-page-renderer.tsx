@@ -11,13 +11,14 @@ import {
   Sparkles,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { cn } from "cn";
 import type { CSSProperties } from "react";
 
+import { Link } from "@/i18n/navigation";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
+import { toSafeHttpUrl, toSafeImageSrc } from "@/shares/lib/safe-url";
 
 import type { BioSkill, PublicPage } from "../../types/page.types";
 import { BioLinkIcon, getLinkPlatformIcon } from "./bio-link-icon";
@@ -142,17 +143,20 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
 
   const displayName = profile.displayName || page.title;
 
-  const coverUrl =
+  const safeWebsite = toSafeHttpUrl(profile.website, { allowRelative: false });
+  const coverUrl = toSafeImageSrc(
     page.coverUrl ||
-    (config?.coverUrl as string) ||
-    (config?.cover_url as string) ||
-    (rawProfile.coverUrl as string) ||
-    (rawProfile.cover_url as string);
-  const avatarUrl =
+      (config?.coverUrl as string) ||
+      (config?.cover_url as string) ||
+      (rawProfile.coverUrl as string) ||
+      (rawProfile.cover_url as string),
+  );
+  const avatarUrl = toSafeImageSrc(
     page.avatarUrl ||
-    profile.avatarUrl ||
-    (config?.avatarUrl as string) ||
-    (config?.avatar_url as string);
+      profile.avatarUrl ||
+      (config?.avatarUrl as string) ||
+      (config?.avatar_url as string),
+  );
 
   return (
     <main
@@ -164,7 +168,7 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
     >
       {/* 1. Ảnh bìa (Cover Banner) */}
       {coverUrl ? (
-        <div className="relative h-44 w-full overflow-hidden sm:h-56">
+        <div className="relative h-36 w-full overflow-hidden sm:h-56">
           <Image
             src={coverUrl}
             alt={page.title}
@@ -178,9 +182,9 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
         </div>
       ) : null}
 
-      <div className="mx-auto w-full max-w-xl px-4 pt-6">
+      <div className="mx-auto w-full max-w-xl px-3.5 pt-5 sm:px-4 sm:pt-6">
         {/* 2. Profile Bento Header */}
-        <header className="mb-8 flex flex-col items-center text-center">
+        <header className="mb-7 flex flex-col items-center text-center sm:mb-8">
           {avatarUrl ? (
             <div
               className={cn(
@@ -224,28 +228,28 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
 
           {/* Meta: Địa điểm, Email, Website */}
           {(profile.location || profile.email || profile.website) && (
-            <div className="text-muted-foreground mt-3.5 flex flex-wrap items-center justify-center gap-2 text-xs">
+            <div className="text-muted-foreground mt-3.5 flex max-w-full flex-wrap items-center justify-center gap-2 text-xs">
               {profile.location ? (
-                <span className="bg-muted/60 text-muted-foreground border-border/50 flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs">
-                  <MapPin className="text-primary size-3.5" />
-                  <span>{profile.location}</span>
+                <span className="bg-muted/60 text-muted-foreground border-border/50 flex max-w-full items-center gap-1.5 rounded-full border px-3 py-1 text-xs">
+                  <MapPin className="text-primary size-3.5 shrink-0" />
+                  <span className="truncate">{profile.location}</span>
                 </span>
               ) : null}
               {profile.email ? (
-                <span className="bg-muted/60 text-muted-foreground border-border/50 flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs">
-                  <Mail className="text-primary size-3.5" />
-                  <span>{profile.email}</span>
+                <span className="bg-muted/60 text-muted-foreground border-border/50 flex max-w-full items-center gap-1.5 rounded-full border px-3 py-1 text-xs">
+                  <Mail className="text-primary size-3.5 shrink-0" />
+                  <span className="truncate">{profile.email}</span>
                 </span>
               ) : null}
-              {profile.website ? (
+              {safeWebsite ? (
                 <Button
                   asChild
                   variant="ghost"
-                  className="bg-muted/60 text-muted-foreground border-border/50 hover:text-primary h-auto rounded-full border px-3 py-1 text-xs transition-colors"
+                  className="bg-muted/60 text-muted-foreground border-border/50 hover:text-primary h-auto max-w-full min-w-0 rounded-full border px-3 py-1 text-xs whitespace-normal transition-colors"
                 >
-                  <Link href={profile.website} target="_blank" rel="noopener noreferrer">
-                    <Globe className="text-primary mr-1.5 size-3.5" />
-                    <span>{profile.website.replace(/^https?:\/\//, "")}</span>
+                  <Link href={safeWebsite as never} target="_blank" rel="noopener noreferrer">
+                    <Globe className="text-primary mr-1.5 size-3.5 shrink-0" />
+                    <span className="truncate">{safeWebsite.replace(/^https?:\/\//, "")}</span>
                   </Link>
                 </Button>
               ) : null}
@@ -257,7 +261,9 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
         {links.length > 0 ? (
           <section className="mb-10 flex flex-col gap-3">
             {links.map((link) => {
-              const platform = getLinkPlatformIcon(link.url, link.title);
+              const safeLinkUrl = toSafeHttpUrl(link.url, { allowRelative: false });
+              if (!safeLinkUrl) return null;
+              const platform = getLinkPlatformIcon(safeLinkUrl, link.title);
 
               return (
                 <Button
@@ -265,17 +271,17 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
                   asChild
                   variant="outline"
                   className={cn(
-                    "border-border/80 bg-card group hover:border-primary/50 relative h-auto w-full items-center justify-between p-3.5 text-left font-normal shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+                    "border-border/80 bg-card group hover:border-primary/50 relative h-auto w-full items-center justify-between p-3 text-left font-normal whitespace-normal shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-3.5",
                     buttonRadiusClass,
                     link.highlight &&
                       "ring-primary/40 border-primary/40 from-primary/5 via-card to-card bg-gradient-to-r shadow-sm ring-2",
                   )}
                 >
-                  <Link href={link.url} target="_blank" rel="noopener noreferrer">
-                    <div className="flex min-w-0 items-center gap-3.5 pr-2">
+                  <Link href={safeLinkUrl as never} target="_blank" rel="noopener noreferrer">
+                    <div className="flex min-w-0 flex-1 items-center gap-3 pr-2 sm:gap-3.5">
                       <div
                         className={cn(
-                          "flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl p-2.5 transition-colors duration-200 group-hover:scale-105",
+                          "flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl p-2 transition-colors duration-200 group-hover:scale-105 sm:size-11 sm:p-2.5",
                           platform.bg,
                         )}
                       >
@@ -287,12 +293,12 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
                           className="size-6 object-contain"
                         />
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-foreground group-hover:text-primary truncate text-sm font-semibold transition-colors">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-foreground group-hover:text-primary line-clamp-2 text-sm leading-snug font-semibold transition-colors">
                           {link.title}
                         </div>
                         {link.description ? (
-                          <div className="text-muted-foreground mt-0.5 truncate text-xs">
+                          <div className="text-muted-foreground mt-0.5 line-clamp-2 text-xs leading-relaxed">
                             {link.description}
                           </div>
                         ) : null}
@@ -388,47 +394,54 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
               </h2>
             </div>
             <div className="space-y-3.5">
-              {projects.map((proj) => (
-                <div
-                  key={proj.id}
-                  className="border-border/80 bg-card group hover:border-primary/40 rounded-2xl border p-4 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-foreground group-hover:text-primary text-sm font-bold transition-colors">
-                      {proj.title}
-                    </h3>
-                    {proj.url ? (
-                      <Button
-                        asChild
-                        variant="ghost"
-                        size="icon-xs"
-                        className="text-primary bg-primary/5 hover:bg-primary/15 size-7 rounded-full"
-                      >
-                        <Link href={proj.url} target="_blank" rel="noopener noreferrer">
-                          <ArrowUpRight className="size-4" />
-                        </Link>
-                      </Button>
+              {projects.map((proj) => {
+                const safeProjUrl = toSafeHttpUrl(proj.url, { allowRelative: false });
+                return (
+                  <div
+                    key={proj.id}
+                    className="border-border/80 bg-card group hover:border-primary/40 rounded-2xl border p-4 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="text-foreground group-hover:text-primary text-sm font-bold transition-colors">
+                        {proj.title}
+                      </h3>
+                      {safeProjUrl ? (
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon-xs"
+                          className="text-primary bg-primary/5 hover:bg-primary/15 size-7 rounded-full"
+                        >
+                          <Link
+                            href={safeProjUrl as never}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <ArrowUpRight className="size-4" />
+                          </Link>
+                        </Button>
+                      ) : null}
+                    </div>
+                    {proj.description ? (
+                      <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed">
+                        {proj.description}
+                      </p>
+                    ) : null}
+                    {proj.tags && proj.tags.length > 0 ? (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {proj.tags.map((tg) => (
+                          <span
+                            key={tg}
+                            className="bg-muted/70 text-muted-foreground border-border/50 rounded-md border px-2 py-0.5 text-[10px] font-medium"
+                          >
+                            {tg}
+                          </span>
+                        ))}
+                      </div>
                     ) : null}
                   </div>
-                  {proj.description ? (
-                    <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed">
-                      {proj.description}
-                    </p>
-                  ) : null}
-                  {proj.tags && proj.tags.length > 0 ? (
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {proj.tags.map((tg) => (
-                        <span
-                          key={tg}
-                          className="bg-muted/70 text-muted-foreground border-border/50 rounded-md border px-2 py-0.5 text-[10px] font-medium"
-                        >
-                          {tg}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         ) : null}

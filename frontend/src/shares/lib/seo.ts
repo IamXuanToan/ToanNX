@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { getPathname } from "@/i18n/navigation";
-import { type AppLocale, type AppPathname, LOCALES } from "@/i18n/routing";
+import { type AppLocale, type AppPathname, DEFAULT_LOCALE, LOCALES } from "@/i18n/routing";
 import { env } from "@/shares/config/env";
 
 /**
@@ -20,7 +20,7 @@ export function buildAlternates(href: AppPathname, locale: AppLocale): Metadata[
     canonical: url(locale),
     languages: {
       ...Object.fromEntries(LOCALES.map((item) => [item, url(item)])),
-      "x-default": url("vi"),
+      "x-default": url(DEFAULT_LOCALE),
     },
   };
 }

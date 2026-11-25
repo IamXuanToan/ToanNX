@@ -60,7 +60,7 @@ export function TableToolbar({
     return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-start gap-2">
       {search ? (
         <SearchInput
           value={search.value}

@@ -152,7 +152,8 @@
       "edit": "Edit",
       "close": "Close",
       "back": "Back",
-      "unsaved": "Unsaved changes"
+      "unsaved": "Unsaved changes",
+      "toggleSidebar": "Toggle sidebar"
     },
     "status": {
       "active": "Active",
@@ -220,7 +221,8 @@
       "rowLocked": "This record can't be changed"
     },
     "search": {
-      "clear": "Clear search"
+      "clear": "Clear search",
+      "limitExceeded": "Search keywords allow up to {maxTerms} words and {maxLength} characters."
     },
     "emptyState": {
       "title": "No data yet"
@@ -298,10 +300,109 @@
       "link": "Link",
       "insert": "Insert",
       "apply": "Apply",
+      "cancel": "Cancel",
+      "close": "Close",
       "invalidUrl": "Only http, https, mailto and tel links are allowed.",
       "invalidImageUrl": "External images must use https.",
       "invalidYoutube": "Only YouTube videos (https) are supported.",
-      "imageFailed": "Could not add the image. Please try again."
+      "imageFailed": "Could not add the image. Please try again.",
+      "codeBlock": "Code block",
+      "alignLeft": "Align left",
+      "alignCenter": "Align center",
+      "alignRight": "Align right",
+      "alignJustify": "Justify",
+      "alignFull": "Full width",
+      "resizeImage": "Drag to resize image",
+      "imageAlt": "Image description (Alt)",
+      "imageAltPlaceholder": "Enter short image description...",
+      "deleteImage": "Delete image",
+      "imageUnavailable": "Unable to load image",
+      "clearFormatting": "Clear formatting",
+      "emptyPlaceholder": "Write something or type '/' for commands...",
+      "slashTitle": "Insert block",
+      "slashEmpty": "No matching block found.",
+      "slashHint": "↑↓ navigate · Enter insert · Esc close",
+      "slashGroupBasic": "Basic blocks",
+      "slashGroupMedia": "Advanced & Media",
+      "slashGroupModule": "Module blocks",
+      "addBlockHint": "Click to insert a block below",
+      "dragHandleHint": "Drag to reorder block or click for menu",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "duplicateBlock": "Duplicate block",
+      "deleteBlock": "Delete block",
+      "turnInto": "Turn into",
+      "textColor": "Color & Highlight",
+      "resetColor": "Default",
+      "insertImageTitle": "Insert image from URL",
+      "insertYoutubeTitle": "Embed YouTube video",
+      "urlPlaceholder": "https://...",
+      "insertUrlAction": "Insert into document",
+      "notionToolbarToggle": "Toolbar",
+      "notionHint": "Type '/' for blocks · Select text for formatting · Drag ⠿ to reorder lines",
+      "stats": "{words} words · {chars} chars · {blocks} blocks",
+      "basicPlaceholder": "Enter description (supports bold and italic)...",
+      "charCount": "{count} / {max} chars",
+      "commentPlaceholder": "Write your comment...",
+      "commentSubmit": "Post comment",
+      "commentSubmitting": "Sending...",
+      "commentCancel": "Cancel",
+      "commentShortcutHint": "Ctrl + Enter to send",
+      "commentReplyingTo": "Replying to {target}",
+      "slashItems": {
+        "paragraph": {
+          "label": "Text",
+          "desc": "Start writing plain paragraphs"
+        },
+        "h1": {
+          "label": "Heading 1",
+          "desc": "Big section heading"
+        },
+        "h2": {
+          "label": "Heading 2",
+          "desc": "Medium section heading"
+        },
+        "h3": {
+          "label": "Heading 3",
+          "desc": "Small subsection heading"
+        },
+        "bulletList": {
+          "label": "Bulleted list",
+          "desc": "Create a simple bulleted list"
+        },
+        "orderedList": {
+          "label": "Numbered list",
+          "desc": "Create a list with numbering"
+        },
+        "taskList": {
+          "label": "To-do list",
+          "desc": "Track tasks with checkboxes"
+        },
+        "blockquote": {
+          "label": "Quote",
+          "desc": "Capture a quote or highlight"
+        },
+        "codeBlock": {
+          "label": "Code block",
+          "desc": "Monospace snippet block"
+        },
+        "table": {
+          "label": "Table (3×3)",
+          "desc": "Structured table with header row"
+        },
+        "horizontalRule": {
+          "label": "Divider",
+          "desc": "Visually divide blocks"
+        },
+        "imageUrl": {
+          "label": "Image (URL)",
+          "desc": "Resizable & alignable interactive image"
+        },
+        "youtube": {
+          "label": "YouTube video",
+          "desc": "Embed a YouTube player"
+        }
+      }
     },
     "components": {
       "remove": "Remove",
@@ -325,6 +426,9 @@
       "unselectGroup": "Unselect group",
       "selectAll": "Select all",
       "clearAll": "Clear selection"
+    },
+    "sortable": {
+      "dragAriaLabel": "Drag and drop to reorder"
     }
   },
   "errors": {
@@ -495,7 +599,11 @@
       "devOnly": "Development only",
       "errorDigest": "Issue code (Digest)",
       "copyDigest": "Copy code",
-      "copiedDigest": "Copied"
+      "copiedDigest": "Copied",
+      "copyDetails": "Copy full error",
+      "copyDetailsTitle": "Copy full error details and stack trace",
+      "copiedDetails": "Details copied",
+      "fallbackMessage": "An unexpected error occurred."
     },
     "network": {
       "title": "Connection lost",

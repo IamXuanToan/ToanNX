@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { useRouter } from "@/i18n/navigation";
+import { LOGOUT_SUCCESS_TOAST_ID, SESSION_EXPIRED_TOAST_ID } from "@/shares/constants/auth-session";
 import { useAuthStore } from "@/store/auth-store";
 
 import { SYSTEM_ROUTES } from "../constants/routes";
@@ -32,9 +33,9 @@ export function useLogout() {
       // Dù API lỗi (mạng), vẫn xóa dữ liệu phía client và rời khu vực quản trị.
       queryClient.clear();
       useAuthStore.getState().resetSession();
-      toast.dismiss("session-expired");
+      toast.dismiss(SESSION_EXPIRED_TOAST_ID);
       toast.success(variables ? t("logoutAllSuccess") : t("logoutSuccess"), {
-        id: "logout-success",
+        id: LOGOUT_SUCCESS_TOAST_ID,
       });
       router.replace(SYSTEM_ROUTES.login);
     },

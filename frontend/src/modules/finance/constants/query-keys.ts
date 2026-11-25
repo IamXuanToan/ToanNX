@@ -14,6 +14,7 @@ export const financeKeys = {
   taxRateResolve: (platformId: string, date: string) =>
     [FINANCE_SCOPE, "tax-rate", platformId, date] as const,
   reportSummary: (filters: object) => [FINANCE_SCOPE, "report-summary", filters] as const,
-  reportMonthly: (year: number) => [FINANCE_SCOPE, "report-monthly", year] as const,
+  reportMonthly: (year: number, owner?: string | null) =>
+    [FINANCE_SCOPE, "report-monthly", { year, owner: owner ?? null }] as const,
   sepay: () => [FINANCE_SCOPE, "sepay"] as const,
 };

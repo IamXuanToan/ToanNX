@@ -2,8 +2,16 @@
 
 import { useEffect, useState } from "react";
 
+import { DEFAULT_TIMEZONE } from "@/shares/constants/locale";
 import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
 
+import {
+  DEFAULT_WEATHER_FALLBACK,
+  LEGACY_WEATHER_CACHE_KEYS,
+  WEATHER_LOCATION_STORAGE_KEY,
+  WEATHER_LOCATIONS,
+} from "../../../constants/weather-config";
+import { detectRainIntensity, detectWeatherCondition } from "../../../lib/weather-detection";
 import {
   calculateAstronomicalMoonPhase,
   type LocationKey,
@@ -29,101 +37,6 @@ export interface UseWeatherWidgetProps {
   isDay?: boolean;
 }
 
-export const LOCATIONS: Record<LocationKey, { name: string; lat: number; lon: number }> = {
-  danang: {
-    name: "Đà Nẵng",
-    lat: 16.0767,
-    lon: 108.2228,
-  },
-  quangtri: {
-    name: "Quảng Trị",
-    lat: 17.4686,
-    lon: 106.6223,
-  },
-};
-
-const STORAGE_KEY = "home_location";
-
-export const DEFAULT_FALLBACK: Record<LocationKey, WeatherData> = {
-  danang: {
-    temperature: 28,
-    feelsLike: 31,
-    humidity: 74,
-    windSpeed: 12,
-    windGusts: 20,
-    surfacePressure: 1014,
-    cloudCover: 25,
-    visibility: 10000,
-    precipitation: 0,
-    isDay: true,
-    weatherCode: 1,
-    conditionKey: "clear",
-    sunrise: "05:50",
-    sunset: "17:15",
-    moonPhase: calculateAstronomicalMoonPhase(),
-  },
-  quangtri: {
-    temperature: 27,
-    feelsLike: 30,
-    humidity: 78,
-    windSpeed: 10,
-    windGusts: 18,
-    surfacePressure: 1013,
-    cloudCover: 55,
-    visibility: 9000,
-    precipitation: 0,
-    isDay: true,
-    weatherCode: 3,
-    conditionKey: "cloudy",
-    sunrise: "05:52",
-    sunset: "17:16",
-    moonPhase: calculateAstronomicalMoonPhase(),
-  },
-};
-
-/**
- * Phân tích dữ liệu khí tượng Open-Meteo theo bảng chuẩn WMO (World Meteorological Organization)
- * để phát hiện chính xác trạng thái thời tiết & dông bão
- */
-export function detectWeatherCondition(
-  code: number,
-  windGusts: number,
-  windSpeed: number,
-  pressure: number,
-  precipitation: number,
-): "clear" | "cloudy" | "fog" | "rain" | "storm" {
-  if ([95, 96, 99].includes(code)) return "storm";
-  if (windGusts >= 48 || windSpeed >= 35 || (pressure < 1002 && precipitation > 2)) {
-    return "storm";
-  }
-  if (code === 45 || code === 48) return "fog";
-  if (
-    [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86].includes(code) ||
-    precipitation > 0.3
-  ) {
-    return "rain";
-  }
-  if (code === 2 || code === 3) return "cloudy";
-  return "clear";
-}
-
-/**
- * Tự động phân cấp mức độ mưa theo lượng mưa và mã WMO
- */
-export function detectRainIntensity(
-  code: number,
-  precipitation: number,
-  condKey: "clear" | "cloudy" | "fog" | "rain" | "storm",
-): RainIntensityType {
-  if (condKey === "storm" || [65, 67, 82, 95, 96, 99].includes(code) || precipitation >= 4.0) {
-    return "heavy";
-  }
-  if ([51, 53, 56, 61, 80].includes(code) || precipitation < 1.5) {
-    return "light";
-  }
-  return "medium";
-}
-
 const isLocationKey = (value: unknown): value is LocationKey =>
   value === "danang" || value === "quangtri";
 
@@ -138,11 +51,11 @@ export function useWeatherWidget({
   isDay: parentIsDay = true,
 }: UseWeatherWidgetProps) {
   const [selectedLocation, setSelectedLocation] = useStoredPreference<LocationKey>(
-    STORAGE_KEY,
+    WEATHER_LOCATION_STORAGE_KEY,
     "danang",
     isLocationKey,
   );
-  const [weatherData, setWeatherData] = useState<WeatherData>(DEFAULT_FALLBACK.danang);
+  const [weatherData, setWeatherData] = useState<WeatherData>(DEFAULT_WEATHER_FALLBACK.danang);
   const [selectedEffect, setSelectedEffect] = useState<WeatherEffectType>("auto");
   const [rainIntensity, setRainIntensity] = useState<RainIntensityType>("medium");
   const [windMultiplier, setWindMultiplier] = useState<number>(1);
@@ -155,8 +68,9 @@ export function useWeatherWidget({
   // Dọn dẹp key cache cũ trong LocalStorage nếu còn sót lại
   useEffect(() => {
     try {
-      localStorage.removeItem("home_weather_cache_danang");
-      localStorage.removeItem("home_weather_cache_quangtri");
+      for (const cacheKey of LEGACY_WEATHER_CACHE_KEYS) {
+        localStorage.removeItem(cacheKey);
+      }
     } catch {
       // bỏ qua
     }
@@ -171,7 +85,7 @@ export function useWeatherWidget({
 
   // Fetch dữ liệu thời tiết chi tiết từ Open-Meteo API kèm cache LocalStorage 3 phút
   useEffect(() => {
-    const loc = LOCATIONS[selectedLocation];
+    const loc = WEATHER_LOCATIONS[selectedLocation];
     let isCancelled = false;
 
     const loadWeather = async () => {
@@ -194,7 +108,7 @@ export function useWeatherWidget({
       setIsUpdating(true);
       try {
         const res = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_gusts_10m&daily=sunrise,sunset&timezone=Asia%2FHo_Chi_Minh`,
+          `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_gusts_10m&daily=sunrise,sunset&timezone=${encodeURIComponent(DEFAULT_TIMEZONE)}`,
         );
 
         if (!res.ok) throw new Error("Network error");
@@ -242,7 +156,7 @@ export function useWeatherWidget({
         }
       } catch {
         if (!isCancelled) {
-          const fallback = DEFAULT_FALLBACK[selectedLocation];
+          const fallback = DEFAULT_WEATHER_FALLBACK[selectedLocation];
           setWeatherData(fallback);
           setRainIntensity(
             detectRainIntensity(

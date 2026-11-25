@@ -254,7 +254,25 @@
     "watermarkFontSizeValue": "{percent}% of width",
     "watermarkColorWhite": "White",
     "watermarkColorBlack": "Black",
-    "watermarkColorPicker": "Pick text color"
+    "watermarkColorPicker": "Pick text color",
+    "viewModeGroupAria": "View mode",
+    "playVideoAria": "Play video",
+    "seekVideoAria": "Seek video progress",
+    "playAria": "Play",
+    "pauseAria": "Pause",
+    "muteAria": "Mute",
+    "unmuteAria": "Unmute",
+    "volumeAria": "Adjust volume",
+    "fullscreenAria": "Fullscreen",
+    "exitFullscreenAria": "Exit fullscreen",
+    "cropHandleNw": "Drag top-left corner",
+    "cropHandleNe": "Drag top-right corner",
+    "cropHandleSw": "Drag bottom-left corner",
+    "cropHandleSe": "Drag bottom-right corner",
+    "cropHandleN": "Drag top edge",
+    "cropHandleS": "Drag bottom edge",
+    "cropHandleW": "Drag left edge",
+    "cropHandleE": "Drag right edge"
   },
   "auth": {
     "login": {
@@ -696,7 +714,9 @@
       "googleDesc": "Allow users to authenticate or link using their Google account.",
       "githubTitle": "GitHub Sign-in",
       "githubDesc": "Allow users to authenticate or link using their GitHub account.",
-      "updatedSuccess": "Setting updated successfully."
+      "updatedSuccess": "Setting updated successfully.",
+      "enabledBadge": "Enabled",
+      "disabledBadge": "Disabled"
     },
     "table": {
       "title": "Configuration Parameters",
@@ -752,7 +772,8 @@
       "hint": "Shows a popup even when the tab is closed.",
       "granted": "Enabled on this browser.",
       "denied": "The browser blocks notifications; allow them in site settings.",
-      "unsupported": "Not supported by this browser or Firebase is not configured."
+      "unsupported": "Not supported by this browser or Firebase is not configured.",
+      "browserFallback": "Browser"
     },
     "telegramBot": {
       "title": "Your Telegram bot",

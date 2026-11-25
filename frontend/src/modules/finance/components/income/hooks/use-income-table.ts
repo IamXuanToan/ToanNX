@@ -8,12 +8,15 @@ import { useFinanceRoutes } from "../../../hooks/use-finance-routes";
 import { useBulkDeleteIncomes } from "../../../hooks/use-bulk-delete-incomes";
 import { useDeleteIncome } from "../../../hooks/use-delete-income";
 import { useIncomes } from "../../../hooks/use-incomes";
+import { useOwnerFilterOptions } from "../../../hooks/use-owner-filter-options";
 import { usePlatformOptions } from "../../../hooks/use-platform-options";
 import { useRecalculateIncomeTax } from "../../../hooks/use-recalculate-income-tax";
 import { useReclassifyIncomes } from "../../../hooks/use-reclassify-incomes";
+import { INCOME_PERMISSIONS } from "../../../permissions/income-permission";
 import type { Income, IncomeFilters } from "../../../types/income.types";
 
 const FILTER_KEYS = [
+  "owner",
   "platform",
   "taxStatus",
   "source",
@@ -38,6 +41,7 @@ export function useIncomeTable(scope: IncomeFilters = {}) {
   const extra = table.extraFilters;
   const filters: IncomeFilters = {
     ...table.filters,
+    owner: extra.owner,
     platform: extra.platform,
     taxStatus: extra.taxStatus,
     source: extra.source,
@@ -50,6 +54,7 @@ export function useIncomeTable(scope: IncomeFilters = {}) {
   };
   const query = useIncomes(filters);
   const platforms = usePlatformOptions();
+  const ownerFilter = useOwnerFilterOptions(INCOME_PERMISSIONS.manageAll);
   const remove = useDeleteIncome();
   const bulkDelete = useBulkDeleteIncomes();
   const reclassify = useReclassifyIncomes();
@@ -59,6 +64,13 @@ export function useIncomeTable(scope: IncomeFilters = {}) {
     table,
     query,
     filters,
+    canManageAll: ownerFilter.canManageAll,
+    canFilterOwner: ownerFilter.canFilterOwner,
+    ownerOptions: ownerFilter.ownerOptions,
+    yearOptions: Array.from({ length: 6 }, (_, index) => {
+      const value = String(new Date().getFullYear() - index);
+      return { value, label: value };
+    }),
     platformOptions: (platforms.data ?? []).map((platform) => ({
       value: platform.id,
       label: platform.name,

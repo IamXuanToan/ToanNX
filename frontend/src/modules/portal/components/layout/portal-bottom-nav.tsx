@@ -4,9 +4,16 @@ import { FileText, Images, LayoutDashboard, Link2, QrCode } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
+import { ATTACHMENT_PERMISSIONS } from "@/modules/system/permissions/attachment-permission";
+import { hasPermission } from "@/modules/system/services/current-user.service";
+import { PAGE_PERMISSIONS } from "@/modules/utilities/permissions/page-permission";
+import { QR_CODE_PERMISSIONS } from "@/modules/utilities/permissions/qr-code-permission";
+import { SHORT_LINK_PERMISSIONS } from "@/modules/utilities/permissions/short-link-permission";
+import { isLocalizedRouteExact, startsWithLocalizedRoute } from "@/shares/lib/localized-route";
 import { cn } from "cn";
 
-import { PORTAL_ROUTES } from "../../constants/routes";
+import { PORTAL_PATHNAMES, PORTAL_ROUTES } from "../../constants/routes";
 
 /**
  * Thanh điều hướng đáy màn hình (Bottom Navigation Bar) tối ưu trải nghiệm chạm vuốt trên Mobile:
@@ -18,47 +25,45 @@ export function PortalBottomNav() {
   const t = useTranslations("portal.navigation");
   const tPortal = useTranslations("portal");
   const pathname = usePathname();
+  const { data: currentUser } = useCurrentUser();
 
   const navItems = [
     {
       title: t("dashboard"),
       href: PORTAL_ROUTES.dashboard,
       icon: LayoutDashboard,
-      active: pathname === PORTAL_ROUTES.dashboard || (pathname as string) === "/ca-nhan",
+      permission: undefined,
+      active: isLocalizedRouteExact(pathname, PORTAL_ROUTES.dashboard, PORTAL_PATHNAMES),
     },
     {
       title: t("pages"),
       href: PORTAL_ROUTES.pages,
       icon: FileText,
-      active:
-        pathname.startsWith(PORTAL_ROUTES.pages) ||
-        (pathname as string).startsWith("/ca-nhan/trang"),
+      permission: PAGE_PERMISSIONS.read,
+      active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.pages, PORTAL_PATHNAMES),
     },
     {
       title: t("shortLinks"),
       href: PORTAL_ROUTES.shortLinks,
       icon: Link2,
-      active:
-        pathname.startsWith(PORTAL_ROUTES.shortLinks) ||
-        (pathname as string).startsWith("/ca-nhan/link-rut-gon"),
+      permission: SHORT_LINK_PERMISSIONS.read,
+      active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.shortLinks, PORTAL_PATHNAMES),
     },
     {
       title: t("qrCodes"),
       href: PORTAL_ROUTES.qrCodes,
       icon: QrCode,
-      active:
-        pathname.startsWith(PORTAL_ROUTES.qrCodes) ||
-        (pathname as string).startsWith("/ca-nhan/ma-qr"),
+      permission: QR_CODE_PERMISSIONS.read,
+      active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.qrCodes, PORTAL_PATHNAMES),
     },
     {
       title: t("files"),
       href: PORTAL_ROUTES.library,
       icon: Images,
-      active:
-        pathname.startsWith(PORTAL_ROUTES.library) ||
-        (pathname as string).startsWith("/ca-nhan/thu-vien"),
+      permission: ATTACHMENT_PERMISSIONS.read,
+      active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.library, PORTAL_PATHNAMES),
     },
-  ];
+  ].filter((item) => !item.permission || hasPermission(currentUser, item.permission));
 
   return (
     <nav

@@ -16,7 +16,6 @@ import {
   Sparkles,
   UserCheck,
 } from "lucide-react";
-import NextLink from "next/link";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { Controller } from "react-hook-form";
@@ -46,6 +45,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui
 import { Textarea } from "@/shares/components/ui/textarea";
 
 import { PAGE_TYPE } from "../../constants/page-constants";
+import { THEME_PRESETS, type ThemePreset } from "../../constants/page-theme-presets";
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { PAGE_EXTENSIONS } from "../../extensions/page-extensions";
 import { PAGE_STATUSES, PAGE_TYPES, type PageDetail } from "../../types/page.types";
@@ -59,7 +59,7 @@ import { PageBioEditor } from "./page-bio-editor";
 import { PageDonationEditor } from "./page-donation-editor";
 import { PageButtonDialog } from "./page-button-dialog";
 import { PagePreviewFrame } from "./page-preview-frame";
-import { PageThemeEditor, THEME_PRESETS, type ThemePreset } from "./page-theme-editor";
+import { PageThemeEditor } from "./page-theme-editor";
 import { QuickAddModal } from "./quick-add-modal";
 
 /**
@@ -122,8 +122,8 @@ export function PageForm({
   }, [state.pageType]);
 
   const validTabs = useMemo(() => {
-    const tabs = ["design", "settings"];
-    if (isAffiliate) tabs.unshift("products");
+    const tabs = isLegacy ? ["settings"] : ["design", "settings"];
+    if (isAffiliate) tabs.unshift("products", "categories");
     else if (isBio) tabs.unshift("bio");
     else if (isDonation) tabs.unshift("donation");
     else if (isLegacy) tabs.unshift("content");
@@ -269,10 +269,10 @@ export function PageForm({
                 size="sm"
                 className="h-8 gap-1.5 px-2.5 text-xs font-medium"
               >
-                <NextLink href={page.publicUrl} target="_blank" rel="noopener noreferrer">
+                <Link href={page.publicUrl as never} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="size-3.5" />
                   <span>{t("openLink")}</span>
-                </NextLink>
+                </Link>
               </Button>
             </div>
           </div>
@@ -348,9 +348,9 @@ export function PageForm({
 
         <div className={`grid gap-6 ${showLivePreview ? "xl:grid-cols-12" : "grid-cols-1"}`}>
           {/* Form Section bên trái */}
-          <div className={showLivePreview ? "xl:col-span-6 2xl:col-span-7" : ""}>
+          <div className={showLivePreview ? "min-w-0 xl:col-span-6 2xl:col-span-7" : "min-w-0"}>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="mb-4 w-full justify-start">
+              <TabsList className="mb-4 w-full max-w-full scrollbar-none justify-start overflow-x-auto">
                 {isAffiliate ? (
                   <>
                     <TabsTrigger
@@ -387,10 +387,12 @@ export function PageForm({
                     <span>{t("tabs.content")}</span>
                   </TabsTrigger>
                 ) : null}
-                <TabsTrigger value="design" className="gap-1.5 px-3 py-1.5 text-xs font-medium">
-                  <Palette className="size-3.5" />
-                  <span>{t("tabs.design")}</span>
-                </TabsTrigger>
+                {!isLegacy ? (
+                  <TabsTrigger value="design" className="gap-1.5 px-3 py-1.5 text-xs font-medium">
+                    <Palette className="size-3.5" />
+                    <span>{t("tabs.design")}</span>
+                  </TabsTrigger>
+                ) : null}
                 <TabsTrigger value="settings" className="gap-1.5 px-3 py-1.5 text-xs font-medium">
                   <Settings className="size-3.5" />
                   <span>{t("tabs.settings")}</span>
@@ -488,52 +490,54 @@ export function PageForm({
                   </TabsContent>
                 ) : null}
 
-                <TabsContent value="design" className="space-y-6">
-                  <FormSection title={t("sections.images")}>
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <FormField
-                        control={form.control}
-                        name="avatar"
-                        label={t("fields.avatar")}
-                        tooltip={t("fields.avatarTooltip")}
-                      >
-                        {(field) => (
-                          <AttachmentImageUploadView
-                            value={field.value}
-                            onChange={field.onChange}
-                            disabled={locked}
-                            hideHint
-                            aria-label={t("fields.avatar")}
-                          />
-                        )}
-                      </FormField>
-                      <FormField
-                        control={form.control}
-                        name="cover"
-                        label={t("fields.cover")}
-                        tooltip={t("fields.coverTooltip")}
-                      >
-                        {(field) => (
-                          <AttachmentImageUploadView
-                            value={field.value}
-                            onChange={field.onChange}
-                            shape="square"
-                            disabled={locked}
-                            hideHint
-                            aria-label={t("fields.cover")}
-                          />
-                        )}
-                      </FormField>
-                    </div>
-                  </FormSection>
+                {!isLegacy ? (
+                  <TabsContent value="design" className="space-y-6">
+                    <FormSection title={t("sections.images")}>
+                      <div className="grid gap-5 sm:grid-cols-2">
+                        <FormField
+                          control={form.control}
+                          name="avatar"
+                          label={t("fields.avatar")}
+                          tooltip={t("fields.avatarTooltip")}
+                        >
+                          {(field) => (
+                            <AttachmentImageUploadView
+                              value={field.value}
+                              onChange={field.onChange}
+                              disabled={locked}
+                              hideHint
+                              aria-label={t("fields.avatar")}
+                            />
+                          )}
+                        </FormField>
+                        <FormField
+                          control={form.control}
+                          name="cover"
+                          label={t("fields.cover")}
+                          tooltip={t("fields.coverTooltip")}
+                        >
+                          {(field) => (
+                            <AttachmentImageUploadView
+                              value={field.value}
+                              onChange={field.onChange}
+                              shape="square"
+                              disabled={locked}
+                              hideHint
+                              aria-label={t("fields.cover")}
+                            />
+                          )}
+                        </FormField>
+                      </div>
+                    </FormSection>
 
-                  <PageThemeEditor
-                    control={form.control}
-                    setValue={form.setValue}
-                    disabled={locked}
-                    onApplyPreset={handleApplyPreset}
-                  />
-                </TabsContent>
+                    <PageThemeEditor
+                      control={form.control}
+                      setValue={form.setValue}
+                      disabled={locked}
+                      onApplyPreset={handleApplyPreset}
+                    />
+                  </TabsContent>
+                ) : null}
 
                 <TabsContent value="settings">{settings}</TabsContent>
               </div>
@@ -542,8 +546,8 @@ export function PageForm({
 
           {/* Live Preview Frame bên phải */}
           {showLivePreview ? (
-            <div className="xl:col-span-6 2xl:col-span-5">
-              <div className="sticky top-6">
+            <div className="min-w-0 xl:col-span-6 2xl:col-span-5">
+              <div className="sticky top-[var(--tiptap-sticky-top,1.5rem)]">
                 <PagePreviewFrame
                   page={state.livePreviewData}
                   device={state.previewDevice}
@@ -572,10 +576,10 @@ export function PageForm({
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
         {page?.publicUrl ? (
           <Button type="button" variant="outline" asChild className="gap-1.5">
-            <NextLink href={page.publicUrl} target="_blank" rel="noreferrer">
+            <Link href={page.publicUrl as never} target="_blank" rel="noreferrer">
               <ExternalLink className="size-3.5" />
               <span>{t("view")}</span>
-            </NextLink>
+            </Link>
           </Button>
         ) : null}
         <Button type="button" variant="outline" asChild>

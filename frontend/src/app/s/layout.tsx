@@ -10,6 +10,7 @@ import { AppAnalytics } from "@/shares/components/analytics/app-analytics";
 import { LanguageSwitcher } from "@/shares/components/layout/language-switcher";
 import { ThemeSwitcher } from "@/shares/components/layout/theme-switcher";
 import { AppProviders } from "@/shares/components/providers/app-providers";
+import { DEFAULT_TIMEZONE } from "@/shares/constants/locale";
 
 const inter = Inter({ subsets: ["latin", "vietnamese"], variable: "--font-sans", display: "swap" });
 
@@ -29,7 +30,7 @@ export default async function ShortLinkLayout({ children }: LayoutProps<"/s">) {
   return (
     <html lang={locale} suppressHydrationWarning className={inter.variable}>
       <body className="bg-canvas text-foreground selection:bg-primary/20 relative h-svh min-h-svh overflow-hidden font-sans antialiased">
-        <NextIntlClientProvider locale={locale} messages={messages} timeZone="Asia/Ho_Chi_Minh">
+        <NextIntlClientProvider locale={locale} messages={messages} timeZone={DEFAULT_TIMEZONE}>
           <AppProviders>
             {/* Không gian ánh sáng ambient dùng chuẩn token primary */}
             <div

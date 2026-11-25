@@ -1,6 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { getPushToken, isPushSupported } from "@/shares/lib/firebase-messaging";
@@ -9,7 +10,7 @@ import { notificationKeys } from "../../../constants/query-keys";
 import { pushDeviceService } from "../../../services/push-device.service";
 
 /** Tên thiết bị gọn từ user agent (ví dụ "Chrome · Windows"). */
-function deviceLabel(): string {
+function deviceLabel(fallbackBrowser: string): string {
   const agent = navigator.userAgent;
   const browser = /Edg\//.test(agent)
     ? "Edge"
@@ -19,7 +20,7 @@ function deviceLabel(): string {
         ? "Firefox"
         : /Safari\//.test(agent)
           ? "Safari"
-          : "Trình duyệt";
+          : fallbackBrowser;
   const system = /Windows/.test(agent)
     ? "Windows"
     : /Android/.test(agent)
@@ -42,6 +43,7 @@ function deviceLabel(): string {
  * @returns Trạng thái và hàm bật.
  */
 export function usePushRegistration(enabled: boolean) {
+  const t = useTranslations("system.notifications.push");
   const queryClient = useQueryClient();
   const supported = enabled && typeof window !== "undefined" && isPushSupported();
   const [permission, setPermission] = useState<NotificationPermission | "unsupported">(
@@ -51,7 +53,7 @@ export function usePushRegistration(enabled: boolean) {
   const register = async () => {
     const token = await getPushToken();
     if (!token) return;
-    await pushDeviceService.register(token, deviceLabel());
+    await pushDeviceService.register(token, deviceLabel(t("browserFallback")));
     await queryClient.invalidateQueries({ queryKey: notificationKeys.devices() });
   };
   useEffect(() => {

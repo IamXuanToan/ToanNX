@@ -12,6 +12,7 @@ import { useRouter } from "@/i18n/navigation";
 import type { AppPathname } from "@/i18n/routing";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 
+import { AUTH_WORKSPACE_PATHS } from "../../../constants/auth-storage";
 import { authKeys } from "../../../constants/query-keys";
 import {
   createInvitationSchema,
@@ -113,7 +114,9 @@ export function useInvitationForm() {
       queryClient.setQueryData(authKeys.me(), result);
       toast.success(t("welcomeSuccess", { name: result.user.fullName || result.user.email }));
 
-      const targetPath: AppPathname = result.user.isStaff ? "/admin" : "/";
+      const targetPath: AppPathname = result.user.isStaff
+        ? AUTH_WORKSPACE_PATHS.admin
+        : AUTH_WORKSPACE_PATHS.home;
       router.replace(targetPath);
     } catch (error) {
       setRootError(errorMessage(error));

@@ -29,7 +29,7 @@ export function AttachmentViewModeToggle({
   return (
     <div
       role="group"
-      aria-label="Chế độ hiển thị"
+      aria-label={t("viewModeGroupAria")}
       className="border-border/70 bg-muted/30 flex h-10 items-center rounded-xl border p-0.5 shadow-2xs"
     >
       <Tooltip>

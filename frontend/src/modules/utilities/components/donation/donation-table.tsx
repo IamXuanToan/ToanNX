@@ -2,9 +2,10 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Download, ShieldAlert } from "lucide-react";
-import { useFormatter } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
+import { usePermission } from "@/modules/system/hooks/use-permission";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
@@ -12,41 +13,30 @@ import { TableStatusSwitch } from "@/shares/components/common/table-status-switc
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
+import { env } from "@/shares/config/env";
+import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
 import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
 import { useTableState } from "@/shares/hooks/use-table-state";
 import { createBooleanBulkStatus } from "@/shares/lib/bulk-status";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import { donationKeys } from "../../constants/query-keys";
+import { DONATION_PERMISSIONS } from "../../permissions/donation-permission";
 import { donationService } from "../../services/donation.service";
 import type { DonationTier, DonationTransaction } from "../../types/donation.types";
 
-const TIER_BADGES: Record<DonationTier, { label: string; className: string }> = {
-  NORMAL: { label: "Thường", className: "bg-muted text-muted-foreground border-transparent" },
-  BRONZE: {
-    label: "Bảng Đồng",
-    className:
-      "bg-amber-600/10 text-amber-700 dark:text-amber-400 border-amber-600/30 font-semibold",
-  },
-  SILVER: {
-    label: "Bảng Bạc",
-    className:
-      "bg-slate-300/30 text-slate-700 dark:text-slate-300 border-slate-400/40 font-semibold",
-  },
-  GOLD: {
-    label: "Bảng Vàng",
-    className:
-      "bg-yellow-400/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/40 font-bold",
-  },
-  DIAMOND: {
-    label: "Kim Cương",
-    className: "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/40 font-extrabold",
-  },
+const TIER_BADGE_CLASSES: Record<DonationTier, string> = {
+  NORMAL: "bg-muted text-muted-foreground border-transparent",
+  BRONZE: "bg-amber-600/10 text-amber-700 dark:text-amber-400 border-amber-600/30 font-semibold",
+  SILVER: "bg-slate-300/30 text-slate-700 dark:text-slate-300 border-slate-400/40 font-semibold",
+  GOLD: "bg-yellow-400/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/40 font-bold",
+  DIAMOND: "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/40 font-extrabold",
 };
 
 export function DonationTable({
   ownerId,
   pageId,
-  canUpdate = true,
+  canUpdate = false,
   dateFrom,
   dateTo,
 }: {
@@ -58,6 +48,8 @@ export function DonationTable({
 }) {
   const queryClient = useQueryClient();
   const format = useFormatter();
+  const t = useTranslations("utilities.donations");
+  const canExport = usePermission(DONATION_PERMISSIONS.export);
 
   const tableState = useTableState({
     filterKeys: ["tier", "status"] as const,
@@ -73,7 +65,7 @@ export function DonationTable({
     ordering: tableState.filters.ordering,
     owner: ownerId,
     page_id: pageId,
-    tier: selectedTier.length > 0 ? (selectedTier[0] as DonationTier) : undefined,
+    tier: selectedTier.length > 0 ? selectedTier : undefined,
     isCensored: statusFilter.includes("censored") ? true : undefined,
     isHidden: statusFilter.includes("hidden") ? true : undefined,
     dateFrom,
@@ -82,29 +74,29 @@ export function DonationTable({
 
   const { data, isLoading } = useQuery({
     queryKey: donationKeys.list(queryParams),
-    queryFn: () => donationService.list(queryParams),
+    queryFn: ({ signal }) => donationService.list(queryParams, signal),
   });
 
   const toggleMutation = useMutation({
     mutationFn: ({ id, isHidden }: { id: string; isHidden: boolean }) =>
       donationService.toggleHidden(id, isHidden),
     onSuccess: (updated) => {
-      toast.success(updated.isHidden ? "Đã ẩn bình luận" : "Đã hiện bình luận");
+      toast.success(updated.isHidden ? t("toast.hidden") : t("toast.shown"));
       queryClient.invalidateQueries({ queryKey: donationKeys.all });
     },
     onError: () => {
-      toast.error("Không thể cập nhật trạng thái bình luận");
+      toast.error(t("toast.updateError"));
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => donationService.delete(id),
     onSuccess: () => {
-      toast.success("Đã xóa lượt quyên góp");
+      toast.success(t("toast.deleted"));
       queryClient.invalidateQueries({ queryKey: donationKeys.all });
     },
     onError: () => {
-      toast.error("Không thể xóa lượt quyên góp");
+      toast.error(t("toast.deleteError"));
     },
   });
 
@@ -114,24 +106,28 @@ export function DonationTable({
   });
 
   const handleExport = () => {
-    const origin =
-      typeof window !== "undefined" ? window.location.origin : "https://api.toannx.com";
-    const exportUrl = `${origin}/api/v1/utilities/donations/export?${new URLSearchParams(
+    const exportUrl = `${env.apiBaseUrl}/utilities/donations/export?${new URLSearchParams(
       Object.entries({
         owner: ownerId,
         page_id: pageId,
-        tier: selectedTier.length > 0 ? selectedTier[0] : undefined,
+        search: tableState.filters.search || undefined,
+        tier: selectedTier.length > 0 ? selectedTier.join(",") : undefined,
+        is_censored: statusFilter.includes("censored") ? "true" : undefined,
+        is_hidden: statusFilter.includes("hidden") ? "true" : undefined,
         date_from: dateFrom,
         date_to: dateTo,
       }).filter(([, v]) => v !== undefined) as [string, string][],
     )}`;
-    window.open(exportUrl, "_blank");
+    const safeExportUrl = toSafeHttpUrl(exportUrl);
+    if (safeExportUrl) {
+      window.open(safeExportUrl, "_blank", "noopener,noreferrer");
+    }
   };
 
   const columns: DataTableColumn<DonationTransaction>[] = [
     {
       id: "time",
-      header: "Thời gian",
+      header: t("columns.time"),
       cell: (item) => (
         <span className="text-muted-foreground font-mono text-xs whitespace-nowrap">
           {format.dateTime(new Date(item.receivedAt), {
@@ -143,9 +139,9 @@ export function DonationTable({
     },
     {
       id: "page",
-      header: "Trang nhận",
+      header: t("columns.page"),
       cell: (item) => (
-        <div className="max-w-[140px] truncate">
+        <div className="max-w-[120px] truncate">
           <span className="text-xs font-medium" title={item.pageTitle}>
             {item.pageTitle}
           </span>
@@ -154,7 +150,7 @@ export function DonationTable({
     },
     {
       id: "donor",
-      header: "Danh xưng tri ân",
+      header: t("columns.donor"),
       cell: (item) => (
         <div className="space-y-0.5 whitespace-nowrap">
           <span className="text-primary text-xs font-semibold">{item.donorTitle}</span>
@@ -164,11 +160,11 @@ export function DonationTable({
     },
     {
       id: "amount",
-      header: "Số tiền",
+      header: t("columns.amount"),
       cell: (item) => (
         <div className="space-y-0.5 whitespace-nowrap">
           <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
-            {item.amount.toLocaleString("vi-VN")} ₫
+            {format.number(item.amount)} {CURRENCY_SYMBOLS.VND}
           </span>
           <p className="text-muted-foreground text-[11px]">{item.giftLabel}</p>
         </div>
@@ -176,25 +172,25 @@ export function DonationTable({
     },
     {
       id: "tier",
-      header: "Bảng vinh danh",
+      header: t("columns.tier"),
       cell: (item) => {
-        const tierInfo = TIER_BADGES[item.tier] ?? TIER_BADGES.NORMAL;
+        const className = TIER_BADGE_CLASSES[item.tier] ?? TIER_BADGE_CLASSES.NORMAL;
         return (
-          <Badge variant="outline" className={`${tierInfo.className} whitespace-nowrap`}>
-            {tierInfo.label}
+          <Badge variant="outline" className={`${className} whitespace-nowrap`}>
+            {t(`tiers.${item.tier}`)}
           </Badge>
         );
       },
     },
     {
       id: "message",
-      header: "Lời nhắn",
+      header: t("columns.message"),
       cell: (item) => (
-        <div className="max-w-md min-w-[200px] space-y-1">
+        <div className="max-w-xs min-w-[140px] space-y-1">
           {item.isCensored ? (
             <div className="flex items-center gap-1.5 text-xs font-medium text-rose-600 dark:text-rose-400">
               <ShieldAlert className="size-3.5 shrink-0" />
-              <span>Đã che vi phạm từ ngữ</span>
+              <span>{t("censoredHidden")}</span>
             </div>
           ) : (
             <p
@@ -207,7 +203,7 @@ export function DonationTable({
           <Tooltip>
             <TooltipTrigger asChild>
               <p className="text-muted-foreground cursor-pointer truncate font-mono text-[10px]">
-                Gốc: {item.originalContent}
+                {t("originalPrefix", { content: item.originalContent })}
               </p>
             </TooltipTrigger>
             <TooltipContent className="max-w-sm text-xs">{item.originalContent}</TooltipContent>
@@ -217,20 +213,20 @@ export function DonationTable({
     },
     {
       id: "status",
-      header: "Trạng thái",
+      header: t("columns.status"),
       cell: (item) => (
         <div className="space-y-1 whitespace-nowrap">
           {item.isCensored && (
             <Badge variant="destructive" className="block w-fit text-[10px]">
-              Vi phạm từ ngữ
+              {t("censoredBadge")}
             </Badge>
           )}
           <TableStatusSwitch
             checked={!item.isHidden}
-            onLabel="Hiển thị"
-            offLabel="Đã ẩn"
-            aria-label={item.isHidden ? "Hiển thị lời nhắn" : "Ẩn lời nhắn"}
-            disabled={toggleMutation.isPending}
+            onLabel={t("visibleLabel")}
+            offLabel={t("hiddenLabel")}
+            aria-label={item.isHidden ? t("showCommentAria") : t("hideCommentAria")}
+            disabled={toggleMutation.isPending || !canUpdate}
             onCheckedChange={
               canUpdate
                 ? (checked) => toggleMutation.mutate({ id: item.id, isHidden: !checked })
@@ -248,38 +244,40 @@ export function DonationTable({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <FilterSelect
-            label="Bảng vinh danh"
+            label={t("filters.tier")}
             value={selectedTier}
             onValueChange={(val) => tableState.setFilterValues("tier", val)}
             options={[
-              { value: "BRONZE", label: "Bảng Đồng (≥100k)" },
-              { value: "SILVER", label: "Bảng Bạc (≥200k)" },
-              { value: "GOLD", label: "Bảng Vàng (≥500k)" },
-              { value: "DIAMOND", label: "Bảng Kim Cương (≥1M)" },
-              { value: "NORMAL", label: "Bình thường (<100k)" },
+              { value: "BRONZE", label: t("tierOptions.BRONZE") },
+              { value: "SILVER", label: t("tierOptions.SILVER") },
+              { value: "GOLD", label: t("tierOptions.GOLD") },
+              { value: "DIAMOND", label: t("tierOptions.DIAMOND") },
+              { value: "NORMAL", label: t("tierOptions.NORMAL") },
             ]}
           />
           <FilterSelect
-            label="Trạng thái"
+            label={t("filters.status")}
             value={statusFilter}
             onValueChange={(val) => tableState.setFilterValues("status", val)}
             options={[
-              { value: "censored", label: "Bị kiểm duyệt từ xấu" },
-              { value: "hidden", label: "Chủ trang đã ẩn" },
+              { value: "censored", label: t("filters.statusCensored") },
+              { value: "hidden", label: t("filters.statusHidden") },
             ]}
           />
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={handleExport}
-          className="h-9 gap-1.5 text-xs font-medium"
-        >
-          <Download className="size-3.5" />
-          <span>Xuất báo cáo CSV</span>
-        </Button>
+        {canExport ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            className="h-9 gap-1.5 text-xs font-medium"
+          >
+            <Download className="size-3.5" />
+            <span>{t("exportCsv")}</span>
+          </Button>
+        ) : null}
       </div>
 
       {/* Bảng dữ liệu DataTable */}
@@ -288,7 +286,9 @@ export function DonationTable({
         columns={columns}
         rows={data?.items}
         getRowId={(row) => row.id}
-        getRowLabel={(row) => `${row.donorTitle} (${row.amount.toLocaleString("vi-VN")} đ)`}
+        getRowLabel={(row) =>
+          `${row.donorTitle} (${format.number(row.amount)} ${CURRENCY_SYMBOLS.VND})`
+        }
         isLoading={isLoading}
         pagination={
           data?.pagination
@@ -302,7 +302,7 @@ export function DonationTable({
         search={{
           value: tableState.search.value,
           onValueChange: tableState.search.onValueChange,
-          placeholder: "Tìm kiếm người ủng hộ, nội dung...",
+          placeholder: t("searchPlaceholder"),
         }}
         onDelete={(row) => deleteMutation.mutateAsync(row.id)}
         can={{ update: canUpdate, delete: canUpdate }}
@@ -310,7 +310,7 @@ export function DonationTable({
         bulkStatus={
           canUpdate
             ? createBooleanBulkStatus<DonationTransaction>(
-                { on: "Hiển thị bình luận", off: "Ẩn bình luận" },
+                { on: t("bulk.show"), off: t("bulk.hide") },
                 (rows, on) => bulk.bulkUpdate(rows, { isHidden: !on }),
               )
             : undefined

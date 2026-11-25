@@ -45,6 +45,7 @@ import {
   PROFILE_PASSWORD_FORM_ID,
 } from "../../constants/profile-forms";
 import { usePermission } from "../../hooks/use-permission";
+import { ATTACHMENT_PERMISSIONS } from "../../permissions/attachment-permission";
 import { NOTIFICATION_PREFERENCE_PERMISSIONS } from "../../permissions/notification-preference-permission";
 import { TELEGRAM_BOT_PERMISSIONS } from "../../permissions/telegram-bot-permission";
 import type { AuthRole, AuthUser } from "../../types/auth.types";
@@ -89,6 +90,8 @@ export function ProfileDialog({
   const now = useNow({ updateInterval: 60_000 });
 
   const canPreferences = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.read);
+  const canReadAttachments = usePermission(ATTACHMENT_PERMISSIONS.read);
+  const canUploadAttachments = usePermission(ATTACHMENT_PERMISSIONS.create);
   const hasTelegramBotPermission = usePermission(TELEGRAM_BOT_PERMISSIONS.read);
   const canTelegramBot = Boolean(user?.isSuperuser) && hasTelegramBotPermission;
   const canNotifications = canPreferences || canTelegramBot;
@@ -125,10 +128,12 @@ export function ProfileDialog({
     open,
   });
 
-  const fallbackRenderAttachmentPicker = (pickerProps: {
-    onSelect: (file: { id: string; url: string }) => void;
-    onClose: () => void;
-  }) => <AttachmentPicker canUpload={true} {...pickerProps} />;
+  const fallbackRenderAttachmentPicker = canReadAttachments
+    ? (pickerProps: {
+        onSelect: (file: { id: string; url: string }) => void;
+        onClose: () => void;
+      }) => <AttachmentPicker canUpload={canUploadAttachments} {...pickerProps} />
+    : undefined;
 
   const effectiveRenderAttachmentPicker = renderAttachmentPicker ?? fallbackRenderAttachmentPicker;
 
@@ -195,18 +200,20 @@ export function ProfileDialog({
                 </div>
 
                 <div className="mt-3 flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="xs"
-                    className="h-8 gap-1.5 rounded-lg text-xs font-medium"
-                    onClick={() => setLibraryOpen(true)}
-                    disabled={isSaving}
-                    data-testid="profile-open-library-button"
-                  >
-                    <Images className="size-3.5" aria-hidden />
-                    <span>{t("avatarLibrary")}</span>
-                  </Button>
+                  {effectiveRenderAttachmentPicker ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="xs"
+                      className="h-8 gap-1.5 rounded-lg text-xs font-medium"
+                      onClick={() => setLibraryOpen(true)}
+                      disabled={isSaving}
+                      data-testid="profile-open-library-button"
+                    >
+                      <Images className="size-3.5" aria-hidden />
+                      <span>{t("avatarLibrary")}</span>
+                    </Button>
+                  ) : null}
 
                   {user?.avatar ? (
                     <Button
@@ -535,7 +542,7 @@ export function ProfileDialog({
                                     variant="outline"
                                     className="border-amber-500/30 bg-amber-500/10 text-[10px] font-medium text-amber-700 dark:text-amber-400"
                                   >
-                                    {t("temporarilyDisabled") || "Tạm ngưng"}
+                                    {t("temporarilyDisabled")}
                                   </Badge>
                                 ) : isConfigured ? (
                                   <Badge
@@ -557,8 +564,7 @@ export function ProfileDialog({
                                 {isConnected
                                   ? account?.email || account?.displayName || t("connected")
                                   : !isEnabled
-                                    ? t("disabledByAdminDesc") ||
-                                      "Quản trị viên đang tạm tắt phương thức này"
+                                    ? t("disabledByAdminDesc")
                                     : isConfigured
                                       ? "Accounts Google (OAuth 2.0)"
                                       : t("notConfigured")}
@@ -635,7 +641,7 @@ export function ProfileDialog({
                                     variant="outline"
                                     className="border-amber-500/30 bg-amber-500/10 text-[10px] font-medium text-amber-700 dark:text-amber-400"
                                   >
-                                    {t("temporarilyDisabled") || "Tạm ngưng"}
+                                    {t("temporarilyDisabled")}
                                   </Badge>
                                 ) : isConfigured ? (
                                   <Badge
@@ -657,8 +663,7 @@ export function ProfileDialog({
                                 {isConnected
                                   ? account?.email || account?.displayName || t("connected")
                                   : !isEnabled
-                                    ? t("disabledByAdminDesc") ||
-                                      "Quản trị viên đang tạm tắt phương thức này"
+                                    ? t("disabledByAdminDesc")
                                     : isConfigured
                                       ? "GitHub OAuth App"
                                       : t("notConfigured")}
@@ -721,7 +726,7 @@ export function ProfileDialog({
             onClick={() => onOpenChange(false)}
             disabled={isSaving}
           >
-            {activeTab === "social" ? t("close") || "Đóng" : t("cancel")}
+            {activeTab === "social" ? t("close") : t("cancel")}
           </Button>
           {activeTab === "info" ? (
             <Button
@@ -788,7 +793,7 @@ export function ProfileDialog({
         destructive
       />
 
-      {libraryOpen
+      {libraryOpen && effectiveRenderAttachmentPicker
         ? effectiveRenderAttachmentPicker({
             onSelect: (file) => {
               void handleSelectAvatar(file);

@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useId, useState } from "react";
 
 import { isApiError } from "@/shares/lib/api/api-error";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import { usePublicShortLink } from "../../../hooks/use-public-short-link";
 import { shortLinkService } from "../../../services/short-link.service";
@@ -44,8 +45,9 @@ export function useShortLinkLanding(
 
   const [password, setPassword] = useState("");
   const [unlockedDestination, setUnlockedDestination] = useState<string | null>(null);
-  const destination =
+  const rawDestination =
     unlockedDestination ?? (link?.hasPassword ? null : (link?.destinationUrl ?? null));
+  const destination = toSafeHttpUrl(rawDestination, { allowRelative: false });
 
   const [customRemaining, setCustomRemaining] = useState<number | null>(null);
   const remaining = customRemaining ?? link?.autoRedirectSeconds ?? null;

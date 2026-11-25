@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -7,6 +8,21 @@ import { useQrBanks } from "../../../hooks/use-qr-banks";
 import type { DonationQrItem, QrAccountType } from "../../../types/page.types";
 
 const PREVIEW_DELAY_MS = 250;
+
+/**
+ * Sinh token ngẫu nhiên mật mã học cho webhook SePay (không dùng timestamp dễ đoán).
+ */
+function generateSecureWebhookToken(): string {
+  if (typeof crypto !== "undefined") {
+    if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+    if (typeof crypto.getRandomValues === "function") {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+    }
+  }
+  return "";
+}
 
 export interface UsePageDonationQrDialogProps {
   initialItem?: DonationQrItem | null;
@@ -24,6 +40,7 @@ export function usePageDonationQrDialog({
   onSave,
   onClose,
 }: UsePageDonationQrDialogProps) {
+  const t = useTranslations("utilities.customPages.pages.donationEditor");
   const banks = useQrBanks();
 
   const [type, setType] = useState<QrAccountType>(initialItem?.type ?? "BANK_TRANSFER");
@@ -40,10 +57,7 @@ export function usePageDonationQrDialog({
   const [webhookEnabled, setWebhookEnabled] = useState(initialItem?.webhookEnabled ?? false);
   const [webhookToken, setWebhookToken] = useState<string>(() => {
     if (initialItem?.webhookToken) return initialItem.webhookToken;
-    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-      return crypto.randomUUID();
-    }
-    return `token-${Date.now()}`;
+    return generateSecureWebhookToken();
   });
 
   // Cấu hình kiểu dáng QR
@@ -82,20 +96,16 @@ export function usePageDonationQrDialog({
     if (!webhookUrl) return;
     try {
       await navigator.clipboard.writeText(webhookUrl);
-      toast.success("Đã sao chép Webhook URL SePay vào bộ nhớ tạm!");
+      toast.success(t("webhookCopied"));
     } catch {
-      toast.error("Không thể sao chép URL");
+      toast.error(t("webhookCopyError"));
     }
   };
 
   const handleToggleWebhook = (enabled: boolean) => {
     setWebhookEnabled(enabled);
     if (enabled && !webhookToken) {
-      const newToken =
-        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-          ? crypto.randomUUID()
-          : `token-${Date.now()}`;
-      setWebhookToken(newToken);
+      setWebhookToken(generateSecureWebhookToken());
     }
   };
 
@@ -106,7 +116,7 @@ export function usePageDonationQrDialog({
       if (newType === "BANK_TRANSFER") {
         setTitle(bankName || "MBBank");
       } else if (newType === "CUSTOM") {
-        setTitle("Ví MoMo");
+        setTitle(t("momoFallback"));
       }
     }
   };
@@ -183,7 +193,7 @@ export function usePageDonationQrDialog({
     const savedItem: DonationQrItem = {
       id: initialItem?.id ?? `qr-${Date.now()}`,
       type,
-      title: title.trim() || (type === "BANK_TRANSFER" ? bankName : "Mã QR"),
+      title: title.trim() || (type === "BANK_TRANSFER" ? bankName : t("qrFallback")),
       bankBin: type === "BANK_TRANSFER" ? bankBin : undefined,
       bankName: type === "BANK_TRANSFER" ? bankName : undefined,
       accountNumber: accountNumber.trim(),

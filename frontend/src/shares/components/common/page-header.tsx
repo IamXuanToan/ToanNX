@@ -39,7 +39,7 @@ export function PageHeader({
     <header
       className={cn(
         inline
-          ? "flex items-center justify-between gap-3"
+          ? "flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap sm:gap-3"
           : "flex flex-col gap-4 sm:flex-row sm:justify-between",
         // Không có mô tả: tên trang thẳng giữa với nút; có mô tả: nút bám mép trên.
         description ? "sm:items-start" : "sm:items-center",
@@ -67,7 +67,9 @@ export function PageHeader({
           ) : null}
         </div>
       </div>
-      {actions ? <div className="flex shrink-0 gap-2">{actions}</div> : null}
+      {actions ? (
+        <div className="flex max-w-full shrink-0 flex-wrap justify-end gap-2">{actions}</div>
+      ) : null}
     </header>
   );
 }

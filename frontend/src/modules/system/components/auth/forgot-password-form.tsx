@@ -10,6 +10,7 @@ import { Button } from "@/shares/components/ui/button";
 import { FieldGroup } from "@/shares/components/ui/field";
 import { Input } from "@/shares/components/ui/input";
 
+import { SYSTEM_ROUTES } from "../../constants/routes";
 import { useForgotPasswordForm } from "./hooks/use-forgot-password-form";
 
 /**
@@ -43,7 +44,7 @@ export function ForgotPasswordForm() {
             size="lg"
             className="bg-primary text-primary-foreground shadow-primary/25 hover:bg-primary-hover h-10.5 w-full rounded-xl font-semibold shadow-md"
           >
-            <Link href="/login">
+            <Link href={SYSTEM_ROUTES.login}>
               <ArrowLeft className="mr-2 size-4" />
               {t("backToLogin")}
             </Link>
@@ -108,7 +109,7 @@ export function ForgotPasswordForm() {
 
       <div className="pt-2 text-center">
         <Link
-          href="/login"
+          href={SYSTEM_ROUTES.login}
           className="text-muted-foreground hover:text-primary inline-flex items-center text-xs font-medium transition-colors hover:underline"
         >
           <ArrowLeft className="mr-1.5 size-3.5" />

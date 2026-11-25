@@ -3,8 +3,10 @@
 import { ExternalLink, MessageCircle, Send, Trash2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { Link } from "@/i18n/navigation";
 import { StatusBadge } from "@/shares/components/common/status-badge";
 import { Button } from "@/shares/components/ui/button";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import { useTelegramChatList } from "./hooks/use-telegram-chat-list";
 
@@ -17,9 +19,11 @@ import { useTelegramChatList } from "./hooks/use-telegram-chat-list";
  */
 export function TelegramChatList({
   canCreate,
+  canUpdate = false,
   canDelete,
 }: {
   canCreate: boolean;
+  canUpdate?: boolean;
   canDelete: boolean;
 }) {
   const t = useTranslations("system.notifications.telegramChats");
@@ -37,15 +41,17 @@ export function TelegramChatList({
               <StatusBadge tone={chat.status === "active" ? "success" : "warning"}>
                 {t(`status.${chat.status}`)}
               </StatusBadge>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={t("test")}
-                onClick={() => state.test(chat.id)}
-              >
-                <Send />
-              </Button>
+              {canUpdate ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t("test")}
+                  onClick={() => state.test(chat.id)}
+                >
+                  <Send />
+                </Button>
+              ) : null}
               {canDelete ? (
                 <Button
                   type="button"
@@ -68,10 +74,14 @@ export function TelegramChatList({
           <p>{t("pendingHint", { code: state.pending.code })}</p>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="outline" size="sm" asChild>
-              <a href={state.pending.link} target="_blank" rel="noreferrer">
+              <Link
+                href={(toSafeHttpUrl(state.pending.link, { allowRelative: false }) ?? "#") as never}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <ExternalLink />
                 {t("openTelegram")}
-              </a>
+              </Link>
             </Button>
             <Button type="button" size="sm" onClick={() => void state.verify()}>
               {t("verify")}

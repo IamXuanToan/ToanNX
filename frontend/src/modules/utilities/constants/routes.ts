@@ -29,6 +29,8 @@ export const UTILITIES_ROUTES = {
   }),
   /** Trang xem trước trực tiếp các mẫu template công khai. */
   demo: "/demo",
+  /** Trang demo trình soạn thảo Notion-like mới. */
+  demoEditor: "/demo/editor",
   demoType: (type: DemoTemplateTypeValue) => ({
     pathname: "/demo/[type]" as const,
     params: { type },
@@ -86,6 +88,7 @@ export const UTILITIES_PATHNAMES = {
     en: "/admin/utilities/page-paths/[id]",
   },
   "/demo": { vi: "/demo", en: "/demo" },
+  "/demo/editor": { vi: "/demo/editor", en: "/demo/editor" },
   "/demo/[type]": { vi: "/demo/[type]", en: "/demo/[type]" },
 } as const;
 

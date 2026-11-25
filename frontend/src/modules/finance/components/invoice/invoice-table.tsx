@@ -55,6 +55,23 @@ export function InvoiceTable({ canUpdate, canDelete }: { canUpdate: boolean; can
       hideBelow: "lg",
       cell: (invoice) => invoice.platformName ?? "—",
     },
+    ...(state.canManageAll
+      ? [
+          {
+            id: "owner",
+            header: t("fields.owner"),
+            hideBelow: "xl" as const,
+            cell: (invoice: Invoice) => (
+              <span
+                className="text-muted-foreground block max-w-44 truncate"
+                title={invoice.ownerEmail}
+              >
+                {invoice.ownerName || invoice.ownerEmail}
+              </span>
+            ),
+          },
+        ]
+      : []),
     {
       id: "amount",
       header: t("fields.originalAmount"),
@@ -99,6 +116,20 @@ export function InvoiceTable({ canUpdate, canDelete }: { canUpdate: boolean; can
       onClearFilters={table.hasFilters ? table.clearFilters : undefined}
       filters={
         <>
+          {state.canFilterOwner ? (
+            <FilterSelect
+              label={t("fields.owner")}
+              value={table.getFilterValues("owner")}
+              onValueChange={(values) => table.setFilterValues("owner", values)}
+              options={state.ownerOptions}
+            />
+          ) : null}
+          <FilterSelect
+            label={t("filters.year")}
+            value={table.getFilterValues("year")}
+            onValueChange={(values) => table.setFilterValues("year", values.slice(-1))}
+            options={state.yearOptions}
+          />
           <FilterSelect
             label={t("fields.docType")}
             value={table.getFilterValues("docType")}

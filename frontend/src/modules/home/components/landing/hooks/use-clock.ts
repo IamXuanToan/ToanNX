@@ -2,6 +2,13 @@
 
 import { useSyncExternalStore } from "react";
 
+import {
+  APP_NUMBER_LOCALE,
+  CHINESE_LUNAR_LOCALE,
+  DEFAULT_TIMEZONE,
+  EN_NUMBER_LOCALE,
+} from "@/shares/constants/locale";
+
 import type { ClockSnapshot } from "../../../types/clock.types";
 
 const SERVER_SNAPSHOT: ClockSnapshot = {
@@ -42,16 +49,16 @@ const CHI = [
 
 function calculateClockSnapshot(now: Date): ClockSnapshot {
   // 1. Phân tách giờ 12h và 24h
-  const parts12 = new Intl.DateTimeFormat("vi-VN", {
-    timeZone: "Asia/Ho_Chi_Minh",
+  const parts12 = new Intl.DateTimeFormat(APP_NUMBER_LOCALE, {
+    timeZone: DEFAULT_TIMEZONE,
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
     hour12: true,
   }).formatToParts(now);
 
-  const parts24 = new Intl.DateTimeFormat("vi-VN", {
-    timeZone: "Asia/Ho_Chi_Minh",
+  const parts24 = new Intl.DateTimeFormat(APP_NUMBER_LOCALE, {
+    timeZone: DEFAULT_TIMEZONE,
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -77,16 +84,16 @@ function calculateClockSnapshot(now: Date): ClockSnapshot {
   }
 
   // 2. Ngày Dương lịch (hỗ trợ cả tiếng Việt và tiếng Anh)
-  const dateStringVi = now.toLocaleDateString("vi-VN", {
-    timeZone: "Asia/Ho_Chi_Minh",
+  const dateStringVi = now.toLocaleDateString(APP_NUMBER_LOCALE, {
+    timeZone: DEFAULT_TIMEZONE,
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 
-  const dateStringEn = now.toLocaleDateString("en-US", {
-    timeZone: "Asia/Ho_Chi_Minh",
+  const dateStringEn = now.toLocaleDateString(EN_NUMBER_LOCALE, {
+    timeZone: DEFAULT_TIMEZONE,
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -98,8 +105,8 @@ function calculateClockSnapshot(now: Date): ClockSnapshot {
   let lunarYearVi = "";
   let lunarYearEn = "";
   try {
-    const lunarParts = new Intl.DateTimeFormat("vi-VN-u-ca-chinese", {
-      timeZone: "Asia/Ho_Chi_Minh",
+    const lunarParts = new Intl.DateTimeFormat(CHINESE_LUNAR_LOCALE, {
+      timeZone: DEFAULT_TIMEZONE,
       year: "numeric",
       month: "numeric",
       day: "numeric",

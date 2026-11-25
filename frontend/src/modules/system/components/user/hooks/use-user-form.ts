@@ -63,7 +63,15 @@ function fromUser(user: User, { copy }: { copy: boolean }): CreateUserFormValues
  * @param params - Người dùng đang sửa hoặc id nguồn khi sao chép.
  * @returns Form, submit, sổ phần mở rộng và trạng thái.
  */
-export function useUserForm({ user, copyFrom }: { user?: User; copyFrom?: string }) {
+export function useUserForm({
+  user,
+  copyFrom,
+  canUpdateInfo = true,
+}: {
+  user?: User;
+  copyFrom?: string;
+  canUpdateInfo?: boolean;
+}) {
   const t = useTranslations("system.account.validation");
   const tUsers = useTranslations("system.account.users");
   const router = useRouter();
@@ -97,9 +105,13 @@ export function useUserForm({ user, copyFrom }: { user?: User; copyFrom?: string
     let saved: User;
     try {
       if (user) {
-        const updateBody = { ...body };
-        delete (updateBody as Record<string, unknown>).sendInvitation;
-        saved = await update.mutateAsync(updateBody);
+        if (canUpdateInfo && form.formState.isDirty) {
+          const updateBody = { ...body };
+          delete (updateBody as Record<string, unknown>).sendInvitation;
+          saved = await update.mutateAsync(updateBody);
+        } else {
+          saved = user;
+        }
       } else {
         saved = await create.mutateAsync(body);
       }

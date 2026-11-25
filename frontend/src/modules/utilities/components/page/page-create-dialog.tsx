@@ -33,13 +33,13 @@ import { sanitizeSlugInput } from "@/shares/lib/code-slug-input";
 
 import { PORTAL_ROUTES } from "@/modules/portal/constants/routes";
 import { PAGE_TYPE } from "../../constants/page-constants";
+import { THEME_PRESETS } from "../../constants/page-theme-presets";
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { useCreatePage } from "../../hooks/use-create-page";
 import { usePagePathOptions } from "../../hooks/use-page-path-options";
 import { PAGE_FORM_DEFAULTS } from "../../schemas/page.schema";
 import type { PageDetail, PageInput, PageType } from "../../types/page.types";
 import { PagePathSelect } from "../page-path/page-path-select";
-import { THEME_PRESETS } from "./page-theme-editor";
 
 /** 4 loại trang tiêu chuẩn hỗ trợ tạo mới */
 const CREATE_PAGE_TYPE_OPTIONS = [
@@ -169,6 +169,7 @@ export function PageCreateDialog({
 
     setSubmitting(true);
     try {
+      const isLegacy = selectedType === PAGE_TYPE.LEGACY_PAGE;
       const preset = THEME_PRESETS[selectedOption.themePresetIndex] ?? THEME_PRESETS[0];
 
       // Chuẩn bị payload khởi tạo phù hợp với loại trang được chọn
@@ -181,21 +182,28 @@ export function PageCreateDialog({
         template: "blank",
         templateKey: selectedOption.templateKey,
         templateVersion: 1,
-        contentConfig: PAGE_FORM_DEFAULTS.contentConfig,
-        theme: {
-          primaryColor: preset.primary,
-          backgroundColor: preset.bg,
-          textColor: preset.text,
-          buttonStyle: preset.buttonStyle,
-          mode: preset.mode,
-        },
-        styleConfig: {
-          themePreset: preset.name.toLowerCase().replace(/\s+/g, "_"),
-          primaryColor: preset.primary,
-          backgroundColor: preset.bg,
-          textColor: preset.text,
-        },
-        responsiveConfig: PAGE_FORM_DEFAULTS.responsiveConfig,
+        contentConfig: isLegacy ? {} : PAGE_FORM_DEFAULTS.contentConfig,
+        theme: isLegacy
+          ? {
+              mode: "system",
+              buttonStyle: "rounded",
+            }
+          : {
+              primaryColor: preset.primary,
+              backgroundColor: preset.bg,
+              textColor: preset.text,
+              buttonStyle: preset.buttonStyle,
+              mode: preset.mode,
+            },
+        styleConfig: isLegacy
+          ? {}
+          : {
+              themePreset: preset.name.toLowerCase().replace(/\s+/g, "_"),
+              primaryColor: preset.primary,
+              backgroundColor: preset.bg,
+              textColor: preset.text,
+            },
+        responsiveConfig: isLegacy ? {} : PAGE_FORM_DEFAULTS.responsiveConfig,
         content: { type: "doc", content: [{ type: "paragraph" }] },
       };
 
@@ -250,22 +258,23 @@ export function PageCreateDialog({
                 );
 
                 return (
-                  <button
+                  <Button
                     key={opt.type}
                     type="button"
+                    variant="outline"
                     onClick={() => setSelectedType(opt.type)}
                     className={cn(
-                      "relative flex cursor-pointer flex-col rounded-xl border p-3.5 text-left transition-all",
+                      "relative flex h-auto flex-col items-stretch justify-start rounded-xl p-3.5 text-left font-normal whitespace-normal transition-all",
                       isSelected
                         ? "border-primary bg-primary/5 ring-primary/30 shadow-xs ring-2"
                         : "border-border hover:border-primary/40 hover:bg-muted/30 bg-card",
                     )}
                   >
-                    <div className="mb-2 flex items-center justify-between">
+                    <div className="mb-2 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <div
                           className={cn(
-                            "flex size-8 items-center justify-center rounded-lg border",
+                            "flex size-8 shrink-0 items-center justify-center rounded-lg border",
                             opt.colorClass,
                           )}
                         >
@@ -275,7 +284,7 @@ export function PageCreateDialog({
                       </div>
                       <Badge
                         variant={isSelected ? "default" : "secondary"}
-                        className="h-4.5 px-1.5 text-[10px] font-medium"
+                        className="h-4.5 shrink-0 px-1.5 text-[10px] font-medium"
                       >
                         {optBadge}
                       </Badge>
@@ -283,7 +292,7 @@ export function PageCreateDialog({
                     <p className="text-muted-foreground line-clamp-2 text-xs leading-relaxed">
                       {optDesc}
                     </p>
-                  </button>
+                  </Button>
                 );
               })}
             </div>

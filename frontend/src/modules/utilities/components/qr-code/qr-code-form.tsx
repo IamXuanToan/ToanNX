@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import NextLink from "next/link";
 import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
@@ -23,6 +22,7 @@ import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 import { Textarea } from "@/shares/components/ui/textarea";
+import { DEFAULT_CURRENCY } from "@/shares/constants/currency";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { ERROR_CORRECTION_LEVELS, QR_TYPES, type QrCodeDetail } from "../../types/qr-code.types";
@@ -42,10 +42,10 @@ const POPULAR_BANKS = [
 ];
 
 const URL_PRESETS = [
-  { label: "Ví MoMo", prefix: "https://nhantien.momo.vn/" },
-  { label: "PayPal", prefix: "https://paypal.me/" },
-  { label: "ZaloPay", prefix: "https://zalopay.me/" },
-];
+  { key: "momo", prefix: "https://nhantien.momo.vn/" },
+  { key: "paypal", prefix: "https://paypal.me/" },
+  { key: "zalopay", prefix: "https://zalopay.me/" },
+] as const;
 
 /**
  * Form mã QR **một form cho tạo, sửa, xem**: bố cục Studio Split cân đối 55/45.
@@ -64,11 +64,12 @@ export function QrCodeForm({
 }) {
   const t = useTranslations("utilities.qrCodes");
   const tCommon = useTranslations("common.actions");
-  const state = useQrCodeForm({ code });
+  const state = useQrCodeForm({ code, disabled });
   const { form, preview, qrType } = state;
   const locked = disabled || state.isSubmitting;
   const rootError = form.formState.errors.root?.message;
   const svg = preview.data?.svg;
+  const previewSrc = svg || (disabled ? code?.image?.url : undefined);
 
   return (
     <Form onSubmit={state.onSubmit} className="space-y-6">
@@ -92,9 +93,9 @@ export function QrCodeForm({
               }
             >
               <div className="bg-muted/30 relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl border p-6 transition-all">
-                {svg ? (
+                {previewSrc ? (
                   <Image
-                    src={svg}
+                    src={previewSrc}
                     alt={t("previewAlt")}
                     fill
                     sizes="320px"
@@ -110,23 +111,26 @@ export function QrCodeForm({
               <div className="flex flex-wrap items-center gap-2">
                 {code ? (
                   <Button asChild variant="outline" className="flex-1">
-                    <NextLink
-                      href={code.image.url}
+                    <Link
+                      href={code.image.url as never}
                       download={`${code.name}.png`}
                       target="_blank"
                       rel="noreferrer"
                     >
                       <Download className="mr-1.5 size-4" />
                       <span>{t("downloadPng")}</span>
-                    </NextLink>
+                    </Link>
                   </Button>
                 ) : null}
                 {svg ? (
                   <Button asChild variant="outline" className="flex-1">
-                    <NextLink href={svg} download={`${form.getValues("name") || "qr-code"}.svg`}>
+                    <Link
+                      href={svg as never}
+                      download={`${form.getValues("name") || "qr-code"}.svg`}
+                    >
                       <Download className="mr-1.5 size-4" />
                       <span>{t("downloadSvg")}</span>
-                    </NextLink>
+                    </Link>
                   </Button>
                 ) : null}
               </div>
@@ -175,7 +179,7 @@ export function QrCodeForm({
                     <div className="space-y-2">
                       <div className="flex flex-wrap items-center gap-1 pb-1">
                         <span className="text-muted-foreground mr-1 text-[11px] font-medium">
-                          Phổ biến:
+                          {t("popularLabel")}
                         </span>
                         {POPULAR_BANKS.map((b) => (
                           <Button
@@ -246,7 +250,7 @@ export function QrCodeForm({
                   <MoneyInput
                     value={field.value}
                     onChange={field.onChange}
-                    currency="VND"
+                    currency={DEFAULT_CURRENCY}
                     disabled={locked}
                     aria-invalid={field["aria-invalid"]}
                   />
@@ -267,32 +271,40 @@ export function QrCodeForm({
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-1.5 pb-1">
                 <span className="text-muted-foreground mr-1 text-[11px] font-medium">
-                  Mẫu ví / dịch vụ nhanh:
+                  {t("quickPresetsLabel")}
                 </span>
-                {URL_PRESETS.map((preset) => (
-                  <Button
-                    key={preset.label}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      form.setValue("url", preset.prefix, {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                      });
-                      if (!form.getValues("name")) {
-                        form.setValue("name", preset.label, {
+                {URL_PRESETS.map((preset) => {
+                  const presetLabel =
+                    preset.key === "momo"
+                      ? t("momoLabel")
+                      : preset.key === "paypal"
+                        ? "PayPal"
+                        : "ZaloPay";
+                  return (
+                    <Button
+                      key={preset.key}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        form.setValue("url", preset.prefix, {
                           shouldValidate: true,
                           shouldDirty: true,
                         });
-                      }
-                    }}
-                    disabled={locked}
-                    className="h-6 px-2 text-[11px] font-normal"
-                  >
-                    {preset.label}
-                  </Button>
-                ))}
+                        if (!form.getValues("name")) {
+                          form.setValue("name", presetLabel, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }
+                      }}
+                      disabled={locked}
+                      className="h-6 px-2 text-[11px] font-normal"
+                    >
+                      {presetLabel}
+                    </Button>
+                  );
+                })}
               </div>
               <FormField
                 control={form.control}

@@ -16,11 +16,15 @@ import { SidebarTrigger } from "@/shares/components/ui/sidebar";
  */
 export function PortalHeader() {
   const t = useTranslations("portal");
+  const tActions = useTranslations("common.actions");
 
   return (
     <header className="border-border bg-card sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b px-4 sm:px-6">
       <div className="flex items-center gap-2">
-        <SidebarTrigger className="-ml-2 size-10 rounded-xl" />
+        <SidebarTrigger
+          toggleLabel={tActions("toggleSidebar")}
+          className="-ml-2 size-10 rounded-xl"
+        />
         <h2 className="text-foreground text-sm font-semibold tracking-tight">
           {t("dashboard.title")}
         </h2>

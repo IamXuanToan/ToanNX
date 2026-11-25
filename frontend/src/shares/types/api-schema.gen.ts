@@ -5198,6 +5198,19 @@ export interface components {
        */
       readonly id: string;
       /**
+       * Chủ
+       * Format: uuid
+       * @description Người dùng sở hữu.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
+      /**
        * Nguồn
        * @description MANUAL / SEPAY.
        *
@@ -5466,6 +5479,19 @@ export interface components {
        * @description Định danh UUID do hệ thống sinh, không đổi.
        */
       readonly id: string;
+      /**
+       * Chủ
+       * Format: uuid
+       * @description Người dùng sở hữu.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
       /**
        * Loại
        * @description Loại chứng từ.
@@ -10117,6 +10143,8 @@ export interface operations {
         needs_review?: unknown;
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -10329,6 +10357,8 @@ export interface operations {
         needs_review?: unknown;
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -10575,6 +10605,8 @@ export interface operations {
         doc_type?: ("CONTRACT" | "INVOICE" | "OTHER" | "STATEMENT" | "WITHHOLDING_CERTIFICATE")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -10745,6 +10777,8 @@ export interface operations {
         doc_type?: ("CONTRACT" | "INVOICE" | "OTHER" | "STATEMENT" | "WITHHOLDING_CERTIFICATE")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -10822,6 +10856,8 @@ export interface operations {
         is_active?: ("false" | "true")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -10985,6 +11021,8 @@ export interface operations {
         is_active?: ("false" | "true")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -11286,6 +11324,8 @@ export interface operations {
   finance_reports_monthly_retrieve: {
     parameters: {
       query: {
+        /** @description Lọc theo người dùng sở hữu (nhiều UUID phân tách dấu phẩy). */
+        owner?: string;
         /** @description Năm. */
         year: number;
       };
@@ -11323,6 +11363,8 @@ export interface operations {
       query: {
         /** @description Tháng. */
         month?: number | null;
+        /** @description Lọc theo người dùng sở hữu (nhiều UUID phân tách dấu phẩy). */
+        owner?: string;
         /** @description Năm. */
         year: number;
       };
@@ -11367,6 +11409,8 @@ export interface operations {
         is_active?: ("false" | "true")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */
@@ -11532,6 +11576,8 @@ export interface operations {
         is_active?: ("false" | "true")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
+        /** @description Người dùng sở hữu; nhiều giá trị. */
+        owner?: string[];
         /** @description A page number within the paginated result set. */
         page?: number;
         /** @description Number of results to return per page. */

@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "@/i18n/navigation";
-import { PORTAL_ROUTES } from "@/modules/portal/constants/routes";
+import { PORTAL_PATHNAMES, PORTAL_ROUTES } from "@/modules/portal/constants/routes";
+import { startsWithLocalizedRoute } from "@/shares/lib/localized-route";
 
 import { FINANCE_ROUTES } from "../constants/routes";
 
@@ -16,7 +17,7 @@ import { FINANCE_ROUTES } from "../constants/routes";
  */
 export function useFinanceRoutes() {
   const pathname = usePathname();
-  const isPortal = pathname.startsWith("/portal") || (pathname as string).startsWith("/ca-nhan");
+  const isPortal = startsWithLocalizedRoute(pathname, PORTAL_ROUTES.dashboard, PORTAL_PATHNAMES);
 
   if (isPortal) {
     return {

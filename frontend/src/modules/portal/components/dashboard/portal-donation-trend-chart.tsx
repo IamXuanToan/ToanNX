@@ -22,6 +22,7 @@ import {
   ChartTooltipContent,
 } from "@/shares/components/ui/chart";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { formatVndText } from "@/shares/lib/number-format";
 
 export type PortalDonationTrendChartProps = {
   data?: DonationDailyTrend[];
@@ -85,7 +86,7 @@ export function PortalDonationTrendChart({ data = [], isLoading }: PortalDonatio
             onClick={() => setViewMode("both")}
             className="h-7 px-2 text-[11px]"
           >
-            Tất cả
+            {t("charts.filterAll")}
           </Button>
           <Button
             type="button"
@@ -94,7 +95,7 @@ export function PortalDonationTrendChart({ data = [], isLoading }: PortalDonatio
             onClick={() => setViewMode("amount")}
             className="h-7 px-2 text-[11px]"
           >
-            Số tiền
+            {t("charts.filterAmount")}
           </Button>
           <Button
             type="button"
@@ -103,7 +104,7 @@ export function PortalDonationTrendChart({ data = [], isLoading }: PortalDonatio
             onClick={() => setViewMode("count")}
             className="h-7 px-2 text-[11px]"
           >
-            Lượt ủng hộ
+            {t("charts.filterCount")}
           </Button>
         </div>
       </CardHeader>
@@ -163,9 +164,7 @@ export function PortalDonationTrendChart({ data = [], isLoading }: PortalDonatio
                         return (
                           <div className="flex w-full items-center justify-between gap-2">
                             <span className="text-muted-foreground">{t("charts.amount")}:</span>
-                            <span className="text-foreground font-bold">
-                              {Number(val).toLocaleString("vi-VN")} ₫
-                            </span>
+                            <span className="text-foreground font-bold">{formatVndText(val)}</span>
                           </div>
                         );
                       }

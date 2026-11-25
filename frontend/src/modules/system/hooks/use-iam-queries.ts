@@ -2,6 +2,8 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
+import { usePermission } from "./use-permission";
+import { IAM_PERMISSIONS } from "../permissions/iam-permission";
 import { iamKeys } from "../constants/query-keys";
 import { permissionService } from "../services/permission.service";
 import { roleService } from "../services/role.service";
@@ -10,10 +12,11 @@ import type { RoleFilters } from "../types/iam.types";
 
 /** @returns Đủ vai trò cho bộ lọc và ô chọn, không cắt ở trang đầu. */
 export function useRoleOptions(options: { enabled?: boolean } = {}) {
+  const canReadRoles = usePermission(IAM_PERMISSIONS.roleRead);
   return useQuery({
     queryKey: iamKeys.roleOptions(),
     queryFn: ({ signal }) => roleService.listAll(signal),
-    enabled: options.enabled ?? true,
+    enabled: (options.enabled ?? true) && canReadRoles,
   });
 }
 

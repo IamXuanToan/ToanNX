@@ -19,6 +19,7 @@ import { SlugInput } from "@/shares/components/common/slug-input";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import type { ShortLinkDetail } from "../../types/short-link.types";
@@ -234,14 +235,14 @@ export function ShortLinkForm({
             <div className="bg-muted/30 space-y-2 rounded-xl border p-3.5">
               <p className="text-sm">
                 <span className="text-muted-foreground">{t("fields.shortUrl")}: </span>
-                <a
-                  href={link.shortUrl}
+                <Link
+                  href={(toSafeHttpUrl(link.shortUrl) ?? "#") as never}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="text-primary font-medium underline underline-offset-4"
                 >
                   {link.shortUrl}
-                </a>
+                </Link>
               </p>
               <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs">
                 <span>

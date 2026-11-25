@@ -12,6 +12,7 @@ import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge } from "@/shares/components/common/status-badge";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { PAGE_STATUSES, PAGE_TYPES, type Page } from "../../types/page.types";
@@ -198,10 +199,13 @@ export function PageTable({
       can={{ update: canUpdate, create: canCreate, delete: canDelete }}
       rowActions={[
         {
-          key: "view",
+          key: "openPublic",
           label: t("view"),
           icon: ExternalLink,
-          onClick: (page) => window.open(page.publicUrl, "_blank", "noopener,noreferrer"),
+          onClick: (page) => {
+            const safeUrl = toSafeHttpUrl(page.publicUrl);
+            if (safeUrl) window.open(safeUrl, "_blank", "noopener,noreferrer");
+          },
         },
       ]}
       bulkStatus={

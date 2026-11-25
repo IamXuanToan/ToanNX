@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { AttachmentPicker } from "@/modules/system/components/attachment/attachment-picker";
+import { AUTH_WORKSPACE_PATHS } from "@/modules/system/constants/auth-storage";
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { ATTACHMENT_PERMISSIONS } from "@/modules/system/permissions/attachment-permission";
 import { UserAvatar } from "@/shares/components/common/user-avatar";
@@ -56,21 +57,20 @@ export function UserMenu({
     useUserMenu();
   const isSidebar = variant === "sidebar";
 
-  const isPortal = pathname.startsWith("/ca-nhan") || (pathname as string).startsWith("/portal");
+  const isPortal =
+    pathname.startsWith(AUTH_WORKSPACE_PATHS.portalViPrefix) ||
+    (pathname as string).startsWith(AUTH_WORKSPACE_PATHS.portal);
   const isStaff = Boolean(user?.isStaff || user?.isSuperuser);
 
   const canReadAttachments = usePermission(ATTACHMENT_PERMISSIONS.read);
   const canUploadAttachments = usePermission(ATTACHMENT_PERMISSIONS.create);
 
-  const defaultRenderPicker =
-    canReadAttachments || Boolean(user)
-      ? (pickerProps: {
-          onSelect: (file: { id: string; url: string }) => void;
-          onClose: () => void;
-        }) => (
-          <AttachmentPicker canUpload={canUploadAttachments || Boolean(user)} {...pickerProps} />
-        )
-      : undefined;
+  const defaultRenderPicker = canReadAttachments
+    ? (pickerProps: {
+        onSelect: (file: { id: string; url: string }) => void;
+        onClose: () => void;
+      }) => <AttachmentPicker canUpload={canUploadAttachments} {...pickerProps} />
+    : undefined;
 
   const effectiveRenderAttachmentPicker = renderAttachmentPicker ?? defaultRenderPicker;
 
@@ -137,7 +137,7 @@ export function UserMenu({
               {isPortal ? (
                 isStaff ? (
                   <DropdownMenuItem asChild className="h-10 cursor-pointer gap-2.5 rounded-xl px-3">
-                    <Link href={"/admin" as never}>
+                    <Link href={AUTH_WORKSPACE_PATHS.admin as never}>
                       <ShieldCheck className="text-primary size-4 shrink-0" aria-hidden />
                       <span>{t("admin")}</span>
                     </Link>
@@ -145,7 +145,7 @@ export function UserMenu({
                 ) : null
               ) : (
                 <DropdownMenuItem asChild className="h-10 cursor-pointer gap-2.5 rounded-xl px-3">
-                  <Link href={"/portal" as never}>
+                  <Link href={AUTH_WORKSPACE_PATHS.portal as never}>
                     <Sparkles className="text-primary size-4 shrink-0" aria-hidden />
                     <span>{t("portal")}</span>
                   </Link>

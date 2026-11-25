@@ -18,6 +18,7 @@ import {
   ChartTooltipContent,
 } from "@/shares/components/ui/chart";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { formatVndText } from "@/shares/lib/number-format";
 
 export type PortalDonationGiftChartProps = {
   byGift?: Array<{
@@ -68,7 +69,7 @@ export function PortalDonationGiftChart({ byGift = [], isLoading }: PortalDonati
           <Skeleton className="h-64 w-full rounded-xl" />
         ) : chartData.length === 0 ? (
           <div className="text-muted-foreground flex h-64 flex-col items-center justify-center text-center text-xs">
-            <p>Chưa có quà tặng quy đổi nào</p>
+            <p>{t("charts.noGiftsData")}</p>
           </div>
         ) : (
           <ChartContainer config={chartConfig} className="aspect-auto h-64 w-full">
@@ -94,12 +95,14 @@ export function PortalDonationGiftChart({ byGift = [], isLoading }: PortalDonati
                       <div className="space-y-1">
                         <div className="flex items-center justify-between gap-3">
                           <span className="text-muted-foreground">{t("charts.count")}:</span>
-                          <span className="text-foreground font-bold">{val} lượt</span>
+                          <span className="text-foreground font-bold">
+                            {t("charts.giftCount", { count: Number(val) || 0 })}
+                          </span>
                         </div>
                         <div className="flex items-center justify-between gap-3 text-[11px]">
                           <span className="text-muted-foreground">{t("charts.amount")}:</span>
                           <span className="font-semibold text-amber-600 dark:text-amber-400">
-                            {Number(item.payload?.total).toLocaleString("vi-VN")} ₫
+                            {formatVndText(item.payload?.total)}
                           </span>
                         </div>
                       </div>

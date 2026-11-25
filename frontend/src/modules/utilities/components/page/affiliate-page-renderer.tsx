@@ -2,14 +2,16 @@
 
 import { ArrowUpRight, Search, Sparkles, X } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { type CSSProperties, useMemo } from "react";
 import { cn } from "cn";
 
+import { Link } from "@/i18n/navigation";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
+import { formatVndText } from "@/shares/lib/number-format";
+import { toSafeHttpUrl, toSafeImageSrc } from "@/shares/lib/safe-url";
 
 import type { AffiliateCategory, PublicPage } from "../../types/page.types";
 import { useAffiliatePageRenderer } from "./hooks/use-affiliate-page-renderer";
@@ -200,16 +202,16 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
 
       {/* 3. Thanh điều khiển: Tìm kiếm & Lọc danh mục */}
       <div className="border-border/80 bg-background/90 sticky top-0 z-20 border-y shadow-2xs backdrop-blur-md">
-        <div className="mx-auto max-w-5xl px-4 py-3">
+        <div className="mx-auto max-w-5xl px-4 py-2.5 sm:py-3">
           {showSearch ? (
-            <div className="relative mb-3">
+            <div className="relative mb-2.5 sm:mb-3">
               <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2" />
               <Input
                 type="text"
                 placeholder={t("searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-muted/50 focus-visible:bg-background border-border/80 focus-visible:border-primary/50 w-full rounded-full pr-10 pl-10 text-xs shadow-2xs transition-all sm:text-sm"
+                className="bg-muted/50 focus-visible:bg-background border-border/80 focus-visible:border-primary/50 h-9 w-full rounded-full pr-10 pl-10 text-xs shadow-2xs transition-all sm:h-10 sm:text-sm"
               />
               {searchQuery ? (
                 <Button
@@ -226,7 +228,7 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
           ) : null}
 
           {displayCategories.length > 0 ? (
-            <div className="flex scrollbar-none gap-2 overflow-x-auto pb-0.5">
+            <div className="-mx-4 flex scrollbar-none gap-2 overflow-x-auto px-4 pb-0.5 sm:mx-0 sm:px-0">
               <Button
                 type="button"
                 variant={selectedCategory === "all" ? "default" : "outline"}
@@ -262,22 +264,16 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
         ) : layout === "links" ? (
           /* Bố cục Minimal Links */
           <div className="flex flex-col gap-3">
-            {filteredItems.map((item) => (
-              <Button
-                key={item.id}
-                asChild
-                variant="outline"
-                className={cn(
-                  "hover:border-primary/50 group h-auto w-full items-center justify-between p-3.5 text-left font-normal shadow-2xs transition-all hover:shadow-xs",
-                  cardRadiusClass,
-                )}
-              >
-                <Link href={item.destinationUrl} target="_blank" rel="noopener noreferrer nofollow">
-                  <div className="flex min-w-0 items-center gap-3 pr-4">
-                    {showImage && item.imageUrl ? (
+            {filteredItems.map((item) => {
+              const safeHref = toSafeHttpUrl(item.destinationUrl, { allowRelative: false });
+              const safeImg = toSafeImageSrc(item.imageUrl);
+              const content = (
+                <>
+                  <div className="flex min-w-0 flex-1 items-center gap-3 pr-2 sm:pr-4">
+                    {showImage && safeImg ? (
                       <div className="bg-muted/50 relative size-11 shrink-0 overflow-hidden rounded-lg">
                         <Image
-                          src={item.imageUrl}
+                          src={safeImg}
                           alt={item.title}
                           fill
                           unoptimized
@@ -285,13 +281,13 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                         />
                       </div>
                     ) : null}
-                    <div className="min-w-0">
-                      <div className="text-foreground group-hover:text-primary truncate text-sm font-semibold transition-colors">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-foreground group-hover:text-primary line-clamp-2 text-sm leading-snug font-semibold transition-colors">
                         {item.title}
                       </div>
                       <p className="text-muted-foreground mt-0.5 text-xs">
                         {showPrice && item.priceConfig?.amount
-                          ? `${item.priceConfig.amount.toLocaleString("vi-VN")} ₫ · `
+                          ? `${formatVndText(item.priceConfig.amount)} · `
                           : ""}
                         <span className="font-medium uppercase">{item.platform}</span>
                       </p>
@@ -301,9 +297,38 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                     <span>{item.buttonConfig?.label || t("viewNow")}</span>
                     <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </div>
-                </Link>
-              </Button>
-            ))}
+                </>
+              );
+
+              return safeHref ? (
+                <Button
+                  key={item.id}
+                  asChild
+                  variant="outline"
+                  className={cn(
+                    "hover:border-primary/50 group h-auto w-full items-center justify-between p-3 text-left font-normal whitespace-normal shadow-2xs transition-all hover:shadow-xs sm:p-3.5",
+                    cardRadiusClass,
+                  )}
+                >
+                  <Link href={safeHref as never} target="_blank" rel="noopener noreferrer nofollow">
+                    {content}
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  key={item.id}
+                  type="button"
+                  disabled
+                  variant="outline"
+                  className={cn(
+                    "group h-auto w-full items-center justify-between p-3 text-left font-normal whitespace-normal shadow-2xs sm:p-3.5",
+                    cardRadiusClass,
+                  )}
+                >
+                  {content}
+                </Button>
+              );
+            })}
           </div>
         ) : layout === "list" ? (
           /* Bố cục Product List (Hàng ngang) */
@@ -320,6 +345,9 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                   )
                 : 0;
 
+              const safeHref = toSafeHttpUrl(item.destinationUrl, { allowRelative: false });
+              const safeImg = toSafeImageSrc(item.imageUrl);
+
               return (
                 <div
                   key={item.id}
@@ -328,10 +356,10 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                     cardRadiusClass,
                   )}
                 >
-                  {showImage && item.imageUrl ? (
+                  {showImage && safeImg ? (
                     <div className="bg-muted/40 relative aspect-square w-full shrink-0 overflow-hidden rounded-xl sm:w-36">
                       <Image
-                        src={item.imageUrl}
+                        src={safeImg}
                         alt={item.title}
                         fill
                         unoptimized
@@ -391,11 +419,11 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                           {item.priceConfig?.mode === "fixed" && item.priceConfig.amount ? (
                             <div className="flex flex-wrap items-baseline gap-1.5">
                               <span className="text-base font-extrabold tracking-tight text-rose-600 sm:text-lg dark:text-rose-400">
-                                {item.priceConfig.amount.toLocaleString("vi-VN")} ₫
+                                {formatVndText(item.priceConfig.amount)}
                               </span>
                               {item.priceConfig.originalAmount ? (
                                 <span className="text-muted-foreground text-xs line-through">
-                                  {item.priceConfig.originalAmount.toLocaleString("vi-VN")} ₫
+                                  {formatVndText(item.priceConfig.originalAmount)}
                                 </span>
                               ) : null}
                             </div>
@@ -409,23 +437,25 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                       ) : (
                         <div />
                       )}
-                      <Button
-                        size="sm"
-                        asChild
-                        className={cn("gap-1.5 px-3 font-semibold", buttonRadiusClass)}
-                      >
-                        <Link
-                          href={item.destinationUrl}
-                          target="_blank"
-                          rel="noopener noreferrer nofollow"
+                      {safeHref ? (
+                        <Button
+                          size="sm"
+                          asChild
+                          className={cn("gap-1.5 px-3 font-semibold", buttonRadiusClass)}
                         >
-                          <span>
-                            {item.buttonConfig?.label ||
-                              t("buyNow", { platform: item.platform.toUpperCase() })}
-                          </span>
-                          <ArrowUpRight className="size-3.5" />
-                        </Link>
-                      </Button>
+                          <Link
+                            href={safeHref as never}
+                            target="_blank"
+                            rel="noopener noreferrer nofollow"
+                          >
+                            <span>
+                              {item.buttonConfig?.label ||
+                                t("buyNow", { platform: item.platform.toUpperCase() })}
+                            </span>
+                            <ArrowUpRight className="size-3.5" />
+                          </Link>
+                        </Button>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -455,6 +485,9 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                   )
                 : 0;
 
+              const safeHref = toSafeHttpUrl(item.destinationUrl, { allowRelative: false });
+              const safeImg = toSafeImageSrc(item.imageUrl);
+
               return (
                 <div
                   key={item.id}
@@ -466,9 +499,9 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                   {/* Khung ảnh sản phẩm */}
                   {showImage ? (
                     <div className="bg-muted/40 relative aspect-square w-full overflow-hidden">
-                      {item.imageUrl ? (
+                      {safeImg ? (
                         <Image
-                          src={item.imageUrl}
+                          src={safeImg}
                           alt={item.title}
                           fill
                           unoptimized
@@ -526,13 +559,13 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                     {showPrice ? (
                       <div className="mt-auto pt-2">
                         {item.priceConfig?.mode === "fixed" && item.priceConfig.amount ? (
-                          <div className="flex flex-wrap items-baseline gap-1">
+                          <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
                             <span className="text-xs font-extrabold tracking-tight text-rose-600 sm:text-sm dark:text-rose-400">
-                              {item.priceConfig.amount.toLocaleString("vi-VN")} ₫
+                              {formatVndText(item.priceConfig.amount)}
                             </span>
                             {item.priceConfig.originalAmount ? (
                               <span className="text-muted-foreground text-[10px] line-through">
-                                {item.priceConfig.originalAmount.toLocaleString("vi-VN")} ₫
+                                {formatVndText(item.priceConfig.originalAmount)}
                               </span>
                             ) : null}
                           </div>
@@ -548,26 +581,28 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                     )}
 
                     {/* Nút bấm CTA chuẩn E-commerce */}
-                    <Button
-                      size="sm"
-                      asChild
-                      className={cn(
-                        "group/btn mt-2 h-7 w-full gap-1 px-2 text-[11px] font-semibold shadow-2xs sm:h-8 sm:text-xs",
-                        buttonRadiusClass,
-                      )}
-                    >
-                      <Link
-                        href={item.destinationUrl}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
+                    {safeHref ? (
+                      <Button
+                        size="sm"
+                        asChild
+                        className={cn(
+                          "group/btn mt-2 h-auto min-h-8 w-full gap-1 px-2 py-1.5 text-center text-[11px] leading-tight font-semibold whitespace-normal shadow-2xs sm:text-xs",
+                          buttonRadiusClass,
+                        )}
                       >
-                        <span className="truncate">
-                          {item.buttonConfig?.label ||
-                            t("buyNow", { platform: item.platform.toUpperCase() })}
-                        </span>
-                        <ArrowUpRight className="size-3.5 shrink-0 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-                      </Link>
-                    </Button>
+                        <Link
+                          href={safeHref as never}
+                          target="_blank"
+                          rel="noopener noreferrer nofollow"
+                        >
+                          <span className="line-clamp-1">
+                            {item.buttonConfig?.label ||
+                              t("buyNow", { platform: item.platform.toUpperCase() })}
+                          </span>
+                          <ArrowUpRight className="size-3.5 shrink-0 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+                        </Link>
+                      </Button>
+                    ) : null}
                   </div>
                 </div>
               );

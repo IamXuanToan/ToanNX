@@ -153,7 +153,8 @@
     "emptyContent": "Chương này chưa có nội dung văn bản.",
     "chapterNotFoundTitle": "Chương không tồn tại",
     "chapterNotFoundDescription": "Chương truyện bạn đang tìm không tồn tại hoặc đã ngừng công khai.",
-    "chapterNotFoundDesc": "Chương truyện bạn đang tìm không tồn tại hoặc đã ngừng công khai."
+    "chapterNotFoundDesc": "Chương truyện bạn đang tìm không tồn tại hoặc đã ngừng công khai.",
+    "chapterNavAria": "Điều hướng chương"
   },
   "history": {
     "title": "Lịch sử đọc",

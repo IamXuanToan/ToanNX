@@ -15,6 +15,9 @@ export type ManualRateSource = (typeof MANUAL_RATE_SOURCES)[number];
 /** Giao dịch thu nhập (BE `IncomeResponseSerializer`); tiền là chuỗi Decimal. */
 export type Income = {
   id: string;
+  ownerId: string;
+  ownerEmail: string;
+  ownerName: string;
   source: IncomeSource;
   receivedAt: string;
   receivedDate: string;
@@ -54,6 +57,7 @@ export type Income = {
 export type IncomeFilters = ListParams & {
   year?: number;
   month?: number;
+  owner?: string;
   platform?: string;
   taxStatus?: string;
   source?: string;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { usePathname } from "@/i18n/navigation";
@@ -35,6 +36,7 @@ export function ModuleSidebar({
   footer?: ReactNode;
 }) {
   const pathname = usePathname();
+  const tActions = useTranslations("common.actions");
   const { setOpenMobile } = useSidebar();
   const activeHref = findActiveNavHref(
     pathname,
@@ -59,7 +61,7 @@ export function ModuleSidebar({
         ))}
       </SidebarContent>
       {footer ? <SidebarFooter className="px-3 pt-2 pb-3">{footer}</SidebarFooter> : null}
-      <SidebarRail />
+      <SidebarRail toggleLabel={tActions("toggleSidebar")} />
     </Sidebar>
   );
 }

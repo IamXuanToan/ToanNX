@@ -15,7 +15,12 @@ export const PageButton = Node.create({
     return {
       label: { default: "" },
       href: { default: "" },
-      shortLinkId: { default: null },
+      shortLinkId: {
+        default: null,
+        parseHTML: (el: HTMLElement) => el.getAttribute("data-short-link-id"),
+        renderHTML: (attrs: { shortLinkId?: string | null }) =>
+          attrs.shortLinkId ? { "data-short-link-id": attrs.shortLinkId } : {},
+      },
       variant: { default: "primary" },
     };
   },
@@ -32,10 +37,10 @@ export const PageButton = Node.create({
         target: "_blank",
         rel: "noopener noreferrer nofollow",
         class:
-          "page-button my-2 flex h-11 w-full items-center justify-center px-5 text-sm font-medium no-underline " +
+          "page-button my-2 flex h-11 w-full items-center justify-center rounded-xl px-5 text-sm font-medium no-underline " +
           (outline
-            ? "border border-[var(--page-primary)] text-[var(--page-primary)]"
-            : "bg-[var(--page-primary)] text-white"),
+            ? "border border-[var(--page-primary,var(--primary))] bg-transparent text-[var(--page-primary,var(--primary))]"
+            : "bg-[var(--page-primary,var(--primary))] text-primary-foreground"),
       }),
       node.attrs.label || node.attrs.href || "",
     ];
@@ -60,7 +65,8 @@ export const PageCallout = Node.create({
       mergeAttributes(HTMLAttributes, {
         "data-type": "callout",
         "data-tone": node.attrs.tone,
-        class: "my-3 rounded-xl border-l-4 border-[var(--page-primary)] bg-black/5 p-4",
+        class:
+          "my-3 rounded-xl border-l-4 border-[var(--page-primary,var(--primary))] bg-muted/70 p-4",
       }),
       0,
     ];

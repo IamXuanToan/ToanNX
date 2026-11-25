@@ -19,6 +19,7 @@ import {
   ChartTooltipContent,
 } from "@/shares/components/ui/chart";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { formatDisplayNumber } from "@/shares/lib/number-format";
 
 export type PortalLinkClicksChartProps = {
   links?: ShortLink[];
@@ -91,7 +92,7 @@ export function PortalLinkClicksChart({ links = [], isLoading }: PortalLinkClick
                       <div className="flex w-full items-center justify-between gap-3">
                         <span className="text-muted-foreground">/{item.payload?.slug}:</span>
                         <span className="text-foreground font-bold">
-                          {Number(val).toLocaleString("vi-VN")} click
+                          {t("charts.clickCount", { count: formatDisplayNumber(val) })}
                         </span>
                       </div>
                     )}

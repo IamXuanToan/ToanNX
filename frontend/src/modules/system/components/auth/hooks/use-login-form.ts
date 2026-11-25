@@ -9,7 +9,13 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "@/i18n/navigation";
 import type { AppPathname } from "@/i18n/routing";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
+import {
+  AUTH_WORKSPACE_PATHS,
+  OAUTH_MODE,
+  OAUTH_STORAGE_KEYS,
+} from "../../../constants/auth-storage";
 import { useLogin } from "../../../hooks/use-login";
 import { createLoginSchema, type LoginFormValues } from "../../../schemas/login.schema";
 import { authService, sanitizeNextPath } from "../../../services/auth.service";
@@ -41,17 +47,22 @@ export function useLoginForm(redirectTo: AppPathname) {
     setSocialLoading(provider);
     try {
       const state = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      sessionStorage.setItem("oauth_state", state);
-      sessionStorage.setItem("oauth_mode", "login");
+      sessionStorage.setItem(OAUTH_STORAGE_KEYS.state, state);
+      sessionStorage.setItem(OAUTH_STORAGE_KEYS.mode, OAUTH_MODE.login);
       const next = searchParams.get("redirect") || searchParams.get("next");
       if (next) {
-        sessionStorage.setItem("oauth_next", next);
+        sessionStorage.setItem(OAUTH_STORAGE_KEYS.next, next);
       } else {
-        sessionStorage.removeItem("oauth_next");
+        sessionStorage.removeItem(OAUTH_STORAGE_KEYS.next);
       }
       const redirectUri = `${window.location.origin}/auth/callback/${provider}`;
       const res = await authService.getSocialAuthUrl(provider, state, redirectUri);
-      window.location.href = res.authorizationUrl;
+      const safeAuthUrl = toSafeHttpUrl(res.authorizationUrl, { allowRelative: false });
+      if (!safeAuthUrl) {
+        setSocialLoading(null);
+        return;
+      }
+      window.location.href = safeAuthUrl;
     } catch (error) {
       form.setError("root", { message: errorMessage(error) });
       setSocialLoading(null);
@@ -70,15 +81,17 @@ export function useLoginForm(redirectTo: AppPathname) {
     const next = sanitizeNextPath(searchParams.get("redirect") || searchParams.get("next"));
     if (next) {
       // Người dùng thường không được chuyển vào trang quản trị: đưa vào client portal
-      const isAdminTarget = next.includes("/admin") || next.includes("/quan-tri");
+      const isAdminTarget =
+        next.includes(AUTH_WORKSPACE_PATHS.admin) ||
+        next.includes(AUTH_WORKSPACE_PATHS.adminViPrefix);
       if (!isStaffUser && isAdminTarget) {
-        router.replace("/portal" as never);
+        router.replace(AUTH_WORKSPACE_PATHS.portal as never);
       } else {
         window.location.assign(next);
       }
     } else {
       // Người dùng có is_staff=True thì vào trang admin, không thì vào client portal
-      const destination = isStaffUser ? redirectTo : ("/portal" as AppPathname);
+      const destination = isStaffUser ? redirectTo : (AUTH_WORKSPACE_PATHS.portal as AppPathname);
       router.replace(destination as never);
     }
   });

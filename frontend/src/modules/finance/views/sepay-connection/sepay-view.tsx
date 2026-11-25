@@ -28,23 +28,17 @@ export function SepayView() {
       <div className="border-primary/20 bg-primary/5 space-y-2.5 rounded-2xl border p-4 text-sm sm:p-5">
         <div className="text-primary flex items-center gap-2 font-semibold">
           <Info className="size-4.5 shrink-0" />
-          <span>Mục đích kết nối SePay cá nhân</span>
+          <span>{t("purposeTitle")}</span>
         </div>
         <p className="text-muted-foreground text-xs leading-relaxed">
-          Kết nối SePay tại đây dùng để{" "}
-          <strong>tự động nhận biến động số dư tài khoản ngân hàng của riêng bạn</strong> và tự động
-          nhận diện, phân loại các khoản thu nhập (thanh toán hợp đồng, tiền lương, freelance, hoa
-          hồng tiếp thị liên kết...) vào sổ theo dõi tài chính cá nhân này.
+          {t("purposeIntro")} <strong>{t("purposeHighlight")}</strong> {t("purposeOutro")}
         </p>
         <div className="border-primary/10 text-muted-foreground flex flex-col gap-3 border-t pt-1 text-[11px] sm:flex-row sm:items-center">
           <div className="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
             <ShieldCheck className="size-3.5 shrink-0" />
-            <span>Độc lập & Bảo mật riêng tư</span>
+            <span>{t("privacyTitle")}</span>
           </div>
-          <span>
-            • Token và webhook này chỉ dùng cho tài khoản của bạn, không chia sẻ với người dùng
-            khác.
-          </span>
+          <span>• {t("privacyDesc")}</span>
         </div>
       </div>
 

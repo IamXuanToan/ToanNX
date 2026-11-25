@@ -3,6 +3,7 @@
 import { useFormatter, useTranslations } from "next-intl";
 
 import { usePermission } from "@/modules/system/hooks/use-permission";
+import { FilterSelect } from "@/shares/components/common/filter-select";
 import { PageHeader } from "@/shares/components/common/page-header";
 import { SelectField } from "@/shares/components/common/select-field";
 import { ErrorState } from "@/shares/components/errors/error-state";
@@ -36,6 +37,7 @@ export function FinanceReport() {
   const t = useTranslations("finance.report");
   const format = useFormatter();
   const state = useFinanceReport();
+  const canReadIncomes = usePermission(INCOME_PERMISSIONS.read);
   const canUpdate = usePermission(INCOME_PERMISSIONS.update);
   const data = state.query.data;
   const monthOptions = [
@@ -50,7 +52,15 @@ export function FinanceReport() {
       <PageHeader
         title={t("title")}
         actions={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            {state.canFilterOwner ? (
+              <FilterSelect
+                label={t("owner")}
+                options={state.ownerOptions}
+                value={state.owner}
+                onValueChange={state.setOwner}
+              />
+            ) : null}
             <YearSelect value={state.year} years={state.years} onChange={state.setYear} />
             <SelectField
               className="w-40"
@@ -234,12 +244,18 @@ export function FinanceReport() {
               </CardContent>
             </Card>
           </div>
-          <IncomeTable
-            tableId="finance-report-incomes"
-            canUpdate={canUpdate}
-            canDelete={false}
-            scope={{ year: state.year, month: state.month ?? undefined }}
-          />
+          {canReadIncomes ? (
+            <IncomeTable
+              tableId="finance-report-incomes"
+              canUpdate={canUpdate}
+              canDelete={false}
+              scope={{
+                year: state.year,
+                month: state.month ?? undefined,
+                owner: state.ownerQuery ?? undefined,
+              }}
+            />
+          ) : null}
         </>
       )}
     </div>

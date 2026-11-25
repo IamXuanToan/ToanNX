@@ -25,12 +25,14 @@ import { useGroupBreadcrumb } from "./hooks/use-group-breadcrumb";
 /** Khung trong nhóm module: sidebar trái (menu chia theo module), nội dung phải. */
 export function WorkspaceLayout({
   activeGroup,
+  canAccessCurrentRoute = Boolean(activeGroup),
   groups,
   sidebarOpen,
   onSidebarOpenChange,
   children,
 }: {
   activeGroup?: AdminGroup;
+  canAccessCurrentRoute?: boolean;
   groups: AdminGroup[];
   sidebarOpen: boolean;
   onSidebarOpenChange: (open: boolean) => void;
@@ -38,6 +40,7 @@ export function WorkspaceLayout({
 }) {
   const breadcrumb = useGroupBreadcrumb(activeGroup);
   const t = useTranslations("manageApp.shell");
+  const tActions = useTranslations("common.actions");
   const canReadLibrary = usePermission(ATTACHMENT_PERMISSIONS.read);
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={onSidebarOpenChange}>
@@ -57,7 +60,10 @@ export function WorkspaceLayout({
       />
       <SidebarInset>
         <header className={HEADER_CLASS}>
-          <SidebarTrigger className="-ml-2 size-10 rounded-xl" />
+          <SidebarTrigger
+            toggleLabel={tActions("toggleSidebar")}
+            className="-ml-2 size-10 rounded-xl"
+          />
           <Tooltip>
             <TooltipTrigger asChild>
               <Button asChild variant="ghost" size="icon" className="text-muted-foreground">
@@ -78,7 +84,7 @@ export function WorkspaceLayout({
           <HeaderActions />
         </header>
         <div className="w-full max-w-[1600px] flex-1 p-4 sm:p-6 lg:p-8" data-testid="admin-content">
-          {activeGroup ? children : <ForbiddenView />}
+          {canAccessCurrentRoute ? children : <ForbiddenView />}
         </div>
       </SidebarInset>
     </SidebarProvider>

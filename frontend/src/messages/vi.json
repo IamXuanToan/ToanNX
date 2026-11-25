@@ -152,7 +152,8 @@
       "edit": "Sửa",
       "close": "Đóng",
       "back": "Quay lại",
-      "unsaved": "Có thay đổi chưa lưu"
+      "unsaved": "Có thay đổi chưa lưu",
+      "toggleSidebar": "Đóng/mở thanh bên"
     },
     "status": {
       "active": "Hoạt động",
@@ -220,7 +221,8 @@
       "rowLocked": "Không thể thao tác với bản ghi này"
     },
     "search": {
-      "clear": "Xoá từ khoá"
+      "clear": "Xoá từ khoá",
+      "limitExceeded": "Từ khóa tối đa {maxTerms} từ và {maxLength} ký tự."
     },
     "emptyState": {
       "title": "Chưa có dữ liệu"
@@ -298,10 +300,109 @@
       "link": "Liên kết",
       "insert": "Chèn",
       "apply": "Áp dụng",
+      "cancel": "Hủy",
+      "close": "Đóng",
       "invalidUrl": "Chỉ chấp nhận liên kết http, https, mailto, tel.",
       "invalidImageUrl": "Ảnh ngoài phải là URL https.",
       "invalidYoutube": "Chỉ hỗ trợ video YouTube (https).",
-      "imageFailed": "Không thể thêm ảnh. Vui lòng thử lại."
+      "imageFailed": "Không thể thêm ảnh. Vui lòng thử lại.",
+      "codeBlock": "Khối mã",
+      "alignLeft": "Căn trái",
+      "alignCenter": "Căn giữa",
+      "alignRight": "Căn phải",
+      "alignJustify": "Căn đều",
+      "alignFull": "Toàn chiều rộng",
+      "resizeImage": "Kéo để chỉnh kích thước ảnh",
+      "imageAlt": "Mô tả ảnh (Alt)",
+      "imageAltPlaceholder": "Nhập mô tả ngắn cho ảnh...",
+      "deleteImage": "Xóa ảnh",
+      "imageUnavailable": "Không tải được ảnh",
+      "clearFormatting": "Xóa định dạng",
+      "emptyPlaceholder": "Nhập nội dung hoặc gõ '/' để chèn khối...",
+      "slashTitle": "Chèn khối mới",
+      "slashEmpty": "Không tìm thấy khối phù hợp.",
+      "slashHint": "↑↓ chọn · Enter chèn · Esc đóng",
+      "slashGroupBasic": "Khối cơ bản",
+      "slashGroupMedia": "Nâng cao & Media",
+      "slashGroupModule": "Mở rộng của trang",
+      "addBlockHint": "Nhấp để thêm khối bên dưới",
+      "dragHandleHint": "Kéo để đổi vị trí dòng hoặc nhấp để mở menu",
+      "moveUp": "Di chuyển lên",
+      "moveDown": "Di chuyển xuống",
+      "duplicateBlock": "Nhân bản khối",
+      "deleteBlock": "Xóa khối",
+      "turnInto": "Chuyển đổi thành",
+      "textColor": "Màu chữ & Tô sáng",
+      "resetColor": "Mặc định",
+      "insertImageTitle": "Chèn hình ảnh từ URL",
+      "insertYoutubeTitle": "Chèn video YouTube",
+      "urlPlaceholder": "https://...",
+      "insertUrlAction": "Chèn vào tài liệu",
+      "notionToolbarToggle": "Thanh công cụ",
+      "notionHint": "Gõ '/' chèn khối · Bôi đen định dạng · Kéo ⠿ đổi vị trí dòng",
+      "stats": "{words} từ · {chars} ký tự · {blocks} khối",
+      "basicPlaceholder": "Nhập mô tả ngắn (hỗ trợ in đậm, in nghiêng)...",
+      "charCount": "{count} / {max} ký tự",
+      "commentPlaceholder": "Viết bình luận của bạn...",
+      "commentSubmit": "Gửi bình luận",
+      "commentSubmitting": "Đang gửi...",
+      "commentCancel": "Hủy",
+      "commentShortcutHint": "Ctrl + Enter để gửi",
+      "commentReplyingTo": "Đang trả lời {target}",
+      "slashItems": {
+        "paragraph": {
+          "label": "Đoạn văn",
+          "desc": "Văn bản thường để viết nội dung"
+        },
+        "h1": {
+          "label": "Tiêu đề 1",
+          "desc": "Tiêu đề mục lớn"
+        },
+        "h2": {
+          "label": "Tiêu đề 2",
+          "desc": "Tiêu đề phần vừa"
+        },
+        "h3": {
+          "label": "Tiêu đề 3",
+          "desc": "Tiêu đề mục nhỏ"
+        },
+        "bulletList": {
+          "label": "Danh sách đầu dòng",
+          "desc": "Liệt kê các ý đơn giản"
+        },
+        "orderedList": {
+          "label": "Danh sách đánh số",
+          "desc": "Danh sách thứ tự 1, 2, 3"
+        },
+        "taskList": {
+          "label": "Danh sách việc cần làm",
+          "desc": "Các ô đánh dấu hoàn thành"
+        },
+        "blockquote": {
+          "label": "Trích dẫn",
+          "desc": "Làm nổi bật một câu nói hoặc ghi chú"
+        },
+        "codeBlock": {
+          "label": "Khối mã (Code)",
+          "desc": "Đoạn mã lập trình với font monospace"
+        },
+        "table": {
+          "label": "Bảng 3×3",
+          "desc": "Bảng dữ liệu có hàng tiêu đề"
+        },
+        "horizontalRule": {
+          "label": "Đường phân cách",
+          "desc": "Chia tách các phần nội dung"
+        },
+        "imageUrl": {
+          "label": "Hình ảnh (URL)",
+          "desc": "Chèn ảnh tương tác có kéo nhỏ & căn lề"
+        },
+        "youtube": {
+          "label": "Video YouTube",
+          "desc": "Nhúng video phát trực tiếp"
+        }
+      }
     },
     "components": {
       "remove": "Xóa",
@@ -325,6 +426,9 @@
       "unselectGroup": "Bỏ chọn cả nhóm",
       "selectAll": "Chọn tất cả",
       "clearAll": "Bỏ chọn"
+    },
+    "sortable": {
+      "dragAriaLabel": "Kéo thả để sắp xếp thứ tự"
     }
   },
   "errors": {
@@ -495,7 +599,11 @@
       "devOnly": "Chỉ môi trường phát triển",
       "errorDigest": "Mã sự cố (Digest)",
       "copyDigest": "Sao chép mã lỗi",
-      "copiedDigest": "Đã sao chép"
+      "copiedDigest": "Đã sao chép",
+      "copyDetails": "Sao chép toàn bộ lỗi",
+      "copyDetailsTitle": "Sao chép toàn bộ chi tiết lỗi và Stack Trace",
+      "copiedDetails": "Đã sao chép chi tiết",
+      "fallbackMessage": "Đã xảy ra sự cố không mong muốn."
     },
     "network": {
       "title": "Mất kết nối mạng",

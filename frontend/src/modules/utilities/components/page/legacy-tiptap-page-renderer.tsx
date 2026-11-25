@@ -1,41 +1,21 @@
 import Image from "next/image";
 import { cn } from "cn";
-import type { CSSProperties } from "react";
 
 import { TiptapContent } from "@/shares/components/common/tiptap-content";
 
 import { PAGE_EXTENSIONS } from "../../extensions/page-extensions";
 import type { PublicPage } from "../../types/page.types";
 
-const BUTTON_RADIUS = {
-  rounded: "[&_.page-button]:rounded-xl",
-  square: "[&_.page-button]:rounded-none",
-  pill: "[&_.page-button]:rounded-full",
-} as const;
-
 /**
- * Hiển thị trang bài viết tự do dạng Tiptap JSON cũ (bảo toàn tương thích 100%).
+ * Hiển thị trang soạn thảo tự do (`LEGACY_PAGE` / custom) dùng chung đúng hệ màu & định dạng
+ * với `TiptapEditor` (không ghi đè bảng màu nút/nền).
  *
  * @param props - Dữ liệu trang công khai.
- * @returns Giao diện bài viết Tiptap.
+ * @returns Giao diện bài viết Tiptap đồng nhất với trình soạn thảo.
  */
 export function LegacyTiptapPageRenderer({ page }: { page: PublicPage }) {
-  const theme = page.theme;
-  const style = {
-    "--page-primary": theme.primaryColor ?? "#2563eb",
-    ...(theme.backgroundColor ? { backgroundColor: theme.backgroundColor } : {}),
-    ...(theme.textColor ? { color: theme.textColor } : {}),
-  } as CSSProperties;
-
   return (
-    <main
-      style={style}
-      className={cn(
-        "min-h-svh",
-        theme.mode === "dark" && !theme.backgroundColor && "bg-neutral-950 text-neutral-100",
-        theme.mode === "light" && !theme.backgroundColor && "bg-white text-neutral-900",
-      )}
-    >
+    <main className="bg-background text-foreground min-h-svh">
       {page.coverUrl ? (
         <div className="relative h-48 w-full overflow-hidden sm:h-64">
           <Image
@@ -49,8 +29,8 @@ export function LegacyTiptapPageRenderer({ page }: { page: PublicPage }) {
           />
         </div>
       ) : null}
-      <article className="mx-auto max-w-2xl px-4 py-10">
-        <header className="mb-8 flex flex-col items-center gap-4 text-center">
+      <article className="mx-auto max-w-2xl overflow-x-hidden px-4 py-7 break-words sm:py-10 [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto">
+        <header className="mb-6 flex flex-col items-center gap-4 text-center sm:mb-8">
           {page.avatarUrl ? (
             <div
               className={cn(
@@ -68,14 +48,10 @@ export function LegacyTiptapPageRenderer({ page }: { page: PublicPage }) {
               />
             </div>
           ) : null}
-          <h1 className="text-3xl font-bold">{page.title}</h1>
-          {page.description ? <p className="opacity-80">{page.description}</p> : null}
+          <h1 className="text-2xl font-bold break-words sm:text-3xl">{page.title}</h1>
+          {page.description ? <p className="text-muted-foreground">{page.description}</p> : null}
         </header>
-        <TiptapContent
-          content={page.content}
-          extensions={PAGE_EXTENSIONS}
-          className={BUTTON_RADIUS[theme.buttonStyle ?? "rounded"]}
-        />
+        <TiptapContent content={page.content} extensions={PAGE_EXTENSIONS} />
       </article>
     </main>
   );

@@ -9,6 +9,7 @@ import { EditModeProvider } from "@/shares/components/common/edit-mode-provider"
 import { useEditMode } from "@/shares/hooks/use-edit-mode";
 
 import { UserProfile } from "../../components/user/user-profile";
+import { IAM_PERMISSIONS } from "../../permissions/iam-permission";
 import { USER_PERMISSIONS } from "../../permissions/user-permission";
 
 /**
@@ -30,12 +31,20 @@ export function UserDetailView({
   history?: ReactNode;
 }) {
   const canRead = usePermission(USER_PERMISSIONS.userRead);
-  const canEdit = usePermission(USER_PERMISSIONS.userUpdate);
+  const canUpdate = usePermission(USER_PERMISSIONS.userUpdate);
+  const canAssignRoles = usePermission(IAM_PERMISSIONS.roleAssign);
+  const canEdit = canUpdate || canAssignRoles;
   const isEditing = useEditMode(canEdit);
   if (!canRead) return <ForbiddenView />;
   return (
     <EditModeProvider canEdit={canEdit}>
-      <UserProfile id={id} canEdit={isEditing} extensions={extensions} history={history} />
+      <UserProfile
+        id={id}
+        canEdit={isEditing}
+        canUpdateInfo={canUpdate && isEditing}
+        extensions={extensions}
+        history={history}
+      />
     </EditModeProvider>
   );
 }

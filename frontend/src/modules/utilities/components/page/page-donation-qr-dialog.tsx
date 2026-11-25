@@ -300,7 +300,7 @@ export function PageDonationQrDialog({
                         ? {
                             id: state.customImageId,
                             url: state.customImageUrl ?? "",
-                            name: "Mã QR",
+                            name: t("qrFallback"),
                             contentType: "image/png",
                           }
                         : null
@@ -361,11 +361,9 @@ export function PageDonationQrDialog({
                 />
                 <div className="space-y-0.5">
                   <Label htmlFor="qr-hide-amount" className="cursor-pointer text-xs font-medium">
-                    Ẩn số tiền ủng hộ trên trang công khai
+                    {t("hideAmountLabel")}
                   </Label>
-                  <p className="text-muted-foreground text-[11px]">
-                    Chỉ hiển thị tên người ủng hộ và món quà (ví dụ: Ly cà phê, Gói mì tôm), không để lộ số tiền cụ thể.
-                  </p>
+                  <p className="text-muted-foreground text-[11px]">{t("hideAmountHint")}</p>
                 </div>
               </div>
 
@@ -377,7 +375,7 @@ export function PageDonationQrDialog({
                   onCheckedChange={(checked) => state.setIsDefault(Boolean(checked))}
                 />
                 <Label htmlFor="qr-is-default" className="cursor-pointer text-xs font-medium">
-                  Đặt làm phương thức thanh toán mặc định
+                  {t("isDefaultLabel")}
                 </Label>
               </div>
 
@@ -386,8 +384,11 @@ export function PageDonationQrDialog({
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
                     <Zap className="size-4 text-amber-500" />
-                    <Label htmlFor="qr-webhook-enabled" className="cursor-pointer text-xs font-semibold">
-                      Tự động nhận Webhook SePay cho mã QR này
+                    <Label
+                      htmlFor="qr-webhook-enabled"
+                      className="cursor-pointer text-xs font-semibold"
+                    >
+                      {t("webhookAutoLabel")}
                     </Label>
                   </div>
                   <Checkbox
@@ -400,7 +401,7 @@ export function PageDonationQrDialog({
                 {state.webhookEnabled ? (
                   <div className="space-y-2 pt-1 text-xs">
                     <p className="text-muted-foreground text-[11px]">
-                      Sao chép URL bên dưới và dán vào mục <strong>Webhooks</strong> trên trang quản trị <strong>my.sepay.vn</strong>:
+                      {t("webhookCopyInstruction")}
                     </p>
                     <div className="flex items-center gap-1.5">
                       <Input
@@ -416,20 +417,18 @@ export function PageDonationQrDialog({
                         className="h-8 shrink-0 gap-1 px-2.5 text-xs"
                       >
                         <Copy className="size-3.5" />
-                        <span>Sao chép</span>
+                        <span>{t("copyButton")}</span>
                       </Button>
                     </div>
                     <div className="bg-muted/40 text-muted-foreground space-y-0.5 rounded-md p-2 text-[11px]">
-                      <p className="text-foreground font-medium">💡 Hướng dẫn cấu hình nhanh:</p>
-                      <p>1. Vào <strong>my.sepay.vn</strong> › <strong>Webhooks</strong> › Bấm <strong>Thêm webhook</strong></p>
-                      <p>2. Dán Webhook URL ở trên vào ô URL Webhook</p>
-                      <p>3. Chọn Sự kiện: <strong>Chỉ tiền vào</strong> và chọn tài khoản ngân hàng tương ứng.</p>
+                      <p className="text-foreground font-medium">{t("webhookGuideTitle")}</p>
+                      <p>{t("webhookGuideStep1")}</p>
+                      <p>{t("webhookGuideStep2")}</p>
+                      <p>{t("webhookGuideStep3")}</p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-muted-foreground text-[11px]">
-                    Bật tính năng này để hệ thống tự động ghi nhận giao dịch ủng hộ vào trang khi có người chuyển khoản.
-                  </p>
+                  <p className="text-muted-foreground text-[11px]">{t("webhookDisabledHint")}</p>
                 )}
               </div>
             </div>
@@ -455,7 +454,7 @@ export function PageDonationQrDialog({
                     [{state.type === "BANK_TRANSFER" ? "VietQR" : t("livePreviewBadgeCustom")}]
                   </span>
                   <span className="max-w-[140px] truncate">
-                    {state.title || (state.type === "BANK_TRANSFER" ? "MBBank" : "Ví MoMo")}
+                    {state.title || (state.type === "BANK_TRANSFER" ? "MBBank" : t("momoFallback"))}
                   </span>
                 </span>
               </div>
@@ -485,7 +484,7 @@ export function PageDonationQrDialog({
                   <div className="text-muted-foreground flex flex-col items-center justify-center gap-1.5 p-3 text-center text-xs">
                     <QrCode className="text-muted-foreground/60 size-16 stroke-1" />
                     <span className="text-muted-foreground text-[11px] leading-tight">
-                      {state.type === "CUSTOM" ? "Chưa có ảnh mã QR" : t("vietQrHint")}
+                      {state.type === "CUSTOM" ? t("customQrEmpty") : t("vietQrHint")}
                     </span>
                   </div>
                 )}
@@ -500,7 +499,7 @@ export function PageDonationQrDialog({
                   </span>
                   <span className="text-foreground max-w-[145px] truncate font-semibold">
                     {state.title ||
-                      (state.type === "BANK_TRANSFER" ? state.bankName : "Ví điện tử")}
+                      (state.type === "BANK_TRANSFER" ? state.bankName : t("eWalletFallback"))}
                   </span>
                 </div>
 
@@ -534,7 +533,7 @@ export function PageDonationQrDialog({
                 {/* Hàng 4: Lời nhắn (nếu có) */}
                 {state.note ? (
                   <div className="border-border text-muted-foreground truncate border-t pt-1.5 text-[11px] italic">
-                    Nội dung: &ldquo;
+                    {t("notePrefix")} &ldquo;
                     {state.type === "BANK_TRANSFER" &&
                     !state.note.toLowerCase().startsWith("donate")
                       ? `donate ${state.note}`

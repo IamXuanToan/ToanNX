@@ -4,7 +4,10 @@
 
 import { useQuery } from "@tanstack/react-query";
 
+import { usePermission } from "@/modules/system/hooks/use-permission";
+
 import { novelKeys } from "../constants/query-keys";
+import { GENRE_PERMISSIONS } from "../permissions/genre-permission";
 import { genreService } from "../services/genre.service";
 
 /**
@@ -13,10 +16,12 @@ import { genreService } from "../services/genre.service";
  * @returns Mảng options chứa `{ value: id, label: name }`.
  */
 export function useGenreOptions() {
+  const canRead = usePermission(GENRE_PERMISSIONS.read);
   const query = useQuery({
     queryKey: novelKeys.genre.list({ all: true }),
     queryFn: ({ signal }) => genreService.listAll({}, signal),
     staleTime: 60_000,
+    enabled: canRead,
   });
 
   const options = (query.data ?? []).map((item) => ({

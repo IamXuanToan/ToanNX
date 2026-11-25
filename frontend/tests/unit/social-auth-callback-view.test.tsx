@@ -1,8 +1,13 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { AUTH_WORKSPACE_PATHS, OAUTH_STORAGE_KEYS } from "@/modules/system/constants/auth-storage";
 import { SocialAuthCallbackView } from "@/modules/system/views/auth/social-auth-callback-view";
+
+const mockReplace = vi.fn();
+const mockNextReplace = vi.fn();
+const mockExchange = vi.fn();
 
 // Mock router & navigation
 vi.mock("@/i18n/navigation", () => ({
@@ -13,8 +18,16 @@ vi.mock("@/i18n/navigation", () => ({
   ),
   usePathname: () => "/auth/callback/github",
   useRouter: () => ({
-    replace: vi.fn(),
+    replace: mockReplace,
     push: vi.fn(),
+  }),
+}));
+
+vi.mock("@/modules/system/hooks/use-social-auth-exchange", () => ({
+  useSocialAuthExchange: () => ({
+    exchange: (...args: unknown[]) => mockExchange(...args),
+    sanitizeNext: (next: string | null) =>
+      next && next.startsWith("/") && !next.startsWith("//") ? next : null,
   }),
 }));
 
@@ -23,6 +36,10 @@ let mockSearchParams = new URLSearchParams();
 vi.mock("next/navigation", () => ({
   useParams: () => ({}),
   useSearchParams: () => mockSearchParams,
+  useRouter: () => ({
+    replace: mockNextReplace,
+    push: vi.fn(),
+  }),
 }));
 
 // Mock next-themes
@@ -78,6 +95,32 @@ describe("SocialAuthCallbackView", () => {
   afterEach(() => {
     cleanup();
     sessionStorage.clear();
+    vi.clearAllMocks();
+  });
+
+  it("chuyển người dùng không phải staff về Portal khi bấm Chuyển hướng ngay", async () => {
+    sessionStorage.setItem(OAUTH_STORAGE_KEYS.state, "valid_state");
+    mockSearchParams = new URLSearchParams("code=mock_code&state=valid_state");
+    mockExchange.mockResolvedValue({ user: { isStaff: false, isSuperuser: false } });
+
+    render(<SocialAuthCallbackView provider="github" />);
+
+    const btn = await screen.findByRole("button", { name: "Chuyển hướng ngay" });
+    fireEvent.click(btn);
+    expect(mockReplace).toHaveBeenCalledWith(AUTH_WORKSPACE_PATHS.portal);
+  });
+
+  it("dùng next/navigation replace khi next là đường dẫn có sẵn prefix ngôn ngữ", async () => {
+    sessionStorage.setItem(OAUTH_STORAGE_KEYS.state, "valid_state");
+    sessionStorage.setItem(OAUTH_STORAGE_KEYS.next, "/vi/quan-tri/tien-ich/quyen-gop");
+    mockSearchParams = new URLSearchParams("code=mock_code&state=valid_state");
+    mockExchange.mockResolvedValue({ user: { isStaff: true, isSuperuser: false } });
+
+    render(<SocialAuthCallbackView provider="github" />);
+
+    const btn = await screen.findByRole("button", { name: "Chuyển hướng ngay" });
+    fireEvent.click(btn);
+    expect(mockNextReplace).toHaveBeenCalledWith("/vi/quan-tri/tien-ich/quyen-gop");
   });
 
   it("hiển thị trạng thái lỗi CSRF khi thiếu hoặc lệch oauth_state", async () => {

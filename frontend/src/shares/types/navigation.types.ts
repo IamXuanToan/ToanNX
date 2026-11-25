@@ -18,8 +18,8 @@ export type AdminNavItem = {
   /** Đường dẫn nội bộ (`<M>_ROUTES` của module). */
   href: AdminHref;
   icon: LucideIcon;
-  /** Quyền cần có để thấy mục (bỏ trống = mọi người vào được khung quản trị). */
-  permission?: string;
+  /** Quyền cần có để thấy mục (bỏ trống = mọi người vào được khung quản trị; mảng = có ít nhất một quyền). */
+  permission?: string | readonly string[];
   /**
    * Cụm của mục trong sidebar (khóa dịch nhãn cụm). Các mục liền nhau cùng cụm gom một khối có nhãn nhỏ;
    * thu gọn thì giữa các cụm có vạch ngăn. Module ít mục (≤ 5) có thể bỏ trống (một cụm không nhãn).

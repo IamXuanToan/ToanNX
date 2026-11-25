@@ -42,10 +42,16 @@ const BACKEND_FIELDS: Record<string, keyof QrCodeFormValues> = {
  * Hook quản lý trạng thái form tạo và sửa mã QR trong Client Portal:
  * Xem trước trực tiếp theo thời gian thực (debounce 300ms) và chuyển hướng về danh sách QR cá nhân khi thành công.
  *
- * @param params - Chi tiết mã QR (khi sửa).
+ * @param params - Chi tiết mã QR (khi sửa) và cờ khóa form.
  * @returns State form, ngân hàng, xem trước trực tiếp và hàm submit.
  */
-export function usePortalQrCodeForm({ code }: { code?: QrCodeDetail }) {
+export function usePortalQrCodeForm({
+  code,
+  disabled = false,
+}: {
+  code?: QrCodeDetail;
+  disabled?: boolean;
+}) {
   const t = useTranslations("utilities.qrCodes.validation");
   const tQr = useTranslations("utilities.qrCodes");
   const router = useRouter();
@@ -66,6 +72,7 @@ export function usePortalQrCodeForm({ code }: { code?: QrCodeDetail }) {
   const [previewInput, setPreviewInput] = useState<QrPreviewInput | null>(null);
 
   useEffect(() => {
+    if (disabled) return;
     const timer = setTimeout(() => {
       const parsed = schema.safeParse({ ...watched, name: watched.name || "preview" });
       if (!parsed.success) return;
@@ -73,9 +80,9 @@ export function usePortalQrCodeForm({ code }: { code?: QrCodeDetail }) {
       setPreviewInput({ qrType, content, design, logoId });
     }, PREVIEW_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [watched, schema]);
+  }, [watched, schema, disabled]);
 
-  const preview = useQrPreview(previewInput);
+  const preview = useQrPreview(previewInput, !disabled);
 
   const onSubmit = form.handleSubmit(async (values) => {
     try {

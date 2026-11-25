@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { PermissionGate } from "@/modules/system/components/permission/permission-gate";
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { PageHeader } from "@/shares/components/common/page-header";
+import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { Button } from "@/shares/components/ui/button";
 
 import { UserTable } from "../../components/user/user-table";
@@ -21,9 +22,11 @@ import { SYSTEM_ROUTES } from "../../constants/routes";
  */
 export function UserListView({ roleFilter }: { roleFilter?: ReactNode }) {
   const t = useTranslations("system.account.users");
+  const canRead = usePermission(USER_PERMISSIONS.userRead);
   const canCreate = usePermission(USER_PERMISSIONS.userCreate);
   const canUpdate = usePermission(USER_PERMISSIONS.userUpdate);
   const canDelete = usePermission(USER_PERMISSIONS.userDelete);
+  if (!canRead) return <ForbiddenView />;
   return (
     <div className="space-y-6">
       <PageHeader

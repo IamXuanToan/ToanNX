@@ -2,17 +2,21 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { CalendarRange, Coins, Heart, HeartHandshake, Trophy } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
+import { usePermission } from "@/modules/system/hooks/use-permission";
 import { DonationTable } from "@/modules/utilities/components/donation/donation-table";
 import { donationKeys } from "@/modules/utilities/constants/query-keys";
+import { DONATION_PERMISSIONS } from "@/modules/utilities/permissions/donation-permission";
 import { donationService } from "@/modules/utilities/services/donation.service";
 import { DatePicker } from "@/shares/components/common/date-picker";
 import { Button } from "@/shares/components/ui/button";
 import { Card, CardContent } from "@/shares/components/ui/card";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
 
 import { PortalDonationTrendChart } from "../dashboard/portal-donation-trend-chart";
 import { PortalDonationGiftChart } from "./portal-donation-gift-chart";
@@ -22,8 +26,11 @@ import { PortalDonationGiftChart } from "./portal-donation-gift-chart";
  * Chỉ hiển thị số liệu và giao dịch của riêng 1 người dùng (owner = current user).
  */
 export function PortalDonationDashboard() {
+  const t = useTranslations("portal.donations");
+  const format = useFormatter();
   const searchParams = useSearchParams();
   const { data: currentUser } = useCurrentUser();
+  const canUpdate = usePermission(DONATION_PERMISSIONS.update);
   const userId = currentUser?.user.id;
 
   const urlRange =
@@ -106,7 +113,7 @@ export function PortalDonationDashboard() {
 
   const statsQuery = useQuery({
     queryKey: donationKeys.stats({ ...dateFilter, owner: userId }),
-    queryFn: () => donationService.stats({ ...dateFilter, owner: userId }),
+    queryFn: ({ signal }) => donationService.stats({ ...dateFilter, owner: userId }, signal),
     enabled: Boolean(userId),
   });
 
@@ -119,15 +126,12 @@ export function PortalDonationDashboard() {
         <div className="relative z-10 max-w-2xl space-y-2">
           <div className="border-primary/20 bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold">
             <Heart className="size-3.5 fill-current" />
-            <span>Khu vực Cá nhân</span>
+            <span>{t("badge")}</span>
           </div>
           <h1 className="text-foreground text-2xl font-extrabold tracking-tight sm:text-3xl">
-            Thống kê Quyên góp & Ủng hộ của bạn
+            {t("title")}
           </h1>
-          <p className="text-muted-foreground text-sm">
-            Theo dõi các khoản ủng hộ từ bạn bè, độc giả và người hâm mộ gửi qua mã QR SePay trên
-            các trang Donate của bạn.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
         </div>
       </div>
 
@@ -141,17 +145,17 @@ export function PortalDonationDashboard() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-muted-foreground truncate text-xs font-medium">
-                Tổng tiền nhận được
+                {t("totalReceivedLabel")}
               </p>
               <h3 className="text-foreground text-xl font-extrabold sm:text-2xl">
                 {stats ? (
-                  `${stats.totalAmount.toLocaleString("vi-VN")} ₫`
+                  `${format.number(stats.totalAmount)} ${CURRENCY_SYMBOLS.VND}`
                 ) : (
                   <Skeleton className="h-7 w-24" />
                 )}
               </h3>
               <p className="text-muted-foreground mt-0.5 text-[11px]">
-                {stats?.totalCount ?? 0} lượt ủng hộ từ mọi người
+                {t("totalReceivedHint", { count: stats?.totalCount ?? 0 })}
               </p>
             </div>
           </CardContent>
@@ -165,13 +169,13 @@ export function PortalDonationDashboard() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-muted-foreground truncate text-xs font-medium">
-                Lượt ủng hộ thành công
+                {t("successCountLabel")}
               </p>
               <h3 className="text-foreground text-xl font-extrabold sm:text-2xl">
                 {stats ? stats.totalCount : <Skeleton className="h-7 w-16" />}
               </h3>
               <p className="text-muted-foreground mt-0.5 text-[11px]">
-                {stats?.hiddenCount ?? 0} bình luận bạn đã ẩn
+                {t("hiddenCommentsHint", { count: stats?.hiddenCount ?? 0 })}
               </p>
             </div>
           </CardContent>
@@ -185,7 +189,7 @@ export function PortalDonationDashboard() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-muted-foreground truncate text-xs font-medium">
-                Đang trên Bảng Vinh danh
+                {t("activeLeaderboardLabel")}
               </p>
               <h3 className="text-foreground text-xl font-extrabold sm:text-2xl">
                 {stats ? (
@@ -195,7 +199,7 @@ export function PortalDonationDashboard() {
                 )}
               </h3>
               <p className="text-muted-foreground mt-0.5 text-[11px]">
-                Đồng, Bạc, Vàng đang đếm ngược
+                {t("activeLeaderboardHint")}
               </p>
             </div>
           </CardContent>
@@ -205,7 +209,9 @@ export function PortalDonationDashboard() {
       {/* Bộ lọc khoảng ngày nhanh & tùy chọn */}
       <div className="space-y-3 border-b pb-3">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-muted-foreground mr-1 text-xs font-medium">Khoảng thời gian:</span>
+          <span className="text-muted-foreground mr-1 text-xs font-medium">
+            {t("dateRangeLabel")}
+          </span>
           <Button
             type="button"
             variant={dateRange === "all" ? "default" : "outline"}
@@ -213,7 +219,7 @@ export function PortalDonationDashboard() {
             onClick={() => setDateRange("all")}
             className="h-7 px-2.5 text-xs font-normal"
           >
-            Tất cả
+            {t("rangeAll")}
           </Button>
           <Button
             type="button"
@@ -222,7 +228,7 @@ export function PortalDonationDashboard() {
             onClick={() => setDateRange("today")}
             className="h-7 px-2.5 text-xs font-normal"
           >
-            Hôm nay
+            {t("rangeToday")}
           </Button>
           <Button
             type="button"
@@ -231,7 +237,7 @@ export function PortalDonationDashboard() {
             onClick={() => setDateRange("7d")}
             className="h-7 px-2.5 text-xs font-normal"
           >
-            7 ngày qua
+            {t("range7d")}
           </Button>
           <Button
             type="button"
@@ -240,7 +246,7 @@ export function PortalDonationDashboard() {
             onClick={() => setDateRange("30d")}
             className="h-7 px-2.5 text-xs font-normal"
           >
-            30 ngày qua
+            {t("range30d")}
           </Button>
           <Button
             type="button"
@@ -250,7 +256,7 @@ export function PortalDonationDashboard() {
             className="h-7 gap-1 px-2.5 text-xs font-normal"
           >
             <CalendarRange className="size-3" />
-            <span>Tùy chọn</span>
+            <span>{t("rangeCustom")}</span>
           </Button>
         </div>
 
@@ -258,20 +264,20 @@ export function PortalDonationDashboard() {
         {dateRange === "custom" && (
           <div className="animate-in fade-in-50 flex flex-wrap items-center gap-2 pt-1">
             <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground text-xs">Từ ngày:</span>
+              <span className="text-muted-foreground text-xs">{t("fromDateLabel")}</span>
               <DatePicker
                 value={customFrom}
                 onChange={setCustomFrom}
-                placeholder="Chọn từ ngày"
+                placeholder={t("fromDatePlaceholder")}
                 className="h-8 w-36 text-xs"
               />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground text-xs">Đến ngày:</span>
+              <span className="text-muted-foreground text-xs">{t("toDateLabel")}</span>
               <DatePicker
                 value={customTo}
                 onChange={setCustomTo}
-                placeholder="Chọn đến ngày"
+                placeholder={t("toDatePlaceholder")}
                 className="h-8 w-36 text-xs"
               />
             </div>
@@ -288,7 +294,7 @@ export function PortalDonationDashboard() {
                 }}
                 className="text-muted-foreground hover:text-foreground h-8 px-2 text-xs"
               >
-                Đặt lại
+                {t("resetRange")}
               </Button>
             )}
           </div>
@@ -304,7 +310,7 @@ export function PortalDonationDashboard() {
       {/* Bảng danh sách ủng hộ của cá nhân (hỗ trợ toggle ẩn/hiện comment và đồng bộ khoảng thời gian) */}
       <DonationTable
         ownerId={userId}
-        canUpdate={true}
+        canUpdate={canUpdate}
         dateFrom={dateFilter.date_from}
         dateTo={dateFilter.date_to}
       />

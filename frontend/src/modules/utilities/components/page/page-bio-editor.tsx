@@ -17,17 +17,19 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+import { Link } from "@/i18n/navigation";
 import { SortableList } from "@/shares/components/common/sortable-list";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shares/components/ui/card";
+import { Checkbox } from "@/shares/components/ui/checkbox";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { Textarea } from "@/shares/components/ui/textarea";
+import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import type { BioContentConfig, BioExperience, BioProject, BioSkill } from "../../types/page.types";
 import { BioLinkIcon } from "./bio-link-icon";
@@ -1025,14 +1027,18 @@ export function PageBioEditor({
                     <div className="min-w-0 pr-4">
                       <div className="flex items-center gap-2">
                         <span className="text-foreground text-xs font-semibold">{proj.title}</span>
-                        {proj.url ? (
+                        {toSafeHttpUrl(proj.url, { allowRelative: false }) ? (
                           <Button
                             asChild
                             variant="ghost"
                             size="icon-xs"
                             className="text-primary size-5 p-0"
                           >
-                            <Link href={proj.url} target="_blank" rel="noopener noreferrer">
+                            <Link
+                              href={toSafeHttpUrl(proj.url, { allowRelative: false }) as never}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               <ExternalLink className="size-3" />
                             </Link>
                           </Button>
@@ -1173,19 +1179,23 @@ export function PageBioEditor({
                   />
                 </div>
               </div>
-              <div className="flex items-center justify-between pt-1">
-                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium">
-                  <input
-                    type="checkbox"
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="bio-add-link-highlight"
                     checked={newLink.highlight}
-                    onChange={(e) => setNewLink({ ...newLink, highlight: e.target.checked })}
-                    className="accent-primary rounded"
+                    onCheckedChange={(checked) =>
+                      setNewLink({ ...newLink, highlight: Boolean(checked) })
+                    }
                   />
-                  <span className="flex items-center gap-1">
+                  <Label
+                    htmlFor="bio-add-link-highlight"
+                    className="flex cursor-pointer items-center gap-1 text-xs font-medium"
+                  >
                     <Sparkles className="size-3 text-amber-500" />
                     <span>{t("linkHighlight")}</span>
-                  </span>
-                </label>
+                  </Label>
+                </div>
                 <div className="flex gap-2">
                   <Button
                     type="button"
@@ -1301,21 +1311,23 @@ export function PageBioEditor({
                         />
                       </div>
                     </div>
-                    <div className="flex items-center justify-between pt-1">
-                      <label className="flex cursor-pointer items-center gap-2 text-xs font-medium">
-                        <input
-                          type="checkbox"
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id={`bio-edit-link-highlight-${editingLink.id}`}
                           checked={Boolean(editingLink.highlight)}
-                          onChange={(e) =>
-                            setEditingLink({ ...editingLink, highlight: e.target.checked })
+                          onCheckedChange={(checked) =>
+                            setEditingLink({ ...editingLink, highlight: Boolean(checked) })
                           }
-                          className="accent-primary rounded"
                         />
-                        <span className="flex items-center gap-1">
+                        <Label
+                          htmlFor={`bio-edit-link-highlight-${editingLink.id}`}
+                          className="flex cursor-pointer items-center gap-1 text-xs font-medium"
+                        >
                           <Sparkles className="size-3 text-amber-500" />
                           <span>{t("linkHighlight")}</span>
-                        </span>
-                      </label>
+                        </Label>
+                      </div>
                       <div className="flex gap-2">
                         <Button
                           type="button"
@@ -1367,16 +1379,22 @@ export function PageBioEditor({
                               <span>{t("highlightBadge")}</span>
                             </Badge>
                           ) : null}
-                          <Button
-                            asChild
-                            variant="ghost"
-                            size="icon-xs"
-                            className="text-primary size-5 p-0"
-                          >
-                            <Link href={link.url} target="_blank" rel="noopener noreferrer">
-                              <ExternalLink className="size-3" />
-                            </Link>
-                          </Button>
+                          {toSafeHttpUrl(link.url, { allowRelative: false }) ? (
+                            <Button
+                              asChild
+                              variant="ghost"
+                              size="icon-xs"
+                              className="text-primary size-5 p-0"
+                            >
+                              <Link
+                                href={toSafeHttpUrl(link.url, { allowRelative: false }) as never}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <ExternalLink className="size-3" />
+                              </Link>
+                            </Button>
+                          ) : null}
                         </div>
                         {link.description ? (
                           <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">

@@ -3,6 +3,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { cn } from "cn";
 
@@ -38,6 +39,7 @@ export function SortableItem<T>({
   onMove,
   renderItem,
 }: SortableItemProps<T>) {
+  const t = useTranslations("common.sortable");
   const {
     attributes,
     listeners,
@@ -69,7 +71,7 @@ export function SortableItem<T>({
       "cursor-grab active:cursor-grabbing text-muted-foreground/60 hover:text-foreground touch-none select-none transition-colors p-1 rounded-md hover:bg-muted shrink-0",
       disabled && "cursor-not-allowed opacity-40",
     ),
-    "aria-label": "Kéo thả để sắp xếp thứ tự",
+    "aria-label": t("dragAriaLabel"),
     role: "button",
     tabIndex: 0,
   };
@@ -84,7 +86,7 @@ export function SortableItem<T>({
         dragHandlePosition === "left" ? "mr-2.5" : "ml-2.5",
         disabled && "cursor-not-allowed opacity-40",
       )}
-      aria-label="Kéo thả để sắp xếp thứ tự"
+      aria-label={t("dragAriaLabel")}
       role="button"
       tabIndex={0}
     >

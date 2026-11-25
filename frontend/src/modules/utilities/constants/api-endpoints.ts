@@ -19,8 +19,7 @@ export const UTILITIES_API_ENDPOINTS = {
   donationExport: "/utilities/donations/export",
   donationToggleHidden: (id: string) => `/utilities/donations/${id}/toggle-hidden`,
   donationPublicFeed: (pageId: string) => `/utilities/pages/${pageId}/donations/feed`,
-  donationPublicLeaderboard: (pageId: string) =>
-    `/utilities/pages/${pageId}/donations/leaderboard`,
+  donationPublicLeaderboard: (pageId: string) => `/utilities/pages/${pageId}/donations/leaderboard`,
   /**
    * Nội dung trang công khai `/<segment>/<slug>`.
    *

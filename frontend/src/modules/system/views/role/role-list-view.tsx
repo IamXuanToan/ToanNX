@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { PermissionGate } from "@/modules/system/components/permission/permission-gate";
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { PageHeader } from "@/shares/components/common/page-header";
+import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { Button } from "@/shares/components/ui/button";
 
 import { RoleTable } from "../../components/role/role-table";
@@ -20,9 +21,12 @@ import { SYSTEM_ROUTES } from "../../constants/routes";
  */
 export function RoleListView() {
   const t = useTranslations("system.iam.roles");
+  const canRead = usePermission(IAM_PERMISSIONS.roleRead);
   const canCreate = usePermission(IAM_PERMISSIONS.roleCreate);
   const canUpdate = usePermission(IAM_PERMISSIONS.roleUpdate);
+  const canAssignPermissions = usePermission(IAM_PERMISSIONS.permissionAssign);
   const canDelete = usePermission(IAM_PERMISSIONS.roleDelete);
+  if (!canRead) return <ForbiddenView />;
   return (
     <div className="space-y-6">
       <PageHeader
@@ -38,7 +42,12 @@ export function RoleListView() {
           </PermissionGate>
         }
       />
-      <RoleTable canCreate={canCreate} canUpdate={canUpdate} canDelete={canDelete} />
+      <RoleTable
+        canCreate={canCreate}
+        canUpdate={canUpdate}
+        canAssignPermissions={canAssignPermissions}
+        canDelete={canDelete}
+      />
     </div>
   );
 }

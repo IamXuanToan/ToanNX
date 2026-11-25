@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/shares/components/ui/button";
@@ -14,9 +14,12 @@ import {
 } from "@/shares/components/ui/dialog";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
+import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
+import { formatVndText } from "@/shares/lib/number-format";
 
 import type { DonationSuggestedIconKey } from "../../constants/page-constants";
-import { DonationAmountIcon, DonationAmountIconPicker } from "./donation-amount-icon-picker";
+import { DonationAmountIcon } from "./donation-amount-icon";
+import { DonationAmountIconPicker } from "./donation-amount-icon-picker";
 
 export interface SuggestedAmountItem {
   amount: number;
@@ -45,6 +48,7 @@ export function PageDonationAmountDialog({
   onSave,
 }: PageDonationAmountDialogProps) {
   const t = useTranslations("utilities.customPages.pages.donationEditor");
+  const format = useFormatter();
 
   const [prevItem, setPrevItem] = useState<SuggestedAmountItem | null | undefined>(initialItem);
   const [prevOpen, setPrevOpen] = useState<boolean>(open);
@@ -71,7 +75,7 @@ export function PageDonationAmountDialog({
 
   const handleSave = () => {
     if (!isValid) return;
-    const finalLabel = label.trim() || `${numAmount.toLocaleString("vi-VN")} ₫`;
+    const finalLabel = label.trim() || formatVndText(numAmount);
     onSave({
       amount: numAmount,
       label: finalLabel,
@@ -110,7 +114,7 @@ export function PageDonationAmountDialog({
             />
             {numAmount > 0 ? (
               <p className="text-primary font-mono text-xs font-semibold">
-                = {numAmount.toLocaleString("vi-VN")} ₫
+                = {formatVndText(numAmount)}
               </p>
             ) : (
               <p className="text-muted-foreground text-[11px]">{t("amountLabelHelp")}</p>
@@ -154,10 +158,14 @@ export function PageDonationAmountDialog({
               <div className="min-w-0 flex-1">
                 <p className="text-foreground truncate text-xs font-semibold">
                   {label.trim() ||
-                    (numAmount > 0 ? `${numAmount.toLocaleString("vi-VN")} ₫` : "1 ly cà phê")}
+                    (numAmount > 0
+                      ? `${format.number(numAmount)} ${CURRENCY_SYMBOLS.VND}`
+                      : t("defaultCoffeeAmountLabel"))}
                 </p>
                 <p className="text-primary font-mono text-xs font-bold">
-                  {numAmount > 0 ? `${numAmount.toLocaleString("vi-VN")} ₫` : "50.000 ₫"}
+                  {numAmount > 0
+                    ? `${format.number(numAmount)} ${CURRENCY_SYMBOLS.VND}`
+                    : `${format.number(50000)} ${CURRENCY_SYMBOLS.VND}`}
                 </p>
               </div>
             </div>

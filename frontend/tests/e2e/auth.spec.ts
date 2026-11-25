@@ -12,7 +12,7 @@ test.describe("Xác thực", () => {
 
   test("sai mật khẩu hiển thị lỗi, không rời trang", async ({ page }) => {
     await page.goto("/vi/dang-nhap");
-    await page.getByLabel("Email hoặc tên người dùng").fill(E2E_ADMIN.email);
+    await page.getByLabel("Email hoặc tên đăng nhập").fill(E2E_ADMIN.email);
     await page.getByLabel("Mật khẩu", { exact: true }).fill("wrong-password-123");
     await page.getByRole("button", { name: "Đăng nhập" }).click();
     await expect(page.getByTestId("login-form").getByRole("alert")).toContainText(

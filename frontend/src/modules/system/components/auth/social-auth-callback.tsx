@@ -7,6 +7,7 @@ import { AlertCircle, CheckCircle2, ChevronRight, Loader2, ShieldAlert } from "l
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/shares/components/ui/button";
 
+import { SYSTEM_ROUTES } from "../../constants/routes";
 import { AuthShell } from "./auth-shell";
 import { useSocialAuthCallback } from "./hooks/use-social-auth-callback";
 
@@ -31,7 +32,7 @@ export function SocialAuthCallback({ provider }: { provider: string }) {
   } = useSocialAuthCallback(provider);
 
   return (
-    <AuthShell homeHref="/login" title={shellTitle} description={shellDescription}>
+    <AuthShell homeHref={SYSTEM_ROUTES.login} title={shellTitle} description={shellDescription}>
       {/* 1. Trạng thái Đang xử lý xác thực */}
       {status === "processing" ? (
         <div className="flex flex-col items-center justify-center space-y-5 py-4 text-center">
@@ -133,7 +134,7 @@ export function SocialAuthCallback({ provider }: { provider: string }) {
               variant="default"
               className="h-11 w-full rounded-xl font-medium shadow-xs"
             >
-              <Link href="/login">
+              <Link href={SYSTEM_ROUTES.login}>
                 {isNotLinked ? t("callbackLoginWithPassword") : t("callbackBackToLogin")}
               </Link>
             </Button>

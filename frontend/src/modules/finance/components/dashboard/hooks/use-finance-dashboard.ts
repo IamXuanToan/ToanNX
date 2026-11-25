@@ -4,13 +4,15 @@ import { useFormatter, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+import { useOwnerFilterOptions } from "../../../hooks/use-owner-filter-options";
 import { useReportMonthly } from "../../../hooks/use-report-monthly";
 import { useReportSummary } from "../../../hooks/use-report-summary";
 import { buildMonthSeries, buildPlatformSeries, changePercent } from "../../../lib/report-series";
+import { INCOME_PERMISSIONS } from "../../../permissions/income-permission";
 
 /**
- * State dashboard: năm chọn, chuỗi 12 tháng (năm chọn + năm trước), theo nền tảng, tỷ trọng nền tảng/tiền tệ,
- * KPI so với cùng kỳ năm trước.
+ * State dashboard: năm chọn, người dùng (nếu có quyền), chuỗi 12 tháng (năm chọn + năm trước),
+ * theo nền tảng, tỷ trọng nền tảng/tiền tệ, KPI so với cùng kỳ năm trước.
  *
  * @returns Truy vấn và dữ liệu đã dựng.
  */
@@ -21,22 +23,42 @@ export function useFinanceDashboard() {
   const urlYear = Number.parseInt(searchParams.get("year") ?? "", 10);
   const currentYear = new Date().getFullYear();
   const initialYear = Number.isFinite(urlYear) && urlYear > 2000 ? urlYear : currentYear;
+  const initialOwner = (searchParams.get("owner") ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
 
   const [year, setYearState] = useState(initialYear);
+  const [owner, setOwnerState] = useState<string[]>(initialOwner);
+  const { canFilterOwner, ownerOptions } = useOwnerFilterOptions(INCOME_PERMISSIONS.manageAll);
 
-  const setYear = (nextYear: number) => {
-    setYearState(nextYear);
+  const replaceUrl = (nextYear: number, nextOwner: string[]) => {
     const params = new URLSearchParams(window.location.search);
     if (nextYear === currentYear) {
       params.delete("year");
     } else {
       params.set("year", String(nextYear));
     }
+    if (nextOwner.length) {
+      params.set("owner", nextOwner.join(","));
+    } else {
+      params.delete("owner");
+    }
     const query = params.toString();
     window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
   };
-  const monthly = useReportMonthly(year);
-  const summary = useReportSummary(year, null);
+
+  const setYear = (nextYear: number) => {
+    setYearState(nextYear);
+    replaceUrl(nextYear, owner);
+  };
+  const setOwner = (nextOwner: string[]) => {
+    setOwnerState(nextOwner);
+    replaceUrl(year, nextOwner);
+  };
+  const ownerQuery = owner.length ? owner.join(",") : null;
+  const monthly = useReportMonthly(year, ownerQuery);
+  const summary = useReportSummary(year, null, ownerQuery);
   const monthLabel = (month: number) =>
     format.dateTime(new Date(year, month - 1, 1), { month: "short" });
   const points = monthly.data ? buildMonthSeries(monthly.data, monthLabel) : [];
@@ -70,6 +92,10 @@ export function useFinanceDashboard() {
   return {
     year,
     setYear,
+    owner,
+    setOwner,
+    canFilterOwner,
+    ownerOptions,
     years: Array.from({ length: 6 }, (_, index) => new Date().getFullYear() - index),
     monthly,
     points,

@@ -14,7 +14,7 @@ import type { PublicSettings } from "../types/setting.types";
 export function usePublicSettings() {
   return useQuery<PublicSettings>({
     queryKey: settingKeys.public(),
-    queryFn: () => settingService.getPublicSettings(),
+    queryFn: ({ signal }) => settingService.getPublicSettings(signal),
     staleTime: 5 * 60 * 1000,
   });
 }

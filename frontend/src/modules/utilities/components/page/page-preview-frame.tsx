@@ -1,14 +1,15 @@
 "use client";
 
 import { ExternalLink, Laptop, Maximize2, Smartphone, Tablet, X } from "lucide-react";
-import NextLink from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { cn } from "cn";
 
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/shares/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/shares/components/ui/dialog";
 
+import { PAGE_TYPE } from "../../constants/page-constants";
 import type { PublicPage as PublicPageType } from "../../types/page.types";
 import { PublicPage } from "./public-page";
 
@@ -50,7 +51,8 @@ export function PagePreviewFrame({
   };
 
   const isDark =
-    themeMode === "dark" || (themeMode !== "light" && bgRaw ? !isLightHex(bgRaw) : false);
+    page.pageType !== PAGE_TYPE.LEGACY_PAGE &&
+    (themeMode === "dark" || (themeMode !== "light" && bgRaw ? !isLightHex(bgRaw) : false));
 
   return (
     <>
@@ -128,9 +130,9 @@ export function PagePreviewFrame({
                 className="size-7 rounded-lg"
                 title={t("view")}
               >
-                <NextLink href={page.canonicalUrl} target="_blank" rel="noreferrer">
+                <Link href={page.canonicalUrl as never} target="_blank" rel="noreferrer">
                   <ExternalLink className="size-3.5" />
-                </NextLink>
+                </Link>
               </Button>
             ) : null}
           </div>
@@ -280,9 +282,9 @@ export function PagePreviewFrame({
                   className="size-7 rounded-lg"
                   title={t("view")}
                 >
-                  <NextLink href={page.canonicalUrl} target="_blank" rel="noreferrer">
+                  <Link href={page.canonicalUrl as never} target="_blank" rel="noreferrer">
                     <ExternalLink className="size-3.5" />
-                  </NextLink>
+                  </Link>
                 </Button>
               ) : null}
 

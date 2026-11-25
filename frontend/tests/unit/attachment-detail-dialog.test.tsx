@@ -24,6 +24,11 @@ vi.mock("@/modules/system/hooks/use-update-attachment", () => ({
 
 vi.mock("@/i18n/navigation", () => ({
   getPathname: ({ href }: { href: { params: { id: string } } }) => `/vi/tep/${href.params.id}`,
+  Link: ({ href, children, ...props }: { href: unknown; children: React.ReactNode }) => (
+    <a href={typeof href === "string" ? href : "#"} {...props}>
+      {children}
+    </a>
+  ),
 }));
 
 vi.mock("next-intl", () => ({

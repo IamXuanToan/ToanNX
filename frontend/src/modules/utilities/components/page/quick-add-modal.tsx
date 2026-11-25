@@ -30,38 +30,44 @@ import {
 } from "@/shares/components/ui/dialog";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
+import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
+import { formatDisplayNumber } from "@/shares/lib/number-format";
 
 import type { AffiliateCategory, AffiliateItem } from "../../types/page.types";
 import { useQuickAddModal } from "./hooks/use-quick-add-modal";
 
-const PLATFORM_OPTIONS = [
-  { value: "shopee", label: "Shopee" },
-  { value: "lazada", label: "Lazada" },
-  { value: "tiktok", label: "TikTok Shop" },
-  { value: "tiki", label: "Tiki" },
-  { value: "amazon", label: "Amazon" },
-  { value: "custom", label: "Khác / Trực tiếp" },
-];
+const PLATFORM_VALUES = ["shopee", "lazada", "tiktok", "tiki", "amazon", "custom"] as const;
 
-export const BADGE_PRESETS = [
-  { label: "Khuyên dùng", defaultBg: "#EF4444", defaultText: "#FFFFFF" },
-  { label: "Nổi bật", defaultBg: "#F97316", defaultText: "#FFFFFF" },
-  { label: "Bán chạy", defaultBg: "#10B981", defaultText: "#FFFFFF" },
-  { label: "Sale", defaultBg: "#EF4444", defaultText: "#FFFFFF" },
-  { label: "Hot Deal", defaultBg: "#DC2626", defaultText: "#FFFFFF" },
-  { label: "Mới nhất", defaultBg: "#3B82F6", defaultText: "#FFFFFF" },
-  { label: "Giảm 50%", defaultBg: "#8B5CF6", defaultText: "#FFFFFF" },
-];
+const STATIC_PLATFORM_LABELS: Record<
+  Exclude<(typeof PLATFORM_VALUES)[number], "custom">,
+  string
+> = {
+  shopee: "Shopee",
+  lazada: "Lazada",
+  tiktok: "TikTok Shop",
+  tiki: "Tiki",
+  amazon: "Amazon",
+};
+
+const BADGE_PRESETS = [
+  { key: "recommended", defaultBg: "#EF4444", defaultText: "#FFFFFF" },
+  { key: "featured", defaultBg: "#F97316", defaultText: "#FFFFFF" },
+  { key: "bestSeller", defaultBg: "#10B981", defaultText: "#FFFFFF" },
+  { key: "sale", defaultBg: "#EF4444", defaultText: "#FFFFFF" },
+  { key: "hotDeal", defaultBg: "#DC2626", defaultText: "#FFFFFF" },
+  { key: "newest", defaultBg: "#3B82F6", defaultText: "#FFFFFF" },
+  { key: "discount50", defaultBg: "#8B5CF6", defaultText: "#FFFFFF" },
+] as const;
 
 const BADGE_COLOR_PRESETS = [
-  { label: "Đỏ", bg: "#EF4444", text: "#FFFFFF" },
-  { label: "Cam", bg: "#F97316", text: "#FFFFFF" },
-  { label: "Xanh lá", bg: "#10B981", text: "#FFFFFF" },
-  { label: "Xanh dương", bg: "#3B82F6", text: "#FFFFFF" },
-  { label: "Tím", bg: "#8B5CF6", text: "#FFFFFF" },
-  { label: "Đen", bg: "#18181B", text: "#FFFFFF" },
-  { label: "Sáng", bg: "#F1F5F9", text: "#0F172A" },
-];
+  { key: "red", bg: "#EF4444", text: "#FFFFFF" },
+  { key: "orange", bg: "#F97316", text: "#FFFFFF" },
+  { key: "green", bg: "#10B981", text: "#FFFFFF" },
+  { key: "blue", bg: "#3B82F6", text: "#FFFFFF" },
+  { key: "purple", bg: "#8B5CF6", text: "#FFFFFF" },
+  { key: "black", bg: "#18181B", text: "#FFFFFF" },
+  { key: "light", bg: "#F1F5F9", text: "#0F172A" },
+] as const;
 
 /**
  * Modal thêm mới và chỉnh sửa sản phẩm Affiliate to rộng, hỗ trợ lấy thông tin tự động từ URL,
@@ -296,7 +302,7 @@ export function QuickAddModal({
                   {imageUrl ? (
                     <Image
                       src={imageUrl}
-                      alt={title || "Xem trước ảnh sản phẩm"}
+                      alt={title || t("imagePreviewAlt")}
                       fill
                       unoptimized
                       className="object-cover"
@@ -368,15 +374,13 @@ export function QuickAddModal({
                       <Input
                         id="quick-add-price"
                         inputMode="numeric"
-                        value={
-                          price ? Number(price.replace(/\D/g, "")).toLocaleString("vi-VN") : ""
-                        }
+                        value={price ? formatDisplayNumber(Number(price.replace(/\D/g, ""))) : ""}
                         onChange={(e) => setPrice(e.target.value.replace(/\D/g, ""))}
                         placeholder={t("pricePlaceholder")}
                         className="h-9 pr-8 text-xs font-medium"
                       />
                       <span className="text-muted-foreground pointer-events-none absolute right-2.5 text-xs font-semibold">
-                        ₫
+                        {CURRENCY_SYMBOLS.VND}
                       </span>
                     </div>
                   </div>
@@ -391,7 +395,7 @@ export function QuickAddModal({
                         inputMode="numeric"
                         value={
                           originalPrice
-                            ? Number(originalPrice.replace(/\D/g, "")).toLocaleString("vi-VN")
+                            ? formatDisplayNumber(Number(originalPrice.replace(/\D/g, "")))
                             : ""
                         }
                         onChange={(e) => setOriginalPrice(e.target.value.replace(/\D/g, ""))}
@@ -399,7 +403,7 @@ export function QuickAddModal({
                         className="h-9 pr-8 text-xs font-medium"
                       />
                       <span className="text-muted-foreground pointer-events-none absolute right-2.5 text-xs font-semibold">
-                        ₫
+                        {CURRENCY_SYMBOLS.VND}
                       </span>
                     </div>
                   </div>
@@ -432,7 +436,10 @@ export function QuickAddModal({
                   id="quick-add-platform"
                   value={platform}
                   onValueChange={(val) => setPlatform(val as AffiliateItem["platform"])}
-                  options={PLATFORM_OPTIONS}
+                  options={PLATFORM_VALUES.map((value) => ({
+                    value,
+                    label: value === "custom" ? t("platformCustom") : STATIC_PLATFORM_LABELS[value],
+                  }))}
                 />
               </div>
             </div>
@@ -477,10 +484,11 @@ export function QuickAddModal({
                 </Button>
 
                 {BADGE_PRESETS.map((preset) => {
-                  const isSelected = badgeText === preset.label;
+                  const presetLabel = t(`badgePresets.${preset.key}`);
+                  const isSelected = badgeText === presetLabel;
                   return (
                     <Button
-                      key={preset.label}
+                      key={preset.key}
                       type="button"
                       size="sm"
                       variant={isSelected ? "default" : "outline"}
@@ -488,7 +496,7 @@ export function QuickAddModal({
                         if (isSelected) {
                           setBadgeText("");
                         } else {
-                          setBadgeText(preset.label);
+                          setBadgeText(presetLabel);
                           if (!badgeText) {
                             setBadgeBgColor(preset.defaultBg);
                             setBadgeTextColor(preset.defaultText);
@@ -509,7 +517,7 @@ export function QuickAddModal({
                       }
                     >
                       {isSelected ? <Check className="size-3" /> : null}
-                      <span>{preset.label}</span>
+                      <span>{presetLabel}</span>
                     </Button>
                   );
                 })}
@@ -529,15 +537,17 @@ export function QuickAddModal({
                           badgeTextColor.toLowerCase() === p.text.toLowerCase();
 
                         return (
-                          <button
-                            key={p.label}
+                          <Button
+                            key={p.key}
                             type="button"
+                            size="sm"
+                            variant="outline"
                             onClick={() => {
                               setBadgeBgColor(p.bg);
                               setBadgeTextColor(p.text);
                             }}
                             className={cn(
-                              "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-all",
+                              "h-7 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all",
                               isSelected
                                 ? "ring-primary ring-2 ring-offset-1"
                                 : "opacity-85 hover:opacity-100",
@@ -548,8 +558,8 @@ export function QuickAddModal({
                               borderColor: p.bg,
                             }}
                           >
-                            <span>{p.label}</span>
-                          </button>
+                            <span>{t(`colorPresets.${p.key}`)}</span>
+                          </Button>
                         );
                       })}
                     </div>

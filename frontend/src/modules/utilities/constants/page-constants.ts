@@ -45,18 +45,24 @@ export function isDemoTemplateType(value: string): value is DemoTemplateTypeValu
  * Danh sách các icon gợi ý tiêu chuẩn cho mốc ủng hộ tài chính (Donation Suggested Amounts).
  */
 export const DONATION_SUGGESTED_ICONS = [
-  { value: "coffee", label: "Cà phê / Trà" },
-  { value: "utensils", label: "Bữa ăn / Ẩm thực" },
-  { value: "heart", label: "Trái tim / Yêu thích" },
-  { value: "sparkles", label: "Tỏa sáng / Đặc biệt" },
-  { value: "beer", label: "Cốc bia / Giải khát" },
-  { value: "gift", label: "Hộp quà / Quà tặng" },
-  { value: "book", label: "Sách / Tri thức" },
-  { value: "server", label: "Máy chủ / Hạ tầng" },
-  { value: "zap", label: "Tia chớp / Năng lượng" },
-  { value: "smile", label: "Nụ cười / Vui vẻ" },
-  { value: "thumbs-up", label: "Ủng hộ / Like" },
-  { value: "award", label: "Huy hiệu / Cúp" },
+  { value: "coffee" },
+  { value: "utensils" },
+  { value: "heart" },
+  { value: "sparkles" },
+  { value: "beer" },
+  { value: "gift" },
+  { value: "book" },
+  { value: "server" },
+  { value: "zap" },
+  { value: "smile" },
+  { value: "thumbs-up" },
+  { value: "award" },
 ] as const;
 
 export type DonationSuggestedIconKey = (typeof DONATION_SUGGESTED_ICONS)[number]["value"];
+
+/** Tiền tố khóa lưu bản nháp tạm trang tùy chỉnh trong LocalStorage. */
+export const CUSTOM_PAGE_DRAFT_STORAGE_PREFIX = "custom-page-draft:";
+
+/** Mã lỗi xung đột phiên bản chỉnh sửa trang tùy chỉnh từ backend. */
+export const PAGE_VERSION_CONFLICT_CODE = "UTILITIES_PAGE_VERSION_CONFLICT";

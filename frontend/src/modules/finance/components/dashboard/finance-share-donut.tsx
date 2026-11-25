@@ -36,7 +36,7 @@ export function FinanceShareDonut({
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={config} className="mx-auto aspect-square h-64">
+        <ChartContainer config={config} className="h-72 w-full">
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent nameKey="key" hideLabel />} />
             <Pie

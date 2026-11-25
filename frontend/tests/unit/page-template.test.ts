@@ -18,7 +18,7 @@ import {
   DEMO_TEMPLATE_TYPES,
   isDemoTemplateType,
 } from "@/modules/utilities/constants/page-constants";
-import { THEME_PRESETS } from "@/modules/utilities/components/page/page-theme-editor";
+import { THEME_PRESETS } from "@/modules/utilities/constants/page-theme-presets";
 import {
   extractCleanDomain,
   getLinkPlatformIcon,

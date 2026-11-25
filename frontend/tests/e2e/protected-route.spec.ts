@@ -8,7 +8,7 @@ test.describe("Bảo vệ route quản trị", () => {
   }) => {
     await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     await expect(page).toHaveURL(/\/vi\/dang-nhap\?next=%2Fvi%2Fquan-tri%2Fnguoi-dung/);
-    await page.getByLabel("Email hoặc tên người dùng").fill(E2E_ADMIN.email);
+    await page.getByLabel("Email hoặc tên đăng nhập").fill(E2E_ADMIN.email);
     await page.getByLabel("Mật khẩu", { exact: true }).fill(E2E_ADMIN.password);
     await page.getByRole("button", { name: "Đăng nhập" }).click();
     await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/nguoi-dung$/);

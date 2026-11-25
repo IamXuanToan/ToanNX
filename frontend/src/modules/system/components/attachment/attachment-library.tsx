@@ -49,7 +49,7 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
   const tChoice = useTranslations("common.choice");
   const { viewMode, setViewMode } = useAttachmentViewMode();
   const state = useAttachmentLibrary(capabilities);
-  const usersQuery = useAdminSessionUsers();
+  const usersQuery = useAdminSessionUsers(capabilities.canManageAll);
   const {
     table,
     query,
@@ -259,7 +259,7 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
                 handleInspect(file);
                 state.setDetailOpen(true);
               }}
-              onEdit={(file) => setEditingFile(file)}
+              onEdit={capabilities.canMove ? (file) => setEditingFile(file) : undefined}
               disabled={state.locked}
             />
           </div>

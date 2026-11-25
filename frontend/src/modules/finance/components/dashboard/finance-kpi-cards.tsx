@@ -20,16 +20,16 @@ export function FinanceKpiCards({
 }) {
   const t = useTranslations("finance.dashboard.kpi");
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
       {kpis.map((kpi) => (
         <Card key={kpi.key}>
           <CardHeader className="pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-medium">
+            <CardTitle className="text-muted-foreground truncate text-sm font-medium">
               {t(kpi.key)}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold tabular-nums">
+          <CardContent className="min-w-0">
+            <p className="text-xl font-bold tracking-tight whitespace-nowrap tabular-nums xl:text-2xl">
               {kpi.key === "count" ? formatDisplayNumber(kpi.value) : formatDisplayMoney(kpi.value)}
             </p>
             <p

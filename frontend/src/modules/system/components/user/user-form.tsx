@@ -47,19 +47,22 @@ export function UserForm({
   user,
   copyFrom,
   canEdit = true,
+  canUpdateInfo = canEdit,
   extensions,
 }: {
   user?: User;
   copyFrom?: string;
   canEdit?: boolean;
+  canUpdateInfo?: boolean;
   extensions?: ReactNode;
 }) {
   const t = useTranslations("system.account.users");
   const tCommon = useTranslations("common.actions");
-  const state = useUserForm({ user, copyFrom });
+  const state = useUserForm({ user, copyFrom, canUpdateInfo });
   const { form, isSubmitting } = state;
   const { errors } = form.formState;
   const disabled = !canEdit || isSubmitting;
+  const infoDisabled = !canUpdateInfo || isSubmitting;
   const flags = useWatch({ control: form.control, name: FLAGS });
   const sendInvitation = useWatch({ control: form.control, name: "sendInvitation" });
   const [fullName, email, username] = useWatch({
@@ -109,7 +112,7 @@ export function UserForm({
                 onToggle={(flag, checked) =>
                   form.setValue(flag as (typeof FLAGS)[number], checked, { shouldDirty: true })
                 }
-                disabled={disabled}
+                disabled={infoDisabled}
                 aria-label={t("sections.access")}
               />
             </FormSection>
@@ -127,7 +130,7 @@ export function UserForm({
                 <AttachmentImageUploadView
                   value={field.value}
                   onChange={field.onChange}
-                  disabled={disabled}
+                  disabled={infoDisabled}
                   aria-label={t("fields.avatar")}
                   fallback={
                     initials ? (
@@ -166,7 +169,7 @@ export function UserForm({
                     id="send-invitation-switch"
                     checked={Boolean(field.value)}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={infoDisabled}
                   />
                 )}
               />
@@ -174,7 +177,7 @@ export function UserForm({
           ) : null}
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField control={form.control} name="email" label={t("fields.email")} required>
-              {(field) => <EmailInput {...field} autoFocus={!user} disabled={disabled} />}
+              {(field) => <EmailInput {...field} autoFocus={!user} disabled={infoDisabled} />}
             </FormField>
             <FormField
               control={form.control}
@@ -183,7 +186,7 @@ export function UserForm({
               required={!user && !sendInvitation}
             >
               {(field) => (
-                <Input {...field} autoComplete="off" maxLength={150} disabled={disabled} />
+                <Input {...field} autoComplete="off" maxLength={150} disabled={infoDisabled} />
               )}
             </FormField>
             <div className="sm:col-span-2">
@@ -193,7 +196,7 @@ export function UserForm({
                 label={t("fields.fullName")}
                 required
               >
-                {(field) => <Input {...field} autoComplete="name" disabled={disabled} />}
+                {(field) => <Input {...field} autoComplete="name" disabled={infoDisabled} />}
               </FormField>
             </div>
           </div>
@@ -216,7 +219,7 @@ export function UserForm({
               description={user ? t("fields.newPasswordHint") : t("fields.passwordHint")}
             >
               {(field) => (
-                <PasswordInput {...field} autoComplete="new-password" disabled={disabled} />
+                <PasswordInput {...field} autoComplete="new-password" disabled={infoDisabled} />
               )}
             </FormField>
           )}

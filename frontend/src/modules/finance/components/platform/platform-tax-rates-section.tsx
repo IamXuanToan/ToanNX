@@ -3,6 +3,7 @@
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 
+import { usePermission } from "@/modules/system/hooks/use-permission";
 import { DatePicker } from "@/shares/components/common/date-picker";
 import { FormSection } from "@/shares/components/common/form-section";
 import { NumberInput } from "@/shares/components/common/number-input";
@@ -14,6 +15,7 @@ import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
+import { INCOME_PERMISSIONS } from "../../permissions/income-permission";
 import { usePlatformTaxRatesSection } from "./hooks/use-platform-tax-rates-section";
 
 /**
@@ -33,6 +35,7 @@ export function PlatformTaxRatesSection({
   const t = useTranslations("finance.taxRates");
   const tCommon = useTranslations("common.actions");
   const format = useFormatter();
+  const canUpdateIncomes = usePermission(INCOME_PERMISSIONS.update);
   const state = usePlatformTaxRatesSection(platformId);
   const { draft } = state;
   return (
@@ -47,7 +50,7 @@ export function PlatformTaxRatesSection({
         ) : null
       }
     >
-      {state.affected.length ? (
+      {state.affected.length && canUpdateIncomes ? (
         <Alert>
           <AlertDescription className="flex flex-wrap items-center justify-between gap-3">
             <span>{t("affected", { count: state.affected.length })}</span>

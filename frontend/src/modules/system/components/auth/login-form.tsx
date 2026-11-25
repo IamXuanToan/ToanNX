@@ -14,6 +14,7 @@ import { Button } from "@/shares/components/ui/button";
 import { FieldGroup } from "@/shares/components/ui/field";
 import { Input } from "@/shares/components/ui/input";
 
+import { SYSTEM_ROUTES } from "../../constants/routes";
 import { usePublicSettings } from "../../hooks/use-public-settings";
 import { useLoginForm } from "./hooks/use-login-form";
 
@@ -140,7 +141,7 @@ export function LoginForm({ redirectTo }: { redirectTo: AppPathname }) {
           <div className="relative">
             <div className="absolute top-0 right-0 z-10">
               <Link
-                href="/forgot-password"
+                href={SYSTEM_ROUTES.forgotPassword}
                 className="text-primary hover:text-primary-hover text-xs font-medium transition-colors hover:underline"
               >
                 {t("forgotPasswordLink")}

@@ -2,13 +2,21 @@
 
 import Image from "next/image";
 import { Check, Copy, CreditCard, QrCode } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { type CSSProperties, useMemo } from "react";
 import { cn } from "cn";
 
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
+import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
 import { normalizeMediaUrl } from "@/shares/lib/asset-paths";
+import {
+  APP_NUMBER_LOCALE,
+  formatDisplayNumber,
+  formatVndText,
+  getNumberLocale,
+} from "@/shares/lib/number-format";
+import { toSafeImageSrc } from "@/shares/lib/safe-url";
 
 import type { DonationQrItem, PublicPage } from "../../types/page.types";
 import { useDonationPageRenderer } from "./hooks/use-donation-page-renderer";
@@ -19,8 +27,11 @@ import { PresetAmountIcon } from "./preset-amount-icon";
  * Phân tích và tách biệt nhãn mô tả và số tiền hiển thị cho các mốc ủng hộ gợi ý.
  * Chống tràn viền, loại bỏ lặp số tiền và tối ưu giao diện 2 dòng cân đối.
  */
-export function parsePresetAmount(opt: { amount: number; label: string }) {
-  const formattedAmount = `${opt.amount.toLocaleString("vi-VN")} ₫`;
+export function parsePresetAmount(
+  opt: { amount: number; label: string },
+  numberLocale = APP_NUMBER_LOCALE,
+) {
+  const formattedAmount = formatVndText(opt.amount, numberLocale);
   if (!opt.label || opt.label.trim() === "" || opt.label.trim() === formattedAmount) {
     return { title: null, amount: formattedAmount };
   }
@@ -51,21 +62,25 @@ export function parsePresetAmount(opt: { amount: number; label: string }) {
  */
 export function DonationPageRenderer({ page }: { page: PublicPage }) {
   const t = useTranslations("utilities.customPages.donation");
+  const locale = useLocale();
+  const numberLocale = getNumberLocale(locale);
   const config = page.contentConfig as unknown as Record<string, unknown> | undefined;
 
   const creatorConfig = (config?.creator ?? {}) as Record<string, unknown>;
-  const avatarUrl =
+  const avatarUrl = toSafeImageSrc(
     page.avatarUrl ||
-    (config?.avatarUrl as string) ||
-    (config?.avatar_url as string) ||
-    (creatorConfig.avatarUrl as string) ||
-    (creatorConfig.avatar_url as string);
-  const coverUrl =
+      (config?.avatarUrl as string) ||
+      (config?.avatar_url as string) ||
+      (creatorConfig.avatarUrl as string) ||
+      (creatorConfig.avatar_url as string),
+  );
+  const coverUrl = toSafeImageSrc(
     page.coverUrl ||
-    (config?.coverUrl as string) ||
-    (config?.cover_url as string) ||
-    (creatorConfig.coverUrl as string) ||
-    (creatorConfig.cover_url as string);
+      (config?.coverUrl as string) ||
+      (config?.cover_url as string) ||
+      (creatorConfig.coverUrl as string) ||
+      (creatorConfig.cover_url as string),
+  );
 
   const fallbackBank = useMemo(() => {
     const rawBank = (config?.bankAccount ?? config?.bank_account ?? {}) as Record<string, unknown>;
@@ -88,7 +103,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
         return {
           id: String(q.id ?? `qr-${idx}`),
           type: (q.type as DonationQrItem["type"]) ?? "BANK_TRANSFER",
-          title: String(q.title ?? q.bankName ?? q.bank_name ?? "Tài khoản"),
+          title: String(q.title ?? q.bankName ?? q.bank_name ?? t("accountFallback")),
           bankBin: q.bankBin ? String(q.bankBin) : undefined,
           bankName: q.bankName ? String(q.bankName) : undefined,
           accountNumber: String(q.accountNumber ?? q.account_number ?? ""),
@@ -136,15 +151,15 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
         isDefault: true,
       },
     ];
-  }, [rawQrCodes, fallbackBank]);
+  }, [rawQrCodes, fallbackBank, t]);
 
   const rawSuggested = config?.suggestedAmounts ?? config?.suggested_amounts;
   const suggestedAmounts: { amount: number; label: string; icon?: string }[] = useMemo(() => {
     if (!rawSuggested || !Array.isArray(rawSuggested) || rawSuggested.length === 0) {
       return [
-        { amount: 30000, label: "30.000 ₫", icon: "coffee" },
-        { amount: 50000, label: "50.000 ₫", icon: "coffee" },
-        { amount: 100000, label: "100.000 ₫", icon: "utensils" },
+        { amount: 30000, label: formatVndText(30000, numberLocale), icon: "coffee" },
+        { amount: 50000, label: formatVndText(50000, numberLocale), icon: "coffee" },
+        { amount: 100000, label: formatVndText(100000, numberLocale), icon: "utensils" },
       ];
     }
     return rawSuggested
@@ -152,7 +167,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
         if (typeof item === "number") {
           return {
             amount: item,
-            label: `${item.toLocaleString("vi-VN")} ₫`,
+            label: formatVndText(item, numberLocale),
           };
         }
         if (typeof item === "string") {
@@ -161,7 +176,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
             ? null
             : {
                 amount: num,
-                label: `${num.toLocaleString("vi-VN")} ₫`,
+                label: formatVndText(num, numberLocale),
               };
         }
         if (typeof item === "object" && item !== null) {
@@ -169,7 +184,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
           const num = Number(rawAmount);
           if (isNaN(num)) return null;
           const rawLabel = (item as Record<string, unknown>).label;
-          const label = String(rawLabel ?? `${num.toLocaleString("vi-VN")} ₫`);
+          const label = String(rawLabel ?? formatVndText(num, numberLocale));
           const rawIcon = (item as Record<string, unknown>).icon;
           const icon = typeof rawIcon === "string" ? rawIcon : undefined;
           return { amount: num, label, icon };
@@ -177,7 +192,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
         return null;
       })
       .filter((item): item is { amount: number; label: string; icon?: string } => item !== null);
-  }, [rawSuggested]);
+  }, [numberLocale, rawSuggested]);
 
   const minAmount = Number(config?.minAmount ?? config?.min_amount ?? 10000) || 10000;
   const allowCustomAmount = Boolean(
@@ -297,12 +312,12 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
 
     // Phương thức Tùy chỉnh (ảnh mã QR do người dùng tải lên)
     if (activeQr.type === "CUSTOM") {
-      return activeQr.customImageUrl || activeQr.previewSvg || null;
+      return toSafeImageSrc(activeQr.customImageUrl || activeQr.previewSvg) || null;
     }
 
     // Nếu đã có previewSvg từ hệ thống
     if (activeQr.previewSvg) {
-      return activeQr.previewSvg;
+      return toSafeImageSrc(activeQr.previewSvg) || null;
     }
 
     return null;
@@ -315,7 +330,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
       case "BANK_TRANSFER":
         return "VietQR";
       case "CUSTOM":
-        return "Tùy chỉnh";
+        return t("customType");
       default:
         return "QR";
     }
@@ -421,7 +436,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
               className={cn(
                 "relative mb-5 flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-neutral-200/90 bg-white p-3 shadow-md dark:border-neutral-800",
                 activeQr?.type === "CUSTOM"
-                  ? "h-64 w-full max-w-[280px] sm:h-72"
+                  ? "h-60 w-full max-w-[260px] sm:h-72 sm:max-w-[280px]"
                   : "size-60 sm:size-68",
               )}
             >
@@ -432,7 +447,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                 <div className="relative z-10 size-full">
                   <Image
                     src={normalizeMediaUrl(qrImageSrc)}
-                    alt={activeQr?.title || "Mã QR"}
+                    alt={activeQr?.title || t("qrAlt")}
                     fill
                     sizes="(max-width: 640px) 280px, 280px"
                     unoptimized
@@ -448,31 +463,31 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
             </div>
 
             {/* Thẻ Ngân hàng Số (Fintech Digital Card) */}
-            <div className="border-border/80 from-card via-muted/30 to-muted/60 w-full space-y-2.5 rounded-2xl border bg-gradient-to-br p-4 shadow-2xs">
-              <div className="flex items-center justify-between text-xs">
-                <div className="text-muted-foreground flex items-center gap-1.5">
+            <div className="border-border/80 from-card via-muted/30 to-muted/60 w-full space-y-2.5 rounded-2xl border bg-gradient-to-br p-3.5 shadow-2xs sm:p-4">
+              <div className="flex items-center justify-between gap-3 text-xs">
+                <div className="text-muted-foreground flex shrink-0 items-center gap-1.5">
                   <CreditCard className="text-primary size-3.5" />
                   <span>{activeQr?.type === "CUSTOM" ? t("methodLabel") : t("bank")}</span>
                 </div>
-                <span className="text-foreground font-bold">
+                <span className="text-foreground min-w-0 text-right font-bold break-words">
                   {activeQr?.title || activeQr?.bankName || fallbackBank.bankName}
                 </span>
               </div>
 
               {activeQr?.accountHolder && (
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">{t("accountHolder")}</span>
-                  <span className="text-foreground font-bold tracking-wider uppercase">
+                <div className="flex items-center justify-between gap-3 text-xs">
+                  <span className="text-muted-foreground shrink-0">{t("accountHolder")}</span>
+                  <span className="text-foreground min-w-0 text-right font-bold tracking-wider break-words uppercase">
                     {activeQr.accountHolder}
                   </span>
                 </div>
               )}
 
               {currentAccountNumber ? (
-                <div className="border-border/60 flex items-center justify-between border-t pt-2.5 text-xs">
-                  <span className="text-muted-foreground">{t("accountNumber")}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-primary font-mono text-sm font-extrabold tracking-wider sm:text-base">
+                <div className="border-border/60 flex items-center justify-between gap-3 border-t pt-2.5 text-xs">
+                  <span className="text-muted-foreground shrink-0">{t("accountNumber")}</span>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="text-primary font-mono text-sm font-extrabold tracking-wider break-all sm:text-base">
                       {currentAccountNumber}
                     </span>
                     <Button
@@ -482,7 +497,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                       onClick={handleCopyAccount}
                       title={t("copyAccount")}
                       aria-label={t("copyAccount")}
-                      className="border-border/80 bg-background/80 hover:bg-muted size-7 rounded-lg shadow-2xs transition-all"
+                      className="border-border/80 bg-background/80 hover:bg-muted size-7 shrink-0 rounded-lg shadow-2xs transition-all"
                     >
                       {copied ? (
                         <Check className="size-3.5 text-emerald-500" />
@@ -495,10 +510,12 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
               ) : null}
 
               {activeQr?.type === "BANK_TRANSFER" && (
-                <div className="border-border/60 flex items-center justify-between border-t pt-2.5 text-xs">
-                  <span className="text-muted-foreground">{t("transferNote")}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-primary font-mono text-xs font-bold">{transferNote}</span>
+                <div className="border-border/60 flex items-center justify-between gap-3 border-t pt-2.5 text-xs">
+                  <span className="text-muted-foreground shrink-0">{t("transferNote")}</span>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="text-primary truncate font-mono text-xs font-bold">
+                      {transferNote}
+                    </span>
                     <Button
                       type="button"
                       size="icon-xs"
@@ -506,7 +523,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                       onClick={handleCopyNote}
                       title={t("copyNote")}
                       aria-label={t("copyNote")}
-                      className="border-border/80 bg-background/80 hover:bg-muted size-7 rounded-lg shadow-2xs transition-all"
+                      className="border-border/80 bg-background/80 hover:bg-muted size-7 shrink-0 rounded-lg shadow-2xs transition-all"
                     >
                       {copiedNote ? (
                         <Check className="size-3.5 text-emerald-500" />
@@ -520,7 +537,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
 
               {activeQr?.type !== "BANK_TRANSFER" && activeQr?.note && (
                 <div className="border-border/60 text-muted-foreground border-t pt-2 text-[11px] italic">
-                  Lời nhắn: &ldquo;{activeQr.note}&rdquo;
+                  {t("notePrefix")} &ldquo;{activeQr.note}&rdquo;
                 </div>
               )}
             </div>
@@ -593,13 +610,15 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                         className="h-9 pr-8 text-xs font-semibold shadow-2xs"
                       />
                       <span className="text-muted-foreground pointer-events-none absolute right-3 text-xs font-bold">
-                        ₫
+                        {CURRENCY_SYMBOLS.VND}
                       </span>
                     </div>
 
                     {isBelowMin ? (
                       <p className="text-[11px] font-medium text-rose-500">
-                        {t("minAmountWarning", { min: minAmount.toLocaleString("vi-VN") })}
+                        {t("minAmountWarning", {
+                          min: formatDisplayNumber(minAmount, { locale: numberLocale }),
+                        })}
                       </p>
                     ) : null}
                   </div>
@@ -611,13 +630,13 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                     <span className="text-muted-foreground mb-2.5 block text-center text-xs font-semibold tracking-wider uppercase">
                       {t("suggestedAmountTitle")}
                     </span>
-                    <div className="grid w-full min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                    <div className="grid w-full min-w-0 grid-cols-1 gap-2 min-[360px]:grid-cols-2">
                       {suggestedAmounts.map((opt, index) => {
                         const isSelected = selectedAmount === opt.amount;
                         const isOddLast =
                           suggestedAmounts.length % 2 !== 0 &&
                           index === suggestedAmounts.length - 1;
-                        const preset = parsePresetAmount(opt);
+                        const preset = parsePresetAmount(opt, numberLocale);
                         const noteTitle = preset.title || "";
 
                         return (
@@ -628,9 +647,9 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                             size="sm"
                             onClick={() => handleSelectPresetAmount(opt.amount, noteTitle)}
                             className={cn(
-                              "border-border/80 group hover:border-primary/50 relative flex min-h-[52px] w-full max-w-full min-w-0 flex-col items-center justify-center overflow-hidden py-2 text-center shadow-2xs transition-all duration-200 hover:shadow-xs",
-                              buttonStyle === "pill" ? "rounded-full px-4" : "rounded-2xl px-3",
-                              isOddLast && "sm:col-span-2",
+                              "border-border/80 group hover:border-primary/50 relative flex h-auto min-h-13.5 w-full max-w-full min-w-0 flex-col items-center justify-center overflow-hidden px-2.5 py-2 text-center whitespace-normal shadow-2xs transition-all duration-200 hover:shadow-xs",
+                              buttonStyle === "pill" ? "rounded-full px-3.5" : "rounded-2xl px-2.5",
+                              isOddLast && "min-[360px]:col-span-2",
                               isSelected && "ring-primary/30 shadow-sm ring-2",
                             )}
                             style={
@@ -643,7 +662,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                             }
                           >
                             {preset.title ? (
-                              <div className="flex w-full max-w-full items-center justify-center gap-1.5 truncate px-1 text-[11px] leading-tight font-medium opacity-90">
+                              <div className="flex w-full max-w-full min-w-0 items-center justify-center gap-1 px-0.5 text-[11px] leading-tight font-medium opacity-90">
                                 <PresetAmountIcon
                                   title={preset.title}
                                   customIcon={opt.icon}
@@ -652,7 +671,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                                 <span className="truncate">{preset.title}</span>
                               </div>
                             ) : null}
-                            <span className="mt-0.5 w-full max-w-full truncate px-1 font-mono text-xs leading-tight font-extrabold tracking-tight sm:text-sm">
+                            <span className="mt-0.5 w-full max-w-full truncate px-0.5 font-mono text-xs leading-tight font-extrabold tracking-tight sm:text-sm">
                               {preset.amount}
                             </span>
                           </Button>
@@ -670,7 +689,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
           </div>
         </div>
 
-        {/* 4. Dòng tin Tri ân & Bảng Vinh danh đếm ngược */}
+        {/* 4. Bảng Vinh danh đếm ngược & Lịch sử ủng hộ */}
         <DonationPublicFeed
           pageId={page.id ?? ""}
           preview={Boolean(page.preview)}

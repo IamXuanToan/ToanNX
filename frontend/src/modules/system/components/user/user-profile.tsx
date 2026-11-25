@@ -20,11 +20,13 @@ import { useUserProfile } from "./hooks/use-user-profile";
 export function UserProfile({
   id,
   canEdit,
+  canUpdateInfo = canEdit,
   extensions,
   history,
 }: {
   id: string;
   canEdit: boolean;
+  canUpdateInfo?: boolean;
   extensions?: ReactNode;
   history?: ReactNode;
 }) {
@@ -52,7 +54,12 @@ export function UserProfile({
 
   return (
     <FormPage title={user.data.fullName || user.data.email}>
-      <UserForm user={user.data} canEdit={canEdit} extensions={extensions} />
+      <UserForm
+        user={user.data}
+        canEdit={canEdit}
+        canUpdateInfo={canUpdateInfo}
+        extensions={extensions}
+      />
       {history ? <div className="mt-6">{history}</div> : null}
     </FormPage>
   );

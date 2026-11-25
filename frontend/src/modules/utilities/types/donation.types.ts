@@ -78,7 +78,7 @@ export type DonationListParams = {
   page_id?: string;
   search?: string;
   ordering?: string;
-  tier?: DonationTier;
+  tier?: DonationTier | readonly string[];
   isHidden?: boolean;
   isCensored?: boolean;
   dateFrom?: string;

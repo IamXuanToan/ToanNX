@@ -14,9 +14,11 @@ import { Label } from "@/shares/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shares/components/ui/radio-group";
 import { Textarea } from "@/shares/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
+import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
+import { formatDisplayNumber, formatVndText } from "@/shares/lib/number-format";
 
 import type { DonationContentConfig, DonationQrItem } from "../../types/page.types";
-import { DonationAmountIcon } from "./donation-amount-icon-picker";
+import { DonationAmountIcon } from "./donation-amount-icon";
 import { PageDonationAmountDialog, type SuggestedAmountItem } from "./page-donation-amount-dialog";
 import { PageDonationQrDialog } from "./page-donation-qr-dialog";
 import { PageDonationQrItemCard } from "./page-donation-qr-item-card";
@@ -484,7 +486,7 @@ export function PageDonationEditor({
                     <div className="min-w-0 flex-1">
                       <div className="text-foreground truncate font-semibold">{opt.label}</div>
                       <div className="text-primary font-mono text-[11px] font-bold">
-                        {opt.amount.toLocaleString("vi-VN")} ₫
+                        {formatVndText(opt.amount)}
                       </div>
                     </div>
                   </div>
@@ -542,7 +544,9 @@ export function PageDonationEditor({
                   <Input
                     inputMode="numeric"
                     value={
-                      config.minAmount ? Number(config.minAmount).toLocaleString("vi-VN") : "10.000"
+                      config.minAmount
+                        ? formatDisplayNumber(Number(config.minAmount))
+                        : formatDisplayNumber(10000)
                     }
                     onChange={(e) => {
                       const num = Number(e.target.value.replace(/\D/g, ""));
@@ -553,7 +557,7 @@ export function PageDonationEditor({
                     className="h-8 pr-8 text-xs font-medium"
                   />
                   <span className="text-muted-foreground pointer-events-none absolute right-2.5 text-xs font-semibold">
-                    ₫
+                    {CURRENCY_SYMBOLS.VND}
                   </span>
                 </div>
                 <p className="text-muted-foreground text-[11px]">{t("minAmountHint")}</p>
@@ -562,7 +566,7 @@ export function PageDonationEditor({
 
             {/* Cấu hình thời hạn Bảng Vinh danh đếm ngược */}
             <div className="space-y-1 pt-2">
-              <Label className="text-xs font-medium">Thời gian vinh danh trên Bảng xếp hạng</Label>
+              <Label className="text-xs font-medium">{t("leaderboardDaysLabel")}</Label>
               <div className="relative flex max-w-xs items-center">
                 <Input
                   type="number"
@@ -577,13 +581,10 @@ export function PageDonationEditor({
                   className="h-8 pr-12 text-xs font-medium"
                 />
                 <span className="text-muted-foreground pointer-events-none absolute right-2.5 text-xs font-semibold">
-                  ngày
+                  {t("leaderboardDaysUnit")}
                 </span>
               </div>
-              <p className="text-muted-foreground text-[11px]">
-                Thời hạn hiển thị và đếm ngược của người ủng hộ trên Bảng Đồng, Bạc, Vàng (từ 1 đến
-                30 ngày).
-              </p>
+              <p className="text-muted-foreground text-[11px]">{t("leaderboardDaysHint")}</p>
             </div>
           </div>
         </CardContent>

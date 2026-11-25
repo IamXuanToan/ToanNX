@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { useReportClientError } from "../../../hooks/use-report-client-error";
@@ -15,6 +16,7 @@ import { useReportClientError } from "../../../hooks/use-report-client-error";
  * @returns Mã digest, error message, cờ copied và hàm handleCopy.
  */
 export function useAppErrorContent(error: unknown) {
+  const t = useTranslations("errors.serverError");
   useReportClientError(error);
 
   const [copied, setCopied] = useState(false);
@@ -34,7 +36,7 @@ export function useAppErrorContent(error: unknown) {
       ? error.message
       : typeof error === "string"
         ? error
-        : "Đã xảy ra sự cố không mong muốn.";
+        : t("fallbackMessage");
   const errorStack = error instanceof Error ? (error.stack ?? null) : null;
   const isDev = process.env.NODE_ENV === "development";
 

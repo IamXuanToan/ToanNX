@@ -33,6 +33,7 @@ export function AdminNovelListView() {
   const t = useTranslations("novel.admin");
   const canRead = usePermission(NOVEL_PERMISSIONS.read);
   const canCreate = usePermission(NOVEL_PERMISSIONS.create);
+  const canImport = usePermission(NOVEL_PERMISSIONS.import);
   const canUpdate = usePermission(NOVEL_PERMISSIONS.update);
   const canDelete = usePermission(NOVEL_PERMISSIONS.delete);
 
@@ -44,15 +45,17 @@ export function AdminNovelListView() {
         title={t("title")}
         description={t("description")}
         actions={
-          canCreate ? (
+          canCreate || canImport ? (
             <div className="flex items-center gap-2">
-              <NovelImportDialog />
-              <Button asChild>
-                <Link href={NOVEL_ROUTES.adminNovelCreate}>
-                  <Plus className="mr-1.5 size-4" />
-                  {t("createNovel")}
-                </Link>
-              </Button>
+              {canImport ? <NovelImportDialog /> : null}
+              {canCreate ? (
+                <Button asChild>
+                  <Link href={NOVEL_ROUTES.adminNovelCreate}>
+                    <Plus className="mr-1.5 size-4" />
+                    {t("createNovel")}
+                  </Link>
+                </Button>
+              ) : null}
             </div>
           ) : undefined
         }

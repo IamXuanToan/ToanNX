@@ -1,4 +1,12 @@
-import { FileText, HeartHandshake, LayoutDashboard, Link2, QrCode, Route, Wrench } from "lucide-react";
+import {
+  FileText,
+  HeartHandshake,
+  LayoutDashboard,
+  Link2,
+  QrCode,
+  Route,
+  Wrench,
+} from "lucide-react";
 
 import type { AdminModuleNavigation } from "@/shares/types/navigation.types";
 
@@ -24,7 +32,13 @@ export const utilitiesNavigation: AdminModuleNavigation = {
       labelKey: "utilities.nav.dashboard",
       href: UTILITIES_ROUTES.dashboard,
       icon: LayoutDashboard,
-      permission: PAGE_PERMISSIONS.read,
+      permission: [
+        PAGE_PERMISSIONS.read,
+        SHORT_LINK_PERMISSIONS.read,
+        QR_CODE_PERMISSIONS.read,
+        DONATION_PERMISSIONS.read,
+        PAGE_PATH_PERMISSIONS.read,
+      ],
       section: "utilities.navSections.overview",
     },
     {

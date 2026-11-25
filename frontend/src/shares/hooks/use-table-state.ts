@@ -2,6 +2,8 @@
 
 import { useSearchParams } from "next/navigation";
 
+import { clampSearchQuery } from "@/shares/lib/search-text";
+
 /** Số dòng mỗi trang mặc định của mọi bảng. */
 export const DEFAULT_PAGE_SIZE = 20;
 
@@ -21,7 +23,7 @@ export function readTableUrlState(
   const page = Number.parseInt(params.get("page") ?? "", 10);
   const pageSize = Number.parseInt(params.get("pageSize") ?? "", 10);
   return {
-    search: params.get("search") ?? "",
+    search: clampSearchQuery(params.get("search") ?? ""),
     page: Number.isFinite(page) && page > 0 ? page : 1,
     pageSize:
       Number.isFinite(pageSize) && pageSize > 0 && pageSize <= 100 ? pageSize : defaults.pageSize,

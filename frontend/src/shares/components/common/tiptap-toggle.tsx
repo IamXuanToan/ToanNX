@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { cn } from "cn";
 import { Button } from "@/shares/components/ui/button";
 
 type TiptapToggleProps = {
@@ -12,17 +13,22 @@ type TiptapToggleProps = {
   children: ReactNode;
 };
 
+/** Nút bật/tắt định dạng nhỏ gọn trên thanh công cụ `TiptapToolbar`. */
 export function TiptapToggle({ label, active, disabled, onClick, children }: TiptapToggleProps) {
   return (
     <Button
       type="button"
-      size="icon"
+      size="icon-sm"
       variant={active ? "secondary" : "ghost"}
       aria-label={label}
       title={label}
       aria-pressed={active}
       disabled={disabled}
       onClick={onClick}
+      className={cn(
+        "rounded-lg transition-colors [&_svg]:size-4",
+        active && "bg-primary/12 text-primary ring-primary/25 hover:bg-primary/18 ring-1",
+      )}
     >
       {children}
     </Button>

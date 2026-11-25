@@ -11,27 +11,29 @@ import { Skeleton } from "@/shares/components/ui/skeleton";
 import { PORTAL_ROUTES } from "../../constants/routes";
 
 /**
- * Component Chỉnh sửa trang cho Client Portal:
+ * Component Chi tiết và Chỉnh sửa trang cho Client Portal:
  * Chuẩn hóa dùng FormPage như trang Admin, đưa tiêu đề và thanh action cố định (sticky) lên đầu trang.
  *
  * @param props - Id trang và quyền thao tác.
- * @returns Giao diện sửa trang.
+ * @returns Giao diện xem / sửa trang.
  */
 export function PortalPageEdit({
   id,
   canUpdate,
+  canManageAll = false,
   canCreatePath,
   canUpdatePath,
 }: {
   id: string;
   canUpdate: boolean;
+  canManageAll?: boolean;
   canCreatePath: boolean;
   canUpdatePath: boolean;
 }) {
-  const { data: currentUser } = useCurrentUser();
+  const { data: currentUser, isPending: isUserPending } = useCurrentUser();
   const pageQuery = usePage(id);
 
-  if (pageQuery.isPending) {
+  if (pageQuery.isPending || isUserPending) {
     return <Skeleton className="mx-auto h-[32rem] w-full max-w-6xl rounded-xl" />;
   }
 
@@ -47,13 +49,8 @@ export function PortalPageEdit({
 
   const page = pageQuery.data;
 
-  // Kiểm tra quyền sở hữu trang của client: nếu không phải owner và không có quyền manage_all -> chặn
-  if (
-    page &&
-    page.owner?.id !== currentUser?.user.id &&
-    !currentUser?.user.isSuperuser &&
-    !currentUser?.user.isStaff
-  ) {
+  // Kiểm tra quyền sở hữu trang theo IAM: chỉ chủ trang hoặc người có quyền manage_all mới truy cập được.
+  if (page && page.owner?.id !== currentUser?.user.id && !canManageAll) {
     return <ForbiddenView />;
   }
 

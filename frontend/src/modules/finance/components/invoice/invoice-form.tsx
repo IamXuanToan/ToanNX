@@ -18,6 +18,7 @@ import { SelectField } from "@/shares/components/common/select-field";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
+import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
 
 import { DOC_TYPES } from "../../constants/finance-enums";
 import { useFinanceRoutes } from "../../hooks/use-finance-routes";
@@ -275,7 +276,7 @@ export function InvoiceForm({
                 items={state.incomes.map((income) => ({
                   value: income.id,
                   label: `${income.receivedDate} · ${income.platformName ?? "?"}`,
-                  description: `${format.number(Number(income.amount ?? 0))} ₫ · ${income.content}`,
+                  description: `${format.number(Number(income.amount ?? 0))} ${CURRENCY_SYMBOLS.VND} · ${income.content}`,
                 }))}
                 value={field.value}
                 onToggle={(value, checked) =>
