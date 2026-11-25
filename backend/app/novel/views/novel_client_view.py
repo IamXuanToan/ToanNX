@@ -9,6 +9,7 @@ from app.core.exceptions.not_found_error import NotFoundError
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.novel.permissions.novel_permission import NovelPermission
 from app.novel.serializers.responses.novel_client_detail_response_serializer import (
     NovelClientDetailResponseSerializer,
 )
@@ -62,7 +63,12 @@ class NovelClientView(CoreApiView):
         """
         actor = self.get_actor(request)
         novel = self.novel_service.find_by_slug(slug)
-        if novel is None or (not novel.is_published and not getattr(actor, "is_staff", False)):
+        can_preview_draft = (
+            novel is not None
+            and actor.has_perm(NovelPermission.READ.code)
+            and self.novel_service.can_access(actor, novel)
+        )
+        if novel is None or (not novel.is_published and not can_preview_draft):
             raise NotFoundError("Không tìm thấy truyện.")
 
         # Tăng lượt xem
