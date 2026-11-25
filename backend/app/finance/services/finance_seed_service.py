@@ -14,14 +14,19 @@ Tạo thu nhập trải dài 12 tháng năm 2026 và năm 2025 để kiểm th�
 
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Any
 from zoneinfo import ZoneInfo
 
+from app.core.constants.defaults import DEFAULT_CURRENCY_CODE, DEFAULT_TIMEZONE
+from app.finance.models.classification_rule import ClassificationRule
 from app.finance.models.income import Income
 from app.finance.models.platform import Platform
+from app.finance.models.platform_tax_rate import PlatformTaxRate
 from app.system.models.currency import Currency
 from app.system.repositories.user_repository import UserRepository
+from app.system.utils.frontend_url import get_frontend_origin
 
-VN_TZ = ZoneInfo("Asia/Ho_Chi_Minh")
+VN_TZ = ZoneInfo(DEFAULT_TIMEZONE)
 
 
 class FinanceSeedService:
@@ -44,22 +49,59 @@ class FinanceSeedService:
         if not user:
             raise ValueError(f"Không tìm thấy người dùng có email: {email}.")
 
-        currency = Currency.objects.filter(code="VND").first()
+        currency = Currency.objects.filter(code=DEFAULT_CURRENCY_CODE).first()
         if not currency:
-            raise ValueError("Không tìm thấy tiền tệ VND trong hệ thống.")
+            raise ValueError(f"Không tìm thấy tiền tệ {DEFAULT_CURRENCY_CODE} trong hệ thống.")
 
-        # 1. Tạo các nền tảng mẫu
-        platforms_def = [
-            {"code": "youtube", "name": "YouTube Partner Program"},
-            {"code": "shopee", "name": "Shopee Affiliate"},
-            {"code": "tiktok", "name": "TikTok Shop / Creator"},
-            {"code": "freelance", "name": "Freelance Software Development"},
-            {"code": "sponsorship", "name": "GitHub Sponsors & Brand Sponsorship"},
-            {"code": "sepay_donation", "name": "Ủng hộ & Quyên góp SePay"},
+        # 1. Tạo các nền tảng mẫu kèm mốc thuế và quy tắc nhận diện
+        platforms_def: list[dict[str, Any]] = [
+            {
+                "code": "youtube",
+                "name": "YouTube Partner Program",
+                "tax_withheld": False,
+                "tax_rate": Decimal("0.00"),
+                "pattern": r"YOUTUBE|ADSENSE",
+            },
+            {
+                "code": "shopee",
+                "name": "Shopee Affiliate",
+                "tax_withheld": False,
+                "tax_rate": Decimal("0.00"),
+                "pattern": r"SHOPEE",
+            },
+            {
+                "code": "tiktok",
+                "name": "TikTok Shop / Creator",
+                "tax_withheld": False,
+                "tax_rate": Decimal("0.00"),
+                "pattern": r"TIKTOK",
+            },
+            {
+                "code": "freelance",
+                "name": "Freelance Software Development",
+                "tax_withheld": True,
+                "tax_rate": Decimal("10.00"),
+                "pattern": r"FREELANCE|HOP DONG|THANH TOAN DU AN",
+            },
+            {
+                "code": "sponsorship",
+                "name": "GitHub Sponsors & Brand Sponsorship",
+                "tax_withheld": False,
+                "tax_rate": Decimal("0.00"),
+                "pattern": r"SPONSOR|GITHUB",
+            },
+            {
+                "code": "sepay_donation",
+                "name": "Ủng hộ & Quyên góp SePay",
+                "tax_withheld": False,
+                "tax_rate": Decimal("0.00"),
+                "pattern": r"UNG HO|QUYEN GOP|DONATE",
+            },
         ]
 
         platform_map: dict[str, Platform] = {}
-        for p_def in platforms_def:
+        tax_rate_map: dict[str, PlatformTaxRate] = {}
+        for index, p_def in enumerate(platforms_def):
             plat, _ = Platform.objects.get_or_create(
                 owner=user,
                 code=p_def["code"],
@@ -69,10 +111,30 @@ class FinanceSeedService:
                 },
             )
             platform_map[p_def["code"]] = plat
+            tax_rate_entry, _ = PlatformTaxRate.objects.get_or_create(
+                platform=plat,
+                effective_from=date(2025, 1, 1),
+                defaults={
+                    "tax_withheld": p_def["tax_withheld"],
+                    "rate": p_def["tax_rate"],
+                    "note": "Mốc thuế mặc định khi seed dữ liệu mẫu.",
+                },
+            )
+            tax_rate_map[p_def["code"]] = tax_rate_entry
+            ClassificationRule.objects.get_or_create(
+                owner=user,
+                platform=plat,
+                name=f"Nhận diện {p_def['name']}",
+                defaults={
+                    "pattern": p_def["pattern"],
+                    "priority": 100 - index * 10,
+                    "is_active": True,
+                },
+            )
 
         # 2. Tạo thu nhập mẫu 12 tháng năm 2026
         # Số tiền phong phú mô phỏng thu nhập thực tế của một lập trình viên/content creator
-        incomes_2026 = [
+        incomes_2026: list[dict[str, Any]] = [
             # Tháng 1/2026
             {
                 "date": date(2026, 1, 15),
@@ -328,7 +390,7 @@ class FinanceSeedService:
         ]
 
         # 3. Tạo thu nhập mẫu năm 2025 (để biểu đồ so sánh 2 năm hiển thị trọn vẹn)
-        incomes_2025 = [
+        incomes_2025: list[dict[str, Any]] = [
             {"month": m, "amount": 12000000 + (m * 1100000), "platform": "freelance"} for m in range(1, 13)
         ]
 
@@ -369,6 +431,7 @@ class FinanceSeedService:
                     "tax_amount": tax_amount,
                     "gross_amount": gross_amount,
                     "tax_status": tax_status,
+                    "tax_rate_entry": tax_rate_map.get(item["platform"]),
                 },
             )
             if created:
@@ -400,6 +463,7 @@ class FinanceSeedService:
                     "tax_amount": tax_amount,
                     "gross_amount": gross_amount,
                     "tax_status": Income.TaxStatus.WITHHELD,
+                    "tax_rate_entry": tax_rate_map.get("freelance"),
                 },
             )
             if created:
@@ -407,9 +471,10 @@ class FinanceSeedService:
 
         total_incomes = Income.objects.filter(owner=user).count()
 
+        frontend_origin = get_frontend_origin()
         return [
             f"✓ Đã tạo/đồng bộ {len(platforms_def)} nền tảng tài chính mẫu.",
             "✓ Đã nạp thành công các khoản thu nhập mẫu 12 tháng năm 2026 và năm 2025.",
             f"  - Tạo mới: {created_incomes} khoản thu | Tổng hiện tại của user: {total_incomes}",
-            "  - Dashboard Tài chính: http://localhost:3001/vi/quan-tri/tai-chinh",
+            f"  - Dashboard Tài chính: {frontend_origin}/vi/quan-tri/tai-chinh",
         ]

@@ -34,6 +34,8 @@ class ReportMonthlyView(CoreApiView):
         """Số liệu VNĐ."""
         return CoreResponse(
             ReportMonthlyResponseSerializer(
-                self.finance_report_service.monthly(self.get_actor(request), validated_data["year"])
+                self.finance_report_service.monthly(
+                    self.get_actor(request), validated_data["year"], validated_data.get("owner")
+                )
             ).data
         )

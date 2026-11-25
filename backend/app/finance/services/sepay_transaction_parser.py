@@ -10,10 +10,11 @@ from typing import Any
 
 from django.utils import timezone
 
+from app.core.constants.defaults import DEFAULT_CURRENCY_CODE
 from app.finance.types.incoming_sepay_transaction import IncomingSepayTransaction
 from app.finance.utils.vn_time import parse_sepay_datetime
 
-BASE_CURRENCY = "VND"
+BASE_CURRENCY = DEFAULT_CURRENCY_CODE
 
 
 class SepayTransactionParser:

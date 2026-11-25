@@ -35,7 +35,10 @@ class ReportSummaryView(CoreApiView):
         return CoreResponse(
             ReportSummaryResponseSerializer(
                 self.finance_report_service.summary(
-                    self.get_actor(request), validated_data["year"], validated_data["month"]
+                    self.get_actor(request),
+                    validated_data["year"],
+                    validated_data["month"],
+                    validated_data.get("owner"),
                 )
             ).data
         )

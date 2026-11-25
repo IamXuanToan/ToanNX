@@ -93,3 +93,85 @@ def test_usd_invoice_and_validation(superuser: Any, login: Any, client: Any) -> 
         api.post(URL, other_income, format="json").json()["error"]["code"] == "FINANCE_INVOICE_INCOME_INVALID"
     )
     assert other.pk
+
+
+def test_multi_owner_filter_across_finance_resources(superuser: Any, login: Any) -> None:
+    """Superuser lọc nhiều owner qua `?owner=a,b`; member thiếu manage_all chỉ thấy dữ liệu của mình."""
+    from app.finance.permissions.rule_permission import RulePermission
+    from app.finance.tests.helpers.finance_test_helper import make_platform
+    from app.system.tests.helpers.permission_helper import grant
+
+    owner_a, owner_b = UserFactory(), UserFactory()
+    perms = (
+        "finance.invoice.read",
+        "finance.invoice.create",
+        "finance.platform.read",
+        "finance.platform.create",
+        RulePermission.READ,
+        RulePermission.CREATE,
+        "finance.report.read",
+        "system.currency.read",
+    )
+    grant(owner_a, *perms)
+    grant(owner_b, *perms)
+
+    platform_a = make_platform(owner_a, "p-a", "Platform A")
+    platform_b = make_platform(owner_b, "p-b", "Platform B")
+    api_a = login(owner_a)
+    api_b = login(owner_b)
+    api_admin = login(superuser)
+
+    assert (
+        api_a.post(
+            "/api/v1/finance/rules",
+            {"name": "Rule A", "pattern": "RULEA", "platform_id": str(platform_a.pk)},
+            format="json",
+        ).status_code
+        == 201
+    )
+    assert (
+        api_b.post(
+            "/api/v1/finance/rules",
+            {"name": "Rule B", "pattern": "RULEB", "platform_id": str(platform_b.pk)},
+            format="json",
+        ).status_code
+        == 201
+    )
+    vnd = str(currency("VND").pk)
+    api_a.post(
+        URL,
+        {
+            "doc_type": "INVOICE",
+            "issuer": "Issuer A",
+            "number": "INV-A1",
+            "issued_on": "2026-08-01",
+            "currency_id": vnd,
+            "original_amount": "1000000",
+            "attachment_ids": [_file(owner_a)],
+        },
+        format="json",
+    )
+    api_b.post(
+        URL,
+        {
+            "doc_type": "INVOICE",
+            "issuer": "Issuer B",
+            "number": "INV-B1",
+            "issued_on": "2026-08-02",
+            "currency_id": vnd,
+            "original_amount": "2000000",
+            "attachment_ids": [_file(owner_b)],
+        },
+        format="json",
+    )
+
+    pair = f"{owner_a.pk},{owner_b.pk}"
+    assert len(api_admin.get(URL, {"owner": pair}).json()["data"]) == 2
+    assert len(api_admin.get("/api/v1/finance/platforms", {"owner": pair}).json()["data"]) == 2
+    assert len(api_admin.get("/api/v1/finance/rules", {"owner": pair}).json()["data"]) == 2
+    assert api_admin.get("/api/v1/finance/reports/monthly", {"year": 2026, "owner": pair}).status_code == 200
+
+    # Member A truyền owner B phải bị cô lập (không thấy dữ liệu của B)
+    assert api_a.get(URL, {"owner": str(owner_b.pk)}).json()["data"] == []
+    assert api_a.get("/api/v1/finance/platforms", {"owner": str(owner_b.pk)}).json()["data"] == []
+    assert api_a.get("/api/v1/finance/rules", {"owner": str(owner_b.pk)}).json()["data"] == []

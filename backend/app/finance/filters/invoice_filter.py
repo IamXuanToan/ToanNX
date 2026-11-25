@@ -11,9 +11,10 @@ class InvoiceFilter(django_filters.FilterSet):
     """Năm theo ngày lập, loại, nền tảng."""
 
     year = django_filters.NumberFilter(field_name="issued_on", lookup_expr="year", help_text="Năm.")
+    owner = CoreUUIDInFilter(field_name="owner_id", help_text="Người dùng sở hữu; nhiều giá trị.")
     doc_type = CoreChoiceInFilter(choices=Invoice.DocType.choices, help_text="Loại; nhiều giá trị.")
     platform = CoreUUIDInFilter(field_name="platform_id", help_text="Nền tảng; nhiều giá trị.")
 
     class Meta:
         model = Invoice
-        fields = ("year", "doc_type", "platform")
+        fields = ("year", "owner", "doc_type", "platform")

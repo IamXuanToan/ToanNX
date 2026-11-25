@@ -16,12 +16,12 @@ class InvoiceRepository(CoreRepository[Invoice]):
     model = Invoice
 
     def get_queryset(self) -> QuerySet[Invoice]:
-        """Kèm nền tảng, tiền tệ, file, giao dịch chưa xóa."""
+        """Kèm chủ sở hữu, nền tảng, tiền tệ, file, giao dịch chưa xóa."""
         attachments: QuerySet[Attachment] = Attachment.objects.select_related("created_by", "folder")
         return (
             super()
             .get_queryset()
-            .select_related("platform", "currency")
+            .select_related("owner", "platform", "currency")
             .prefetch_related(
                 Prefetch("attachments", queryset=attachments),
                 Prefetch(

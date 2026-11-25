@@ -1,7 +1,9 @@
 """Mặc định của module Tài chính."""
 
+from app.core.constants.defaults import DEFAULT_TIMEZONE
+
 # Báo cáo, mốc thuế, tỷ giá đều theo ngày giờ Việt Nam.
-FINANCE_TIMEZONE = "Asia/Ho_Chi_Minh"
+FINANCE_TIMEZONE = DEFAULT_TIMEZONE
 # Webhook SePay: lệch giờ tối đa giữa X-SePay-Timestamp và server (chống replay).
 SEPAY_WEBHOOK_TOLERANCE_SECONDS = 300
 # Salt dẫn xuất secret webhook từ DJANGO_SECRET_KEY (salted_hmac), và mục đích mã hóa token API.
