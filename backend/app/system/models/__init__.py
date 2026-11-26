@@ -17,7 +17,6 @@ from app.system.models.role import Role
 from app.system.models.role_permission import RolePermission
 from app.system.models.setting import Setting
 from app.system.models.system_announcement import SystemAnnouncement
-from app.system.models.telegram_bot import TelegramBot
 from app.system.models.telegram_chat import TelegramChat
 from app.system.models.user import User
 from app.system.models.user_role import UserRole
@@ -41,7 +40,6 @@ __all__ = [
     "RolePermission",
     "Setting",
     "SystemAnnouncement",
-    "TelegramBot",
     "TelegramChat",
     "User",
     "UserRole",

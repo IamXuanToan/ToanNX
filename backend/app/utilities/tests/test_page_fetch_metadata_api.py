@@ -47,7 +47,7 @@ class TestPageFetchMetadataApi(BaseApiTestCase):
         """
 
         with patch(
-            "app.utilities.utils.safe_http_client.SafeHttpClient.fetch_html",
+            "app.core.utils.safe_http_client.SafeHttpClient.fetch_html",
             return_value=(html_content, "https://shopee.vn/product-rain75"),
         ):
             res = api.post(URL, {"url": "https://s.shopee.vn/rain75"}, format="json")

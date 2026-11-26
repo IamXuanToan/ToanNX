@@ -8,6 +8,7 @@ from rest_framework.request import Request
 from app.core.decorators.rate_limit import rate_limit
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.finance.constants.finance_rate_limit_key import FinanceRateLimitKey
 from app.finance.permissions.sepay_permission import SepayPermission
 from app.finance.serializers.responses.sepay_test_response_serializer import SepayTestResponseSerializer
 from app.finance.services.sepay_connection_service import SepayConnectionService
@@ -24,7 +25,7 @@ class SepayConnectionTestView(CoreApiView):
 
     @extend_schema(request=None, responses=SepayTestResponseSerializer)
     @require_permission(SepayPermission.MANAGE)
-    @rate_limit("finance.sepay.call")
+    @rate_limit(FinanceRateLimitKey.SEPAY_CALL)
     def post(self, request: Request) -> CoreResponse:
         """Số tài khoản liên kết."""
         count = self.sepay_connection_service.test(self.get_actor(request))

@@ -12,6 +12,7 @@ GET    /utilities/short-links/{id}/history
 
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.system.types.permission_rule import permission_rule
+from app.utilities.constants.utilities_rate_limit_key import UtilitiesRateLimitKey
 from app.utilities.filters.short_link_filter import ShortLinkFilter
 from app.utilities.models.short_link import ShortLink
 from app.utilities.permissions.short_link_permission import ShortLinkPermission as P
@@ -58,7 +59,7 @@ class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
     bulk_update_serializer_class = ShortLinkBulkUpdateValidateSerializer
     bulk_delete_enabled = True
     history_enabled = True
-    action_rate_limits = {"create": "utilities.short_link.create"}
+    action_rate_limits = {"create": UtilitiesRateLimitKey.SHORT_LINK_CREATE}
     action_permissions = {
         "list": permission_rule(P.READ),
         "retrieve": permission_rule(P.READ),

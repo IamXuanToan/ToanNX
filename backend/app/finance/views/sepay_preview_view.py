@@ -9,6 +9,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.finance.constants.finance_rate_limit_key import FinanceRateLimitKey
 from app.finance.permissions.sepay_permission import SepayPermission
 from app.finance.serializers.responses.sepay_preview_row_response_serializer import (
     SepayPreviewRowResponseSerializer,
@@ -28,7 +29,7 @@ class SepayPreviewView(CoreApiView):
 
     @extend_schema(responses=SepayPreviewRowResponseSerializer(many=True))
     @require_permission(SepayPermission.MANAGE)
-    @rate_limit("finance.sepay.call")
+    @rate_limit(FinanceRateLimitKey.SEPAY_CALL)
     @validate_request(SepayRangeValidateSerializer)
     def post(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse:
         """Danh sách dòng."""

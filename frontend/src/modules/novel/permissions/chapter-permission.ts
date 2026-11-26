@@ -1,18 +1,19 @@
+import { PERMISSION_ACTION } from "@/shares/constants/permission-actions";
+import { createResourcePermissions } from "@/shares/lib/permissions/resource-permissions";
+
+import { NOVEL_SCOPE } from "../constants/query-keys";
+
 /**
  * Quyền hạn của tài nguyên Chapter (Chương truyện).
  *
  * Khớp hoàn toàn với `ChapterPermission` trong backend (`novel/permissions/chapter_permission.py`).
  */
-export const CHAPTER_PERMISSIONS = {
-  /** Quyền xem danh sách và nội dung chi tiết chương */
-  read: "novel.chapter.read",
-  /** Quyền tạo mới chương truyện */
-  create: "novel.chapter.create",
-  /** Quyền cập nhật nội dung chương truyện */
-  update: "novel.chapter.update",
-  /** Quyền xóa chương truyện */
-  delete: "novel.chapter.delete",
-} as const;
+export const CHAPTER_PERMISSIONS = createResourcePermissions(NOVEL_SCOPE, "chapter", {
+  read: PERMISSION_ACTION.read,
+  create: PERMISSION_ACTION.create,
+  update: PERMISSION_ACTION.update,
+  delete: PERMISSION_ACTION.delete,
+});
 
 /** Kiểu dữ liệu giá trị quyền của Chapter. */
 export type ChapterPermissionValue = (typeof CHAPTER_PERMISSIONS)[keyof typeof CHAPTER_PERMISSIONS];

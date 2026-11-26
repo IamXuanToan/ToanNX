@@ -14,6 +14,7 @@ from rest_framework import exceptions
 from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 
+from app.core.constants.core_rate_limit_key import CoreRateLimitKey
 from app.core.decorators.rate_limit import rate_limit
 from app.core.exceptions.app_exception import AppException
 from app.core.responses.core_response import CoreResponse
@@ -43,7 +44,7 @@ class PagePublicView(CoreApiView):
             request.auth = None
 
     @extend_schema(responses=PagePublicResponseSerializer)
-    @rate_limit("public.read")
+    @rate_limit(CoreRateLimitKey.PUBLIC_READ)
     def get(self, request: Request, segment: str, slug: str) -> CoreResponse:
         """Dữ liệu trang công khai (hoặc bản nháp cho người có quyền).
 

@@ -10,6 +10,7 @@ from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
 from app.system.decorators.require_permission import require_permission
+from app.utilities.constants.utilities_rate_limit_key import UtilitiesRateLimitKey
 from app.utilities.permissions.qr_code_permission import QrCodePermission
 from app.utilities.serializers.responses.qr_preview_response_serializer import (
     QrPreviewResponseSerializer,
@@ -30,7 +31,7 @@ class QrPreviewView(CoreApiView):
 
     @extend_schema(responses=QrPreviewResponseSerializer)
     @require_permission(QrCodePermission.CREATE, QrCodePermission.UPDATE)
-    @rate_limit("utilities.qr_code.preview")
+    @rate_limit(UtilitiesRateLimitKey.QR_CODE_PREVIEW)
     @validate_request(QrPreviewValidateSerializer)
     def post(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse:
         """Xem trước mã QR.

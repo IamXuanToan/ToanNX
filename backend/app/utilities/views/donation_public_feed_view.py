@@ -7,6 +7,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 
+from app.core.constants.core_rate_limit_key import CoreRateLimitKey
 from app.core.decorators.rate_limit import rate_limit
 from app.core.exceptions.validation_error import ValidationError
 from app.core.responses.core_response import CoreResponse
@@ -32,7 +33,7 @@ class DonationPublicFeedView(CoreApiView):
         description="Lấy danh sách lượt quyên góp gần nhất đã kiểm duyệt, hỗ trợ phân trang cuộn tiếp.",
         responses=DonationPublicFeedResponseSerializer(many=True),
     )
-    @rate_limit("public.read")
+    @rate_limit(CoreRateLimitKey.PUBLIC_READ)
     def get(self, request: Request, page_id: uuid.UUID) -> CoreResponse:
         """Lấy danh sách lượt ủng hộ công khai."""
         limit = min(max(1, self._parse_positive_int(request.query_params.get("limit"), 20, "limit")), 100)

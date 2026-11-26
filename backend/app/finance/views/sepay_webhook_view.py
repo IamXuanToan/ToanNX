@@ -15,6 +15,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.exceptions.authentication_error import AuthenticationError
 from app.core.exceptions.validation_error import ValidationError
 from app.core.views.core_api_view import CoreApiView
+from app.finance.constants.finance_rate_limit_key import FinanceRateLimitKey
 from app.finance.services.sepay_webhook_service import SepayWebhookService
 
 
@@ -38,7 +39,7 @@ class SepayWebhookView(CoreApiView):
             503: OpenApiResponse(description="DB lỗi, SePay gửi lại."),
         },
     )
-    @rate_limit("finance.sepay.webhook")
+    @rate_limit(FinanceRateLimitKey.SEPAY_WEBHOOK)
     def post(self, request: Request, public_id: Any) -> JsonResponse:
         """Kiểm chữ ký rồi ghi tiền vào."""
         raw_body = request._request.body

@@ -28,29 +28,55 @@ class TelegramClient:
         return self._call(token, "getMe", {})
 
     def get_webhook_info(self, token: str) -> dict[str, Any]:
-        """Bot có đang đặt webhook không (có thì getUpdates không chạy)."""
-        return self._call(token, "getWebhookInfo", {})
+        """Kiểm tra trạng thái webhook hiện tại của bot."""
+        result = self._call(token, "getWebhookInfo", {})
+        return result if isinstance(result, dict) else {}
 
-    def get_updates(self, token: str) -> list[dict[str, Any]]:
-        """Cập nhật gần đây của bot."""
-        result = self._call(token, "getUpdates", {"allowed_updates": ["message", "my_chat_member"]})
+    def set_webhook(self, token: str, url: str, *, secret_token: str = "") -> Any:
+        """Đăng ký webhook nhận sự kiện Telegram cho bot chung."""
+        payload: dict[str, Any] = {
+            "url": url,
+            "allowed_updates": ["message", "my_chat_member"],
+        }
+        if secret_token:
+            payload["secret_token"] = secret_token
+        return self._call(token, "setWebhook", payload)
+
+    def get_updates(self, token: str, *, offset: int | None = None, timeout: int = 0) -> list[dict[str, Any]]:
+        """Cập nhật gần đây của bot (dùng cho nút Kiểm tra hoặc polling local)."""
+        payload: dict[str, Any] = {"allowed_updates": ["message", "my_chat_member"]}
+        if offset is not None:
+            payload["offset"] = int(offset)
+        if timeout > 0:
+            payload["timeout"] = min(int(timeout), TELEGRAM_TIMEOUT_SECONDS)
+        result = self._call(token, "getUpdates", payload)
         return result if isinstance(result, list) else []
 
     def get_chat_member(self, token: str, chat_id: str, user_id: int) -> dict[str, Any]:
         """Vai trò của bot trong chat."""
         return self._call(token, "getChatMember", {"chat_id": chat_id, "user_id": user_id})
 
-    def send_message(self, token: str, chat_id: str, html: str) -> TelegramSendResult:
+    def send_message(
+        self,
+        token: str,
+        chat_id: str,
+        html: str,
+        *,
+        reply_to_message_id: int | None = None,
+    ) -> TelegramSendResult:
         """Gửi tin HTML; đổi lỗi Telegram thành mã ổn định (403 bị xóa, 429 retry_after, nâng supergroup)."""
+        payload: dict[str, Any] = {
+            "chat_id": chat_id,
+            "text": html,
+            "parse_mode": "HTML",
+            "disable_web_page_preview": True,
+        }
+        if reply_to_message_id is not None:
+            payload["reply_to_message_id"] = int(reply_to_message_id)
         try:
             response = self.session.post(
                 self._url(token, "sendMessage"),
-                json={
-                    "chat_id": chat_id,
-                    "text": html,
-                    "parse_mode": "HTML",
-                    "disable_web_page_preview": True,
-                },
+                json=payload,
                 timeout=TELEGRAM_TIMEOUT_SECONDS,
             )
             body = response.json()

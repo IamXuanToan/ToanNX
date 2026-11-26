@@ -1,5 +1,8 @@
 """Quy ước module: CoreModuleConfig, mã module = label app, mọi view kế thừa view gốc của core."""
 
+import ast
+from enum import StrEnum
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -8,6 +11,7 @@ from django.conf import settings
 from django.urls import URLPattern, URLResolver, get_resolver
 from rest_framework.permissions import AllowAny
 
+from app.core.constants.module_code import ModuleCode
 from app.core.decorators.rate_limit import RATE_LIMIT_ATTR
 from app.core.permissions.csrf_protected import CsrfProtected
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
@@ -138,20 +142,52 @@ class TestModuleConventions:
         assert not wrong, f"permission_classes ngoài bảng chuẩn: {wrong}"
 
     def test_rate_limit_keys_exist(self) -> None:
-        """Khóa `action_rate_limits` / `@rate_limit` phải có trong `settings.RATE_LIMITS` (sai là 500)."""
+        """Khóa `action_rate_limits` / `@rate_limit` phải là StrEnum và khai trong `settings.RATE_LIMITS`."""
         missing: list[str] = []
+        raw_views: list[str] = []
         for view_class, _ in _module_views():
             declared = getattr(view_class, "action_rate_limits", {})
-            missing += [
-                f"{view_class.__qualname__}.{action}: {key}"
-                for action, key in declared.items()
-                if key not in settings.RATE_LIMITS
-            ]
+            for action, key in declared.items():
+                if not isinstance(key, StrEnum):
+                    raw_views.append(f"{view_class.__qualname__}.{action}: {key!r}")
+                if key not in settings.RATE_LIMITS:
+                    missing.append(f"{view_class.__qualname__}.{action}: {key}")
             for method in ("get", "post", "patch", "put", "delete"):
                 key = getattr(getattr(view_class, method, None), RATE_LIMIT_ATTR, None)
-                if key is not None and key not in settings.RATE_LIMITS:
-                    missing.append(f"{view_class.__qualname__}.{method}: {key}")
+                if key is not None:
+                    if not isinstance(key, StrEnum):
+                        raw_views.append(f"{view_class.__qualname__}.{method}: {key!r}")
+                    if key not in settings.RATE_LIMITS:
+                        missing.append(f"{view_class.__qualname__}.{method}: {key}")
+        raw_settings = [repr(key) for key in settings.RATE_LIMITS if not isinstance(key, StrEnum)]
+        assert not raw_views, (
+            f"Rate limit trong view dùng chuỗi thô thay vì StrEnum: {sorted(set(raw_views))}"
+        )
+        assert not raw_settings, f"settings.RATE_LIMITS dùng chuỗi thô thay vì StrEnum: {raw_settings}"
         assert not missing, f"Khóa rate limit chưa khai trong RATE_LIMITS: {sorted(set(missing))}"
+
+    def test_rate_limit_constants_split_segments(self) -> None:
+        """Lớp `*RateLimitKey` phải ghép từ hằng module/nhóm/action, không viết chuỗi gộp dấu chấm."""
+        app_root = Path(__file__).resolve().parents[2]
+        offenders: list[str] = []
+        for path in sorted(app_root.rglob("*_rate_limit_key.py")):
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+            for node in tree.body:
+                if not isinstance(node, ast.ClassDef):
+                    continue
+                for stmt in node.body:
+                    if not isinstance(stmt, ast.Assign):
+                        continue
+                    if (
+                        isinstance(stmt.value, ast.Constant)
+                        and isinstance(stmt.value.value, str)
+                        and "." in stmt.value.value
+                    ):
+                        rel = path.relative_to(app_root).as_posix()
+                        offenders.append(f"{rel}:{stmt.lineno} ({stmt.value.value!r})")
+        assert not offenders, "Khóa rate limit viết gộp dấu chấm nguyên chuỗi:\n" + "\n".join(offenders)
+        registered_labels = {config.label for config in _module_app_configs()}
+        assert set(ModuleCode) == registered_labels
 
     def test_rate_limit_actions_exist(self) -> None:
         """Tên action trong `action_rate_limits` phải là action thật của ViewSet (gõ sai = không giới hạn)."""

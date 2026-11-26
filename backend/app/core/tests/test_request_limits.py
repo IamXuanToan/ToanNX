@@ -4,6 +4,7 @@ from typing import Any
 
 import pytest
 
+from app.core.constants.core_rate_limit_key import CoreRateLimitKey
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.system.models.user import User
 
@@ -36,7 +37,7 @@ class TestRequestLimits(BaseApiTestCase):
         self.assert_error(api.get(USERS, {"is_active": values}), 400, "VALIDATION_ERROR")
 
     def test_default_write_rate_limit(self, superuser: User, login: Any, settings: Any) -> None:
-        settings.RATE_LIMITS = {**settings.RATE_LIMITS, "default.write": (1, 60, "user")}
+        settings.RATE_LIMITS = {**settings.RATE_LIMITS, CoreRateLimitKey.DEFAULT_WRITE: (1, 60, "user")}
         api = login(superuser)
         self.assert_success(api.post(ROLES, {"code": "RL_ONE", "name": "1"}, format="json"), 201)
         response = api.post(ROLES, {"code": "RL_TWO", "name": "2"}, format="json")

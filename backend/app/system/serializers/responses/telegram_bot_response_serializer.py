@@ -1,24 +1,14 @@
-"""Response bot Telegram (không bao giờ trả token)."""
+"""Response thông tin Bot Telegram dùng chung toàn hệ thống (không bao giờ trả token)."""
+
+from typing import Any
 
 from rest_framework import serializers
 
-from app.system.models.telegram_bot import TelegramBot
 
+class TelegramBotResponseSerializer(serializers.Serializer[Any]):
+    """Metadata Bot Telegram chung từ cấu hình môi trường."""
 
-class TelegramBotResponseSerializer(serializers.ModelSerializer[TelegramBot]):
-    """Bot của chính người dùng."""
-
-    class Meta:
-        model = TelegramBot
-        fields = (
-            "id",
-            "username",
-            "display_name",
-            "token_last4",
-            "is_active",
-            "last_checked_at",
-            "last_error_code",
-            "created_at",
-            "updated_at",
-        )
-        read_only_fields = fields
+    configured = serializers.BooleanField(help_text="Đã cấu hình TELEGRAM_BOT_TOKEN hay chưa.")
+    username = serializers.CharField(allow_blank=True, help_text="Username bot (không gồm @).")
+    display_name = serializers.CharField(allow_blank=True, help_text="Tên hiển thị của bot.")
+    bot_url = serializers.CharField(allow_blank=True, help_text="Link mở chat với bot trên Telegram.")

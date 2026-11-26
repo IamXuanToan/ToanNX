@@ -12,7 +12,8 @@ thì ghi đè ngay trong view đó theo đúng một trong năm trường hợp:
 | Công khai, đổi trạng thái bằng cookie | như trên, `permission_classes = [AllowAny, CsrfProtected]` |
 | Công khai, cần biết ai đang xem | `[AllowAny]`, ghi đè `perform_authentication` (token hỏng = khách) |
 
-Rate limit: `@rate_limit("<khóa RATE_LIMITS>")` trên method (mặc định method ghi dùng `default.write`).
+Rate limit: `@rate_limit(<KhóaRateLimitKey>)` trên method (method ghi mặc định dùng
+`CoreRateLimitKey.DEFAULT_WRITE`).
 
 Service khởi tạo trong `__init__` của view con:
 

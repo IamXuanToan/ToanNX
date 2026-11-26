@@ -9,6 +9,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.novel.constants.novel_rate_limit_key import NovelRateLimitKey
 from app.novel.permissions.novel_permission import NovelPermission as P
 from app.novel.serializers.responses.novel_import_result_response_serializer import (
     NovelImportResultResponseSerializer,
@@ -52,7 +53,7 @@ class NovelImportView(CoreApiView):
         request=NovelImportValidateSerializer,
         responses={201: NovelImportResultResponseSerializer},
     )
-    @rate_limit("novel.import")
+    @rate_limit(NovelRateLimitKey.IMPORT)
     @require_permission(P.IMPORT)
     @validate_request(NovelImportValidateSerializer)
     def post(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse:

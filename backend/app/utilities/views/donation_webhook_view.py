@@ -12,6 +12,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.exceptions.not_found_error import NotFoundError
 from app.core.exceptions.validation_error import ValidationError
 from app.core.views.core_api_view import CoreApiView
+from app.utilities.constants.utilities_rate_limit_key import UtilitiesRateLimitKey
 from app.utilities.services.donation_transaction_service import DonationTransactionService
 
 
@@ -37,7 +38,7 @@ class DonationWebhookView(CoreApiView):
             503: OpenApiResponse(description="Lỗi DB, SePay gửi lại."),
         },
     )
-    @rate_limit("utilities.donation.webhook")
+    @rate_limit(UtilitiesRateLimitKey.DONATION_WEBHOOK)
     def post(self, request: Request, webhook_token: str) -> JsonResponse:
         """Tiếp nhận và xử lý payload biến động số dư từ SePay."""
         payload = request.data if isinstance(request.data, dict) else {}

@@ -9,6 +9,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.finance.constants.finance_rate_limit_key import FinanceRateLimitKey
 from app.finance.permissions.sepay_permission import SepayPermission
 from app.finance.serializers.responses.sepay_status_response_serializer import SepayStatusResponseSerializer
 from app.finance.serializers.validates.sepay_connection_validate_serializer import (
@@ -36,7 +37,7 @@ class SepayConnectionView(CoreApiView):
 
     @extend_schema(responses=SepayStatusResponseSerializer)
     @require_permission(SepayPermission.MANAGE)
-    @rate_limit("finance.sepay.call")
+    @rate_limit(FinanceRateLimitKey.SEPAY_CALL)
     @validate_request(SepayConnectionValidateSerializer)
     def put(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse:
         """Lưu token (kiểm trước) / bật tắt."""

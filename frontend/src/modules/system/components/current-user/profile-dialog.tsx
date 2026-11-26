@@ -47,7 +47,8 @@ import {
 import { usePermission } from "../../hooks/use-permission";
 import { ATTACHMENT_PERMISSIONS } from "../../permissions/attachment-permission";
 import { NOTIFICATION_PREFERENCE_PERMISSIONS } from "../../permissions/notification-preference-permission";
-import { TELEGRAM_BOT_PERMISSIONS } from "../../permissions/telegram-bot-permission";
+import { PUSH_DEVICE_PERMISSIONS } from "../../permissions/push-device-permission";
+import { TELEGRAM_CHAT_PERMISSIONS } from "../../permissions/telegram-chat-permission";
 import type { AuthRole, AuthUser } from "../../types/auth.types";
 import type { ProfileTab } from "../../types/profile-tab.types";
 import { AttachmentPicker } from "../attachment/attachment-picker";
@@ -92,9 +93,9 @@ export function ProfileDialog({
   const canPreferences = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.read);
   const canReadAttachments = usePermission(ATTACHMENT_PERMISSIONS.read);
   const canUploadAttachments = usePermission(ATTACHMENT_PERMISSIONS.create);
-  const hasTelegramBotPermission = usePermission(TELEGRAM_BOT_PERMISSIONS.read);
-  const canTelegramBot = Boolean(user?.isSuperuser) && hasTelegramBotPermission;
-  const canNotifications = canPreferences || canTelegramBot;
+  const canPushDevices = usePermission(PUSH_DEVICE_PERMISSIONS.read);
+  const canTelegramChats = usePermission(TELEGRAM_CHAT_PERMISSIONS.read);
+  const canNotifications = canPreferences || canPushDevices || canTelegramChats;
   const canPreferenceUpdate = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.update);
   const tPreferences = useTranslations("system.notifications.preferences");
   const {

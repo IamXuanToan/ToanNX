@@ -9,6 +9,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.finance.constants.finance_rate_limit_key import FinanceRateLimitKey
 from app.finance.permissions.income_permission import IncomePermission
 from app.finance.permissions.sepay_permission import SepayPermission
 from app.finance.serializers.responses.sepay_import_response_serializer import SepayImportResponseSerializer
@@ -27,7 +28,7 @@ class SepayImportView(CoreApiView):
 
     @extend_schema(responses=SepayImportResponseSerializer)
     @require_permission(SepayPermission.MANAGE, IncomePermission.CREATE, require_all=True)
-    @rate_limit("finance.sepay.call")
+    @rate_limit(FinanceRateLimitKey.SEPAY_CALL)
     @validate_request(SepayImportValidateSerializer)
     def post(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse:
         """Số tạo/cập nhật/bỏ qua."""

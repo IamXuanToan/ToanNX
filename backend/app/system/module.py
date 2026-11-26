@@ -28,7 +28,6 @@ from app.system.permissions.notification_preference_permission import Notificati
 from app.system.permissions.push_device_permission import PushDevicePermission
 from app.system.permissions.session_permission import SessionPermission
 from app.system.permissions.setting_permission import SettingPermission
-from app.system.permissions.telegram_bot_permission import TelegramBotPermission
 from app.system.permissions.telegram_chat_permission import TelegramChatPermission
 from app.system.permissions.user_permission import UserPermission
 from app.system.permissions.webhook_permission import WebhookPermission
@@ -52,7 +51,6 @@ MODULE = ModuleDescriptor(
         *NotificationPermission.all(),
         *NotificationPreferencePermission.all(),
         *PushDevicePermission.all(),
-        *TelegramBotPermission.all(),
         *TelegramChatPermission.all(),
         *NotificationDeliveryPermission.all(),
         *AnnouncementPermission.all(),
@@ -67,7 +65,6 @@ MODULE = ModuleDescriptor(
         *NotificationPermission.member(),
         *NotificationPreferencePermission.member(),
         *PushDevicePermission.member(),
-        *TelegramBotPermission.member(),
         *TelegramChatPermission.member(),
         *NotificationDeliveryPermission.member(),
         *CurrencyPermission.member(),
@@ -167,6 +164,27 @@ MODULE = ModuleDescriptor(
                 "QSTASH_TOKEN, QSTASH_CURRENT_SIGNING_KEY, QSTASH_NEXT_SIGNING_KEY. "
                 "Không cần tạo schedule trên QStash.",
                 "cron-job.org: POST URL ở trên mỗi 10 phút, header Authorization: Bearer <CRON_SECRET>.",
+            ),
+        ),
+        WebhookDefinition(
+            code="system.telegram_webhook",
+            name="Webhook Bot Telegram chung",
+            provider="Telegram Bot API",
+            path="/system/telegram/webhook",
+            description=(
+                "Nhận sự kiện `/start <code>`, `my_chat_member` để tự kích hoạt TelegramChat theo user "
+                "và chuyển tiếp tin nhắn Trợ lý AI sang module xử lý."
+            ),
+            auth=(
+                "Header X-Telegram-Bot-Api-Secret-Token dẫn xuất salted_hmac từ DJANGO_SECRET_KEY + "
+                "sha256(TELEGRAM_BOT_TOKEN). Sai hoặc chưa cấu hình bot → 404."
+            ),
+            setup=(
+                "Đặt TELEGRAM_BOT_TOKEN (và tùy chọn TELEGRAM_BOT_USERNAME) ở biến môi trường backend.",
+                (
+                    "Vào Admin → Hồ sơ → Thông báo (quyền system.setting.update) hoặc chạy command "
+                    "`sync_telegram_webhook` để đăng ký webhook tự động."
+                ),
             ),
         ),
     ),

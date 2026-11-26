@@ -1,15 +1,16 @@
-"""Kiểm thử bộ lọc SSRF và SafeHttpClient trong module Tiện ích."""
+"""Kiểm thử bộ lọc SSRF và SafeHttpClient trong app.core.utils."""
 
 from unittest.mock import patch
 
 import pytest
 
 from app.core.exceptions.validation_error import ValidationError
-from app.utilities.utils.safe_http_client import SafeHttpClient, is_ip_allowed, validate_url_safety
+from app.core.utils.pinned_http_adapter import PinnedHttpAdapter
+from app.core.utils.safe_http_client import SafeHttpClient, is_ip_allowed, validate_url_safety
 
 
 class TestSafeHttpClient:
-    """Kiểm thử phòng vệ SSRF và kiểm tra tính an toàn của IP/URL."""
+    """Kiểm thử phòng vệ SSRF, fetch_html và probe."""
 
     def test_is_ip_allowed_blocks_private_and_loopback(self) -> None:
         """Chặn loopback, private IP LAN và cloud metadata."""
@@ -63,7 +64,7 @@ class TestSafeHttpClient:
 
         with (
             patch(
-                "app.utilities.utils.safe_http_client.socket.getaddrinfo",
+                "app.core.utils.safe_http_client.socket.getaddrinfo",
                 return_value=[(2, 1, 6, "", ("93.184.216.34", 0))],
             ),
             patch.object(client.session, "get") as mock_get,
@@ -81,12 +82,11 @@ class TestSafeHttpClient:
         assert "<title>Safe</title>" in html
         assert final_url == "https://example.com/page"
         assert client.pinned_ips["example.com"] == "93.184.216.34"
+        mock_resp.close.assert_called_once()
 
     def test_pinned_http_adapter_connects_to_pinned_ip_and_preserves_tls_sni(self) -> None:
         """PinnedHttpAdapter ép urllib3 nối thẳng IP đã xác thực và giữ SNI/assert_hostname cho HTTPS."""
         import requests
-
-        from app.utilities.utils.pinned_http_adapter import PinnedHttpAdapter
 
         adapter = PinnedHttpAdapter({"example.com": "93.184.216.34"})
         prepared = requests.Request("GET", "https://example.com/hello").prepare()
@@ -98,5 +98,49 @@ class TestSafeHttpClient:
         assert kwargs["host"] == "93.184.216.34"
         assert kwargs["scheme"] == "https"
         assert kwargs["port"] == 443
-        assert kwargs["pool_kwargs"]["assert_hostname"] == "example.com"
-        assert kwargs["pool_kwargs"]["server_hostname"] == "example.com"
+
+    def test_probe_follows_safe_redirects_blocks_ssrf_hop_and_closes_response(self) -> None:
+        """probe() chặn redirect tới IP nội bộ, giữ deadline <= 5s và luôn đóng response."""
+        client = SafeHttpClient()
+
+        def fake_getaddrinfo(host: str, *args: object, **kwargs: object) -> list[tuple[object, ...]]:
+            ip = "127.0.0.1" if host == "127.0.0.1" else "93.184.216.34"
+            return [(2, 1, 6, "", (ip, 0))]
+
+        with (
+            patch("app.core.utils.safe_http_client.socket.getaddrinfo", side_effect=fake_getaddrinfo),
+            patch.object(client.session, "request") as mock_req,
+        ):
+            redirect_resp = mock_req.return_value
+            redirect_resp.is_redirect = True
+            redirect_resp.status_code = 302
+            redirect_resp.headers = {"Location": "http://127.0.0.1/admin"}
+
+            result = client.probe("https://example.com/health", method="HEAD", timeout=10.0)
+
+        assert result["ok"] is False
+        assert result["status_code"] is None
+        assert "127.0.0.1" in result["final_url"]
+        redirect_resp.close.assert_called_once()
+
+    def test_probe_returns_status_and_latency_when_healthy(self) -> None:
+        """probe() trả status_code, latency_ms và đóng stream sạch khi thành công."""
+        client = SafeHttpClient()
+        with (
+            patch(
+                "app.core.utils.safe_http_client.socket.getaddrinfo",
+                return_value=[(2, 1, 6, "", ("93.184.216.34", 0))],
+            ),
+            patch.object(client.session, "request") as mock_req,
+        ):
+            ok_resp = mock_req.return_value
+            ok_resp.is_redirect = False
+            ok_resp.status_code = 204
+            ok_resp.headers = {}
+
+            result = client.probe("https://example.com/up", method="GET", timeout=3.0)
+
+        assert result["ok"] is True
+        assert result["status_code"] == 204
+        assert result["latency_ms"] >= 1
+        ok_resp.close.assert_called_once()

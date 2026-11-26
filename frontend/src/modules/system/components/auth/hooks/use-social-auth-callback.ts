@@ -14,6 +14,7 @@ import {
   OAUTH_STORAGE_KEYS,
   PROFILE_DIALOG_QUERY,
 } from "../../../constants/auth-storage";
+import { ACCOUNT_ERROR_CODES } from "../../../constants/error-codes";
 import { useSocialAuthExchange } from "../../../hooks/use-social-auth-exchange";
 import type { CurrentUser } from "../../../types/auth.types";
 
@@ -152,7 +153,7 @@ export function useSocialAuthCallback(provider: string) {
         setStatus("error");
         const msg = errorMessage(err);
         const errObj = err as { code?: string };
-        if (errObj?.code === "ACCOUNT_SOCIAL_NOT_LINKED") {
+        if (errObj?.code === ACCOUNT_ERROR_CODES.socialNotLinked) {
           setIsNotLinked(true);
         }
         setErrorText(msg);

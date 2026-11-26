@@ -776,22 +776,18 @@
       "browserFallback": "Trình duyệt"
     },
     "telegramBot": {
-      "title": "Bot Telegram của bạn",
-      "placeholder": "Dán token bot...",
-      "save": "Lưu và kiểm tra",
-      "check": "Kiểm tra",
-      "change": "Đổi token",
-      "remove": "Xóa bot",
-      "checkOk": "Bot hoạt động bình thường.",
-      "hasWebhook": "Bot đang đặt webhook ở nơi khác, hãy gỡ webhook để dùng.",
-      "steps": {
-        "1": "Mở Telegram, chat với @BotFather, gõ /newbot.",
-        "2": "Đặt tên và username cho bot (kết thúc bằng bot).",
-        "3": "Chép token BotFather gửi về và dán vào đây."
-      },
+      "title": "Bot Telegram hệ thống",
+      "configuredDescription": "Hệ thống dùng chung một Bot Telegram trung tâm cho thông báo và Trợ lý AI hai chiều.",
+      "unconfigured": "Chưa cấu hình TELEGRAM_BOT_TOKEN trên máy chủ.",
+      "unconfiguredBadge": "Chưa cấu hình",
+      "openBot": "Mở bot Telegram",
+      "checkWebhook": "Kiểm tra webhook",
+      "webhookActive": "Webhook đang hoạt động",
+      "webhookInactive": "Webhook chưa gắn hoặc không hợp lệ",
+      "checkOk": "Bot và webhook hoạt động bình thường.",
       "errors": {
-        "TELEGRAM_BOT_TOKEN_INVALID": "Token không còn dùng được, hãy nhập lại.",
-        "TELEGRAM_BOT_HAS_WEBHOOK": "Bot đang đặt webhook ở nơi khác."
+        "TELEGRAM_BOT_TOKEN_INVALID": "Token Bot Telegram hệ thống không hợp lệ.",
+        "TELEGRAM_BOT_MISSING": "Chưa cấu hình Bot Telegram trên máy chủ."
       }
     },
     "telegramChats": {

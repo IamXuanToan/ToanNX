@@ -12,12 +12,12 @@ from urllib.parse import unquote, urlsplit
 
 from app.core.cache.cache_service import CacheService
 from app.core.constants.defaults import DEFAULT_CURRENCY_CODE
+from app.core.utils.safe_http_client import SafeHttpClient
 from app.utilities.constants.affiliate_platform import (
     PLATFORM_DOMAIN_PATTERNS,
     AffiliatePlatform,
 )
 from app.utilities.utils.metadata_html_parser import MetadataHtmlParser
-from app.utilities.utils.safe_http_client import SafeHttpClient
 
 _METADATA_CACHE_TTL_SECONDS = 604800  # 7 ngày
 

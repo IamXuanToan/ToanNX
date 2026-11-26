@@ -17,4 +17,13 @@ export const JOURNAL_FIELD_PREFIXES: Readonly<Record<string, MessageKey>> = {
   "novel.genre": "novel.genres.fields",
   "novel.tag": "novel.tags.fields",
   "novel.chapter": "novel.chapters.fields",
+  "workspace.asset": "workspace.assets.fields",
+  "workspace.asset_warranty_claim": "workspace.warrantyClaims.fields",
+  "workspace.subscription": "workspace.subscriptions.fields",
+  "workspace.subscription_payment": "workspace.subscriptionPayments.fields",
+  "workspace.vault_item": "workspace.vault.fields",
+  "workspace.monitor_target": "workspace.monitors.fields",
+  "workspace.monitor_incident": "workspace.monitorIncidents.fields",
+  "workspace.reminder": "workspace.reminders.fields",
+  "workspace.workspace_setting": "workspace.settings.fields",
 };

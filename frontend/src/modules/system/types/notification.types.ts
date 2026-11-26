@@ -66,12 +66,16 @@ export type PushDevice = {
 };
 
 export type TelegramBot = {
-  id: string;
+  configured: boolean;
   username: string;
   displayName: string;
-  tokenLast4: string;
-  isActive: boolean;
-  lastCheckedAt: string | null;
+  botUrl: string;
+};
+
+export type TelegramBotCheck = {
+  bot: TelegramBot;
+  webhookActive: boolean;
+  webhookUrl: string;
   lastErrorCode: string;
 };
 

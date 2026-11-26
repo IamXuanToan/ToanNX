@@ -6,6 +6,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
 
+from app.core.constants.core_rate_limit_key import CoreRateLimitKey
 from app.core.decorators.rate_limit import rate_limit
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
@@ -31,7 +32,7 @@ class UserSocialAccountView(CoreApiView):
         self.oauth_service = OAuthService()
 
     @extend_schema(responses=UserSocialAccountSummaryResponseSerializer(many=True))
-    @rate_limit("public.read")
+    @rate_limit(CoreRateLimitKey.PUBLIC_READ)
     def get(self, request: Request) -> CoreResponse:
         """Lấy danh sách trạng thái liên kết mạng xã hội.
 

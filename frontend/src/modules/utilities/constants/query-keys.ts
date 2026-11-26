@@ -1,39 +1,40 @@
 import { createResourceKeys } from "@/shares/lib/api/resource-keys";
 
 /** Phạm vi chung của query key module Tiện ích (invalidate cả module bằng `["utilities"]`). */
-const SCOPE = "utilities";
+export const UTILITIES_SCOPE = "utilities";
 
 /** Query key của link rút gọn. */
-const baseShortLinkKeys = createResourceKeys(SCOPE, "short-links");
+const baseShortLinkKeys = createResourceKeys(UTILITIES_SCOPE, "short-links");
 export const shortLinkKeys = {
   ...baseShortLinkKeys,
-  resolve: (slug: string) => [SCOPE, "short-links", "resolve", slug] as const,
+  resolve: (slug: string) => [UTILITIES_SCOPE, "short-links", "resolve", slug] as const,
 };
 
-const qrCodes = createResourceKeys(SCOPE, "qr-codes");
+const qrCodes = createResourceKeys(UTILITIES_SCOPE, "qr-codes");
 
 /** Query key của mã QR (kèm danh mục ngân hàng và ảnh xem trước). */
 export const qrCodeKeys = {
   ...qrCodes,
-  banks: () => [SCOPE, "qr-codes", "banks"] as const,
-  preview: (input: object) => [SCOPE, "qr-codes", "preview", input] as const,
+  banks: () => [UTILITIES_SCOPE, "qr-codes", "banks"] as const,
+  preview: (input: object) => [UTILITIES_SCOPE, "qr-codes", "preview", input] as const,
 };
 
 /** Query key của đường dẫn giữa. */
-export const pagePathKeys = createResourceKeys(SCOPE, "page-paths");
+export const pagePathKeys = createResourceKeys(UTILITIES_SCOPE, "page-paths");
 
 /** Query key của trang. */
-const basePageKeys = createResourceKeys(SCOPE, "pages");
+const basePageKeys = createResourceKeys(UTILITIES_SCOPE, "pages");
 export const pageKeys = {
   ...basePageKeys,
-  public: (segment: string, slug: string) => [SCOPE, "pages", "public", segment, slug] as const,
+  public: (segment: string, slug: string) =>
+    [UTILITIES_SCOPE, "pages", "public", segment, slug] as const,
 };
 
 /** Query key của quyên góp và ủng hộ (Donations). */
-const baseDonationKeys = createResourceKeys(SCOPE, "donations");
+const baseDonationKeys = createResourceKeys(UTILITIES_SCOPE, "donations");
 export const donationKeys = {
   ...baseDonationKeys,
-  stats: (params?: object) => [SCOPE, "donations", "stats", params] as const,
-  feed: (pageId: string) => [SCOPE, "donations", "feed", pageId] as const,
-  leaderboard: (pageId: string) => [SCOPE, "donations", "leaderboard", pageId] as const,
+  stats: (params?: object) => [UTILITIES_SCOPE, "donations", "stats", params] as const,
+  feed: (pageId: string) => [UTILITIES_SCOPE, "donations", "feed", pageId] as const,
+  leaderboard: (pageId: string) => [UTILITIES_SCOPE, "donations", "leaderboard", pageId] as const,
 };

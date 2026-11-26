@@ -11,6 +11,7 @@ GET    /utilities/qr-codes/{id}/history
 
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.system.types.permission_rule import permission_rule
+from app.utilities.constants.utilities_rate_limit_key import UtilitiesRateLimitKey
 from app.utilities.filters.qr_code_filter import QrCodeFilter
 from app.utilities.models.qr_code import QrCode
 from app.utilities.permissions.qr_code_permission import QrCodePermission as P
@@ -43,7 +44,7 @@ class QrCodeViewSet(CoreModelViewSet[QrCode]):
     update_serializer_class = QrCodeUpdateValidateSerializer
     bulk_delete_enabled = True
     history_enabled = True
-    action_rate_limits = {"create": "utilities.qr_code.create"}
+    action_rate_limits = {"create": UtilitiesRateLimitKey.QR_CODE_CREATE}
     action_permissions = {
         "list": permission_rule(P.READ),
         "retrieve": permission_rule(P.READ),

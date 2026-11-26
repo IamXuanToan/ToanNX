@@ -45,9 +45,9 @@ TEST_ACCOUNTS: list[dict[str, Any]] = [
     {
         "email": "portal.member@toannx.local",
         "username": "portal_member",
-        "full_name": "Thành viên Portal (FINANCE + UTILITIES + SYSTEM)",
+        "full_name": "Thành viên Portal (WORKSPACE + FINANCE + UTILITIES + SYSTEM)",
         "is_staff": False,
-        "roles": ["FINANCE_MEMBER", "UTILITIES_MEMBER", "SYSTEM_MEMBER"],
+        "roles": ["WORKSPACE_MEMBER", "FINANCE_MEMBER", "UTILITIES_MEMBER", "SYSTEM_MEMBER"],
     },
 ]
 

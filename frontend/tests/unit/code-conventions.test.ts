@@ -95,4 +95,51 @@ describe("Quy ước tập trung hằng số và Link", () => {
 
     expect(offenders.map(toRel)).toEqual([]);
   });
+
+  it("khai báo quyền trong permissions/ dùng createResourcePermissions + PERMISSION_ACTION, không hardcode chuỗi quyền", () => {
+    const permissionFiles = tsFiles.filter((file) =>
+      /^modules\/[^/]+\/permissions\/[^/]+-permission\.ts$/.test(toRel(file)),
+    );
+    expect(permissionFiles.length).toBeGreaterThan(0);
+
+    const invalidPermissionFiles = permissionFiles.filter((file) => {
+      const content = readFileSync(file, "utf8");
+      const usesHelper =
+        content.includes("createResourcePermissions(") && content.includes("PERMISSION_ACTION.");
+      const hasRawLiteral = /["'][a-z_]+\.[a-z_]+\.[a-z_]+["']/.test(content);
+      return !usesHelper || hasRawLiteral;
+    });
+    expect(invalidPermissionFiles.map(toRel)).toEqual([]);
+
+    const rawPermissionUsages = tsFiles.filter((file) => {
+      const content = readFileSync(file, "utf8").replace(
+        /\b(?:useTranslations|createPageMetadata)\(\s*(?:\{[^}]*title:\s*)?["'][^"']+["']\s*(?:\})?\s*\)/g,
+        "",
+      );
+      return /["'](?:system|utilities|novel|finance|workspace)\.[a-z_]+\.(?:read|create|update|delete|manage_all|read_private|manage|assign|revoke|export|import|chat|reveal)["']/.test(
+        content,
+      );
+    });
+    expect(rawPermissionUsages.map(toRel)).toEqual([]);
+  });
+
+  it("không hardcode queryKey chuỗi thô ở hook/component hoặc mã lỗi xác thực ngoài constants", () => {
+    const rawQueryKeyFiles = tsFiles.filter((file) => {
+      const rel = toRel(file);
+      if (rel.includes("/constants/")) return false;
+      const content = readFileSync(file, "utf8");
+      return /queryKey\s*:\s*\[\s*["'][^"']+["']/.test(content);
+    });
+    expect(rawQueryKeyFiles.map(toRel)).toEqual([]);
+
+    const rawAuthErrorCodeFiles = tsFiles.filter((file) => {
+      const rel = toRel(file);
+      if (rel.includes("/constants/")) return false;
+      const content = readFileSync(file, "utf8");
+      return /["'](AUTH_REFRESH_CONFLICT|AUTH_CSRF_FAILED|ACCOUNT_SOCIAL_NOT_LINKED)["']/.test(
+        content,
+      );
+    });
+    expect(rawAuthErrorCodeFiles.map(toRel)).toEqual([]);
+  });
 });
