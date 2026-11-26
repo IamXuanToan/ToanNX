@@ -53,7 +53,7 @@ trước khi viết code Next.
   ước nếu tự động kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt làm việc.
 - Skill của project: workflow chính (`start-task`, `fix`, `review-code`) và các skill hỗ trợ (`create-plan`,
   `review-plan`, `test`, `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`,
-  `check-ci`, `commit-demo`, `commit-push`) ở `.agents/skills/`, liên kết sang
+  `commit-demo`, `commit-push`) ở `.agents/skills/`, liên kết sang
   `.claude/skills/`; skill ngoài ghi nguồn/commit ở `skills-lock.json`. Chỉ `.claude/skills/rule-*/` do script rule
   sinh; `docs/rules/` thắng skill. Đổi skill project thì chạy `python scripts/check-workflow-skills.py` để kiểm
   metadata và bản Claude.
@@ -283,8 +283,8 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
    kỹ plan theo rule; `start-task` khi giao việc mới; `fix` khi báo lỗi; `review-code` khi
    yêu cầu rà cuối, tự sửa lỗi xác nhận được và kiểm lại; dùng `test` (tạo test BE/FE + Playwright soi ảnh + monkey
    test), `refactor`, `review-security` (giả lập tấn công + lưu `docs/reports/security-verification.md`), `i18n-audit`,
-   `permission-audit`, `db-migration`, `check-ci` (kiểm tra/tái lập GitHub CI luôn pass), `commit-demo` (soạn gợi ý
-   commit dán VS Code khi được yêu cầu), `commit-push` (commit và push khi người dùng gọi) đúng mục tiêu. Cả nhóm đọc source, `docs/` và rule liên quan trước khi
+   `permission-audit`, `db-migration`, `commit-demo` (soạn gợi ý commit dán VS Code khi được yêu cầu),
+   `commit-push` (kiểm tra/tái lập GitHub CI pass, commit và push khi người dùng gọi) đúng mục tiêu. Cả nhóm đọc source, `docs/` và rule liên quan trước khi
    sửa. Nạp skill chuyên môn theo phần việc: `security-best-practices` khi yêu cầu audit bảo mật/code an toàn;
    `django-perf-review` khi rà hiệu năng Django; `web-perf` khi đo tốc độ trang/Core Web Vitals;
    `vitest` khi viết/sửa unit test FE;

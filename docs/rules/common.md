@@ -142,8 +142,8 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
   người dùng nhắc riêng việc cập nhật tài liệu rule.
 - **Skill quy trình và hỗ trợ của project**: `start-task` cho việc mới, `fix` cho lỗi đã có, `review-code` cho lượt
   rà cuối có tự sửa lỗi xác nhận được; cùng các skill hỗ trợ chuyên biệt `create-plan`, `review-plan`, `test`,
-  `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`, `check-ci`, `commit-demo`,
-  `commit-push`. Chọn bằng ngữ nghĩa câu chat theo `.agents/rules/01-workflow.md`; `review-code` không tự chạy sau
+  `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`, `commit-demo`,
+  `commit-push` (kiểm tra/bảo đảm CI pass rồi commit và push). Chọn bằng ngữ nghĩa câu chat theo `.agents/rules/01-workflow.md`; `review-code` không tự chạy sau
   mọi lần sửa. Các skill phải đọc source thực, mục lục `docs/`, rule và tài liệu liên quan trước khi sửa; kiểm đúng
   phạm vi và **chỉ gợi ý commit (`commit-demo`) hoặc thực hiện commit/push (`commit-push`) khi người dùng yêu cầu**
   theo [git.md](git.md).

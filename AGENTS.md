@@ -41,7 +41,7 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   (rule chung mục 4).
 - **Skill project**: `start-task` cho việc mới, `fix` cho lỗi, `review-code` cho lượt rà cuối do người dùng yêu
   cầu, cùng các skill hỗ trợ `create-plan`, `review-plan`, `test`, `refactor`, `review-security`, `i18n-audit`,
-  `permission-audit`, `db-migration`, `check-ci`, `commit-demo`, `commit-push`; mỗi skill đọc source, `docs/` và rule
+  `permission-audit`, `db-migration`, `commit-demo`, `commit-push`; mỗi skill đọc source, `docs/` và rule
   liên quan trước khi làm/sửa. Skill nội bộ ở `.agents/skills/`
   được liên kết sang `.claude/skills/`; skill ngoài cài qua CLI có nguồn/commit ở `skills-lock.json`. Chỉ
   `.claude/skills/rule-*/` do script rule sinh; chọn theo `.agents/rules/01-workflow.md`, ưu tiên `docs/rules/`.
@@ -142,9 +142,8 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   review/thẩm định plan trong `docs/plans/<YYYY>/<MM>/<DD>/` → `review-plan`; task/tính năng mới → `start-task`; sửa lỗi/regression/test fail → `fix`;
   người dùng yêu cầu review code cuối → `review-code` (tự sửa lỗi xác nhận được và kiểm lại). Yêu cầu tự tạo test/chụp ảnh Playwright/monkey test → `test`; tái cấu trúc code → `refactor`;
   audit bảo mật kèm giả lập tấn công và file xác nhận trong `docs/` → `review-security`; rà thiếu i18n → `i18n-audit`;
-  rà ma trận quyền BE–FE → `permission-audit`; thiết kế model/migration → `db-migration`; kiểm tra và sửa để bảo
-  đảm GitHub CI luôn pass → `check-ci`; soạn gợi ý nội dung commit → `commit-demo`; thực hiện commit và push khi
-  được gọi → `commit-push`. Chỉ một workflow chính; thêm
+  rà ma trận quyền BE–FE → `permission-audit`; thiết kế model/migration → `db-migration`; soạn gợi ý nội dung
+  commit → `commit-demo`; kiểm tra/tái lập đầy đủ cổng GitHub CI, stage, commit và push khi được gọi → `commit-push`. Chỉ một workflow chính; thêm
   skill chuyên môn theo phần việc. Yêu cầu audit bảo mật/code an toàn → `security-best-practices`; rà hiệu năng Django
   → `django-perf-review`; đo tốc độ trang/Core Web Vitals → `web-perf`; viết/sửa unit test FE → `vitest`;
   viết/sửa E2E spec → `playwright-best-practices`;

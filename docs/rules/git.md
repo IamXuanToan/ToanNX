@@ -10,9 +10,9 @@
   gồm tiêu đề và phần mô tả** cho thay đổi liên quan (hoặc toàn bộ thay đổi chưa commit trong project nếu không
   giới hạn). Nêu rõ thay đổi có sẵn trước task ở ngoài khối văn bản, tách nhiều commit nếu khác mục đích, và
   tuyệt đối không tự stage, commit hoặc push.
-- **Chỉ commit và push khi người dùng gọi (`commit-push`)**: thực hiện kiểm tra an toàn (secret, `.gitignore`,
-  kiểm tra liên quan, `.githooks/`), stage đúng file, commit không bỏ qua hook và push nhánh hiện tại (nếu đang
-  ở `main` phải xác nhận rõ trước khi commit/push trực tiếp).
+- **Chỉ commit và push khi người dùng gọi (`commit-push`)**: chạy tái lập và bảo đảm các cổng GitHub CI đều pass,
+  kiểm tra an toàn (secret, `.gitignore`, `.githooks/`), stage đúng file, commit không bỏ qua hook và push nhánh hiện tại
+  (nếu đang ở `main` phải xác nhận rõ trước khi commit/push trực tiếp).
 
 ## Nhánh
 

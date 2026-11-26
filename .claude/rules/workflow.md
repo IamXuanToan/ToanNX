@@ -37,9 +37,8 @@ thông tin tối thiểu cần thiết và tiếp tục khảo sát phần độ
 | Rà soát và sửa thiếu i18n `vi`/`en` toàn FE | `i18n-audit`; quét chuỗi cứng, đối chiếu JSON, BE error code và kiểm `/vi`/`/en` |
 | Kiểm toán và lập ma trận phân quyền BE–FE ba tầng | `permission-audit`; đối chiếu `MEMBER`, owner, Admin/Portal và `seed_test_accounts` |
 | Thiết kế model và Django migration an toàn cho PostgreSQL/Neon | `db-migration`; kiểm `UniqueConstraint` xóa mềm, index, `sqlmigrate` và migrate local |
-| Kiểm tra, tái lập đầy đủ và sửa lỗi các cổng GitHub CI | `check-ci`; chạy parity backend, frontend, `api-types` và rules/skills check đến khi pass |
 | Soạn gợi ý nội dung commit chuẩn để dán vào VS Code | `commit-demo`; chỉ chạy khi được yêu cầu, không stage/commit/push và không thêm `Co-Authored-By:` |
-| Thực hiện stage, commit chuẩn và push lên remote | `commit-push`; chỉ chạy khi người dùng gọi rõ ràng, tôn trọng git hook, không thêm `Co-Authored-By:` |
+| Kiểm tra, tái lập đủ cổng GitHub CI (BE/FE/api-types/rule-skill), stage, commit chuẩn và push lên remote | `commit-push`; chỉ chạy khi người dùng gọi rõ ràng (hoặc yêu cầu đảm bảo CI pass rồi push), tôn trọng git hook, không thêm `Co-Authored-By:` |
 | Hỏi về cấu trúc, quan hệ file/symbol hoặc nội dung codebase | `graphify`; query graph hiện có trước khi đọc rộng, chỉ update theo điều kiện của `AGENTS.md` |
 | Tích hợp/tra dữ liệu SePay, chuyển khoản, VietQR, webhook thanh toán, hóa đơn | `sepay`; đọc trước khi gọi công cụ SePay |
 | Người dùng yêu cầu audit bảo mật / code an toàn | `security-best-practices`; xem rule `security-review` |
