@@ -1,10 +1,9 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
-import { qrCodeService } from "@/modules/utilities/services/qr-code.service";
+import { useQrCode } from "@/modules/utilities/hooks/use-qr-code";
 import { FormPage } from "@/shares/components/common/form-page";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
@@ -31,16 +30,7 @@ export function PortalQrCodeEdit({
   const t = useTranslations("portal.qrCodes");
   const { data: currentUser, isPending: isUserPending } = useCurrentUser();
 
-  const {
-    data: code,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ["portal-qr-code-detail", id],
-    queryFn: ({ signal }) => qrCodeService.get(id, signal),
-  });
+  const { data: code, isLoading, isError, error, refetch } = useQrCode(id);
 
   if (isLoading || isUserPending) {
     return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;

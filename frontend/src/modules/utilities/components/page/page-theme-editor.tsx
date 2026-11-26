@@ -234,7 +234,10 @@ export function PageThemeEditor({
                   onValueChange={(val) => {
                     field.onChange(val);
                     if (setValue) {
-                      if (val === "dark" && isLightHexColor(currentBg)) {
+                      if (val === "system") {
+                        setValue("backgroundColor", "", { shouldDirty: true });
+                        setValue("textColor", "", { shouldDirty: true });
+                      } else if (val === "dark" && isLightHexColor(currentBg)) {
                         setValue("backgroundColor", "#09090B", { shouldDirty: true });
                         setValue("textColor", "#F4F4F5", { shouldDirty: true });
                       } else if (val === "light" && !isLightHexColor(currentBg)) {

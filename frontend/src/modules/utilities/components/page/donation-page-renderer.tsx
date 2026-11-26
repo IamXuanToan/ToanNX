@@ -19,7 +19,6 @@ import {
 import { toSafeImageSrc } from "@/shares/lib/safe-url";
 
 import { useResolvedPageTheme } from "../../hooks/use-resolved-page-theme";
-import { isLightHexColor } from "../../lib/page-theme";
 import type { DonationQrItem, PublicPage } from "../../types/page.types";
 import { useDonationPageRenderer } from "./hooks/use-donation-page-renderer";
 import { DonationPublicFeed } from "./donation-public-feed";
@@ -222,8 +221,7 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
     handleCopyNote,
   } = useDonationPageRenderer(qrCodes, fallbackBank.accountNumber, minAmount, displayMode);
 
-  const { isDark, primaryColor, primaryForeground, buttonStyle, customStyle } =
-    useResolvedPageTheme(page);
+  const { pageThemeScope, buttonStyle, customStyle } = useResolvedPageTheme(page);
   const buttonRadiusClass =
     buttonStyle === "square"
       ? "rounded-none"
@@ -287,10 +285,10 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
   return (
     <main
       style={customStyle}
+      data-page-theme={pageThemeScope}
       className={cn(
         "bg-background text-foreground flex min-h-svh flex-col items-center transition-colors duration-200",
         coverUrl ? "pb-16 sm:pb-20" : "px-4 py-8 sm:py-14",
-        isDark ? "dark" : "light",
       )}
     >
       {/* 1. Ảnh bìa / Thumbnail */}
@@ -358,14 +356,6 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                         "h-8 gap-1.5 px-3 text-xs font-semibold shadow-2xs transition-all",
                         buttonRadiusClass,
                       )}
-                      style={
-                        isActive
-                          ? {
-                              backgroundColor: primaryColor,
-                              color: isLightHexColor(primaryColor) ? "#0f172a" : "#ffffff",
-                            }
-                          : undefined
-                      }
                     >
                       <span className="text-[10px] opacity-80">
                         [{getMethodBadgeName(item.type)}]
@@ -598,16 +588,8 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                               "border-border/80 group hover:border-primary/50 relative flex h-auto min-h-13.5 w-full max-w-full min-w-0 flex-col items-center justify-center overflow-hidden px-2.5 py-2 text-center whitespace-normal shadow-2xs transition-all duration-200 hover:shadow-xs",
                               buttonStyle === "pill" ? "rounded-full px-3.5" : "rounded-2xl px-2.5",
                               isOddLast && "min-[360px]:col-span-2",
-                              isSelected && "ring-primary/30 shadow-sm ring-2",
+                              isSelected && "border-primary ring-primary/30 shadow-sm ring-2",
                             )}
-                            style={
-                              isSelected
-                                ? {
-                                    backgroundColor: primaryColor,
-                                    color: primaryForeground,
-                                  }
-                                : undefined
-                            }
                           >
                             {preset.title ? (
                               <div className="flex w-full max-w-full min-w-0 items-center justify-center gap-1 px-0.5 text-[11px] leading-tight font-medium opacity-90">

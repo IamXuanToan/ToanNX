@@ -76,7 +76,7 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
     url: proj.url ? String(proj.url) : undefined,
     tags: (proj.tags as string[]) ?? [],
   }));
-  const { isDark, buttonStyle, customStyle } = useResolvedPageTheme(page);
+  const { pageThemeScope, buttonStyle, customStyle } = useResolvedPageTheme(page);
   const buttonRadiusClass =
     buttonStyle === "square"
       ? "rounded-none"
@@ -104,10 +104,8 @@ export function BioPageRenderer({ page }: { page: PublicPage }) {
   return (
     <main
       style={customStyle}
-      className={cn(
-        "bg-background text-foreground min-h-svh pb-20 transition-colors duration-200",
-        isDark ? "dark" : "light",
-      )}
+      data-page-theme={pageThemeScope}
+      className="bg-background text-foreground min-h-svh pb-20 transition-colors duration-200"
     >
       {/* 1. Ảnh bìa (Cover Banner) */}
       {coverUrl ? (

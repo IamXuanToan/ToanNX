@@ -33,7 +33,7 @@ export function PagePreviewFrame({
   const tCommon = useTranslations("common.actions");
   const [fullModalOpen, setFullModalOpen] = useState(false);
 
-  const { isDark } = useResolvedPageTheme(page);
+  const { pageThemeScope } = useResolvedPageTheme(page);
 
   return (
     <>
@@ -124,10 +124,8 @@ export function PagePreviewFrame({
           {device === "mobile" ? (
             /* Mockup Điện thoại iPhone */
             <div
-              className={cn(
-                "bg-background relative mx-auto flex h-[720px] w-[390px] max-w-full flex-col overflow-hidden rounded-[2.5rem] border-[8px] border-neutral-900 shadow-2xl transition-all duration-300 dark:border-neutral-800",
-                isDark ? "dark" : "light",
-              )}
+              data-page-theme={pageThemeScope}
+              className="bg-background relative mx-auto flex h-[720px] w-[390px] max-w-full flex-col overflow-hidden rounded-[2.5rem] border-[8px] border-neutral-900 shadow-2xl transition-all duration-300 dark:border-neutral-800"
             >
               <div className="pointer-events-none absolute top-2 left-1/2 z-20 h-3.5 w-24 -translate-x-1/2 rounded-full bg-neutral-900 dark:bg-neutral-800" />
               <div className="h-full overflow-y-auto">
@@ -141,10 +139,8 @@ export function PagePreviewFrame({
             /* Mockup Tablet iPad */
             <div className="flex w-full flex-col items-center">
               <div
-                className={cn(
-                  "border-border bg-background relative flex h-[720px] w-full max-w-[640px] flex-col overflow-hidden rounded-2xl border shadow-xl transition-all duration-300",
-                  isDark ? "dark" : "light",
-                )}
+                data-page-theme={pageThemeScope}
+                className="border-border bg-background relative flex h-[720px] w-full max-w-[640px] flex-col overflow-hidden rounded-2xl border shadow-xl transition-all duration-300"
               >
                 <div className="border-border bg-muted/60 flex shrink-0 items-center gap-1.5 border-b px-4 py-2">
                   <div className="size-2.5 rounded-full bg-red-400/80" />
@@ -165,10 +161,8 @@ export function PagePreviewFrame({
             /* Mockup Desktop Browser với tỷ lệ chuẩn 100% không bóp méo */
             <div className="flex w-full flex-col items-center">
               <div
-                className={cn(
-                  "border-border bg-background relative flex h-[720px] w-full flex-col overflow-hidden rounded-xl border shadow-md transition-all duration-300",
-                  isDark ? "dark" : "light",
-                )}
+                data-page-theme={pageThemeScope}
+                className="border-border bg-background relative flex h-[720px] w-full flex-col overflow-hidden rounded-xl border shadow-md transition-all duration-300"
               >
                 {/* Thanh tiêu đề cửa sổ browser */}
                 <div className="border-border bg-muted/60 flex shrink-0 items-center gap-1.5 border-b px-4 py-2">
@@ -194,10 +188,7 @@ export function PagePreviewFrame({
       <Dialog open={fullModalOpen} onOpenChange={setFullModalOpen}>
         <DialogContent
           showCloseButton={false}
-          className={cn(
-            "flex h-[92vh] max-h-[960px] w-[95vw] flex-col overflow-hidden rounded-2xl border p-0 shadow-2xl sm:max-w-[95vw] md:max-w-[95vw] lg:max-w-7xl",
-            isDark && "dark",
-          )}
+          className="flex h-[92vh] max-h-[960px] w-[95vw] flex-col overflow-hidden rounded-2xl border p-0 shadow-2xl sm:max-w-[95vw] md:max-w-[95vw] lg:max-w-7xl"
         >
           {/* Header điều khiển trong Modal xem trước */}
           <div className="bg-muted/40 border-border/80 flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2.5 sm:px-6">
@@ -289,10 +280,8 @@ export function PagePreviewFrame({
             {device === "mobile" ? (
               /* Khung Điện thoại Smartphone trong Modal */
               <div
-                className={cn(
-                  "bg-background relative mx-auto my-auto flex w-[375px] max-w-full shrink-0 flex-col overflow-hidden rounded-[2.5rem] border-[8px] border-neutral-900 shadow-2xl transition-all duration-300 dark:border-neutral-800",
-                  isDark ? "dark" : "light",
-                )}
+                data-page-theme={pageThemeScope}
+                className="bg-background relative mx-auto my-auto flex w-[375px] max-w-full shrink-0 flex-col overflow-hidden rounded-[2.5rem] border-[8px] border-neutral-900 shadow-2xl transition-all duration-300 dark:border-neutral-800"
               >
                 <div className="pointer-events-none absolute top-2 left-1/2 z-20 h-3.5 w-24 -translate-x-1/2 rounded-full bg-neutral-900 dark:bg-neutral-800" />
                 <div
@@ -310,10 +299,8 @@ export function PagePreviewFrame({
             ) : device === "tablet" ? (
               /* Khung Máy tính bảng Tablet iPad trong Modal */
               <div
-                className={cn(
-                  "bg-background relative mx-auto my-auto flex h-[740px] max-h-[76vh] w-[768px] max-w-full shrink-0 flex-col overflow-hidden rounded-2xl border-[8px] border-neutral-900 shadow-xl transition-all duration-300 dark:border-neutral-800",
-                  isDark ? "dark" : "light",
-                )}
+                data-page-theme={pageThemeScope}
+                className="bg-background relative mx-auto my-auto flex h-[740px] max-h-[76vh] w-[768px] max-w-full shrink-0 flex-col overflow-hidden rounded-2xl border-[8px] border-neutral-900 shadow-xl transition-all duration-300 dark:border-neutral-800"
               >
                 <div className="flex-1 overflow-y-auto">
                   <PublicPage page={page} />
@@ -322,10 +309,8 @@ export function PagePreviewFrame({
             ) : (
               /* Khung Máy tính Desktop Browser trong Modal */
               <div
-                className={cn(
-                  "border-border bg-background relative my-auto flex h-[780px] max-h-[80vh] w-full max-w-6xl shrink-0 flex-col overflow-hidden rounded-xl border shadow-2xl transition-all duration-300",
-                  isDark ? "dark" : "light",
-                )}
+                data-page-theme={pageThemeScope}
+                className="border-border bg-background relative my-auto flex h-[780px] max-h-[80vh] w-full max-w-6xl shrink-0 flex-col overflow-hidden rounded-xl border shadow-2xl transition-all duration-300"
               >
                 {/* Thanh cửa sổ trình duyệt máy tính */}
                 <div className="border-border bg-muted/70 flex shrink-0 items-center gap-2 border-b px-4 py-2.5">

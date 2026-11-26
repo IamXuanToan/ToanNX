@@ -135,13 +135,19 @@ export function PageForm({
     defaultTab,
   });
 
-  const handleApplyPreset = (preset: ThemePreset) => {
+  const handleApplyPreset = (preset: ThemePreset, applyMode = true) => {
     form.setValue("primaryColor", preset.primary, { shouldDirty: true, shouldValidate: true });
-    form.setValue("backgroundColor", preset.bg, { shouldDirty: true, shouldValidate: true });
-    form.setValue("textColor", preset.text, { shouldDirty: true, shouldValidate: true });
     form.setValue("buttonStyle", preset.buttonStyle, { shouldDirty: true, shouldValidate: true });
-    if (preset.mode) {
+    const nextMode = applyMode && preset.mode ? preset.mode : form.getValues("themeMode");
+    if (applyMode && preset.mode) {
       form.setValue("themeMode", preset.mode, { shouldDirty: true, shouldValidate: true });
+    }
+    if (nextMode === "system") {
+      form.setValue("backgroundColor", "", { shouldDirty: true, shouldValidate: true });
+      form.setValue("textColor", "", { shouldDirty: true, shouldValidate: true });
+    } else {
+      form.setValue("backgroundColor", preset.bg, { shouldDirty: true, shouldValidate: true });
+      form.setValue("textColor", preset.text, { shouldDirty: true, shouldValidate: true });
     }
     const currentStyleConfig = form.getValues("styleConfig") ?? {};
     form.setValue(
@@ -150,8 +156,7 @@ export function PageForm({
         ...currentStyleConfig,
         themePreset: preset.name.toLowerCase().replace(/\s+/g, "_"),
         primaryColor: preset.primary,
-        backgroundColor: preset.bg,
-        textColor: preset.text,
+        ...(nextMode === "system" ? {} : { backgroundColor: preset.bg, textColor: preset.text }),
       },
       { shouldDirty: true },
     );
@@ -216,11 +221,11 @@ export function PageForm({
               onChange={(nextType) => {
                 field.onChange(nextType);
                 if (nextType === PAGE_TYPE.AFFILIATE) {
-                  handleApplyPreset(THEME_PRESETS[0]);
+                  handleApplyPreset(THEME_PRESETS[0], false);
                 } else if (nextType === PAGE_TYPE.BIO) {
-                  handleApplyPreset(THEME_PRESETS[1]);
+                  handleApplyPreset(THEME_PRESETS[1], false);
                 } else if (nextType === PAGE_TYPE.DONATION) {
-                  handleApplyPreset(THEME_PRESETS[2]);
+                  handleApplyPreset(THEME_PRESETS[2], false);
                 }
               }}
               disabled={locked}

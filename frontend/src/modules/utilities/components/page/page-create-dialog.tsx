@@ -183,25 +183,17 @@ export function PageCreateDialog({
         templateKey: selectedOption.templateKey,
         templateVersion: 1,
         contentConfig: isLegacy ? {} : PAGE_FORM_DEFAULTS.contentConfig,
-        theme: isLegacy
-          ? {
-              mode: "system",
-              buttonStyle: "rounded",
-            }
-          : {
-              primaryColor: preset.primary,
-              backgroundColor: preset.bg,
-              textColor: preset.text,
-              buttonStyle: preset.buttonStyle,
-              mode: preset.mode,
-            },
+        theme: {
+          ...(isLegacy
+            ? { buttonStyle: "rounded" as const }
+            : { primaryColor: preset.primary, buttonStyle: preset.buttonStyle }),
+          mode: "system" as const,
+        },
         styleConfig: isLegacy
           ? {}
           : {
               themePreset: preset.name.toLowerCase().replace(/\s+/g, "_"),
               primaryColor: preset.primary,
-              backgroundColor: preset.bg,
-              textColor: preset.text,
             },
         responsiveConfig: isLegacy ? {} : PAGE_FORM_DEFAULTS.responsiveConfig,
         content: { type: "doc", content: [{ type: "paragraph" }] },

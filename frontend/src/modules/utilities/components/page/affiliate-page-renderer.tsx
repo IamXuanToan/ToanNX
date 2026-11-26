@@ -59,7 +59,7 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
     });
   }, [categories]);
 
-  const { isDark, buttonStyle, customStyle } = useResolvedPageTheme(page);
+  const { pageThemeScope, buttonStyle, customStyle } = useResolvedPageTheme(page);
   const layout = (styleConfig.layout as string) ?? "grid";
   const showPrice = styleConfig.showPrice !== false && styleConfig.show_price !== false;
   const showImage = styleConfig.showImage !== false && styleConfig.show_image !== false;
@@ -100,10 +100,8 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
   return (
     <main
       style={customStyle}
-      className={cn(
-        "bg-background text-foreground min-h-svh pb-20 transition-colors duration-200",
-        isDark ? "dark" : "light",
-      )}
+      data-page-theme={pageThemeScope}
+      className="bg-background text-foreground min-h-svh pb-20 transition-colors duration-200"
     >
       {/* 1. Header ảnh bìa */}
       {coverUrl ? (
