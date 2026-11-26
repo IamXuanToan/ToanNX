@@ -140,7 +140,7 @@ class BackendTemplateDefinition:
 
 ## 4. Kiểm soát Cache và Tối ưu Ngân sách Hạ tầng
 
-Tuân thủ nghiêm ngặt tài liệu [Hạ tầng và giới hạn gói miễn phí](../architecture/infrastructure.md):
+Tuân thủ nghiêm ngặt tài liệu [Hạ tầng và giới hạn gói miễn phí](../../../../architecture/infrastructure.md):
 
 1. **Bảo vệ Neon Compute (100 CU-giờ/tháng):**
    - Tất cả trang ở trạng thái `PUBLISHED` được cache tại Upstash Redis.

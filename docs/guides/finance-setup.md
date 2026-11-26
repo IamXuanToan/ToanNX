@@ -1,6 +1,6 @@
 # Hướng dẫn cài đặt và dùng module Tài chính
 
-Cập nhật 22/11/2026. Thiết kế: [plans/finance-refactor-plan.md](../plans/finance-refactor-plan.md). Thông báo
+Cập nhật 22/11/2026. Thiết kế: [plans/2026/11/21/finance-refactor-plan.md](../plans/2026/11/21/finance-refactor-plan.md). Thông báo
 (chuông, Telegram, popup trình duyệt): [notification-setup-guide.md](notification-setup.md).
 
 ## 1. Module làm gì

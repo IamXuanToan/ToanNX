@@ -1,11 +1,11 @@
 # Plan: tối ưu toàn hệ thống trên hạ tầng free
 
 Ngày: 2026-11-22 · Trạng thái: **giai đoạn 0–3 đã làm (backend), giai đoạn 4 làm một phần, giai đoạn 5 chưa làm** — xem
-[reports/2026-11-22-free-tier-optimization-result.md](../reports/2026-11-22-free-tier-optimization-result.md)
+[reports/2026-11-22-free-tier-optimization-result.md](../../../../reports/2026-11-22-free-tier-optimization-result.md)
 
-Nền tảng: [architecture/infrastructure.md](../architecture/infrastructure.md) (giới hạn và ngân sách).
-Thay thế: [reports/2026-11-22-background-jobs-plan.md](../reports/2026-11-22-background-jobs-plan.md).
-Nguyên nhân gốc: [reports/2026-11-22-login-performance.md](../reports/2026-11-22-login-performance.md).
+Nền tảng: [architecture/infrastructure.md](../../../../architecture/infrastructure.md) (giới hạn và ngân sách).
+Thay thế: [reports/2026-11-22-background-jobs-plan.md](../../../../reports/2026-11-22-background-jobs-plan.md).
+Nguyên nhân gốc: [reports/2026-11-22-login-performance.md](../../../../reports/2026-11-22-login-performance.md).
 
 ## Mục tiêu
 
@@ -168,7 +168,7 @@ vào báo cáo; E2E chỉ chạy spec liên quan (`auth.spec.ts`, spec link rút
 
 ## Giai đoạn 6. Vận hành
 
-- Checklist hằng tuần ở [infrastructure.md §6](../architecture/infrastructure.md#6-checklist-theo-dõi-hằng-tuần).
+- Checklist hằng tuần ở [infrastructure.md §6](../../../../architecture/infrastructure.md#6-checklist-theo-dõi-hằng-tuần).
 - Vercel Cron (1 lần/ngày) giữ việc dọn dẹp; cron-job.org mỗi 10 phút là lưới an toàn cho thông báo.
 - Sau mỗi giai đoạn: chạy test liên quan, ghi số đo trước và sau vào `docs/reports/`.
 

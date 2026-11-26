@@ -1,6 +1,6 @@
 # Module Tài chính cá nhân — thu nhập, giao dịch ngân hàng (SePay), chứng từ, thuế
 > **Đã thay thế** phần mô hình dữ liệu và chức năng bởi [finance-refactor-plan.md](finance-refactor-plan.md) và
-> [notification-system-plan.md](notification-system-plan.md) (11/2026).
+> [notification-system-plan.md](../22/notification-system-plan.md) (11/2026).
 
 
 Ngày 21/11/2026 · bản 5 (chống trùng theo mã giao dịch; mẫu thông báo; rà soát hoàn thiện).

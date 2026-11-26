@@ -881,7 +881,7 @@ Hóa đơn không làm thay đổi số báo cáo ở 14.3.
 
 ## 15. Thông báo (xem plan riêng)
 
-Toàn bộ thông báo nằm ở [notification-system-plan.md](notification-system-plan.md) và làm cùng đợt:
+Toàn bộ thông báo nằm ở [notification-system-plan.md](../22/notification-system-plan.md) và làm cùng đợt:
 
 - chuông 2 tab Cá nhân / Hệ thống, mức info/warning/error;
 - realtime + popup trình duyệt qua Firebase;

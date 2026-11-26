@@ -95,7 +95,7 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
   Có thể đặt mật khẩu và thời điểm hết hạn; link hết hạn hiện trang thông báo. Slug tự sinh là UUID.
   Mật khẩu được băm, không trả mã băm hay URL đích của link khóa ở API công khai.
 - Module **Tài chính** (`finance`, BE `app/finance`, FE `modules/finance`, API `/api/v1/finance/...`, bảng
-  `finance_*`, nhóm quản trị "Tài chính"; thiết kế: `docs/plans/finance-refactor-plan.md`). Chỉ theo dõi **thu nhập
+  `finance_*`, nhóm quản trị "Tài chính"; thiết kế: `docs/plans/2026/11/21/finance-refactor-plan.md`). Chỉ theo dõi **thu nhập
   (tiền vào)** của từng người: model `Platform` + `PlatformTaxRate` (lịch sử % khấu trừ theo `effective_from`),
   `ClassificationRule` (regex → nền tảng, thư viện `regex` có timeout), `Income` (nhập tay hoặc SePay; chụp lại
   `tax_rate`/`tax_amount`, sửa được; T = round(N × r / (100 − r)), G = N + T; ngoại tệ quy về VNĐ theo tỷ giá
@@ -107,7 +107,7 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
   (NEW/EXISTS/CHANGED), không ghi đè khoản đã có nếu không chọn. Webhook không có tiền tệ: luôn VNĐ; không đọc được
   số tiền → `amount_status` cần xem lại.
 - Tiền tệ và tỷ giá ở `system` (`Currency` seed VND gốc + USD; `ExchangeRate` nhập tay hoặc Vietcombank, quy về VNĐ).
-- Thông báo dùng chung (module `system`, thiết kế `docs/plans/notification-system-plan.md`): module khai sự kiện
+- Thông báo dùng chung (module `system`, thiết kế `docs/plans/2026/11/22/notification-system-plan.md`): module khai sự kiện
   trong `ModuleDescriptor.notification_events` (`scope` PERSONAL/SYSTEM, `audience` OWNER/SUBSCRIBERS,
   `permission`, mức INFO/WARNING/ERROR) và gọi `NotificationService.notify(...)`; model `Notification` (chuông 2 tab
   Cá nhân / Hệ thống) + outbox `NotificationDelivery` theo kênh (Trình duyệt qua FCM, Email, Telegram); gửi ngay

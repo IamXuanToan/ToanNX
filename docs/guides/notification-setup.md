@@ -1,6 +1,6 @@
 # Hướng dẫn cài đặt thông báo
 
-Cập nhật 22/11/2026. Thiết kế: [plans/notification-system-plan.md](../plans/notification-system-plan.md).
+Cập nhật 22/11/2026. Thiết kế: [plans/2026/11/22/notification-system-plan.md](../plans/2026/11/22/notification-system-plan.md).
 
 ## 1. Thông báo hoạt động thế nào
 

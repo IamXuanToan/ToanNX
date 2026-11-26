@@ -1,6 +1,6 @@
 """Dữ liệu kịch bản năm 2026 (plan mục 14): cấu hình, webhook giả lập, nhập tay, sửa giao dịch.
 
-Kết quả kỳ vọng ở `EXPECTED_2026` khớp bảng 14.3 của `docs/plans/finance-refactor-plan.md`.
+Kết quả kỳ vọng ở `EXPECTED_2026` khớp bảng 14.3 của `docs/plans/2026/11/21/finance-refactor-plan.md`.
 """
 
 from datetime import date

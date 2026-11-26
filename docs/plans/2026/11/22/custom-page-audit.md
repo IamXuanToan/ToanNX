@@ -47,7 +47,7 @@ Admin tạo trang với tiêu đề, đường dẫn giữa (`PagePath`), slug, 
 Hệ thống ToanNX tuân thủ kiến trúc phân tầng độc lập (`CoreModelViewSet`, `CoreCrudService`, `CoreRepository`). Khi mở rộng Template-Based Page, các tài nguyên sau trong hệ thống có thể và cần được tái sử dụng:
 
 ### 3.1. Thư viện file (`system.attachment`) & Cloudflare R2
-- **Cơ chế:** Attachment phân quyền chặt chẽ (`public` vs `private`). Ảnh đại diện (`avatar`), ảnh bìa (`cover`), logo mã QR và hình ảnh đưa vào trang công khai **bắt buộc là file `public`** (xem tài liệu [docs/features/attachment-visibility.md](../features/attachment-visibility.md)).
+- **Cơ chế:** Attachment phân quyền chặt chẽ (`public` vs `private`). Ảnh đại diện (`avatar`), ảnh bìa (`cover`), logo mã QR và hình ảnh đưa vào trang công khai **bắt buộc là file `public`** (xem tài liệu [docs/features/attachment-visibility.md](../../../../features/attachment-visibility.md)).
 - **Tái sử dụng:**
   - `AttachmentImageUploadView` / `AttachmentPicker`: Tái sử dụng trực tiếp trong form quản trị để admin chọn ảnh đại diện, ảnh bìa, hoặc upload ảnh sản phẩm (trong trường hợp muốn lưu trữ ảnh cố định trên R2).
   - Tận dụng `AttachmentService.find_alive_images()` để kiểm tra quyền sở hữu ảnh (tránh việc dùng ảnh private hoặc ảnh của người khác).
