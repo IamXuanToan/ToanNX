@@ -22,8 +22,6 @@ export const JOURNAL_FIELD_PREFIXES: Readonly<Record<string, MessageKey>> = {
   "workspace.subscription": "workspace.subscriptions.fields",
   "workspace.subscription_payment": "workspace.subscriptionPayments.fields",
   "workspace.vault_item": "workspace.vault.fields",
-  "workspace.monitor_target": "workspace.monitors.fields",
-  "workspace.monitor_incident": "workspace.monitorIncidents.fields",
   "workspace.reminder": "workspace.reminders.fields",
   "workspace.workspace_setting": "workspace.settings.fields",
 };

@@ -114,10 +114,8 @@ export function useInvitationForm() {
       queryClient.setQueryData(authKeys.me(), result);
       toast.success(t("welcomeSuccess", { name: result.user.fullName || result.user.email }));
 
-      const targetPath: AppPathname = result.user.isStaff
-        ? AUTH_WORKSPACE_PATHS.admin
-        : AUTH_WORKSPACE_PATHS.home;
-      router.replace(targetPath);
+      const targetPath: AppPathname = AUTH_WORKSPACE_PATHS.portal;
+      router.replace(targetPath as never);
     } catch (error) {
       setRootError(errorMessage(error));
     } finally {

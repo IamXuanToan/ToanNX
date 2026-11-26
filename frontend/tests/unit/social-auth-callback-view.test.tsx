@@ -110,6 +110,18 @@ describe("SocialAuthCallbackView", () => {
     expect(mockReplace).toHaveBeenCalledWith(AUTH_WORKSPACE_PATHS.portal);
   });
 
+  it("chuyển cả tài khoản Admin/Staff về Client Portal khi không có next", async () => {
+    sessionStorage.setItem(OAUTH_STORAGE_KEYS.state, "valid_state");
+    mockSearchParams = new URLSearchParams("code=mock_code&state=valid_state");
+    mockExchange.mockResolvedValue({ user: { isStaff: true, isSuperuser: true } });
+
+    render(<SocialAuthCallbackView provider="github" />);
+
+    const btn = await screen.findByRole("button", { name: "Chuyển hướng ngay" });
+    fireEvent.click(btn);
+    expect(mockReplace).toHaveBeenCalledWith(AUTH_WORKSPACE_PATHS.portal);
+  });
+
   it("dùng next/navigation replace khi next là đường dẫn có sẵn prefix ngôn ngữ", async () => {
     sessionStorage.setItem(OAUTH_STORAGE_KEYS.state, "valid_state");
     sessionStorage.setItem(OAUTH_STORAGE_KEYS.next, "/vi/quan-tri/tien-ich/quyen-gop");

@@ -53,7 +53,6 @@ export function useSocialAuthCallback(provider: string) {
   const [isNotLinked, setIsNotLinked] = useState(false);
   const [redirectTarget, setRedirectTarget] = useState<string | null>(null);
   const [authMode, setAuthMode] = useState<string>("login");
-  const [isStaffTarget, setIsStaffTarget] = useState(false);
   const executedRef = useRef(false);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -121,7 +120,6 @@ export function useSocialAuthCallback(provider: string) {
             targetUrl = null;
           }
         }
-        setIsStaffTarget(isStaffUser);
         setRedirectTarget(targetUrl);
         setStatus("success");
 
@@ -132,16 +130,14 @@ export function useSocialAuthCallback(provider: string) {
           } else {
             if (mode === OAUTH_MODE.link) {
               router.replace({
-                pathname: AUTH_WORKSPACE_PATHS.admin,
+                pathname: AUTH_WORKSPACE_PATHS.portal,
                 query: {
                   [PROFILE_DIALOG_QUERY.openParam]: PROFILE_DIALOG_QUERY.openValue,
                   [PROFILE_DIALOG_QUERY.tabParam]: PROFILE_DIALOG_QUERY.socialTab,
                 },
               });
             } else {
-              router.replace(
-                isStaffUser ? AUTH_WORKSPACE_PATHS.admin : (AUTH_WORKSPACE_PATHS.portal as never),
-              );
+              router.replace(AUTH_WORKSPACE_PATHS.portal as never);
             }
           }
         }, 1000);
@@ -175,16 +171,14 @@ export function useSocialAuthCallback(provider: string) {
     } else {
       if (authMode === OAUTH_MODE.link) {
         router.replace({
-          pathname: AUTH_WORKSPACE_PATHS.admin,
+          pathname: AUTH_WORKSPACE_PATHS.portal,
           query: {
             [PROFILE_DIALOG_QUERY.openParam]: PROFILE_DIALOG_QUERY.openValue,
             [PROFILE_DIALOG_QUERY.tabParam]: PROFILE_DIALOG_QUERY.socialTab,
           },
         });
       } else {
-        router.replace(
-          isStaffTarget ? AUTH_WORKSPACE_PATHS.admin : (AUTH_WORKSPACE_PATHS.portal as never),
-        );
+        router.replace(AUTH_WORKSPACE_PATHS.portal as never);
       }
     }
   };

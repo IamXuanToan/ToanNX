@@ -53,8 +53,8 @@ Cơ chế "của mình / của mọi người": [../../features/permission-scope
 | Tích hợp | Webhook · Callback | `webhook`, `callback` |
 | Vận hành | Cài đặt · Nhật ký thay đổi | `cai-dat`, `nhat-ky` |
 
-Trang công khai/đăng nhập: đăng nhập, quên/đặt lại mật khẩu, xác thực email, lời mời, callback OAuth, trang mở
-file riêng tư `/tep/{id}`.
+Trang công khai/đăng nhập: đăng nhập (mọi tài khoản mặc định vào Client Portal `/portal`; Admin tự chuyển sang `/admin` qua `UserMenu`), quên/đặt lại mật khẩu, xác thực email, lời mời, callback OAuth, trang mở
+file riêng tư `/tep/{id}`. Chuông thông báo chuẩn hóa link cũ `/admin/finance/...` và `/admin/sessions` về `/portal/...`.
 
 ## Sự kiện thông báo
 
@@ -79,7 +79,7 @@ file riêng tư `/tep/{id}`.
 - `notify` chỉ ghi `Notification` + `NotificationDelivery(PENDING)`; **request không gọi FCM/SMTP/Telegram**. Sau
   commit đá `NotificationKickService` một lần cho cả request (mốc Redis `notification:next_due` + tin QStash).
 - Lỗi tạm → `next_attempt_at` theo lùi dần 1/5/15/60/240 phút và hẹn QStash gọi lại đúng lúc đó.
-- Token bot Telegram chung đọc từ ENV (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, webhook `POST /api/v1/system/telegram/webhook/<webhook_secret>`); module khác có thể đăng ký callback nhận tin nhắn qua `ModuleRegistry.register_telegram_update_handler`. Khi Telegram trả 401/403/404 cho đích nhận `TelegramChat` → đánh dấu lỗi `TELEGRAM_CHAT_UNREACHABLE`, một bản `FAILED` + cảnh báo.
+- Token bot Telegram chung đọc từ ENV (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, webhook `POST /api/v1/system/telegram/webhook` xác thực bằng header `X-Telegram-Bot-Api-Secret-Token` dẫn xuất từ `DJANGO_SECRET_KEY`); module khác có thể đăng ký callback nhận tin nhắn qua `ModuleRegistry.register_telegram_update_handler`. Khi Telegram trả 401/403/404 cho đích nhận `TelegramChat` → đánh dấu lỗi `TELEGRAM_CHAT_UNREACHABLE`, một bản `FAILED` + cảnh báo.
 - `NotificationService.notify(..., kick=False)` hỗ trợ phát hàng loạt và dồn một lần gọi `NotificationService.flush_kick()`.
 - Tin Telegram/email dựng bằng `NotificationMessageFormatter`: `<icon> <b>Tiêu đề</b>`, các dòng `details`, `🕒 Thời gian`,
   `👉 Xem chi tiết`. Icon sự kiện: đăng nhập 🔐, thiết bị mới 🛡️, đổi mật khẩu 🔑, thông báo hệ thống 📢, gửi lỗi 🚨,

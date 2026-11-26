@@ -24,10 +24,17 @@ class TestSettingListApi(BaseApiTestCase):
         assert "auth_github_enabled" in keys
 
     def test_filter_settings_by_category(self, superuser: User, login: Any) -> None:
-        """Lọc cấu hình theo nhóm (category=auth)."""
-        res = login(superuser).get(f"{URL}?page=1&category=auth")
+        """Lọc cấu hình theo nhóm (`category=auth`, `category=assistant`) và `is_public`."""
+        client = login(superuser)
+        res = client.get(f"{URL}?page=1&category=auth")
         items, _ = self.assert_paginated(res)
+        assert len(items) >= 2
         assert all(item["category"] == "auth" for item in items)
+
+        res_assistant = client.get(f"{URL}?page=1&category=assistant&is_public=false")
+        assistant_items, _ = self.assert_paginated(res_assistant)
+        assert any(item["key"] == "workspace_assistant_config" for item in assistant_items)
+        assert all(item["category"] == "assistant" and item["is_public"] is False for item in assistant_items)
 
     def test_list_unauthenticated_rejected(self, client: Any) -> None:
         """Khách chưa đăng nhập bị 401."""

@@ -56,7 +56,10 @@ export function useProfileDialog({
   const isProfileOpenInUrl =
     urlMode === "page" ||
     searchParams?.get(PROFILE_DIALOG_QUERY.openParam) === PROFILE_DIALOG_QUERY.openValue;
-  const rawTabParam = isProfileOpenInUrl ? searchParams?.get(PROFILE_DIALOG_QUERY.tabParam) : null;
+  const rawTabParam = isProfileOpenInUrl
+    ? (searchParams?.get(PROFILE_DIALOG_QUERY.tabParam) ??
+      (urlMode === "page" ? searchParams?.get("tab") : null))
+    : null;
   const tabParam = rawTabParam === "password" ? "security" : rawTabParam;
   const validTab =
     tabParam === "security" ||

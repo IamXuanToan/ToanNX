@@ -176,6 +176,33 @@ class NotificationPreferenceService:
             result[user.pk] = resolved
         return result
 
+    def resolve_explicit(
+        self, users: list[Any], channels: tuple[str, ...] | list[str], level: str
+    ) -> dict[Any, ResolvedChannels]:
+        """Xác định kênh gửi tường minh theo cấu hình từng bản ghi (`WEBSITE`/`TELEGRAM`/`EMAIL`)."""
+        allowed_set = {str(ch) for ch in channels}
+        user_ids = [user.pk for user in users]
+        active_chats: dict[Any, list[Any]] = defaultdict(list)
+        if Channel.TELEGRAM in allowed_set and self.telegram_bot_service.is_configured():
+            for chat in self.telegram_chat_repository.filter(
+                owner_id__in=user_ids, status=TelegramChat.Status.ACTIVE, is_active=True
+            ):
+                active_chats[chat.owner_id].append(chat.pk)
+
+        push_ready = Channel.PUSH in allowed_set and self.push_device_service.is_configured()
+        result: dict[Any, ResolvedChannels] = {}
+        for user in users:
+            in_app = (Channel.IN_APP in allowed_set) or (level == NotificationLevel.ERROR)
+            email_ok = (Channel.EMAIL in allowed_set) and bool(user.email)
+            chat_ids = list(active_chats.get(user.pk, [])) if Channel.TELEGRAM in allowed_set else []
+            result[user.pk] = ResolvedChannels(
+                in_app=in_app,
+                push=push_ready,
+                email=email_ok,
+                chat_ids=chat_ids,
+            )
+        return result
+
     def _resolve_one(self, user_id: Any, event: NotificationEventDefinition) -> ResolvedChannels:
         rows = list(self.repository.for_users([user_id], event.code))
         chats = (

@@ -1,6 +1,6 @@
 # Xác thực
 
-Không có đăng ký (`/register`, `/signup` trả 404). Đăng nhập bằng email + mật khẩu (Argon2id).
+Không có đăng ký (`/register`, `/signup` trả 404). Đăng nhập bằng email + mật khẩu (Argon2id) hoặc OAuth; mặc định điều hướng vào Client Portal (`/ca-nhan` / `/en/portal`) cho mọi vai trò (Admin tự chuyển sang `/quan-tri` qua `UserMenu` nếu cần, trừ trường hợp có `?next=`/`?redirect=` hợp lệ).
 
 ## API (`/api/v1/system/auth`)
 

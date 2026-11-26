@@ -90,8 +90,8 @@ export function useLoginForm(redirectTo: AppPathname) {
         window.location.assign(next);
       }
     } else {
-      // Người dùng có is_staff=True thì vào trang admin, không thì vào client portal
-      const destination = isStaffUser ? redirectTo : (AUTH_WORKSPACE_PATHS.portal as AppPathname);
+      // Mọi tài khoản (kể cả Admin) mặc định luôn vào Client Portal; Admin tự chuyển sang /admin sau khi đăng nhập
+      const destination = redirectTo || (AUTH_WORKSPACE_PATHS.portal as AppPathname);
       router.replace(destination as never);
     }
   });

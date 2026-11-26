@@ -58,11 +58,11 @@ Vercel Cron gói miễn phí chỉ chạy 1 lần/ngày (dọn dẹp, có gửi 
 
 ## 5. Telegram (1 Bot hệ thống qua ENV + Đích nhận theo người dùng)
 
-Cấu hình `TELEGRAM_BOT_TOKEN` (bắt buộc) và `TELEGRAM_BOT_USERNAME` (tùy chọn, tự lấy từ `getMe`) trên máy chủ BE. Ở **Hồ sơ → Thông báo** (cần quyền `system.telegram_chat.read`):
+Cấu hình `TELEGRAM_BOT_TOKEN` (bắt buộc) và `TELEGRAM_BOT_USERNAME` (tùy chọn, tự lấy từ `getMe`) trong `backend/.env` trên máy chủ BE. Ở **Hồ sơ → Thông báo** (cần quyền `system.telegram_chat.read`):
 
-1. Chat với @BotFather → `/newbot` → chép token → dán → **Lưu và kiểm tra** (token lưu DB đã mã hóa).
-2. **Chat riêng với bot** hoặc **Thêm nhóm** → mở Telegram bằng nút trên màn → quay lại bấm **Kiểm tra**.
-3. **Gửi thử** để xác nhận. Bot đang đặt webhook ở nơi khác thì phải gỡ webhook đó trước.
+1. Kiểm tra card **Bot Telegram hệ thống** hiển thị `@username` và link `https://t.me/<username>`.
+2. Chọn **Chat riêng với bot** hoặc **Thêm nhóm** → mở Telegram bằng nút trên màn (gửi `/start <mã>` hoặc mời bot vào nhóm) → quay lại bấm **Kiểm tra**.
+3. Bấm **Gửi thử** để xác nhận. Cần bật webhook (`POST /api/v1/system/telegram/webhook`) hoặc chạy local `uv run python manage.py poll_telegram_assistant` để nhận `/start`.
 
 Khi Telegram báo bot bị chặn / không gửi được tới chat đã lưu (401/403/404): đích nhận đó bị đánh dấu lỗi
 `TELEGRAM_CHAT_UNREACHABLE` kèm một cảnh báo trong ứng dụng. Quản trị viên có quyền `setting.update` có thể

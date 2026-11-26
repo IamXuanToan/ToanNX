@@ -88,6 +88,7 @@ class NotificationService:
         payload: NotificationPayload,
         recipient: Any | None = None,
         recipients: list[Any] | None = None,
+        channels: tuple[str, ...] | list[str] | None = None,
         kick: bool = True,
     ) -> int:
         """Tạo thông báo cho người nhận của sự kiện; sau commit đá việc gửi (không gửi trong request).
@@ -98,6 +99,7 @@ class NotificationService:
             payload: Nội dung.
             recipient: Người nhận (bắt buộc với sự kiện `OWNER` nếu không truyền `recipients`).
             recipients: Danh sách người nhận do nơi gọi chọn (thông báo hệ thống theo vai trò).
+            channels: Tùy chọn ép tập kênh gửi tường minh (`NotificationChannel`) cho bản ghi.
             kick: True để tự đá `NotificationKickService` sau commit; False để gom chờ gọi `flush_kick()`.
 
         Returns:
@@ -114,7 +116,7 @@ class NotificationService:
         try:
             with transaction.atomic():
                 users = self._recipients(event, recipient, recipients)
-                created, delivery_ids = self._create(event, users, dedup_key, payload)
+                created, delivery_ids = self._create(event, users, dedup_key, payload, channels=channels)
         except Exception:  # noqa: BLE001 - thông báo lỗi không được làm hỏng nghiệp vụ gọi nó
             logger.exception("notification.notify_failed %s", event_code)
             return 0
@@ -268,17 +270,23 @@ class NotificationService:
         users: list[Any],
         dedup_key: str,
         payload: NotificationPayload,
+        *,
+        channels: tuple[str, ...] | list[str] | None = None,
     ) -> tuple[int, list[Any]]:
         if not users:
             return 0, []
         existing = self.repository.existing_recipient_ids(event.code, dedup_key, [user.pk for user in users])
         users = [user for user in users if user.pk not in existing]
         level = payload.level or event.default_level
-        channels = self.preference_service.resolve(users, event, level)
+        resolved_map = (
+            self.preference_service.resolve_explicit(users, channels, level)
+            if channels is not None
+            else self.preference_service.resolve(users, event, level)
+        )
         now = timezone.now()
         notifications: list[Notification] = []
         for user in users:
-            resolved = channels[user.pk]
+            resolved = resolved_map[user.pk]
             if not resolved.any:
                 continue
             notifications.append(
@@ -306,7 +314,7 @@ class NotificationService:
             created.extend(
                 self.repository.bulk_create(notifications[start : start + NOTIFICATION_BULK_BATCH])
             )
-        deliveries = self._deliveries(created, channels)
+        deliveries = self._deliveries(created, resolved_map)
         self.delivery_repository.bulk_create(deliveries)
         return len(created), [delivery.pk for delivery in deliveries]
 
