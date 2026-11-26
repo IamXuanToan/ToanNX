@@ -29,7 +29,7 @@ trước khi viết code Next.
   - đụng chức năng nào → file tương ứng trong `docs/features/` (phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác,
     điều hướng quản trị, file công khai/riêng tư, Web Push…);
   - sửa phần nền → `docs/architecture/`; cài đặt/vận hành → `docs/guides/`;
-  - việc đang dở → `docs/plans/`.
+  - việc đang dở → `docs/plans/<YYYY>/<MM>/<DD>/` (chia thư mục theo năm/tháng/ngày lập).
 
 ## 2. RULE CỐT LÕI
 
@@ -47,8 +47,9 @@ trước khi viết code Next.
   (frontmatter `trigger`: `always_on` | `model_decision` | `glob` + `globs` | `manual`, có `description`), rồi chạy
   `python scripts/sync-ai-rules.py` để sinh lại `.claude/rules/`, `.claude/skills/rule-*/`, `.claude/commands/`.
   Không sửa tay file trong `.claude/` có dòng "Sinh tự động". Cách viết: `.agents/rules/40-docs-and-rules.md`.
-- Skill của project: workflow chính (`start-task`, `fix`, `review-code`) và các skill hỗ trợ (`test`,
-  `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`, `check-ci`) ở `.agents/skills/`, liên kết sang
+- Skill của project: workflow chính (`start-task`, `fix`, `review-code`) và các skill hỗ trợ (`create-plan`,
+  `review-plan`, `test`, `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`,
+  `check-ci`) ở `.agents/skills/`, liên kết sang
   `.claude/skills/`; skill ngoài ghi nguồn/commit ở `skills-lock.json`. Chỉ `.claude/skills/rule-*/` do script rule
   sinh; `docs/rules/` thắng skill. Đổi skill project thì chạy `python scripts/check-workflow-skills.py` để kiểm
   metadata và bản Claude.
@@ -250,6 +251,8 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
   trong cùng lần.
 - Đổi cách một chức năng chạy → sửa `docs/features/<chức-năng>.md`; chức năng dùng chung mới → thêm file + dòng
   mục lục ở `docs/README.md`. Thêm module → thêm `docs/modules/<module>/README.md`.
+- Kế hoạch triển khai lưu theo ngày lập tại `docs/plans/<YYYY>/<MM>/<DD>/<ten-kebab-case>-plan.md`;
+  không đặt file thẳng ở gốc `docs/plans/`.
 - Đổi rule trong `docs/rules/`, quy trình hay bảng kiểm → sửa rule AI trong `.agents/rules/`, chạy
   `python scripts/sync-ai-rules.py`, cập nhật `CLAUDE.md`, `AGENTS.md`, `prompt.md` cùng lần.
 - Tài liệu lệch với code coi như việc chưa xong.
@@ -268,7 +271,8 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
    hoặc sửa trong lần làm việc này, không chỉ file của tính năng. Ngoại lệ phải báo trước khi sửa: sửa kéo
    theo đổi contract API/migration, hoặc lan sang khoảng 10 file trở lên.
 7. Không tắt lint/typecheck, không bỏ test, không dùng giải pháp tạm để che lỗi.
-8. Chọn một workflow chính bằng câu chat: `start-task` khi giao việc mới; `fix` khi báo lỗi; `review-code` khi
+8. Chọn một workflow chính bằng câu chat: `create-plan` khi lên plan lưu `docs/plans/<YYYY>/<MM>/<DD>/`; `review-plan` khi thẩm định
+   kỹ plan theo rule; `start-task` khi giao việc mới; `fix` khi báo lỗi; `review-code` khi
    yêu cầu rà cuối, tự sửa lỗi xác nhận được và kiểm lại; dùng `test` (tạo test BE/FE + Playwright soi ảnh + monkey
    test), `refactor`, `review-security` (giả lập tấn công + lưu `docs/reports/security-verification.md`), `i18n-audit`,
    `permission-audit`, `db-migration`, `check-ci` (kiểm tra/tái lập GitHub CI luôn pass) đúng mục tiêu. Cả nhóm đọc source, `docs/` và rule liên quan trước khi

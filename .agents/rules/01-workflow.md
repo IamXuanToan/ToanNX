@@ -30,6 +30,8 @@ thông tin tối thiểu cần thiết và tiếp tục khảo sát phần độ
 
 | Việc | Skill |
 | --- | --- |
+| Lên kế hoạch, viết đặc tả kỹ thuật và lưu vào `docs/plans/<YYYY>/<MM>/<DD>/` | `create-plan`; đọc rule, `docs/` và source trước khi thiết kế |
+| Review, thẩm định kỹ thuật file plan trong `docs/plans/<YYYY>/<MM>/<DD>/` | `review-plan`; đọc đầy đủ rule, `docs/` và đối chiếu code thật |
 | Bắt đầu và triển khai task/tính năng mới | `start-task`; đọc source, rule và `docs/` liên quan trước khi viết |
 | Sửa bug, regression, test fail hoặc hành vi sai | `fix`; tái hiện, tìm nguyên nhân gốc, sửa và kiểm hồi quy |
 | Người dùng yêu cầu review code cuối task | `review-code`; rà toàn diện phần việc, tự sửa lỗi xác nhận được và kiểm lại |

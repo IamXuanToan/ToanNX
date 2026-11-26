@@ -9,6 +9,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 NAMES = ("start-task", "fix", "review-code")
 PROJECT_SKILLS = (
+    "create-plan",
+    "review-plan",
     "test",
     "refactor",
     "review-security",
@@ -18,6 +20,8 @@ PROJECT_SKILLS = (
     "check-ci",
 )
 REFERENCES: dict[str, tuple[str, ...]] = {
+    "create-plan": ("references/plan-template.md", "references/planning-checklist.md"),
+    "review-plan": ("references/review-plan-matrix.md",),
     "start-task": ("references/acceptance-matrix.md",),
     "fix": ("references/regression-matrix.md",),
     "review-code": ("references/review-matrix.md",),

@@ -31,9 +31,9 @@ paths:
 | `docs/guides/` | Cài đặt, vận hành (deploy, R2, OAuth, thông báo, tài chính) |
 | `docs/modules/<m>/README.md` | Mỗi module: model, quyền, route, sự kiện, webhook |
 | `docs/features/<chức-năng>.md` | Mỗi chức năng dùng chung: làm gì, chạy thế nào, quy định |
-| `docs/plans/`, `docs/reports/` | Kế hoạch, báo cáo (lịch sử, không sửa đường dẫn cũ trong đó) |
+| `docs/plans/<YYYY>/<MM>/<DD>/`, `docs/reports/` | Kế hoạch chia theo năm/tháng/ngày lập, báo cáo (lịch sử, không sửa đường dẫn cũ trong đó) |
 
-Tên file kebab-case tiếng Anh, nội dung tiếng Việt có dấu, câu ngắn, không chép lại rule mà dẫn link.
+Tên file kebab-case tiếng Anh, nội dung tiếng Việt có dấu, câu ngắn, không chép lại rule mà dẫn link. Plan mới lưu đúng vào `docs/plans/<YYYY>/<MM>/<DD>/<ten>-plan.md` theo ngày lập, không đặt ở gốc `docs/plans/`.
 
 ## Đồng bộ
 

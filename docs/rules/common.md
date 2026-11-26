@@ -130,8 +130,8 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
   `docs/rules/` (hoặc quy trình/bảng kiểm) thì sửa rule AI tương ứng, `CLAUDE.md`, `AGENTS.md`, `prompt.md` trong cùng
   lần. Cách viết rule AI: `.agents/rules/40-docs-and-rules.md`.
 - **Skill quy trình và hỗ trợ của project**: `start-task` cho việc mới, `fix` cho lỗi đã có, `review-code` cho lượt
-  rà cuối có tự sửa lỗi xác nhận được; cùng các skill hỗ trợ chuyên biệt `test`, `refactor`, `review-security`,
-  `i18n-audit`, `permission-audit`, `db-migration`, `check-ci`. Chọn bằng ngữ nghĩa câu chat theo `.agents/rules/01-workflow.md`;
+  rà cuối có tự sửa lỗi xác nhận được; cùng các skill hỗ trợ chuyên biệt `create-plan`, `review-plan`, `test`,
+  `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`, `check-ci`. Chọn bằng ngữ nghĩa câu chat theo `.agents/rules/01-workflow.md`;
   `review-code` không tự chạy sau mọi lần sửa. Các skill phải đọc source thực, mục lục `docs/`, rule và tài liệu
   liên quan trước khi sửa; kiểm đúng phạm vi rồi báo nội dung commit theo [git.md](git.md).
 - Nguồn skill project ở `.agents/skills/<tên>/`; skill viết riêng cho repo được liên kết sang
@@ -144,7 +144,9 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
   - đổi cách một chức năng chạy (phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác, sidebar, file công khai/riêng
     tư, Web Push…) → file tương ứng trong `docs/features/`; chức năng dùng chung mới → thêm file + dòng mục lục;
   - đổi cách cài đặt/vận hành → `docs/guides/`; đổi kiến trúc nền → `docs/architecture/`;
-  - thêm module → thêm `docs/modules/<module>/README.md`.
+  - thêm module → thêm `docs/modules/<module>/README.md`;
+  - viết hoặc cập nhật kế hoạch triển khai → lưu vào `docs/plans/<YYYY>/<MM>/<DD>/<ten-kebab-case>-plan.md`
+    theo ngày lập để dễ tra cứu theo ngày; không đặt file plan trực tiếp ở gốc `docs/plans/`.
   Tài liệu lệch với code coi như việc chưa xong.
 
 ## 5. Bảo mật

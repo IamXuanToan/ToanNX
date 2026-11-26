@@ -12,7 +12,7 @@
 Mục lục tài liệu: [docs/README.md](docs/README.md) — `docs/architecture/` (kiến trúc, xác thực, phân quyền, i18n,
 kiểm thử), `docs/guides/` (triển khai, R2, OAuth, thông báo, tài chính), `docs/modules/<module>/` (tài liệu từng
 module), `docs/features/` (mô tả từng chức năng: phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác, sidebar, file
-công khai/riêng tư, Web Push). Lý do của các chuẩn: [docs/plans/system-standardization-plan.md](docs/plans/system-standardization-plan.md).
+công khai/riêng tư, Web Push). Lý do của các chuẩn: [docs/plans/2026/11/15/system-standardization-plan.md](docs/plans/2026/11/15/system-standardization-plan.md).
 
 Ba skill workflow đã chứa quy trình giao việc: Claude Code gọi `/start-task`, `/fix`, `/review-code`; Codex gọi
 `$start-task`, `$fix`, `$review-code`, hoặc chỉ chat thường để AI tự chọn. [prompt.md](prompt.md) là bản tra cứu tùy chọn,
@@ -40,8 +40,9 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   cập nhật `CLAUDE.md`, `AGENTS.md`, `prompt.md` trong cùng lần; `--check` chạy trong `scripts/check-all.*`
   (rule chung mục 4).
 - **Skill project**: `start-task` cho việc mới, `fix` cho lỗi, `review-code` cho lượt rà cuối do người dùng yêu
-  cầu, cùng các skill hỗ trợ `test`, `refactor`, `review-security`, `i18n-audit`, `permission-audit`,
-  `db-migration`, `check-ci`; mỗi skill đọc source, `docs/` và rule liên quan trước khi sửa. Skill nội bộ ở `.agents/skills/`
+  cầu, cùng các skill hỗ trợ `create-plan`, `review-plan`, `test`, `refactor`, `review-security`, `i18n-audit`,
+  `permission-audit`, `db-migration`, `check-ci`; mỗi skill đọc source, `docs/` và rule liên quan trước khi
+  làm/sửa. Skill nội bộ ở `.agents/skills/`
   được liên kết sang `.claude/skills/`; skill ngoài cài qua CLI có nguồn/commit ở `skills-lock.json`. Chỉ
   `.claude/skills/rule-*/` do script rule sinh; chọn theo `.agents/rules/01-workflow.md`, ưu tiên `docs/rules/`.
   Đổi các skill project hoặc chuyên môn thì chạy `python scripts/check-workflow-skills.py` để kiểm trigger và bản Claude.
@@ -107,7 +108,8 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   `/attachments/{id}/content`) (rule chung mục 5.2).
 - **Tài liệu `docs/` cập nhật cùng lần sửa**: đổi model/quyền/route/sự kiện/webhook của module →
   `docs/modules/<module>/README.md`; đổi cách một chức năng chạy → `docs/features/<chức-năng>.md`; module mới thêm
-  thư mục `docs/modules/<module>/` (rule chung mục 4).
+  thư mục `docs/modules/<module>/`; kế hoạch triển khai lưu theo ngày lập ở `docs/plans/<YYYY>/<MM>/<DD>/`
+  (không đặt file ở gốc `docs/plans/`) (rule chung mục 4).
 - **Thông báo chỉ qua `NotificationService.notify`**: sự kiện khai `scope`/`audience`/`permission` trong
   `ModuleDescriptor.notification_events`; sự kiện `OWNER` phải truyền `recipient`; không tự gửi email/Telegram/push.
   Request không bao giờ gọi FCM/SMTP/Telegram: `notify` chỉ ghi outbox rồi đá QStash sau commit (cron là lưới an
@@ -133,7 +135,8 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   `test_<resource>_<action>_api.py`, FE đúng file Vitest/spec E2E của luồng). Chạy toàn bộ (`scripts/check-all.*`,
   `pnpm e2e` đầy đủ, `uv run pytest`/`pnpm test` không chỉ định file) chỉ khi người dùng yêu cầu, kể cả khi sửa
   nhiều file (rule chung mục 7).
-- **Chọn workflow theo câu chat**: task/tính năng mới → `start-task`; sửa lỗi/regression/test fail → `fix`;
+- **Chọn workflow theo câu chat**: lên kế hoạch/viết plan vào `docs/plans/<YYYY>/<MM>/<DD>/` → `create-plan`;
+  review/thẩm định plan trong `docs/plans/<YYYY>/<MM>/<DD>/` → `review-plan`; task/tính năng mới → `start-task`; sửa lỗi/regression/test fail → `fix`;
   người dùng yêu cầu review code cuối → `review-code` (tự sửa lỗi xác nhận được và kiểm lại, rồi trả commit đúng
   `docs/rules/git.md`). Yêu cầu tự tạo test/chụp ảnh Playwright/monkey test → `test`; tái cấu trúc code → `refactor`;
   audit bảo mật kèm giả lập tấn công và file xác nhận trong `docs/` → `review-security`; rà thiếu i18n → `i18n-audit`;

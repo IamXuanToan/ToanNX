@@ -12,7 +12,7 @@ Thực hiện việc được giao đến khi có kết quả kiểm chứng đ�
 ## 1. Nạp bối cảnh trước khi sửa
 
 1. Đọc `AGENTS.md`, `SYSTEM_CONTEXT.md`, `docs/README.md`, `docs/rules/common.md`, `docs/rules/git.md`, `docs/common-catalog.md` và rule `always_on` trong `.agents/rules/`. Đọc `docs/rules/backend.md` và/hoặc `docs/rules/frontend.md` theo tầng sẽ chạm; đọc cả hai nếu task full-stack. Nếu thư mục làm việc có `AGENTS.md` gần hơn, đọc thêm file đó.
-2. Theo mục lục `docs/`, đọc README của module liên quan, mô tả chức năng trong `docs/features/`, tài liệu kiến trúc/hạ tầng trong `docs/architecture/`, hướng dẫn trong `docs/guides/`, kế hoạch đang dở trong `docs/plans/` khi liên quan. Không coi tên file hoặc bản tóm tắt là đã đọc nội dung. Không quét mọi tài liệu không liên quan.
+2. Theo mục lục `docs/`, đọc README của module liên quan, mô tả chức năng trong `docs/features/`, tài liệu kiến trúc/hạ tầng trong `docs/architecture/`, hướng dẫn trong `docs/guides/`, kế hoạch đang dở trong `docs/plans/<YYYY>/<MM>/<DD>/` khi liên quan. Không coi tên file hoặc bản tóm tắt là đã đọc nội dung. Không quét mọi tài liệu không liên quan.
 3. Có graph thì `graphify query` để định vị luồng, sau đó mở **source thực**: entrypoint, lớp gọi tiếp, contract, test và common đang dùng. Graph chỉ là chỉ dẫn, phải đối chiếu code hiện tại. Chỉ cập nhật graph theo điều kiện của `AGENTS.md`.
 4. Đọc `git status`/diff ở chế độ chỉ đọc để nhận ra thay đổi có sẵn và không ghi đè. Tóm tắt phạm vi, chỗ tái sử dụng, contract và kiểm tra cần làm trước khi triển khai.
 
