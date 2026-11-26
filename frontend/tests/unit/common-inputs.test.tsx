@@ -14,8 +14,12 @@ import { NumberInput } from "@/shares/components/common/number-input";
 import { formatDisplayMoney } from "@/shares/lib/number-format";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
+import { ChipListInput } from "@/shares/components/common/chip-list-input";
+import { DateTimePicker } from "@/shares/components/common/date-time-picker";
 import { EmailInput } from "@/shares/components/common/email-input";
 import { PasswordInput } from "@/shares/components/common/password-input";
+import { TagsInput } from "@/shares/components/common/tags-input";
+import { Label } from "@/shares/components/ui/label";
 import { emailField, moneyField, slugField } from "@/shares/lib/field-schemas";
 import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
 const provider = ({ children }: { children: React.ReactNode }) => (
@@ -160,5 +164,60 @@ describe("common input contracts", () => {
     await user.click(toggle);
     expect(input.type).toBe("password");
     expect(toggle.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("shadcn Label cho phép bôi đen copy (không chứa select-none); TagsInput có nút chấm than tooltip", () => {
+    render(
+      <div>
+        <Label htmlFor="tags-demo">Nhãn mẫu</Label>
+        <TagsInput value={["khẩn"]} onChange={vi.fn()} />
+      </div>,
+      { wrapper: provider },
+    );
+    const labelEl = screen.getByText("Nhãn mẫu");
+    expect(labelEl.className).not.toContain("select-none");
+    expect(screen.getByRole("button", { name: "Hướng dẫn nhập thẻ" })).toBeDefined();
+  });
+
+  it("DateTimePicker hiển thị gọn trong 1 khung cho chế độ tách ngày/giờ và ChipListInput thêm/xoá bằng Enter", async () => {
+    const user = userEvent.setup();
+    const onDateChange = vi.fn();
+    const onTimeChange = vi.fn();
+    const onChipsChange = vi.fn();
+
+    render(
+      <div>
+        <DateTimePicker
+          dateValue="2026-11-26"
+          timeValue="20:10"
+          onDateChange={onDateChange}
+          onTimeChange={onTimeChange}
+          dateRequired
+        />
+        <ChipListInput
+          values={["30", "7"]}
+          onChange={onChipsChange}
+          parseItem={(raw) => (/^\d+$/.test(raw) ? { value: raw } : { error: "Chỉ nhập số" })}
+          formatItem={(v) => `${v} ngày`}
+          placeholder="Nhập ngày"
+          tooltip="Gõ số ngày rồi nhấn Enter"
+          tooltipLabel="Hướng dẫn mốc ngày"
+        />
+      </div>,
+      { wrapper: provider },
+    );
+
+    expect(screen.getByText("26/11/2026")).toBeDefined();
+    expect(screen.getByText("20:10")).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Xoá giờ" }));
+    expect(onTimeChange).toHaveBeenCalledWith("");
+
+    expect(screen.getByRole("button", { name: "Hướng dẫn mốc ngày" })).toBeDefined();
+    const chipInput = screen.getByPlaceholderText("Nhập ngày");
+    await user.type(chipInput, "abc{Enter}");
+    expect(screen.getByRole("alert").textContent).toBe("Chỉ nhập số");
+    await user.clear(chipInput);
+    await user.type(chipInput, "14{Enter}");
+    expect(onChipsChange).toHaveBeenCalledWith(["30", "7", "14"]);
   });
 });

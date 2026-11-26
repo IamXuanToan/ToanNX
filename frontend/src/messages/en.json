@@ -224,6 +224,8 @@
     },
     "search": {
       "clear": "Clear search",
+      "hint": "Type keywords and press Enter to search.",
+      "hintLabel": "Search tips",
       "limitExceeded": "Search keywords allow up to {maxTerms} words and {maxLength} characters."
     },
     "emptyState": {
@@ -250,7 +252,16 @@
     },
     "tagsInput": {
       "placeholder": "Type and press Enter",
+      "hint": "Type a value and press Enter or comma (,) to add a tag.",
+      "hintLabel": "Tag input tips",
       "remove": "Remove {tag}"
+    },
+    "chipListInput": {
+      "placeholder": "Enter a value...",
+      "add": "Add",
+      "tooltip": "Type a value and press Enter or click Add.",
+      "tooltipLabel": "Input instructions",
+      "remove": "Remove {item}"
     },
     "datePicker": {
       "placeholder": "Pick a date",
@@ -266,7 +277,9 @@
       "clear": "Clear time"
     },
     "dateTimePicker": {
-      "clear": "Clear date and time"
+      "timePlaceholder": "Time",
+      "clear": "Clear date and time",
+      "clearTime": "Clear time"
     },
     "monthSelect": {
       "placeholder": "Pick a month",

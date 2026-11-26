@@ -224,6 +224,8 @@
     },
     "search": {
       "clear": "Xoá từ khoá",
+      "hint": "Gõ từ khóa rồi nhấn Enter để tìm kiếm.",
+      "hintLabel": "Hướng dẫn tìm kiếm",
       "limitExceeded": "Từ khóa tối đa {maxTerms} từ và {maxLength} ký tự."
     },
     "emptyState": {
@@ -250,7 +252,16 @@
     },
     "tagsInput": {
       "placeholder": "Gõ rồi nhấn Enter",
+      "hint": "Nhập giá trị rồi nhấn Enter hoặc dấu phẩy (,) để thêm thẻ.",
+      "hintLabel": "Hướng dẫn nhập thẻ",
       "remove": "Bỏ {tag}"
+    },
+    "chipListInput": {
+      "placeholder": "Nhập giá trị...",
+      "add": "Thêm",
+      "tooltip": "Nhập giá trị rồi nhấn Enter hoặc bấm Thêm.",
+      "tooltipLabel": "Hướng dẫn thêm mục",
+      "remove": "Xoá {item}"
     },
     "datePicker": {
       "placeholder": "Chọn ngày",
@@ -266,7 +277,9 @@
       "clear": "Xoá giờ"
     },
     "dateTimePicker": {
-      "clear": "Xoá ngày giờ"
+      "timePlaceholder": "Giờ",
+      "clear": "Xoá ngày giờ",
+      "clearTime": "Xoá giờ"
     },
     "monthSelect": {
       "placeholder": "Chọn tháng",

@@ -7,28 +7,38 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/shares/components/ui/button";
 import {
   formatDateTimeLocal,
+  formatTimeString,
   mergeDateAndTime,
   MINUTE_OPTIONS,
   parseDateTimeLocal,
   parseIsoDate,
+  parseTimeString,
   snapMinuteToStep,
   toInputDate,
 } from "@/shares/lib/date-time-input";
 
-import { TimePickerPopover } from "./time-picker-popover";
 import { DatePicker } from "./date-picker";
+import { TimePickerPopover } from "./time-picker-popover";
 
 /**
- * Chọn ngày + giờ chuẩn (theo CommonDateTimePicker của Medoly): ô ngày và ô giờ cạnh nhau (xếp dọc
- * trên mobile); chưa chọn ngày thì khoá ô giờ. Giá trị `yyyy-MM-ddTHH:mm` (giờ địa phương).
- * Điều khiển (controlled).
+ * Chọn ngày + giờ gọn gàng trong **một khung viền duy nhất** (`h-10`, ôm sát nội dung).
+ * Hỗ trợ hai chế độ:
+ * - Gộp: `value` + `onChange` (chuỗi `yyyy-MM-ddTHH:mm`).
+ * - Tách (giờ tuỳ chọn): `dateValue` + `timeValue` + `onDateChange` + `onTimeChange` (VD: Nhắc việc).
+ * Chưa chọn ngày thì khoá phần giờ.
  *
  * @param props - Giá trị, callback, giới hạn ngày, bước phút và trạng thái.
- * @returns Ô chọn ngày giờ.
+ * @returns Ô chọn ngày giờ gọn trong một field.
  */
 export function DateTimePicker({
+  id,
   value,
   onChange,
+  dateValue,
+  timeValue,
+  onDateChange,
+  onTimeChange,
+  dateRequired = false,
   disabled,
   clearable = true,
   fromDate,
@@ -37,8 +47,14 @@ export function DateTimePicker({
   invalid,
   className,
 }: {
+  id?: string;
   value?: string | null;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
+  dateValue?: string | null;
+  timeValue?: string | null;
+  onDateChange?: (date: string) => void;
+  onTimeChange?: (time: string) => void;
+  dateRequired?: boolean;
   disabled?: boolean;
   clearable?: boolean;
   fromDate?: Date;
@@ -48,55 +64,118 @@ export function DateTimePicker({
   className?: string;
 }) {
   const t = useTranslations("common.dateTimePicker");
-  const selected = parseDateTimeLocal(value);
-  const hour = selected?.getHours() ?? 0;
-  const minute = selected?.getMinutes() ?? 0;
-  const dateValue = toInputDate(value);
-  const base = () => selected ?? parseIsoDate(dateValue) ?? new Date();
-  const update = (date: Date, nextHour: number, nextMinute: number) =>
-    onChange(formatDateTimeLocal(mergeDateAndTime(date, nextHour, nextMinute)));
+  const isSplit = Boolean(onDateChange || onTimeChange);
+
+  const combinedDate = parseDateTimeLocal(value);
+  const splitTime = parseTimeString(timeValue);
+
+  const activeDate = isSplit ? toInputDate(dateValue) : toInputDate(value);
+  const hour = isSplit ? (splitTime?.hour ?? 0) : (combinedDate?.getHours() ?? 0);
+  const minute = isSplit ? (splitTime?.minute ?? 0) : (combinedDate?.getMinutes() ?? 0);
+  const hasTime = isSplit ? Boolean(splitTime) : Boolean(combinedDate);
+
+  const updateCombined = (date: Date, nextHour: number, nextMinute: number) =>
+    onChange?.(formatDateTimeLocal(mergeDateAndTime(date, nextHour, nextMinute)));
+  const combinedBase = () => combinedDate ?? parseIsoDate(activeDate) ?? new Date();
+
+  const handleDateChange = (next: string) => {
+    if (isSplit) {
+      onDateChange?.(next);
+      return;
+    }
+    if (next) updateCombined(parseIsoDate(next) ?? new Date(), hour, minute);
+    else onChange?.("");
+  };
+
+  const handleHourChange = (nextHour: number) => {
+    const snappedMinute = snapMinuteToStep(minute, minuteStep);
+    if (isSplit) {
+      onTimeChange?.(formatTimeString(nextHour, snappedMinute));
+      return;
+    }
+    updateCombined(combinedBase(), nextHour, snappedMinute);
+  };
+
+  const handleMinuteChange = (nextMinute: number) => {
+    const snapped = snapMinuteToStep(nextMinute, minuteStep);
+    if (isSplit) {
+      onTimeChange?.(formatTimeString(hour, snapped));
+      return;
+    }
+    updateCombined(combinedBase(), hour, snapped);
+  };
+
+  const handleClearTime = () => {
+    if (isSplit) {
+      onTimeChange?.("");
+      return;
+    }
+    onChange?.("");
+  };
+
+  const handleClearButton = () => {
+    if (isSplit && dateRequired) {
+      onTimeChange?.("");
+      return;
+    }
+    if (isSplit) {
+      onDateChange?.("");
+      onTimeChange?.("");
+      return;
+    }
+    onChange?.("");
+  };
+
+  const showClearButton = Boolean(
+    clearable && !disabled && (isSplit && dateRequired ? hasTime : activeDate || hasTime),
+  );
 
   return (
     <div
-      className={cn("flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-center", className)}
+      className={cn(
+        "border-input bg-card dark:bg-input/30 focus-within:border-ring focus-within:ring-ring/50 inline-flex h-10 w-fit max-w-full flex-nowrap items-center overflow-hidden rounded-xl border text-sm transition-colors focus-within:ring-3",
+        invalid && "border-destructive ring-destructive/20 dark:ring-destructive/40 ring-3",
+        disabled && "cursor-not-allowed opacity-50",
+        className,
+      )}
     >
       <DatePicker
-        value={dateValue}
+        id={id}
+        inline
+        value={activeDate}
         disabled={disabled}
         clearable={false}
         invalid={invalid}
         fromDate={fromDate}
         toDate={toDate}
-        className="sm:flex-1"
-        onChange={(next) =>
-          next ? update(parseIsoDate(next) ?? new Date(), hour, minute) : onChange("")
-        }
+        onChange={handleDateChange}
       />
-      <div className="flex items-center gap-1 sm:w-44 sm:shrink-0">
-        <TimePickerPopover
-          hour={hour}
-          minute={minute}
-          hasValue={Boolean(selected)}
-          minuteOptions={MINUTE_OPTIONS.filter((item) => item % minuteStep === 0)}
-          disabled={disabled || !dateValue}
-          className="flex-1"
-          onHourChange={(next) => update(base(), next, minute)}
-          onMinuteChange={(next) => update(base(), hour, snapMinuteToStep(next, minuteStep))}
-        />
-        {clearable && value ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label={t("clear")}
-            disabled={disabled}
-            className="text-muted-foreground"
-            onClick={() => onChange("")}
-          >
-            <X />
-          </Button>
-        ) : null}
-      </div>
+      <span aria-hidden className="bg-border h-5 w-px shrink-0" />
+      <TimePickerPopover
+        inline
+        hour={hour}
+        minute={minute}
+        hasValue={hasTime}
+        clearable={clearable}
+        placeholder={t("timePlaceholder")}
+        minuteOptions={MINUTE_OPTIONS.filter((item) => item % minuteStep === 0)}
+        disabled={disabled || !activeDate}
+        onHourChange={handleHourChange}
+        onMinuteChange={handleMinuteChange}
+        onClear={handleClearTime}
+      />
+      {showClearButton ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          aria-label={dateRequired ? t("clearTime") : t("clear")}
+          onClick={handleClearButton}
+          className="text-muted-foreground hover:text-foreground h-full w-8 shrink-0 rounded-none border-l"
+        >
+          <X className="size-3.5" />
+        </Button>
+      ) : null}
     </div>
   );
 }

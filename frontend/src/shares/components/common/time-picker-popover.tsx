@@ -14,6 +14,7 @@ import { TimeScrollColumn } from "./time-scroll-column";
 
 /**
  * Nút chọn giờ dạng popover hai cột (giờ / phút), theo TimePickerPopover của Medoly.
+ * Hỗ trợ chế độ `inline` khi nằm trong khung chung `DateTimePicker`/`TimePicker` và nút xoá giờ trong popover.
  *
  * @param props - Giờ, phút, các phút được chọn, callback và trạng thái.
  * @returns Nút chọn giờ.
@@ -27,6 +28,9 @@ export function TimePickerPopover({
   disabled,
   placeholder,
   hasValue,
+  inline = false,
+  clearable = false,
+  onClear,
   className,
 }: {
   hour: number;
@@ -37,6 +41,9 @@ export function TimePickerPopover({
   disabled?: boolean;
   placeholder?: string;
   hasValue: boolean;
+  inline?: boolean;
+  clearable?: boolean;
+  onClear?: () => void;
   className?: string;
 }) {
   const t = useTranslations("common.timePicker");
@@ -47,14 +54,27 @@ export function TimePickerPopover({
       <PopoverTrigger asChild>
         <Button
           type="button"
-          variant="outline"
+          variant={inline ? "ghost" : "outline"}
           disabled={disabled}
           aria-expanded={open}
           aria-label={t("label")}
-          className={cn(FORM_CONTROL_TRIGGER_CLASS, "tabular-nums", className)}
+          className={cn(
+            inline
+              ? "hover:bg-muted/50 h-full gap-1.5 rounded-none px-2.5 text-left text-sm font-normal tabular-nums focus-visible:ring-0"
+              : cn(FORM_CONTROL_TRIGGER_CLASS, "tabular-nums"),
+            className,
+          )}
         >
-          <Clock3 className="text-muted-foreground size-4 shrink-0" aria-hidden />
-          <span className={cn("truncate", !hasValue && "text-muted-foreground")}>
+          <Clock3
+            className={cn("text-muted-foreground shrink-0", inline ? "size-3.5" : "size-4")}
+            aria-hidden
+          />
+          <span
+            className={cn(
+              inline ? "whitespace-nowrap" : "truncate",
+              !hasValue && "text-muted-foreground",
+            )}
+          >
             {hasValue ? display : (placeholder ?? t("placeholder"))}
           </span>
         </Button>
@@ -80,8 +100,30 @@ export function TimePickerPopover({
             onSelect={onMinuteChange}
           />
         </div>
-        <div className="flex justify-end border-t p-1">
-          <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+        <div className="flex items-center justify-between gap-2 border-t p-1">
+          {clearable && hasValue && onClear ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground h-8 px-2.5 text-xs"
+              onClick={() => {
+                onClear();
+                setOpen(false);
+              }}
+            >
+              {t("clear")}
+            </Button>
+          ) : (
+            <span />
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2.5 text-xs font-medium"
+            onClick={() => setOpen(false)}
+          >
             {t("done")}
           </Button>
         </div>
