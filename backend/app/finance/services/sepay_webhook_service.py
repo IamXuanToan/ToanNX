@@ -30,7 +30,7 @@ from app.system.types.notification_payload import NotificationPayload
 
 logger = logging.getLogger(__name__)
 SIGNATURE_PREFIX = "sha256="
-SEPAY_PAGE_PATH = "/admin/finance/sepay"
+SEPAY_PAGE_PATH = "/portal/finance/sepay"
 
 
 class SepayWebhookService:

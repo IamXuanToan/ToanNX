@@ -19,6 +19,7 @@ import {
 } from "@/shares/components/ui/table";
 
 import { INCOME_PERMISSIONS } from "../../permissions/income-permission";
+import { isValidHexColor } from "../../constants/chart-colors";
 import { useFinanceReport } from "./hooks/use-finance-report";
 import { IncomeTable } from "../income/income-table";
 import { MoneyText } from "../income/money-text";
@@ -147,7 +148,20 @@ export function FinanceReport() {
                 <TableBody>
                   {data.byPlatform.map((row) => (
                     <TableRow key={`${row.platformId}-${row.taxRate}-${row.taxWithheld}`}>
-                      <TableCell>{row.platform || t("unclassified")}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span
+                            aria-hidden
+                            className="border-border/70 bg-muted inline-block size-2.5 shrink-0 rounded-full border"
+                            style={
+                              isValidHexColor(row.color)
+                                ? { backgroundColor: row.color }
+                                : undefined
+                            }
+                          />
+                          <span>{row.platform || t("unclassified")}</span>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         {row.taxWithheld ? `${Number(row.taxRate)}%` : t("noWithholding")}
                       </TableCell>

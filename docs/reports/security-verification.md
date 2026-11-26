@@ -20,7 +20,7 @@
 | SEC-HOOK-01 | Secret Leak & Spoofing | `GET /api/v1/utilities/pages/public/<segment>/<slug>`, `POST /api/v1/utilities/donations/webhook/<token>` | Lộ `webhookToken`/`webhook_token` qua trang Donate công khai; giả mạo `transferType="out"`, số tiền `<= 0` hoặc dùng lại `sepay_id` chéo trang | `app/utilities/tests/test_page_public_api.py` (`test_public_donation_page_strips_secret_webhook_tokens`), `app/utilities/tests/test_donation_webhook_api.py` | PASS | 2026-11-25 |
 | SEC-HOOK-02 | Webhook HMAC & Cron Secret | `/api/v1/finance/sepay/webhook/<id>`, `/api/v1/system/internal/cleanup`, `/notifications/dispatch` | Sai chữ ký / timestamp quá hạn / sai `CRON_SECRET` hoặc `Upstash-Signature` | `app/finance/tests/test_sepay_webhook_api.py`, `app/system/tests/test_cleanup.py`, `app/system/tests/test_notification_dispatch_api.py` | PASS | 2026-11-25 |
 | SEC-INJ-01 | CSV Formula Injection | `GET /api/v1/finance/incomes/export`, `GET /api/v1/utilities/donations/export` | Chèn `=cmd\|...`, `+SUM(...)`, `-2+3`, `@IMPORTXML(...)`, `\t=...` vào nội dung/ghi chú/tên trang để thực thi DDE khi mở Excel | `app/core/tests/test_csv_safety.py`, `app/finance/tests/test_income_export_api.py`, `app/utilities/tests/test_donation_export_api.py` | PASS | 2026-11-25 |
-| SEC-SSRF-01 | SSRF & DNS Rebinding | `SafeHttpClient`, `PinnedHttpAdapter` | Bypass qua IPv4-mapped IPv6 (`::ffff:127.0.0.1`), NAT64 (`64:ff9b::127.0.0.1`), 6to4, CGNAT, biến môi trường proxy, DNS Rebinding giữa lúc check và connect | `app/utilities/tests/test_safe_http_client.py` | PASS | 2026-11-25 |
+| SEC-SSRF-01 | SSRF & DNS Rebinding | `SafeHttpClient`, `PinnedHttpAdapter` | Bypass qua IPv4-mapped IPv6 (`::ffff:127.0.0.1`), NAT64 (`64:ff9b::127.0.0.1`), 6to4, CGNAT, biến môi trường proxy, DNS Rebinding giữa lúc check và connect | `app/core/tests/test_safe_http_client.py` | PASS | 2026-11-25 |
 | SEC-FE-01 | Edge Proxy DoS | `frontend/src/proxy.ts` (`matchPublicPage`) | Gửi URL percent-encoding hỏng `/%ZZ/test`, `/%E0%A4%A/donate` làm sập `decodeURIComponent` gây HTTP 500 | `frontend/tests/unit/security-controls.test.ts` + HTTP live `:3001/%ZZ/test -> 307` | PASS | 2026-11-25 |
 | SEC-FE-02 | Open Redirect & DOM XSS | `sanitizeNextPath`, `toSafeHttpUrl`, `toSafeImageSrc`, `bio/affiliate/donation/short-link` | Bypass redirect bằng `/\t/evil.com`, `/\n/evil.com`, `/\\evil.com`; chèn `javascript:`, `vbscript:`, `data:text/html` vào link Bio/Affiliate/ShortLink/QR | `frontend/tests/unit/security-controls.test.ts`, `frontend/tests/unit/auth-service.test.ts` | PASS | 2026-11-25 |
 | SEC-FE-03 | Image Optimizer SSRF | `frontend/next.config.ts` (`dangerouslyAllowLocalIP`, `remotePatterns`) | Chặn `dangerouslyAllowLocalIP` và `http://localhost`/`127.0.0.1` trong `remotePatterns` khi chạy production | `NEXT_DIST_DIR=.next-verify pnpm build` | PASS | 2026-11-25 |
@@ -73,7 +73,7 @@ uv run pytest --reuse-db `
   app/utilities/tests/test_donation_export_api.py `
   app/utilities/tests/test_donation_stats_api.py `
   app/utilities/tests/test_donation_list_api.py `
-  app/utilities/tests/test_safe_http_client.py `
+  app/core/tests/test_safe_http_client.py `
   app/utilities/tests/test_page_duplicate_api.py `
   app/utilities/tests/test_page_public_api.py `
   app/utilities/tests/test_donation_public_feed_api.py

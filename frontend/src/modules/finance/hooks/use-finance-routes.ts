@@ -11,8 +11,6 @@ import { FINANCE_ROUTES } from "../constants/routes";
  * - Nếu đang ở Client Portal (`/portal` hay `/ca-nhan`): trả về các route của Portal (`/portal/finance/...`).
  * - Nếu đang ở Admin (`/admin` hay `/quan-tri`): trả về các route của Admin (`/admin/finance/...`).
  *
- * Giúp tái sử dụng hoàn toàn các Form, Profile, Table của module Finance mà không bao giờ bị lệch URL hay nhảy sai trang.
- *
  * @returns Tập route tương ứng với ngữ cảnh hiện tại.
  */
 export function useFinanceRoutes() {
@@ -22,7 +20,7 @@ export function useFinanceRoutes() {
   if (isPortal) {
     return {
       isPortal: true,
-      dashboard: PORTAL_ROUTES.financeDashboard,
+      dashboard: PORTAL_ROUTES.dashboard,
       reports: PORTAL_ROUTES.financeReports,
       sepay: PORTAL_ROUTES.financeSepay,
       incomes: PORTAL_ROUTES.financeIncomes,
@@ -34,9 +32,6 @@ export function useFinanceRoutes() {
       platforms: PORTAL_ROUTES.financePlatforms,
       platformCreate: PORTAL_ROUTES.financePlatformCreate,
       platformDetail: PORTAL_ROUTES.financePlatformDetail,
-      rules: PORTAL_ROUTES.financeRules,
-      ruleCreate: PORTAL_ROUTES.financeRuleCreate,
-      ruleDetail: PORTAL_ROUTES.financeRuleDetail,
     };
   }
 
@@ -46,9 +41,6 @@ export function useFinanceRoutes() {
     platforms: PORTAL_ROUTES.financePlatforms,
     platformCreate: PORTAL_ROUTES.financePlatformCreate,
     platformDetail: PORTAL_ROUTES.financePlatformDetail,
-    rules: PORTAL_ROUTES.financeRules,
-    ruleCreate: PORTAL_ROUTES.financeRuleCreate,
-    ruleDetail: PORTAL_ROUTES.financeRuleDetail,
     sepay: PORTAL_ROUTES.financeSepay,
   };
 }

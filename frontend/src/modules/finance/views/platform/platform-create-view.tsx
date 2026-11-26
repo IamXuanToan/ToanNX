@@ -8,14 +8,25 @@ import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 
 import { PlatformForm } from "../../components/platform/platform-form";
 import { PLATFORM_PERMISSIONS } from "../../permissions/platform-permission";
+import { RULE_PERMISSIONS } from "../../permissions/rule-permission";
 
 /** Trang tạo (finance.platforms). */
 export function PlatformCreateView() {
   const t = useTranslations("finance.platforms");
-  if (!usePermission(PLATFORM_PERMISSIONS.create)) return <ForbiddenView />;
+  const canCreatePlatform = usePermission(PLATFORM_PERMISSIONS.create);
+  const canReadRules = usePermission(RULE_PERMISSIONS.read);
+  const canCreateRule = usePermission(RULE_PERMISSIONS.create);
+  const canUpdateRule = usePermission(RULE_PERMISSIONS.update);
+  const canDeleteRule = usePermission(RULE_PERMISSIONS.delete);
+  if (!canCreatePlatform) return <ForbiddenView />;
   return (
     <FormPage title={t("create")}>
-      <PlatformForm />
+      <PlatformForm
+        canReadRules={canReadRules}
+        canCreateRule={canCreateRule}
+        canUpdateRule={canUpdateRule}
+        canDeleteRule={canDeleteRule}
+      />
     </FormPage>
   );
 }

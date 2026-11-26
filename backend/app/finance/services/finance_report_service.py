@@ -51,7 +51,7 @@ class FinanceReportService:
         totals = ok.aggregate(**_totals())
         totals["needs_review"] = scoped.filter(NEEDS_REVIEW).count()
         by_platform = list(
-            ok.values("platform_id", "platform__name", "tax_withheld", "tax_rate")
+            ok.values("platform_id", "platform__name", "platform__color", "tax_withheld", "tax_rate")
             .annotate(**_totals())
             .order_by("platform__name", "tax_rate")
         )
@@ -89,7 +89,7 @@ class FinanceReportService:
         previous = self._period(actor, year - 1, None, owner_ids).filter(amount_status=Income.AmountStatus.OK)
         platforms = (
             current.annotate(month=ExtractMonth("received_date"))
-            .values("month", "platform__name")
+            .values("month", "platform__name", "platform__color")
             .annotate(total=Coalesce(Sum("amount"), ZERO))
             .order_by("month")
         )
@@ -98,7 +98,12 @@ class FinanceReportService:
             "months": self._months(current),
             "previous_months": self._months(previous),
             "by_platform": [
-                {"month": row["month"], "platform": row["platform__name"] or "", "total": row["total"]}
+                {
+                    "month": row["month"],
+                    "platform": row["platform__name"] or "",
+                    "color": row["platform__color"] or "",
+                    "total": row["total"],
+                }
                 for row in platforms
             ],
         }
@@ -137,6 +142,7 @@ class FinanceReportService:
         return {
             "platform_id": row["platform_id"],
             "platform": row["platform__name"] or "",
+            "color": row["platform__color"] or "",
             "tax_withheld": row["tax_withheld"],
             "tax_rate": row["tax_rate"],
             **{

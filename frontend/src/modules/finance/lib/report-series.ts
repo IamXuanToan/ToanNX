@@ -81,6 +81,13 @@ export function buildMonthSeries(
  */
 export function buildPlatformSeries(data: ReportMonthly, unclassified: string) {
   const platforms = Array.from(new Set(data.byPlatform.map((row) => row.platform || unclassified)));
+  const platformColors: Record<string, string> = {};
+  for (const item of data.byPlatform) {
+    const key = item.platform || unclassified;
+    if (!platformColors[key] && item.color) {
+      platformColors[key] = item.color;
+    }
+  }
   const rows = data.months.map((month) => {
     const row: Record<string, number> = { month: month.month };
     for (const platform of platforms) row[platform] = 0;
@@ -89,7 +96,7 @@ export function buildPlatformSeries(data: ReportMonthly, unclassified: string) {
     }
     return row;
   });
-  return { platforms, rows };
+  return { platforms, platformColors, rows };
 }
 
 /** @returns % thay đổi so với năm trước (null khi năm trước bằng 0). */

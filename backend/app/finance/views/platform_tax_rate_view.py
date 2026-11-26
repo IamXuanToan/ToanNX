@@ -52,9 +52,7 @@ class PlatformTaxRateView(CoreApiView):
     def post(self, request: Request, pk: Any, validated_data: dict[str, Any]) -> CoreResponse:
         """Thêm mốc; trả giao dịch bị ảnh hưởng."""
         actor = self.get_actor(request)
-        entry, affected = self.platform_tax_rate_service.create(
-            actor, self.platform_service.get_for_write(actor, pk), validated_data
-        )
+        entry, affected = self.platform_tax_rate_service.create_for(actor, pk, validated_data)
         return CoreResponse(
             PlatformTaxRateMutationResponseSerializer({"entry": entry, "affected_income_ids": affected}).data,
             status=201,
@@ -67,7 +65,6 @@ class PlatformTaxRateObjectView(CoreApiView):
     def __init__(self, **kwargs: Any) -> None:
         """Khởi tạo service."""
         super().__init__(**kwargs)
-        self.platform_service = PlatformService()
         self.platform_tax_rate_service = PlatformTaxRateService()
 
     @extend_schema(responses=PlatformTaxRateMutationResponseSerializer)
@@ -76,8 +73,7 @@ class PlatformTaxRateObjectView(CoreApiView):
     def patch(self, request: Request, pk: Any, rate_id: Any, validated_data: dict[str, Any]) -> CoreResponse:
         """Sửa mốc."""
         actor = self.get_actor(request)
-        platform = self.platform_service.get_for_write(actor, pk)
-        entry, affected = self.platform_tax_rate_service.update(actor, platform, rate_id, validated_data)
+        entry, affected = self.platform_tax_rate_service.update_for(actor, pk, rate_id, validated_data)
         return CoreResponse(
             PlatformTaxRateMutationResponseSerializer({"entry": entry, "affected_income_ids": affected}).data
         )
@@ -87,9 +83,7 @@ class PlatformTaxRateObjectView(CoreApiView):
     def delete(self, request: Request, pk: Any, rate_id: Any) -> CoreResponse:
         """Xóa mốc."""
         actor = self.get_actor(request)
-        affected = self.platform_tax_rate_service.delete(
-            actor, self.platform_service.get_for_write(actor, pk), rate_id
-        )
+        affected = self.platform_tax_rate_service.delete_for(actor, pk, rate_id)
         return CoreResponse(
             PlatformTaxRateMutationResponseSerializer({"entry": None, "affected_income_ids": affected}).data
         )

@@ -1,10 +1,16 @@
 """Nền tảng trả tiền (Facebook, YouTube, Làm tự do...) của một người; thuế nằm ở lịch sử `PlatformTaxRate`."""
 
 from django.conf import settings
+from django.core.validators import RegexValidator
 from django.db import models
 
 from app.core.models.core_model import CoreModel
 from app.core.tracking.journal_tracker import JournalTracker
+
+HEX_COLOR_VALIDATOR = RegexValidator(
+    regex=r"^(#[0-9A-Fa-f]{6})?$",
+    message="Mã màu HEX phải có dạng #RRGGBB.",
+)
 
 
 class Platform(JournalTracker, CoreModel):
@@ -32,6 +38,15 @@ class Platform(JournalTracker, CoreModel):
     )
     is_active = models.BooleanField(
         default=True, verbose_name="Đang dùng", help_text="Tắt để ẩn khỏi chọn mới.", db_comment="Đang dùng"
+    )
+    color = models.CharField(
+        max_length=7,
+        blank=True,
+        default="",
+        validators=[HEX_COLOR_VALIDATOR],
+        verbose_name="Màu biểu đồ",
+        help_text="Mã màu HEX (#RRGGBB) hiển thị trên biểu đồ.",
+        db_comment="Màu biểu đồ",
     )
     note = models.TextField(
         blank=True, default="", verbose_name="Ghi chú", help_text="Ghi chú.", db_comment="Ghi chú"

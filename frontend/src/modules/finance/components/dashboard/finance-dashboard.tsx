@@ -98,6 +98,7 @@ export function FinanceDashboard() {
           </div>
           <FinancePlatformAreaChart
             platforms={state.platformSeries.platforms}
+            colors={state.platformSeries.platformColors}
             rows={state.platformSeries.rows}
             monthLabel={monthLabel}
           />

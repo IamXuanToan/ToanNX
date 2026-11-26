@@ -43,7 +43,7 @@ from app.system.types.notification_payload import NotificationPayload
 
 Status = Income.TaxStatus
 AmountStatus = Income.AmountStatus
-INCOME_PATH = "/admin/finance/incomes/{pk}"
+INCOME_PATH = "/portal/finance/incomes/{pk}"
 CONVERSION_FIELDS = ("currency_id", "original_amount", "rate_source", "exchange_rate")
 TAX_INPUT_FIELDS = ("is_tax_manual", "tax_withheld", "tax_rate", "tax_amount")
 CSV_HEADER = (
@@ -550,28 +550,84 @@ class IncomeService(CoreCrudService[Income, IncomeRepository]):
         received_at: Any,
         content: str,
         amount: Decimal,
+        bank_name: str = "",
+        account_number: str = "",
+        reference_code: str = "",
+        sepay_payload: dict[str, Any] | None = None,
     ) -> Income:
-        """Đồng bộ giao dịch quyên góp sang bảng Thu nhập của chủ trang."""
+        """Đồng bộ giao dịch quyên góp sang bảng Thu nhập của chủ trang và phát thông báo tiền vào."""
         currency = self.currency_service.base()
-        platform = self.platform_service.get_or_create_sepay_donation_platform(owner)
         day = vn_date(received_at)
-        fields: dict[str, Any] = {
-            "source": Income.Source.SEPAY,
-            "received_at": received_at,
-            "received_date": day,
-            "content": content,
-            "currency": currency,
-            "original_amount": amount,
-            "amount": amount,
-            "exchange_rate": Decimal("1.0"),
-            "platform": platform,
-            "tax_withheld": False,
-            "tax_rate": Decimal("0.0"),
-            "tax_amount": Decimal("0.0"),
-            "amount_status": AmountStatus.OK,
-            "tax_status": Status.NOT_WITHHELD,
-        }
         existing = self.repository.find_by_sepay_id(owner.pk, sepay_id)
         if existing is not None:
+            platform = existing.platform
+            if not existing.is_platform_locked:
+                platform = self.platform_service.get_or_create_sepay_donation_platform(owner)
+            fields: dict[str, Any] = {
+                "received_at": received_at,
+                "received_date": day,
+                "content": content,
+                "currency": currency,
+                "original_amount": amount,
+                "amount": amount,
+                "exchange_rate": Decimal("1.0"),
+                "rate_source": RateSource.BASE,
+                "amount_status": AmountStatus.OK,
+                "platform": platform,
+                "bank_name": bank_name or existing.bank_name,
+                "account_last4": (account_number[-4:] if account_number else existing.account_last4),
+                "reference_code": reference_code or existing.reference_code,
+                "sepay_payload": sepay_payload if sepay_payload is not None else existing.sepay_payload,
+            }
+            if not existing.is_tax_manual:
+                tax = self._tax(amount, platform, day, {})
+                if tax.tax_status == Status.NO_RATE:
+                    fields.update(
+                        tax_withheld=False,
+                        tax_rate=Decimal("0.0"),
+                        tax_amount=Decimal("0.0"),
+                        gross_amount=amount,
+                        tax_rate_entry=None,
+                        tax_status=Status.NOT_WITHHELD,
+                    )
+                else:
+                    fields.update(self._tax_fields(tax))
             return self.repository.update(existing, actor=owner, **fields)
-        return self.repository.create(actor=owner, owner=owner, sepay_id=sepay_id, **fields)
+
+        platform = self.platform_service.get_or_create_sepay_donation_platform(owner)
+        tax = self._tax(amount, platform, day, {})
+        tax_fields: dict[str, Any]
+        if tax.tax_status == Status.NO_RATE:
+            tax_fields = {
+                "tax_withheld": False,
+                "tax_rate": Decimal("0.0"),
+                "tax_amount": Decimal("0.0"),
+                "gross_amount": amount,
+                "tax_rate_entry": None,
+                "tax_status": Status.NOT_WITHHELD,
+            }
+        else:
+            tax_fields = self._tax_fields(tax)
+        income = self.repository.create(
+            actor=owner,
+            owner=owner,
+            source=Income.Source.SEPAY,
+            received_at=received_at,
+            received_date=day,
+            content=content,
+            currency=currency,
+            original_amount=amount,
+            amount=amount,
+            exchange_rate=Decimal("1.0"),
+            rate_source=RateSource.BASE,
+            platform=platform,
+            amount_status=AmountStatus.OK,
+            bank_name=bank_name,
+            account_last4=account_number[-4:] if account_number else "",
+            reference_code=reference_code,
+            sepay_payload=sepay_payload or {},
+            sepay_id=sepay_id,
+            **tax_fields,
+        )
+        self._notify_new(income)
+        return income

@@ -7,6 +7,7 @@ export type Platform = {
   code: string;
   defaultCurrencyId: string;
   defaultCurrencyCode: string;
+  color: string;
   isActive: boolean;
   note: string;
   currentTax: { effectiveFrom: string; taxWithheld: boolean; rate: string } | null;
@@ -20,6 +21,7 @@ export type PlatformInput = {
   name?: string;
   code?: string;
   defaultCurrencyId?: string;
+  color?: string;
   isActive?: boolean;
   note?: string;
 };

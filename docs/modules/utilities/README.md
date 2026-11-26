@@ -37,7 +37,7 @@ Chia 3 cụm chuẩn:
 - **Nội dung (`content`)**: Trang (`trang`) · Đường dẫn (`duong-dan`) · Quyên góp (`quyen-gop` - Lịch sử ủng hộ toàn sàn, lọc bảng vinh danh, trạng thái kiểm duyệt, xuất báo cáo CSV).
 - **Công cụ (`tools`)**: Link rút gọn (`link-rut-gon`) · Mã QR (`ma-qr`).
 
-Ngoài ra, Client Portal bổ sung màn hình **Quyên góp & Ủng hộ** (`/ca-nhan/quyen-gop`) dành riêng cho từng chủ trang: theo dõi thống kê cá nhân (1 người), quản lý ẩn/hiện comment và xuất báo cáo CSV.
+Ngoài ra, phần thống kê Quyên góp được gộp trực tiếp vào Dashboard hợp nhất (`/ca-nhan`), còn màn hình **Giao dịch ủng hộ** (`/ca-nhan/quyen-gop`) nằm trong cụm Tiện ích dành cho chủ trang lọc theo ngày, ẩn/hiện bình luận và xuất báo cáo CSV. Webhook mỗi mã QR (`DonationTransactionService._sync_to_finance_income`) tự động áp vào module `finance` dưới nền tảng `Donate` (`code="donate"`), ghi đủ thông tin ngân hàng/mã tham chiếu và phát thông báo `finance.income.received` trỏ về `/portal/finance/incomes/{id}`.
 
 ## Trang công khai
 

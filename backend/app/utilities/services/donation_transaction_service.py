@@ -168,21 +168,31 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
             received_at=received_at,
         )
 
-        self._sync_to_finance_income(donation)
+        self._sync_to_finance_income(donation, payload=payload)
         self.invalidate_public_cache()
         return donation, True
 
-    def _sync_to_finance_income(self, donation: DonationTransaction) -> None:
+    def _sync_to_finance_income(
+        self, donation: DonationTransaction, payload: dict[str, Any] | None = None
+    ) -> None:
         """Đồng bộ giao dịch quyên góp SePay sang bản ghi Thu nhập (Income) của module Finance."""
+        raw_payload = payload or {}
         try:
-            content = donation.original_content or donation.message or f"Ủng hộ trang {donation.page.title}"
-            self.income_service.record_donation_income(
-                owner=donation.owner,
-                sepay_id=donation.sepay_id,
-                received_at=donation.received_at,
-                content=content,
-                amount=Decimal(str(donation.amount)),
-            )
+            with transaction.atomic():
+                content = (
+                    donation.original_content or donation.message or f"Ủng hộ trang {donation.page.title}"
+                )
+                self.income_service.record_donation_income(
+                    owner=donation.owner,
+                    sepay_id=donation.sepay_id,
+                    received_at=donation.received_at,
+                    content=content,
+                    amount=Decimal(str(donation.amount)),
+                    bank_name=str(raw_payload.get("gateway") or ""),
+                    account_number=str(raw_payload.get("accountNumber") or ""),
+                    reference_code=str(raw_payload.get("referenceCode") or ""),
+                    sepay_payload=raw_payload,
+                )
         except (DatabaseError, ObjectDoesNotExist, ValueError) as exc:
             logger.warning("Lỗi đồng bộ giao dịch quyên góp sang thu nhập tài chính: %s", exc)
 

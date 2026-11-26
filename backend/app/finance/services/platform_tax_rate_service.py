@@ -19,6 +19,7 @@ from app.finance.models.platform import Platform
 from app.finance.models.platform_tax_rate import PlatformTaxRate
 from app.finance.repositories.income_repository import IncomeRepository
 from app.finance.repositories.platform_tax_rate_repository import PlatformTaxRateRepository
+from app.finance.services.platform_service import PlatformService
 
 
 class PlatformTaxRateService:
@@ -28,10 +29,12 @@ class PlatformTaxRateService:
         self,
         repository: PlatformTaxRateRepository | None = None,
         income_repository: IncomeRepository | None = None,
+        platform_service: PlatformService | None = None,
     ) -> None:
         """Khởi tạo phụ thuộc."""
         self.repository = repository or PlatformTaxRateRepository()
         self.income_repository = income_repository or IncomeRepository()
+        self.platform_service = platform_service or PlatformService()
 
     def resolve(self, platform_id: Any, day: date) -> PlatformTaxRate | None:
         """Mốc áp dụng cho ngày (giờ VN)."""
@@ -75,6 +78,28 @@ class PlatformTaxRateService:
         """Xóa mềm mốc; trả giao dịch bị ảnh hưởng."""
         self.repository.delete(self._get(platform, pk), actor=actor)
         return self.affected_income_ids(platform.pk)
+
+    @transaction.atomic
+    def create_for(
+        self, actor: Any, platform_id: Any, data: dict[str, Any]
+    ) -> tuple[PlatformTaxRate, list[Any]]:
+        """Khóa nền tảng trong transaction rồi thêm mốc."""
+        platform = self.platform_service.get_for_write(actor, platform_id)
+        return self.create(actor, platform, data)
+
+    @transaction.atomic
+    def update_for(
+        self, actor: Any, platform_id: Any, pk: Any, data: dict[str, Any]
+    ) -> tuple[PlatformTaxRate, list[Any]]:
+        """Khóa nền tảng trong transaction rồi sửa mốc."""
+        platform = self.platform_service.get_for_write(actor, platform_id)
+        return self.update(actor, platform, pk, data)
+
+    @transaction.atomic
+    def delete_for(self, actor: Any, platform_id: Any, pk: Any) -> list[Any]:
+        """Khóa nền tảng trong transaction rồi xóa mềm mốc."""
+        platform = self.platform_service.get_for_write(actor, platform_id)
+        return self.delete(actor, platform, pk)
 
     def affected_income_ids(self, platform_id: Any) -> list[Any]:
         """Giao dịch tự tính thuế có (khấu trừ, %) đang chụp khác với mốc lịch sử hiện tại cho ngày của nó."""
