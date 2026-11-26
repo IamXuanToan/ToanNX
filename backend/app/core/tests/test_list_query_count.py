@@ -284,10 +284,6 @@ def _workspace(model: str) -> Callable[[Any, int], None]:
         from app.system.models.currency import Currency
         from app.workspace.models.asset import Asset
         from app.workspace.models.asset_warranty_claim import AssetWarrantyClaim
-        from app.workspace.models.assistant_conversation import AssistantConversation
-        from app.workspace.models.assistant_message import AssistantMessage
-        from app.workspace.models.monitor_incident import MonitorIncident
-        from app.workspace.models.monitor_target import MonitorTarget
         from app.workspace.models.reminder import Reminder
         from app.workspace.models.subscription import Subscription
         from app.workspace.models.subscription_payment import SubscriptionPayment
@@ -297,13 +293,10 @@ def _workspace(model: str) -> Callable[[Any, int], None]:
         today = timezone.localdate()
         asset = None
         sub = None
-        target = None
         if model == "claims":
             asset = Asset.objects.create(owner=owner, name="TB QC", purchase_date=today, currency=vnd)
         elif model == "payments":
             sub = Subscription.objects.create(owner=owner, name="Sub QC", currency=vnd, renew_date=today)
-        elif model == "incidents":
-            target = MonitorTarget.objects.create(owner=owner, name="Mon QC", url="https://example.com")
 
         for index in range(count):
             uid = uuid.uuid4().hex[:8]
@@ -337,17 +330,8 @@ def _workspace(model: str) -> Callable[[Any, int], None]:
                     secret_encrypted=SecretCipher().encrypt("workspace.vault.secret", "s3cr3t"),
                     secret_last4="cr3t",
                 )
-            elif model == "monitors":
-                MonitorTarget.objects.create(owner=owner, name=f"Mon {uid}", url="https://example.com")
-            elif model == "incidents" and target is not None:
-                MonitorIncident.objects.create(
-                    owner=owner, target=target, started_at=timezone.now(), status_code=500
-                )
             elif model == "reminders":
                 Reminder.objects.create(owner=owner, title=f"Rem {uid}", due_date=today)
-            elif model == "conversations":
-                conv = AssistantConversation.objects.create(owner=owner, title=f"Chat {uid}")
-                AssistantMessage.objects.create(conversation=conv, content="hi")
 
     return make
 
@@ -391,10 +375,7 @@ CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/workspace/subscriptions", _workspace("subscriptions")),
     ("/api/v1/workspace/subscription-payments", _workspace("payments")),
     ("/api/v1/workspace/vault-items", _workspace("vault")),
-    ("/api/v1/workspace/monitor-targets", _workspace("monitors")),
-    ("/api/v1/workspace/monitor-incidents", _workspace("incidents")),
     ("/api/v1/workspace/reminders", _workspace("reminders")),
-    ("/api/v1/workspace/assistant/conversations", _workspace("conversations")),
     (
         "/api/v1/system/settings",
         lambda owner, n: [

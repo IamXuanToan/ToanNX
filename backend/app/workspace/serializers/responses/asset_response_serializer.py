@@ -90,6 +90,7 @@ class AssetResponseSerializer(serializers.ModelSerializer[Asset]):
             "warranty_note",
             "invoice_attachments",
             "notes",
+            "notification_channels",
             "warranty_claim_count",
             "repair_count",
             "total_claim_count",

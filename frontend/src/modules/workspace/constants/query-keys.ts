@@ -11,12 +11,10 @@ export const workspaceKeys = {
   subscriptions: createResourceKeys(WORKSPACE_SCOPE, "subscriptions"),
   subscriptionPayments: createResourceKeys(WORKSPACE_SCOPE, "subscription-payments"),
   vaultItems: createResourceKeys(WORKSPACE_SCOPE, "vault-items"),
-  monitorTargets: createResourceKeys(WORKSPACE_SCOPE, "monitor-targets"),
-  monitorIncidents: createResourceKeys(WORKSPACE_SCOPE, "monitor-incidents"),
   reminders: createResourceKeys(WORKSPACE_SCOPE, "reminders"),
-  conversations: createResourceKeys(WORKSPACE_SCOPE, "conversations"),
-  conversationMessages: (id: string, before?: string | null) =>
-    [WORKSPACE_SCOPE, "conversation-messages", id, before ?? null] as const,
+  assistantConfig: () => [WORKSPACE_SCOPE, "assistant-config"] as const,
+  assistantBotProfile: () => [WORKSPACE_SCOPE, "assistant-bot-profile"] as const,
+  assistantThread: (page: number) => [WORKSPACE_SCOPE, "assistant-thread", page] as const,
   setting: (ownerId?: string | null) => [WORKSPACE_SCOPE, "setting", ownerId ?? "me"] as const,
   dashboardSummary: (ownerId?: string | null) =>
     [WORKSPACE_SCOPE, "dashboard-summary", ownerId ?? "me"] as const,

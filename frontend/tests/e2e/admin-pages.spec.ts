@@ -7,6 +7,7 @@ test.describe("Trang quản trị", () => {
     page,
   }) => {
     await loginViaUi(page);
+    await page.goto("/vi/quan-tri");
     const launcher = page.getByTestId("module-launcher");
     // Một thẻ mỗi nhóm có module: Hệ thống, Tiện ích, Tiểu thuyết, Tài chính.
     await expect(launcher.getByRole("link")).toHaveCount(4);

@@ -97,8 +97,20 @@ export function AssetTable({ canUpdate, canDelete }: { canUpdate: boolean; canDe
       id: "claims",
       header: t("fields.warrantyClaimCount"),
       align: "end",
-      hideBelow: "xl",
-      cell: (item) => `${item.totalClaimCount} (${item.openClaimCount})`,
+      hideBelow: "lg",
+      cell: (item) => (
+        <Link
+          href={
+            {
+              ...WORKSPACE_ROUTES.assetDetail(item.id),
+              query: { tab: "claims" },
+            } as never
+          }
+          className="text-primary font-medium tabular-nums underline-offset-4 hover:underline"
+        >
+          {item.totalClaimCount} ({item.openClaimCount})
+        </Link>
+      ),
     },
     ...(state.canManageAll
       ? [

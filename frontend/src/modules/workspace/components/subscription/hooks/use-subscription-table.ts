@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { useRouter } from "@/i18n/navigation";
 import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
+import { useResourceMutation } from "@/shares/hooks/use-resource-mutation";
 import { useTableState } from "@/shares/hooks/use-table-state";
 import { withEditMode } from "@/shares/lib/edit-mode";
 
@@ -32,6 +33,10 @@ export function useSubscriptionTable() {
     owner: ownerFilter.canFilterOwner ? table.extraFilters.owner : undefined,
   });
   const remove = useDeleteSubscription();
+  const toggleActive = useResourceMutation<{ id: string; isActive: boolean }, Subscription>({
+    mutationFn: ({ id, isActive }) => subscriptionService.update(id, { isActive }),
+    invalidate: [workspaceKeys.all],
+  });
   const bulk = useBulkActions<Subscription>({
     service: subscriptionService,
     invalidate: [workspaceKeys.all],
@@ -44,10 +49,8 @@ export function useSubscriptionTable() {
     ...ownerFilter,
     renewTarget,
     setRenewTarget,
-    toggleActive: async (item: Subscription, isActive: boolean) => {
-      await subscriptionService.update(item.id, { isActive });
-      await query.refetch();
-    },
+    toggleActive: (item: Subscription, isActive: boolean) =>
+      toggleActive.mutate({ id: item.id, isActive }),
     bulkSetActive: (rows: Subscription[], isActive: boolean) => bulk.bulkUpdate(rows, { isActive }),
     view: (item: Subscription) => router.push(WORKSPACE_ROUTES.subscriptionDetail(item.id)),
     edit: (item: Subscription) =>

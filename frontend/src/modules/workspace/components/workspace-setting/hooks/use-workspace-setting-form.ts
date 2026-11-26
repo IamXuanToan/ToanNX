@@ -2,13 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { useTelegramChats } from "@/modules/system/hooks/use-telegram-chats";
 import { TELEGRAM_CHAT_PERMISSIONS } from "@/modules/system/permissions/telegram-chat-permission";
+import type { ChipItemParseResult } from "@/shares/components/common/hooks/use-chip-list-input";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 
@@ -22,60 +23,55 @@ import {
 } from "../../../schemas/workspace-setting.schema";
 import type { WorkspaceSetting } from "../../../types/workspace-setting.types";
 
+const HHMM_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+function toDayChips(days?: number[] | null, fallback: number[] = []): string[] {
+  return (days?.length ? days : fallback).map((d) => String(d));
+}
+
 function toFormValues(s: WorkspaceSetting): WorkspaceSettingFormValues {
   return {
     timezone: s.timezone || DEFAULT_WORKSPACE_TIMEZONE,
     dailyDigestEnabled: s.dailyDigestEnabled,
     digestTimeSlots: s.digestTimeSlots ?? ["08:00"],
-    digestSections: s.digestSections ?? ["reminders", "monitors", "finance"],
-    warrantyAlertDaysText: (s.warrantyAlertDays ?? [30, 7, 1]).join(", "),
-    subscriptionDefaultAlertDaysText: (s.subscriptionDefaultAlertDays ?? [7, 3, 1]).join(", "),
-    preferredAiModel: s.preferredAiModel || "",
-    aiDailyTokenLimit: s.aiDailyTokenLimit !== null ? String(s.aiDailyTokenLimit) : "",
-    telegramAiEnabled: s.telegramAiEnabled,
+    digestSections: s.digestSections ?? ["reminders", "warranty", "subscriptions", "finance"],
+    warrantyAlertDays: toDayChips(s.warrantyAlertDays, [30, 7, 1]),
+    subscriptionDefaultAlertDays: toDayChips(s.subscriptionDefaultAlertDays, [7, 3, 1]),
     telegramAllowedChatIds: s.telegramAllowedChatIds ?? [],
-    telegramGroupRequireMention: s.telegramGroupRequireMention,
-    telegramGroupToolPolicy: s.telegramGroupToolPolicy,
-    telegramGroupHideAmounts: s.telegramGroupHideAmounts,
-    telegramGroupReplyInDm: s.telegramGroupReplyInDm,
   };
 }
 
-function parseDaysCsv(raw: string): number[] {
-  return raw
-    .split(",")
-    .map((x) => x.trim())
-    .filter(Boolean)
-    .map((x) => Number(x));
+function sortDaysDesc(items: string[]): string[] {
+  return [...items].sort((a, b) => Number(b) - Number(a));
 }
 
-/** @returns Query & form state Cài đặt Digest, AI & Telegram hai chiều. */
+function sortTimeAsc(items: string[]): string[] {
+  return [...items].sort();
+}
+
+/**
+ * Query & form state Cài đặt cá nhân (Múi giờ, Digest, mốc cảnh báo dạng chip & Telegram nhận tin).
+ *
+ * @returns State form, parser chip và thao tác danh sách phần/chat Telegram.
+ */
 export function useWorkspaceSettingForm() {
   const tValidation = useTranslations("workspace.validation");
   const tCommon = useTranslations("workspace.common");
-  const settingQuery = useWorkspaceSetting();
+  const settingQuery = useWorkspaceSetting(undefined, true);
   const save = useSaveWorkspaceSetting();
   const canReadChats = usePermission(TELEGRAM_CHAT_PERMISSIONS.read);
   const telegramChatsQuery = useTelegramChats(canReadChats);
   const errorMessage = useApiErrorMessage();
   const schema = useMemo(() => workspaceSettingSchema(tValidation), [tValidation]);
-  const [slotInput, setSlotInput] = useState("");
 
   const defaults: WorkspaceSettingFormValues = {
     timezone: DEFAULT_WORKSPACE_TIMEZONE,
     dailyDigestEnabled: true,
     digestTimeSlots: ["08:00"],
-    digestSections: ["reminders", "warranty", "subscriptions", "monitors", "finance"],
-    warrantyAlertDaysText: "30, 7, 1",
-    subscriptionDefaultAlertDaysText: "7, 3, 1",
-    preferredAiModel: "",
-    aiDailyTokenLimit: "",
-    telegramAiEnabled: false,
+    digestSections: ["reminders", "warranty", "subscriptions", "finance"],
+    warrantyAlertDays: ["30", "7", "1"],
+    subscriptionDefaultAlertDays: ["7", "3", "1"],
     telegramAllowedChatIds: [],
-    telegramGroupRequireMention: true,
-    telegramGroupToolPolicy: "OWNER_ONLY",
-    telegramGroupHideAmounts: true,
-    telegramGroupReplyInDm: false,
   };
 
   const form = useForm<WorkspaceSettingFormValues>({
@@ -86,6 +82,11 @@ export function useWorkspaceSettingForm() {
 
   const digestTimeSlots = useWatch({ control: form.control, name: "digestTimeSlots" });
   const digestSections = useWatch({ control: form.control, name: "digestSections" });
+  const warrantyAlertDays = useWatch({ control: form.control, name: "warrantyAlertDays" });
+  const subscriptionDefaultAlertDays = useWatch({
+    control: form.control,
+    name: "subscriptionDefaultAlertDays",
+  });
   const telegramAllowedChatIds = useWatch({
     control: form.control,
     name: "telegramAllowedChatIds",
@@ -98,16 +99,9 @@ export function useWorkspaceSettingForm() {
         dailyDigestEnabled: values.dailyDigestEnabled,
         digestTimeSlots: values.digestTimeSlots,
         digestSections: values.digestSections,
-        warrantyAlertDays: parseDaysCsv(values.warrantyAlertDaysText),
-        subscriptionDefaultAlertDays: parseDaysCsv(values.subscriptionDefaultAlertDaysText),
-        preferredAiModel: values.preferredAiModel,
-        aiDailyTokenLimit: values.aiDailyTokenLimit ? Number(values.aiDailyTokenLimit) : null,
-        telegramAiEnabled: values.telegramAiEnabled,
+        warrantyAlertDays: values.warrantyAlertDays.map((x) => Number(x)),
+        subscriptionDefaultAlertDays: values.subscriptionDefaultAlertDays.map((x) => Number(x)),
         telegramAllowedChatIds: values.telegramAllowedChatIds,
-        telegramGroupRequireMention: values.telegramGroupRequireMention,
-        telegramGroupToolPolicy: values.telegramGroupToolPolicy,
-        telegramGroupHideAmounts: values.telegramGroupHideAmounts,
-        telegramGroupReplyInDm: values.telegramGroupReplyInDm,
       });
       toast.success(tCommon("updated"));
     } catch (error) {
@@ -119,34 +113,35 @@ export function useWorkspaceSettingForm() {
     }
   });
 
+  const parseTimeSlot = (raw: string): ChipItemParseResult => {
+    const clean = raw.trim();
+    if (!HHMM_REGEX.test(clean)) return { error: tValidation("timeSlot") };
+    return { value: clean };
+  };
+
+  const parseAlertDay = (raw: string): ChipItemParseResult => {
+    const clean = raw.trim();
+    if (!/^\d+$/.test(clean)) return { error: tValidation("alertDay") };
+    const num = Number(clean);
+    if (num < 0 || num > 365) return { error: tValidation("alertDay") };
+    return { value: String(num) };
+  };
+
   return {
     settingQuery,
     telegramChats: telegramChatsQuery.data ?? [],
     form,
     onSubmit,
     isSubmitting: save.isPending,
-    slotInput,
-    setSlotInput,
     digestTimeSlots: digestTimeSlots ?? [],
     digestSections: digestSections ?? [],
+    warrantyAlertDays: warrantyAlertDays ?? [],
+    subscriptionDefaultAlertDays: subscriptionDefaultAlertDays ?? [],
     telegramAllowedChatIds: telegramAllowedChatIds ?? [],
-    addSlot: () => {
-      const clean = slotInput.trim();
-      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(clean)) {
-        form.setError("digestTimeSlots", { message: tValidation("timeSlot") });
-        return;
-      }
-      form.clearErrors("digestTimeSlots");
-      const current = form.getValues("digestTimeSlots");
-      if (!current.includes(clean)) {
-        form.setValue("digestTimeSlots", [...current, clean].sort(), { shouldDirty: true });
-      }
-      setSlotInput("");
-    },
-    removeSlot: (slot: string) => {
-      const next = form.getValues("digestTimeSlots").filter((s) => s !== slot);
-      form.setValue("digestTimeSlots", next, { shouldDirty: true });
-    },
+    parseTimeSlot,
+    parseAlertDay,
+    sortTimeAsc,
+    sortDaysDesc,
     toggleSection: (section: string, checked: boolean) => {
       const current = form.getValues("digestSections");
       const next = checked

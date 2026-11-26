@@ -15,7 +15,6 @@ from app.workspace.constants.workspace_defaults import AI_TOOL_ITEM_LIMIT, STALE
 from app.workspace.models.asset import Asset
 from app.workspace.models.reminder import Reminder
 from app.workspace.services.asset_service import AssetService
-from app.workspace.services.monitor_target_service import MonitorTargetService
 from app.workspace.services.reminder_service import ReminderService
 from app.workspace.services.subscription_service import SubscriptionService
 from app.workspace.services.workspace_setting_service import WorkspaceSettingService
@@ -30,7 +29,6 @@ READ_TOOL_NAMES = frozenset(
         "get_pending_reminders",
         "get_assets_and_warranty",
         "get_stale_projects",
-        "get_monitor_health",
     }
 )
 OWNER_MUTATION_TOOL_NAMES = frozenset({"create_quick_reminder"})
@@ -38,7 +36,7 @@ ALL_TOOL_NAMES = READ_TOOL_NAMES | OWNER_MUTATION_TOOL_NAMES
 
 
 class AssistantToolsService:
-    """Thực thi 8 tool cá nhân an toàn; tuyệt đối không có tool đọc/giải mã Két sắt Bí mật."""
+    """Thực thi 7 tool cá nhân an toàn; tuyệt đối không có tool đọc/giải mã Két sắt Bí mật."""
 
     def __init__(
         self,
@@ -49,7 +47,6 @@ class AssistantToolsService:
         asset_service: AssetService | None = None,
         page_service: PageService | None = None,
         novel_service: NovelService | None = None,
-        monitor_service: MonitorTargetService | None = None,
         setting_service: WorkspaceSettingService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
     ) -> None:
@@ -61,7 +58,6 @@ class AssistantToolsService:
         self.asset_service = asset_service or AssetService()
         self.page_service = page_service or PageService()
         self.novel_service = novel_service or NovelService()
-        self.monitor_service = monitor_service or MonitorTargetService()
         self.setting_service = setting_service or WorkspaceSettingService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
 
@@ -110,11 +106,6 @@ class AssistantToolsService:
                 "get_stale_projects",
                 "Tìm các trang tùy chỉnh hoặc truyện của chính chủ bị bỏ quên chưa cập nhật.",
                 {"days": {"type": "integer", "minimum": 1, "maximum": 365}},
-            ),
-            self._schema(
-                "get_monitor_health",
-                "Kiểm tra trạng thái Uptime/HTTP mới nhất của các website/API đang giám sát.",
-                {},
             ),
         ]
         if is_owner:
@@ -165,8 +156,6 @@ class AssistantToolsService:
                 return self._run_assets(actor, args, hide_amounts=hide_amounts)
             if name == "get_stale_projects":
                 return self._run_stale_projects(actor, args)
-            if name == "get_monitor_health":
-                return self._run_monitors(actor)
             return self._run_create_reminder(actor, args)
         except (AppException, ValueError, TypeError) as exc:
             return {"ok": False, "error": str(exc)}
@@ -299,28 +288,6 @@ class AssistantToolsService:
             "novels": [
                 {"id": str(n.pk), "title": n.title, "updated_at": n.updated_at.date().isoformat()}
                 for n in novels
-            ],
-        }
-
-    def _run_monitors(self, actor: Any) -> dict[str, Any]:
-        items, total = self.monitor_service.get_realtime_status(actor)
-        down_count = sum(1 for item in items if item.last_status == "DOWN")
-        healthy_count = sum(1 for item in items if item.last_status == "HEALTHY")
-        return {
-            "ok": True,
-            "total_count": total,
-            "healthy_count": healthy_count,
-            "down_count": down_count,
-            "items": [
-                {
-                    "id": str(item.pk),
-                    "name": item.name,
-                    "url": item.url,
-                    "status": item.last_status,
-                    "status_code": item.last_status_code,
-                    "latency_ms": item.last_latency_ms,
-                }
-                for item in items
             ],
         }
 

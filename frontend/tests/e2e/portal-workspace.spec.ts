@@ -46,6 +46,7 @@ test.describe("Client Portal — Không gian cá nhân & Trợ lý AI", () => {
     page,
     browser,
   }) => {
+    test.setTimeout(90_000);
     await loginViaUi(page);
     const suffix = Date.now();
     const baseURL = new URL(page.url()).origin;
@@ -182,6 +183,13 @@ test.describe("Client Portal — Không gian cá nhân & Trợ lý AI", () => {
       await memberPage.getByRole("button", { name: "Lưu", exact: true }).click();
       await expect(memberPage).toHaveURL(/\/vi\/ca-nhan\/bao-hanh\/[0-9a-f-]{36}$/);
 
+      // Quay về thẳng tab Bảo hành của thiết bị và xác nhận phiếu hiển thị trong bảng theo thiết bị
+      await memberPage.getByRole("link", { name: "Về thiết bị" }).click();
+      await expect(memberPage).toHaveURL(
+        new RegExp(`/vi/ca-nhan/thiet-bi/${assetId}\\?tab=claims$`),
+      );
+      await expect(memberPage.getByRole("table")).toContainText("Apple Care E2E");
+
       // 3. Dịch vụ định kỳ -> Gia hạn qua dialog -> Tab Lịch sử gia hạn tăng
       await memberPage.goto("/vi/ca-nhan/dich-vu/tao-moi");
       await expect(
@@ -213,31 +221,53 @@ test.describe("Client Portal — Không gian cá nhân & Trợ lý AI", () => {
       await memberPage.goto("/vi/ca-nhan/ket-sat");
       await expect(memberPage.getByRole("table")).toContainText("9876");
 
-      // 5. Uptime Monitor & Nhắc việc
-      await memberPage.goto("/vi/ca-nhan/uptime/tao-moi");
-      await memberPage.getByLabel("Tên dịch vụ").fill(`Monitor E2E ${suffix}`);
-      await memberPage.getByLabel("URL kiểm tra").fill("https://example.com");
-      await memberPage.getByRole("button", { name: "Lưu", exact: true }).click();
-      await expect(memberPage).toHaveURL(/\/vi\/ca-nhan\/uptime\/[0-9a-f-]{36}$/);
-
+      // 5. Nhắc việc + DateTimePicker gọn 1 khung + Tooltip Nhãn + Kênh nhận thông báo + nút Hủy/Quay lại
       await memberPage.goto("/vi/ca-nhan/nhac-viec/tao-moi");
+      await expect(memberPage.getByRole("link", { name: "Hủy" })).toBeVisible();
+      await expect(memberPage.getByRole("button", { name: "Hướng dẫn nhập thẻ" })).toBeVisible();
       await memberPage.getByLabel("Tiêu đề việc").fill(`Reminder E2E ${suffix}`);
+      await memberPage.getByRole("checkbox", { name: /Telegram/i }).click();
+      await memberPage.getByRole("checkbox", { name: /Email/i }).click();
       await memberPage.getByRole("button", { name: "Lưu", exact: true }).click();
       await expect(memberPage).toHaveURL(/\/vi\/ca-nhan\/nhac-viec\/[0-9a-f-]{36}$/);
+      await expect(memberPage.getByRole("link", { name: "Quay lại" })).toBeVisible();
 
-      // 6. Trợ lý AI Slash /today (0 token)
-      await memberPage.goto("/vi/ca-nhan/tro-ly");
-      await memberPage.getByRole("button", { name: /\/today · Việc hôm nay/ }).click();
-      await expect(memberPage.getByText(`Reminder E2E ${suffix}`)).toBeVisible();
+      // 6. Nút tròn Trợ lý AI kéo-thả hít 4 cạnh & Popup 1 luồng chat (badge trường trộn + cỡ popup + gõ /)
+      const aiTrigger = memberPage.getByTestId("assistant-floating-trigger");
+      await expect(aiTrigger).toBeVisible();
+      await aiTrigger.click();
+      const aiPopup = memberPage.getByTestId("assistant-popup-panel");
+      await expect(aiPopup).toBeVisible();
+      await expect(memberPage.getByTestId("assistant-popup-config")).toHaveCount(0);
+      await aiPopup.getByTestId("assistant-size-compact").click();
+      await expect(aiPopup.getByTestId("assistant-size-compact")).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
+      await aiPopup.getByRole("textbox").fill("/");
+      await expect(aiPopup.getByTestId("assistant-slash-suggestions")).toBeVisible();
+      await aiPopup.getByTestId("slash-option-today").dispatchEvent("mousedown");
+      await expect(aiPopup.getByText(`Reminder E2E ${suffix}`)).toBeVisible();
+      await memberPage.getByTestId("assistant-popup-close").click();
+      await expect(aiPopup).toHaveCount(0);
 
-      // 7. Cài đặt & đổi ngôn ngữ /vi <-> /en
+      // 7. Admin cấu hình Chatbot AI theo form chuẩn & xem danh sách lệnh Telegram + có nút Hủy
+      await page.goto("/vi/quan-tri/he-thong/tro-ly-ai");
+      await expect(page.getByRole("heading", { name: "Cấu hình Chatbot AI" })).toBeVisible();
+      await expect(page.getByRole("link", { name: "Hủy" })).toBeVisible();
+      await expect(page.getByTestId("admin-command-list")).toBeVisible();
+      await page.getByRole("button", { name: "Ngắn gọn · Tiếng Việt" }).click();
+      await page.getByRole("button", { name: "Lưu", exact: true }).click();
+
+      // 8. Cài đặt cá nhân (Múi giờ +7, Digest, chip ngày cảnh báo & nút Hủy) + đổi ngôn ngữ /vi <-> /en
       await memberPage.goto("/vi/ca-nhan/cai-dat");
+      await expect(memberPage.getByRole("link", { name: "Hủy" })).toBeVisible();
       await memberPage.getByRole("button", { name: "Lưu cài đặt" }).click();
       await memberPage.getByTestId("language-switcher").click();
       await memberPage.getByTestId("locale-en").click();
       await expect(memberPage).toHaveURL(/\/en\/portal\/settings$/);
       await expect(
-        memberPage.getByRole("heading", { name: "Assistant & Digest Settings" }),
+        memberPage.getByRole("heading", { name: "Personal Digest & Alert Settings" }),
       ).toBeVisible();
 
       expect(pageErrors, `Page errors: ${pageErrors.join("; ")}`).toEqual([]);

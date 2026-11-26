@@ -6,6 +6,11 @@ from django.db.models import Q
 
 from app.core.models.core_model import CoreModel
 from app.core.tracking.journal_tracker import JournalTracker
+from app.workspace.constants.workspace_defaults import DEFAULT_WORKSPACE_NOTIFICATION_CHANNELS
+
+
+def _default_notification_channels() -> list[str]:
+    return list(DEFAULT_WORKSPACE_NOTIFICATION_CHANNELS)
 
 
 class Reminder(JournalTracker, CoreModel):
@@ -18,6 +23,7 @@ class Reminder(JournalTracker, CoreModel):
         "priority",
         "is_completed",
         "recurrence",
+        "notification_channels",
     )
 
     class Priority(models.TextChoices):
@@ -120,6 +126,13 @@ class Reminder(JournalTracker, CoreModel):
         verbose_name="Thẻ gắn",
         help_text="Nhãn phân loại công việc.",
         db_comment="Nhãn nhắc việc",
+    )
+    notification_channels = models.JSONField(
+        default=_default_notification_channels,
+        blank=True,
+        verbose_name="Kênh nhận thông báo",
+        help_text="Danh sách kênh thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`).",
+        db_comment="Kênh nhận thông báo",
     )
 
     class Meta:

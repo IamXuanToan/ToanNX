@@ -1,203 +1,249 @@
 "use client";
 
-import { Bot, MessageSquarePlus, Send, Sparkles, Trash2 } from "lucide-react";
+import { Send, Sparkles, Trash2 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
+import { useRef } from "react";
 
-import { StatusBadge } from "@/shares/components/common/status-badge";
+import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
 import { Form } from "@/shares/components/common/form";
+import { Message } from "@/shares/components/common/message";
+import { MessageAvatar } from "@/shares/components/common/message-avatar";
+import { MessageContent } from "@/shares/components/common/message-content";
+import { MessageMeta } from "@/shares/components/common/message-meta";
+import { MessageScroller } from "@/shares/components/common/message-scroller";
+import { UserAvatar } from "@/shares/components/common/user-avatar";
 import { Button } from "@/shares/components/ui/button";
-import { Card } from "@/shares/components/ui/card";
 import { Input } from "@/shares/components/ui/input";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 import { cn } from "cn";
 
-import { ASSISTANT_SLASH_COMMANDS } from "../../constants/defaults";
+import { matchSlashBadgeInMessage } from "../../constants/defaults";
+import { AssistantAvatar } from "./assistant-avatar";
+import { AssistantCommandBadge } from "./assistant-command-badge";
+import { AssistantSlashSuggestions } from "./assistant-slash-suggestions";
+import { AssistantThinkingIndicator } from "./assistant-thinking-indicator";
 import { useAssistantChatPanel } from "./hooks/use-assistant-chat-panel";
 
 /**
- * Giao diện Trợ lý AI hai cột (lịch sử hội thoại Web + Telegram bên trái,
- * luồng tin nhắn + badge model/fallback/tokens + 8 nút slash command bên phải).
+ * Luồng chat 1 cửa chuẩn shadcn (`Message`, `MessageAvatar`, `MessageContent`, `MessageMeta`, `MessageScroller`):
+ * chuẩn hóa lệnh nhanh tiếng Việt/Anh và hiện popup gợi ý ngay khi gõ `/`.
  *
- * @param props - Quyền chat, quyền xem/xóa lịch sử hội thoại.
- * @returns Màn hình Trợ lý AI.
+ * @param props - Kiểu hiển thị (`popup` hoặc `page`) và quyền trò chuyện.
+ * @returns Khung chat Trợ lý AI.
  */
 export function AssistantChat({
+  variant = "popup",
   canChat,
-  canReadConversations,
-  canDeleteConversations,
+  enabled = true,
 }: {
+  variant?: "popup" | "page";
   canChat: boolean;
-  canReadConversations: boolean;
-  canDeleteConversations: boolean;
+  enabled?: boolean;
 }) {
   const t = useTranslations("workspace.assistant");
+  const tTable = useTranslations("common.table");
   const format = useFormatter();
-  const state = useAssistantChatPanel(canReadConversations);
-  const convList = state.conversations.data?.items ?? [];
+  const state = useAssistantChatPanel(canChat, enabled);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const assistantTitle = state.botProfile?.name || t("defaultName");
+  const isPopup = variant === "popup";
+  const visibleCommands = isPopup ? state.commands.slice(0, 4) : state.commands;
+  const scrollWatchKey = `${state.messages.length}:${state.isSending ? "1" : "0"}`;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
-      <Card className="flex flex-col gap-3 p-3">
-        <Button type="button" size="sm" onClick={state.startNew} className="w-full justify-start">
-          <MessageSquarePlus />
-          {t("newChat")}
-        </Button>
-
-        <div className="space-y-1 overflow-y-auto lg:max-h-[65svh]">
-          {state.conversations.isPending ? (
-            <Skeleton className="h-24 w-full rounded-lg" />
-          ) : convList.length === 0 ? (
-            <p className="text-muted-foreground px-2 py-4 text-center text-xs">
-              {t("emptyConversations")}
-            </p>
-          ) : (
-            convList.map((conv) => {
-              const selected = state.activeId === conv.id;
-              return (
-                <div
-                  key={conv.id}
-                  className={cn(
-                    "group flex items-center justify-between gap-1 rounded-lg px-2 py-1.5 text-sm transition-colors",
-                    selected ? "bg-primary-light text-primary font-medium" : "hover:bg-muted/60",
-                  )}
-                >
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => state.setActiveId(conv.id)}
-                    className="h-auto min-w-0 flex-1 justify-start truncate px-1 py-1 text-left font-normal"
-                  >
-                    <span className="truncate">{conv.title || t("newChat")}</span>
-                  </Button>
-                  {canDeleteConversations ? (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      aria-label={conv.title}
-                      onClick={() => void state.removeConversation(conv.id)}
-                      className="text-muted-foreground hover:text-destructive size-7 shrink-0"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </Button>
-                  ) : null}
-                </div>
-              );
-            })
-          )}
-        </div>
-      </Card>
-
-      <Card className="flex min-h-[65svh] flex-col justify-between gap-4 p-4">
-        <div className="space-y-3 overflow-y-auto pr-1 lg:max-h-[55svh]">
+    <>
+      <div
+        className={cn(
+          "flex min-h-0 flex-1 flex-col justify-between",
+          isPopup ? "p-3" : "bg-card rounded-2xl border p-4 shadow-2xs",
+        )}
+      >
+        <MessageScroller
+          watchValue={scrollWatchKey}
+          scrollToBottomLabel={t("scrollToBottom")}
+          className={cn("space-y-3 pr-1", isPopup ? "py-1" : "max-h-[55svh] py-2")}
+        >
           {state.hasMoreOlder ? (
             <div className="flex justify-center">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                disabled={state.loadingOlder}
                 onClick={() => void state.loadMore()}
+                disabled={state.loadingOlder}
               >
                 {t("loadMore")}
               </Button>
             </div>
           ) : null}
 
-          {state.detail.isPending && state.activeId ? (
-            <Skeleton className="h-40 w-full rounded-xl" />
+          {state.threadQuery.isPending ? (
+            <div className="space-y-2 py-2">
+              <Skeleton className="h-12 w-3/4 rounded-2xl" />
+              <Skeleton className="ml-auto h-10 w-2/3 rounded-2xl" />
+            </div>
           ) : state.messages.length === 0 ? (
-            <div className="text-muted-foreground flex flex-col items-center justify-center gap-2 py-16 text-center text-sm">
-              <Sparkles className="text-primary size-8" aria-hidden />
-              <p className="max-w-md">{t("emptyMessages")}</p>
+            <div className="text-muted-foreground flex flex-col items-center justify-center gap-2 py-10 text-center text-sm">
+              <Sparkles className="text-primary size-6" aria-hidden />
+              <p className="max-w-xs">{t("emptyMessages")}</p>
             </div>
           ) : (
             state.messages.map((msg) => {
-              const isUser = msg.role === "USER";
+              const role = msg.role === "USER" ? "user" : "assistant";
+              const slashBadge = role === "user" ? matchSlashBadgeInMessage(msg.content) : null;
               return (
-                <div
+                <Message
                   key={msg.id}
-                  className={cn("flex flex-col gap-1", isUser ? "items-end" : "items-start")}
+                  role={role}
+                  avatar={
+                    <MessageAvatar>
+                      {role === "user" ? (
+                        <UserAvatar
+                          user={state.currentUser}
+                          alt={msg.senderName || "U"}
+                          size="sm"
+                          className="size-7"
+                        />
+                      ) : (
+                        <AssistantAvatar
+                          avatarUrl={state.botProfile?.avatar?.url ?? null}
+                          name={assistantTitle}
+                          size="sm"
+                          className="size-7"
+                        />
+                      )}
+                    </MessageAvatar>
+                  }
+                  meta={
+                    <MessageMeta align={role === "user" ? "end" : "start"}>
+                      <span>
+                        {format.dateTime(new Date(msg.createdAt), { timeStyle: "short" })}
+                      </span>
+                    </MessageMeta>
+                  }
                 >
-                  <div
-                    className={cn(
-                      "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm break-words whitespace-pre-wrap",
-                      isUser
-                        ? "bg-primary text-primary-foreground"
-                        : msg.isError
-                          ? "bg-destructive/10 text-destructive border"
-                          : "bg-muted/60 border",
+                  <MessageContent role={role} isError={msg.isError}>
+                    {slashBadge ? (
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <AssistantCommandBadge
+                          commandKey={slashBadge.key}
+                          label={t(`slashBadges.${slashBadge.key}`)}
+                          className="h-5 px-2 text-[11px]"
+                        />
+                        {slashBadge.rest ? <span>{slashBadge.rest}</span> : null}
+                      </div>
+                    ) : (
+                      msg.content
                     )}
-                  >
-                    {msg.content}
-                  </div>
-                  <div className="text-muted-foreground flex flex-wrap items-center gap-1.5 px-1 text-[11px]">
-                    {!isUser ? <Bot className="size-3" aria-hidden /> : null}
-                    {msg.modelUsed ? (
-                      <StatusBadge tone="info">
-                        {t("modelBadge", { model: msg.modelUsed })}
-                      </StatusBadge>
-                    ) : null}
-                    {msg.tokensUsed > 0 ? (
-                      <span>{t("tokensUsed", { tokens: msg.tokensUsed })}</span>
-                    ) : null}
-                    {msg.containsPrivateData ? (
-                      <StatusBadge tone="warning">{t("privateBadge")}</StatusBadge>
-                    ) : null}
-                    <span>{format.dateTime(new Date(msg.createdAt), { timeStyle: "short" })}</span>
-                  </div>
-                </div>
+                  </MessageContent>
+                </Message>
               );
             })
           )}
-        </div>
 
-        <div className="space-y-3 border-t pt-3">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-muted-foreground text-xs font-medium">{t("slashLabel")}</span>
-            {ASSISTANT_SLASH_COMMANDS.map((item) => (
+          {state.isSending ? (
+            <AssistantThinkingIndicator
+              name={assistantTitle}
+              avatarUrl={state.botProfile?.avatar?.url ?? null}
+              label={t("thinking", { name: assistantTitle })}
+            />
+          ) : null}
+        </MessageScroller>
+
+        <div className="border-border/60 relative mt-2 space-y-2 border-t pt-2.5">
+          <AssistantSlashSuggestions
+            suggestions={state.slashSuggestions}
+            activeIndex={state.activeSuggestionIndex}
+            onHoverIndex={state.setActiveSuggestionIndex}
+            onSelect={(item) => {
+              if (state.selectSlashCommand(item)) inputRef.current?.focus();
+            }}
+          />
+
+          <div className="flex flex-wrap items-center justify-between gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {visibleCommands.map((cmd) => (
+                <Button
+                  key={cmd.key}
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  title={cmd.command.trim()}
+                  disabled={!canChat || state.isSending}
+                  onClick={() => {
+                    if (state.selectSlashCommand(cmd)) inputRef.current?.focus();
+                  }}
+                  className="h-auto rounded-full p-0 hover:bg-transparent"
+                >
+                  <AssistantCommandBadge
+                    commandKey={cmd.key}
+                    label={t(`slashBadges.${cmd.key}`)}
+                    className="hover:opacity-85"
+                  />
+                </Button>
+              ))}
+            </div>
+
+            {state.messages.length > 0 && canChat ? (
               <Button
-                key={item.key}
                 type="button"
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="h-7 px-2.5 text-xs"
-                disabled={!canChat || state.isSending}
-                onClick={() => {
-                  if (item.command.endsWith(" ")) {
-                    state.setDraft(item.command);
-                  } else {
-                    void state.sendMessage(item.command);
-                  }
-                }}
+                onClick={() => state.setClearConfirmOpen(true)}
+                disabled={state.isClearing || state.isSending}
+                data-testid="assistant-clear-thread-btn"
+                className="text-muted-foreground hover:text-destructive h-6 gap-1 px-2 text-[11px]"
               >
-                {t(`slashCommands.${item.key}`)}
+                <Trash2 className="size-3" />
+                <span>{t("clearThreadShort")}</span>
               </Button>
-            ))}
+            ) : null}
           </div>
 
           <Form
-            onSubmit={(e) => {
-              e.preventDefault();
+            onSubmit={(event) => {
+              event.preventDefault();
               void state.sendMessage();
             }}
             className="flex gap-2"
           >
             <Input
+              ref={inputRef}
               value={state.draft}
-              onChange={(e) => state.setDraft(e.target.value)}
+              onChange={(event) => state.setDraft(event.target.value)}
+              onKeyDown={(event) => {
+                if (state.onInputKeyDown(event)) inputRef.current?.focus();
+              }}
               placeholder={t("placeholder")}
               disabled={!canChat || state.isSending}
-              className="h-10 flex-1"
+              aria-autocomplete="list"
+              aria-expanded={state.slashSuggestions.length > 0}
+              className={cn(isPopup ? "h-9 text-sm" : "h-10")}
+              maxLength={2000}
             />
-            <Button type="submit" disabled={!canChat || !state.draft.trim() || state.isSending}>
-              <Send />
-              {state.isSending ? t("sending") : t("send")}
+            <Button
+              type="submit"
+              size={isPopup ? "sm" : "default"}
+              disabled={!canChat || !state.draft.trim() || state.isSending}
+              aria-label={t("send")}
+              className={cn(isPopup ? "h-9 px-3" : "h-10")}
+            >
+              <Send className="size-4" />
+              {isPopup ? null : <span>{t("send")}</span>}
             </Button>
           </Form>
         </div>
-      </Card>
-    </div>
+      </div>
+
+      <ConfirmDialog
+        open={state.clearConfirmOpen}
+        onOpenChange={state.setClearConfirmOpen}
+        title={t("clearThread")}
+        description={t("clearConfirm")}
+        confirmLabel={tTable("delete")}
+        onConfirm={() => void state.confirmClearThread()}
+        isPending={state.isClearing}
+      />
+    </>
   );
 }

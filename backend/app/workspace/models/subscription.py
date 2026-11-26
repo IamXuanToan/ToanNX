@@ -8,11 +8,18 @@ from django.db.models import Q
 
 from app.core.models.core_model import CoreModel
 from app.core.tracking.journal_tracker import JournalTracker
-from app.workspace.constants.workspace_defaults import DEFAULT_REMINDER_DAYS_BEFORE
+from app.workspace.constants.workspace_defaults import (
+    DEFAULT_REMINDER_DAYS_BEFORE,
+    DEFAULT_WORKSPACE_NOTIFICATION_CHANNELS,
+)
 
 
 def _default_reminder_days() -> list[int]:
     return list(DEFAULT_REMINDER_DAYS_BEFORE)
+
+
+def _default_notification_channels() -> list[str]:
+    return list(DEFAULT_WORKSPACE_NOTIFICATION_CHANNELS)
 
 
 class Subscription(JournalTracker, CoreModel):
@@ -27,6 +34,7 @@ class Subscription(JournalTracker, CoreModel):
         "renew_date",
         "auto_renew",
         "is_active",
+        "notification_channels",
     )
 
     class Category(models.TextChoices):
@@ -166,6 +174,13 @@ class Subscription(JournalTracker, CoreModel):
         verbose_name="Số ngày nhắc trước",
         help_text="Danh sách số ngày nhắc trước hạn (ví dụ [7, 3, 1]).",
         db_comment="Danh sách ngày nhắc trước",
+    )
+    notification_channels = models.JSONField(
+        default=_default_notification_channels,
+        blank=True,
+        verbose_name="Kênh nhận thông báo",
+        help_text="Danh sách kênh thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`).",
+        db_comment="Kênh nhận thông báo",
     )
     is_active = models.BooleanField(
         default=True,

@@ -1,10 +1,8 @@
-"""Nghiệp vụ Lịch Tổng hợp 5 nguồn sự kiện trên Client Portal theo múi giờ người dùng."""
+"""Nghiệp vụ Lịch Tổng hợp 4 nguồn sự kiện trên Client Portal theo múi giờ người dùng."""
 
-from datetime import date, datetime, time
+from datetime import date
 from decimal import Decimal
 from typing import Any
-
-from django.utils import timezone as dj_timezone
 
 from app.core.exceptions.validation_error import ValidationError
 from app.system.services.user_service import UserService
@@ -16,7 +14,6 @@ from app.workspace.constants.workspace_error_code import WorkspaceErrorCode
 from app.workspace.permissions.workspace_calendar_permission import WorkspaceCalendarPermission
 from app.workspace.repositories.asset_repository import AssetRepository
 from app.workspace.repositories.asset_warranty_claim_repository import AssetWarrantyClaimRepository
-from app.workspace.repositories.monitor_incident_repository import MonitorIncidentRepository
 from app.workspace.repositories.reminder_repository import ReminderRepository
 from app.workspace.repositories.subscription_repository import SubscriptionRepository
 from app.workspace.services.workspace_setting_service import WorkspaceSettingService
@@ -24,7 +21,7 @@ from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneS
 
 
 class WorkspaceCalendarService:
-    """Gom 5 loại sự kiện (dịch vụ, nhắc việc, bảo hành TB, phiếu sửa, sự cố monitor)."""
+    """Gom 4 loại sự kiện (dịch vụ, nhắc việc, bảo hành TB, phiếu sửa)."""
 
     def __init__(
         self,
@@ -35,7 +32,6 @@ class WorkspaceCalendarService:
         reminder_repository: ReminderRepository | None = None,
         asset_repository: AssetRepository | None = None,
         claim_repository: AssetWarrantyClaimRepository | None = None,
-        incident_repository: MonitorIncidentRepository | None = None,
     ) -> None:
         """Khởi tạo các repository nguồn sự kiện và dịch vụ múi giờ."""
         self.setting_service = setting_service or WorkspaceSettingService()
@@ -45,7 +41,6 @@ class WorkspaceCalendarService:
         self.reminder_repository = reminder_repository or ReminderRepository()
         self.asset_repository = asset_repository or AssetRepository()
         self.claim_repository = claim_repository or AssetWarrantyClaimRepository()
-        self.incident_repository = incident_repository or MonitorIncidentRepository()
 
     def events(
         self,
@@ -81,7 +76,6 @@ class WorkspaceCalendarService:
             target_owner = self.user_service.find_by_id(target_owner_id) or actor
 
         setting = self.setting_service.get_or_create_for_owner(target_owner)
-        zone = self.tz_service.resolve_zone(setting.timezone)
         items: list[dict[str, Any]] = []
 
         if "subscription" in selected_types:
@@ -180,36 +174,6 @@ class WorkspaceCalendarService:
                             "link": f"/portal/warranty-claims/{claim.pk}",
                         }
                     )
-
-        if "monitor_incident" in selected_types:
-            start_dt = (
-                datetime.combine(from_date, time.min)
-                .replace(tzinfo=zone)
-                .astimezone(dj_timezone.get_default_timezone())
-            )
-            end_dt = (
-                datetime.combine(to_date, time.max)
-                .replace(tzinfo=zone)
-                .astimezone(dj_timezone.get_default_timezone())
-            )
-            incidents = self.incident_repository.list_between(target_owner.pk, start_dt, end_dt)
-            for inc in incidents:
-                local_dt = inc.started_at.astimezone(zone)
-                items.append(
-                    {
-                        "id": f"inc:{inc.pk}",
-                        "source_id": str(inc.pk),
-                        "type": "monitor_incident",
-                        "date": local_dt.date(),
-                        "time": local_dt.strftime("%H:%M"),
-                        "title": f"Sự cố {inc.target.name}",
-                        "subtitle": inc.error_message or f"HTTP {inc.status_code or '-'}",
-                        "status": "RESOLVED" if inc.resolved_at else "OPEN",
-                        "amount_vnd": None,
-                        "is_completed": inc.resolved_at is not None,
-                        "link": f"/portal/uptime/{inc.target_id}",
-                    }
-                )
 
         items.sort(key=lambda item: (item["date"], item["time"], item["type"], item["title"]))
         return {

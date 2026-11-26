@@ -1,18 +1,38 @@
-"""8 lệnh Slash 0-token của Trợ lý AI (chạy nội bộ ngay lập tức, không tốn quota LLM)."""
+"""6 lệnh Slash 0-token của Trợ lý AI (hỗ trợ chuẩn tiếng Việt + alias tiếng Anh, không tốn quota LLM)."""
 
 from datetime import date, time
 from decimal import Decimal
 from typing import Any
 
-from app.workspace.constants.workspace_defaults import SLASH_COMMAND_NAMES
+from app.workspace.constants.workspace_defaults import (
+    ASSISTANT_COMMANDS,
+    SLASH_COMMAND_ALIASES,
+    SLASH_COMMAND_NAMES,
+)
 from app.workspace.models.reminder import Reminder
 from app.workspace.services.assistant_tools_service import AssistantToolsService
 from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 
+PRIORITY_LABELS_VI: dict[str, str] = {
+    "LOW": "Thấp",
+    "MEDIUM": "Trung bình",
+    "HIGH": "Cao",
+    "URGENT": "Khẩn cấp",
+}
+
+ASSET_STATUS_LABELS_VI: dict[str, str] = {
+    "IN_USE": "Đang dùng",
+    "BACKUP": "Dự phòng",
+    "IN_WARRANTY": "Đang bảo hành",
+    "IN_REPAIR": "Đang sửa chữa",
+    "SOLD": "Đã bán",
+    "BROKEN": "Đã hỏng",
+}
+
 
 class AssistantSlashService:
-    """Thực thi `/today`, `/upcoming`, `/spending`, `/assets`, `/status`, `/remind`, `/newchat`, `/help`."""
+    """Thực thi `/hom_nay`, `/sap_toi`, `/chi_tieu`, `/thiet_bi`, `/nhac_viec`, `/tro_giup` và alias EN."""
 
     def __init__(
         self,
@@ -20,7 +40,7 @@ class AssistantSlashService:
         setting_service: WorkspaceSettingService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
     ) -> None:
-        """Khởi tạo service tool 8 hàm và múi giờ người dùng."""
+        """Khởi tạo service tool và múi giờ người dùng."""
         self.tools_service = tools_service or AssistantToolsService()
         self.setting_service = setting_service or WorkspaceSettingService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
@@ -46,29 +66,20 @@ class AssistantSlashService:
     ) -> dict[str, Any]:
         """Thực thi một lệnh Slash `0 token` và trả về nội dung văn bản kèm cờ bảo mật."""
         cmd, rest = self.parse_command(text)
+        canonical = SLASH_COMMAND_ALIASES.get(cmd, "")
 
-        if cmd == "/help":
+        if canonical == "help":
+            include_en_alias = cmd == "/help"
+            lines = ["Các lệnh nhanh (0 token AI):"]
+            for spec in ASSISTANT_COMMANDS:
+                if spec["telegram_only"]:
+                    continue
+                alias_suffix = f" ({spec['en_command']})" if include_en_alias else ""
+                lines.append(f"• {spec['syntax']}{alias_suffix} — {spec['description']}")
             return {
-                "reply": (
-                    "Các lệnh nhanh (0 token LLM):\n"
-                    "• /today — Việc cần làm & nhắc hẹn hôm nay\n"
-                    "• /upcoming [số_ngày] — Gói dịch vụ sắp gia hạn\n"
-                    "• /spending [mm/yyyy] — Tổng chi tiêu cá nhân trong tháng\n"
-                    "• /assets [từ khóa] — Tra cứu thiết bị & bảo hành\n"
-                    "• /status — Tình trạng Uptime các website/API\n"
-                    "• /remind <DD/MM> <HH:MM> <nội dung> — Tạo nhắc việc nhanh\n"
-                    "• /newchat — Bắt đầu phiên hội thoại mới\n"
-                    "• /help — Xem hướng dẫn lệnh"
-                ),
+                "reply": "\n".join(lines),
                 "contains_private_data": False,
                 "is_new_chat": False,
-            }
-
-        if cmd == "/newchat":
-            return {
-                "reply": "Đã mở phiên trò chuyện mới. Bạn cần mình hỗ trợ gì tiếp theo?",
-                "contains_private_data": False,
-                "is_new_chat": True,
             }
 
         if not allow_personal_tools:
@@ -78,21 +89,21 @@ class AssistantSlashService:
                 "is_new_chat": False,
             }
 
-        if cmd == "/today":
+        if canonical == "today":
             res = self.tools_service.execute_tool(actor, "get_pending_reminders", {"scope": "today"})
             items = res.get("items") or []
             if not items:
                 reply = "Hôm nay bạn không có nhắc việc nào đang chờ."
             else:
                 lines = [
-                    f"• [{it['priority']}] {it['title']}"
+                    f"• [{PRIORITY_LABELS_VI.get(str(it['priority']), it['priority'])}] {it['title']}"
                     + (f" ({it['due_time']})" if it.get("due_time") else "")
                     for it in items
                 ]
                 reply = f"Nhắc việc hôm nay ({res.get('total_count', len(items))}):\n" + "\n".join(lines)
             return {"reply": reply, "contains_private_data": True, "is_new_chat": False}
 
-        if cmd == "/upcoming":
+        if canonical == "upcoming":
             days = int(rest) if rest.isdigit() and 1 <= int(rest) <= 90 else 14
             res = self.tools_service.execute_tool(
                 actor,
@@ -111,7 +122,7 @@ class AssistantSlashService:
                 reply = f"Dịch vụ sắp gia hạn ({days} ngày tới):\n" + "\n".join(lines)
             return {"reply": reply, "contains_private_data": True, "is_new_chat": False}
 
-        if cmd == "/spending":
+        if canonical == "spending":
             args: dict[str, Any] = {}
             if rest and "/" in rest:
                 m_str, y_str = rest.split("/", 1)
@@ -136,7 +147,7 @@ class AssistantSlashService:
             )
             return {"reply": reply, "contains_private_data": True, "is_new_chat": False}
 
-        if cmd == "/assets":
+        if canonical == "assets":
             res = self.tools_service.execute_tool(
                 actor,
                 "get_assets_and_warranty",
@@ -148,29 +159,17 @@ class AssistantSlashService:
                 reply = "Không tìm thấy thiết bị nào phù hợp."
             else:
                 lines = [
-                    f"• {it['name']} ({it['status']}) — BH tới: {it.get('warranty_end_date') or 'Không'}"
+                    f"• {it['name']} ({ASSET_STATUS_LABELS_VI.get(str(it['status']), it['status'])}) "
+                    f"— BH tới: {it.get('warranty_end_date') or 'Không'}"
                     for it in items
                 ]
                 reply = f"Thiết bị tìm thấy ({res.get('total_count', len(items))}):\n" + "\n".join(lines)
             return {"reply": reply, "contains_private_data": True, "is_new_chat": False}
 
-        if cmd == "/status":
-            res = self.tools_service.execute_tool(actor, "get_monitor_health", {})
-            items = res.get("items") or []
-            if not items:
-                reply = "Bạn chưa thiết lập mục tiêu giám sát Uptime nào."
-            else:
-                lines = [f"• {it['name']}: {it['status']} ({it.get('latency_ms') or '-'} ms)" for it in items]
-                reply = (
-                    f"Tình trạng Uptime ({res['healthy_count']}/{res['total_count']} ổn định):\n"
-                    + "\n".join(lines)
-                )
-            return {"reply": reply, "contains_private_data": True, "is_new_chat": False}
-
-        if cmd == "/remind":
+        if canonical == "remind":
             if not is_owner:
                 return {
-                    "reply": "Chỉ chủ sở hữu mới có thể tạo nhắc việc bằng lệnh /remind.",
+                    "reply": "Chỉ chủ sở hữu mới có thể tạo nhắc việc bằng lệnh /nhac_viec.",
                     "contains_private_data": False,
                     "is_new_chat": False,
                 }
@@ -188,7 +187,8 @@ class AssistantSlashService:
         if len(parts) < 3 or "/" not in parts[0]:
             return {
                 "reply": (
-                    "Cú pháp đúng: /remind <DD/MM> <HH:MM> <nội dung> (VD: /remind 28/11 09:00 Gia hạn SSL)"
+                    "Cú pháp đúng: /nhac_viec <DD/MM> <HH:MM> <nội_dung> "
+                    "(VD: /nhac_viec 28/11 09:00 Gia hạn SSL)"
                 ),
                 "contains_private_data": False,
                 "is_new_chat": False,

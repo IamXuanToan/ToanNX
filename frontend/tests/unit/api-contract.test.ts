@@ -27,16 +27,14 @@ import type { TelegramBot, TelegramBotCheck } from "@/modules/system/types/notif
 import type { Asset } from "@/modules/workspace/types/asset.types";
 import type { AssetWarrantyClaim } from "@/modules/workspace/types/asset-warranty-claim.types";
 import type {
+  AssistantBotProfile,
   AssistantChatResult,
-  AssistantConversation,
-  AssistantConversationDetail,
+  AssistantCommand,
+  AssistantConfig,
   AssistantMessage,
+  AssistantThread,
+  AssistantThreadClearResult,
 } from "@/modules/workspace/types/assistant.types";
-import type { MonitorIncident } from "@/modules/workspace/types/monitor-incident.types";
-import type {
-  MonitorPingResult,
-  MonitorTarget,
-} from "@/modules/workspace/types/monitor-target.types";
 import type { Reminder } from "@/modules/workspace/types/reminder.types";
 import type { Subscription } from "@/modules/workspace/types/subscription.types";
 import type { SubscriptionPayment } from "@/modules/workspace/types/subscription-payment.types";
@@ -104,13 +102,6 @@ describe("hợp đồng kiểu FE ↔ OpenAPI", () => {
     expectTypeOf<keyof VaultItemReveal>().toEqualTypeOf<
       keyof ApiModel<"VaultItemRevealResponse">
     >();
-    expectTypeOf<keyof MonitorTarget>().toEqualTypeOf<keyof ApiModel<"MonitorTargetResponse">>();
-    expectTypeOf<keyof MonitorPingResult>().toEqualTypeOf<
-      keyof ApiModel<"MonitorTargetPingResponse">
-    >();
-    expectTypeOf<keyof MonitorIncident>().toEqualTypeOf<
-      keyof ApiModel<"MonitorIncidentResponse">
-    >();
     expectTypeOf<keyof Reminder>().toEqualTypeOf<keyof ApiModel<"ReminderResponse">>();
     expectTypeOf<keyof WorkspaceSetting>().toEqualTypeOf<
       keyof ApiModel<"WorkspaceSettingResponse">
@@ -127,11 +118,20 @@ describe("hợp đồng kiểu FE ↔ OpenAPI", () => {
     expectTypeOf<keyof WorkspaceCalendarEvent>().toEqualTypeOf<
       keyof ApiModel<"WorkspaceCalendarEventResponse">
     >();
-    expectTypeOf<keyof AssistantConversation>().toEqualTypeOf<
-      keyof ApiModel<"AssistantConversationListResponse">
+    expectTypeOf<keyof AssistantBotProfile>().toEqualTypeOf<
+      keyof ApiModel<"AssistantBotProfileResponse">
     >();
-    expectTypeOf<keyof AssistantConversationDetail>().toEqualTypeOf<
-      keyof ApiModel<"AssistantConversationDetailResponse">
+    expectTypeOf<keyof AssistantCommand>().toEqualTypeOf<
+      keyof ApiModel<"AssistantCommandResponse">
+    >();
+    expectTypeOf<keyof AssistantConfig>().toEqualTypeOf<
+      keyof ApiModel<"AssistantConfigResponse">
+    >();
+    expectTypeOf<keyof AssistantThread>().toEqualTypeOf<
+      keyof ApiModel<"AssistantThreadResponse">
+    >();
+    expectTypeOf<keyof AssistantThreadClearResult>().toEqualTypeOf<
+      keyof ApiModel<"AssistantThreadClearResponse">
     >();
     expectTypeOf<keyof AssistantMessage>().toEqualTypeOf<
       keyof ApiModel<"AssistantMessageResponse">

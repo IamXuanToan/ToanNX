@@ -27,11 +27,13 @@ export function SubscriptionDetail({
   id,
   canUpdate,
   canRenew,
+  canDeletePayment = false,
   history,
 }: {
   id: string;
   canUpdate: boolean;
   canRenew: boolean;
+  canDeletePayment?: boolean;
   history?: ReactNode;
 }) {
   const t = useTranslations("workspace.subscriptions");
@@ -75,7 +77,7 @@ export function SubscriptionDetail({
           <SubscriptionForm subscription={query.data} disabled={!canUpdate} />
         </TabsContent>
         <TabsContent value="payments" className="mt-4">
-          <SubscriptionPaymentsTab subscriptionId={query.data.id} />
+          <SubscriptionPaymentsTab subscriptionId={query.data.id} canDelete={canDeletePayment} />
         </TabsContent>
         {history ? (
           <TabsContent value="history" className="mt-4">

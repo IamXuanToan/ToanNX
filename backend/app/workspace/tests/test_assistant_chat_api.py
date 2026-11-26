@@ -14,9 +14,10 @@ from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.finance.models.income import Income
 from app.system.tests.factories.user_factory import UserFactory
 from app.system.tests.helpers.permission_helper import grant
+from app.workspace.models.assistant_conversation import AssistantConversation
 from app.workspace.models.reminder import Reminder
-from app.workspace.models.workspace_setting import WorkspaceSetting
 from app.workspace.permissions.assistant_permission import AssistantPermission as P
+from app.workspace.services.assistant_config_service import AssistantConfigService
 from app.workspace.services.assistant_tools_service import AssistantToolsService
 
 pytestmark = pytest.mark.django_db
@@ -38,20 +39,31 @@ class TestAssistantChatApi(BaseApiTestCase):
         assert help_res["tokens_used"] == 0
         assert "/today" in help_res["reply"]
 
+        vi_help_res = self.assert_success(api.post(URL, {"message": "/tro_giup"}, format="json"))
+        assert vi_help_res["model_used"] == "slash"
+        assert "/hom_nay" in vi_help_res["reply"]
+        assert "/nhac_viec" in vi_help_res["reply"]
+
         rem_res = self.assert_success(
-            api.post(URL, {"message": "/remind 28/12 09:00 Gia hạn chứng chỉ"}, format="json")
+            api.post(URL, {"message": "/nhac_viec 28/12 09:00 Gia hạn chứng chỉ"}, format="json")
         )
         assert Reminder.objects.filter(owner=user, title="Gia hạn chứng chỉ").exists() is True
         assert rem_res["contains_private_data"] is True
 
-        new_res = self.assert_success(
-            api.post(
-                URL,
-                {"message": "/newchat", "conversation_id": rem_res["conversation_id"]},
-                format="json",
-            )
+        # Luồng chat Web là 1 luồng duy nhất — mọi lượt chat đều dùng chung conversation_id.
+        second_res = self.assert_success(api.post(URL, {"message": "/hom_nay"}, format="json"))
+        assert second_res["conversation_id"] == rem_res["conversation_id"]
+        assert (
+            "Gia hạn chứng chỉ" in second_res["reply"]
+            or "Nhắc việc hôm nay" in second_res["reply"]
+            or "không có nhắc việc" in second_res["reply"]
         )
-        assert new_res["conversation_id"] != rem_res["conversation_id"]
+        assert (
+            AssistantConversation.objects.filter(
+                owner=user, channel=AssistantConversation.Channel.WEB
+            ).count()
+            == 1
+        )
 
     def test_xkiro_multi_model_fallback_cooldown_and_401_stop(
         self, user: Any, login: Any, settings: Any, fake_redis: Any
@@ -205,7 +217,7 @@ class TestAssistantChatApi(BaseApiTestCase):
         assert parsed_rem["total_count"] == 20
 
     def test_daily_token_limit_triggers_slash_fallback(self, user: Any, login: Any) -> None:
-        WorkspaceSetting.objects.create(owner=user, ai_daily_token_limit=100)
+        AssistantConfigService().update_config(user, {"ai_daily_token_limit": 100})
         grant(user, P.CHAT)
         api = login(user)
         # Seed trực tiếp tin nhắn tiêu 100 token hôm nay qua /help trước hay AssistantMessage
@@ -221,3 +233,41 @@ class TestAssistantChatApi(BaseApiTestCase):
         res = self.assert_success(api.post(URL, {"message": "Hỏi thêm câu nữa"}, format="json"))
         assert res["is_fallback"] is True
         assert res["fallback_code"] == "WORKSPACE_AI_DAILY_LIMIT_EXCEEDED"
+
+    def test_custom_assistant_policy_injected_after_core_guardrail(
+        self, user: Any, login: Any, settings: Any
+    ) -> None:
+        settings.XKIRO_API_BASE = "https://xkiro.example.com/v1"
+        settings.XKIRO_API_KEY = "test-secret"
+        settings.XKIRO_MODEL = "model-a"
+        AssistantConfigService().update_config(
+            user,
+            {"assistant_system_prompt": "Xưng hô bằng Anh/Em và trả lời tối đa 3 gạch đầu dòng."},
+        )
+        grant(user, P.CHAT)
+
+        captured_system: list[str] = []
+
+        def fake_post(url: str, *, json: Any, headers: Any, timeout: float) -> MagicMock:
+            captured_system.append(json["messages"][0]["content"])
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json.return_value = {
+                "model": "model-a",
+                "choices": [{"message": {"content": "Chào anh, em đã sẵn sàng."}}],
+                "usage": {"total_tokens": 12},
+            }
+            return resp
+
+        with patch("requests.Session.post", side_effect=fake_post):
+            res = self.assert_success(login(user).post(URL, {"message": "Chào em"}, format="json"))
+
+        assert res["reply"] == "Chào anh, em đã sẵn sàng."
+        assert len(captured_system) == 1
+        sys_prompt = captured_system[0]
+        assert "Két sắt" in sys_prompt
+        assert "khủng bố" in sys_prompt.lower()
+        assert "quân sự" in sys_prompt.lower()
+        assert "phân biệt vùng miền" in sys_prompt.lower()
+        assert "Xưng hô bằng Anh/Em và trả lời tối đa 3 gạch đầu dòng." in sys_prompt
+        assert sys_prompt.index("Két sắt") < sys_prompt.index("Xưng hô bằng Anh/Em")

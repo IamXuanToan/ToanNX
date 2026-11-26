@@ -5,9 +5,12 @@ import {
   ASSET_PURCHASE_CHANNELS,
   ASSET_STATUSES,
   ASSET_WARRANTY_TYPES,
+  WORKSPACE_NOTIFICATION_CHANNELS,
 } from "../constants/defaults";
 
-type Translate = (key: "required" | "nonNegative" | "positive" | "url" | "months") => string;
+type Translate = (
+  key: "required" | "nonNegative" | "positive" | "url" | "months" | "atLeastOneChannel",
+) => string;
 
 const NON_NEGATIVE = /^\d+(\.\d+)?$/;
 const POSITIVE_RATE = /^(?!0+(\.0+)?$)\d+(\.\d+)?$/;
@@ -40,6 +43,7 @@ export const ASSET_FORM_FIELDS = [
   "warrantyNote",
   "invoiceAttachmentIds",
   "notes",
+  "notificationChannels",
 ] as const;
 
 /**
@@ -76,6 +80,9 @@ export function assetSchema(t: Translate) {
       warrantyNote: z.string().max(1000),
       invoiceAttachmentIds: z.array(z.string()),
       notes: z.string().max(2000),
+      notificationChannels: z
+        .array(z.enum(WORKSPACE_NOTIFICATION_CHANNELS))
+        .min(1, t("atLeastOneChannel")),
     })
     .superRefine((value, ctx) => {
       if (value.purchasePrice && !NON_NEGATIVE.test(value.purchasePrice)) {

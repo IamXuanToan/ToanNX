@@ -1,4 +1,4 @@
-"""Kiểm thử cập nhật Cài đặt Trợ lý: PUT/PATCH /api/v1/workspace/settings & /<owner_id>."""
+"""Kiểm thử cập nhật Cài đặt Digest & Cảnh báo cá nhân: PUT/PATCH /api/v1/workspace/settings."""
 
 from typing import Any
 
@@ -16,12 +16,9 @@ URL = "/api/v1/workspace/settings"
 
 
 class TestWorkspaceSettingUpdateApi(BaseApiTestCase):
-    """Kiểm thử validate `digest_time_slots`, `digest_sections`, Group policy, chat & soft delete."""
+    """Kiểm thử validate `digest_time_slots`, `digest_sections`, alert days, allowed chats & soft delete."""
 
-    def test_update_validation_and_telegram_group_settings(
-        self, user: Any, login: Any, settings: Any
-    ) -> None:
-        settings.XKIRO_MODEL = "gpt-4o-mini"
+    def test_update_personal_digest_alerts_and_allowed_chats(self, user: Any, login: Any) -> None:
         other = UserFactory()
         my_chat = TelegramChat.objects.create(
             owner=user, chat_id="-1001", title="Dev", status=TelegramChat.Status.ACTIVE, is_active=True
@@ -36,6 +33,9 @@ class TestWorkspaceSettingUpdateApi(BaseApiTestCase):
         bad_slot = api.patch(URL, {"digest_time_slots": ["25:99"]}, format="json")
         self.assert_error(bad_slot, 400, "WORKSPACE_DIGEST_SLOT_INVALID")
 
+        bad_section = api.patch(URL, {"digest_sections": ["monitors"]}, format="json")
+        self.assert_error(bad_section, 400, "VALIDATION_ERROR")
+
         bad_chat = api.patch(URL, {"telegram_allowed_chat_ids": [str(other_chat.pk)]}, format="json")
         self.assert_error(bad_chat, 400, "VALIDATION_ERROR")
 
@@ -43,34 +43,33 @@ class TestWorkspaceSettingUpdateApi(BaseApiTestCase):
             URL,
             {
                 "timezone": "Asia/Ho_Chi_Minh",
+                "daily_digest_enabled": True,
                 "digest_time_slots": ["20:30", "08:00", "08:00"],
-                "digest_sections": ["reminders", "monitors"],
-                "preferred_ai_model": "gpt-4o-mini",
-                "telegram_ai_enabled": True,
+                "digest_sections": ["reminders", "finance"],
+                "warranty_alert_days": [7, 30, 1],
+                "subscription_default_alert_days": [1, 7],
                 "telegram_allowed_chat_ids": [str(my_chat.pk)],
-                "telegram_group_require_mention": True,
-                "telegram_group_tool_policy": "ALL_MEMBERS",
-                "telegram_group_hide_amounts": True,
-                "telegram_group_reply_in_dm": True,
             },
             format="json",
         )
         data = self.assert_success(res)
         assert data["digest_time_slots"] == ["08:00", "20:30"]
-        assert data["digest_sections"] == ["reminders", "monitors"]
-        assert data["telegram_group_tool_policy"] == "ALL_MEMBERS"
-        assert data["telegram_group_hide_amounts"] is True
-        assert data["telegram_group_reply_in_dm"] is True
+        assert data["digest_sections"] == ["reminders", "finance"]
+        assert data["warranty_alert_days"] == [30, 7, 1]
+        assert data["subscription_default_alert_days"] == [7, 1]
+        assert data["telegram_allowed_chat_ids"] == [str(my_chat.pk)]
 
-        # Admin có MANAGE_ALL cập nhật cấu hình user khác
+        # Admin có MANAGE_ALL cập nhật múi giờ cho user khác
         grant(user, P.MANAGE_ALL)
         user = type(user).objects.get(pk=user.pk)
         admin_res = login(user).patch(
             f"{URL}/{other.pk}",
-            {"telegram_group_tool_policy": "DISABLED"},
+            {"timezone": "Asia/Tokyo", "daily_digest_enabled": False},
             format="json",
         )
-        assert self.assert_success(admin_res)["telegram_group_tool_policy"] == "DISABLED"
+        other_data = self.assert_success(admin_res)
+        assert other_data["timezone"] == "Asia/Tokyo"
+        assert other_data["daily_digest_enabled"] is False
 
         # Soft delete + UniqueConstraint cho phép tạo bản ghi mới cùng owner
         ws = WorkspaceSetting.objects.get(owner=other)

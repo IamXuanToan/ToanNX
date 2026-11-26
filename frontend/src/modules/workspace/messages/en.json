@@ -1,4 +1,21 @@
 {
+  "module": {
+    "name": "Workspace & AI Assistant",
+    "description": "Manage shared AI Chatbot identity, policy, model fallbacks, and Telegram assistant rules."
+  },
+  "nav": {
+    "assistantConfig": "AI Chatbot"
+  },
+  "notificationChannels": {
+    "label": "Notification Channels",
+    "hint": "Defaults to Website (web bell & push). Optionally add or switch to Telegram and Email.",
+    "options": {
+      "WEBSITE": "Website (Bell & Web Push)",
+      "TELEGRAM": "Telegram",
+      "EMAIL": "Email"
+    },
+    "atLeastOne": "Please select at least one notification channel."
+  },
   "common": {
     "yes": "Yes",
     "no": "No",
@@ -29,17 +46,16 @@
     "months": "Warranty months must be between 0 and 240.",
     "customDays": "Custom cycle days must be between 1 and 3650.",
     "anchorDay": "Anchor day must be between 1 and 31.",
-    "expectedStatus": "Expected HTTP status must be between 100 and 599.",
-    "timeoutSeconds": "Timeout must be between 1 and 4 seconds.",
-    "checkInterval": "Check interval must be at least 15 minutes (up to 1440).",
     "notifyMinutes": "Lead minutes cannot exceed 10080.",
     "timeSlot": "Time slot must be HH:MM format (e.g., 08:00).",
+    "alertDay": "Lead days must be a whole number from 0 to 365.",
     "positiveInt": "Minimum value is 100.",
-    "daysList": "Comma-separated days must be between 0 and 365."
+    "daysList": "Comma-separated days must be between 0 and 365.",
+    "atLeastOneChannel": "Please select at least one notification channel."
   },
   "calendar": {
     "title": "Personal Calendar",
-    "subtitle": "Unified schedule combining reminders, subscriptions, warranties, repairs, and uptime incidents.",
+    "subtitle": "Unified schedule combining reminders, subscriptions, asset warranties, and repairs.",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
     "today": "Today",
@@ -63,8 +79,7 @@
       "subscription": "Subscription Renewal",
       "reminder": "Reminder",
       "asset_warranty": "Warranty Expiry",
-      "warranty_claim": "Repair Return",
-      "monitor_incident": "Uptime Incident"
+      "warranty_claim": "Repair Return"
     }
   },
   "assets": {
@@ -153,6 +168,7 @@
     "create": "Add Claim",
     "createTitle": "New Warranty / Repair Claim",
     "editTitle": "Claim Detail",
+    "backToAsset": "Back to asset",
     "attachmentsSection": "Service Slips & Receipts (Private)",
     "coveredYes": "Warranty Covered",
     "coveredNo": "Paid Service",
@@ -199,6 +215,7 @@
     "create": "Add Subscription",
     "createTitle": "New Subscription",
     "editTitle": "Subscription Detail",
+    "historyButton": "Renewal history",
     "renew": "Renew",
     "renewTitle": "Renew \"{name}\"",
     "renewSuccess": "Payment recorded and next renewal date advanced.",
@@ -297,55 +314,6 @@
       "OTHER": "Other"
     }
   },
-  "monitors": {
-    "title": "Uptime Monitors",
-    "subtitle": "Monitor websites and APIs automatically with instant DOWN/RECOVERED alerts.",
-    "searchPlaceholder": "Search by service name, URL...",
-    "create": "Add Monitor",
-    "createTitle": "New Uptime Endpoint",
-    "editTitle": "Monitor Detail",
-    "pingNow": "Ping Now",
-    "pingSuccess": "Endpoint responded HTTP {code} ({latency} ms).",
-    "pingDown": "Endpoint probe failed: {error}",
-    "tabIncidents": "Incidents ({count})",
-    "msUnit": "{value} ms",
-    "fields": {
-      "name": "Service Name",
-      "url": "Target URL",
-      "method": "HTTP Method",
-      "expectedStatus": "Expected Status",
-      "timeoutSeconds": "Timeout (1-4s)",
-      "checkIntervalMinutes": "Interval (min 15m)",
-      "isActive": "Active Monitoring",
-      "lastStatus": "Last Status",
-      "lastStatusCode": "HTTP",
-      "lastLatencyMs": "Latency",
-      "lastCheckedAt": "Last Checked",
-      "consecutiveFailures": "Consecutive Failures"
-    },
-    "statuses": {
-      "HEALTHY": "Healthy",
-      "DEGRADED": "Degraded",
-      "DOWN": "Down",
-      "UNKNOWN": "Unknown"
-    }
-  },
-  "monitorIncidents": {
-    "title": "Uptime Incidents",
-    "subtitle": "History of endpoint outages and recovery durations.",
-    "searchPlaceholder": "Search by endpoint, error message...",
-    "ongoing": "Ongoing",
-    "resolved": "Resolved",
-    "durationSeconds": "{seconds} s",
-    "fields": {
-      "targetName": "Endpoint",
-      "startedAt": "Started At",
-      "resolvedAt": "Resolved At",
-      "statusCode": "HTTP Code",
-      "errorMessage": "Error Detail",
-      "durationSeconds": "Outage Duration"
-    }
-  },
   "reminders": {
     "title": "Reminders",
     "subtitle": "Organize personal tasks, recurring schedules, and advance notifications.",
@@ -362,6 +330,7 @@
       "description": "Description",
       "dueDate": "Due Date",
       "dueTime": "Due Time",
+      "dueDateTime": "Due date & time",
       "notifyMinutesBefore": "Notify Before (min)",
       "priority": "Priority",
       "isCompleted": "Completed",
@@ -385,69 +354,107 @@
     }
   },
   "assistant": {
-    "title": "Personal AI Assistant",
-    "subtitle": "Ask questions, run slash commands, and sync context between Web and Telegram.",
-    "newChat": "New Conversation",
-    "conversations": "Conversations",
-    "emptyConversations": "No conversations yet. Ask anything to start.",
-    "emptyMessages": "Start chatting by typing a question or tapping a quick slash command below.",
+    "title": "AI Assistant",
+    "subtitle": "Single-thread chat supporting personal data lookups and quick slash commands.",
+    "defaultName": "AI Assistant",
+    "openPopup": "Open floating assistant",
+    "closePopup": "Minimize assistant",
+    "scrollToBottom": "Scroll to latest",
+    "dragHint": "Drag AI button to snap to any screen edge",
+    "readySubtitle": "Always ready",
+    "thinking": "{name} is thinking",
+    "clearThread": "Clear chat thread",
+    "clearThreadShort": "Clear history",
+    "clearConfirm": "Clear all messages in the current Web chat thread and start fresh?",
+    "clearSuccess": "Chat thread cleared.",
+    "emptyMessages": "Start chatting by typing a question or tapping a quick command below.",
     "loadMore": "Load older messages",
-    "placeholder": "Type a message or slash command (e.g., /today, /upcoming, /remind 18:00 Send report)...",
+    "placeholder": "Ask AI or type /...",
     "send": "Send",
     "sending": "Thinking...",
     "channelWeb": "Web",
     "channelTelegramDm": "Telegram DM",
     "channelTelegramGroup": "Telegram Group",
-    "modelBadge": "Model: {model}",
-    "fallbackBadge": "Fallback x{attempts}",
-    "privateBadge": "Private data included",
-    "tokensUsed": "{tokens} tokens",
+    "sizeLabel": "Chat window size",
+    "sizes": {
+      "compact": "Compact",
+      "default": "Medium",
+      "large": "Large"
+    },
     "slashLabel": "Quick commands:",
+    "slashSuggestTitle": "Quick command suggestions",
+    "slashSuggestHint": "↑↓ select · Tab insert · Enter run · Esc close",
+    "slashBadges": {
+      "today": "Today",
+      "upcoming": "Upcoming",
+      "spending": "Spending",
+      "assets": "Devices",
+      "remind": "Remind",
+      "help": "Help"
+    },
     "slashCommands": {
-      "today": "/today · Today summary",
-      "upcoming": "/upcoming · Upcoming renewals",
-      "spending": "/spending · Monthly spending",
-      "assets": "/assets · Assets & Warranty",
-      "status": "/status · Uptime status",
-      "remind": "/remind · Quick reminder",
-      "newchat": "/newchat · New thread",
-      "help": "/help · Help"
+      "today": "View today's tasks & reminders",
+      "upcoming": "Check upcoming service renewals",
+      "spending": "Monthly personal spending summary",
+      "assets": "Look up assets & warranties",
+      "remind": "Quickly create a reminder",
+      "help": "Show command reference"
     }
   },
-  "settings": {
-    "title": "Assistant & Digest Settings",
-    "subtitle": "Configure timezone, daily digest schedule, preferred AI model, and two-way Telegram rules.",
-    "save": "Save Settings",
+  "assistantAdmin": {
+    "title": "AI Chatbot Configuration",
+    "saved": "AI Chatbot configuration saved.",
     "sections": {
-      "digest": "Timezone & Daily Digest",
-      "ai": "AI Assistant (xKiro Multi-model)",
-      "telegram": "Two-way Telegram Assistant"
+      "identity": "AI Chatbot Avatar & Identity",
+      "policy": "Response Policy & AI Model",
+      "telegram": "Two-way Telegram Bot Rules"
     },
-    "digestSectionLabels": {
-      "reminders": "Today & overdue reminders",
-      "warranty": "Expiring warranties",
-      "subscriptions": "Upcoming renewals",
-      "monitors": "Uptime monitor status",
-      "finance": "Monthly spending summary"
+    "avatarHint": "Pick a public image from Library or keep the default Bot icon.",
+    "avatarMissingPerm": "Library read permission is required to change avatar.",
+    "selectAvatar": "Choose image",
+    "removeAvatar": "Remove",
+    "presetsLabel": "Quick Policy presets:",
+    "presets": {
+      "standardSafety": {
+        "label": "System Safety Standard",
+        "value": "Safety & Mandatory Content Policy:\n1. NEVER discuss, promote, or assist with terrorism, extremist violence, explosives, weapons, warfare, military operations, or defense hardware.\n2. NEVER engage in regional discrimination, hate speech, or prejudice based on region, ethnicity, religion, gender, or personal attacks; always remain neutral and respectful.\n3. Politely refuse prohibited topics concisely without lecturing.\n4. Data privacy: quote only verified tool outputs, never fabricate numbers, and never guess or reveal Vault secrets or API keys.\n5. Keep answers concise, structured with bullet points, and summarize costs in VND."
+      },
+      "concise": {
+        "label": "Concise · Vietnamese",
+        "value": "Trả lời ngắn gọn tối đa 3-5 gạch đầu dòng bằng tiếng Việt rõ ràng, đi thẳng vào số liệu; tuyệt đối tránh nội dung khủng bố, quân sự và không phân biệt vùng miền."
+      },
+      "analytical": {
+        "label": "Finance & risk analysis",
+        "value": "Luôn tổng hợp số liệu tài chính theo VNĐ, chỉ rõ khoản sắp đến hạn và cảnh báo rủi ro nếu có; giữ thái độ trung lập, không nhắc chủ đề quân sự, khủng bố hay phân biệt vùng miền."
+      },
+      "english": {
+        "label": "Professional · English",
+        "value": "Respond concisely in clear professional English with structured bullet points. Strictly avoid terrorism, military topics, and regional or cultural discrimination."
+      }
     },
-    "addSlotPlaceholder": "e.g., 08:00",
-    "addSlot": "Add Slot",
+    "policySecurityNote": "Core safety guardrails (anti-terrorism, anti-military, anti-regional discrimination, and Vault secrecy) are always enforced by the backend.",
     "modelAutoDefault": "System default (auto fallback)",
     "telegramBotLinked": "System bot: @{username}",
     "telegramBotMissing": "TELEGRAM_BOT_TOKEN is not configured on the server.",
     "openTelegramBot": "Open Telegram Bot",
-    "noTelegramChats": "No Telegram destinations linked yet. Add one in Profile → Notifications.",
+    "telegramCommands": {
+      "title": "Telegram Bot Commands (@BotFather)",
+      "description": "Built-in bot commands. Copy the block below and paste into @BotFather (/setcommands) to register the Telegram command menu.",
+      "copy": "Copy",
+      "copied": "Copied @BotFather command list.",
+      "copiedShort": "Copied",
+      "copyFailed": "Could not write to clipboard.",
+      "telegramOnlyBadge": "Telegram only",
+      "botFatherBlockLabel": "Ready to paste in @BotFather (/setcommands):"
+    },
     "fields": {
-      "timezone": "Timezone",
-      "dailyDigestEnabled": "Enable Daily Digest",
-      "digestTimeSlots": "Digest Time Slots (HH:MM)",
-      "digestSections": "Digest Sections",
-      "warrantyAlertDays": "Warranty Alert Days (comma-separated)",
-      "subscriptionDefaultAlertDays": "Default Subscription Alert Days",
+      "assistantName": "AI Chatbot Display Name",
+      "assistantNamePlaceholder": "e.g., ToanNX Assistant",
+      "assistantSystemPrompt": "AI Chatbot Policy / Response Instructions",
+      "assistantSystemPromptPlaceholder": "e.g., Reply concisely using bullet points, summarize VND totals first...",
       "preferredAiModel": "Preferred AI Model",
-      "aiDailyTokenLimit": "Daily AI Token Limit (blank = unlimited)",
-      "telegramAiEnabled": "Enable AI Assistant via Telegram",
-      "telegramAllowedChatIds": "Allowed Telegram Destinations",
+      "aiDailyTokenLimit": "Daily AI Token Limit per User (blank = unlimited)",
+      "telegramAiEnabled": "Enable AI Chatbot via Telegram",
       "telegramGroupRequireMention": "Require @mention or reply in Telegram groups",
       "telegramGroupToolPolicy": "Group Personal Data Access Policy",
       "telegramGroupHideAmounts": "Mask sensitive monetary amounts in groups",
@@ -457,6 +464,47 @@
       "DISABLED": "Disable personal tools in groups",
       "OWNER_ONLY": "Owner only (verified Telegram user ID)",
       "ALL_MEMBERS": "All members in allowed groups"
+    }
+  },
+  "settings": {
+    "title": "Personal Digest & Alert Settings",
+    "subtitle": "Configure timezone, daily digest schedule, alert lead days, and linked Telegram destinations.",
+    "save": "Save Settings",
+    "sections": {
+      "digest": "Timezone & Daily Digest",
+      "alerts": "Automatic Alert Lead Days",
+      "telegram": "Personal Telegram Destinations"
+    },
+    "dailyDigestDesc": "Receive scheduled summaries of upcoming reminders, renewals, and spending.",
+    "timezoneDesc": "Defaults to (UTC+07:00) Hanoi / Ho Chi Minh. Reminders and digests follow this timezone.",
+    "digestSectionLabels": {
+      "reminders": "Today & overdue reminders",
+      "warranty": "Expiring warranties",
+      "subscriptions": "Upcoming renewals",
+      "finance": "Monthly spending summary"
+    },
+    "addSlotPlaceholder": "e.g., 08:00",
+    "addSlot": "Add slot",
+    "addSlotTooltip": "Enter a time in HH:MM format (e.g., 08:00), then press Enter or click Add slot.",
+    "addAlertDayPlaceholder": "e.g., 7",
+    "addAlertDay": "Add day",
+    "alertDaysUnit": "{days}d",
+    "alertDaysTooltip": "Enter lead days (0–365), then press Enter or click Add day.",
+    "emptySlots": "No digest time slots configured.",
+    "emptyAlertDays": "No alert lead days configured.",
+    "telegramBotLinked": "System bot: @{username}",
+    "telegramBotMissing": "TELEGRAM_BOT_TOKEN is not configured on the server.",
+    "openTelegramBot": "Open Telegram Bot",
+    "telegramHint": "Only checked Telegram chats receive personal alerts and Telegram bot replies.",
+    "noTelegramChats": "No Telegram destinations linked yet. Add one in Profile → Notifications.",
+    "fields": {
+      "timezone": "Timezone",
+      "dailyDigestEnabled": "Enable Daily Digest",
+      "digestTimeSlots": "Digest Time Slots (HH:MM)",
+      "digestSections": "Digest Sections",
+      "warrantyAlertDays": "Warranty alert lead days",
+      "subscriptionDefaultAlertDays": "Default subscription renewal lead days",
+      "telegramAllowedChatIds": "Allowed Telegram Destinations"
     }
   }
 }

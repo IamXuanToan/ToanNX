@@ -13,13 +13,14 @@ from app.system.types.telegram_send_result import TelegramSendResult
 from app.workspace.models.assistant_conversation import AssistantConversation
 from app.workspace.models.assistant_message import AssistantMessage
 from app.workspace.models.workspace_setting import WorkspaceSetting
+from app.workspace.services.assistant_config_service import AssistantConfigService
 
 pytestmark = pytest.mark.django_db
 URL = "/api/v1/workspace/assistant/telegram-process"
 
 
 class TestTelegramAssistantAsyncApi(BaseApiTestCase):
-    """Kiểm thử routing nhóm đa chủ sở hữu, `tool_policy`, `hide_amounts`, `reply_in_dm` & fallback 403."""
+    """Kiểm thử routing nhóm đa chủ sở hữu, Policy Admin (`tool_policy`, `hide_amounts`, `reply_in_dm`)."""
 
     def test_auth_404_and_multi_owner_group_routing_with_dm_fallback(
         self, user: Any, client: Any, settings: Any, vnd: Any
@@ -34,6 +35,16 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
         assert client.post(URL, {}, format="json").status_code == 404
 
         owner2 = UserFactory()
+        AssistantConfigService().update_config(
+            user,
+            {
+                "telegram_ai_enabled": True,
+                "telegram_group_require_mention": True,
+                "telegram_group_tool_policy": "OWNER_ONLY",
+                "telegram_group_hide_amounts": True,
+                "telegram_group_reply_in_dm": True,
+            },
+        )
         group_chat_1 = TelegramChat.objects.create(
             owner=user,
             chat_id="-100999",
@@ -52,21 +63,13 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
         )
         WorkspaceSetting.objects.create(
             owner=user,
-            telegram_ai_enabled=True,
             telegram_owner_user_id=111001,
             telegram_allowed_chat_ids=[str(group_chat_1.pk)],
-            telegram_group_require_mention=True,
-            telegram_group_tool_policy=WorkspaceSetting.GroupToolPolicy.OWNER_ONLY,
-            telegram_group_hide_amounts=True,
-            telegram_group_reply_in_dm=True,
         )
         WorkspaceSetting.objects.create(
             owner=owner2,
-            telegram_ai_enabled=True,
             telegram_owner_user_id=222002,
             telegram_allowed_chat_ids=[str(group_chat_2.pk)],
-            telegram_group_require_mention=True,
-            telegram_group_tool_policy=WorkspaceSetting.GroupToolPolicy.OWNER_ONLY,
         )
 
         # Gửi lệnh /spending trong nhóm có @helper_bot từ owner1 (111001) với reply_in_dm=True:
@@ -97,7 +100,6 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
         data = self.assert_success(res)
         assert data["handled"] is True
         assert data["replied_in_dm"] is True
-        # Gọi 2 lần: 1 lần DM bị 403, 1 lần fallback ngay tại Group kèm link mở DM.
         assert calls[0]["chat_id"] == "111001"
         assert calls[1]["chat_id"] == "-100999"
         assert "t.me/helper_bot" in calls[1]["text"]
@@ -107,9 +109,9 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
         assert AssistantConversation.objects.filter(owner=owner2).exists() is False
         assert conv.messages.filter(contains_private_data=True).exists() is True
 
-        # Khi thành viên lạ (999999) nhắn ở nhóm chỉ có owner1 (xem setting owner1 ở chế độ OWNER_ONLY),
-        # thử chat với xKiro phải EXCLUDE lịch sử chứa `contains_private_data=True` & tắt tools!
-        WorkspaceSetting.objects.filter(owner=owner2).update(telegram_ai_enabled=False)
+        # Khi thành viên lạ (999999) nhắn ở nhóm chỉ còn owner1 cho phép chat,
+        # Policy OWNER_ONLY buộc EXCLUDE lịch sử `contains_private_data=True` & tắt tools!
+        WorkspaceSetting.objects.filter(owner=owner2).update(telegram_allowed_chat_ids=[])
         captured_messages: list[Any] = []
 
         def fake_xkiro(self: Any, messages: Any, **kwargs: Any) -> dict[str, Any]:

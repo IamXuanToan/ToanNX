@@ -14,15 +14,22 @@ import type { SubscriptionPayment } from "../../../types/subscription-payment.ty
 
 const FILTER_KEYS = ["subscription", "owner"] as const;
 
-/** @returns State bảng Lịch sử thanh toán gia hạn dịch vụ. */
-export function useSubscriptionPaymentTable() {
+/**
+ * @param subscriptionId - Khi truyền ID dịch vụ (ở tab Lịch sử gia hạn), bảng tự khóa theo dịch vụ đó.
+ * @returns State bảng Lịch sử thanh toán gia hạn dịch vụ.
+ */
+export function useSubscriptionPaymentTable(subscriptionId?: string) {
   const ownerFilter = useWorkspaceOwnerOptions(SUBSCRIPTION_PAYMENT_PERMISSIONS.manageAll);
   const subscriptions = useSubscriptionOptions();
   const table = useTableState({ ordering: "-paid_on", filterKeys: FILTER_KEYS });
   const query = useSubscriptionPayments({
     ...table.filters,
-    subscription: table.extraFilters.subscription || undefined,
-    owner: ownerFilter.canFilterOwner ? table.extraFilters.owner : undefined,
+    subscription: subscriptionId ?? (table.extraFilters.subscription || undefined),
+    owner: subscriptionId
+      ? undefined
+      : ownerFilter.canFilterOwner
+        ? table.extraFilters.owner
+        : undefined,
   });
   const remove = useDeleteSubscriptionPayment();
   const bulk = useBulkActions<SubscriptionPayment>({

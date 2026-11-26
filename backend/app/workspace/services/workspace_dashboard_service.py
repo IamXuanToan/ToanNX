@@ -1,4 +1,4 @@
-"""Nghiệp vụ Bảng điều khiển Tổng hợp Portal (4 KPI chính + danh sách việc gần nhất)."""
+"""Nghiệp vụ Bảng điều khiển Tổng hợp Portal (3 KPI Workspace + danh sách việc hôm nay)."""
 
 from datetime import timedelta
 from decimal import Decimal
@@ -7,10 +7,8 @@ from typing import Any
 from app.system.services.user_service import UserService
 from app.workspace.permissions.workspace_dashboard_permission import WorkspaceDashboardPermission
 from app.workspace.repositories.asset_repository import AssetRepository
-from app.workspace.repositories.monitor_target_repository import MonitorTargetRepository
 from app.workspace.repositories.reminder_repository import ReminderRepository
 from app.workspace.repositories.subscription_repository import SubscriptionRepository
-from app.workspace.services.monitor_target_service import MonitorTargetService
 from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_spending_service import WorkspaceSpendingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
@@ -28,8 +26,6 @@ class WorkspaceDashboardService:
         asset_repository: AssetRepository | None = None,
         subscription_repository: SubscriptionRepository | None = None,
         reminder_repository: ReminderRepository | None = None,
-        monitor_repository: MonitorTargetRepository | None = None,
-        monitor_service: MonitorTargetService | None = None,
     ) -> None:
         """Khởi tạo các service và repository phục vụ KPI dashboard."""
         self.spending_service = spending_service or WorkspaceSpendingService()
@@ -39,11 +35,9 @@ class WorkspaceDashboardService:
         self.asset_repository = asset_repository or AssetRepository()
         self.subscription_repository = subscription_repository or SubscriptionRepository()
         self.reminder_repository = reminder_repository or ReminderRepository()
-        self.monitor_repository = monitor_repository or MonitorTargetRepository()
-        self.monitor_service = monitor_service or MonitorTargetService()
 
     def summary(self, actor: Any, *, target_owner_id: Any | None = None) -> dict[str, Any]:
-        """Trả 4 nhóm KPI theo đúng chủ sở hữu (chỉ xem user khác nếu có `manage_all`)."""
+        """Trả 3 nhóm KPI theo đúng chủ sở hữu (chỉ xem user khác nếu có `manage_all`)."""
         target_owner = actor
         if (
             target_owner_id
@@ -82,16 +76,6 @@ class WorkspaceDashboardService:
         )
         upcoming_sub_total = sum((Decimal(item.amount_vnd) for item in upcoming_subs), Decimal("0"))
 
-        monitor_items, monitors_total = self.monitor_repository.list_for_owner(target_owner.pk, limit=200)
-        monitors_healthy = 0
-        monitors_down = 0
-        for item in monitor_items:
-            overlaid = self.monitor_service.overlay_redis_state(item)
-            if overlaid.last_status == "HEALTHY":
-                monitors_healthy += 1
-            elif overlaid.last_status == "DOWN":
-                monitors_down += 1
-
         return {
             "owner_id": str(target_owner.pk),
             "timezone": setting.timezone,
@@ -106,9 +90,6 @@ class WorkspaceDashboardService:
             "expiring_warranties_30d": expiring_warranties,
             "upcoming_subscriptions_14d": upcoming_sub_count,
             "upcoming_subscriptions_14d_vnd": upcoming_sub_total,
-            "monitors_total": monitors_total,
-            "monitors_healthy": monitors_healthy,
-            "monitors_down": monitors_down,
             "today_reminders": [
                 {
                     "id": str(item.pk),

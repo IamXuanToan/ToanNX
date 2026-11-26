@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -95,11 +95,25 @@ export function useWarrantyClaimForm(claim?: AssetWarrantyClaim) {
   const form = useForm<AssetWarrantyClaimFormValues>({
     resolver: zodResolver(schema),
     defaultValues: empty,
-    values: claim ? toFormValues(claim) : baseCurrency ? empty : undefined,
+    values: claim ? toFormValues(claim) : undefined,
   });
 
+  useEffect(() => {
+    if (!claim && baseCurrency && !form.getValues("currencyId")) {
+      form.setValue("currencyId", baseCurrency.id);
+    }
+  }, [claim, baseCurrency, form]);
+
   const currencyId = useWatch({ control: form.control, name: "currencyId" });
+  const watchedAssetId = useWatch({ control: form.control, name: "assetId" });
   const selectedCurrency = currencies.data?.find((c) => c.id === currencyId);
+  const returnAssetId = claim?.assetId || initialAssetId || watchedAssetId;
+  const cancelHref = returnAssetId
+    ? {
+        ...WORKSPACE_ROUTES.assetDetail(returnAssetId),
+        query: { tab: "claims" },
+      }
+    : WORKSPACE_ROUTES.assets;
 
   const onSubmit = form.handleSubmit(async (values) => {
     const input: AssetWarrantyClaimInput = {
@@ -145,6 +159,7 @@ export function useWarrantyClaimForm(claim?: AssetWarrantyClaim) {
     onSubmit,
     isSubmitting: save.isPending,
     assetOptions: assets.options,
+    cancelHref,
     files,
     addFiles: (selected: Attachment[]) => {
       const merged = [...files, ...selected.filter((f) => !files.some((item) => item.id === f.id))];

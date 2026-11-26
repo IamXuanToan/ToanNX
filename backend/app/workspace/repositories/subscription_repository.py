@@ -33,11 +33,14 @@ class SubscriptionRepository(CoreRepository[Subscription]):
         items = list(qs[:limit]) if limit is not None else list(qs)
         return items, total
 
-    def list_all_active_upcoming(self, end_date: date) -> list[Subscription]:
-        """Tất cả gói active có mốc gia hạn đến hết `end_date` (cho cron W4)."""
-        return list(
-            self.get_queryset().filter(is_active=True, renew_date__lte=end_date).order_by("renew_date")
-        )
+    def list_all_active_upcoming(
+        self, end_date: date, *, start_date: date | None = None
+    ) -> list[Subscription]:
+        """Tất cả gói active có mốc gia hạn đến hết `end_date` (tùy chọn `start_date` cho cron W4)."""
+        qs = self.get_queryset().filter(is_active=True, renew_date__lte=end_date)
+        if start_date is not None:
+            qs = qs.filter(renew_date__gte=start_date)
+        return list(qs.order_by("renew_date"))
 
     def sum_projected_vnd(self, owner_id: Any, start_date: date, end_date: date) -> Decimal:
         """Dự kiến tiền gia hạn trong khoảng ngày."""

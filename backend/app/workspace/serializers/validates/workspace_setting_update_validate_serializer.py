@@ -1,13 +1,12 @@
-"""Validate cập nhật Cài đặt Trợ lý cá nhân, Lịch Digest & Chính sách Telegram Group."""
+"""Validate cập nhật Cài đặt Digest, Cảnh báo cá nhân & Chat Telegram được phép."""
 
 from rest_framework import serializers
 
 from app.core.serializers.core_validate_serializer import CoreValidateSerializer
-from app.workspace.models.workspace_setting import WorkspaceSetting
 
 
 class WorkspaceSettingUpdateValidateSerializer(CoreValidateSerializer):
-    """Đầu vào PUT/PATCH `/workspace/settings`."""
+    """Đầu vào PUT/PATCH `/workspace/settings` (người dùng chỉ cấu hình Digest & Múi giờ cá nhân)."""
 
     timezone = serializers.CharField(
         max_length=64, required=False, help_text="Múi giờ chuẩn IANA (VD: Asia/Ho_Chi_Minh)."
@@ -23,9 +22,7 @@ class WorkspaceSettingUpdateValidateSerializer(CoreValidateSerializer):
     digest_sections = serializers.ListField(
         child=serializers.CharField(max_length=32),
         required=False,
-        help_text=(
-            "Các mục hiển thị trong Digest (`reminders`, `warranty`, `subscriptions`, `monitors`, `finance`)."
-        ),
+        help_text="Các mục hiển thị trong Digest (`reminders`, `warranty`, `subscriptions`, `finance`).",
     )
     warranty_alert_days = serializers.ListField(
         child=serializers.IntegerField(min_value=0, max_value=365),
@@ -37,37 +34,8 @@ class WorkspaceSettingUpdateValidateSerializer(CoreValidateSerializer):
         required=False,
         help_text="Mốc ngày nhắc mặc định cho dịch vụ định kỳ.",
     )
-    preferred_ai_model = serializers.CharField(
-        max_length=120,
-        required=False,
-        allow_blank=True,
-        help_text="Model AI ưu tiên (để trống = dùng thứ tự mặc định của hệ thống).",
-    )
-    ai_daily_token_limit = serializers.IntegerField(
-        min_value=100,
-        required=False,
-        allow_null=True,
-        help_text="Giới hạn token AI mỗi ngày (null = không đặt giới hạn).",
-    )
-    telegram_ai_enabled = serializers.BooleanField(
-        required=False, help_text="Bật tương tác Trợ lý AI qua Bot Telegram."
-    )
     telegram_allowed_chat_ids = serializers.ListField(
         child=serializers.UUIDField(),
         required=False,
-        help_text="Danh sách UUID của `system.TelegramChat` được phép gọi Trợ lý.",
-    )
-    telegram_group_require_mention = serializers.BooleanField(
-        required=False, help_text="Trong nhóm Telegram bắt buộc `@bot` hoặc reply tin nhắn bot."
-    )
-    telegram_group_tool_policy = serializers.ChoiceField(
-        choices=WorkspaceSetting.GroupToolPolicy.choices,
-        required=False,
-        help_text="Chính sách đọc dữ liệu cá nhân trong nhóm Telegram.",
-    )
-    telegram_group_hide_amounts = serializers.BooleanField(
-        required=False, help_text="Ẩn số tiền nhạy cảm khi bot trả lời trong nhóm Telegram."
-    )
-    telegram_group_reply_in_dm = serializers.BooleanField(
-        required=False, help_text="Gửi chi tiết riêng tư về DM chính chủ khi được hỏi trong nhóm."
+        help_text="Danh sách UUID của `system.TelegramChat` nhận bản tin/tương tác.",
     )

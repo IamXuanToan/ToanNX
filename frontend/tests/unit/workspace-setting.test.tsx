@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { WorkspaceSettingForm } from "@/modules/workspace/components/workspace-setting/workspace-setting-form";
+import { PORTAL_ROUTES } from "@/modules/portal/constants/routes";
 import { TooltipProvider } from "@/shares/components/ui/tooltip";
 
 beforeAll(() => {
@@ -68,20 +69,12 @@ vi.mock("@/modules/workspace/services/workspace-setting.service", () => ({
       timezone: "Asia/Ho_Chi_Minh",
       dailyDigestEnabled: true,
       digestTimeSlots: ["08:00"],
-      digestSections: ["reminders", "monitors"],
+      digestSections: ["reminders", "warranty"],
       warrantyAlertDays: [30, 7, 1],
       subscriptionDefaultAlertDays: [7, 3, 1],
-      preferredAiModel: "",
-      aiDailyTokenLimit: null,
-      telegramAiEnabled: true,
       telegramOwnerUserId: 123456,
       telegramAllowedChatIds: ["chat-uuid-1"],
-      telegramGroupRequireMention: true,
-      telegramGroupToolPolicy: "OWNER_ONLY",
-      telegramGroupHideAmounts: true,
-      telegramGroupReplyInDm: false,
-      availableAiModels: ["gemini-2.5-flash", "gpt-4o-mini"],
-      availableDigestSections: ["reminders", "warranty", "subscriptions", "monitors", "finance"],
+      availableDigestSections: ["reminders", "warranty", "subscriptions", "finance"],
       telegramBotConfigured: true,
       telegramBotUsername: "toannx_bot",
       telegramBotUrl: "https://t.me/toannx_bot",
@@ -92,13 +85,13 @@ vi.mock("@/modules/workspace/services/workspace-setting.service", () => ({
   },
 }));
 
-describe("WorkspaceSettingForm (Digest, AI model, Telegram 2 chiều)", () => {
+describe("WorkspaceSettingForm (Digest, Mốc cảnh báo & Telegram cá nhân)", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
   });
 
-  it("hiển thị Bot chung, nơi nhận Telegram và lưu cấu hình đúng payload", async () => {
+  it("hiển thị Bot chung, nơi nhận Telegram và lưu cấu hình cá nhân đúng payload", async () => {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={client}>
@@ -113,6 +106,19 @@ describe("WorkspaceSettingForm (Digest, AI model, Telegram 2 chiều)", () => {
       expect(screen.getByText(/DevOps Nhóm/)).toBeTruthy();
     });
 
+    // Có nút Hủy quay về dashboard Client Portal
+    const cancelLink = screen.getByRole("link", { name: "cancel" });
+    expect(cancelLink.getAttribute("href")).toBe(PORTAL_ROUTES.dashboard);
+
+    // Không cho người dùng sửa AI Bot Avatar/Policy ở cài đặt cá nhân
+    expect(screen.queryByText("fields.assistantSystemPrompt")).toBeNull();
+    expect(screen.queryByText("fields.preferredAiModel")).toBeNull();
+
+    // Thêm mốc ngày bảo hành bằng Enter trong ChipListInput
+    const dayInput = screen.getAllByPlaceholderText("addAlertDayPlaceholder")[0];
+    fireEvent.change(dayInput, { target: { value: "14" } });
+    fireEvent.keyDown(dayInput, { key: "Enter" });
+
     fireEvent.click(screen.getByRole("button", { name: "save" }));
     await waitFor(() => {
       expect(mockUpdateSetting).toHaveBeenCalledTimes(1);
@@ -120,9 +126,10 @@ describe("WorkspaceSettingForm (Digest, AI model, Telegram 2 chiều)", () => {
     expect(mockUpdateSetting.mock.calls[0]?.[0]).toMatchObject({
       timezone: "Asia/Ho_Chi_Minh",
       digestTimeSlots: ["08:00"],
-      telegramAiEnabled: true,
+      digestSections: ["reminders", "warranty"],
+      warrantyAlertDays: [30, 14, 7, 1],
+      subscriptionDefaultAlertDays: [7, 3, 1],
       telegramAllowedChatIds: ["chat-uuid-1"],
-      telegramGroupHideAmounts: true,
     });
   });
 });

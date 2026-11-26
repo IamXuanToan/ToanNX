@@ -42,6 +42,7 @@ test.describe("Đa ngôn ngữ", () => {
 
   test("chuyển ngôn ngữ trong admin giữ trang và phiên", async ({ page }) => {
     await loginViaUi(page);
+    await page.goto("/vi/quan-tri");
     await page.getByTestId("module-launcher").getByRole("link", { name: "Hệ thống" }).click();
     await page.locator("[data-slot=sidebar]").getByRole("link", { name: "Vai trò" }).click();
     await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/vai-tro$/);

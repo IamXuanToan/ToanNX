@@ -51,6 +51,9 @@ function toFormValues(asset: Asset): AssetFormValues {
     warrantyNote: asset.warrantyNote,
     invoiceAttachmentIds: asset.invoiceAttachments.map((f) => f.id),
     notes: asset.notes,
+    notificationChannels: asset.notificationChannels?.length
+      ? asset.notificationChannels
+      : ["WEBSITE"],
   };
 }
 
@@ -92,6 +95,7 @@ export function useAssetForm(asset?: Asset) {
     warrantyNote: "",
     invoiceAttachmentIds: [],
     notes: "",
+    notificationChannels: ["WEBSITE"],
   };
 
   const form = useForm<AssetFormValues>({
@@ -130,6 +134,7 @@ export function useAssetForm(asset?: Asset) {
       warrantyNote: values.warrantyNote,
       invoiceAttachmentIds: values.invoiceAttachmentIds,
       notes: values.notes,
+      notificationChannels: values.notificationChannels,
     };
     try {
       const saved = await save.mutateAsync(input);

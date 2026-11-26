@@ -15,44 +15,56 @@ import { WORKSPACE_ROUTES } from "../../constants/routes";
 import type { SubscriptionPayment } from "../../types/subscription-payment.types";
 import { useSubscriptionPaymentTable } from "./hooks/use-subscription-payment-table";
 
-/** @param props - Quyền xóa. @returns Bảng lịch sử thanh toán gia hạn dịch vụ. */
-export function SubscriptionPaymentTable({ canDelete }: { canDelete: boolean }) {
+/** @param props - Quyền xóa và `subscriptionId` tùy chọn khi nhúng trong chi tiết dịch vụ. @returns Bảng lịch sử thanh toán gia hạn dịch vụ. */
+export function SubscriptionPaymentTable({
+  canDelete,
+  subscriptionId,
+}: {
+  canDelete: boolean;
+  subscriptionId?: string;
+}) {
   const t = useTranslations("workspace.subscriptionPayments");
   const tCommon = useTranslations("workspace.common");
   const format = useFormatter();
-  const state = useSubscriptionPaymentTable();
+  const state = useSubscriptionPaymentTable(subscriptionId);
   const { table, query } = state;
 
   const columns: DataTableColumn<SubscriptionPayment>[] = [
+    ...(subscriptionId
+      ? []
+      : [
+          {
+            id: "subscriptionName",
+            header: t("fields.subscriptionName"),
+            mobile: "title" as const,
+            className: "md:w-full",
+            cell: (item: SubscriptionPayment) => (
+              <Link
+                href={WORKSPACE_ROUTES.subscriptionDetail(item.subscriptionId)}
+                className="hover:text-primary font-medium underline-offset-4 hover:underline"
+              >
+                {item.subscriptionName}
+              </Link>
+            ),
+          },
+        ]),
     {
-      id: "subscriptionName",
-      header: t("fields.subscriptionName"),
-      mobile: "title",
-      className: "md:w-full",
-      cell: (item) => (
-        <Link
-          href={WORKSPACE_ROUTES.subscriptionDetail(item.subscriptionId)}
-          className="hover:text-primary font-medium underline-offset-4 hover:underline"
-        >
-          {item.subscriptionName}
-        </Link>
-      ),
+      id: "period",
+      header: t("fields.period"),
+      ...(subscriptionId
+        ? { mobile: "title" as const, className: "md:w-full" }
+        : { hideBelow: "lg" as const }),
+      cell: (item) =>
+        `${format.dateTime(new Date(item.periodFrom), { dateStyle: "short" })} → ${format.dateTime(
+          new Date(item.periodTo),
+          { dateStyle: "short" },
+        )}`,
     },
     {
       id: "paidOn",
       header: t("fields.paidOn"),
       sortKey: "paid_on",
       cell: (item) => format.dateTime(new Date(item.paidOn), { dateStyle: "short" }),
-    },
-    {
-      id: "period",
-      header: t("fields.period"),
-      hideBelow: "lg",
-      cell: (item) =>
-        `${format.dateTime(new Date(item.periodFrom), { dateStyle: "short" })} → ${format.dateTime(
-          new Date(item.periodTo),
-          { dateStyle: "short" },
-        )}`,
     },
     {
       id: "amountVnd",
@@ -86,7 +98,7 @@ export function SubscriptionPaymentTable({ canDelete }: { canDelete: boolean }) 
         );
       },
     },
-    ...(state.canManageAll
+    ...(state.canManageAll && !subscriptionId
       ? [
           {
             id: "owner",
@@ -104,7 +116,11 @@ export function SubscriptionPaymentTable({ canDelete }: { canDelete: boolean }) 
 
   return (
     <DataTable
-      tableId="workspace-subscription-payments"
+      tableId={
+        subscriptionId
+          ? "workspace-subscription-detail-payments"
+          : "workspace-subscription-payments"
+      }
       columns={columns}
       rows={query.data?.items}
       getRowId={(item) => item.id}
@@ -112,22 +128,24 @@ export function SubscriptionPaymentTable({ canDelete }: { canDelete: boolean }) 
       search={{ ...table.search, placeholder: t("searchPlaceholder") }}
       onClearFilters={table.hasFilters ? table.clearFilters : undefined}
       filters={
-        <>
-          <FilterSelect
-            label={t("fields.subscriptionName")}
-            value={table.getFilterValues("subscription")}
-            onValueChange={(values) => table.setFilterValues("subscription", values.slice(-1))}
-            options={state.subscriptionOptions}
-          />
-          {state.canFilterOwner ? (
+        subscriptionId ? undefined : (
+          <>
             <FilterSelect
-              label={tCommon("owner")}
-              value={table.getFilterValues("owner")}
-              onValueChange={(values) => table.setFilterValues("owner", values.slice(-1))}
-              options={state.ownerOptions}
+              label={t("fields.subscriptionName")}
+              value={table.getFilterValues("subscription")}
+              onValueChange={(values) => table.setFilterValues("subscription", values.slice(-1))}
+              options={state.subscriptionOptions}
             />
-          ) : null}
-        </>
+            {state.canFilterOwner ? (
+              <FilterSelect
+                label={tCommon("owner")}
+                value={table.getFilterValues("owner")}
+                onValueChange={(values) => table.setFilterValues("owner", values.slice(-1))}
+                options={state.ownerOptions}
+              />
+            ) : null}
+          </>
+        )
       }
       ordering={table.ordering}
       onOrderingChange={table.onOrderingChange}

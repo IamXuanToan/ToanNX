@@ -11,7 +11,6 @@ from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.system.tests.factories.user_factory import UserFactory
 from app.system.tests.helpers.permission_helper import grant
 from app.workspace.models.asset import Asset
-from app.workspace.models.monitor_target import MonitorTarget
 from app.workspace.models.reminder import Reminder
 from app.workspace.models.subscription import Subscription
 from app.workspace.models.subscription_payment import SubscriptionPayment
@@ -22,7 +21,7 @@ URL = "/api/v1/workspace/dashboard/summary"
 
 
 class TestWorkspaceDashboardSummaryApi(BaseApiTestCase):
-    """Kiểm thử 4 nhóm KPI tổng hợp và cô lập `?owner=` theo quyền `MANAGE_ALL`."""
+    """Kiểm thử KPI tổng hợp (Chi tiêu, Nhắc việc, Bảo hành, Gia hạn) và cô lập `?owner=`."""
 
     def test_summary_kpis_and_owner_scoping(self, user: Any, login: Any, client: Any, vnd: Any) -> None:
         other = UserFactory()
@@ -56,10 +55,6 @@ class TestWorkspaceDashboardSummaryApi(BaseApiTestCase):
             currency=vnd,
         )
         Reminder.objects.create(owner=user, title="Việc hôm nay", due_date=today)
-        MonitorTarget.objects.create(
-            owner=user, name="Site OK", url="https://example.com", last_status=MonitorTarget.Status.HEALTHY
-        )
-        MonitorTarget.objects.create(owner=other, name="Other", url="https://other.com")
 
         self.assert_unauthorized(client.get(URL))
         self.assert_forbidden(login(user).get(URL), "PERMISSION_DENIED")
@@ -73,13 +68,13 @@ class TestWorkspaceDashboardSummaryApi(BaseApiTestCase):
         assert data["pending_reminders_today"] == 1
         assert data["expiring_warranties_30d"] == 1
         assert data["upcoming_subscriptions_14d"] == 1
-        assert data["monitors_total"] == 1
-        assert data["monitors_healthy"] == 1
+        assert "monitors_total" not in data
+        assert "monitors_healthy" not in data
 
         grant(user, P.MANAGE_ALL)
         user = type(user).objects.get(pk=user.pk)
         other_summary = self.assert_success(login(user).get(URL, {"owner": str(other.pk)}))
         assert other_summary["owner_id"] == str(other.pk)
-        assert other_summary["monitors_total"] == 1
         assert other_summary["monthly_spending_vnd"] == "0"
+        assert other_summary["pending_reminders_today"] == 0
         assert date.fromisoformat(other_summary["today"])

@@ -1,12 +1,11 @@
 import { z } from "zod";
 
-import { TELEGRAM_GROUP_TOOL_POLICIES } from "../constants/defaults";
-
-type Translate = (key: "required" | "timeSlot" | "positiveInt" | "daysList") => string;
+type Translate = (key: "required" | "timeSlot" | "alertDay") => string;
 
 const HHMM_SLOT = /^([01]\d|2[0-3]):[0-5]\d$/;
+const ALERT_DAY_PATTERN = /^\d+$/;
 
-/** Tên trường form Cài đặt Trợ lý & Digest. */
+/** Tên trường form Cài đặt Digest & Cảnh báo cá nhân. */
 export const WORKSPACE_SETTING_FORM_FIELDS = [
   "timezone",
   "dailyDigestEnabled",
@@ -14,18 +13,11 @@ export const WORKSPACE_SETTING_FORM_FIELDS = [
   "digestSections",
   "warrantyAlertDays",
   "subscriptionDefaultAlertDays",
-  "preferredAiModel",
-  "aiDailyTokenLimit",
-  "telegramAiEnabled",
   "telegramAllowedChatIds",
-  "telegramGroupRequireMention",
-  "telegramGroupToolPolicy",
-  "telegramGroupHideAmounts",
-  "telegramGroupReplyInDm",
 ] as const;
 
 /**
- * Schema form Cài đặt Trợ lý AI, Digest & Telegram hai chiều.
+ * Schema form Cài đặt cá nhân: Múi giờ, Digest, mốc nhắc dạng danh sách chip & kênh Telegram.
  *
  * @param t - Hàm dịch `workspace.validation`.
  * @returns Zod schema.
@@ -37,41 +29,24 @@ export function workspaceSettingSchema(t: Translate) {
       dailyDigestEnabled: z.boolean(),
       digestTimeSlots: z.array(z.string().trim()),
       digestSections: z.array(z.string()),
-      warrantyAlertDaysText: z.string().trim(),
-      subscriptionDefaultAlertDaysText: z.string().trim(),
-      preferredAiModel: z.string().trim().max(120),
-      aiDailyTokenLimit: z.string().trim(),
-      telegramAiEnabled: z.boolean(),
+      warrantyAlertDays: z.array(z.string().trim()),
+      subscriptionDefaultAlertDays: z.array(z.string().trim()),
       telegramAllowedChatIds: z.array(z.string()),
-      telegramGroupRequireMention: z.boolean(),
-      telegramGroupToolPolicy: z.enum(TELEGRAM_GROUP_TOOL_POLICIES),
-      telegramGroupHideAmounts: z.boolean(),
-      telegramGroupReplyInDm: z.boolean(),
     })
     .superRefine((value, ctx) => {
       if (value.digestTimeSlots.some((slot) => !HHMM_SLOT.test(slot))) {
         ctx.addIssue({ code: "custom", path: ["digestTimeSlots"], message: t("timeSlot") });
       }
-      if (
-        value.aiDailyTokenLimit &&
-        (!/^\d+$/.test(value.aiDailyTokenLimit) || Number(value.aiDailyTokenLimit) < 100)
-      ) {
-        ctx.addIssue({ code: "custom", path: ["aiDailyTokenLimit"], message: t("positiveInt") });
+      const isDaysValid = (days: string[]) =>
+        days.every((item) => ALERT_DAY_PATTERN.test(item) && Number(item) <= 365);
+      if (!isDaysValid(value.warrantyAlertDays)) {
+        ctx.addIssue({ code: "custom", path: ["warrantyAlertDays"], message: t("alertDay") });
       }
-      const isDaysCsvValid = (raw: string) =>
-        !raw ||
-        raw
-          .split(",")
-          .map((item) => item.trim())
-          .every((item) => /^\d+$/.test(item) && Number(item) <= 365);
-      if (!isDaysCsvValid(value.warrantyAlertDaysText)) {
-        ctx.addIssue({ code: "custom", path: ["warrantyAlertDaysText"], message: t("daysList") });
-      }
-      if (!isDaysCsvValid(value.subscriptionDefaultAlertDaysText)) {
+      if (!isDaysValid(value.subscriptionDefaultAlertDays)) {
         ctx.addIssue({
           code: "custom",
-          path: ["subscriptionDefaultAlertDaysText"],
-          message: t("daysList"),
+          path: ["subscriptionDefaultAlertDays"],
+          message: t("alertDay"),
         });
       }
     });

@@ -1,10 +1,13 @@
 "use client";
 
+import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
+import { Link } from "@/i18n/navigation";
 import { FormPage } from "@/shares/components/common/form-page";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
+import { Button } from "@/shares/components/ui/button";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui/tabs";
 
@@ -13,7 +16,8 @@ import { useWarrantyClaimDetail } from "./hooks/use-warranty-claim-detail";
 import { WarrantyClaimForm } from "./warranty-claim-form";
 
 /**
- * Trang chi tiết Phiếu bảo hành / sửa chữa (Tab Thông tin chung + Lịch sử thay đổi).
+ * Trang chi tiết Phiếu bảo hành / sửa chữa (Tab Thông tin chung + Lịch sử thay đổi),
+ * gắn nút quay về thẳng tab Bảo hành của thiết bị chứa phiếu.
  *
  * @param props - ID phiếu, quyền sửa, slot lịch sử.
  * @returns Chi tiết Phiếu bảo hành.
@@ -37,13 +41,30 @@ export function WarrantyClaimDetail({
       <QueryErrorState
         error={query.error}
         onRetry={() => query.refetch()}
-        backHref={WORKSPACE_ROUTES.warrantyClaims}
+        backHref={WORKSPACE_ROUTES.assets}
       />
     );
   }
 
   return (
-    <FormPage title={query.data.claimCode || query.data.assetName || t("editTitle")}>
+    <FormPage
+      title={query.data.claimCode || query.data.assetName || t("editTitle")}
+      actions={
+        <Button asChild variant="outline">
+          <Link
+            href={
+              {
+                ...WORKSPACE_ROUTES.assetDetail(query.data.assetId),
+                query: { tab: "claims" },
+              } as never
+            }
+          >
+            <ArrowLeft />
+            {t("backToAsset")}
+          </Link>
+        </Button>
+      }
+    >
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
         <TabsList>
           <TabsTrigger value="general">{tCommon("tabGeneral")}</TabsTrigger>

@@ -1,6 +1,10 @@
 import type { ListParams } from "@/shares/types/api.types";
 
-import type { REMINDER_PRIORITIES, REMINDER_RECURRENCES } from "../constants/defaults";
+import type {
+  REMINDER_PRIORITIES,
+  REMINDER_RECURRENCES,
+  WorkspaceNotificationChannel,
+} from "../constants/defaults";
 
 export type ReminderPriority = (typeof REMINDER_PRIORITIES)[number];
 export type ReminderRecurrence = (typeof REMINDER_RECURRENCES)[number];
@@ -21,6 +25,7 @@ export type Reminder = {
   recurrence: ReminderRecurrence;
   anchorDay: number | null;
   tags: string[];
+  notificationChannels: WorkspaceNotificationChannel[];
   createdAt: string;
   updatedAt: string;
 };
@@ -36,6 +41,7 @@ export type ReminderInput = {
   recurrence?: ReminderRecurrence;
   anchorDay?: number | null;
   tags?: string[];
+  notificationChannels?: WorkspaceNotificationChannel[];
 };
 
 /** Bộ lọc danh sách Nhắc việc. */

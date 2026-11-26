@@ -27,18 +27,20 @@ const STATUS_TONE: Record<WarrantyClaimStatus, StatusTone> = {
   CANCELLED: "neutral",
 };
 
-/** @param props - Quyền sửa/xóa. @returns Bảng Phiếu bảo hành / sửa chữa thiết bị. */
+/** @param props - Quyền sửa/xóa và `assetId` tùy chọn khi nhúng trong chi tiết thiết bị. @returns Bảng Phiếu bảo hành / sửa chữa thiết bị. */
 export function WarrantyClaimTable({
   canUpdate,
   canDelete,
+  assetId,
 }: {
   canUpdate: boolean;
   canDelete: boolean;
+  assetId?: string;
 }) {
   const t = useTranslations("workspace.warrantyClaims");
   const tCommon = useTranslations("workspace.common");
   const format = useFormatter();
-  const state = useWarrantyClaimTable();
+  const state = useWarrantyClaimTable(assetId);
   const { table, query } = state;
 
   const columns: DataTableColumn<AssetWarrantyClaim>[] = [
@@ -55,11 +57,19 @@ export function WarrantyClaimTable({
           >
             {item.claimCode || item.issueDescription}
           </Link>
-          <p className="text-muted-foreground truncate text-xs">
-            <Link href={WORKSPACE_ROUTES.assetDetail(item.assetId)} className="hover:underline">
-              {item.assetName}
-            </Link>
-          </p>
+          {assetId ? (
+            item.claimCode && item.issueDescription ? (
+              <p className="text-muted-foreground max-w-md truncate text-xs">
+                {item.issueDescription}
+              </p>
+            ) : null
+          ) : (
+            <p className="text-muted-foreground truncate text-xs">
+              <Link href={WORKSPACE_ROUTES.assetDetail(item.assetId)} className="hover:underline">
+                {item.assetName}
+              </Link>
+            </p>
+          )}
         </div>
       ),
     },
@@ -98,7 +108,7 @@ export function WarrantyClaimTable({
       hideBelow: "lg",
       cell: (item) => item.serviceCenter || "—",
     },
-    ...(state.canManageAll
+    ...(state.canManageAll && !assetId
       ? [
           {
             id: "owner",
@@ -116,7 +126,7 @@ export function WarrantyClaimTable({
 
   return (
     <DataTable
-      tableId="workspace-warranty-claims"
+      tableId={assetId ? "workspace-asset-claims" : "workspace-warranty-claims"}
       columns={columns}
       rows={query.data?.items}
       getRowId={(item) => item.id}
@@ -125,12 +135,14 @@ export function WarrantyClaimTable({
       onClearFilters={table.hasFilters ? table.clearFilters : undefined}
       filters={
         <>
-          <FilterSelect
-            label={t("fields.assetId")}
-            value={table.getFilterValues("asset")}
-            onValueChange={(values) => table.setFilterValues("asset", values.slice(-1))}
-            options={state.assetOptions}
-          />
+          {assetId ? null : (
+            <FilterSelect
+              label={t("fields.assetId")}
+              value={table.getFilterValues("asset")}
+              onValueChange={(values) => table.setFilterValues("asset", values.slice(-1))}
+              options={state.assetOptions}
+            />
+          )}
           <FilterSelect
             label={t("fields.claimType")}
             value={table.getFilterValues("claimType")}
@@ -154,7 +166,7 @@ export function WarrantyClaimTable({
               { value: "false", label: t("coveredNo") },
             ]}
           />
-          {state.canFilterOwner ? (
+          {state.canFilterOwner && !assetId ? (
             <FilterSelect
               label={tCommon("owner")}
               value={table.getFilterValues("owner")}

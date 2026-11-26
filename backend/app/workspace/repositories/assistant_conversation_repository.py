@@ -1,4 +1,4 @@
-"""Repository Hội thoại Trợ lý AI (list gọn nhẹ không prefetch messages)."""
+"""Repository Hội thoại Trợ lý AI (1 luồng Web duy nhất cho mỗi user + kênh Telegram)."""
 
 from typing import Any
 
@@ -20,6 +20,15 @@ class AssistantConversationRepository(CoreRepository[AssistantConversation]):
             .get_queryset()
             .select_related("owner")
             .annotate(message_count=Count("messages", filter=Q(messages__deleted_at__isnull=True)))
+        )
+
+    def find_web_thread(self, owner_id: Any) -> AssistantConversation | None:
+        """Tìm 1 luồng chat Web duy nhất của `owner_id`."""
+        return (
+            self.get_queryset()
+            .filter(owner_id=owner_id, channel=AssistantConversation.Channel.WEB)
+            .order_by("-last_message_at", "-created_at")
+            .first()
         )
 
     def find_for_channel(

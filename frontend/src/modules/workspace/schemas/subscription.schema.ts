@@ -1,8 +1,14 @@
 import { z } from "zod";
 
-import { BILLING_CYCLES, SUBSCRIPTION_CATEGORIES } from "../constants/defaults";
+import {
+  BILLING_CYCLES,
+  SUBSCRIPTION_CATEGORIES,
+  WORKSPACE_NOTIFICATION_CHANNELS,
+} from "../constants/defaults";
 
-type Translate = (key: "required" | "positive" | "url" | "customDays" | "anchorDay") => string;
+type Translate = (
+  key: "required" | "positive" | "url" | "customDays" | "anchorDay" | "atLeastOneChannel",
+) => string;
 
 const POSITIVE_AMOUNT = /^(?!0+(\.0+)?$)\d+(\.\d+)?$/;
 const HTTP_URL = /^https?:\/\/[^\s]+$/i;
@@ -25,6 +31,7 @@ export const SUBSCRIPTION_FORM_FIELDS = [
   "reminderDaysBefore",
   "isActive",
   "notes",
+  "notificationChannels",
 ] as const;
 
 /**
@@ -52,6 +59,9 @@ export function subscriptionSchema(t: Translate) {
       reminderDaysBefore: z.array(z.number()),
       isActive: z.boolean(),
       notes: z.string().max(2000),
+      notificationChannels: z
+        .array(z.enum(WORKSPACE_NOTIFICATION_CHANNELS))
+        .min(1, t("atLeastOneChannel")),
     })
     .superRefine((value, ctx) => {
       if (value.exchangeRate && !POSITIVE_AMOUNT.test(value.exchangeRate)) {

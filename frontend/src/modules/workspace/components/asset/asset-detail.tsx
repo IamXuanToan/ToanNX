@@ -24,11 +24,15 @@ export function AssetDetail({
   id,
   canUpdate,
   canCreateClaim,
+  canUpdateClaim = false,
+  canDeleteClaim = false,
   history,
 }: {
   id: string;
   canUpdate: boolean;
   canCreateClaim: boolean;
+  canUpdateClaim?: boolean;
+  canDeleteClaim?: boolean;
   history?: ReactNode;
 }) {
   const t = useTranslations("workspace.assets");
@@ -61,7 +65,12 @@ export function AssetDetail({
           <AssetForm asset={query.data} disabled={!canUpdate} />
         </TabsContent>
         <TabsContent value="claims" className="mt-4">
-          <AssetClaimsTab asset={query.data} canCreateClaim={canCreateClaim} />
+          <AssetClaimsTab
+            asset={query.data}
+            canCreateClaim={canCreateClaim}
+            canUpdateClaim={canUpdateClaim}
+            canDeleteClaim={canDeleteClaim}
+          />
         </TabsContent>
         {history ? (
           <TabsContent value="history" className="mt-4">

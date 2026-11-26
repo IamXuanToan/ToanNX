@@ -1,16 +1,16 @@
-"""Nghiệp vụ Hội thoại Trợ lý AI (tải 50 tin gần nhất + phân trang lịch sử cũ)."""
+"""Nghiệp vụ Hội thoại Trợ lý AI: 1 luồng Web duy nhất cho mỗi user & giữ ngữ cảnh Telegram."""
 
+from datetime import datetime
 from typing import Any
 
 from django.db import transaction
-from django.db.models import QuerySet
 from django.utils import timezone
 
 from app.core.services.core_crud_service import CoreCrudService
 from app.workspace.constants.workspace_defaults import AI_INITIAL_MESSAGES_LIMIT
 from app.workspace.models.assistant_conversation import AssistantConversation
 from app.workspace.models.assistant_message import AssistantMessage
-from app.workspace.permissions.assistant_conversation_permission import AssistantConversationPermission
+from app.workspace.permissions.assistant_config_permission import AssistantConfigPermission
 from app.workspace.repositories.assistant_conversation_repository import (
     AssistantConversationRepository,
 )
@@ -18,11 +18,11 @@ from app.workspace.repositories.assistant_message_repository import AssistantMes
 
 
 class AssistantConversationService(CoreCrudService[AssistantConversation, AssistantConversationRepository]):
-    """Đọc/xóa phiên hội thoại và đóng gói đọc/ghi `AssistantMessage` không tạo service riêng."""
+    """Đọc/làm mới luồng chat Web duy nhất và đóng gói đọc/ghi `AssistantMessage`."""
 
     repository_class = AssistantConversationRepository
     owner_field = "owner"
-    manage_all_permission = AssistantConversationPermission.MANAGE_ALL.code
+    manage_all_permission = AssistantConfigPermission.READ.code
 
     def __init__(
         self,
@@ -33,20 +33,20 @@ class AssistantConversationService(CoreCrudService[AssistantConversation, Assist
         super().__init__(repository or AssistantConversationRepository())
         self.message_repository = message_repository or AssistantMessageRepository()
 
-    def retrieve_with_recent_messages(
-        self, actor: Any, pk: Any
-    ) -> tuple[AssistantConversation, list[AssistantMessage], bool]:
-        """Trả chi tiết hội thoại kèm tối đa 50 tin gần nhất & cờ `has_more_messages`."""
-        conversation = self.get_by_id_for(actor, pk)
-        items, has_more = self.message_repository.list_recent(
-            conversation.pk, limit=AI_INITIAL_MESSAGES_LIMIT
+    @transaction.atomic
+    def get_or_create_web_thread(self, owner: Any) -> AssistantConversation:
+        """Trả về đúng 1 hội thoại Web duy nhất của `owner` (tạo mới nếu chưa có)."""
+        existing = self.repository.find_web_thread(owner.pk)
+        if existing is not None:
+            return existing
+        return self.repository.create(
+            actor=owner,
+            owner=owner,
+            channel=AssistantConversation.Channel.WEB,
+            external_chat_id="",
+            title="Trợ lý AI",
+            last_message_at=timezone.now(),
         )
-        return conversation, items, has_more
-
-    def messages_queryset_for(self, actor: Any, pk: Any) -> QuerySet[AssistantMessage]:
-        """Queryset phân trang cho `GET /assistant/conversations/{id}/messages`."""
-        conversation = self.get_by_id_for(actor, pk)
-        return self.message_repository.queryset_for_conversation(conversation.pk)
 
     @transaction.atomic
     def get_or_create_active(
@@ -55,14 +55,12 @@ class AssistantConversationService(CoreCrudService[AssistantConversation, Assist
         *,
         channel: str,
         external_chat_id: str = "",
-        conversation_id: Any | None = None,
-        force_new: bool = False,
         title: str = "",
     ) -> AssistantConversation:
-        """Tìm hoặc mở phiên hội thoại phù hợp cho Web hoặc Telegram."""
-        if conversation_id is not None and not force_new:
-            return self.get_by_id_for(owner, conversation_id)
-        if not force_new and external_chat_id:
+        """Tìm hoặc mở phiên hội thoại phù hợp cho Web (1 luồng) hoặc kênh Telegram."""
+        if channel == AssistantConversation.Channel.WEB:
+            return self.get_or_create_web_thread(owner)
+        if external_chat_id:
             existing = self.repository.find_for_channel(owner.pk, channel, external_chat_id)
             if existing is not None:
                 return existing
@@ -75,19 +73,36 @@ class AssistantConversationService(CoreCrudService[AssistantConversation, Assist
             last_message_at=timezone.now(),
         )
 
+    def get_web_thread_messages(
+        self, actor: Any, *, page: int = 1, page_size: int = AI_INITIAL_MESSAGES_LIMIT
+    ) -> dict[str, Any]:
+        """Lấy lịch sử tin nhắn trong đúng 1 luồng chat Web của `actor` (mặc định 50 tin gần nhất)."""
+        thread = self.repository.find_web_thread(actor.pk)
+        if thread is None:
+            return {"messages": [], "has_more_messages": False, "total_messages": 0}
+        safe_page = max(1, int(page))
+        safe_size = max(1, min(100, int(page_size)))
+        qs = self.message_repository.queryset_for_conversation(thread.pk)
+        total = qs.count()
+        offset = (safe_page - 1) * safe_size
+        rows = list(qs[offset : offset + safe_size + 1])
+        has_more = len(rows) > safe_size
+        items = list(reversed(rows[:safe_size]))
+        return {
+            "messages": items,
+            "has_more_messages": has_more,
+            "total_messages": total,
+        }
+
     @transaction.atomic
-    def create_new_channel_session(
-        self, owner: Any, *, channel: str, external_chat_id: str = "", title: str = ""
-    ) -> AssistantConversation:
-        """Tạo phiên hội thoại mới (dùng cho lệnh `/newchat`)."""
-        return self.repository.create(
-            actor=owner,
-            owner=owner,
-            channel=channel,
-            external_chat_id=external_chat_id,
-            title=title[:200] or "Cuộc trò chuyện mới",
-            last_message_at=timezone.now(),
-        )
+    def clear_web_thread(self, actor: Any) -> int:
+        """Xóa toàn bộ tin nhắn trong luồng chat Web duy nhất của `actor` (bắt đầu lại màn sạch)."""
+        thread = self.repository.find_web_thread(actor.pk)
+        if thread is None:
+            return 0
+        deleted = self.message_repository.hard_delete_where(conversation_id=thread.pk)
+        self.repository.update(thread, actor=actor, last_message_at=timezone.now())
+        return deleted
 
     @transaction.atomic
     def append_message(
@@ -105,7 +120,7 @@ class AssistantConversationService(CoreCrudService[AssistantConversation, Assist
         contains_private_data: bool = False,
         is_error: bool = False,
     ) -> AssistantMessage:
-        """Thêm tin nhắn vào hội thoại và cập nhật mốc `last_message_at` + tiêu đề nếu còn trống."""
+        """Thêm tin nhắn vào hội thoại và cập nhật mốc `last_message_at`."""
         now = timezone.now()
         msg = self.message_repository.create(
             conversation=conversation,
@@ -120,21 +135,21 @@ class AssistantConversationService(CoreCrudService[AssistantConversation, Assist
             contains_private_data=contains_private_data,
             is_error=is_error,
         )
-        update_fields: dict[str, Any] = {"last_message_at": now}
-        if not conversation.title and role == AssistantMessage.Role.USER and content.strip():
-            update_fields["title"] = content.strip()[:120]
-        self.repository.update(conversation, **update_fields)
+        updates: dict[str, Any] = {"last_message_at": now}
+        if not conversation.title and role == AssistantMessage.Role.USER and content:
+            updates["title"] = content[:120]
+        self.repository.update(conversation, **updates)
         return msg
 
     def recent_context_messages(
         self, conversation_id: Any, *, limit: int = 10, exclude_private: bool = False
     ) -> list[AssistantMessage]:
-        """Lấy lịch sử ngắn gửi lên LLM; lọc bỏ `contains_private_data=True` khi chạy chế độ an toàn."""
-        items, _ = self.message_repository.list_recent(conversation_id, limit=limit)
+        """Nạp tối đa `limit` tin nhắn gần nhất để đưa vào context LLM (lọc private nếu ở Group)."""
+        rows, _ = self.message_repository.list_recent(conversation_id, limit=limit * 2)
         if exclude_private:
-            return [m for m in items if not m.contains_private_data]
-        return items
+            rows = [msg for msg in rows if not msg.contains_private_data]
+        return rows[-limit:]
 
-    def sum_tokens_since(self, owner_id: Any, since_dt: Any) -> int:
-        """Tổng token tiêu thụ từ `since_dt` của `owner`."""
+    def sum_tokens_since(self, owner_id: Any, since_dt: datetime) -> int:
+        """Tổng token AI mà `owner` đã sử dụng từ mốc `since_dt`."""
         return self.message_repository.sum_tokens_since(owner_id, since_dt)

@@ -1,39 +1,37 @@
 "use client";
 
 import { Plus, ShieldCheck } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-import { StatusBadge } from "@/shares/components/common/status-badge";
 import { Button } from "@/shares/components/ui/button";
-import { Skeleton } from "@/shares/components/ui/skeleton";
 import { DEFAULT_CURRENCY } from "@/shares/constants/currency";
 import { formatDisplayMoney } from "@/shares/lib/number-format";
 
 import { WORKSPACE_ROUTES } from "../../constants/routes";
-import { useWarrantyClaims } from "../../hooks/use-warranty-claims";
 import type { Asset } from "../../types/asset.types";
+import { WarrantyClaimTable } from "../asset-warranty-claim/warranty-claim-table";
 
 /**
- * Tab Bảo hành & Sửa chữa trong trang Chi tiết Thiết bị:
- * tóm tắt thống kê bảo hành/sửa chữa, danh sách phiếu và nút tạo nhanh truyền `?assetId=`.
+ * Tab Lịch sử Bảo hành & Sửa chữa ngay trong trang Chi tiết Thiết bị:
+ * thống kê nhanh chi phí/lượt mở, nút Tạo phiếu gắn sẵn `?assetId=` và tái sử dụng trọn vẹn
+ * `WarrantyClaimTable` (tìm kiếm, lọc, xem/sửa/xóa và xóa hàng loạt) khóa theo thiết bị này.
  *
- * @param props - Thiết bị hiện tại và quyền tạo phiếu bảo hành.
- * @returns Danh sách phiếu bảo hành của thiết bị.
+ * @param props - Thiết bị hiện tại và quyền thao tác phiếu bảo hành.
+ * @returns Danh sách phiếu bảo hành theo thiết bị.
  */
 export function AssetClaimsTab({
   asset,
   canCreateClaim,
+  canUpdateClaim = false,
+  canDeleteClaim = false,
 }: {
   asset: Asset;
   canCreateClaim: boolean;
+  canUpdateClaim?: boolean;
+  canDeleteClaim?: boolean;
 }) {
   const t = useTranslations("workspace.assets");
-  const tClaim = useTranslations("workspace.warrantyClaims");
-  const tCommon = useTranslations("workspace.common");
-  const format = useFormatter();
-
-  const claimsQuery = useWarrantyClaims({ asset: asset.id, pageSize: 50 });
 
   return (
     <div className="space-y-4">
@@ -66,52 +64,11 @@ export function AssetClaimsTab({
         ) : null}
       </div>
 
-      {claimsQuery.isPending ? (
-        <Skeleton className="h-32 w-full rounded-xl" />
-      ) : (claimsQuery.data?.items.length ?? 0) === 0 ? (
-        <p className="text-muted-foreground rounded-xl border p-6 text-center text-sm">
-          {tCommon("noData")}
-        </p>
-      ) : (
-        <div className="space-y-2">
-          {claimsQuery.data?.items.map((claim) => (
-            <div
-              key={claim.id}
-              className="bg-card flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4"
-            >
-              <div className="min-w-0 space-y-1">
-                <Link
-                  href={WORKSPACE_ROUTES.warrantyClaimDetail(claim.id)}
-                  className="hover:text-primary font-medium underline-offset-4 hover:underline"
-                >
-                  {claim.claimCode || claim.issueDescription}
-                </Link>
-                <p className="text-muted-foreground text-xs">
-                  {tClaim(`types.${claim.claimType}`)} ·{" "}
-                  {format.dateTime(new Date(claim.submittedDate), { dateStyle: "short" })} ·{" "}
-                  {claim.serviceCenter || "—"}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm tabular-nums">
-                  {formatDisplayMoney(claim.costVnd, { currency: DEFAULT_CURRENCY })}
-                </span>
-                <StatusBadge
-                  tone={
-                    claim.status === "COMPLETED"
-                      ? "success"
-                      : claim.status === "REJECTED"
-                        ? "danger"
-                        : "info"
-                  }
-                >
-                  {tClaim(`statuses.${claim.status}`)}
-                </StatusBadge>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <WarrantyClaimTable
+        assetId={asset.id}
+        canUpdate={canUpdateClaim}
+        canDelete={canDeleteClaim}
+      />
     </div>
   );
 }

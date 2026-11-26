@@ -3989,6 +3989,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/workspace/assistant/bot-profile": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lấy thông tin chỉ đọc của Chatbot AI (không lộ Policy hay quyền sửa). */
+    get: operations["workspace_assistant_bot_profile_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/workspace/assistant/chat": {
     parameters: {
       query?: never;
@@ -4006,74 +4023,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/workspace/assistant/conversations": {
+  "/api/v1/workspace/assistant/config": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["workspace_assistant_conversations_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["workspace_assistant_conversations_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/assistant/conversations/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết hội thoại kèm tối đa 50 tin gần nhất và cờ `has_more_messages`. */
-    get: operations["workspace_assistant_conversations_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Xóa bản ghi (204 không body). */
-    delete: operations["workspace_assistant_conversations_destroy"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/assistant/conversations/{id}/messages": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Trả danh sách tin nhắn (hỗ trợ `?page=&page_size=`). */
-    get: operations["workspace_assistant_conversations_messages_list"];
-    put?: never;
+    /** @description Lấy cấu hình Chatbot AI dùng chung cho màn Admin. */
+    get: operations["workspace_assistant_config_retrieve"];
+    /** @description Cập nhật cấu hình Chatbot AI (PUT). */
+    put: operations["workspace_assistant_config_update"];
     post?: never;
     delete?: never;
     options?: never;
     head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/assistant/conversations/bulk-delete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["workspace_assistant_conversations_bulk_delete_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
+    /** @description Cập nhật một phần cấu hình Chatbot AI (PATCH). */
+    patch: operations["workspace_assistant_config_partial_update"];
     trace?: never;
   };
   "/api/v1/workspace/assistant/telegram-process": {
@@ -4088,6 +4054,24 @@ export interface paths {
     /** @description Xác thực QStash/CRON_SECRET rồi chạy xKiro + gửi phản hồi về Telegram. */
     post: operations["workspace_assistant_telegram_process_create"];
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/assistant/thread": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lấy tin nhắn gần nhất theo thứ tự thời gian trong luồng chat Web duy nhất. */
+    get: operations["workspace_assistant_thread_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa toàn bộ tin nhắn khỏi luồng chat Web duy nhất để bắt đầu lại từ đầu. */
+    delete: operations["workspace_assistant_thread_destroy"];
     options?: never;
     head?: never;
     patch?: never;
@@ -4136,7 +4120,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** @description Thực thi 1 nhịp W1 + W4. */
+    /** @description Thực thi 1 nhịp W4. */
     post: operations["workspace_cron_tick_create"];
     delete?: never;
     options?: never;
@@ -4155,164 +4139,6 @@ export interface paths {
     get: operations["workspace_dashboard_summary_retrieve"];
     put?: never;
     post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/monitor-incidents": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
-    get: operations["workspace_monitor_incidents_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["workspace_monitor_incidents_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/monitor-incidents/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết bản ghi. */
-    get: operations["workspace_monitor_incidents_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Xóa bản ghi (204 không body). */
-    delete: operations["workspace_monitor_incidents_destroy"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/monitor-incidents/bulk-delete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["workspace_monitor_incidents_bulk_delete_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/monitor-targets": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Trộn trạng thái mới hơn từ Redis cho từng trang trước khi serialize. */
-    get: operations["workspace_monitor_targets_list"];
-    put?: never;
-    /** @description Tạo bản ghi (201). */
-    post: operations["workspace_monitor_targets_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/monitor-targets/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Chi tiết endpoint đã trộn trạng thái mới hơn từ Redis. */
-    get: operations["workspace_monitor_targets_retrieve"];
-    put?: never;
-    post?: never;
-    /** @description Xóa bản ghi (204 không body). */
-    delete: operations["workspace_monitor_targets_destroy"];
-    options?: never;
-    head?: never;
-    /** @description Cập nhật một phần (PATCH). */
-    patch: operations["workspace_monitor_targets_partial_update"];
-    trace?: never;
-  };
-  "/api/v1/workspace/monitor-targets/{id}/history": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
-    get: operations["workspace_monitor_targets_history_list"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/monitor-targets/{id}/ping": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Ping kiểm tra thủ công URL qua SafeHttpClient (timeout <= 5s). */
-    post: operations["workspace_monitor_targets_ping_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/monitor-targets/bulk-delete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["workspace_monitor_targets_bulk_delete_create"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/workspace/monitor-targets/bulk-update": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
-    post: operations["workspace_monitor_targets_bulk_update_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -5047,6 +4873,8 @@ export interface components {
        * @default
        */
       notes: string;
+      /** @description Kênh nhận thông báo hết bảo hành (`WEBSITE`, `TELEGRAM`, `EMAIL`). */
+      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
     };
     /** @description Chi tiết/danh sách thiết bị (annotations từ AssetRepository, 0 N+1). */
     AssetResponse: {
@@ -5244,6 +5072,11 @@ export interface components {
        * @description Ghi chú bổ sung về thiết bị.
        */
       readonly notes: string;
+      /**
+       * Kênh nhận thông báo
+       * @description Danh sách kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`).
+       */
+      readonly notification_channels: unknown;
       /**
        * @description Tổng số phiếu bảo hành.
        * @default 0
@@ -5555,6 +5388,17 @@ export interface components {
        */
       readonly updated_at: string;
     };
+    /** @description Avatar, tên hiển thị và model đang chạy (không lộ policy nội bộ hay quyền cấu hình). */
+    AssistantBotProfileResponse: {
+      /** @description Tên hiển thị Chatbot AI. */
+      name: string;
+      /** @description Ảnh đại diện Chatbot AI. */
+      avatar: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /** @description Model AI đang kích hoạt. */
+      active_model: string;
+      /** @description Admin đã thiết lập Policy riêng hay chưa. */
+      has_custom_policy: boolean;
+    };
     /** @description Phản hồi của Trợ lý AI kèm thông tin fallback/model/token. */
     AssistantChatResponse: {
       /**
@@ -5579,140 +5423,94 @@ export interface components {
       /** @description Bản ghi AssistantMessage mới lưu. */
       message: components["schemas"]["AssistantMessageResponse"];
     };
-    /** @description Đầu vào trò chuyện Trợ lý AI Web Portal. */
+    /** @description Đầu vào trò chuyện Trợ lý AI Web Portal (luôn gắn 1 luồng duy nhất của user). */
     AssistantChatValidateRequest: {
       /** @description Câu hỏi tự nhiên hoặc lệnh Slash bắt đầu bằng `/` (tối đa 2000 ký tự). */
       message: string;
-      /**
-       * Format: uuid
-       * @description ID phiên hội thoại muốn tiếp tục (bỏ trống để dùng phiên gần nhất hoặc tạo mới).
-       */
-      conversation_id?: string | null;
     };
-    /** @description Chi tiết hội thoại kèm danh sách 50 tin gần nhất theo thứ tự thời gian. */
-    AssistantConversationDetailResponse: {
-      /**
-       * Mã định danh
-       * Format: uuid
-       * @description Định danh UUID do hệ thống sinh, không đổi.
-       */
-      readonly id: string;
-      /**
-       * Chủ sở hữu
-       * Format: uuid
-       * @description Người sở hữu hội thoại.
-       */
-      readonly owner_id: string;
-      /** @description Email chủ sở hữu. */
-      readonly owner_email: string;
-      /**
-       * Kênh tương tác
-       * @description Nơi diễn ra cuộc trò chuyện.
-       *
-       *     * `WEB` - Giao diện Web
-       *     * `TELEGRAM_DM` - Telegram Riêng
-       *     * `TELEGRAM_GROUP` - Telegram Nhóm
-       */
-      readonly channel: components["schemas"]["WorkspaceAssistantChannelEnum"];
-      /**
-       * ID chat ngoài
-       * @description Chat ID trên Telegram (nếu là kênh Telegram).
-       */
-      readonly external_chat_id: string;
-      /**
-       * Tiêu đề
-       * @description Tiêu đề tóm tắt của phiên trò chuyện.
-       */
-      readonly title: string;
-      /**
-       * Tin nhắn cuối lúc
-       * Format: date-time
-       * @description Thời điểm có tin nhắn mới nhất.
-       */
-      readonly last_message_at: string | null;
-      /**
-       * @description Tổng số tin nhắn trong hội thoại.
-       * @default 0
-       */
-      readonly message_count: number;
-      /** @description Tối đa 50 tin nhắn gần nhất. */
-      readonly recent_messages: components["schemas"]["AssistantMessageResponse"][];
-      /**
-       * @description Còn tin nhắn cũ hơn để phân trang qua `/messages`.
-       * @default false
-       */
-      readonly has_more_messages: boolean;
-      /**
-       * Thời điểm tạo
-       * Format: date-time
-       * @description Thời điểm bản ghi được tạo (tự động).
-       */
-      readonly created_at: string;
-      /**
-       * Thời điểm cập nhật
-       * Format: date-time
-       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
-       */
-      readonly updated_at: string;
+    /** @description Thông tin chuẩn hóa câu lệnh tiếng Việt & tiếng Anh của Chatbot AI. */
+    AssistantCommandResponse: {
+      /** @description Mã hành động chuẩn của câu lệnh. */
+      canonical: string;
+      /** @description Câu lệnh tiếng Việt chuẩn (dùng cho Web & Telegram). */
+      command: string;
+      /** @description Bản lệnh tiếng Anh tương ứng. */
+      en_command: string;
+      /** @description Cú pháp minh họa bằng tiếng Việt. */
+      syntax: string;
+      /** @description Cú pháp minh họa bằng tiếng Anh. */
+      en_syntax: string;
+      /** @description Mô tả ngắn tiếng Việt dùng cho /setcommands. */
+      description: string;
+      /** @description Mô tả ngắn tiếng Anh dùng cho /setcommands. */
+      en_description: string;
+      /** @description Chỉ dùng trực tiếp trên Telegram Bot. */
+      telegram_only: boolean;
     };
-    /** @description Tóm tắt hội thoại kèm số lượng tin nhắn (annotated). */
-    AssistantConversationListResponse: {
+    /** @description Trọn bộ cấu hình Avatar, Tên, Policy, Model, Token Limit và Bot Telegram AI. */
+    AssistantConfigResponse: {
+      /** @description Tên Chatbot AI. */
+      assistant_name: string;
+      /** @description Ảnh đại diện Chatbot AI (null nếu dùng icon mặc định). */
+      assistant_avatar: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /** @description Policy / chỉ dẫn trả lời của Chatbot AI. */
+      assistant_system_prompt: string;
+      /** @description Model AI ưu tiên. */
+      preferred_ai_model: string;
+      /** @description Giới hạn token mỗi ngày (null = không giới hạn). */
+      ai_daily_token_limit: number | null;
+      /** @description Bật tương tác Chatbot AI qua Telegram. */
+      telegram_ai_enabled: boolean;
+      /** @description Nhóm Telegram phải @tag hoặc reply bot. */
+      telegram_group_require_mention: boolean;
+      /** @description Chính sách tool trong nhóm Telegram. */
+      telegram_group_tool_policy: string;
+      /** @description Ẩn số tiền trong nhóm Telegram. */
+      telegram_group_hide_amounts: boolean;
+      /** @description Gửi chi tiết riêng tư qua DM. */
+      telegram_group_reply_in_dm: boolean;
+      /** @description Danh sách model AI khả dụng từ ENV. */
+      available_ai_models: string[];
+      /** @description Bot Telegram đã cấu hình ENV chưa. */
+      telegram_bot_configured: boolean;
+      /** @description Username bot Telegram. */
+      telegram_bot_username: string;
+      /** @description Liên kết mở bot Telegram. */
+      telegram_bot_url: string;
+      /** @description Danh sách câu lệnh chuẩn có sẵn để Admin khai báo vào @BotFather (/setcommands). */
+      telegram_commands: components["schemas"]["AssistantCommandResponse"][];
+    };
+    /** @description Đầu vào PUT/PATCH `/workspace/assistant/config` (chỉ Admin). */
+    AssistantConfigUpdateValidateRequest: {
+      /** @description Tên hiển thị của Chatbot AI (để trống dùng tên mặc định). */
+      assistant_name?: string;
       /**
-       * Mã định danh
        * Format: uuid
-       * @description Định danh UUID do hệ thống sinh, không đổi.
+       * @description ID ảnh công khai (upload qua /attachments) làm avatar Chatbot AI; null để gỡ.
        */
-      readonly id: string;
+      assistant_avatar_id?: string | null;
+      /** @description Policy / chỉ dẫn trả lời bổ sung của Chatbot AI. */
+      assistant_system_prompt?: string;
+      /** @description Model AI ưu tiên (để trống = tự động fallback theo ENV). */
+      preferred_ai_model?: string;
+      /** @description Giới hạn token AI mỗi ngày cho mỗi người dùng (null = không đặt giới hạn). */
+      ai_daily_token_limit?: number | null;
+      /** @description Bật tương tác Chatbot AI qua Bot Telegram chung. */
+      telegram_ai_enabled?: boolean;
+      /** @description Trong nhóm Telegram bắt buộc `@bot` hoặc reply tin nhắn bot. */
+      telegram_group_require_mention?: boolean;
       /**
-       * Chủ sở hữu
-       * Format: uuid
-       * @description Người sở hữu hội thoại.
-       */
-      readonly owner_id: string;
-      /** @description Email chủ sở hữu. */
-      readonly owner_email: string;
-      /**
-       * Kênh tương tác
-       * @description Nơi diễn ra cuộc trò chuyện.
+       * @description Chính sách đọc dữ liệu cá nhân trong nhóm Telegram.
        *
-       *     * `WEB` - Giao diện Web
-       *     * `TELEGRAM_DM` - Telegram Riêng
-       *     * `TELEGRAM_GROUP` - Telegram Nhóm
+       *     * `DISABLED` - DISABLED
+       *     * `OWNER_ONLY` - OWNER_ONLY
+       *     * `ALL_MEMBERS` - ALL_MEMBERS
        */
-      readonly channel: components["schemas"]["WorkspaceAssistantChannelEnum"];
-      /**
-       * ID chat ngoài
-       * @description Chat ID trên Telegram (nếu là kênh Telegram).
-       */
-      readonly external_chat_id: string;
-      /**
-       * Tiêu đề
-       * @description Tiêu đề tóm tắt của phiên trò chuyện.
-       */
-      readonly title: string;
-      /**
-       * Tin nhắn cuối lúc
-       * Format: date-time
-       * @description Thời điểm có tin nhắn mới nhất.
-       */
-      readonly last_message_at: string | null;
-      /**
-       * @description Tổng số tin nhắn trong hội thoại.
-       * @default 0
-       */
-      readonly message_count: number;
-      /**
-       * Thời điểm tạo
-       * Format: date-time
-       * @description Thời điểm bản ghi được tạo (tự động).
-       */
-      readonly created_at: string;
-      /**
-       * Thời điểm cập nhật
-       * Format: date-time
-       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
-       */
-      readonly updated_at: string;
+      telegram_group_tool_policy?: components["schemas"]["WorkspaceGroupToolPolicyEnum"];
+      /** @description Ẩn số tiền nhạy cảm khi bot trả lời trong nhóm Telegram. */
+      telegram_group_hide_amounts?: boolean;
+      /** @description Gửi chi tiết riêng tư về DM chính chủ khi được hỏi trong nhóm. */
+      telegram_group_reply_in_dm?: boolean;
     };
     /** @description Chi tiết từng tin nhắn kèm `model_used`, `tokens_used` và `contains_private_data`. */
     AssistantMessageResponse: {
@@ -5786,6 +5584,20 @@ export interface components {
        * @description Thời điểm bản ghi được tạo (tự động).
        */
       readonly created_at: string;
+    };
+    /** @description Số tin nhắn đã dọn khỏi luồng chat Web. */
+    AssistantThreadClearResponse: {
+      /** @description Số tin nhắn đã xóa khỏi luồng. */
+      deleted_count: number;
+    };
+    /** @description Danh sách tin nhắn theo thứ tự thời gian kèm cờ còn tin cũ hơn. */
+    AssistantThreadResponse: {
+      /** @description Tin nhắn gần nhất. */
+      messages: components["schemas"]["AssistantMessageResponse"][];
+      /** @description Còn tin cũ hơn để tải thêm. */
+      has_more_messages: boolean;
+      /** @description Tổng số tin nhắn trong luồng. */
+      total_messages: number;
     };
     /** @description Gom nhóm cùng transaction, không sửa byte hoặc URL của các file. */
     AttachmentBulkUpdateValidateRequest: {
@@ -6052,6 +5864,14 @@ export interface components {
       /** @description Đã cấu hình client id/secret tương ứng. */
       configured: boolean;
     };
+    /**
+     * @description * `IN_APP` - Trong ứng dụng
+     *     * `PUSH` - Trình duyệt
+     *     * `EMAIL` - Email
+     *     * `TELEGRAM` - Telegram
+     * @enum {string}
+     */
+    ChannelEnum: "IN_APP" | "PUSH" | "EMAIL" | "TELEGRAM";
     /** @description Cập nhật cờ `is_published` của nhiều bản ghi cùng lúc. */
     ChapterBulkUpdateValidateRequest: {
       /** @description Id các bản ghi cần thao tác (tối đa 100). */
@@ -7515,242 +7335,6 @@ export interface components {
       /** @description Số phiên đã bị thu hồi. */
       revoked_sessions: number;
     };
-    /** @description Lịch sử sự cố downtime/phục hồi của endpoint. */
-    MonitorIncidentResponse: {
-      /**
-       * Mã định danh
-       * Format: uuid
-       * @description Định danh UUID do hệ thống sinh, không đổi.
-       */
-      readonly id: string;
-      /**
-       * Chủ sở hữu
-       * Format: uuid
-       * @description Chủ sở hữu sự cố.
-       */
-      readonly owner_id: string;
-      /** @description Email chủ sở hữu. */
-      readonly owner_email: string;
-      /**
-       * Mục tiêu giám sát
-       * Format: uuid
-       * @description Endpoint phát sinh sự cố.
-       */
-      readonly target_id: string;
-      /** @description Tên mục tiêu giám sát. */
-      readonly target_name: string;
-      /** @description URL giám sát. */
-      readonly target_url: string;
-      /**
-       * Bắt đầu lúc
-       * Format: date-time
-       * @description Thời điểm phát hiện sự cố.
-       */
-      readonly started_at: string;
-      /**
-       * Phục hồi lúc
-       * Format: date-time
-       * @description Thời điểm dịch vụ hoạt động bình thường trở lại.
-       */
-      readonly resolved_at: string | null;
-      /**
-       * Mã HTTP lỗi
-       * @description Mã phản hồi HTTP gây lỗi (nếu có).
-       */
-      readonly status_code: number | null;
-      /**
-       * Chi tiết lỗi
-       * @description Mô tả nguyên nhân sự cố.
-       */
-      readonly error_message: string;
-      /**
-       * Thời lượng gián đoạn (giây)
-       * @description Khoảng thời gian dịch vụ bị gián đoạn.
-       */
-      readonly duration_seconds: number | null;
-      /**
-       * Thời điểm tạo
-       * Format: date-time
-       * @description Thời điểm bản ghi được tạo (tự động).
-       */
-      readonly created_at: string;
-      /**
-       * Thời điểm cập nhật
-       * Format: date-time
-       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
-       */
-      readonly updated_at: string;
-    };
-    /** @description Bật/tắt nhiều mục tiêu giám sát cùng lúc. */
-    MonitorTargetBulkUpdateValidateRequest: {
-      /** @description Id các bản ghi cần thao tác (tối đa 100). */
-      ids: string[];
-      /** @description Trạng thái bật giám sát mới (`true`/`false`). */
-      is_active: boolean;
-    };
-    /** @description Đầu vào tạo mục tiêu ping Uptime (`timeout <= 5s`, `interval >= 15 phút`). */
-    MonitorTargetCreateValidateRequest: {
-      /** @description Tên gợi nhớ dịch vụ. */
-      name: string;
-      /**
-       * Format: uri
-       * @description URL công khai cần giám sát.
-       */
-      url: string;
-      /**
-       * @description Phương thức HTTP (`GET` hoặc `HEAD`).
-       *
-       *     * `GET` - GET
-       *     * `HEAD` - HEAD
-       * @default GET
-       */
-      method: components["schemas"]["WorkspaceMonitorMethodEnum"];
-      /**
-       * @description Mã HTTP kỳ vọng (200 chấp nhận dải 200..399).
-       * @default 200
-       */
-      expected_status: number;
-      /**
-       * @description Giới hạn timeout mỗi lượt ping (1–5 giây).
-       * @default 4
-       */
-      timeout_seconds: number;
-      /**
-       * @description Chu kỳ kiểm tra tối thiểu 15 phút.
-       * @default 30
-       */
-      check_interval_minutes: number;
-      /**
-       * @description Bật/tắt ping định kỳ.
-       * @default true
-       */
-      is_active: boolean;
-    };
-    /** @description Kết quả kiểm tra tức thời một URL giám sát. */
-    MonitorTargetPingResponse: {
-      /**
-       * Format: uuid
-       * @description ID mục tiêu giám sát.
-       */
-      target_id: string;
-      /** @description Trạng thái sau lần ping (`HEALTHY`/`DOWN`). */
-      status: string;
-      /** @description HTTP status code trả về. */
-      status_code: number | null;
-      /** @description Độ trễ phản hồi (ms). */
-      latency_ms: number | null;
-      /**
-       * Format: date-time
-       * @description Thời điểm kiểm tra.
-       */
-      checked_at: string;
-      /** @description Thông báo lỗi (nếu có). */
-      error_message: string;
-      /**
-       * Format: uuid
-       * @description ID sự cố đang mở/mới đóng (nếu có).
-       */
-      incident_id: string | null;
-    };
-    /** @description Trạng thái & cấu hình mục tiêu giám sát Uptime. */
-    MonitorTargetResponse: {
-      /**
-       * Mã định danh
-       * Format: uuid
-       * @description Định danh UUID do hệ thống sinh, không đổi.
-       */
-      readonly id: string;
-      /**
-       * Chủ sở hữu
-       * Format: uuid
-       * @description Người sở hữu mục tiêu giám sát.
-       */
-      readonly owner_id: string;
-      /** @description Email chủ sở hữu. */
-      readonly owner_email: string;
-      /**
-       * Tên dịch vụ giám sát
-       * @description Tên gợi nhớ website/API.
-       */
-      readonly name: string;
-      /**
-       * URL kiểm tra
-       * Format: uri
-       * @description Đường dẫn công khai (bị chặn nếu trỏ mạng nội bộ/SSRF).
-       */
-      readonly url: string;
-      /**
-       * Phương thức
-       * @description Phương thức HTTP dùng khi ping.
-       *
-       *     * `GET` - GET
-       *     * `HEAD` - HEAD
-       */
-      readonly method: components["schemas"]["WorkspaceMonitorMethodEnum"];
-      /**
-       * Mã HTTP kỳ vọng
-       * @description Mã trạng thái HTTP coi là thành công (200..399 hoặc mã cụ thể).
-       */
-      readonly expected_status: number;
-      /**
-       * Timeout (giây)
-       * @description Giới hạn tối đa 5 giây cho mỗi lượt ping.
-       */
-      readonly timeout_seconds: number;
-      /**
-       * Chu kỳ kiểm tra (phút)
-       * @description Khoảng cách tối thiểu giữa các lần ping (tối thiểu 15 phút).
-       */
-      readonly check_interval_minutes: number;
-      /**
-       * Đang bật
-       * @description Tắt để tạm ngưng ping định kỳ.
-       */
-      readonly is_active: boolean;
-      /**
-       * Trạng thái gần nhất
-       * @description Kết quả ping mới nhất.
-       *
-       *     * `HEALTHY` - Ổn định
-       *     * `DEGRADED` - Chậm / Cảnh báo
-       *     * `DOWN` - Ngừng phản hồi
-       *     * `UNKNOWN` - Chưa kiểm tra
-       */
-      readonly last_status: components["schemas"]["WorkspaceMonitorStatusEnum"];
-      /**
-       * Mã HTTP gần nhất
-       * @description HTTP status code trả về ở lần ping gần nhất.
-       */
-      readonly last_status_code: number | null;
-      /**
-       * Độ trễ (ms)
-       * @description Thời gian phản hồi tính bằng mili-giây.
-       */
-      readonly last_latency_ms: number | null;
-      /**
-       * Kiểm tra lúc
-       * Format: date-time
-       * @description Thời điểm thực hiện lượt ping mới nhất.
-       */
-      readonly last_checked_at: string | null;
-      /**
-       * Số lỗi liên tiếp
-       * @description Số lượt ping thất bại liên tục.
-       */
-      readonly consecutive_failures: number;
-      /**
-       * Thời điểm tạo
-       * Format: date-time
-       * @description Thời điểm bản ghi được tạo (tự động).
-       */
-      readonly created_at: string;
-      /**
-       * Thời điểm cập nhật
-       * Format: date-time
-       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
-       */
-      readonly updated_at: string;
-    };
     /** @description Lần gửi + tóm tắt thông báo; đích email/Telegram/thiết bị được rút gọn. */
     NotificationDeliveryResponse: {
       /**
@@ -7781,7 +7365,7 @@ export interface components {
        *     * `EMAIL` - Email
        *     * `TELEGRAM` - Telegram
        */
-      readonly channel: components["schemas"]["NotificationDeliveryResponseChannelEnum"];
+      readonly channel: components["schemas"]["ChannelEnum"];
       /**
        * Đích
        * @description Id PushDevice, id TelegramChat hoặc email.
@@ -7826,14 +7410,6 @@ export interface components {
        */
       readonly created_at: string;
     };
-    /**
-     * @description * `IN_APP` - Trong ứng dụng
-     *     * `PUSH` - Trình duyệt
-     *     * `EMAIL` - Email
-     *     * `TELEGRAM` - Telegram
-     * @enum {string}
-     */
-    NotificationDeliveryResponseChannelEnum: "IN_APP" | "PUSH" | "EMAIL" | "TELEGRAM";
     /**
      * @description * `PENDING` - Chờ gửi
      *     * `SENT` - Đã gửi
@@ -8952,31 +8528,6 @@ export interface components {
         };
       };
     };
-    PaginatedAssistantConversationListResponseList: {
-      /** @description Luôn true với response thành công. */
-      success: boolean;
-      data: components["schemas"]["AssistantConversationListResponse"][];
-      meta: {
-        /** @description Id request (khớp header X-Request-ID). */
-        request_id: string;
-        /**
-         * Format: date-time
-         * @description Thời điểm phản hồi.
-         */
-        timestamp: string;
-        /** @description Thông tin phân trang. */
-        pagination: {
-          /** @description Trang hiện tại (bắt đầu từ 1). */
-          page: number;
-          /** @description Số phần tử mỗi trang. */
-          page_size: number;
-          /** @description Tổng số phần tử. */
-          total: number;
-          /** @description Tổng số trang. */
-          total_pages: number;
-        };
-      };
-    };
     PaginatedAttachmentDetailResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -9256,56 +8807,6 @@ export interface components {
       /** @description Luôn true với response thành công. */
       success: boolean;
       data: components["schemas"]["InvoiceResponse"][];
-      meta: {
-        /** @description Id request (khớp header X-Request-ID). */
-        request_id: string;
-        /**
-         * Format: date-time
-         * @description Thời điểm phản hồi.
-         */
-        timestamp: string;
-        /** @description Thông tin phân trang. */
-        pagination: {
-          /** @description Trang hiện tại (bắt đầu từ 1). */
-          page: number;
-          /** @description Số phần tử mỗi trang. */
-          page_size: number;
-          /** @description Tổng số phần tử. */
-          total: number;
-          /** @description Tổng số trang. */
-          total_pages: number;
-        };
-      };
-    };
-    PaginatedMonitorIncidentResponseList: {
-      /** @description Luôn true với response thành công. */
-      success: boolean;
-      data: components["schemas"]["MonitorIncidentResponse"][];
-      meta: {
-        /** @description Id request (khớp header X-Request-ID). */
-        request_id: string;
-        /**
-         * Format: date-time
-         * @description Thời điểm phản hồi.
-         */
-        timestamp: string;
-        /** @description Thông tin phân trang. */
-        pagination: {
-          /** @description Trang hiện tại (bắt đầu từ 1). */
-          page: number;
-          /** @description Số phần tử mỗi trang. */
-          page_size: number;
-          /** @description Tổng số phần tử. */
-          total: number;
-          /** @description Tổng số trang. */
-          total_pages: number;
-        };
-      };
-    };
-    PaginatedMonitorTargetResponseList: {
-      /** @description Luôn true với response thành công. */
-      success: boolean;
-      data: components["schemas"]["MonitorTargetResponse"][];
       meta: {
         /** @description Id request (khớp header X-Request-ID). */
         request_id: string;
@@ -9927,6 +9428,8 @@ export interface components {
       invoice_attachment_ids?: string[];
       /** @description Ghi chú chung. */
       notes?: string;
+      /** @description Kênh nhận thông báo hết bảo hành (`WEBSITE`, `TELEGRAM`, `EMAIL`). */
+      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
     };
     /** @description Đầu vào PATCH phiếu bảo hành/sửa chữa. */
     PatchedAssetWarrantyClaimUpdateValidateRequest: {
@@ -10009,6 +9512,38 @@ export interface components {
       part_warranty_end_date?: string | null;
       /** @description Danh sách ID tệp biên nhận riêng tư. */
       attachment_ids?: string[];
+    };
+    /** @description Đầu vào PUT/PATCH `/workspace/assistant/config` (chỉ Admin). */
+    PatchedAssistantConfigUpdateValidateRequest: {
+      /** @description Tên hiển thị của Chatbot AI (để trống dùng tên mặc định). */
+      assistant_name?: string;
+      /**
+       * Format: uuid
+       * @description ID ảnh công khai (upload qua /attachments) làm avatar Chatbot AI; null để gỡ.
+       */
+      assistant_avatar_id?: string | null;
+      /** @description Policy / chỉ dẫn trả lời bổ sung của Chatbot AI. */
+      assistant_system_prompt?: string;
+      /** @description Model AI ưu tiên (để trống = tự động fallback theo ENV). */
+      preferred_ai_model?: string;
+      /** @description Giới hạn token AI mỗi ngày cho mỗi người dùng (null = không đặt giới hạn). */
+      ai_daily_token_limit?: number | null;
+      /** @description Bật tương tác Chatbot AI qua Bot Telegram chung. */
+      telegram_ai_enabled?: boolean;
+      /** @description Trong nhóm Telegram bắt buộc `@bot` hoặc reply tin nhắn bot. */
+      telegram_group_require_mention?: boolean;
+      /**
+       * @description Chính sách đọc dữ liệu cá nhân trong nhóm Telegram.
+       *
+       *     * `DISABLED` - DISABLED
+       *     * `OWNER_ONLY` - OWNER_ONLY
+       *     * `ALL_MEMBERS` - ALL_MEMBERS
+       */
+      telegram_group_tool_policy?: components["schemas"]["WorkspaceGroupToolPolicyEnum"];
+      /** @description Ẩn số tiền nhạy cảm khi bot trả lời trong nhóm Telegram. */
+      telegram_group_hide_amounts?: boolean;
+      /** @description Gửi chi tiết riêng tư về DM chính chủ khi được hỏi trong nhóm. */
+      telegram_group_reply_in_dm?: boolean;
     };
     /** @description Cho phép chỉ đổi cha hoặc chỉ đổi tên, không bỏ qua kiểm tra tên rỗng. */
     PatchedAttachmentFolderUpdateValidateRequest: {
@@ -10268,31 +9803,6 @@ export interface components {
       /** @description Mật khẩu mới. */
       password?: string;
     };
-    /** @description Đầu vào PATCH mục tiêu Uptime. */
-    PatchedMonitorTargetUpdateValidateRequest: {
-      /** @description Tên gợi nhớ dịch vụ. */
-      name?: string;
-      /**
-       * Format: uri
-       * @description URL công khai cần giám sát.
-       */
-      url?: string;
-      /**
-       * @description Phương thức HTTP.
-       *
-       *     * `GET` - GET
-       *     * `HEAD` - HEAD
-       */
-      method?: components["schemas"]["WorkspaceMonitorMethodEnum"];
-      /** @description Mã HTTP kỳ vọng. */
-      expected_status?: number;
-      /** @description Timeout (1–5 giây). */
-      timeout_seconds?: number;
-      /** @description Chu kỳ kiểm tra (phút, >= 15). */
-      check_interval_minutes?: number;
-      /** @description Đang bật giám sát. */
-      is_active?: boolean;
-    };
     /** @description Input cập nhật truyện (các trường tùy chọn). */
     PatchedNovelUpdateValidateRequest: {
       /** @description Tiêu đề truyện. */
@@ -10433,6 +9943,8 @@ export interface components {
        * @description Tiền tệ mặc định.
        */
       default_currency_id?: string;
+      /** @description Mã màu HEX (#RRGGBB). */
+      color?: string;
       /** @description Đang dùng. */
       is_active?: boolean;
       /** @description Ghi chú. */
@@ -10503,6 +10015,8 @@ export interface components {
       anchor_day?: number | null;
       /** @description Danh sách nhãn. */
       tags?: string[];
+      /** @description Kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`). */
+      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
     };
     /** @description Dữ liệu cập nhật vai trò (mã vai trò không đổi được). */
     PatchedRoleUpdateValidateRequest: {
@@ -10614,6 +10128,8 @@ export interface components {
       manage_url?: string;
       /** @description Danh sách số ngày nhắc trước hạn. */
       reminder_days_before?: number[];
+      /** @description Kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`). */
+      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
       /** @description Đang theo dõi gia hạn. */
       is_active?: boolean;
       /** @description Ghi chú. */
@@ -10684,7 +10200,7 @@ export interface components {
       /** @description Danh sách thẻ. */
       tags?: string[];
     };
-    /** @description Đầu vào PUT/PATCH `/workspace/settings`. */
+    /** @description Đầu vào PUT/PATCH `/workspace/settings` (người dùng chỉ cấu hình Digest & Múi giờ cá nhân). */
     PatchedWorkspaceSettingUpdateValidateRequest: {
       /** @description Múi giờ chuẩn IANA (VD: Asia/Ho_Chi_Minh). */
       timezone?: string;
@@ -10692,34 +10208,14 @@ export interface components {
       daily_digest_enabled?: boolean;
       /** @description Khung giờ gửi Digest định dạng HH:MM. */
       digest_time_slots?: string[];
-      /** @description Các mục hiển thị trong Digest (`reminders`, `warranty`, `subscriptions`, `monitors`, `finance`). */
+      /** @description Các mục hiển thị trong Digest (`reminders`, `warranty`, `subscriptions`, `finance`). */
       digest_sections?: string[];
       /** @description Mốc ngày nhắc trước hạn bảo hành (VD: [30, 7, 1]). */
       warranty_alert_days?: number[];
       /** @description Mốc ngày nhắc mặc định cho dịch vụ định kỳ. */
       subscription_default_alert_days?: number[];
-      /** @description Model AI ưu tiên (để trống = dùng thứ tự mặc định của hệ thống). */
-      preferred_ai_model?: string;
-      /** @description Giới hạn token AI mỗi ngày (null = không đặt giới hạn). */
-      ai_daily_token_limit?: number | null;
-      /** @description Bật tương tác Trợ lý AI qua Bot Telegram. */
-      telegram_ai_enabled?: boolean;
-      /** @description Danh sách UUID của `system.TelegramChat` được phép gọi Trợ lý. */
+      /** @description Danh sách UUID của `system.TelegramChat` nhận bản tin/tương tác. */
       telegram_allowed_chat_ids?: string[];
-      /** @description Trong nhóm Telegram bắt buộc `@bot` hoặc reply tin nhắn bot. */
-      telegram_group_require_mention?: boolean;
-      /**
-       * @description Chính sách đọc dữ liệu cá nhân trong nhóm Telegram.
-       *
-       *     * `DISABLED` - Tắt trong nhóm
-       *     * `OWNER_ONLY` - Chỉ chủ sở hữu
-       *     * `ALL_MEMBERS` - Mọi thành viên nhóm
-       */
-      telegram_group_tool_policy?: components["schemas"]["WorkspaceGroupToolPolicyEnum"];
-      /** @description Ẩn số tiền nhạy cảm khi bot trả lời trong nhóm Telegram. */
-      telegram_group_hide_amounts?: boolean;
-      /** @description Gửi chi tiết riêng tư về DM chính chủ khi được hỏi trong nhóm. */
-      telegram_group_reply_in_dm?: boolean;
     };
     /** @description Thông tin quyền kèm mô tả công dụng. */
     PermissionListResponse: {
@@ -10790,6 +10286,11 @@ export interface components {
       readonly default_currency_id: string;
       /** @description Mã tiền tệ. */
       readonly default_currency_code: string;
+      /**
+       * Màu biểu đồ
+       * @description Mã màu HEX (#RRGGBB) hiển thị trên biểu đồ.
+       */
+      readonly color: string;
       /**
        * Đang dùng
        * @description Tắt để ẩn khỏi chọn mới.
@@ -10910,6 +10411,8 @@ export interface components {
        * @description Tiền tệ mặc định.
        */
       default_currency_id: string;
+      /** @description Mã màu HEX (#RRGGBB). */
+      color?: string;
       /**
        * @description Đang dùng.
        * @default true
@@ -11277,6 +10780,8 @@ export interface components {
       anchor_day?: number | null;
       /** @description Danh sách nhãn. */
       tags?: string[];
+      /** @description Kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`). Mặc định `['WEBSITE']`. */
+      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
     };
     /** @description Chi tiết/danh sách nhắc việc cá nhân. */
     ReminderResponse: {
@@ -11364,6 +10869,11 @@ export interface components {
        */
       readonly tags: unknown;
       /**
+       * Kênh nhận thông báo
+       * @description Danh sách kênh thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`).
+       */
+      readonly notification_channels: unknown;
+      /**
        * Thời điểm tạo
        * Format: date-time
        * @description Thời điểm bản ghi được tạo (tự động).
@@ -11446,6 +10956,8 @@ export interface components {
       month: number;
       /** @description Nền tảng (rỗng = chưa nhận diện). */
       platform: string;
+      /** @description Mã màu HEX (#RRGGBB) của nền tảng. */
+      color: string;
       /**
        * Format: decimal
        * @description VNĐ.
@@ -11488,6 +11000,8 @@ export interface components {
       platform_id: string | null;
       /** @description Tên nền tảng. */
       platform: string;
+      /** @description Mã màu HEX (#RRGGBB) của nền tảng. */
+      color: string;
       /** @description Khấu trừ. */
       tax_withheld: boolean;
       /**
@@ -12359,6 +11873,8 @@ export interface components {
       manage_url?: string;
       /** @description Số ngày nhắc trước hạn (mặc định [7, 3, 1]). */
       reminder_days_before?: number[];
+      /** @description Kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`). Mặc định `['WEBSITE']`. */
+      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
       /**
        * @description Đang theo dõi gia hạn.
        * @default true
@@ -12631,6 +12147,11 @@ export interface components {
        * @description Danh sách số ngày nhắc trước hạn (ví dụ [7, 3, 1]).
        */
       readonly reminder_days_before: unknown;
+      /**
+       * Kênh nhận thông báo
+       * @description Danh sách kênh thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`).
+       */
+      readonly notification_channels: unknown;
       /**
        * Đang theo dõi
        * @description Tắt để tạm ngưng thông báo gia hạn.
@@ -13434,13 +12955,6 @@ export interface components {
      */
     WorkspaceAssetWarrantyTypeEnum: "MANUFACTURER" | "STORE" | "EXTENDED" | "NONE";
     /**
-     * @description * `WEB` - Giao diện Web
-     *     * `TELEGRAM_DM` - Telegram Riêng
-     *     * `TELEGRAM_GROUP` - Telegram Nhóm
-     * @enum {string}
-     */
-    WorkspaceAssistantChannelEnum: "WEB" | "TELEGRAM_DM" | "TELEGRAM_GROUP";
-    /**
      * @description * `USER` - Người dùng
      *     * `ASSISTANT` - Trợ lý
      *     * `TOOL` - Kết quả Tool
@@ -13459,7 +12973,7 @@ export interface components {
      */
     WorkspaceBillingCycleEnum:
       "WEEKLY" | "MONTHLY" | "QUARTERLY" | "SEMI_ANNUAL" | "YEARLY" | "CUSTOM_DAYS";
-    /** @description Sự kiện hợp nhất từ 5 nguồn (dịch vụ, nhắc việc, bảo hành TB, phiếu sửa, sự cố monitor). */
+    /** @description Sự kiện hợp nhất từ 4 nguồn (dịch vụ, nhắc việc, bảo hành TB, phiếu sửa). */
     WorkspaceCalendarEventResponse: {
       /** @description Khóa định danh duy nhất sự kiện trên lịch. */
       id: string;
@@ -13528,16 +13042,8 @@ export interface components {
      * @enum {string}
      */
     WorkspaceClaimTypeEnum: "WARRANTY" | "PAID_REPAIR" | "MAINTENANCE";
-    /** @description Kết quả thực thi đường W1 (Monitor) và đường W4 (Alerts). */
+    /** @description Kết quả thực thi đường W4 (Alerts / Digest). */
     WorkspaceCronTickResponse: {
-      /** @description Số endpoint đã ping trong lượt W1. */
-      w1_checked: number;
-      /** @description Số endpoint đổi trạng thái HEALTHY <-> DOWN. */
-      w1_flipped: number;
-      /** @description Số monitor đồng bộ định kỳ 6h xuống DB. */
-      w1_flushed: number;
-      /** @description Đường W1 có mở kết nối DB hay không. */
-      w1_db_touched: boolean;
       /** @description Đường W4 có thực sự quét DB đến hạn hay không. */
       w4_ran: boolean;
       /** @description Đường W4 có chạm DB hay không. */
@@ -13568,7 +13074,7 @@ export interface components {
       /** @description Trạng thái hoàn thành. */
       is_completed: boolean;
     };
-    /** @description 4 chỉ số KPI tổng hợp & danh sách nhắc việc hôm nay. */
+    /** @description 3 chỉ số KPI tổng hợp & danh sách nhắc việc hôm nay. */
     WorkspaceDashboardSummaryResponse: {
       /**
        * Format: uuid
@@ -13620,36 +13126,23 @@ export interface components {
        * @description Tổng tiền dự kiến gia hạn trong 14 ngày tới.
        */
       upcoming_subscriptions_14d_vnd: string;
-      /** @description Tổng số mục tiêu giám sát Uptime. */
-      monitors_total: number;
-      /** @description Số mục tiêu đang ổn định (HEALTHY). */
-      monitors_healthy: number;
-      /** @description Số mục tiêu đang lỗi (DOWN). */
-      monitors_down: number;
       /** @description Tối đa 5 nhắc việc hôm nay. */
       today_reminders: components["schemas"]["WorkspaceDashboardReminderResponse"][];
     };
     /**
-     * @description * `DISABLED` - Tắt trong nhóm
-     *     * `OWNER_ONLY` - Chỉ chủ sở hữu
-     *     * `ALL_MEMBERS` - Mọi thành viên nhóm
+     * @description * `DISABLED` - DISABLED
+     *     * `OWNER_ONLY` - OWNER_ONLY
+     *     * `ALL_MEMBERS` - ALL_MEMBERS
      * @enum {string}
      */
     WorkspaceGroupToolPolicyEnum: "DISABLED" | "OWNER_ONLY" | "ALL_MEMBERS";
     /**
-     * @description * `GET` - GET
-     *     * `HEAD` - HEAD
+     * @description * `WEBSITE` - WEBSITE
+     *     * `TELEGRAM` - TELEGRAM
+     *     * `EMAIL` - EMAIL
      * @enum {string}
      */
-    WorkspaceMonitorMethodEnum: "GET" | "HEAD";
-    /**
-     * @description * `HEALTHY` - Ổn định
-     *     * `DEGRADED` - Chậm / Cảnh báo
-     *     * `DOWN` - Ngừng phản hồi
-     *     * `UNKNOWN` - Chưa kiểm tra
-     * @enum {string}
-     */
-    WorkspaceMonitorStatusEnum: "HEALTHY" | "DEGRADED" | "DOWN" | "UNKNOWN";
+    WorkspaceNotificationChannelEnum: "WEBSITE" | "TELEGRAM" | "EMAIL";
     /**
      * @description * `LOW` - Thấp
      *     * `MEDIUM` - Trung bình
@@ -13667,7 +13160,7 @@ export interface components {
      * @enum {string}
      */
     WorkspaceReminderRecurrenceEnum: "NONE" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
-    /** @description Cấu hình cá nhân kèm danh sách model AI khả dụng và thông tin Bot Telegram chung. */
+    /** @description Cấu hình cá nhân: múi giờ, digest, mốc nhắc mặc định và chat Telegram đã liên kết. */
     WorkspaceSettingResponse: {
       /**
        * Mã định danh
@@ -13714,56 +13207,15 @@ export interface components {
        */
       readonly subscription_default_alert_days: unknown;
       /**
-       * Model AI ưu tiên
-       * @description Để trống để dùng thứ tự ưu tiên hệ thống.
-       */
-      readonly preferred_ai_model: string;
-      /**
-       * Giới hạn token AI mỗi ngày
-       * @description Để trống nếu không đặt giới hạn ngày.
-       */
-      readonly ai_daily_token_limit: number | null;
-      /**
-       * Bật trợ lý AI trên Telegram
-       * @description Cho phép hỏi đáp & lệnh Slash qua Bot Telegram chung.
-       */
-      readonly telegram_ai_enabled: boolean;
-      /**
        * Telegram User ID chính chủ
        * @description Tự động gắn khi nhắn /start <code> hoặc /verify_owner từ DM.
        */
       readonly telegram_owner_user_id: number | null;
       /**
        * Danh sách Chat ID được phép
-       * @description Danh sách UUID của system.TelegramChat được bật tương tác AI.
+       * @description Danh sách UUID của system.TelegramChat được bật nhận tin/tương tác.
        */
       readonly telegram_allowed_chat_ids: unknown;
-      /**
-       * Nhóm phải @tag hoặc reply bot
-       * @description Tránh bot trả lời mọi tin nhắn thông thường trong nhóm.
-       */
-      readonly telegram_group_require_mention: boolean;
-      /**
-       * Chính sách dữ liệu cá nhân trong nhóm
-       * @description Giới hạn ai có thể kích hoạt tool đọc dữ liệu cá nhân trong nhóm.
-       *
-       *     * `DISABLED` - Tắt trong nhóm
-       *     * `OWNER_ONLY` - Chỉ chủ sở hữu
-       *     * `ALL_MEMBERS` - Mọi thành viên nhóm
-       */
-      readonly telegram_group_tool_policy: components["schemas"]["WorkspaceGroupToolPolicyEnum"];
-      /**
-       * Ẩn số tiền trong nhóm
-       * @description Che giá trị tiền tệ nhạy cảm khi bot trả lời ở nhóm công khai.
-       */
-      readonly telegram_group_hide_amounts: boolean;
-      /**
-       * Gửi chi tiết riêng tư vào DM
-       * @description Chỉ gửi chi tiết riêng tư về DM của chính chủ khi được hỏi trong nhóm.
-       */
-      readonly telegram_group_reply_in_dm: boolean;
-      /** @description Danh sách model AI khả dụng do hệ thống cấu hình. */
-      readonly available_ai_models: string[];
       /** @description Các mục dữ liệu hỗ trợ hiển thị trong Digest. */
       readonly available_digest_sections: string[];
       /** @description Bot Telegram hệ thống đã cấu hình token hay chưa. */
@@ -13785,7 +13237,7 @@ export interface components {
        */
       readonly updated_at: string;
     };
-    /** @description Đầu vào PUT/PATCH `/workspace/settings`. */
+    /** @description Đầu vào PUT/PATCH `/workspace/settings` (người dùng chỉ cấu hình Digest & Múi giờ cá nhân). */
     WorkspaceSettingUpdateValidateRequest: {
       /** @description Múi giờ chuẩn IANA (VD: Asia/Ho_Chi_Minh). */
       timezone?: string;
@@ -13793,34 +13245,14 @@ export interface components {
       daily_digest_enabled?: boolean;
       /** @description Khung giờ gửi Digest định dạng HH:MM. */
       digest_time_slots?: string[];
-      /** @description Các mục hiển thị trong Digest (`reminders`, `warranty`, `subscriptions`, `monitors`, `finance`). */
+      /** @description Các mục hiển thị trong Digest (`reminders`, `warranty`, `subscriptions`, `finance`). */
       digest_sections?: string[];
       /** @description Mốc ngày nhắc trước hạn bảo hành (VD: [30, 7, 1]). */
       warranty_alert_days?: number[];
       /** @description Mốc ngày nhắc mặc định cho dịch vụ định kỳ. */
       subscription_default_alert_days?: number[];
-      /** @description Model AI ưu tiên (để trống = dùng thứ tự mặc định của hệ thống). */
-      preferred_ai_model?: string;
-      /** @description Giới hạn token AI mỗi ngày (null = không đặt giới hạn). */
-      ai_daily_token_limit?: number | null;
-      /** @description Bật tương tác Trợ lý AI qua Bot Telegram. */
-      telegram_ai_enabled?: boolean;
-      /** @description Danh sách UUID của `system.TelegramChat` được phép gọi Trợ lý. */
+      /** @description Danh sách UUID của `system.TelegramChat` nhận bản tin/tương tác. */
       telegram_allowed_chat_ids?: string[];
-      /** @description Trong nhóm Telegram bắt buộc `@bot` hoặc reply tin nhắn bot. */
-      telegram_group_require_mention?: boolean;
-      /**
-       * @description Chính sách đọc dữ liệu cá nhân trong nhóm Telegram.
-       *
-       *     * `DISABLED` - Tắt trong nhóm
-       *     * `OWNER_ONLY` - Chỉ chủ sở hữu
-       *     * `ALL_MEMBERS` - Mọi thành viên nhóm
-       */
-      telegram_group_tool_policy?: components["schemas"]["WorkspaceGroupToolPolicyEnum"];
-      /** @description Ẩn số tiền nhạy cảm khi bot trả lời trong nhóm Telegram. */
-      telegram_group_hide_amounts?: boolean;
-      /** @description Gửi chi tiết riêng tư về DM chính chủ khi được hỏi trong nhóm. */
-      telegram_group_reply_in_dm?: boolean;
     };
     /**
      * @description * `DOMAIN` - Tên miền
@@ -20950,6 +20382,15 @@ export interface operations {
   system_settings_list: {
     parameters: {
       query?: {
+        /** @description Nhóm cấu hình (vd: auth, assistant); nhiều giá trị. */
+        category?: string[];
+        /**
+         * @description Công khai ra public-settings; nhiều giá trị.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_public?: ("false" | "true")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
         /** @description A page number within the paginated result set. */
@@ -21106,6 +20547,15 @@ export interface operations {
   system_settings_history_list: {
     parameters: {
       query?: {
+        /** @description Nhóm cấu hình (vd: auth, assistant); nhiều giá trị. */
+        category?: string[];
+        /**
+         * @description Công khai ra public-settings; nhiều giá trị.
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_public?: ("false" | "true")[];
         /** @description Which field to use when ordering the results. */
         ordering?: string;
         /** @description A page number within the paginated result set. */
@@ -24138,6 +23588,38 @@ export interface operations {
       };
     };
   };
+  workspace_assistant_bot_profile_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssistantBotProfileResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   workspace_assistant_chat_create: {
     parameters: {
       query?: never;
@@ -24174,28 +23656,9 @@ export interface operations {
       };
     };
   };
-  workspace_assistant_conversations_list: {
+  workspace_assistant_config_retrieve: {
     parameters: {
-      query?: {
-        /**
-         * @description Kênh tương tác (WEB, TELEGRAM_DM, TELEGRAM_GROUP).
-         *
-         *     * `WEB` - Giao diện Web
-         *     * `TELEGRAM_DM` - Telegram Riêng
-         *     * `TELEGRAM_GROUP` - Telegram Nhóm
-         */
-        channel?: ("TELEGRAM_DM" | "TELEGRAM_GROUP" | "WEB")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
-        owner?: string[];
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description A search term. */
-        search?: string;
-      };
+      query?: never;
       header?: never;
       path?: never;
       cookie?: never;
@@ -24207,29 +23670,10 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["PaginatedAssistantConversationListResponseList"];
-        };
-      };
-    };
-  };
-  workspace_assistant_conversations_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
           "application/json": {
             /** @description Luôn true với response thành công. */
             success: boolean;
-            data: components["schemas"]["AssistantConversationDetailResponse"];
+            data: components["schemas"]["AssistantConfigResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;
@@ -24244,104 +23688,16 @@ export interface operations {
       };
     };
   };
-  workspace_assistant_conversations_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["AssistantConversationDetailResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_assistant_conversations_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  workspace_assistant_conversations_messages_list: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["AssistantMessageResponse"][];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_assistant_conversations_bulk_delete_create: {
+  workspace_assistant_config_update: {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    requestBody: {
+    requestBody?: {
       content: {
-        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+        "application/json": components["schemas"]["AssistantConfigUpdateValidateRequest"];
       };
     };
     responses: {
@@ -24353,7 +23709,43 @@ export interface operations {
           "application/json": {
             /** @description Luôn true với response thành công. */
             success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
+            data: components["schemas"]["AssistantConfigResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assistant_config_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedAssistantConfigUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssistantConfigResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;
@@ -24386,6 +23778,75 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["TelegramAsyncProcessResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assistant_thread_retrieve: {
+    parameters: {
+      query?: {
+        /** @description Trang tin nhắn cũ (mặc định 1). */
+        page?: number;
+        /** @description Số tin mỗi trang (tối đa 100, mặc định 50). */
+        page_size?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssistantThreadResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assistant_thread_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssistantThreadClearResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;
@@ -24526,511 +23987,6 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["WorkspaceDashboardSummaryResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_monitor_incidents_list: {
-    parameters: {
-      query?: {
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
-        owner?: string[];
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /**
-         * @description Đã phục hồi (`true` = đã có resolved_at, `false` = chưa phục hồi).
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        resolved?: ("false" | "true")[];
-        /** @description A search term. */
-        search?: string;
-        /** @description Mã HTTP lỗi ghi nhận. */
-        status_code?: number;
-        /** @description ID mục tiêu giám sát. */
-        target?: string[];
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedMonitorIncidentResponseList"];
-        };
-      };
-    };
-  };
-  workspace_monitor_incidents_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["MonitorIncidentResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_monitor_incidents_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["MonitorIncidentResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_monitor_incidents_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  workspace_monitor_incidents_bulk_delete_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_monitor_targets_list: {
-    parameters: {
-      query?: {
-        /**
-         * @description Đang bật giám sát (`true`/`false`).
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_active?: ("false" | "true")[];
-        /**
-         * @description Trạng thái kiểm tra gần nhất (HEALTHY, DEGRADED, DOWN, UNKNOWN).
-         *
-         *     * `HEALTHY` - Ổn định
-         *     * `DEGRADED` - Chậm / Cảnh báo
-         *     * `DOWN` - Ngừng phản hồi
-         *     * `UNKNOWN` - Chưa kiểm tra
-         */
-        last_status?: ("DEGRADED" | "DOWN" | "HEALTHY" | "UNKNOWN")[];
-        /**
-         * @description Phương thức HTTP (`GET`, `HEAD`).
-         *
-         *     * `GET` - GET
-         *     * `HEAD` - HEAD
-         */
-        method?: ("GET" | "HEAD")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
-        owner?: string[];
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedMonitorTargetResponseList"];
-        };
-      };
-    };
-  };
-  workspace_monitor_targets_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["MonitorTargetCreateValidateRequest"];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["MonitorTargetResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_monitor_targets_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["MonitorTargetResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_monitor_targets_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  workspace_monitor_targets_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["PatchedMonitorTargetUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["MonitorTargetResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_monitor_targets_history_list: {
-    parameters: {
-      query?: {
-        /**
-         * @description Đang bật giám sát (`true`/`false`).
-         *
-         *     * `true` - true
-         *     * `false` - false
-         */
-        is_active?: ("false" | "true")[];
-        /**
-         * @description Trạng thái kiểm tra gần nhất (HEALTHY, DEGRADED, DOWN, UNKNOWN).
-         *
-         *     * `HEALTHY` - Ổn định
-         *     * `DEGRADED` - Chậm / Cảnh báo
-         *     * `DOWN` - Ngừng phản hồi
-         *     * `UNKNOWN` - Chưa kiểm tra
-         */
-        last_status?: ("DEGRADED" | "DOWN" | "HEALTHY" | "UNKNOWN")[];
-        /**
-         * @description Phương thức HTTP (`GET`, `HEAD`).
-         *
-         *     * `GET` - GET
-         *     * `HEAD` - HEAD
-         */
-        method?: ("GET" | "HEAD")[];
-        /** @description Which field to use when ordering the results. */
-        ordering?: string;
-        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
-        owner?: string[];
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description A search term. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
-        };
-      };
-    };
-  };
-  workspace_monitor_targets_ping_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["MonitorTargetPingResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_monitor_targets_bulk_delete_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_monitor_targets_bulk_update_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["MonitorTargetBulkUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["CoreBulkResultResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;

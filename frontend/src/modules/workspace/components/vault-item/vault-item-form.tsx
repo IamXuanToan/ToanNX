@@ -107,14 +107,16 @@ export function VaultItemForm({
         </div>
       </FormSection>
 
-      {disabled ? null : (
-        <FormActions>
-          <Button asChild type="button" variant="outline">
-            <Link href={WORKSPACE_ROUTES.vault}>{tCommon("cancel")}</Link>
-          </Button>
+      <FormActions>
+        <Button asChild type="button" variant="outline">
+          <Link href={WORKSPACE_ROUTES.vault}>
+            {disabled ? tCommon("back") : tCommon("cancel")}
+          </Link>
+        </Button>
+        {disabled ? null : (
           <FormSubmitButton isSubmitting={state.isSubmitting}>{tCommon("save")}</FormSubmitButton>
-        </FormActions>
-      )}
+        )}
+      </FormActions>
     </Form>
   );
 }

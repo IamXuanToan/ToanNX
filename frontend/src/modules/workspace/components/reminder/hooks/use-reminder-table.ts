@@ -2,6 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useBulkActions } from "@/shares/hooks/use-bulk-actions";
+import { useResourceMutation } from "@/shares/hooks/use-resource-mutation";
 import { useTableState } from "@/shares/hooks/use-table-state";
 import { withEditMode } from "@/shares/lib/edit-mode";
 
@@ -30,6 +31,10 @@ export function useReminderTable() {
     owner: ownerFilter.canFilterOwner ? table.extraFilters.owner : undefined,
   });
   const remove = useDeleteReminder();
+  const toggleCompleted = useResourceMutation<{ id: string; isCompleted: boolean }, Reminder>({
+    mutationFn: ({ id, isCompleted }) => reminderService.update(id, { isCompleted }),
+    invalidate: [workspaceKeys.all],
+  });
   const bulk = useBulkActions<Reminder>({
     service: reminderService,
     invalidate: [workspaceKeys.all],
@@ -39,10 +44,8 @@ export function useReminderTable() {
     table,
     query,
     ...ownerFilter,
-    toggleCompleted: async (item: Reminder, isCompleted: boolean) => {
-      await reminderService.update(item.id, { isCompleted });
-      await query.refetch();
-    },
+    toggleCompleted: (item: Reminder, isCompleted: boolean) =>
+      toggleCompleted.mutate({ id: item.id, isCompleted }),
     bulkSetCompleted: (rows: Reminder[], isCompleted: boolean) =>
       bulk.bulkUpdate(rows, { isCompleted }),
     view: (item: Reminder) => router.push(WORKSPACE_ROUTES.reminderDetail(item.id)),

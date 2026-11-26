@@ -32,5 +32,5 @@ class WorkspaceCronDispatchDueView(CoreApiView):
     def post(self, request: Request) -> CoreResponse:
         """Thực thi W4 kiểm tra & gửi thông báo tới hạn kèm chống gửi trùng."""
         self.cron_service.authorize_request(request.headers, request.body, request.path)
-        result = self.cron_service.run_tick(run_w1=False, run_w4=True, force_w4=True)
+        result = self.cron_service.run_tick(run_w4=True, force_w4=True)
         return CoreResponse(WorkspaceCronTickResponseSerializer(result).data)

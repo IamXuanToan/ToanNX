@@ -8,6 +8,11 @@ from django.db.models import Q
 
 from app.core.models.core_model import CoreModel
 from app.core.tracking.journal_tracker import JournalTracker
+from app.workspace.constants.workspace_defaults import DEFAULT_WORKSPACE_NOTIFICATION_CHANNELS
+
+
+def _default_notification_channels() -> list[str]:
+    return list(DEFAULT_WORKSPACE_NOTIFICATION_CHANNELS)
 
 
 class Asset(JournalTracker, CoreModel):
@@ -26,6 +31,7 @@ class Asset(JournalTracker, CoreModel):
         "purchase_store",
         "warranty_type",
         "warranty_end_date",
+        "notification_channels",
     )
 
     class Category(models.TextChoices):
@@ -281,6 +287,13 @@ class Asset(JournalTracker, CoreModel):
         verbose_name="Ghi chú",
         help_text="Ghi chú bổ sung về thiết bị.",
         db_comment="Ghi chú chung",
+    )
+    notification_channels = models.JSONField(
+        default=_default_notification_channels,
+        blank=True,
+        verbose_name="Kênh nhận thông báo",
+        help_text="Danh sách kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`).",
+        db_comment="Kênh nhận thông báo",
     )
 
     class Meta:

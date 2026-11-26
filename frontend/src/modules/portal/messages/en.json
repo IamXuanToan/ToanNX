@@ -8,22 +8,18 @@
       "media": "Media"
     },
     "dashboard": "Dashboard",
-    "assistant": "AI Assistant",
     "reminders": "Reminders",
     "subscriptions": "Subscriptions",
     "subscriptionPayments": "Renewal History",
     "assets": "Assets",
     "warrantyClaims": "Warranty Claims",
     "vault": "Secret Vault",
-    "monitors": "Uptime Monitors",
-    "monitorIncidents": "Uptime Incidents",
-    "workspaceSettings": "Assistant Settings",
+    "workspaceSettings": "Digest & Alerts",
     "mobileMenu": "More",
     "financeDashboard": "Finance Dashboard",
     "financeIncomes": "Incomes",
     "financeInvoices": "Invoices",
     "financePlatforms": "Platforms",
-    "financeRules": "Classification Rules",
     "financeReports": "Reports",
     "financeSepay": "SePay Connection",
     "pages": "My Pages",
@@ -33,12 +29,19 @@
     "profile": "Profile",
     "goToAdmin": "Admin Console",
     "logout": "Log Out",
-    "donations": "Donations & Support"
+    "donations": "Support Receipts"
   },
   "dashboard": {
     "title": "Creator Studio",
     "welcome": "Welcome back, {name}!",
-    "subtitle": "Manage your custom pages, short links and track engagement.",
+    "subtitle": "Track workspace tasks, finance cashflow, VietQR donations, pages and links in one unified dashboard.",
+    "unified": {
+      "title": "Finance, Donations & Analytics",
+      "subtitle": "Combined income by platform, currency share, gift breakdown and short-link engagement.",
+      "viewIncomes": "Incomes",
+      "viewDonations": "Support Receipts",
+      "viewReports": "Detailed Reports"
+    },
     "stats": {
       "totalPages": "Total Pages",
       "totalPagesHint": "Bio, Affiliate, Donation",
@@ -93,10 +96,7 @@
       "remindersToday": "Reminders Today",
       "remindersOverdue": "{count} overdue",
       "expiringWarranty": "Expiring Warranties",
-      "expiringWarrantyHint": "Within next 30 days",
-      "monitorsHealth": "Uptime Monitors",
-      "monitorsDownHint": "{count} endpoints down",
-      "askAssistant": "Ask AI Assistant"
+      "expiringWarrantyHint": "Within next 30 days"
     }
   },
   "pages": {

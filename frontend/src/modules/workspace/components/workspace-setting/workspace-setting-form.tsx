@@ -1,43 +1,46 @@
 "use client";
 
-import { ExternalLink, Plus, X } from "lucide-react";
+import { Bot, ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
 import { Link } from "@/i18n/navigation";
+import { PORTAL_ROUTES } from "@/modules/portal/constants/routes";
+import { ChipListInput } from "@/shares/components/common/chip-list-input";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
 import { FormField } from "@/shares/components/common/form-field";
+import { FormLayout } from "@/shares/components/common/form-layout";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
-import { NumberInput } from "@/shares/components/common/number-input";
 import { SelectField } from "@/shares/components/common/select-field";
+import { StatusBadge } from "@/shares/components/common/status-badge";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
-import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Checkbox } from "@/shares/components/ui/checkbox";
-import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { Switch } from "@/shares/components/ui/switch";
 import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
-import { TELEGRAM_GROUP_TOOL_POLICIES, WORKSPACE_TIMEZONE_OPTIONS } from "../../constants/defaults";
+import { WORKSPACE_TIMEZONE_SELECT_OPTIONS } from "../../constants/defaults";
 import { useWorkspaceSettingForm } from "./hooks/use-workspace-setting-form";
 
-const AUTO_MODEL_VALUE = "__AUTO__";
-
 /**
- * Form Cài đặt Workspace: Múi giờ, Digest theo khung giờ, AI model & chính sách nhóm Telegram.
+ * Form Cài đặt cá nhân: Múi giờ mặc định +7, Daily Digest, mốc ngày cảnh báo dạng chip
+ * và nơi nhận Telegram cá nhân theo bố cục hai cột chuẩn.
  *
  * @param props - Cờ cho phép lưu thay đổi (`workspace.workspace_setting.update`).
- * @returns Form Cài đặt Workspace.
+ * @returns Form Cài đặt cá nhân.
  */
 export function WorkspaceSettingForm({ canUpdate }: { canUpdate: boolean }) {
   const t = useTranslations("workspace.settings");
+  const tWorkspaceCommon = useTranslations("workspace.common");
+  const tActions = useTranslations("common.actions");
   const state = useWorkspaceSettingForm();
   const { settingQuery, form } = state;
 
-  if (settingQuery.isPending) return <Skeleton className="h-96 w-full rounded-xl" />;
+  if (settingQuery.isPending) return <Skeleton className="h-80 w-full rounded-xl" />;
   if (settingQuery.isError) {
     return <QueryErrorState error={settingQuery.error} onRetry={() => settingQuery.refetch()} />;
   }
@@ -47,7 +50,73 @@ export function WorkspaceSettingForm({ canUpdate }: { canUpdate: boolean }) {
   const rootError = form.formState.errors.root?.message;
   const safeBotUrl = toSafeHttpUrl(setting.telegramBotUrl, { allowRelative: false });
   const availableSections = setting.availableDigestSections ?? [];
-  const availableModels = setting.availableAiModels ?? [];
+
+  const telegramAside = (
+    <FormSection title={t("sections.telegram")}>
+      <div className="space-y-4">
+        <div className="bg-muted/30 space-y-3 rounded-xl border p-3.5 text-sm">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-muted-foreground inline-flex items-center gap-1.5 font-medium">
+              <Bot className="text-primary size-4 shrink-0" aria-hidden />
+              <span>
+                {setting.telegramBotConfigured
+                  ? t("telegramBotLinked", { username: setting.telegramBotUsername })
+                  : t("telegramBotMissing")}
+              </span>
+            </span>
+            <StatusBadge tone={setting.telegramBotConfigured ? "success" : "neutral"}>
+              {setting.telegramBotConfigured
+                ? tWorkspaceCommon("active")
+                : tWorkspaceCommon("inactive")}
+            </StatusBadge>
+          </div>
+          {safeBotUrl ? (
+            <Button asChild variant="outline" size="sm" className="w-full">
+              <Link href={safeBotUrl as never} target="_blank" rel="noopener noreferrer">
+                <ExternalLink />
+                <span>{t("openTelegramBot")}</span>
+              </Link>
+            </Button>
+          ) : null}
+        </div>
+
+        <FormField
+          control={form.control}
+          name="telegramAllowedChatIds"
+          label={t("fields.telegramAllowedChatIds")}
+          description={t("telegramHint")}
+        >
+          {() =>
+            state.telegramChats.length === 0 ? (
+              <p className="text-muted-foreground rounded-xl border border-dashed p-3 text-xs">
+                {t("noTelegramChats")}
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {state.telegramChats.map((chat) => (
+                  <div
+                    key={chat.id}
+                    className="hover:bg-muted/40 flex items-center gap-2.5 rounded-xl border px-3 py-2.5 transition-colors"
+                  >
+                    <Checkbox
+                      id={`tg-chat-${chat.id}`}
+                      checked={state.telegramAllowedChatIds.includes(chat.id)}
+                      onCheckedChange={(checked) => state.toggleChatId(chat.id, Boolean(checked))}
+                      disabled={locked}
+                    />
+                    <Label htmlFor={`tg-chat-${chat.id}`} className="min-w-0 flex-1 cursor-pointer">
+                      <span className="truncate">{chat.title}</span>
+                      <span className="text-muted-foreground ml-auto text-xs">{chat.chatType}</span>
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            )
+          }
+        </FormField>
+      </div>
+    </FormSection>
+  );
 
   return (
     <Form onSubmit={state.onSubmit} className="space-y-6">
@@ -57,298 +126,175 @@ export function WorkspaceSettingForm({ canUpdate }: { canUpdate: boolean }) {
         </p>
       ) : null}
 
-      <FormSection title={t("sections.digest")}>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField control={form.control} name="timezone" label={t("fields.timezone")}>
-            {(field) => (
-              <SelectField
-                value={field.value}
-                onValueChange={field.onChange}
+      <FormLayout aside={telegramAside}>
+        <FormSection title={t("sections.digest")}>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 [&>*]:min-w-0">
+            <FormField
+              control={form.control}
+              name="timezone"
+              label={t("fields.timezone")}
+              description={t("timezoneDesc")}
+            >
+              {(field) => (
+                <SelectField
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={locked}
+                  options={WORKSPACE_TIMEZONE_SELECT_OPTIONS.map((tz) => ({
+                    value: tz.value,
+                    label: tz.label,
+                  }))}
+                />
+              )}
+            </FormField>
+
+            <div className="bg-muted/20 flex items-start justify-between gap-3 rounded-xl border p-3.5">
+              <div className="space-y-1">
+                <Label htmlFor="ws-daily-digest" className="cursor-pointer font-medium">
+                  {t("fields.dailyDigestEnabled")}
+                </Label>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  {t("dailyDigestDesc")}
+                </p>
+              </div>
+              <Controller
+                control={form.control}
+                name="dailyDigestEnabled"
+                render={({ field }) => (
+                  <Switch
+                    id="ws-daily-digest"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                    disabled={locked}
+                  />
+                )}
+              />
+            </div>
+          </div>
+
+          <FormField
+            control={form.control}
+            name="digestTimeSlots"
+            label={t("fields.digestTimeSlots")}
+          >
+            {() => (
+              <ChipListInput
+                values={state.digestTimeSlots}
+                onChange={(next) =>
+                  form.setValue("digestTimeSlots", next, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+                parseItem={state.parseTimeSlot}
+                sortItems={state.sortTimeAsc}
+                placeholder={t("addSlotPlaceholder")}
+                addLabel={t("addSlot")}
+                tooltip={t("addSlotTooltip")}
+                emptyText={t("emptySlots")}
                 disabled={locked}
-                options={WORKSPACE_TIMEZONE_OPTIONS.map((tz) => ({ value: tz, label: tz }))}
+                maxLength={5}
               />
             )}
           </FormField>
 
-          <div className="flex items-center gap-2 pt-6">
-            <Controller
-              control={form.control}
-              name="dailyDigestEnabled"
-              render={({ field }) => (
-                <Checkbox
-                  id="ws-daily-digest"
-                  checked={field.value}
-                  onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                  disabled={locked}
-                />
-              )}
-            />
-            <Label htmlFor="ws-daily-digest">{t("fields.dailyDigestEnabled")}</Label>
-          </div>
-
-          <div className="sm:col-span-2">
-            <FormField
-              control={form.control}
-              name="digestTimeSlots"
-              label={t("fields.digestTimeSlots")}
-            >
-              {() => (
-                <div className="space-y-2">
-                  <div className="flex flex-wrap gap-2">
-                    {state.digestTimeSlots.map((slot) => (
-                      <Badge key={slot} variant="secondary" className="gap-1.5 px-2.5 py-1">
-                        <span className="tabular-nums">{slot}</span>
-                        {!locked ? (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="size-4 p-0"
-                            onClick={() => state.removeSlot(slot)}
-                            aria-label={slot}
-                          >
-                            <X className="size-3" />
-                          </Button>
-                        ) : null}
-                      </Badge>
-                    ))}
+          <FormField
+            control={form.control}
+            name="digestSections"
+            label={t("fields.digestSections")}
+          >
+            {() => (
+              <div className="grid gap-2.5 sm:grid-cols-2">
+                {availableSections.map((sec) => (
+                  <div
+                    key={sec}
+                    className="hover:bg-muted/40 flex items-center gap-2.5 rounded-xl border px-3 py-2.5 transition-colors"
+                  >
+                    <Checkbox
+                      id={`digest-sec-${sec}`}
+                      checked={state.digestSections.includes(sec)}
+                      onCheckedChange={(checked) => state.toggleSection(sec, Boolean(checked))}
+                      disabled={locked}
+                    />
+                    <Label htmlFor={`digest-sec-${sec}`} className="cursor-pointer">
+                      {t(`digestSectionLabels.${sec}` as never)}
+                    </Label>
                   </div>
-                  {!locked ? (
-                    <div className="flex gap-2">
-                      <Input
-                        value={state.slotInput}
-                        onChange={(e) => state.setSlotInput(e.target.value)}
-                        placeholder={t("addSlotPlaceholder")}
-                        className="h-10 max-w-36"
-                      />
-                      <Button type="button" variant="outline" onClick={state.addSlot}>
-                        <Plus />
-                        {t("addSlot")}
-                      </Button>
-                    </div>
-                  ) : null}
-                </div>
-              )}
-            </FormField>
-          </div>
+                ))}
+              </div>
+            )}
+          </FormField>
+        </FormSection>
 
-          <div className="sm:col-span-2">
+        <FormSection title={t("sections.alerts")}>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 [&>*]:min-w-0">
             <FormField
               control={form.control}
-              name="digestSections"
-              label={t("fields.digestSections")}
+              name="warrantyAlertDays"
+              label={t("fields.warrantyAlertDays")}
             >
               {() => (
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {availableSections.map((sec) => (
-                    <div key={sec} className="flex items-center gap-2">
-                      <Checkbox
-                        id={`digest-sec-${sec}`}
-                        checked={state.digestSections.includes(sec)}
-                        onCheckedChange={(checked) => state.toggleSection(sec, Boolean(checked))}
-                        disabled={locked}
-                      />
-                      <Label htmlFor={`digest-sec-${sec}`}>
-                        {t(`digestSectionLabels.${sec}` as never)}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
+                <ChipListInput
+                  values={state.warrantyAlertDays}
+                  onChange={(next) =>
+                    form.setValue("warrantyAlertDays", next, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                  parseItem={state.parseAlertDay}
+                  sortItems={state.sortDaysDesc}
+                  formatItem={(days) => t("alertDaysUnit", { days })}
+                  placeholder={t("addAlertDayPlaceholder")}
+                  addLabel={t("addAlertDay")}
+                  tooltip={t("alertDaysTooltip")}
+                  emptyText={t("emptyAlertDays")}
+                  disabled={locked}
+                  maxLength={3}
+                />
+              )}
+            </FormField>
+
+            <FormField
+              control={form.control}
+              name="subscriptionDefaultAlertDays"
+              label={t("fields.subscriptionDefaultAlertDays")}
+            >
+              {() => (
+                <ChipListInput
+                  values={state.subscriptionDefaultAlertDays}
+                  onChange={(next) =>
+                    form.setValue("subscriptionDefaultAlertDays", next, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                  parseItem={state.parseAlertDay}
+                  sortItems={state.sortDaysDesc}
+                  formatItem={(days) => t("alertDaysUnit", { days })}
+                  placeholder={t("addAlertDayPlaceholder")}
+                  addLabel={t("addAlertDay")}
+                  tooltip={t("alertDaysTooltip")}
+                  emptyText={t("emptyAlertDays")}
+                  disabled={locked}
+                  maxLength={3}
+                />
               )}
             </FormField>
           </div>
+        </FormSection>
+      </FormLayout>
 
-          <FormField
-            control={form.control}
-            name="warrantyAlertDaysText"
-            label={t("fields.warrantyAlertDays")}
-          >
-            {(field) => <Input {...field} disabled={locked} className="h-10" />}
-          </FormField>
-          <FormField
-            control={form.control}
-            name="subscriptionDefaultAlertDaysText"
-            label={t("fields.subscriptionDefaultAlertDays")}
-          >
-            {(field) => <Input {...field} disabled={locked} className="h-10" />}
-          </FormField>
-        </div>
-      </FormSection>
-
-      <FormSection title={t("sections.ai")}>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField
-            control={form.control}
-            name="preferredAiModel"
-            label={t("fields.preferredAiModel")}
-          >
-            {(field) => (
-              <SelectField
-                id={field.id}
-                value={field.value || AUTO_MODEL_VALUE}
-                onValueChange={(v) => field.onChange(v === AUTO_MODEL_VALUE ? "" : v)}
-                disabled={locked}
-                invalid={field["aria-invalid"]}
-                options={[
-                  { value: AUTO_MODEL_VALUE, label: t("modelAutoDefault") },
-                  ...availableModels.map((model) => ({ value: model, label: model })),
-                ]}
-              />
-            )}
-          </FormField>
-          <FormField
-            control={form.control}
-            name="aiDailyTokenLimit"
-            label={t("fields.aiDailyTokenLimit")}
-          >
-            {(field) => (
-              <NumberInput
-                {...field}
-                integer
-                onChange={(val) => field.onChange(val === "" ? "" : String(val))}
-                disabled={locked}
-                className="h-10"
-              />
-            )}
-          </FormField>
-        </div>
-      </FormSection>
-
-      <FormSection title={t("sections.telegram")}>
-        <div className="space-y-4">
-          <div className="bg-muted/40 flex flex-wrap items-center justify-between gap-2 rounded-lg border px-4 py-3 text-sm">
-            <span>
-              {setting.telegramBotConfigured
-                ? t("telegramBotLinked", { username: setting.telegramBotUsername })
-                : t("telegramBotMissing")}
-            </span>
-            {safeBotUrl ? (
-              <Button asChild variant="outline" size="sm">
-                <Link href={safeBotUrl as never} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink />
-                  {t("openTelegramBot")}
-                </Link>
-              </Button>
-            ) : null}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Controller
-              control={form.control}
-              name="telegramAiEnabled"
-              render={({ field }) => (
-                <Checkbox
-                  id="ws-tg-enabled"
-                  checked={field.value}
-                  onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                  disabled={locked}
-                />
-              )}
-            />
-            <Label htmlFor="ws-tg-enabled">{t("fields.telegramAiEnabled")}</Label>
-          </div>
-
-          <FormField
-            control={form.control}
-            name="telegramAllowedChatIds"
-            label={t("fields.telegramAllowedChatIds")}
-          >
-            {() =>
-              state.telegramChats.length === 0 ? (
-                <p className="text-muted-foreground text-sm">{t("noTelegramChats")}</p>
-              ) : (
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {state.telegramChats.map((chat) => (
-                    <div key={chat.id} className="flex items-center gap-2">
-                      <Checkbox
-                        id={`tg-chat-${chat.id}`}
-                        checked={state.telegramAllowedChatIds.includes(chat.id)}
-                        onCheckedChange={(checked) => state.toggleChatId(chat.id, Boolean(checked))}
-                        disabled={locked}
-                      />
-                      <Label htmlFor={`tg-chat-${chat.id}`}>
-                        {chat.title} ({chat.chatType})
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              )
-            }
-          </FormField>
-
-          <FormField
-            control={form.control}
-            name="telegramGroupToolPolicy"
-            label={t("fields.telegramGroupToolPolicy")}
-          >
-            {(field) => (
-              <SelectField
-                value={field.value}
-                onValueChange={field.onChange}
-                disabled={locked}
-                options={TELEGRAM_GROUP_TOOL_POLICIES.map((policy) => ({
-                  value: policy,
-                  label: t(`groupPolicies.${policy}`),
-                }))}
-              />
-            )}
-          </FormField>
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Controller
-                control={form.control}
-                name="telegramGroupRequireMention"
-                render={({ field }) => (
-                  <Checkbox
-                    id="ws-tg-mention"
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                    disabled={locked}
-                  />
-                )}
-              />
-              <Label htmlFor="ws-tg-mention">{t("fields.telegramGroupRequireMention")}</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Controller
-                control={form.control}
-                name="telegramGroupHideAmounts"
-                render={({ field }) => (
-                  <Checkbox
-                    id="ws-tg-hide-amounts"
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                    disabled={locked}
-                  />
-                )}
-              />
-              <Label htmlFor="ws-tg-hide-amounts">{t("fields.telegramGroupHideAmounts")}</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Controller
-                control={form.control}
-                name="telegramGroupReplyInDm"
-                render={({ field }) => (
-                  <Checkbox
-                    id="ws-tg-reply-dm"
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                    disabled={locked}
-                  />
-                )}
-              />
-              <Label htmlFor="ws-tg-reply-dm">{t("fields.telegramGroupReplyInDm")}</Label>
-            </div>
-          </div>
-        </div>
-      </FormSection>
-
-      {canUpdate ? (
-        <FormActions>
+      <FormActions>
+        <Button asChild type="button" variant="outline">
+          <Link href={PORTAL_ROUTES.dashboard}>
+            {canUpdate ? tActions("cancel") : tActions("back")}
+          </Link>
+        </Button>
+        {canUpdate ? (
           <FormSubmitButton isSubmitting={state.isSubmitting}>{t("save")}</FormSubmitButton>
-        </FormActions>
-      ) : null}
+        ) : null}
+      </FormActions>
     </Form>
   );
 }

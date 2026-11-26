@@ -49,8 +49,8 @@ Mỗi phía (`backend/`, `frontend/`) có ba file; chỉ `.env.example` được
   journal quá `JOURNAL_RETENTION_DAYS`, file của tệp đã xóa mềm và file mồ côi quá `ATTACHMENT_PURGE_DAYS`,
   gửi nốt thông báo (`dispatch_notifications`), dọn thông báo cũ (`purge_notifications`).
 - Health check ngoài (cấu hình ngoài repo): gọi `GET /api/v1/system/health` **mỗi 10 phút** (0 SQL, 0 Redis); chỉ gọi `/api/v1/system/health/ready` để kiểm kết nối DB sau deploy hoặc theo sự kiện.
-- Workspace Cron (`cron-job.org` kèm `Authorization: Bearer <CRON_SECRET>`): `POST /api/v1/workspace/cron/tick` **mỗi 15 phút** (đã cấu hình ngoài — kiểm tra Uptime Monitor chỉ chạm Redis 0 SQL khi rảnh và đọc mốc W4 `workspace:alerts_next_due`). Endpoint `POST /api/v1/workspace/cron/dispatch-due` **chạy qua QStash theo sự kiện** khi có lịch nhắc/cảnh báo/digest sắp tới (không cấu hình cron định kỳ 15 phút để Neon Scale-to-Zero).
-- Bot Telegram chung & AI (`backend/.env`): cấu hình `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_BOT_WEBHOOK_SECRET` (tùy chọn), `XKIRO_API_BASE`, `XKIRO_API_KEY`, `XKIRO_MODEL`, `XKIRO_FALLBACK_MODELS`, `XKIRO_TIMEOUT_SECONDS`, `XKIRO_COOLDOWN_SECONDS`.
+- Workspace Cron (`cron-job.org` kèm `Authorization: Bearer <CRON_SECRET>`): `POST /api/v1/workspace/cron/tick` **mỗi 15 phút** (đã cấu hình ngoài — kiểm tra Uptime Monitor chỉ chạm Redis 0 SQL khi rảnh và đọc mốc W4 `workspace:cron:alerts_next_due`). Endpoint `POST /api/v1/workspace/cron/dispatch-due` **chạy qua QStash theo sự kiện** khi có lịch nhắc/cảnh báo/digest sắp tới (không cấu hình cron định kỳ 15 phút để Neon Scale-to-Zero).
+- Bot Telegram chung & AI (`backend/.env`): cấu hình `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME` (webhook secret tự dẫn xuất HMAC từ `DJANGO_SECRET_KEY`, không cần biến riêng), `XKIRO_API_BASE`, `XKIRO_API_KEY`, `XKIRO_MODEL`, `XKIRO_FALLBACK_MODELS`, `XKIRO_TIMEOUT_SECONDS`, `XKIRO_COOLDOWN_SECONDS`.
 - **Cron gửi thông báo** (Vercel Cron chỉ 1 lần/ngày): tạo job miễn phí ở cron-job.org gọi
   `POST https://api.toannx.com/api/v1/system/notifications/dispatch` **mỗi 10 phút** (lưới an toàn; QStash gửi ngay), header
   `Authorization: Bearer <CRON_SECRET>`. Xem [notification-setup-guide.md](notification-setup.md).
@@ -86,6 +86,9 @@ Biến môi trường (Vercel → Settings → Environment Variables):
 | `DB_CONNECT_TIMEOUT` | `10` (giây chờ kết nối; Neon đang ngủ cần vài giây để thức) |
 | `DATABASE_MAX_BYTES` | `1073741824` (Neon free 1 GB); cron dọn dẹp cảnh báo khi dùng từ 80%, `0` = tắt |
 | `EMAIL_ASYNC` / `EMAIL_TIMEOUT` | `False` / `5`: gửi thư theo mẫu đồng bộ (luồng nền bị dừng trên Vercel làm mất thư), chặn treo SMTP |
+| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_BOT_USERNAME` | **Bí mật** token Bot Telegram dùng chung toàn hệ thống (lấy từ @BotFather) và `@username` tùy chọn (tự lấy qua `getMe` nếu trống) |
+| `XKIRO_API_BASE` / `XKIRO_API_KEY` | Endpoint OpenAI-compatible và khóa API bí mật cho Trợ lý AI Workspace |
+| `XKIRO_MODEL` / `XKIRO_FALLBACK_MODELS` / `XKIRO_TIMEOUT_SECONDS` / `XKIRO_COOLDOWN_SECONDS` | Model AI mặc định, danh sách model fallback (phân tách dấu phẩy), timeout mỗi lượt (`1..5s`, mặc định `4.5`) và thời gian tạm né model lỗi trong Redis (`120s`) |
 
 Frontend (project Vercel của FE): `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`,
 `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`, `NEXT_PUBLIC_FIREBASE_APP_ID`, `NEXT_PUBLIC_FIREBASE_VAPID_KEY` (công khai).

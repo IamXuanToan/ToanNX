@@ -1,14 +1,18 @@
 // @vitest-environment jsdom
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { NextIntlClientProvider } from "next-intl";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
+import commonVi from "@/messages/vi.json";
+import systemVi from "@/modules/system/messages/vi.json";
 import { AssistantChat } from "@/modules/workspace/components/assistant/assistant-chat";
+import workspaceVi from "@/modules/workspace/messages/vi.json";
 
 const mockChat = vi.fn().mockResolvedValue({
   conversationId: "conv-1",
   reply: "Hôm nay bạn có 2 nhắc việc.",
-  modelUsed: "gemini-2.5-flash",
+  modelUsed: "cohere/command-a-plus",
   tokensUsed: 120,
   containsPrivateData: true,
   isFallback: false,
@@ -19,11 +23,11 @@ const mockChat = vi.fn().mockResolvedValue({
     conversationId: "conv-1",
     role: "ASSISTANT",
     senderTelegramId: null,
-    senderName: "Assistant",
+    senderName: "ToanNX Bot",
     content: "Hôm nay bạn có 2 nhắc việc.",
     toolCalls: [],
     toolCallId: "",
-    modelUsed: "gemini-2.5-flash",
+    modelUsed: "cohere/command-a-plus",
     tokensUsed: 120,
     containsPrivateData: true,
     isError: false,
@@ -31,127 +35,214 @@ const mockChat = vi.fn().mockResolvedValue({
   },
 });
 
-const mockGetMessages = vi.fn().mockResolvedValue({
-  items: [
-    {
-      id: "m-old",
-      conversationId: "conv-1",
-      role: "USER",
-      senderTelegramId: null,
-      senderName: "User",
-      content: "Tin nhắn cũ hơn",
-      toolCalls: [],
-      toolCallId: "",
-      modelUsed: "",
-      tokensUsed: 0,
-      containsPrivateData: false,
-      isError: false,
-      createdAt: "2026-11-26T08:00:00Z",
-    },
-  ],
-  pagination: { page: 2, pageSize: 50, total: 55, totalPages: 2 },
-});
-
-vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string, params?: Record<string, unknown>) =>
-    params ? `${key}:${JSON.stringify(params)}` : key,
-  useFormatter: () => ({ dateTime: () => "10:00" }),
-}));
-
-vi.mock("@/modules/workspace/services/assistant.service", () => ({
-  assistantService: { chat: (...args: unknown[]) => mockChat(...args) },
-}));
-
-vi.mock("@/modules/workspace/services/assistant-conversation.service", () => ({
-  assistantConversationService: {
-    list: vi.fn().mockResolvedValue({
-      items: [
+const mockGetThread = vi.fn().mockImplementation((params?: { page?: number }) => {
+  if (params?.page === 2) {
+    return Promise.resolve({
+      messages: [
         {
-          id: "conv-1",
-          ownerId: "u1",
-          ownerEmail: "u1@test.local",
-          channel: "WEB",
-          externalChatId: "",
-          title: "Việc hôm nay",
-          lastMessageAt: "2026-11-26T10:00:00Z",
-          messageCount: 55,
-          createdAt: "2026-11-26T08:00:00Z",
-          updatedAt: "2026-11-26T10:00:00Z",
-        },
-      ],
-      pagination: { page: 1, pageSize: 30, total: 1, totalPages: 1 },
-    }),
-    get: vi.fn().mockResolvedValue({
-      id: "conv-1",
-      ownerId: "u1",
-      ownerEmail: "u1@test.local",
-      channel: "WEB",
-      externalChatId: "",
-      title: "Việc hôm nay",
-      lastMessageAt: "2026-11-26T10:00:00Z",
-      messageCount: 55,
-      hasMoreMessages: true,
-      recentMessages: [
-        {
-          id: "m-1",
+          id: "m-old",
           conversationId: "conv-1",
           role: "USER",
           senderTelegramId: null,
           senderName: "User",
-          content: "/today",
+          content: "Tin nhắn cũ hơn",
           toolCalls: [],
           toolCallId: "",
           modelUsed: "",
           tokensUsed: 0,
           containsPrivateData: false,
           isError: false,
-          createdAt: "2026-11-26T09:59:00Z",
+          createdAt: "2026-11-26T08:00:00Z",
         },
       ],
-      createdAt: "2026-11-26T08:00:00Z",
-      updatedAt: "2026-11-26T10:00:00Z",
+      hasMoreMessages: false,
+      totalMessages: 2,
+    });
+  }
+  return Promise.resolve({
+    messages: [
+      {
+        id: "m-1",
+        conversationId: "conv-1",
+        role: "USER",
+        senderTelegramId: null,
+        senderName: "User",
+        content: "/today",
+        toolCalls: [],
+        toolCallId: "",
+        modelUsed: "",
+        tokensUsed: 0,
+        containsPrivateData: false,
+        isError: false,
+        createdAt: "2026-11-26T09:59:00Z",
+      },
+      {
+        id: "m-2",
+        conversationId: "conv-1",
+        role: "ASSISTANT",
+        senderTelegramId: null,
+        senderName: "ToanNX Bot",
+        content: "Hôm nay bạn có 2 nhắc việc.",
+        toolCalls: [],
+        toolCallId: "",
+        modelUsed: "cohere/command-a-plus",
+        tokensUsed: 120,
+        containsPrivateData: true,
+        isError: false,
+        createdAt: "2026-11-26T10:00:00Z",
+      },
+    ],
+    hasMoreMessages: true,
+    totalMessages: 55,
+  });
+});
+
+const mockClearThread = vi.fn().mockResolvedValue({ deletedCount: 2 });
+
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}));
+
+vi.mock("@/modules/system/hooks/use-current-user", () => ({
+  useCurrentUser: () => ({
+    data: {
+      user: { id: "u1", email: "u1@test.local", fullName: "Nguyễn Toàn", avatar: null },
+    },
+  }),
+}));
+
+vi.mock("@/modules/workspace/services/assistant.service", () => ({
+  assistantService: { chat: (...args: unknown[]) => mockChat(...args) },
+}));
+
+vi.mock("@/modules/workspace/services/assistant-config.service", () => ({
+  assistantConfigService: {
+    getBotProfile: vi.fn().mockResolvedValue({
+      name: "ToanNX Bot",
+      avatar: null,
+      activeModel: "cohere/command-a-plus",
+      hasCustomPolicy: true,
     }),
-    messages: (...args: unknown[]) => mockGetMessages(...args),
-    delete: vi.fn(),
+    getThread: (...args: unknown[]) => mockGetThread(...args),
+    clearThread: () => mockClearThread(),
   },
 }));
 
-describe("AssistantChat (8 slash commands + tải thêm tin nhắn cũ)", () => {
-  afterEach(() => {
-    cleanup();
-    vi.clearAllMocks();
-  });
+beforeAll(() => {
+  globalThis.ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+});
 
-  it("bấm slash /today gọi chat và hiển thị badge model; bấm hội thoại tải tin nhắn cũ", async () => {
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
+
+describe("AssistantChat (1 luồng chat shadcn + badge trường trộn + thinking indicator)", () => {
+  it("hiển thị badge lệnh nhanh thân thiện, ẩn meta kỹ thuật, gợi ý / và trạng thái đang suy nghĩ", async () => {
+    let resolveDelayedChat: ((value: unknown) => void) | undefined;
+    mockChat.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveDelayedChat = resolve;
+        }),
+    );
+
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={client}>
-        <AssistantChat canChat canReadConversations canDeleteConversations />
+        <NextIntlClientProvider
+          locale="vi"
+          timeZone="Asia/Ho_Chi_Minh"
+          messages={{ ...commonVi, system: systemVi, workspace: workspaceVi }}
+        >
+          <AssistantChat variant="page" canChat />
+        </NextIntlClientProvider>
       </QueryClientProvider>,
     );
 
-    expect(screen.getByRole("button", { name: "slashCommands.today" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "slashCommands.upcoming" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "slashCommands.spending" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "slashCommands.assets" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "slashCommands.status" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "slashCommands.remind" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "slashCommands.newchat" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "slashCommands.help" })).toBeTruthy();
-
-    fireEvent.click(screen.getByRole("button", { name: "slashCommands.today" }));
-    await waitFor(() => {
-      expect(mockChat).toHaveBeenCalledWith({ message: "/today", conversationId: null });
-      expect(screen.getByText(/gemini-2.5-flash/)).toBeTruthy();
-    });
+    expect(screen.getByRole("button", { name: "Hôm nay" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Sắp tới" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Chi tiêu" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Thiết bị" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Nhắc việc" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Trợ giúp" })).toBeTruthy();
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "loadMore" })).toBeTruthy();
+      expect(screen.getByText("Hôm nay bạn có 2 nhắc việc.")).toBeTruthy();
     });
-    fireEvent.click(screen.getByRole("button", { name: "loadMore" }));
+
+    // Không hiển thị metadata kỹ thuật model/tokens/privateBadge lên khung chat
+    expect(screen.queryByText("cohere/command-a-plus")).toBeNull();
+    expect(screen.queryByText(/tokens/i)).toBeNull();
+    expect(screen.queryByText("Có dữ liệu cá nhân")).toBeNull();
+
+    // Tin nhắn user `/today` trong lịch sử được render thành badge trường trộn "Hôm nay"
+    expect(screen.getAllByText("Hôm nay").length).toBeGreaterThanOrEqual(2);
+
+    // Gõ `/` mở popover gợi ý câu lệnh kèm badge trường trộn
+    const input = screen.getByRole("textbox");
+    expect((input as HTMLInputElement).placeholder).toBe("Hỏi AI hoặc gõ /...");
+    fireEvent.change(input, { target: { value: "/" } });
+    expect(screen.getByTestId("assistant-slash-suggestions")).toBeTruthy();
+    expect(screen.getByTestId("slash-option-today")).toBeTruthy();
+
+    // Lọc nhanh theo `/nhac` -> chèn cú pháp `/nhac_viec ` khi nhấn Enter
+    fireEvent.change(input, { target: { value: "/nhac" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect((input as HTMLInputElement).value).toBe("/nhac_viec ");
+    expect(screen.queryByTestId("assistant-slash-suggestions")).toBeNull();
+
+    // Bấm badge lệnh nhanh `Hôm nay` -> hiện `{botName} đang suy nghĩ` khi đang chờ
+    fireEvent.click(screen.getByRole("button", { name: "Hôm nay" }));
     await waitFor(() => {
-      expect(mockGetMessages).toHaveBeenCalledWith("conv-1", { page: 2, pageSize: 50 });
+      expect(screen.getByTestId("assistant-thinking-indicator").textContent).toContain(
+        "ToanNX Bot đang suy nghĩ",
+      );
+    });
+    resolveDelayedChat?.({
+      conversationId: "conv-1",
+      reply: "Hôm nay bạn có 2 nhắc việc.",
+      modelUsed: "cohere/command-a-plus",
+      tokensUsed: 120,
+      containsPrivateData: true,
+      isFallback: false,
+      fallbackAttempts: 1,
+      fallbackCode: "",
+      message: {
+        id: "m-3",
+        conversationId: "conv-1",
+        role: "ASSISTANT",
+        senderTelegramId: null,
+        senderName: "ToanNX Bot",
+        content: "Đã kiểm tra xong.",
+        toolCalls: [],
+        toolCallId: "",
+        modelUsed: "cohere/command-a-plus",
+        tokensUsed: 120,
+        containsPrivateData: true,
+        isError: false,
+        createdAt: "2026-11-26T10:01:00Z",
+      },
+    });
+    await waitFor(() => {
+      expect(mockChat).toHaveBeenCalledWith({ message: "/hom_nay" });
+      expect(screen.queryByTestId("assistant-thinking-indicator")).toBeNull();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Tải thêm tin nhắn cũ" }));
+    await waitFor(() => {
+      expect(mockGetThread).toHaveBeenCalledWith({ page: 2, pageSize: 50 });
       expect(screen.getByText("Tin nhắn cũ hơn")).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByTestId("assistant-clear-thread-btn"));
+    fireEvent.click(screen.getByTestId("confirm-dialog-confirm"));
+    await waitFor(() => {
+      expect(mockClearThread).toHaveBeenCalledTimes(1);
     });
   });
 });

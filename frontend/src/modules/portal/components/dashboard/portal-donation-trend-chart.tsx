@@ -69,8 +69,8 @@ export function PortalDonationTrendChart({ data = [], isLoading }: PortalDonatio
 
   return (
     <Card className="border-border bg-card rounded-2xl shadow-2xs">
-      <CardHeader className="flex flex-col gap-3 pb-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+      <CardHeader className="flex flex-wrap items-start justify-between gap-2.5 pb-3">
+        <div className="min-w-44 flex-1">
           <CardTitle className="text-foreground text-sm font-bold">
             {t("charts.donationTrendTitle")}
           </CardTitle>
@@ -78,7 +78,7 @@ export function PortalDonationTrendChart({ data = [], isLoading }: PortalDonatio
             {t("charts.donationTrendDesc")}
           </CardDescription>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           <Button
             type="button"
             variant={viewMode === "both" ? "default" : "outline"}

@@ -17,7 +17,7 @@ export async function loginViaUi(page: Page, credentials = E2E_ADMIN) {
   await page.getByLabel("Email hoặc tên đăng nhập").fill(credentials.email);
   await page.getByLabel("Mật khẩu", { exact: true }).fill(credentials.password);
   await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await expect(page).toHaveURL(/\/vi\/quan-tri$/);
+  await expect(page).toHaveURL(/\/vi\/ca-nhan$/);
 }
 
 /**

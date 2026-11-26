@@ -1,37 +1,26 @@
 "use client";
 
-import {
-  BellRing,
-  Bot,
-  CreditCard,
-  FileText,
-  Laptop,
-  LayoutDashboard,
-  Link2,
-  Menu,
-} from "lucide-react";
+import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 import { hasPermission } from "@/modules/system/services/current-user.service";
-import { PAGE_PERMISSIONS } from "@/modules/utilities/permissions/page-permission";
-import { SHORT_LINK_PERMISSIONS } from "@/modules/utilities/permissions/short-link-permission";
-import { WORKSPACE_PATHNAMES, WORKSPACE_ROUTES } from "@/modules/workspace/constants/routes";
-import { ASSET_PERMISSIONS } from "@/modules/workspace/permissions/asset-permission";
-import { ASSISTANT_PERMISSIONS } from "@/modules/workspace/permissions/assistant-permission";
-import { REMINDER_PERMISSIONS } from "@/modules/workspace/permissions/reminder-permission";
-import { SUBSCRIPTION_PERMISSIONS } from "@/modules/workspace/permissions/subscription-permission";
 import { Button } from "@/shares/components/ui/button";
 import { useSidebar } from "@/shares/components/ui/sidebar";
-import { isLocalizedRouteExact, startsWithLocalizedRoute } from "@/shares/lib/localized-route";
 import { cn } from "cn";
 
-import { PORTAL_PATHNAMES, PORTAL_ROUTES } from "../../constants/routes";
+import {
+  isPortalNavItemActive,
+  PORTAL_BOTTOM_NAV_KEYS,
+  PORTAL_NAV_SECTIONS,
+} from "../../constants/navigation";
+
+const ALL_NAV_ITEMS = PORTAL_NAV_SECTIONS.flatMap((section) => section.items);
 
 /**
  * Thanh điều hướng đáy màn hình di động (Bottom Navigation Bar):
- * Lấy tối đa 4 mục ưu tiên đầu tiên còn quyền + nút Menu mở ngăn kéo Sidebar đầy đủ 5 cụm.
+ * dùng chung khai báo từ `PORTAL_NAV_SECTIONS`, lấy tối đa 4 mục ưu tiên còn quyền + nút Mở Drawer.
  *
  * @returns Thanh điều hướng di động.
  */
@@ -41,61 +30,17 @@ export function PortalBottomNav() {
   const pathname = usePathname();
   const { data: currentUser } = useCurrentUser();
   const { toggleSidebar } = useSidebar();
-  const allPathnames = { ...PORTAL_PATHNAMES, ...WORKSPACE_PATHNAMES };
 
-  const navItems = [
-    {
-      title: t("dashboard"),
-      href: PORTAL_ROUTES.dashboard,
-      icon: LayoutDashboard,
-      permission: undefined,
-      active: isLocalizedRouteExact(pathname, PORTAL_ROUTES.dashboard, allPathnames),
-    },
-    {
-      title: t("assistant"),
-      href: WORKSPACE_ROUTES.assistant,
-      icon: Bot,
-      permission: ASSISTANT_PERMISSIONS.chat,
-      active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.assistant, allPathnames),
-    },
-    {
-      title: t("reminders"),
-      href: WORKSPACE_ROUTES.reminders,
-      icon: BellRing,
-      permission: REMINDER_PERMISSIONS.read,
-      active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.reminders, allPathnames),
-    },
-    {
-      title: t("subscriptions"),
-      href: WORKSPACE_ROUTES.subscriptions,
-      icon: CreditCard,
-      permission: SUBSCRIPTION_PERMISSIONS.read,
-      active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.subscriptions, allPathnames),
-    },
-    {
-      title: t("assets"),
-      href: WORKSPACE_ROUTES.assets,
-      icon: Laptop,
-      permission: ASSET_PERMISSIONS.read,
-      active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.assets, allPathnames),
-    },
-    {
-      title: t("pages"),
-      href: PORTAL_ROUTES.pages,
-      icon: FileText,
-      permission: PAGE_PERMISSIONS.read,
-      active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.pages, allPathnames),
-    },
-    {
-      title: t("shortLinks"),
-      href: PORTAL_ROUTES.shortLinks,
-      icon: Link2,
-      permission: SHORT_LINK_PERMISSIONS.read,
-      active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.shortLinks, allPathnames),
-    },
-  ]
+  const navItems = PORTAL_BOTTOM_NAV_KEYS.map((key) => ALL_NAV_ITEMS.find((i) => i.key === key))
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
     .filter((item) => !item.permission || hasPermission(currentUser, item.permission))
-    .slice(0, 4);
+    .slice(0, 4)
+    .map((item) => ({
+      title: t(item.labelKey),
+      href: item.href,
+      icon: item.icon,
+      active: isPortalNavItemActive(pathname, item),
+    }));
 
   return (
     <nav

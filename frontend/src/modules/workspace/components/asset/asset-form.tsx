@@ -24,6 +24,7 @@ import {
 } from "../../constants/defaults";
 import { WORKSPACE_ROUTES } from "../../constants/routes";
 import type { Asset } from "../../types/asset.types";
+import { NotificationChannelsField } from "../workspace-setting/notification-channels-field";
 import { AssetInvoicesField } from "./asset-invoices-field";
 import { useAssetForm } from "./hooks/use-asset-form";
 
@@ -35,6 +36,7 @@ import { useAssetForm } from "./hooks/use-asset-form";
  */
 export function AssetForm({ asset, disabled = false }: { asset?: Asset; disabled?: boolean }) {
   const t = useTranslations("workspace.assets");
+  const tChannels = useTranslations("workspace.notificationChannels");
   const tCommon = useTranslations("common.actions");
   const state = useAssetForm(asset);
   const { form } = state;
@@ -316,18 +318,36 @@ export function AssetForm({ asset, disabled = false }: { asset?: Asset; disabled
                 {(field) => <Textarea {...field} disabled={locked} rows={3} />}
               </FormField>
             </div>
+            <div className="sm:col-span-2">
+              <FormField
+                control={form.control}
+                name="notificationChannels"
+                label={tChannels("label")}
+              >
+                {(field) => (
+                  <NotificationChannelsField
+                    value={field.value}
+                    onChange={field.onChange}
+                    disabled={locked}
+                    idPrefix="asset-channel"
+                  />
+                )}
+              </FormField>
+            </div>
           </div>
         </FormSection>
       </FormLayout>
 
-      {disabled ? null : (
-        <FormActions>
-          <Button asChild type="button" variant="outline">
-            <Link href={WORKSPACE_ROUTES.assets}>{tCommon("cancel")}</Link>
-          </Button>
+      <FormActions>
+        <Button asChild type="button" variant="outline">
+          <Link href={WORKSPACE_ROUTES.assets}>
+            {disabled ? tCommon("back") : tCommon("cancel")}
+          </Link>
+        </Button>
+        {disabled ? null : (
           <FormSubmitButton isSubmitting={state.isSubmitting}>{tCommon("save")}</FormSubmitButton>
-        </FormActions>
-      )}
+        )}
+      </FormActions>
     </Form>
   );
 }

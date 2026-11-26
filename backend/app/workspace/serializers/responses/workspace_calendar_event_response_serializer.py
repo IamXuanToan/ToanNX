@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 
 class WorkspaceCalendarEventResponseSerializer(serializers.Serializer[Any]):
-    """Sự kiện hợp nhất từ 5 nguồn (dịch vụ, nhắc việc, bảo hành TB, phiếu sửa, sự cố monitor)."""
+    """Sự kiện hợp nhất từ 4 nguồn (dịch vụ, nhắc việc, bảo hành TB, phiếu sửa)."""
 
     id = serializers.CharField(help_text="Khóa định danh duy nhất sự kiện trên lịch.")
     source_id = serializers.UUIDField(help_text="ID bản ghi gốc.")

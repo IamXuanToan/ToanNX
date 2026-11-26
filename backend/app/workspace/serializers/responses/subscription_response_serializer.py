@@ -41,6 +41,7 @@ class SubscriptionResponseSerializer(serializers.ModelSerializer[Subscription]):
             "payment_method",
             "manage_url",
             "reminder_days_before",
+            "notification_channels",
             "is_active",
             "notes",
             "created_at",

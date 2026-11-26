@@ -1,7 +1,7 @@
-"""Quản lý cache Redis & hẹn lịch QStash tách biệt cho W1 (Monitor) và W4 (Digest/Reminder)."""
+"""Quản lý cache Redis & hẹn lịch QStash cho đường W4 (Digest/Reminder/Bảo hành/Gia hạn)."""
 
 from datetime import datetime, time, timedelta
-from typing import Any
+from typing import Any, cast
 
 from django.db import transaction
 from django.utils import timezone as dj_timezone
@@ -18,21 +18,16 @@ from app.workspace.constants.workspace_defaults import (
     DEFAULT_REMINDER_DAYS_BEFORE,
     DEFAULT_WARRANTY_ALERT_DAYS,
     DIGEST_SENT_TTL_SECONDS,
-    MONITOR_STATE_TTL_SECONDS,
-    MONITORS_CACHE_TTL_SECONDS,
+    DIGEST_WINDOW_SECONDS,
     REDIS_ALERT_SENT_KEY,
     REDIS_ALERTS_NEXT_DUE_KEY,
     REDIS_DIGEST_SENT_KEY,
-    REDIS_MONITOR_STATE_KEY,
-    REDIS_MONITORS_ACTIVE_KEY,
     REDIS_REMINDER_SENT_KEY,
-    REDIS_W1_LOCK_KEY,
     REDIS_W4_LOCK_KEY,
     REMINDER_BACKSTOP_WINDOW_SECONDS,
     REMINDER_SENT_TTL_SECONDS,
 )
 from app.workspace.repositories.asset_repository import AssetRepository
-from app.workspace.repositories.monitor_target_repository import MonitorTargetRepository
 from app.workspace.repositories.reminder_repository import ReminderRepository
 from app.workspace.repositories.subscription_repository import SubscriptionRepository
 from app.workspace.repositories.workspace_setting_repository import WorkspaceSettingRepository
@@ -40,17 +35,16 @@ from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneS
 
 DEFAULT_REMINDER_FALLBACK_TIME = time(8, 0)
 MAX_NEXT_DUE_WINDOW_DAYS = 7
-RECENT_DUE_GRACE_SECONDS = 600
+RECENT_DUE_GRACE_SECONDS = DIGEST_WINDOW_SECONDS
 
 
 class WorkspaceAlertsCacheService:
-    """Giữ trạng thái Redis W1/W4 độc lập, đảm bảo Neon 0 CU khi rảnh và chống gửi trùng."""
+    """Giữ trạng thái Redis W4, đảm bảo Neon 0 CU khi rảnh và chống gửi trùng."""
 
     def __init__(
         self,
         cache_service: CacheService | None = None,
         qstash_client: QstashClient | None = None,
-        monitor_repository: MonitorTargetRepository | None = None,
         reminder_repository: ReminderRepository | None = None,
         setting_repository: WorkspaceSettingRepository | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
@@ -60,23 +54,11 @@ class WorkspaceAlertsCacheService:
         """Khởi tạo cache Redis, QStash và các repository tối giản để re-warm."""
         self.cache_service = cache_service or CacheService()
         self.qstash_client = qstash_client or QstashClient()
-        self.monitor_repository = monitor_repository or MonitorTargetRepository()
         self.reminder_repository = reminder_repository or ReminderRepository()
         self.setting_repository = setting_repository or WorkspaceSettingRepository()
         self.tz_service = tz_service or WorkspaceTimezoneService()
         self.asset_repository = asset_repository or AssetRepository()
         self.subscription_repository = subscription_repository or SubscriptionRepository()
-
-    # ------------------------------------------------------------------
-    # Distributed locks (W1 ≠ W4)
-    # ------------------------------------------------------------------
-    def acquire_w1_lock(self) -> bool:
-        """Chiếm lock chạy ping Monitor (TTL 30s)."""
-        return self.cache_service.set_if_absent(REDIS_W1_LOCK_KEY, "1", CRON_LOCK_TTL_SECONDS)
-
-    def release_w1_lock(self) -> None:
-        """Giải phóng lock W1."""
-        self.cache_service.delete(REDIS_W1_LOCK_KEY)
 
     def acquire_w4_lock(self) -> bool:
         """Chiếm lock quét Digest/Reminder/Cảnh báo (TTL 30s)."""
@@ -126,57 +108,25 @@ class WorkspaceAlertsCacheService:
         key = REDIS_ALERT_SENT_KEY.format(alert_key=alert_key)
         return self.cache_service.get_json(key) is not None
 
-    # ------------------------------------------------------------------
-    # Đường W1: Monitor cache
-    # ------------------------------------------------------------------
-    def get_monitors_active(self) -> list[dict[str, Any]] | None:
-        """Đọc danh sách monitor active từ Redis (`None` nghĩa là miss hoặc Redis tắt)."""
-        data = self.cache_service.get_json(REDIS_MONITORS_ACTIVE_KEY)
-        return data if isinstance(data, list) else None
+    def reminder_schedule_key(self, reminder: Any) -> str:
+        """Khóa lịch hẹn của reminder theo ngày, giờ và phút nhắc trước để sửa giờ vẫn gửi lại."""
+        time_part = reminder.due_time.strftime("%H%M") if reminder.due_time else "default"
+        return f"{reminder.due_date.isoformat()}:{time_part}:{int(reminder.notify_minutes_before or 0)}"
 
-    def sync_monitors_active(self) -> list[dict[str, Any]]:
-        """Đọc từ DB và nạp lại cache `monitors:active` (kể cả rỗng `[]`, TTL 24h)."""
-        targets = self.monitor_repository.list_active_targets()
-        payload: list[dict[str, Any]] = []
-        for target in targets:
-            item = {
-                "id": str(target.pk),
-                "owner_id": str(target.owner_id),
-                "name": target.name,
-                "url": target.url,
-                "method": target.method,
-                "expected_status": int(target.expected_status),
-                "timeout_seconds": int(target.timeout_seconds),
-                "check_interval_minutes": int(target.check_interval_minutes),
-                "last_status": target.last_status,
-                "last_status_code": target.last_status_code,
-                "last_latency_ms": target.last_latency_ms,
-                "last_checked_at": (target.last_checked_at.isoformat() if target.last_checked_at else None),
-                "consecutive_failures": int(target.consecutive_failures),
-            }
-            payload.append(item)
-        self.cache_service.set_json(REDIS_MONITORS_ACTIVE_KEY, payload, MONITORS_CACHE_TTL_SECONDS)
-        return payload
+    @staticmethod
+    def _register_on_commit_once(key: str, callback: Any) -> None:
+        conn = transaction.get_connection()
+        if conn.in_atomic_block and any(
+            getattr(entry[1], "_ws_on_commit_key", None) == key for entry in conn.run_on_commit
+        ):
+            return
 
-    def sync_monitors_active_on_commit(self) -> None:
-        """Đồng bộ cache monitor sau khi transaction hiện tại commit thành công."""
-        if self.cache_service.enabled:
-            transaction.on_commit(self.sync_monitors_active)
+        def _wrapped() -> None:
+            callback()
 
-    def read_monitor_state(self, target_id: Any) -> dict[str, Any] | None:
-        """Đọc trạng thái ping mới nhất của monitor trong Redis."""
-        key = REDIS_MONITOR_STATE_KEY.format(target_id=target_id)
-        data = self.cache_service.get_json(key)
-        return data if isinstance(data, dict) else None
+        cast(Any, _wrapped)._ws_on_commit_key = key
+        transaction.on_commit(_wrapped)
 
-    def write_monitor_state(self, target_id: Any, state: dict[str, Any]) -> None:
-        """Ghi trạng thái ping mới nhất vào Redis."""
-        key = REDIS_MONITOR_STATE_KEY.format(target_id=target_id)
-        self.cache_service.set_json(key, state, MONITOR_STATE_TTL_SECONDS)
-
-    # ------------------------------------------------------------------
-    # Đường W4: alerts_next_due & QStash 7 ngày
-    # ------------------------------------------------------------------
     def read_alerts_next_due(self) -> int | None:
         """Đọc epoch giây tới hạn tiếp theo từ Redis (`None` khi miss hoặc Redis tắt)."""
         data = self.cache_service.get_json(REDIS_ALERTS_NEXT_DUE_KEY)
@@ -187,7 +137,7 @@ class WorkspaceAlertsCacheService:
         return None
 
     def write_alerts_next_due(self, epoch: int) -> None:
-        """Ghi epoch giây `alerts_next_due` vào Redis (TTL 7 ngày)."""
+        """Ghi epoch giây `alerts_next_due` vào Redis (TTL 24h để mỗi ngày kiểm DB lại ít nhất 1 lần)."""
         self.cache_service.set_json(
             REDIS_ALERTS_NEXT_DUE_KEY,
             {"epoch": int(epoch)},
@@ -249,10 +199,13 @@ class WorkspaceAlertsCacheService:
         settings_list = self.setting_repository.list_digest_enabled()
         settings_by_owner: dict[Any, Any] = {item.owner_id: item for item in settings_list}
 
-        end_date = current.date() + timedelta(days=MAX_NEXT_DUE_WINDOW_DAYS)
-        pending_reminders = self.reminder_repository.list_all_pending_up_to(end_date)
+        start_date = (
+            current - timedelta(seconds=REMINDER_BACKSTOP_WINDOW_SECONDS) - timedelta(days=1)
+        ).date()
+        end_date = current.date() + timedelta(days=MAX_NEXT_DUE_WINDOW_DAYS + 1)
+        pending_reminders = self.reminder_repository.list_all_pending_up_to(end_date, start_date=start_date)
         for reminder in pending_reminders:
-            if self.is_reminder_notified(reminder.pk, reminder.due_date.isoformat()):
+            if self.is_reminder_notified(reminder.pk, self.reminder_schedule_key(reminder)):
                 continue
             owner_setting = self._get_owner_setting(reminder.owner_id, settings_by_owner)
             tz_name = owner_setting.timezone if owner_setting else DEFAULT_TIMEZONE
@@ -269,7 +222,7 @@ class WorkspaceAlertsCacheService:
             tz_name = owner_setting.timezone or DEFAULT_TIMEZONE
             local_today = self.tz_service.local_today(tz_name, now=current)
             slots = owner_setting.digest_time_slots or []
-            for offset in (0, 1):
+            for offset in (-1, 0, 1):
                 day = local_today + timedelta(days=offset)
                 date_str = day.isoformat()
                 for raw_slot in slots:
@@ -314,7 +267,9 @@ class WorkspaceAlertsCacheService:
             if candidate is not None:
                 earliest = self._pick_earliest(earliest, candidate, window_end_ts)
 
-        subs = self.subscription_repository.list_all_active_upcoming(lookahead_end)
+        subs = self.subscription_repository.list_all_active_upcoming(
+            lookahead_end, start_date=current.date() - timedelta(days=1)
+        )
         for sub in subs:
             owner_setting = self._get_owner_setting(sub.owner_id, settings_by_owner)
             tz_name = owner_setting.timezone if owner_setting else DEFAULT_TIMEZONE
@@ -337,7 +292,7 @@ class WorkspaceAlertsCacheService:
         return earliest
 
     def refresh_alerts_next_due(self, *, now: datetime | None = None) -> int:
-        """Tính lại `alerts_next_due`, nạp Redis 7 ngày; chỉ hẹn QStash khi thật sự có việc trong 7 ngày."""
+        """Tính lại `alerts_next_due`, nạp Redis TTL 24h; hẹn QStash khi có việc trong 7 ngày."""
         current = now or dj_timezone.now()
         now_ts = int(current.timestamp())
         next_due = self.compute_next_due_epoch(now=current)
@@ -357,5 +312,5 @@ class WorkspaceAlertsCacheService:
         return target_epoch
 
     def schedule_alerts_next_due_on_commit(self) -> None:
-        """Cập nhật `alerts_next_due` + QStash sau khi transaction hiện tại commit."""
-        transaction.on_commit(self.refresh_alerts_next_due)
+        """Cập nhật `alerts_next_due` + QStash sau khi transaction commit (gộp nếu gọi lặp)."""
+        self._register_on_commit_once("ws:refresh_alerts_next_due", self.refresh_alerts_next_due)

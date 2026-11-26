@@ -1,4 +1,4 @@
-/** Route nội bộ của module Workspace trong Client Portal (`/portal/...` ↔ `/ca-nhan/...`). */
+/** Route nội bộ của module Workspace trong Portal (`/ca-nhan/...`) & Admin (`/quan-tri/...`). */
 export const WORKSPACE_ROUTES = {
   assets: "/portal/assets",
   assetCreate: "/portal/assets/new",
@@ -25,21 +25,14 @@ export const WORKSPACE_ROUTES = {
     pathname: "/portal/vault/[id]" as const,
     params: { id },
   }),
-  monitors: "/portal/monitors",
-  monitorCreate: "/portal/monitors/new",
-  monitorDetail: (id: string) => ({
-    pathname: "/portal/monitors/[id]" as const,
-    params: { id },
-  }),
-  monitorIncidents: "/portal/monitor-incidents",
   reminders: "/portal/reminders",
   reminderCreate: "/portal/reminders/new",
   reminderDetail: (id: string) => ({
     pathname: "/portal/reminders/[id]" as const,
     params: { id },
   }),
-  assistant: "/portal/assistant",
   settings: "/portal/settings",
+  adminAssistant: "/admin/workspace/assistant",
 } as const;
 
 /** Pathname theo ngôn ngữ của module Workspace (gộp vào `routing.pathnames`). */
@@ -66,13 +59,12 @@ export const WORKSPACE_PATHNAMES = {
   "/portal/vault": { vi: "/ca-nhan/ket-sat", en: "/portal/vault" },
   "/portal/vault/new": { vi: "/ca-nhan/ket-sat/tao-moi", en: "/portal/vault/new" },
   "/portal/vault/[id]": { vi: "/ca-nhan/ket-sat/[id]", en: "/portal/vault/[id]" },
-  "/portal/monitors": { vi: "/ca-nhan/uptime", en: "/portal/monitors" },
-  "/portal/monitors/new": { vi: "/ca-nhan/uptime/tao-moi", en: "/portal/monitors/new" },
-  "/portal/monitors/[id]": { vi: "/ca-nhan/uptime/[id]", en: "/portal/monitors/[id]" },
-  "/portal/monitor-incidents": { vi: "/ca-nhan/su-co", en: "/portal/monitor-incidents" },
   "/portal/reminders": { vi: "/ca-nhan/nhac-viec", en: "/portal/reminders" },
   "/portal/reminders/new": { vi: "/ca-nhan/nhac-viec/tao-moi", en: "/portal/reminders/new" },
   "/portal/reminders/[id]": { vi: "/ca-nhan/nhac-viec/[id]", en: "/portal/reminders/[id]" },
-  "/portal/assistant": { vi: "/ca-nhan/tro-ly", en: "/portal/assistant" },
   "/portal/settings": { vi: "/ca-nhan/cai-dat", en: "/portal/settings" },
+  "/admin/workspace/assistant": {
+    vi: "/quan-tri/he-thong/tro-ly-ai",
+    en: "/admin/system/assistant",
+  },
 } as const;

@@ -1,4 +1,4 @@
-"""Nghiệp vụ điều phối Trợ lý AI cá nhân (xKiro Multi-Model Fallback + Slash 0-token + Guardrails)."""
+"""Nghiệp vụ điều phối Trợ lý AI: 1 luồng Web duy nhất, config Bot từ Admin & xKiro Fallback."""
 
 import json
 import time
@@ -13,6 +13,7 @@ from app.workspace.constants.workspace_defaults import (
 )
 from app.workspace.models.assistant_conversation import AssistantConversation
 from app.workspace.models.assistant_message import AssistantMessage
+from app.workspace.services.assistant_config_service import AssistantConfigService
 from app.workspace.services.assistant_conversation_service import AssistantConversationService
 from app.workspace.services.assistant_slash_service import AssistantSlashService
 from app.workspace.services.assistant_tools_service import AssistantToolsService
@@ -22,6 +23,8 @@ from app.workspace.services.xkiro_client import XkiroClient
 
 SYSTEM_PROMPT = (
     "Bạn là Trợ lý AI cá nhân thông minh trong hệ thống ToanNX. "
+    "Chốt an toàn bắt buộc: tuyệt đối KHÔNG nói về khủng bố, bạo lực cực đoan, vũ khí, quân sự, "
+    "chiến tranh hay phân biệt vùng miền, sắc tộc, tôn giáo, giới tính; nếu bị hỏi hãy từ chối ngắn gọn. "
     "Trả lời súc tích, rõ ràng bằng tiếng Việt có dấu (trừ khi người dùng dùng tiếng Anh). "
     "Chỉ dùng dữ liệu thật từ các tool đã cung cấp, tuyệt đối không bịa đặt số liệu "
     "và không bao giờ truy cập hay suy đoán mật khẩu/API key trong Két sắt."
@@ -29,20 +32,22 @@ SYSTEM_PROMPT = (
 
 
 class AssistantService:
-    """Điều phối hội thoại Web & Telegram qua `xKiro`, 8 tool cá nhân và 8 lệnh Slash 0-token."""
+    """Điều phối 1 luồng chat Web & kênh Telegram qua `xKiro`, 7 tool cá nhân & 6 lệnh Slash 0-token."""
 
     def __init__(
         self,
         conversation_service: AssistantConversationService | None = None,
         setting_service: WorkspaceSettingService | None = None,
+        config_service: AssistantConfigService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
         xkiro_client: XkiroClient | None = None,
         tools_service: AssistantToolsService | None = None,
         slash_service: AssistantSlashService | None = None,
     ) -> None:
-        """Khởi tạo service hội thoại, cài đặt, client AI và bộ tool."""
+        """Khởi tạo service hội thoại, cài đặt, cấu hình Bot Admin, client AI và bộ tool."""
         self.conversation_service = conversation_service or AssistantConversationService()
         self.setting_service = setting_service or WorkspaceSettingService()
+        self.config_service = config_service or AssistantConfigService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
         self.xkiro_client = xkiro_client or XkiroClient()
         self.tools_service = tools_service or AssistantToolsService()
@@ -59,7 +64,6 @@ class AssistantService:
         *,
         channel: str = AssistantConversation.Channel.WEB,
         external_chat_id: str = "",
-        conversation_id: Any | None = None,
         sender_telegram_id: int | None = None,
         sender_name: str = "",
         is_owner: bool = True,
@@ -67,26 +71,16 @@ class AssistantService:
         exclude_private_history: bool = False,
         hide_amounts: bool = False,
     ) -> dict[str, Any]:
-        """Xử lý 1 lượt trò chuyện (trả về dict chứa `conversation`, `message`, `is_fallback`...)."""
+        """Xử lý 1 lượt trò chuyện vào luồng chat duy nhất của Web hoặc kênh Telegram."""
         cleaned = (message_text or "").strip()
         cmd, _ = self.slash_service.parse_command(cleaned)
-        force_new = cmd == "/newchat"
 
-        if force_new:
-            conversation = self.conversation_service.create_new_channel_session(
-                owner,
-                channel=channel,
-                external_chat_id=external_chat_id,
-                title=cleaned,
-            )
-        else:
-            conversation = self.conversation_service.get_or_create_active(
-                owner,
-                channel=channel,
-                external_chat_id=external_chat_id,
-                conversation_id=conversation_id,
-                title=cleaned[:120],
-            )
+        conversation = self.conversation_service.get_or_create_active(
+            owner,
+            channel=channel,
+            external_chat_id=external_chat_id,
+            title=cleaned[:120],
+        )
 
         self.conversation_service.append_message(
             conversation,
@@ -116,11 +110,14 @@ class AssistantService:
             return self._build_response(conversation, assistant_msg, is_fallback=False, fallback_attempts=0)
 
         setting = self.setting_service.get_or_create_for_owner(owner)
+        bot_cfg = self.config_service.get_config()
+        daily_limit = bot_cfg.get("ai_daily_token_limit")
+        preferred_model = str(bot_cfg.get("preferred_ai_model") or "")
+        custom_policy = str(bot_cfg.get("assistant_system_prompt") or "")
 
-        # Kiểm giới hạn token hàng ngày của user trước khi gọi LLM.
-        if setting.ai_daily_token_limit is not None:
+        if daily_limit is not None:
             used_today = self._tokens_used_today(owner.pk, setting.timezone)
-            if used_today >= int(setting.ai_daily_token_limit):
+            if used_today >= int(daily_limit):
                 return self._save_fallback(
                     conversation,
                     "Bạn đã dùng hết hạn mức token AI trong ngày hôm nay.",
@@ -141,6 +138,7 @@ class AssistantService:
             exclude_private=exclude_private_history,
             hide_amounts=hide_amounts,
             allow_tools=allow_personal_tools,
+            custom_policy=custom_policy,
         )
         tools = self.tools_service.tool_schemas(is_owner=is_owner) if allow_personal_tools else None
 
@@ -154,7 +152,7 @@ class AssistantService:
             result = self.xkiro_client.chat_completion(
                 llm_messages,
                 tools=tools,
-                preferred_model=setting.preferred_ai_model,
+                preferred_model=preferred_model,
                 deadline_monotonic=deadline,
             )
             fallback_attempts += int(result.get("fallback_attempts") or 0)
@@ -234,11 +232,10 @@ class AssistantService:
                     }
                 )
 
-        # Vượt số vòng gọi tool tối đa: chốt lượt cuối không kèm tools để LLM tóm tắt.
         final_res = self.xkiro_client.chat_completion(
             llm_messages,
             tools=None,
-            preferred_model=last_model or setting.preferred_ai_model,
+            preferred_model=last_model or preferred_model,
             deadline_monotonic=deadline,
         )
         fallback_attempts += int(final_res.get("fallback_attempts") or 0)
@@ -277,8 +274,12 @@ class AssistantService:
         exclude_private: bool,
         hide_amounts: bool,
         allow_tools: bool,
+        custom_policy: str = "",
     ) -> list[dict[str, Any]]:
         prompt_parts = [SYSTEM_PROMPT]
+        cleaned_policy = (custom_policy or "").strip()
+        if cleaned_policy:
+            prompt_parts.append(f"Policy và phong cách trả lời ưu tiên của quản trị viên: {cleaned_policy}")
         if hide_amounts:
             prompt_parts.append("Đang ở nhóm chat Telegram: KHÔNG nêu con số tiền tệ nhạy cảm cụ thể.")
         if not allow_tools:
@@ -292,7 +293,6 @@ class AssistantService:
             exclude_private=exclude_private,
         )
         messages: list[dict[str, Any]] = [{"role": "system", "content": " ".join(prompt_parts)}]
-        # Bỏ các bản ghi TOOL thô ở quá xa (chỉ giữ vài tin cuối cùng nếu có tool).
         cutoff_idx = max(0, len(history) - 4)
         for idx, msg in enumerate(history):
             if msg.role == AssistantMessage.Role.TOOL:

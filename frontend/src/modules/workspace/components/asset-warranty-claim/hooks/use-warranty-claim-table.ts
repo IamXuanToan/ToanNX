@@ -17,8 +17,11 @@ import type { AssetWarrantyClaim } from "../../../types/asset-warranty-claim.typ
 
 const FILTER_KEYS = ["asset", "claimType", "status", "isCoveredByWarranty", "owner"] as const;
 
-/** @returns State bảng Phiếu bảo hành / sửa chữa. */
-export function useWarrantyClaimTable() {
+/**
+ * @param assetId - Khi truyền ID thiết bị (ở tab Bảo hành trong Thiết bị), bảng khóa lọc theo thiết bị đó.
+ * @returns State bảng Phiếu bảo hành / sửa chữa.
+ */
+export function useWarrantyClaimTable(assetId?: string) {
   const router = useRouter();
   const ownerFilter = useWorkspaceOwnerOptions(ASSET_WARRANTY_CLAIM_PERMISSIONS.manageAll);
   const assets = useAssetOptions();
@@ -26,11 +29,11 @@ export function useWarrantyClaimTable() {
   const covered = table.extraFilters.isCoveredByWarranty;
   const query = useWarrantyClaims({
     ...table.filters,
-    asset: table.extraFilters.asset || undefined,
+    asset: assetId ?? (table.extraFilters.asset || undefined),
     claimType: table.getFilterValues("claimType"),
     status: table.getFilterValues("status"),
     isCoveredByWarranty: covered === "true" ? true : covered === "false" ? false : undefined,
-    owner: ownerFilter.canFilterOwner ? table.extraFilters.owner : undefined,
+    owner: assetId ? undefined : ownerFilter.canFilterOwner ? table.extraFilters.owner : undefined,
   });
   const remove = useDeleteWarrantyClaim();
   const bulk = useBulkActions<AssetWarrantyClaim>({

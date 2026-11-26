@@ -78,15 +78,15 @@ Neon chỉ tốn CU-giờ khi đang thức. **Mỗi truy vấn đánh thức nó
 
 | Nguồn đánh thức | Ước lượng CU-giờ/tháng (0,25 CU) |
 | --- | --- |
-| Rảnh hoàn toàn (`cleanup` `03:00` + `backup` 1/ngày + `W4` 7 ngày/lần; `0` monitor) | ~1,6–2,0 |
+| Rảnh hoàn toàn (`cleanup` `03:00` + `backup` 1/ngày + `W4` kiểm lại `1/ngày` qua TTL `24h`; `0` monitor) | ~1,6–2,0 |
 | Chủ site dùng trang quản trị ~2,5 giờ/ngày + tab nền poll `15–30p` | ~20–25 |
 | Khách vào `/p/[slug]`, `/s/[slug]`, Donate, Cài đặt công khai (cache Redis `600s`) | ~8–14 (chủ yếu từ `ShortLink` ghi click + miss cache) |
 | Bộ hẹn giờ thông báo **chạm DB mỗi lần** (nếu không có Redis / `IDLE_RECHECK` ngắn) | **>100**, Neon không bao giờ ngủ |
-| Bộ hẹn giờ thông báo/W4 chỉ chạm DB khi Redis báo đến hạn (`24h` / `7 ngày`) | ~0–2 |
+| Bộ hẹn giờ thông báo/W4 chỉ chạm DB khi Redis báo đến hạn hoặc hết TTL `24h` | ~0–2 |
 
 Hai quy tắc rút ra:
 1. **Lượt khách đọc public settings / page / donation không chạm DB khi cache còn hiệu lực**, và rate limit đếm trên Redis.
-2. **Bộ hẹn giờ không được query DB khi không có việc.** Kiểm cờ trong Redis trước (`notification:next_due` tối đa `24h`, `workspace:alerts_next_due` tối đa `7 ngày`).
+2. **Bộ hẹn giờ không được query DB khi không có việc.** Kiểm cờ trong Redis trước (`notification:next_due` TTL `24h`, `workspace:cron:alerts_next_due` TTL `24h` với horizon QStash `7 ngày` và task `refresh_cron_schedules` đồng bộ mỗi ngày tại `03:00 UTC`).
 
 Cố định compute ở **0,25 CU** (không cho tự tăng) để ngân sách đoán trước được.
 

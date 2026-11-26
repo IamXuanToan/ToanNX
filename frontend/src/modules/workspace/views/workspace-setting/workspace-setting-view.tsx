@@ -9,7 +9,7 @@ import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { WorkspaceSettingForm } from "../../components/workspace-setting/workspace-setting-form";
 import { WORKSPACE_SETTING_PERMISSIONS } from "../../permissions/workspace-setting-permission";
 
-/** @returns Trang Cài đặt Trợ lý AI, Digest & Telegram hai chiều. */
+/** @returns Trang Cài đặt Digest, Mốc cảnh báo & Chat Telegram cá nhân. */
 export function WorkspaceSettingView() {
   const t = useTranslations("workspace.settings");
   const canRead = usePermission(WORKSPACE_SETTING_PERMISSIONS.read);

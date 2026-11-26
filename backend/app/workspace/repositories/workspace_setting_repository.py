@@ -1,4 +1,4 @@
-"""Repository Cài đặt Trợ lý & Telegram Group của từng user."""
+"""Repository Cài đặt Lịch Digest & Telegram của từng user."""
 
 from typing import Any
 
@@ -9,7 +9,7 @@ from app.workspace.models.workspace_setting import WorkspaceSetting
 
 
 class WorkspaceSettingRepository(CoreRepository[WorkspaceSetting]):
-    """Truy xuất cấu hình Trợ lý cá nhân."""
+    """Truy xuất cấu hình Digest và liên kết Telegram cá nhân."""
 
     model = WorkspaceSetting
 
@@ -21,10 +21,12 @@ class WorkspaceSettingRepository(CoreRepository[WorkspaceSetting]):
         """Tìm cấu hình theo `owner_id`."""
         return self.find_one(owner_id=owner_id)
 
+    def find_by_owners(self, owner_ids: list[Any]) -> list[WorkspaceSetting]:
+        """Lấy cấu hình cho tập chủ sở hữu đang liên kết trong một Telegram chat."""
+        if not owner_ids:
+            return []
+        return list(self.get_queryset().filter(owner_id__in=owner_ids))
+
     def list_digest_enabled(self) -> list[WorkspaceSetting]:
         """Các cấu hình đang bật tóm tắt hàng ngày (cho cron W4)."""
         return list(self.get_queryset().filter(daily_digest_enabled=True))
-
-    def list_telegram_ai_enabled(self) -> list[WorkspaceSetting]:
-        """Các cấu hình đang bật trợ lý AI trên Telegram (phục vụ định tuyến tin nhắn)."""
-        return list(self.get_queryset().filter(telegram_ai_enabled=True))

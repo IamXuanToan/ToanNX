@@ -1,9 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Controller } from "react-hook-form";
 
 import { Link } from "@/i18n/navigation";
-import { DatePicker } from "@/shares/components/common/date-picker";
+import { DateTimePicker } from "@/shares/components/common/date-time-picker";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
 import { FormField } from "@/shares/components/common/form-field";
@@ -12,7 +13,6 @@ import { FormSubmitButton } from "@/shares/components/common/form-submit-button"
 import { NumberInput } from "@/shares/components/common/number-input";
 import { SelectField } from "@/shares/components/common/select-field";
 import { TagsInput } from "@/shares/components/common/tags-input";
-import { TimePicker } from "@/shares/components/common/time-picker";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
@@ -20,6 +20,7 @@ import { Textarea } from "@/shares/components/ui/textarea";
 import { REMINDER_PRIORITIES, REMINDER_RECURRENCES } from "../../constants/defaults";
 import { WORKSPACE_ROUTES } from "../../constants/routes";
 import type { Reminder } from "../../types/reminder.types";
+import { NotificationChannelsField } from "../workspace-setting/notification-channels-field";
 import { useReminderForm } from "./hooks/use-reminder-form";
 
 /**
@@ -42,6 +43,7 @@ export function ReminderForm({
   onCancel?: () => void;
 }) {
   const t = useTranslations("workspace.reminders");
+  const tChannels = useTranslations("workspace.notificationChannels");
   const tCommon = useTranslations("common.actions");
   const state = useReminderForm(reminder, { defaultDueDate, onSaved });
   const { form } = state;
@@ -63,20 +65,39 @@ export function ReminderForm({
               {(field) => <Input {...field} disabled={locked} className="h-10" />}
             </FormField>
           </div>
-          <FormField control={form.control} name="dueDate" label={t("fields.dueDate")} required>
+          <FormField control={form.control} name="dueDate" label={t("fields.dueDateTime")} required>
             {(field) => (
-              <DatePicker
-                id={field.id}
-                value={field.value}
-                onChange={field.onChange}
-                disabled={locked}
-                invalid={field["aria-invalid"]}
+              <Controller
+                control={form.control}
+                name="dueTime"
+                render={({ field: timeField }) => (
+                  <DateTimePicker
+                    id={field.id}
+                    dateValue={field.value}
+                    timeValue={timeField.value}
+                    onDateChange={field.onChange}
+                    onTimeChange={timeField.onChange}
+                    dateRequired
+                    disabled={locked}
+                    invalid={field["aria-invalid"]}
+                  />
+                )}
               />
             )}
           </FormField>
-          <FormField control={form.control} name="dueTime" label={t("fields.dueTime")}>
+          <FormField
+            control={form.control}
+            name="notifyMinutesBefore"
+            label={t("fields.notifyMinutesBefore")}
+          >
             {(field) => (
-              <TimePicker value={field.value} onChange={field.onChange} disabled={locked} />
+              <NumberInput
+                {...field}
+                integer
+                onChange={(val) => field.onChange(val === "" ? "" : String(val))}
+                disabled={locked}
+                className="h-10"
+              />
             )}
           </FormField>
           <FormField control={form.control} name="priority" label={t("fields.priority")}>
@@ -109,21 +130,6 @@ export function ReminderForm({
               />
             )}
           </FormField>
-          <FormField
-            control={form.control}
-            name="notifyMinutesBefore"
-            label={t("fields.notifyMinutesBefore")}
-          >
-            {(field) => (
-              <NumberInput
-                {...field}
-                integer
-                onChange={(val) => field.onChange(val === "" ? "" : String(val))}
-                disabled={locked}
-                className="h-10"
-              />
-            )}
-          </FormField>
           <FormField control={form.control} name="anchorDay" label={t("fields.anchorDay")}>
             {(field) => (
               <NumberInput
@@ -147,23 +153,41 @@ export function ReminderForm({
               {(field) => <Textarea {...field} disabled={locked} rows={3} />}
             </FormField>
           </div>
+          <div className="sm:col-span-2">
+            <FormField
+              control={form.control}
+              name="notificationChannels"
+              label={tChannels("label")}
+            >
+              {(field) => (
+                <NotificationChannelsField
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={locked}
+                  idPrefix="rem-channel"
+                />
+              )}
+            </FormField>
+          </div>
         </div>
       </FormSection>
 
-      {disabled ? null : (
-        <FormActions>
-          {onCancel ? (
-            <Button type="button" variant="outline" onClick={onCancel}>
-              {tCommon("cancel")}
-            </Button>
-          ) : (
-            <Button asChild type="button" variant="outline">
-              <Link href={WORKSPACE_ROUTES.reminders}>{tCommon("cancel")}</Link>
-            </Button>
-          )}
+      <FormActions>
+        {onCancel ? (
+          <Button type="button" variant="outline" onClick={onCancel}>
+            {disabled ? tCommon("back") : tCommon("cancel")}
+          </Button>
+        ) : (
+          <Button asChild type="button" variant="outline">
+            <Link href={WORKSPACE_ROUTES.reminders}>
+              {disabled ? tCommon("back") : tCommon("cancel")}
+            </Link>
+          </Button>
+        )}
+        {disabled ? null : (
           <FormSubmitButton isSubmitting={state.isSubmitting}>{tCommon("save")}</FormSubmitButton>
-        </FormActions>
-      )}
+        )}
+      </FormActions>
     </Form>
   );
 }

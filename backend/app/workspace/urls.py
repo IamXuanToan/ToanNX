@@ -5,13 +5,10 @@ from rest_framework.routers import SimpleRouter
 
 from app.workspace.views.asset_view_set import AssetViewSet
 from app.workspace.views.asset_warranty_claim_view_set import AssetWarrantyClaimViewSet
+from app.workspace.views.assistant_bot_profile_view import AssistantBotProfileView
 from app.workspace.views.assistant_chat_view import AssistantChatView
-from app.workspace.views.assistant_conversation_messages_view import (
-    AssistantConversationMessagesView,
-)
-from app.workspace.views.assistant_conversation_view_set import AssistantConversationViewSet
-from app.workspace.views.monitor_incident_view_set import MonitorIncidentViewSet
-from app.workspace.views.monitor_target_view_set import MonitorTargetViewSet
+from app.workspace.views.assistant_config_view import AssistantConfigView
+from app.workspace.views.assistant_thread_view import AssistantThreadView
 from app.workspace.views.reminder_view_set import ReminderViewSet
 from app.workspace.views.subscription_payment_view_set import SubscriptionPaymentViewSet
 from app.workspace.views.subscription_view_set import SubscriptionViewSet
@@ -34,14 +31,7 @@ router.register("warranty-claims", AssetWarrantyClaimViewSet, basename="warranty
 router.register("subscriptions", SubscriptionViewSet, basename="subscriptions")
 router.register("subscription-payments", SubscriptionPaymentViewSet, basename="subscription-payments")
 router.register("vault-items", VaultItemViewSet, basename="vault-items")
-router.register("monitor-targets", MonitorTargetViewSet, basename="monitor-targets")
-router.register("monitor-incidents", MonitorIncidentViewSet, basename="monitor-incidents")
 router.register("reminders", ReminderViewSet, basename="reminders")
-router.register(
-    "assistant/conversations",
-    AssistantConversationViewSet,
-    basename="assistant-conversations",
-)
 
 urlpatterns: list[URLPattern | URLResolver] = [
     path("settings", WorkspaceSettingView.as_view(), name="workspace-settings"),
@@ -56,16 +46,14 @@ urlpatterns: list[URLPattern | URLResolver] = [
         name="workspace-dashboard-summary",
     ),
     path("calendar", WorkspaceCalendarView.as_view(), name="workspace-calendar"),
+    path("assistant/config", AssistantConfigView.as_view(), name="assistant-config"),
+    path("assistant/bot-profile", AssistantBotProfileView.as_view(), name="assistant-bot-profile"),
+    path("assistant/thread", AssistantThreadView.as_view(), name="assistant-thread"),
     path("assistant/chat", AssistantChatView.as_view(), name="assistant-chat"),
     path(
         "assistant/telegram-process",
         TelegramAssistantProcessView.as_view(),
         name="telegram-assistant-process",
-    ),
-    path(
-        "assistant/conversations/<uuid:pk>/messages",
-        AssistantConversationMessagesView.as_view(),
-        name="assistant-conversation-messages",
     ),
     path("cron/tick", WorkspaceCronTickView.as_view(), name="workspace-cron-tick"),
     path(

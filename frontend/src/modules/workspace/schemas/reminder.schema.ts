@@ -1,8 +1,12 @@
 import { z } from "zod";
 
-import { REMINDER_PRIORITIES, REMINDER_RECURRENCES } from "../constants/defaults";
+import {
+  REMINDER_PRIORITIES,
+  REMINDER_RECURRENCES,
+  WORKSPACE_NOTIFICATION_CHANNELS,
+} from "../constants/defaults";
 
-type Translate = (key: "required" | "notifyMinutes" | "anchorDay") => string;
+type Translate = (key: "required" | "notifyMinutes" | "anchorDay" | "atLeastOneChannel") => string;
 
 /** Tên trường form Nhắc việc cá nhân. */
 export const REMINDER_FORM_FIELDS = [
@@ -15,6 +19,7 @@ export const REMINDER_FORM_FIELDS = [
   "recurrence",
   "anchorDay",
   "tags",
+  "notificationChannels",
 ] as const;
 
 /**
@@ -35,6 +40,9 @@ export function reminderSchema(t: Translate) {
       recurrence: z.enum(REMINDER_RECURRENCES),
       anchorDay: z.string().trim(),
       tags: z.array(z.string()),
+      notificationChannels: z
+        .array(z.enum(WORKSPACE_NOTIFICATION_CHANNELS))
+        .min(1, t("atLeastOneChannel")),
     })
     .superRefine((value, ctx) => {
       if (

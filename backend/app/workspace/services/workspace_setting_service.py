@@ -1,10 +1,10 @@
-"""Nghiệp vụ Cài đặt Trợ lý cá nhân, Lịch Digest & Chính sách hiển thị Telegram Group."""
+"""Nghiệp vụ Cài đặt Lịch Digest, Mốc cảnh báo cá nhân & liên kết Telegram cho từng user."""
 
 from typing import Any
 
-from django.conf import settings
-from django.db import transaction
+from django.db import IntegrityError, transaction
 
+from app.core.exceptions.conflict_error import ConflictError
 from app.core.exceptions.not_found_error import NotFoundError
 from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
@@ -41,23 +41,20 @@ class WorkspaceSettingService(CoreCrudService[WorkspaceSetting, WorkspaceSetting
         self.alerts_cache_service = alerts_cache_service or WorkspaceAlertsCacheService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
 
-    def available_ai_models(self) -> list[str]:
-        """Danh sách model AI hợp lệ từ cấu hình ENV (`XKIRO_MODEL` + `XKIRO_FALLBACK_MODELS`)."""
-        candidates = [settings.XKIRO_MODEL, *settings.XKIRO_FALLBACK_MODELS]
-        seen: list[str] = []
-        for item in candidates:
-            cleaned = str(item or "").strip()
-            if cleaned and cleaned not in seen:
-                seen.append(cleaned)
-        return seen
-
     @transaction.atomic
     def get_or_create_for_owner(self, owner: Any) -> WorkspaceSetting:
-        """Lấy hoặc khởi tạo cấu hình mặc định cho một user có thật."""
+        """Lấy hoặc khởi tạo cấu hình mặc định cho một user có thật (an toàn khi gọi song song)."""
         existing = self.repository.find_by_owner(owner.pk)
         if existing is not None:
             return existing
-        created = self.repository.create(actor=owner, owner=owner)
+        try:
+            with transaction.atomic():
+                created = self.repository.create(actor=owner, owner=owner)
+        except (ConflictError, IntegrityError):
+            concurrent = self.repository.find_by_owner(owner.pk)
+            if concurrent is not None:
+                return concurrent
+            raise
         self.alerts_cache_service.schedule_alerts_next_due_on_commit()
         return created
 
@@ -71,7 +68,7 @@ class WorkspaceSettingService(CoreCrudService[WorkspaceSetting, WorkspaceSetting
 
     @transaction.atomic
     def update_for_owner(self, actor: Any, owner_id: Any, data: dict[str, Any]) -> WorkspaceSetting:
-        """Kiểm tra chặt chẽ các tùy chọn Digest, AI, Telegram Group và lưu cấu hình."""
+        """Kiểm tra chặt chẽ các tùy chọn Digest, Mốc nhắc & Chat Telegram được phép rồi lưu."""
         target_user, instance = self.get_for_target_owner(owner_id)
         payload = dict(data)
 
@@ -99,16 +96,6 @@ class WorkspaceSettingService(CoreCrudService[WorkspaceSetting, WorkspaceSetting
             payload["subscription_default_alert_days"] = self._normalize_positive_days(
                 payload["subscription_default_alert_days"], "subscription_default_alert_days"
             )
-
-        if "preferred_ai_model" in payload:
-            model_name = str(payload["preferred_ai_model"] or "").strip()
-            allowed_models = self.available_ai_models()
-            if model_name and allowed_models and model_name not in allowed_models:
-                raise ValidationError(
-                    "Model AI ưu tiên không nằm trong danh sách hỗ trợ.",
-                    details={"preferred_ai_model": ["Model AI không thuộc danh sách cho phép."]},
-                )
-            payload["preferred_ai_model"] = model_name
 
         if "telegram_allowed_chat_ids" in payload:
             payload["telegram_allowed_chat_ids"] = self._validate_allowed_chats(

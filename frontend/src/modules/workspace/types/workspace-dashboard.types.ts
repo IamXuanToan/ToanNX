@@ -25,8 +25,5 @@ export type WorkspaceDashboardSummary = {
   expiringWarranties30d: number;
   upcomingSubscriptions14d: number;
   upcomingSubscriptions14dVnd: string;
-  monitorsTotal: number;
-  monitorsHealthy: number;
-  monitorsDown: number;
   todayReminders: WorkspaceDashboardReminder[];
 };

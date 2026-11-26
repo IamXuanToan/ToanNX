@@ -1,4 +1,21 @@
 {
+  "module": {
+    "name": "Không gian & Trợ lý AI",
+    "description": "Quản trị cấu hình Chatbot AI dùng chung, Policy trả lời và Bot Telegram."
+  },
+  "nav": {
+    "assistantConfig": "Chatbot AI"
+  },
+  "notificationChannels": {
+    "label": "Kênh nhận thông báo",
+    "hint": "Mặc định qua Website (chuông & push). Có thể chọn thêm hoặc đổi sang Telegram, Email.",
+    "options": {
+      "WEBSITE": "Website (Chuông & Push)",
+      "TELEGRAM": "Telegram",
+      "EMAIL": "Email"
+    },
+    "atLeastOne": "Vui lòng chọn ít nhất một kênh nhận thông báo."
+  },
   "common": {
     "yes": "Có",
     "no": "Không",
@@ -29,17 +46,16 @@
     "months": "Số tháng bảo hành hợp lệ từ 0 đến 240.",
     "customDays": "Chu kỳ tùy chỉnh phải từ 1 đến 3650 ngày.",
     "anchorDay": "Ngày cố định trong tháng phải từ 1 đến 31.",
-    "expectedStatus": "Mã HTTP kỳ vọng phải từ 100 đến 599.",
-    "timeoutSeconds": "Timeout phải từ 1 đến 4 giây.",
-    "checkInterval": "Tần suất kiểm tra phải từ 15 đến 1440 phút.",
     "notifyMinutes": "Số phút báo trước tối đa 10080 phút.",
     "timeSlot": "Khung giờ phải đúng định dạng HH:MM (ví dụ 08:00).",
+    "alertDay": "Số ngày cảnh báo phải là số nguyên từ 0 đến 365.",
     "positiveInt": "Giá trị tối thiểu phải từ 100 trở lên.",
-    "daysList": "Danh sách số ngày phải cách nhau bởi dấu phẩy (0–365)."
+    "daysList": "Danh sách số ngày phải cách nhau bởi dấu phẩy (0–365).",
+    "atLeastOneChannel": "Vui lòng chọn ít nhất một kênh nhận thông báo."
   },
   "calendar": {
     "title": "Lịch việc & Gia hạn",
-    "subtitle": "Gom sự kiện từ nhắc việc, dịch vụ định kỳ, bảo hành, phiếu sửa chữa và sự cố Uptime.",
+    "subtitle": "Gom sự kiện từ nhắc việc, dịch vụ định kỳ, bảo hành thiết bị và phiếu sửa chữa.",
     "prevMonth": "Tháng trước",
     "nextMonth": "Tháng sau",
     "today": "Hôm nay",
@@ -63,8 +79,7 @@
       "subscription": "Gia hạn dịch vụ",
       "reminder": "Nhắc việc",
       "asset_warranty": "Hết bảo hành",
-      "warranty_claim": "Hẹn trả bảo hành",
-      "monitor_incident": "Sự cố Uptime"
+      "warranty_claim": "Hẹn trả bảo hành"
     }
   },
   "assets": {
@@ -153,6 +168,7 @@
     "create": "Tạo phiếu bảo hành",
     "createTitle": "Tạo phiếu bảo hành / sửa chữa",
     "editTitle": "Chi tiết phiếu bảo hành",
+    "backToAsset": "Về thiết bị",
     "attachmentsSection": "Biên nhận & Chứng từ (riêng tư)",
     "coveredYes": "Miễn phí BH",
     "coveredNo": "Tính phí",
@@ -199,6 +215,7 @@
     "create": "Thêm dịch vụ",
     "createTitle": "Thêm dịch vụ định kỳ",
     "editTitle": "Chi tiết dịch vụ định kỳ",
+    "historyButton": "Lịch sử gia hạn",
     "renew": "Gia hạn",
     "renewTitle": "Gia hạn dịch vụ \"{name}\"",
     "renewSuccess": "Đã ghi nhận kỳ thanh toán và cập nhật ngày gia hạn.",
@@ -297,55 +314,6 @@
       "OTHER": "Khác"
     }
   },
-  "monitors": {
-    "title": "Giám sát Uptime",
-    "subtitle": "Kiểm tra tự động sức khỏe các website, API cá nhân và cảnh báo tức thời khi sự cố.",
-    "searchPlaceholder": "Tìm theo tên dịch vụ, URL...",
-    "create": "Thêm endpoint",
-    "createTitle": "Thêm endpoint giám sát",
-    "editTitle": "Chi tiết endpoint Uptime",
-    "pingNow": "Ping ngay",
-    "pingSuccess": "Endpoint phản hồi HTTP {code} ({latency} ms).",
-    "pingDown": "Endpoint gặp sự cố: {error}",
-    "tabIncidents": "Lịch sử sự cố ({count})",
-    "msUnit": "{value} ms",
-    "fields": {
-      "name": "Tên dịch vụ",
-      "url": "URL kiểm tra",
-      "method": "Phương thức",
-      "expectedStatus": "Mã HTTP kỳ vọng",
-      "timeoutSeconds": "Timeout (1-4s)",
-      "checkIntervalMinutes": "Tần suất (tối thiểu 15 phút)",
-      "isActive": "Đang giám sát",
-      "lastStatus": "Trạng thái gần nhất",
-      "lastStatusCode": "HTTP",
-      "lastLatencyMs": "Độ trễ",
-      "lastCheckedAt": "Kiểm tra lúc",
-      "consecutiveFailures": "Số lần lỗi liên tiếp"
-    },
-    "statuses": {
-      "HEALTHY": "Ổn định",
-      "DEGRADED": "Chậm / Cảnh báo",
-      "DOWN": "Ngừng phản hồi",
-      "UNKNOWN": "Chưa kiểm tra"
-    }
-  },
-  "monitorIncidents": {
-    "title": "Sự cố Uptime",
-    "subtitle": "Nhật ký các lần dịch vụ bị gián đoạn và thời gian khôi phục.",
-    "searchPlaceholder": "Tìm theo endpoint, chi tiết lỗi...",
-    "ongoing": "Đang gián đoạn",
-    "resolved": "Đã khôi phục",
-    "durationSeconds": "{seconds} giây",
-    "fields": {
-      "targetName": "Endpoint",
-      "startedAt": "Bắt đầu sự cố",
-      "resolvedAt": "Khôi phục lúc",
-      "statusCode": "Mã HTTP",
-      "errorMessage": "Chi tiết lỗi",
-      "durationSeconds": "Thời lượng gián đoạn"
-    }
-  },
   "reminders": {
     "title": "Nhắc việc cá nhân",
     "subtitle": "Quản lý công việc cần làm, lịch lặp định kỳ và nhắc nhở trước giờ hẹn.",
@@ -362,6 +330,7 @@
       "description": "Mô tả chi tiết",
       "dueDate": "Ngày đến hạn",
       "dueTime": "Giờ đến hạn",
+      "dueDateTime": "Ngày & giờ đến hạn",
       "notifyMinutesBefore": "Nhắc trước (phút)",
       "priority": "Mức độ ưu tiên",
       "isCompleted": "Đã hoàn thành",
@@ -385,69 +354,107 @@
     }
   },
   "assistant": {
-    "title": "Trợ lý AI cá nhân",
-    "subtitle": "Hỏi đáp thông minh, chạy slash command và đồng bộ ngữ cảnh giữa Web & Telegram.",
-    "newChat": "Cuộc trò chuyện mới",
-    "conversations": "Lịch sử hội thoại",
-    "emptyConversations": "Chưa có hội thoại nào. Hãy bắt đầu đặt câu hỏi.",
-    "emptyMessages": "Bắt đầu cuộc trò chuyện bằng cách nhập câu hỏi hoặc bấm nhanh lệnh bên dưới.",
+    "title": "Trợ lý AI",
+    "subtitle": "Luồng chat một cửa hỗ trợ hỏi đáp dữ liệu cá nhân và lệnh nhanh.",
+    "defaultName": "Trợ lý AI",
+    "openPopup": "Mở trợ lý nổi",
+    "closePopup": "Thu gọn trợ lý",
+    "scrollToBottom": "Xuống tin mới nhất",
+    "dragHint": "Kéo để di chuyển nút AI về cạnh màn hình",
+    "readySubtitle": "Sẵn sàng hỗ trợ",
+    "thinking": "{name} đang suy nghĩ",
+    "clearThread": "Làm mới luồng chat",
+    "clearThreadShort": "Xóa lịch sử",
+    "clearConfirm": "Xóa toàn bộ tin nhắn trong luồng chat Web hiện tại để bắt đầu lại?",
+    "clearSuccess": "Đã dọn sạch luồng chat.",
+    "emptyMessages": "Bắt đầu cuộc trò chuyện bằng cách nhập câu hỏi hoặc chọn nhanh lệnh bên dưới.",
     "loadMore": "Tải thêm tin nhắn cũ",
-    "placeholder": "Nhập câu hỏi hoặc lệnh (vd: /today, /upcoming, /remind 18:00 Gửi báo cáo)...",
+    "placeholder": "Hỏi AI hoặc gõ /...",
     "send": "Gửi",
     "sending": "Đang suy nghĩ...",
     "channelWeb": "Web",
     "channelTelegramDm": "Telegram riêng",
     "channelTelegramGroup": "Telegram nhóm",
-    "modelBadge": "Model: {model}",
-    "fallbackBadge": "Fallback x{attempts}",
-    "privateBadge": "Có dữ liệu cá nhân",
-    "tokensUsed": "{tokens} tokens",
+    "sizeLabel": "Kích thước khung chat",
+    "sizes": {
+      "compact": "Nhỏ",
+      "default": "Vừa",
+      "large": "Lớn"
+    },
     "slashLabel": "Lệnh nhanh:",
+    "slashSuggestTitle": "Gợi ý câu lệnh nhanh",
+    "slashSuggestHint": "↑↓ chọn · Tab chèn · Enter chạy · Esc đóng",
+    "slashBadges": {
+      "today": "Hôm nay",
+      "upcoming": "Sắp tới",
+      "spending": "Chi tiêu",
+      "assets": "Thiết bị",
+      "remind": "Nhắc việc",
+      "help": "Trợ giúp"
+    },
     "slashCommands": {
-      "today": "/today · Việc hôm nay",
-      "upcoming": "/upcoming · Dịch vụ sắp hạn",
-      "spending": "/spending · Chi tiêu tháng",
-      "assets": "/assets · Thiết bị & Bảo hành",
-      "status": "/status · Trạng thái Uptime",
-      "remind": "/remind · Tạo nhắc việc",
-      "newchat": "/newchat · Hội thoại mới",
-      "help": "/help · Hướng dẫn"
+      "today": "Việc cần làm & nhắc hẹn hôm nay",
+      "upcoming": "Dịch vụ định kỳ sắp đến hạn gia hạn",
+      "spending": "Tổng hợp chi tiêu cá nhân trong tháng",
+      "assets": "Tra cứu thiết bị & hạn bảo hành",
+      "remind": "Tạo nhắc việc nhanh theo ngày giờ",
+      "help": "Xem danh sách & hướng dẫn câu lệnh nhanh"
     }
   },
-  "settings": {
-    "title": "Cài đặt Trợ lý & Digest",
-    "subtitle": "Tùy biến múi giờ, khung giờ gửi bản tin hàng ngày, model AI ưu tiên và chính sách Telegram.",
-    "save": "Lưu cài đặt",
+  "assistantAdmin": {
+    "title": "Cấu hình Chatbot AI",
+    "saved": "Đã lưu cấu hình Chatbot AI.",
     "sections": {
-      "digest": "Múi giờ & Bản tin tổng hợp (Daily Digest)",
-      "ai": "Trí tuệ nhân tạo (xKiro Multi-model)",
-      "telegram": "Trợ lý hai chiều qua Telegram"
+      "identity": "Avatar & Nhận diện Chatbot AI",
+      "policy": "Policy trả lời & Trí tuệ nhân tạo",
+      "telegram": "Quy tắc Bot Telegram hai chiều"
     },
-    "digestSectionLabels": {
-      "reminders": "Nhắc việc hôm nay & quá hạn",
-      "warranty": "Thiết bị sắp hết bảo hành",
-      "subscriptions": "Dịch vụ sắp gia hạn",
-      "monitors": "Trạng thái Uptime Monitor",
-      "finance": "Tổng hợp chi tiêu tháng"
+    "avatarHint": "Chọn ảnh công khai từ Thư viện hoặc dùng icon Bot mặc định.",
+    "avatarMissingPerm": "Cần quyền Thư viện để đổi ảnh đại diện.",
+    "selectAvatar": "Chọn ảnh",
+    "removeAvatar": "Gỡ ảnh",
+    "presetsLabel": "Gợi ý Policy nhanh:",
+    "presets": {
+      "standardSafety": {
+        "label": "Chuẩn an toàn hệ thống",
+        "value": "Nguyên tắc an toàn & nội dung bắt buộc:\n1. Tuyệt đối KHÔNG thảo luận, cổ súy, hướng dẫn hay bình luận về khủng bố, bạo lực cực đoan, chất nổ, vũ khí, chiến tranh, xung đột vũ trang, quân sự hoặc khí tài quốc phòng.\n2. Tuyệt đối KHÔNG phân biệt vùng miền, địa phương, sắc tộc, quốc tịch, tôn giáo, giới tính hay công kích cá nhân/tổ chức; luôn giữ thái độ trung lập, khách quan và tôn trọng lẫn nhau.\n3. Nếu người dùng đề cập chủ đề bị cấm hoặc trái pháp luật, từ chối ngắn gọn, lịch sự và chuyển hướng về tác vụ hợp lệ, không thuyết giáo.\n4. Bảo mật & trung thực dữ liệu: chỉ dùng số liệu thật từ công cụ được cấp; tuyệt đối không bịa đặt số liệu và không truy xuất hay suy đoán mật khẩu, API key, bí mật trong Két sắt.\n5. Phong cách trả lời: lịch sự, súc tích bằng tiếng Việt có dấu (hoặc tiếng Anh nếu người dùng hỏi bằng tiếng Anh), trình bày gạch đầu dòng rõ ràng, ưu tiên quy đổi chi phí sang VNĐ."
+      },
+      "concise": {
+        "label": "Ngắn gọn · Tiếng Việt",
+        "value": "Trả lời ngắn gọn tối đa 3-5 gạch đầu dòng bằng tiếng Việt rõ ràng, đi thẳng vào số liệu; tuyệt đối tránh nội dung khủng bố, quân sự và không phân biệt vùng miền."
+      },
+      "analytical": {
+        "label": "Phân tích tài chính & rủi ro",
+        "value": "Luôn tổng hợp số liệu tài chính theo VNĐ, chỉ rõ khoản sắp đến hạn và cảnh báo rủi ro nếu có; giữ thái độ trung lập, không nhắc chủ đề quân sự, khủng bố hay phân biệt vùng miền."
+      },
+      "english": {
+        "label": "Chuyên nghiệp · English",
+        "value": "Respond concisely in clear professional English with structured bullet points. Strictly avoid terrorism, military topics, and regional or cultural discrimination."
+      }
     },
-    "addSlotPlaceholder": "VD: 08:00",
-    "addSlot": "Thêm khung giờ",
+    "policySecurityNote": "Chốt an toàn lõi (cấm khủng bố, quân sự, phân biệt vùng miền & bảo mật Két sắt) luôn được backend áp dụng tự động ở tầng hệ thống.",
     "modelAutoDefault": "Mặc định hệ thống (tự động fallback)",
-    "telegramBotLinked": "Bot hệ thống: @{username}",
+    "telegramBotLinked": "Bot Telegram hệ thống: @{username}",
     "telegramBotMissing": "Máy chủ chưa cấu hình TELEGRAM_BOT_TOKEN.",
     "openTelegramBot": "Mở chat với Bot",
-    "noTelegramChats": "Chưa có nơi nhận Telegram nào. Hãy liên kết trong Hồ sơ cá nhân → Thông báo.",
+    "telegramCommands": {
+      "title": "Lệnh Bot Telegram (@BotFather)",
+      "description": "Các lệnh Bot đang hỗ trợ sẵn. Sao chép khối dưới và dán vào @BotFather (/setcommands) để Telegram hiện menu gợi ý đồng bộ.",
+      "copy": "Sao chép",
+      "copied": "Đã sao chép danh sách lệnh @BotFather.",
+      "copiedShort": "Đã chép",
+      "copyFailed": "Không sao chép được từ trình duyệt.",
+      "telegramOnlyBadge": "Chỉ Telegram",
+      "botFatherBlockLabel": "Mẫu dán trực tiếp vào @BotFather (/setcommands):"
+    },
     "fields": {
-      "timezone": "Múi giờ cá nhân",
-      "dailyDigestEnabled": "Bật gửi bản tin tổng hợp hàng ngày",
-      "digestTimeSlots": "Khung giờ gửi Digest (HH:MM)",
-      "digestSections": "Nội dung đưa vào Digest",
-      "warrantyAlertDays": "Mốc ngày cảnh báo bảo hành (cách bởi dấu phẩy)",
-      "subscriptionDefaultAlertDays": "Mốc ngày cảnh báo gia hạn dịch vụ",
+      "assistantName": "Tên hiển thị Chatbot AI",
+      "assistantNamePlaceholder": "VD: ToanNX Assistant",
+      "assistantSystemPrompt": "Policy / Chỉ dẫn trả lời của Chatbot AI",
+      "assistantSystemPromptPlaceholder": "VD: Luôn xưng hô lịch sự, tóm tắt thành gạch đầu dòng ngắn gọn và ưu tiên nêu số tiền bằng VNĐ...",
       "preferredAiModel": "Model AI ưu tiên",
-      "aiDailyTokenLimit": "Giới hạn token AI mỗi ngày (để trống = không giới hạn)",
-      "telegramAiEnabled": "Cho phép Trợ lý AI hoạt động trên Telegram",
-      "telegramAllowedChatIds": "Nơi nhận Telegram được phép gọi Trợ lý",
+      "aiDailyTokenLimit": "Giới hạn token AI mỗi ngày/user (trống = không giới hạn)",
+      "telegramAiEnabled": "Cho phép Chatbot AI hoạt động trên Telegram",
       "telegramGroupRequireMention": "Trong nhóm phải @tag bot hoặc reply tin nhắn bot",
       "telegramGroupToolPolicy": "Quyền đọc dữ liệu cá nhân trong nhóm",
       "telegramGroupHideAmounts": "Ẩn số tiền nhạy cảm khi trả lời trong nhóm",
@@ -457,6 +464,47 @@
       "DISABLED": "Tắt đọc dữ liệu cá nhân trong nhóm",
       "OWNER_ONLY": "Chỉ chủ sở hữu (kiểm tra Telegram ID)",
       "ALL_MEMBERS": "Mọi thành viên trong nhóm đã cấp phép"
+    }
+  },
+  "settings": {
+    "title": "Cài đặt Digest & Cảnh báo cá nhân",
+    "subtitle": "Tùy biến múi giờ, lịch bản tin hàng ngày, mốc nhắc và các chat Telegram nhận thông báo.",
+    "save": "Lưu cài đặt",
+    "sections": {
+      "digest": "Múi giờ & Bản tin tổng hợp (Daily Digest)",
+      "alerts": "Mốc cảnh báo tự động",
+      "telegram": "Liên kết Telegram cá nhân"
+    },
+    "dailyDigestDesc": "Tự động gửi bản tóm tắt việc đến hạn, bảo hành và chi tiêu đúng khung giờ chọn.",
+    "timezoneDesc": "Mặc định (UTC+07:00) Hà Nội / TP.HCM. Mọi lịch nhắc và Digest tính theo múi giờ này.",
+    "digestSectionLabels": {
+      "reminders": "Nhắc việc hôm nay & quá hạn",
+      "warranty": "Thiết bị sắp hết bảo hành",
+      "subscriptions": "Dịch vụ sắp gia hạn",
+      "finance": "Tổng hợp chi tiêu tháng"
+    },
+    "addSlotPlaceholder": "VD: 08:00",
+    "addSlot": "Thêm giờ",
+    "addSlotTooltip": "Nhập khung giờ định dạng HH:MM (ví dụ 08:00) rồi nhấn Enter hoặc bấm Thêm giờ.",
+    "addAlertDayPlaceholder": "VD: 7",
+    "addAlertDay": "Thêm ngày",
+    "alertDaysUnit": "{days} ngày",
+    "alertDaysTooltip": "Nhập số ngày báo trước (0–365) rồi nhấn Enter hoặc bấm Thêm ngày.",
+    "emptySlots": "Chưa có khung giờ gửi nào.",
+    "emptyAlertDays": "Chưa thiết lập mốc ngày cảnh báo.",
+    "telegramBotLinked": "Bot hệ thống: @{username}",
+    "telegramBotMissing": "Máy chủ chưa cấu hình TELEGRAM_BOT_TOKEN.",
+    "openTelegramBot": "Mở chat với Bot",
+    "telegramHint": "Chỉ các cuộc trò chuyện được tích chọn mới nhận cảnh báo và phản hồi Telegram từ hệ thống.",
+    "noTelegramChats": "Chưa có nơi nhận Telegram nào. Hãy liên kết trong Hồ sơ cá nhân → Thông báo.",
+    "fields": {
+      "timezone": "Múi giờ cá nhân",
+      "dailyDigestEnabled": "Bật gửi bản tin tổng hợp hàng ngày",
+      "digestTimeSlots": "Khung giờ gửi Digest (HH:MM)",
+      "digestSections": "Nội dung đưa vào Digest",
+      "warrantyAlertDays": "Cảnh báo hết bảo hành trước",
+      "subscriptionDefaultAlertDays": "Cảnh báo gia hạn dịch vụ trước",
+      "telegramAllowedChatIds": "Nơi nhận Telegram được phép"
     }
   }
 }

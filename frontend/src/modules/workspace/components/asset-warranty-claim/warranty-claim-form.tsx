@@ -20,7 +20,6 @@ import { Label } from "@/shares/components/ui/label";
 import { Textarea } from "@/shares/components/ui/textarea";
 
 import { CLAIM_STATUSES, CLAIM_TYPES } from "../../constants/defaults";
-import { WORKSPACE_ROUTES } from "../../constants/routes";
 import type { AssetWarrantyClaim } from "../../types/asset-warranty-claim.types";
 import { AssetInvoicesField } from "../asset/asset-invoices-field";
 import { useWarrantyClaimForm } from "./hooks/use-warranty-claim-form";
@@ -286,14 +285,16 @@ export function WarrantyClaimForm({
         </FormSection>
       </FormLayout>
 
-      {disabled ? null : (
-        <FormActions>
-          <Button asChild type="button" variant="outline">
-            <Link href={WORKSPACE_ROUTES.warrantyClaims}>{tCommon("cancel")}</Link>
-          </Button>
+      <FormActions>
+        <Button asChild type="button" variant="outline">
+          <Link href={state.cancelHref as never}>
+            {disabled ? tCommon("back") : tCommon("cancel")}
+          </Link>
+        </Button>
+        {disabled ? null : (
           <FormSubmitButton isSubmitting={state.isSubmitting}>{tCommon("save")}</FormSubmitButton>
-        </FormActions>
-      )}
+        )}
+      </FormActions>
     </Form>
   );
 }

@@ -6,7 +6,6 @@ from app.core.registry.notification_event_definition import (
     NOTIFICATION_CHANNEL_IN_APP,
     NOTIFICATION_CHANNEL_PUSH,
     NOTIFICATION_CHANNEL_TELEGRAM,
-    NOTIFICATION_LEVEL_ERROR,
     NOTIFICATION_LEVEL_INFO,
     NOTIFICATION_LEVEL_WARNING,
     NOTIFICATION_SCOPE_PERSONAL,
@@ -16,10 +15,8 @@ from app.core.registry.webhook_definition import WebhookDefinition
 from app.workspace.constants.workspace_notification_event import WorkspaceNotificationEvent as E
 from app.workspace.permissions.asset_permission import AssetPermission
 from app.workspace.permissions.asset_warranty_claim_permission import AssetWarrantyClaimPermission
-from app.workspace.permissions.assistant_conversation_permission import AssistantConversationPermission
+from app.workspace.permissions.assistant_config_permission import AssistantConfigPermission
 from app.workspace.permissions.assistant_permission import AssistantPermission
-from app.workspace.permissions.monitor_incident_permission import MonitorIncidentPermission
-from app.workspace.permissions.monitor_target_permission import MonitorTargetPermission
 from app.workspace.permissions.reminder_permission import ReminderPermission
 from app.workspace.permissions.subscription_payment_permission import SubscriptionPaymentPermission
 from app.workspace.permissions.subscription_permission import SubscriptionPermission
@@ -33,7 +30,7 @@ MODULE = ModuleDescriptor(
     name="Workspace",
     description=(
         "Trợ lý cá nhân: thiết bị & bảo hành, gói định kỳ & lịch sử gia hạn, két sắt bí mật, "
-        "giám sát Uptime, nhắc việc, lịch tổng hợp và trợ lý AI hai chiều qua Web/Telegram."
+        "nhắc việc, lịch tổng hợp và trợ lý AI hai chiều qua Web/Telegram."
     ),
     version="1.0.0",
     dependencies=("system", "finance", "utilities", "novel"),
@@ -43,12 +40,10 @@ MODULE = ModuleDescriptor(
         *SubscriptionPermission.all(),
         *SubscriptionPaymentPermission.all(),
         *VaultItemPermission.all(),
-        *MonitorTargetPermission.all(),
-        *MonitorIncidentPermission.all(),
         *ReminderPermission.all(),
         *WorkspaceSettingPermission.all(),
-        *AssistantConversationPermission.all(),
         *AssistantPermission.all(),
+        *AssistantConfigPermission.all(),
         *WorkspaceDashboardPermission.all(),
         *WorkspaceCalendarPermission.all(),
     ),
@@ -58,11 +53,8 @@ MODULE = ModuleDescriptor(
         *SubscriptionPermission.member(),
         *SubscriptionPaymentPermission.member(),
         *VaultItemPermission.member(),
-        *MonitorTargetPermission.member(),
-        *MonitorIncidentPermission.member(),
         *ReminderPermission.member(),
         *WorkspaceSettingPermission.member(),
-        *AssistantConversationPermission.member(),
         *AssistantPermission.member(),
         *WorkspaceDashboardPermission.member(),
         *WorkspaceCalendarPermission.member(),
@@ -83,7 +75,7 @@ MODULE = ModuleDescriptor(
         NotificationEventDefinition(
             E.DIGEST_DAILY,
             "Tóm tắt công việc hàng ngày",
-            "Bản tin tổng hợp việc, gia hạn, bảo hành và uptime theo khung giờ cấu hình.",
+            "Bản tin tổng hợp việc, gia hạn và bảo hành thiết bị theo khung giờ cấu hình.",
             scope=NOTIFICATION_SCOPE_PERSONAL,
             audience=NOTIFICATION_AUDIENCE_OWNER,
             permission=WorkspaceSettingPermission.READ.code,
@@ -116,48 +108,15 @@ MODULE = ModuleDescriptor(
             kind="business",
             icon="💳",
         ),
-        NotificationEventDefinition(
-            E.MONITOR_DOWN,
-            "Dịch vụ giám sát ngừng phản hồi",
-            "Cảnh báo khi mục tiêu Uptime chuyển sang DOWN.",
-            scope=NOTIFICATION_SCOPE_PERSONAL,
-            audience=NOTIFICATION_AUDIENCE_OWNER,
-            permission=MonitorTargetPermission.READ.code,
-            default_level=NOTIFICATION_LEVEL_ERROR,
-            default_channels=(
-                NOTIFICATION_CHANNEL_IN_APP,
-                NOTIFICATION_CHANNEL_PUSH,
-                NOTIFICATION_CHANNEL_TELEGRAM,
-            ),
-            kind="business",
-            icon="🔴",
-        ),
-        NotificationEventDefinition(
-            E.MONITOR_RECOVERED,
-            "Dịch vụ giám sát đã phục hồi",
-            "Thông báo khi mục tiêu Uptime quay lại trạng thái HEALTHY.",
-            scope=NOTIFICATION_SCOPE_PERSONAL,
-            audience=NOTIFICATION_AUDIENCE_OWNER,
-            permission=MonitorTargetPermission.READ.code,
-            default_level=NOTIFICATION_LEVEL_INFO,
-            default_channels=(
-                NOTIFICATION_CHANNEL_IN_APP,
-                NOTIFICATION_CHANNEL_PUSH,
-                NOTIFICATION_CHANNEL_TELEGRAM,
-            ),
-            kind="business",
-            icon="🟢",
-        ),
     ),
     webhooks=(
         WebhookDefinition(
             code="workspace.cron_tick",
-            name="Cron Workspace Tick (Uptime W1 + Alerts W4)",
+            name="Cron Workspace Tick (Alerts W4)",
             provider="cron-job.org / Upstash QStash",
             path="/workspace/cron/tick",
             description=(
-                "Chạy định kỳ mỗi 15–30 phút: đường W1 ping monitor chỉ dùng Redis khi ổn định, "
-                "đường W4 chỉ chạm DB khi Redis alerts_next_due tới hạn."
+                "Chạy định kỳ mỗi 15–30 phút: đường W4 chỉ chạm DB khi Redis alerts_next_due tới hạn."
             ),
             auth="Header Authorization: Bearer <CRON_SECRET> hoặc Upstash-Signature. Sai cả hai → 404.",
             setup=(
@@ -179,13 +138,13 @@ MODULE = ModuleDescriptor(
             name="Xử lý Trợ lý AI Telegram bất đồng bộ (QStash 1-hop)",
             provider="Upstash QStash",
             path="/workspace/assistant/telegram-process",
-            description=("Tách bước gọi xKiro LLM ra khỏi webhook Telegram để webhook trả 200 OK < 200ms."),
+            description="Tách bước gọi xKiro LLM ra khỏi webhook Telegram để webhook trả 200 OK < 200ms.",
             auth="Header Upstash-Signature hoặc Authorization: Bearer <CRON_SECRET>. Sai → 404.",
             setup=("Tự động kích hoạt bởi hook Telegram của module system khi QSTASH_TOKEN được bật.",),
         ),
     ),
     cleanup_tasks=(
-        "app.workspace.tasks.purge_old_monitor_incidents.purge_old_monitor_incidents",
         "app.workspace.tasks.purge_old_assistant_history.purge_old_assistant_history",
+        "app.workspace.tasks.refresh_cron_schedules.refresh_cron_schedules",
     ),
 )

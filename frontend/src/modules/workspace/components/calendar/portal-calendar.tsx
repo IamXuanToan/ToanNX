@@ -34,8 +34,6 @@ function resolveEventHref(ev: WorkspaceCalendarEvent) {
       return WORKSPACE_ROUTES.assetDetail(ev.sourceId);
     case "warranty_claim":
       return WORKSPACE_ROUTES.warrantyClaimDetail(ev.sourceId);
-    case "monitor_incident":
-      return WORKSPACE_ROUTES.monitorIncidents;
   }
 }
 
@@ -44,7 +42,6 @@ const EVENT_TONE: Record<CalendarEventType, StatusTone> = {
   reminder: "info",
   asset_warranty: "neutral",
   warranty_claim: "success",
-  monitor_incident: "danger",
 };
 
 const DOT_CLASS: Record<CalendarEventType, string> = {
@@ -52,13 +49,12 @@ const DOT_CLASS: Record<CalendarEventType, string> = {
   reminder: "bg-info",
   asset_warranty: "bg-primary",
   warranty_claim: "bg-success",
-  monitor_incident: "bg-destructive",
 };
 
 const WEEKDAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
 /**
- * Lịch tổng hợp 5 nguồn (Dịch vụ định kỳ, Nhắc việc, Hết bảo hành, Hẹn trả sửa chữa, Sự cố Uptime):
+ * Lịch tổng hợp 4 nguồn (Dịch vụ định kỳ, Nhắc việc, Hết bảo hành, Hẹn trả sửa chữa):
  * hỗ trợ lọc chip đa nguồn, xem sự kiện ngày chọn, đánh dấu xong Reminder trực tiếp và mở `FormDialog`
  * tạo nhanh Nhắc việc với form đầy đủ.
  *

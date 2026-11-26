@@ -46,6 +46,7 @@ test.describe("Responsive", () => {
     page,
   }) => {
     await loginViaUi(page);
+    await page.goto("/vi/quan-tri");
     await expect(page.getByTestId("module-launcher")).toBeVisible();
     await expectNoHorizontalScroll(page);
     await openModule(page, "Hệ thống");

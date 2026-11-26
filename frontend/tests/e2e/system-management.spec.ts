@@ -57,6 +57,7 @@ test.describe("Quản trị Hệ thống", () => {
       await apiPost(page.request, `/api/v1/system/users/${staff.id}/roles`, { role_id: role.id });
       const staffPage = await context.newPage();
       await loginViaUi(staffPage, { email: staff.email, password: "E2e-Temp-Passw0rd!" });
+      await staffPage.goto("/vi/quan-tri");
       await staffPage
         .getByTestId("module-launcher")
         .getByRole("link", { name: /Hệ thống/ })

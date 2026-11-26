@@ -44,7 +44,6 @@ class AssistantChatView(CoreApiView):
             actor,
             validated_data["message"],
             channel=AssistantConversation.Channel.WEB,
-            conversation_id=validated_data.get("conversation_id"),
             is_owner=True,
             allow_personal_tools=True,
         )

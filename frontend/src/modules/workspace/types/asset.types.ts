@@ -6,6 +6,7 @@ import type {
   ASSET_PURCHASE_CHANNELS,
   ASSET_STATUSES,
   ASSET_WARRANTY_TYPES,
+  WorkspaceNotificationChannel,
 } from "../constants/defaults";
 
 export type AssetCategory = (typeof ASSET_CATEGORIES)[number];
@@ -49,6 +50,7 @@ export type Asset = {
   warrantyNote: string;
   invoiceAttachments: Attachment[];
   notes: string;
+  notificationChannels: WorkspaceNotificationChannel[];
   warrantyClaimCount: number;
   repairCount: number;
   totalClaimCount: number;
@@ -87,6 +89,7 @@ export type AssetInput = {
   warrantyNote?: string;
   invoiceAttachmentIds?: string[];
   notes?: string;
+  notificationChannels?: WorkspaceNotificationChannel[];
 };
 
 /** Bộ lọc danh sách Thiết bị. */

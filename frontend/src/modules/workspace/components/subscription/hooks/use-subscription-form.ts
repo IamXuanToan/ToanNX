@@ -39,6 +39,7 @@ function toFormValues(sub: Subscription): SubscriptionFormValues {
     reminderDaysBefore: sub.reminderDaysBefore ?? [7, 3, 1],
     isActive: sub.isActive,
     notes: sub.notes,
+    notificationChannels: sub.notificationChannels?.length ? sub.notificationChannels : ["WEBSITE"],
   };
 }
 
@@ -70,6 +71,7 @@ export function useSubscriptionForm(subscription?: Subscription) {
     reminderDaysBefore: [7, 3, 1],
     isActive: true,
     notes: "",
+    notificationChannels: ["WEBSITE"],
   };
 
   const form = useForm<SubscriptionFormValues>({
@@ -103,6 +105,7 @@ export function useSubscriptionForm(subscription?: Subscription) {
       reminderDaysBefore: values.reminderDaysBefore,
       isActive: values.isActive,
       notes: values.notes,
+      notificationChannels: values.notificationChannels,
     };
     try {
       const saved = await save.mutateAsync(input);

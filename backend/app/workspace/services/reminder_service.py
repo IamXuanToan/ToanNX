@@ -15,6 +15,7 @@ from app.workspace.services.workspace_alerts_cache_service import WorkspaceAlert
 from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 from app.workspace.utils.date_math import add_months_clamped
+from app.workspace.utils.notification_channels import normalize_workspace_channels
 
 
 class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
@@ -43,6 +44,8 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
         payload = dict(data)
         if not payload.get("anchor_day"):
             payload["anchor_day"] = payload["due_date"].day
+        if "notification_channels" in payload:
+            payload["notification_channels"] = normalize_workspace_channels(payload["notification_channels"])
         reminder = super().create(actor, payload)
         self.alerts_cache_service.schedule_alerts_next_due_on_commit()
         return reminder
@@ -60,6 +63,9 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
                 payload["completed_at"] = timezone.now()
             elif not target_completed and was_completed:
                 payload["completed_at"] = None
+
+        if "notification_channels" in payload:
+            payload["notification_channels"] = normalize_workspace_channels(payload["notification_channels"])
 
         updated = self.repository.update(reminder, actor=actor, **payload)
 
@@ -82,6 +88,7 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
                 recurrence=updated.recurrence,
                 anchor_day=updated.anchor_day or updated.due_date.day,
                 tags=list(updated.tags or []),
+                notification_channels=normalize_workspace_channels(updated.notification_channels),
             )
 
         self.alerts_cache_service.schedule_alerts_next_due_on_commit()

@@ -3,6 +3,7 @@
 from rest_framework import serializers
 
 from app.core.serializers.core_validate_serializer import CoreValidateSerializer
+from app.workspace.constants.workspace_notification_channel import WorkspaceNotificationChannel
 from app.workspace.models.reminder import Reminder
 
 
@@ -28,4 +29,11 @@ class ReminderUpdateValidateSerializer(CoreValidateSerializer):
     )
     tags = serializers.ListField(
         child=serializers.CharField(max_length=50), required=False, help_text="Danh sách nhãn."
+    )
+    notification_channels = serializers.ListField(
+        child=serializers.ChoiceField(choices=[(c.value, c.value) for c in WorkspaceNotificationChannel]),
+        min_length=1,
+        max_length=len(WorkspaceNotificationChannel),
+        required=False,
+        help_text="Kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`).",
     )

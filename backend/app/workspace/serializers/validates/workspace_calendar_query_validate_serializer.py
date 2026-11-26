@@ -14,9 +14,7 @@ class WorkspaceCalendarQueryValidateSerializer(CoreValidateSerializer):
         child=serializers.CharField(max_length=64),
         required=False,
         default=list,
-        help_text=(
-            "Danh sách loại sự kiện (`subscription,reminder,asset_warranty,warranty_claim,monitor_incident`)."
-        ),
+        help_text=("Danh sách loại sự kiện (`subscription,reminder,asset_warranty,warranty_claim`)."),
     )
     owner = serializers.UUIDField(
         required=False,

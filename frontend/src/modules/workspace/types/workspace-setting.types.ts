@@ -1,8 +1,4 @@
-import type { TELEGRAM_GROUP_TOOL_POLICIES } from "../constants/defaults";
-
-export type TelegramGroupToolPolicy = (typeof TELEGRAM_GROUP_TOOL_POLICIES)[number];
-
-/** Cài đặt Workspace, Digest, AI & Telegram hai chiều (khớp `WorkspaceSettingResponse`). */
+/** Cài đặt cá nhân: Múi giờ, Digest, mốc nhắc mặc định & Telegram nhận tin (khớp `WorkspaceSettingResponse`). */
 export type WorkspaceSetting = {
   id: string;
   ownerId: string;
@@ -13,16 +9,8 @@ export type WorkspaceSetting = {
   digestSections: string[];
   warrantyAlertDays: number[];
   subscriptionDefaultAlertDays: number[];
-  preferredAiModel: string;
-  aiDailyTokenLimit: number | null;
-  telegramAiEnabled: boolean;
   telegramOwnerUserId: number | null;
   telegramAllowedChatIds: string[];
-  telegramGroupRequireMention: boolean;
-  telegramGroupToolPolicy: TelegramGroupToolPolicy;
-  telegramGroupHideAmounts: boolean;
-  telegramGroupReplyInDm: boolean;
-  availableAiModels: string[];
   availableDigestSections: string[];
   telegramBotConfigured: boolean;
   telegramBotUsername: string;
@@ -31,7 +19,7 @@ export type WorkspaceSetting = {
   updatedAt: string;
 };
 
-/** Đầu vào cập nhật cài đặt Workspace. */
+/** Đầu vào cập nhật cài đặt cá nhân (`/workspace/settings`). */
 export type WorkspaceSettingUpdateInput = {
   timezone?: string;
   dailyDigestEnabled?: boolean;
@@ -39,12 +27,5 @@ export type WorkspaceSettingUpdateInput = {
   digestSections?: string[];
   warrantyAlertDays?: number[];
   subscriptionDefaultAlertDays?: number[];
-  preferredAiModel?: string;
-  aiDailyTokenLimit?: number | null;
-  telegramAiEnabled?: boolean;
   telegramAllowedChatIds?: string[];
-  telegramGroupRequireMention?: boolean;
-  telegramGroupToolPolicy?: TelegramGroupToolPolicy;
-  telegramGroupHideAmounts?: boolean;
-  telegramGroupReplyInDm?: boolean;
 };

@@ -37,10 +37,7 @@ class WorkspaceSettingView(CoreApiView):
         """Lấy cấu hình của chính mình (tự tạo mặc định nếu chưa có)."""
         actor = self.get_actor(request)
         setting = self.setting_service.get_or_create_for_owner(actor)
-        ctx = {
-            "available_ai_models": self.setting_service.available_ai_models(),
-            "telegram_bot_info": self.telegram_bot_service.bot_info(),
-        }
+        ctx = {"telegram_bot_info": self.telegram_bot_service.bot_info()}
         return CoreResponse(WorkspaceSettingResponseSerializer(setting, context=ctx).data)
 
     @extend_schema(
@@ -68,10 +65,7 @@ class WorkspaceSettingView(CoreApiView):
     def _save_own(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse:
         actor = self.get_actor(request)
         updated = self.setting_service.update_for_owner(actor, actor.pk, validated_data)
-        ctx = {
-            "available_ai_models": self.setting_service.available_ai_models(),
-            "telegram_bot_info": self.telegram_bot_service.bot_info(),
-        }
+        ctx = {"telegram_bot_info": self.telegram_bot_service.bot_info()}
         return CoreResponse(WorkspaceSettingResponseSerializer(updated, context=ctx).data)
 
 
@@ -92,10 +86,7 @@ class WorkspaceSettingObjectView(CoreApiView):
     def get(self, request: Request, owner_id: Any) -> CoreResponse:
         """Lấy cấu hình theo `owner_id` (trả 404 nếu user không tồn tại)."""
         _, setting = self.setting_service.get_for_target_owner(owner_id)
-        ctx = {
-            "available_ai_models": self.setting_service.available_ai_models(),
-            "telegram_bot_info": self.telegram_bot_service.bot_info(),
-        }
+        ctx = {"telegram_bot_info": self.telegram_bot_service.bot_info()}
         return CoreResponse(WorkspaceSettingResponseSerializer(setting, context=ctx).data)
 
     @extend_schema(
@@ -125,8 +116,5 @@ class WorkspaceSettingObjectView(CoreApiView):
     def _save_target(self, request: Request, owner_id: Any, validated_data: dict[str, Any]) -> CoreResponse:
         actor = self.get_actor(request)
         updated = self.setting_service.update_for_owner(actor, owner_id, validated_data)
-        ctx = {
-            "available_ai_models": self.setting_service.available_ai_models(),
-            "telegram_bot_info": self.telegram_bot_service.bot_info(),
-        }
+        ctx = {"telegram_bot_info": self.telegram_bot_service.bot_info()}
         return CoreResponse(WorkspaceSettingResponseSerializer(updated, context=ctx).data)

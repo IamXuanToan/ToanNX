@@ -10,7 +10,7 @@ from app.workspace.serializers.responses.workspace_dashboard_reminder_response_s
 
 
 class WorkspaceDashboardSummaryResponseSerializer(serializers.Serializer[Any]):
-    """4 chỉ số KPI tổng hợp & danh sách nhắc việc hôm nay."""
+    """3 chỉ số KPI tổng hợp & danh sách nhắc việc hôm nay."""
 
     owner_id = serializers.UUIDField(help_text="ID chủ sở hữu đang xem.")
     timezone = serializers.CharField(help_text="Múi giờ tính lịch của chủ sở hữu.")
@@ -41,9 +41,6 @@ class WorkspaceDashboardSummaryResponseSerializer(serializers.Serializer[Any]):
     upcoming_subscriptions_14d_vnd = serializers.DecimalField(
         max_digits=18, decimal_places=0, help_text="Tổng tiền dự kiến gia hạn trong 14 ngày tới."
     )
-    monitors_total = serializers.IntegerField(help_text="Tổng số mục tiêu giám sát Uptime.")
-    monitors_healthy = serializers.IntegerField(help_text="Số mục tiêu đang ổn định (HEALTHY).")
-    monitors_down = serializers.IntegerField(help_text="Số mục tiêu đang lỗi (DOWN).")
     today_reminders = WorkspaceDashboardReminderResponseSerializer(
         many=True, help_text="Tối đa 5 nhắc việc hôm nay."
     )

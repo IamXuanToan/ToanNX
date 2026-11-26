@@ -5,7 +5,11 @@ from decimal import Decimal
 from rest_framework import serializers
 
 from app.core.serializers.core_validate_serializer import CoreValidateSerializer
-from app.workspace.constants.workspace_defaults import DEFAULT_REMINDER_DAYS_BEFORE
+from app.workspace.constants.workspace_defaults import (
+    DEFAULT_REMINDER_DAYS_BEFORE,
+    DEFAULT_WORKSPACE_NOTIFICATION_CHANNELS,
+)
+from app.workspace.constants.workspace_notification_channel import WorkspaceNotificationChannel
 from app.workspace.models.subscription import Subscription
 
 
@@ -75,6 +79,14 @@ class SubscriptionCreateValidateSerializer(CoreValidateSerializer):
         required=False,
         default=lambda: list(DEFAULT_REMINDER_DAYS_BEFORE),
         help_text="Số ngày nhắc trước hạn (mặc định [7, 3, 1]).",
+    )
+    notification_channels = serializers.ListField(
+        child=serializers.ChoiceField(choices=[(c.value, c.value) for c in WorkspaceNotificationChannel]),
+        min_length=1,
+        max_length=len(WorkspaceNotificationChannel),
+        required=False,
+        default=lambda: list(DEFAULT_WORKSPACE_NOTIFICATION_CHANNELS),
+        help_text="Kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`). Mặc định `['WEBSITE']`.",
     )
     is_active = serializers.BooleanField(required=False, default=True, help_text="Đang theo dõi gia hạn.")
     notes = serializers.CharField(required=False, allow_blank=True, default="", help_text="Ghi chú.")

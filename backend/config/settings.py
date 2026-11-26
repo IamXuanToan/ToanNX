@@ -244,12 +244,11 @@ SPECTACULAR_SETTINGS = {
         "WorkspaceSubscriptionCategoryEnum": "app.workspace.models.subscription.Subscription.Category",
         "WorkspaceBillingCycleEnum": "app.workspace.models.subscription.Subscription.BillingCycle",
         "WorkspaceVaultCategoryEnum": "app.workspace.models.vault_item.VaultItem.Category",
-        "WorkspaceMonitorMethodEnum": "app.workspace.models.monitor_target.MonitorTarget.Method",
-        "WorkspaceMonitorStatusEnum": "app.workspace.models.monitor_target.MonitorTarget.Status",
         "WorkspaceReminderPriorityEnum": "app.workspace.models.reminder.Reminder.Priority",
         "WorkspaceReminderRecurrenceEnum": "app.workspace.models.reminder.Reminder.Recurrence",
-        "WorkspaceGroupToolPolicyEnum": (
-            "app.workspace.models.workspace_setting.WorkspaceSetting.GroupToolPolicy"
+        "WorkspaceGroupToolPolicyEnum": "app.workspace.constants.group_tool_policy.GroupToolPolicy",
+        "WorkspaceNotificationChannelEnum": (
+            "app.workspace.constants.workspace_notification_channel.WorkspaceNotificationChannel"
         ),
         "WorkspaceAssistantChannelEnum": (
             "app.workspace.models.assistant_conversation.AssistantConversation.Channel"
@@ -374,8 +373,6 @@ RATE_LIMITS: dict[StrEnum, tuple[int, int, str]] = {
     WorkspaceRateLimitKey.SUBSCRIPTION_RENEW: (env.int("RL_WS_SUB_RENEW", default=60), 3600, "user"),
     WorkspaceRateLimitKey.VAULT_CREATE: (env.int("RL_WS_VAULT_CREATE", default=60), 3600, "user"),
     WorkspaceRateLimitKey.VAULT_REVEAL: (env.int("RL_WS_VAULT_REVEAL", default=30), 60, "user"),
-    WorkspaceRateLimitKey.MONITOR_CREATE: (env.int("RL_WS_MONITOR_CREATE", default=60), 3600, "user"),
-    WorkspaceRateLimitKey.MONITOR_PING: (env.int("RL_WS_MONITOR_PING", default=20), 60, "user"),
     WorkspaceRateLimitKey.REMINDER_CREATE: (env.int("RL_WS_REMINDER_CREATE", default=120), 3600, "user"),
     WorkspaceRateLimitKey.ASSISTANT_CHAT: (env.int("RL_WS_ASSISTANT_CHAT", default=30), 60, "user"),
     WorkspaceRateLimitKey.CRON_TICK: (env.int("RL_WS_CRON_TICK", default=60), 60, "ip"),

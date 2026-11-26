@@ -1,4 +1,4 @@
-"""Response Cài đặt Trợ lý cá nhân, Lịch Digest & Chính sách Telegram Group."""
+"""Response Cài đặt Lịch Digest & Mốc nhắc cá nhân (không gồm cấu hình AI Bot của Admin)."""
 
 from typing import Any
 
@@ -10,12 +10,9 @@ from app.workspace.models.workspace_setting import WorkspaceSetting
 
 
 class WorkspaceSettingResponseSerializer(serializers.ModelSerializer[WorkspaceSetting]):
-    """Cấu hình cá nhân kèm danh sách model AI khả dụng và thông tin Bot Telegram chung."""
+    """Cấu hình cá nhân: múi giờ, digest, mốc nhắc mặc định và chat Telegram đã liên kết."""
 
     owner_email = serializers.CharField(source="owner.email", read_only=True, help_text="Email chủ sở hữu.")
-    available_ai_models = serializers.SerializerMethodField(
-        help_text="Danh sách model AI khả dụng do hệ thống cấu hình."
-    )
     available_digest_sections = serializers.SerializerMethodField(
         help_text="Các mục dữ liệu hỗ trợ hiển thị trong Digest."
     )
@@ -41,16 +38,8 @@ class WorkspaceSettingResponseSerializer(serializers.ModelSerializer[WorkspaceSe
             "digest_sections",
             "warranty_alert_days",
             "subscription_default_alert_days",
-            "preferred_ai_model",
-            "ai_daily_token_limit",
-            "telegram_ai_enabled",
             "telegram_owner_user_id",
             "telegram_allowed_chat_ids",
-            "telegram_group_require_mention",
-            "telegram_group_tool_policy",
-            "telegram_group_hide_amounts",
-            "telegram_group_reply_in_dm",
-            "available_ai_models",
             "available_digest_sections",
             "telegram_bot_configured",
             "telegram_bot_username",
@@ -59,19 +48,6 @@ class WorkspaceSettingResponseSerializer(serializers.ModelSerializer[WorkspaceSe
             "updated_at",
         )
         read_only_fields = fields
-
-    def get_available_ai_models(self, obj: WorkspaceSetting) -> list[str]:
-        """Lấy từ context hoặc cấu hình `XKIRO_MODEL` / `XKIRO_FALLBACK_MODELS`."""
-        from_ctx = self.context.get("available_ai_models")
-        if isinstance(from_ctx, list):
-            return [str(m) for m in from_ctx]
-        candidates = [settings.XKIRO_MODEL, *settings.XKIRO_FALLBACK_MODELS]
-        seen: list[str] = []
-        for item in candidates:
-            cleaned = str(item or "").strip()
-            if cleaned and cleaned not in seen:
-                seen.append(cleaned)
-        return seen
 
     def get_available_digest_sections(self, obj: WorkspaceSetting) -> list[str]:
         """Danh sách mục Digest được hệ thống hỗ trợ."""
@@ -93,9 +69,9 @@ class WorkspaceSettingResponseSerializer(serializers.ModelSerializer[WorkspaceSe
         return str(self._bot_info().get("username") or settings.TELEGRAM_BOT_USERNAME or "")
 
     def get_telegram_bot_url(self, obj: WorkspaceSetting) -> str:
-        """Link t.me mở Bot Telegram hệ thống."""
-        url = str(self._bot_info().get("bot_url") or "")
-        if url:
-            return url
+        """URL mở Bot Telegram hệ thống."""
+        info = self._bot_info()
+        if "url" in info:
+            return str(info["url"] or "")
         username = self.get_telegram_bot_username(obj)
         return f"https://t.me/{username}" if username else ""

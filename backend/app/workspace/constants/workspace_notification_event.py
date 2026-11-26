@@ -10,5 +10,3 @@ class WorkspaceNotificationEvent(StrEnum):
     DIGEST_DAILY = "workspace.digest.daily"
     WARRANTY_EXPIRING = "workspace.warranty.expiring"
     SUBSCRIPTION_RENEWING = "workspace.subscription.renewing"
-    MONITOR_DOWN = "workspace.monitor.down"
-    MONITOR_RECOVERED = "workspace.monitor.recovered"

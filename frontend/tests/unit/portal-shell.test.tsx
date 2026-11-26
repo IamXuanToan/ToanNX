@@ -44,6 +44,10 @@ vi.mock("@/modules/portal/components/layout/portal-bottom-nav", () => ({
   PortalBottomNav: () => <nav data-testid="portal-bottom-nav-stub" />,
 }));
 
+vi.mock("@/modules/workspace/components/assistant/assistant-floating-widget", () => ({
+  AssistantFloatingWidget: () => <div data-testid="assistant-floating-widget-stub" />,
+}));
+
 function renderPortalShell() {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
@@ -142,6 +146,7 @@ describe("PortalShell", () => {
 
     expect(screen.getByTestId("portal-sidebar-stub")).toBeTruthy();
     expect(screen.getByTestId("portal-header-stub")).toBeTruthy();
+    expect(screen.getByTestId("assistant-floating-widget-stub")).toBeTruthy();
     expect(screen.getByTestId("portal-child").textContent).toBe("Nội dung Studio");
     expect(mockReplace).not.toHaveBeenCalled();
   });

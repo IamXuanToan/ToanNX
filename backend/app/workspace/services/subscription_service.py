@@ -23,6 +23,7 @@ from app.workspace.services.workspace_exchange_service import WorkspaceExchangeS
 from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 from app.workspace.utils.date_math import add_months_clamped
+from app.workspace.utils.notification_channels import normalize_workspace_channels
 
 
 class SubscriptionService(CoreCrudService[Subscription, SubscriptionRepository]):
@@ -75,6 +76,8 @@ class SubscriptionService(CoreCrudService[Subscription, SubscriptionRepository])
         payload["amount"] = rounded_amount
         payload["exchange_rate"] = rate
         payload["amount_vnd"] = amount_vnd
+        if "notification_channels" in payload:
+            payload["notification_channels"] = normalize_workspace_channels(payload["notification_channels"])
 
         subscription = super().create(actor, payload)
         self.alerts_cache_service.schedule_alerts_next_due_on_commit()
@@ -114,6 +117,9 @@ class SubscriptionService(CoreCrudService[Subscription, SubscriptionRepository])
             payload["amount"] = rounded_amount
             payload["exchange_rate"] = rate
             payload["amount_vnd"] = amount_vnd
+
+        if "notification_channels" in payload:
+            payload["notification_channels"] = normalize_workspace_channels(payload["notification_channels"])
 
         updated = self.repository.update(subscription, actor=actor, **payload)
         self.alerts_cache_service.schedule_alerts_next_due_on_commit()

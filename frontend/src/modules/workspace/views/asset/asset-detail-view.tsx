@@ -16,6 +16,8 @@ export function AssetDetailView({ id, history }: { id: string; history?: ReactNo
   const canRead = usePermission(ASSET_PERMISSIONS.read);
   const canUpdate = usePermission(ASSET_PERMISSIONS.update);
   const canCreateClaim = usePermission(ASSET_WARRANTY_CLAIM_PERMISSIONS.create);
+  const canUpdateClaim = usePermission(ASSET_WARRANTY_CLAIM_PERMISSIONS.update);
+  const canDeleteClaim = usePermission(ASSET_WARRANTY_CLAIM_PERMISSIONS.delete);
   const isEditing = useEditMode(canUpdate);
 
   if (!canRead) return <ForbiddenView />;
@@ -26,6 +28,8 @@ export function AssetDetailView({ id, history }: { id: string; history?: ReactNo
         id={id}
         canUpdate={isEditing}
         canCreateClaim={canCreateClaim}
+        canUpdateClaim={canUpdateClaim}
+        canDeleteClaim={canDeleteClaim}
         history={history}
       />
     </EditModeProvider>

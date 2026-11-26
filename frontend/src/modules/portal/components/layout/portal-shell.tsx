@@ -3,6 +3,7 @@
 import { Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { AssistantFloatingWidget } from "@/modules/workspace/components/assistant/assistant-floating-widget";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { SidebarInset, SidebarProvider } from "@/shares/components/ui/sidebar";
 
@@ -50,6 +51,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           {children}
         </div>
         <PortalBottomNav />
+        <AssistantFloatingWidget />
       </SidebarInset>
     </SidebarProvider>
   );

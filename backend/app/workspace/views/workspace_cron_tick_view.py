@@ -1,4 +1,4 @@
-"""Cron Tick Serverless (`POST /api/v1/workspace/cron/tick`): chạy W1 (Monitor) + W4 (Alerts)."""
+"""Cron Tick Serverless (`POST /api/v1/workspace/cron/tick`): chạy W4 (Alerts / Digest)."""
 
 from typing import Any
 
@@ -17,7 +17,7 @@ from app.workspace.services.workspace_cron_service import WorkspaceCronService
 
 
 class WorkspaceCronTickView(CoreApiView):
-    """Xác thực `CRON_SECRET`/`Upstash-Signature`; W1/W4 bỏ qua sớm khi Redis chưa tới hạn."""
+    """Xác thực `CRON_SECRET`/`Upstash-Signature`; W4 bỏ qua sớm khi Redis chưa tới hạn."""
 
     authentication_classes: list[Any] = []
     permission_classes: list[type[BasePermission]] = [AllowAny]
@@ -30,7 +30,7 @@ class WorkspaceCronTickView(CoreApiView):
     @extend_schema(request=None, responses=WorkspaceCronTickResponseSerializer)
     @rate_limit(WorkspaceRateLimitKey.CRON_TICK)
     def post(self, request: Request) -> CoreResponse:
-        """Thực thi 1 nhịp W1 + W4."""
+        """Thực thi 1 nhịp W4."""
         self.cron_service.authorize_request(request.headers, request.body, request.path)
-        result = self.cron_service.run_tick(run_w1=True, run_w4=True, force_w4=False)
+        result = self.cron_service.run_tick(run_w4=True, force_w4=False)
         return CoreResponse(WorkspaceCronTickResponseSerializer(result).data)

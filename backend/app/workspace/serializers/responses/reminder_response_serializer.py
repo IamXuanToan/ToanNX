@@ -27,6 +27,7 @@ class ReminderResponseSerializer(serializers.ModelSerializer[Reminder]):
             "recurrence",
             "anchor_day",
             "tags",
+            "notification_channels",
             "created_at",
             "updated_at",
         )

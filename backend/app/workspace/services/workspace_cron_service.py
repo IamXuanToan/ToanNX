@@ -1,9 +1,6 @@
-"""Động cơ Cron tách 2 đường Redis độc lập: W1 (Monitor Uptime) != W4 (Alerts/Digest)."""
+"""Động cơ Cron Serverless cho Workspace W4 (Nhắc việc, Bảo hành, Gia hạn & Daily Digest)."""
 
 import hmac
-import logging
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any
@@ -14,40 +11,33 @@ from django.utils import timezone as dj_timezone
 from app.core.cache.cache_service import CacheService
 from app.core.constants.defaults import DEFAULT_TIMEZONE
 from app.core.exceptions.not_found_error import NotFoundError
-from app.core.utils.safe_http_client import SafeHttpClient
 from app.system.services.notification_service import NotificationService
 from app.system.services.qstash_client import QstashClient
 from app.system.types.notification_payload import NotificationPayload
 from app.workspace.constants.workspace_defaults import (
     ALERT_LOOKAHEAD_WINDOW_DAYS,
-    CRON_BATCH_BUDGET_SECONDS,
     DEFAULT_DIGEST_SECTIONS,
     DEFAULT_REMINDER_DAYS_BEFORE,
     DEFAULT_WARRANTY_ALERT_DAYS,
+    DIGEST_WINDOW_SECONDS,
     DISPATCH_DUE_SKEW_SECONDS,
-    MONITOR_BATCH_FLUSH_HOURS,
-    MONITOR_MAX_WORKERS,
+    REMINDER_BACKSTOP_WINDOW_SECONDS,
 )
 from app.workspace.constants.workspace_notification_event import WorkspaceNotificationEvent
-from app.workspace.models.monitor_target import MonitorTarget
 from app.workspace.repositories.asset_repository import AssetRepository
-from app.workspace.repositories.monitor_incident_repository import MonitorIncidentRepository
-from app.workspace.repositories.monitor_target_repository import MonitorTargetRepository
 from app.workspace.repositories.reminder_repository import ReminderRepository
 from app.workspace.repositories.subscription_repository import SubscriptionRepository
 from app.workspace.repositories.workspace_setting_repository import WorkspaceSettingRepository
-from app.workspace.services.monitor_target_service import MonitorTargetService
 from app.workspace.services.workspace_alerts_cache_service import WorkspaceAlertsCacheService
 from app.workspace.services.workspace_spending_service import WorkspaceSpendingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
+from app.workspace.utils.notification_channels import to_delivery_channels
 
-logger = logging.getLogger(__name__)
 SIGNATURE_HEADER = "Upstash-Signature"
-DIGEST_WINDOW_SECONDS = 1800
 
 
 class WorkspaceCronService:
-    """Chạy nền trên Serverless: Neon 0 CU khi rảnh, W1 ping bằng Redis, W4 kick QStash 1 lần cuối lượt."""
+    """Chạy nền trên Serverless: Neon 0 CU khi rảnh, W4 quét theo mốc Redis & gửi đúng kênh."""
 
     def __init__(
         self,
@@ -55,9 +45,6 @@ class WorkspaceCronService:
         qstash_client: QstashClient | None = None,
         notification_service: NotificationService | None = None,
         alerts_cache_service: WorkspaceAlertsCacheService | None = None,
-        monitor_service: MonitorTargetService | None = None,
-        monitor_repository: MonitorTargetRepository | None = None,
-        incident_repository: MonitorIncidentRepository | None = None,
         reminder_repository: ReminderRepository | None = None,
         asset_repository: AssetRepository | None = None,
         subscription_repository: SubscriptionRepository | None = None,
@@ -71,14 +58,6 @@ class WorkspaceCronService:
         self.notification_service = notification_service or NotificationService()
         self.alerts_cache_service = alerts_cache_service or WorkspaceAlertsCacheService(
             cache_service=self.cache_service, qstash_client=self.qstash_client
-        )
-        self.monitor_repository = monitor_repository or MonitorTargetRepository()
-        self.incident_repository = incident_repository or MonitorIncidentRepository()
-        self.monitor_service = monitor_service or MonitorTargetService(
-            repository=self.monitor_repository,
-            incident_repository=self.incident_repository,
-            alerts_cache_service=self.alerts_cache_service,
-            notification_service=self.notification_service,
         )
         self.reminder_repository = reminder_repository or ReminderRepository()
         self.asset_repository = asset_repository or AssetRepository()
@@ -101,236 +80,32 @@ class WorkspaceCronService:
             raise NotFoundError()
         return "cron"
 
-    def run_tick(self, *, run_w1: bool = True, run_w4: bool = True, force_w4: bool = False) -> dict[str, Any]:
-        """Thực thi W1 (Monitor) và W4 (Alerts) độc lập, cuối lượt gọi `flush_kick()` đúng 1 lần."""
+    def run_tick(self, *, run_w4: bool = True, force_w4: bool = False) -> dict[str, Any]:
+        """Thực thi W4 (Nhắc việc/Bảo hành/Gia hạn/Digest) và gọi `flush_kick()` đúng 1 lần."""
         now = dj_timezone.now()
-        w1_stats = (
-            self._run_w1_monitors(now)
-            if run_w1
-            else {"checked": 0, "flipped": 0, "flushed": 0, "db_touched": False, "notifications": 0}
-        )
         w4_stats = (
             self._run_w4_alerts(now, force=force_w4)
             if run_w4
             else {"ran": False, "db_touched": False, "notifications": 0}
         )
-
-        total_notifications = int(w1_stats["notifications"]) + int(w4_stats["notifications"])
+        total_notifications = int(w4_stats["notifications"])
         kicked = self.notification_service.flush_kick() if total_notifications > 0 else False
 
         return {
-            "w1_checked": int(w1_stats["checked"]),
-            "w1_flipped": int(w1_stats["flipped"]),
-            "w1_flushed": int(w1_stats["flushed"]),
-            "w1_db_touched": bool(w1_stats["db_touched"]),
             "w4_ran": bool(w4_stats["ran"]),
             "w4_db_touched": bool(w4_stats["db_touched"]),
             "notifications_queued": total_notifications,
             "kicked": kicked,
         }
 
-    # ==================================================================
-    # W1: Monitor Uptime Ping (Redis-only khi ổn định)
-    # ==================================================================
-    def _run_w1_monitors(self, now: datetime) -> dict[str, Any]:
-        stats: dict[str, Any] = {
-            "checked": 0,
-            "flipped": 0,
-            "flushed": 0,
-            "db_touched": False,
-            "notifications": 0,
-        }
-        if not self.alerts_cache_service.acquire_w1_lock():
-            return stats
-
-        try:
-            redis_enabled = self.cache_service.enabled
-            snapshots: list[dict[str, Any]] | None = None
-            if redis_enabled:
-                snapshots = self.alerts_cache_service.get_monitors_active()
-                if snapshots is None:
-                    snapshots = self.alerts_cache_service.sync_monitors_active()
-                    stats["db_touched"] = True
-            else:
-                stats["db_touched"] = True
-                snapshots = self._targets_to_snapshots(self.monitor_repository.list_active_targets())
-
-            if not snapshots:
-                return stats
-
-            due_items = self._select_due_snapshots(snapshots, now)
-            if not due_items:
-                return stats
-
-            probe_outputs = self._probe_parallel(due_items)
-            stats["checked"] = len(probe_outputs)
-
-            flush_cutoff = now - timedelta(hours=MONITOR_BATCH_FLUSH_HOURS)
-            flip_items: list[tuple[dict[str, Any], dict[str, Any], MonitorTarget.Status]] = []
-            batch_items: list[tuple[dict[str, Any], dict[str, Any], MonitorTarget.Status]] = []
-            redis_updates: list[tuple[str, dict[str, Any], bool]] = []
-
-            for snap, probe in probe_outputs:
-                healthy = self.monitor_service.is_probe_healthy(int(snap["expected_status"]), probe)
-                new_status = MonitorTarget.Status.HEALTHY if healthy else MonitorTarget.Status.DOWN
-                prev_status = str(snap["last_status"])
-                new_failures = 0 if healthy else int(snap.get("consecutive_failures") or 0) + 1
-
-                is_flip = (
-                    new_status == MonitorTarget.Status.DOWN and prev_status != MonitorTarget.Status.DOWN
-                ) or (new_status == MonitorTarget.Status.HEALTHY and prev_status == MonitorTarget.Status.DOWN)
-                last_flush = self._parse_dt(snap.get("last_db_flush_at") or snap.get("last_checked_at"))
-                needs_flush = (not redis_enabled) or (last_flush is None) or (last_flush <= flush_cutoff)
-
-                state_payload = {
-                    "last_status": new_status,
-                    "last_status_code": probe.get("status_code"),
-                    "last_latency_ms": probe.get("latency_ms"),
-                    "last_checked_at": now.isoformat(),
-                    "consecutive_failures": new_failures,
-                    "last_db_flush_at": (
-                        now.isoformat() if (is_flip or needs_flush) else snap.get("last_db_flush_at")
-                    ),
-                }
-                redis_updates.append((str(snap["id"]), state_payload, is_flip or needs_flush))
-                if is_flip:
-                    flip_items.append((snap, probe, new_status))
-                elif needs_flush:
-                    batch_items.append((snap, probe, new_status))
-
-            if redis_enabled:
-                for target_id, state_payload, _ in redis_updates:
-                    self.alerts_cache_service.write_monitor_state(target_id, state_payload)
-
-            if not flip_items and not batch_items:
-                return stats
-
-            stats["db_touched"] = True
-            target_ids = [snap["id"] for snap, _, _ in [*flip_items, *batch_items]]
-            targets_map = self.monitor_repository.list_by_ids(target_ids)
-            flip_target_ids = [snap["id"] for snap, _, _ in flip_items]
-            open_incidents = self.incident_repository.find_open_map(flip_target_ids)
-
-            for snap, probe, _ in flip_items:
-                target = targets_map.get(str(snap["id"]))
-                if target is None:
-                    continue
-                prev_status = target.last_status
-                target.last_status = str(snap["last_status"])
-                updated, _ = self.monitor_service.apply_probe_result(
-                    target,
-                    probe,
-                    checked_at=now,
-                    open_incident=open_incidents.get(target.pk),
-                    kick=False,
-                )
-                stats["flipped"] += 1
-                if updated.last_status != prev_status or updated.last_status in (
-                    MonitorTarget.Status.DOWN,
-                    MonitorTarget.Status.HEALTHY,
-                ):
-                    stats["notifications"] += 1
-
-            batch_targets: list[MonitorTarget] = []
-            for snap, probe, batch_status in batch_items:
-                target = targets_map.get(str(snap["id"]))
-                if target is None:
-                    continue
-                target.last_status = batch_status
-                target.last_status_code = probe.get("status_code")
-                target.last_latency_ms = probe.get("latency_ms")
-                target.last_checked_at = now
-                target.consecutive_failures = (
-                    0
-                    if batch_status == MonitorTarget.Status.HEALTHY
-                    else int(snap.get("consecutive_failures") or 0) + 1
-                )
-                target.updated_at = now
-                batch_targets.append(target)
-
-            if batch_targets:
-                self.monitor_repository.bulk_update_states(batch_targets)
-                stats["flushed"] = len(batch_targets)
-
-            if redis_enabled:
-                self.alerts_cache_service.sync_monitors_active()
-
-            return stats
-        finally:
-            self.alerts_cache_service.release_w1_lock()
-
-    def _targets_to_snapshots(self, targets: list[MonitorTarget]) -> list[dict[str, Any]]:
-        return [
-            {
-                "id": str(target.pk),
-                "owner_id": str(target.owner_id),
-                "name": target.name,
-                "url": target.url,
-                "method": target.method,
-                "expected_status": int(target.expected_status),
-                "timeout_seconds": int(target.timeout_seconds),
-                "check_interval_minutes": int(target.check_interval_minutes),
-                "last_status": target.last_status,
-                "last_status_code": target.last_status_code,
-                "last_latency_ms": target.last_latency_ms,
-                "last_checked_at": (target.last_checked_at.isoformat() if target.last_checked_at else None),
-                "consecutive_failures": int(target.consecutive_failures),
-            }
-            for target in targets
-        ]
-
-    def _select_due_snapshots(self, snapshots: list[dict[str, Any]], now: datetime) -> list[dict[str, Any]]:
-        due: list[tuple[datetime, dict[str, Any]]] = []
-        epoch_min = datetime.min.replace(tzinfo=dj_timezone.get_default_timezone())
-        for raw_snap in snapshots:
-            snap = dict(raw_snap)
-            if self.cache_service.enabled:
-                state = self.alerts_cache_service.read_monitor_state(snap["id"])
-                if state:
-                    snap_dt = self._parse_dt(snap.get("last_checked_at"))
-                    state_dt = self._parse_dt(state.get("last_checked_at"))
-                    if state_dt and (snap_dt is None or state_dt >= snap_dt):
-                        snap.update(state)
-            last_checked = self._parse_dt(snap.get("last_checked_at"))
-            interval = max(1, int(snap.get("check_interval_minutes") or 30))
-            if last_checked is None or (now - last_checked) >= timedelta(minutes=interval):
-                due.append((last_checked or epoch_min, snap))
-
-        due.sort(key=lambda pair: pair[0])
-        return [item for _, item in due]
-
-    def _probe_parallel(self, due_items: list[dict[str, Any]]) -> list[tuple[dict[str, Any], dict[str, Any]]]:
-        deadline = time.monotonic() + CRON_BATCH_BUDGET_SECONDS
-        results: list[tuple[dict[str, Any], dict[str, Any]]] = []
-
-        def _worker(item: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
-            remaining = deadline - time.monotonic()
-            if remaining <= 0.3:
-                return item, {
-                    "ok": False,
-                    "status_code": None,
-                    "latency_ms": 1,
-                    "final_url": item["url"],
-                    "error_message": "Hết ngân sách thời gian cron.",
-                }
-            timeout = min(float(item.get("timeout_seconds") or 4), remaining)
-            # Mỗi worker thread tự tạo 1 SafeHttpClient() độc lập (requests.Session không thread-safe).
-            client = SafeHttpClient()
-            return item, client.probe(
-                str(item["url"]),
-                method=str(item.get("method") or "GET"),
-                timeout=timeout,
-            )
-
-        workers = min(MONITOR_MAX_WORKERS, max(1, len(due_items)))
-        with ThreadPoolExecutor(max_workers=workers) as pool:
-            futures = [pool.submit(_worker, item) for item in due_items]
-            for future in as_completed(futures):
-                results.append(future.result())
-        return results
+    def refresh_cron_schedules(self) -> int:
+        """Đồng bộ lại lịch W4/QStash mỗi ngày khi chạy cleanup 03:00 UTC."""
+        if self.cache_service.enabled or self.qstash_client.is_configured():
+            return self.alerts_cache_service.refresh_alerts_next_due()
+        return 0
 
     # ==================================================================
-    # W4: Reminders, Warranties, Subscriptions, Daily Digest (Độc lập W1)
+    # W4: Reminders, Warranties, Subscriptions, Daily Digest
     # ==================================================================
     def _run_w4_alerts(self, now: datetime, *, force: bool = False) -> dict[str, Any]:
         stats: dict[str, Any] = {"ran": False, "db_touched": False, "notifications": 0}
@@ -339,8 +114,6 @@ class WorkspaceCronService:
         if self.cache_service.enabled:
             next_due = self.alerts_cache_service.read_alerts_next_due()
             if force:
-                # Kể cả lượt QStash dispatch-due: nếu Redis xác nhận mốc tới hạn còn ở tương lai xa
-                # (do reminder bị hủy/dời lịch hoặc lượt khác đã xử lý xong), bỏ qua quét DB.
                 if next_due is not None and next_due > now_ts + DISPATCH_DUE_SKEW_SECONDS:
                     return stats
             else:
@@ -375,7 +148,10 @@ class WorkspaceCronService:
 
     def _process_due_reminders(self, now: datetime, settings_by_owner: dict[Any, Any]) -> int:
         sent = 0
-        pending = self.reminder_repository.list_all_pending_up_to(now.date() + timedelta(days=1))
+        start_date = (now - timedelta(seconds=REMINDER_BACKSTOP_WINDOW_SECONDS) - timedelta(days=1)).date()
+        pending = self.reminder_repository.list_all_pending_up_to(
+            now.date() + timedelta(days=1), start_date=start_date
+        )
         for reminder in pending:
             owner_setting = settings_by_owner.get(reminder.owner_id)
             tz_name = owner_setting.timezone if owner_setting else DEFAULT_TIMEZONE
@@ -387,14 +163,16 @@ class WorkspaceCronService:
             if trigger_utc > now:
                 continue
 
+            schedule_key = self.alerts_cache_service.reminder_schedule_key(reminder)
             sent += self.notification_service.notify(
                 WorkspaceNotificationEvent.REMINDER_DUE,
-                dedup_key=f"rem:{reminder.pk}:{reminder.due_date.isoformat()}",
+                dedup_key=f"rem:{reminder.pk}:{schedule_key}",
                 recipient=reminder.owner,
+                channels=to_delivery_channels(reminder.notification_channels),
                 payload=NotificationPayload(
                     title=f"Nhắc việc: {reminder.title}",
                     body=reminder.description or f"Đến hạn ngày {reminder.due_date:%d/%m/%Y}.",
-                    link="/ca-nhan/nhac-viec",
+                    link="/portal/reminders",
                     message_key="workspace.notifications.reminderDue",
                     params={"title": reminder.title},
                     details=(
@@ -405,7 +183,7 @@ class WorkspaceCronService:
                 ),
                 kick=False,
             )
-            self.alerts_cache_service.mark_reminder_notified(reminder.pk, reminder.due_date.isoformat())
+            self.alerts_cache_service.mark_reminder_notified(reminder.pk, schedule_key)
         return sent
 
     def _process_expiring_warranties(self, now: datetime, settings_by_owner: dict[Any, Any]) -> int:
@@ -429,13 +207,14 @@ class WorkspaceCronService:
                 WorkspaceNotificationEvent.WARRANTY_EXPIRING,
                 dedup_key=dedup_key,
                 recipient=asset.owner,
+                channels=to_delivery_channels(asset.notification_channels),
                 payload=NotificationPayload(
                     title=f"{asset.name} còn {days_left} ngày bảo hành",
                     body=(
                         f"Hết hạn ngày {asset.warranty_end_date:%d/%m/%Y} "
                         f"tại {asset.warranty_provider or asset.purchase_store or '-'}."
                     ),
-                    link=f"/ca-nhan/thiet-bi/{asset.pk}",
+                    link=f"/portal/assets/{asset.pk}",
                     message_key="workspace.notifications.warrantyExpiring",
                     params={"name": asset.name, "days_left": days_left},
                     details=(
@@ -452,7 +231,8 @@ class WorkspaceCronService:
     def _process_renewing_subscriptions(self, now: datetime, settings_by_owner: dict[Any, Any]) -> int:
         sent = 0
         subs = self.subscription_repository.list_all_active_upcoming(
-            now.date() + timedelta(days=ALERT_LOOKAHEAD_WINDOW_DAYS)
+            now.date() + timedelta(days=ALERT_LOOKAHEAD_WINDOW_DAYS + 1),
+            start_date=now.date() - timedelta(days=1),
         )
         for sub in subs:
             owner_setting = settings_by_owner.get(sub.owner_id)
@@ -473,10 +253,11 @@ class WorkspaceCronService:
                 WorkspaceNotificationEvent.SUBSCRIPTION_RENEWING,
                 dedup_key=dedup_key,
                 recipient=sub.owner,
+                channels=to_delivery_channels(sub.notification_channels),
                 payload=NotificationPayload(
                     title=f"{sub.name} sắp gia hạn ({days_left} ngày)",
                     body=f"Chi phí dự kiến {amount_text} vào {sub.renew_date:%d/%m/%Y}.",
-                    link=f"/ca-nhan/dich-vu/{sub.pk}",
+                    link=f"/portal/subscriptions/{sub.pk}",
                     message_key="workspace.notifications.subscriptionRenewing",
                     params={"name": sub.name, "days_left": days_left},
                     details=(
@@ -497,29 +278,32 @@ class WorkspaceCronService:
                 continue
             tz_name = owner_setting.timezone or DEFAULT_TIMEZONE
             local_today = self.tz_service.local_today(tz_name, now=now)
-            date_str = local_today.isoformat()
             slots = owner_setting.digest_time_slots or []
-            for raw_slot in slots:
-                slot = str(raw_slot).strip()
-                parsed = self.tz_service.parse_hhmm(slot)
-                if parsed is None:
-                    continue
-                slot_utc = self.tz_service.local_to_utc(local_today, parsed, tz_name)
-                if slot_utc > now or (now - slot_utc).total_seconds() > DIGEST_WINDOW_SECONDS:
-                    continue
-                if not self.alerts_cache_service.acquire_digest_slot_lock(
-                    owner_setting.owner_id, date_str, slot
-                ):
-                    continue
+            for offset in (-1, 0):
+                target_day = local_today + timedelta(days=offset)
+                date_str = target_day.isoformat()
+                for raw_slot in slots:
+                    slot = str(raw_slot).strip()
+                    parsed = self.tz_service.parse_hhmm(slot)
+                    if parsed is None:
+                        continue
+                    slot_utc = self.tz_service.local_to_utc(target_day, parsed, tz_name)
+                    elapsed = (now - slot_utc).total_seconds()
+                    if elapsed < 0 or elapsed > DIGEST_WINDOW_SECONDS:
+                        continue
+                    if not self.alerts_cache_service.acquire_digest_slot_lock(
+                        owner_setting.owner_id, date_str, slot
+                    ):
+                        continue
 
-                payload = self._build_digest_payload(owner_setting, local_today, slot)
-                sent += self.notification_service.notify(
-                    WorkspaceNotificationEvent.DIGEST_DAILY,
-                    dedup_key=f"digest:{owner_setting.owner_id}:{date_str}:{slot}",
-                    recipient=owner_setting.owner,
-                    payload=payload,
-                    kick=False,
-                )
+                    payload = self._build_digest_payload(owner_setting, target_day, slot)
+                    sent += self.notification_service.notify(
+                        WorkspaceNotificationEvent.DIGEST_DAILY,
+                        dedup_key=f"digest:{owner_setting.owner_id}:{date_str}:{slot}",
+                        recipient=owner_setting.owner,
+                        payload=payload,
+                        kick=False,
+                    )
         return sent
 
     def _build_digest_payload(self, owner_setting: Any, local_today: Any, slot: str) -> NotificationPayload:
@@ -552,15 +336,6 @@ class WorkspaceCronService:
             sub_money = f"{total_sub:,} đ".replace(",", ".")
             details.append(("💳 Gia hạn 14 ngày", f"{sub_count} gói ({sub_money})"))
 
-        if "monitors" in sections:
-            monitors, total_mon = self.monitor_repository.list_for_owner(owner.pk, limit=200)
-            down_count = sum(
-                1
-                for m in monitors
-                if self.monitor_service.overlay_redis_state(m).last_status == MonitorTarget.Status.DOWN
-            )
-            details.append(("🟢 Uptime", f"{total_mon - down_count}/{total_mon} ổn định"))
-
         if "finance" in sections:
             spending = self.spending_service.summary(owner, owner=owner)
             spent_str = f"{int(Decimal(spending['total_spent_vnd'])):,} đ".replace(",", ".")
@@ -568,23 +343,9 @@ class WorkspaceCronService:
 
         return NotificationPayload(
             title=f"Bản tin ngày {local_today:%d/%m/%Y} ({slot})",
-            body=" · ".join(summary_parts) or "Tổng hợp trạng thái công việc và hạ tầng cá nhân.",
-            link="/ca-nhan",
+            body=" · ".join(summary_parts) or "Tổng hợp trạng thái công việc và tài chính cá nhân.",
+            link="/portal",
             message_key="workspace.notifications.dailyDigest",
             params={"date": local_today.isoformat(), "slot": slot},
             details=tuple(details),
         )
-
-    @staticmethod
-    def _parse_dt(raw: Any) -> datetime | None:
-        if isinstance(raw, datetime):
-            return raw
-        if not isinstance(raw, str) or not raw:
-            return None
-        try:
-            parsed = datetime.fromisoformat(raw)
-        except ValueError:
-            return None
-        if parsed.tzinfo is None:
-            return parsed.replace(tzinfo=dj_timezone.get_default_timezone())
-        return parsed

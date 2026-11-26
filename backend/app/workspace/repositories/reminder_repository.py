@@ -38,10 +38,9 @@ class ReminderRepository(CoreRepository[Reminder]):
             .order_by("due_date", "due_time")
         )
 
-    def list_all_pending_up_to(self, end_date: date) -> list[Reminder]:
-        """Mọi nhắc việc chưa xong tới hết `end_date` (cho cron W4 tính hạn thông báo)."""
-        return list(
-            self.get_queryset()
-            .filter(is_completed=False, due_date__lte=end_date)
-            .order_by("due_date", "due_time")
-        )
+    def list_all_pending_up_to(self, end_date: date, *, start_date: date | None = None) -> list[Reminder]:
+        """Mọi nhắc việc chưa xong trong khoảng `due_date <= end_date` (có cận dưới khi cron quét)."""
+        qs = self.get_queryset().filter(is_completed=False, due_date__lte=end_date)
+        if start_date is not None:
+            qs = qs.filter(due_date__gte=start_date)
+        return list(qs.order_by("due_date", "due_time"))
