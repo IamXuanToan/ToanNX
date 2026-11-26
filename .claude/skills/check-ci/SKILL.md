@@ -98,5 +98,5 @@ Khi máy local xanh nhưng GitHub CI vẫn fail, đối chiếu 6 nguyên nhân 
 
 1. Gom toàn bộ lỗi từ 4 pha, truy nguyên nhân gốc trong source và tài liệu liên quan rồi sửa chuẩn kiến trúc repo; không vá triệu chứng.
 2. Sau lần chỉnh sửa cuối cùng, chạy lại toàn bộ các bước đã fail và chạy lại trọn chuỗi CI bị ảnh hưởng (BE + `api-types` + FE + rule/skill check) để bảo đảm toàn bộ trả exit code `0` không lỗi, không warning.
-3. Kiểm theo `.agents/rules/90-done-checklist.md`, cập nhật `docs/` nếu hành vi/hợp đồng đổi, đọc `git status` và `git diff` (không tự stage/commit/push).
-4. Báo cáo bằng tiếng Việt có dấu: liệt kê từng cổng CI đã chạy và kết quả thật (exit code / số test pass), lỗi gốc đã sửa (nếu có), giới hạn chưa kiểm (ví dụ E2E hoặc remote `gh`), kèm nội dung commit chuẩn `docs/rules/git.md` trong khối `text`.
+3. Kiểm theo `.agents/rules/90-done-checklist.md`, cập nhật `docs/` nếu hành vi/hợp đồng đổi; nếu người dùng nêu rule/quy chuẩn mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt. Đọc `git status` và `git diff` (không tự stage/commit/push).
+4. Báo cáo bằng tiếng Việt có dấu: liệt kê từng cổng CI đã chạy và kết quả thật (exit code / số test pass), lỗi gốc đã sửa (nếu có), giới hạn chưa kiểm (ví dụ E2E hoặc remote `gh`). Không tự thao tác Git và không tự gợi ý nội dung commit trừ khi người dùng yêu cầu (`commit-demo` hoặc `commit-push`).

@@ -1,14 +1,18 @@
 # Quy tắc Git
 
-> **AI agent:** không tự tạo nhánh, commit, push, merge hay xóa nhánh khi chưa được yêu cầu rõ; làm trên nhánh
-> hiện tại. Các quy tắc dưới đây áp dụng khi người dùng yêu cầu thao tác Git (hoặc tự làm), và khi agent soạn
-> nội dung commit để người dùng dán vào VS Code.
+> **AI agent:** không tự tạo nhánh, commit, push, merge hay xóa nhánh **và không tự gợi ý nội dung commit** ở cuối
+> task (kể cả khi lên/review plan, review code, rà bảo mật hay làm task thường) khi chưa được người dùng yêu
+> cầu rõ; làm trên nhánh hiện tại. Các quy tắc dưới đây áp dụng khi người dùng yêu cầu gợi ý commit (skill
+> `commit-demo`), yêu cầu commit và push (skill `commit-push`), hoặc khi tự thao tác Git.
 
-Sau mỗi task, agent đọc trạng thái và diff Git ở chế độ chỉ đọc (xem cả file chưa được theo dõi), rồi gợi ý
-**nội dung commit đầy đủ gồm tiêu đề và phần mô tả** cho toàn bộ thay đổi chưa commit trong project (kể cả thay
-đổi có sẵn trước task). Không mặc định rằng mọi thay đổi đó do agent thực hiện. Nếu thay đổi không cùng một mục
-đích, đề xuất nhiều commit, mỗi commit một khối văn bản riêng. Không có thay đổi thì không gợi ý. Không tự stage,
-commit hoặc push chỉ vì đã gợi ý.
+- **Chỉ gợi ý commit khi được yêu cầu (`commit-demo`)**: khi người dùng yêu cầu soạn nội dung commit, agent đọc
+  trạng thái và diff Git ở chế độ chỉ đọc (xem cả file chưa được theo dõi), rồi gợi ý **nội dung commit đầy đủ
+  gồm tiêu đề và phần mô tả** cho thay đổi liên quan (hoặc toàn bộ thay đổi chưa commit trong project nếu không
+  giới hạn). Nêu rõ thay đổi có sẵn trước task ở ngoài khối văn bản, tách nhiều commit nếu khác mục đích, và
+  tuyệt đối không tự stage, commit hoặc push.
+- **Chỉ commit và push khi người dùng gọi (`commit-push`)**: thực hiện kiểm tra an toàn (secret, `.gitignore`,
+  kiểm tra liên quan, `.githooks/`), stage đúng file, commit không bỏ qua hook và push nhánh hiện tại (nếu đang
+  ở `main` phải xác nhận rõ trước khi commit/push trực tiếp).
 
 ## Nhánh
 
@@ -36,9 +40,13 @@ commit hoặc push chỉ vì đã gợi ý.
 Mẫu tiêu đề: `<type>(<scope>): <mo-ta-ngan>`. Có thể bỏ `(<scope>)` khi thay đổi không thuộc một phần cụ thể, hoặc
 kết hợp nhiều scope phân tách bằng dấu phẩy nếu thay đổi liên quan đến nhiều khu vực (ví dụ: `feat(utilities, finance): ...`).
 Viết tiêu đề bằng tiếng Anh, ở dạng mệnh lệnh, không viết hoa chữ đầu và không có dấu chấm cuối; tối đa
-72 ký tự. **Mỗi gợi ý phải có body** sau một dòng trống: nêu cụ thể đã đổi gì, vì sao cần đổi, và tác động/
+72 ký tự. **Mỗi commit hoặc gợi ý commit phải có body** sau một dòng trống: nêu cụ thể đã đổi gì, vì sao cần đổi, và tác động/
 migration/API/test nếu liên quan. Body viết tiếng Anh, ngắn gọn, chỉ dựa trên diff đã xem; không liệt kê file
 thay cho mô tả, không bịa kết quả kiểm tra. Ưu tiên dòng body không quá 72 ký tự.
+
+- **Tuyệt đối không chèn nguồn hoặc chữ ký AI bên ngoài** vào thông điệp commit (dù là `commit-demo` hay `commit-push`):
+  cấm các dòng/footer như `Co-Authored-By: Claude ...`, `Co-Authored-By: ... <noreply@anthropic.com>`, `Generated with ...`
+  hoặc nhãn công cụ AI. Commit chỉ chứa tiêu đề, body kỹ thuật và trailer tiêu chuẩn của dự án (như `BREAKING CHANGE:`).
 
 ### Dạng trả về để dán vào VS Code
 
@@ -108,5 +116,7 @@ Không dùng `--no-verify` để lách hook.
    `pnpm e2e`) chỉ khi người dùng yêu cầu (CI vẫn chạy đủ).
 2. Stage đúng file của thay đổi. Xem `git diff --cached --stat` và `git diff --cached --check`.
 3. Không đưa secret, `.env`, database local, `media/`, dependency cài đặt, cache hoặc build output vào Git.
-4. Mỗi commit diễn đạt một thay đổi logic. Commit khởi tạo repository có thể chứa toàn bộ bản nền hiện tại.
-5. Push nhánh đang làm lên `origin`; lần đầu dùng `git push -u origin <branch>`.
+4. Mỗi commit diễn đạt một thay đổi logic. Commit khởi tạo repository có thể chứa toàn bộ bản nền hiện tại. Không
+   chèn `Co-Authored-By:` hay bất kỳ ghi công nguồn bên ngoài nào vào thông điệp commit.
+5. Nếu đang ở `main`, hỏi xác nhận rõ trước khi commit/push trực tiếp. Push nhánh đang làm lên `origin`; lần đầu
+   dùng `git push -u origin <branch>`, không dùng `--force` trên nhánh dùng chung.

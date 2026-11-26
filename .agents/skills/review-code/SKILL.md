@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: "Review code cuối task trong repo ToanNX và tự sửa lỗi xác nhận được trước khi bàn giao. Dùng khi người dùng nói reviewcode, review code cuối, soát code trước commit hoặc yêu cầu kiểm tổng phần vừa làm. Kiểm rule, i18n, shadcn/ui, Tailwind, bảo mật, hiệu năng, test, docs và trả nội dung commit chuẩn. Không tự kích hoạt cho mỗi chỉnh sửa nhỏ."
+description: "Review code cuối task trong repo ToanNX và tự sửa lỗi xác nhận được trước khi bàn giao. Dùng khi người dùng nói reviewcode, review code cuối, soát code trước commit hoặc yêu cầu kiểm tổng phần vừa làm. Kiểm rule, i18n, shadcn/ui, Tailwind, bảo mật, hiệu năng, test, docs trong phạm vi thay đổi. Không tự kích hoạt cho mỗi chỉnh sửa nhỏ."
 ---
 
 # Review code cuối và tự sửa
@@ -38,4 +38,4 @@ Sửa từng nhóm lỗi xác nhận được trong phạm vi, kể cả test v�
 
 Sau mỗi nhóm sửa, chạy format/lint/typecheck/test **đúng phần đã sửa** và tái kiểm vấn đề ban đầu. Backend test chỉ trên PostgreSQL local với `--reuse-db`; không chạy full suite chỉ vì đây là review cuối. Đổi OpenAPI thì chạy `pnpm api:types`; UI thì kiểm giao diện thật, responsive, console, Network nếu môi trường cho phép. Dừng khi không còn lỗi xác nhận được trong phạm vi hoặc chỉ còn việc cần thông tin/quyền từ bên ngoài; ghi rõ điều chưa xác minh.
 
-Cuối cùng chạy `.agents/rules/90-done-checklist.md`. Báo phạm vi đã rà, lỗi đã sửa (file:dòng và bằng chứng) hoặc không có phát hiện, lỗi còn lại và lý do, kiểm tra đã chạy, phần UI/hiệu năng/bảo mật mới kiểm tĩnh, tài liệu/contract đã đồng bộ. Không ghi “đạt” cho phần chưa kiểm. Đưa **nội dung commit tiêu đề + body** theo `docs/rules/git.md` trong khối `text` để dán vào VS Code. Xem toàn bộ worktree để tách commit theo mục đích; không trả lệnh Git và không tự stage/commit/push.
+Cuối cùng chạy `.agents/rules/90-done-checklist.md`. Nếu trong lượt review người dùng đặt ra rule hoặc quy chuẩn mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy ước nếu kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt. Báo phạm vi đã rà, lỗi đã sửa (file:dòng và bằng chứng) hoặc không có phát hiện, lỗi còn lại và lý do, kiểm tra đã chạy, phần UI/hiệu năng/bảo mật mới kiểm tĩnh, tài liệu/contract đã đồng bộ. Không ghi “đạt” cho phần chưa kiểm. Không tự thao tác Git và không tự gợi ý nội dung commit; chỉ soạn commit demo (`commit-demo`) hoặc thực hiện commit/push (`commit-push`) khi người dùng yêu cầu riêng, và tuyệt đối không thêm `Co-Authored-By:` hay nguồn bên ngoài.

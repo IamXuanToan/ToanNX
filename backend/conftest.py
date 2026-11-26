@@ -53,6 +53,10 @@ def _no_external_services(settings: Any) -> None:
     settings.QSTASH_TOKEN = ""
     settings.QSTASH_CURRENT_SIGNING_KEY = ""
     settings.QSTASH_NEXT_SIGNING_KEY = ""
+    settings.TELEGRAM_BOT_TOKEN = ""
+    settings.TELEGRAM_BOT_USERNAME = ""
+    settings.XKIRO_API_BASE = ""
+    settings.XKIRO_API_KEY = ""
     CacheService.use_client(None)
 
 

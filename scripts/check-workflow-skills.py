@@ -18,6 +18,8 @@ PROJECT_SKILLS = (
     "permission-audit",
     "db-migration",
     "check-ci",
+    "commit-demo",
+    "commit-push",
 )
 REFERENCES: dict[str, tuple[str, ...]] = {
     "create-plan": ("references/plan-template.md", "references/planning-checklist.md"),

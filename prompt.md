@@ -36,10 +36,11 @@ trước khi viết code Next.
 ### 2.1 Cách làm việc
 
 - Làm đúng phạm vi yêu cầu. Không tự ý thêm tính năng, dependency, module, hay sửa phần ngoài phạm vi.
-- **Không tự thao tác git**: không tạo nhánh, commit, push, merge, xóa nhánh khi chưa được yêu cầu rõ.
-  Làm thẳng trên nhánh hiện tại. Sau mỗi task, đọc Git status/diff và đưa nội dung commit theo
-  `docs/rules/git.md` cho toàn bộ thay đổi chưa commit, kể cả phần có sẵn: tiêu đề + body trong khối `text`
-  để dán thẳng vào VS Code, không phải câu lệnh Git. Không tự stage hay commit.
+- **Không tự thao tác Git và không tự gợi ý commit**: không tạo nhánh, commit, push, merge, xóa nhánh **và không tự
+  gợi ý nội dung commit sau mỗi task** (kể cả lên/review plan, review code, rà bảo mật...) khi chưa được người dùng yêu
+  cầu rõ. Làm thẳng trên nhánh hiện tại. Chỉ soạn nội dung commit theo `docs/rules/git.md` trong khối `text` để dán
+  thẳng vào VS Code khi được yêu cầu (`commit-demo`), và chỉ commit/push khi người dùng gọi (`commit-push`). Tuyệt đối
+  không thêm nguồn bên ngoài như `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` vào thông điệp commit.
 - Gặp xung đột giữa yêu cầu và rule: báo và đề xuất hướng xử lý trước khi làm.
 - Tool/skill/tài liệu không có hoặc không chạy được: báo rõ, không giả định là đã làm.
 - Sửa `AGENTS.md` thì sửa luôn `CLAUDE.md` và ngược lại, nội dung rule phải khớp nhau.
@@ -47,9 +48,12 @@ trước khi viết code Next.
   (frontmatter `trigger`: `always_on` | `model_decision` | `glob` + `globs` | `manual`, có `description`), rồi chạy
   `python scripts/sync-ai-rules.py` để sinh lại `.claude/rules/`, `.claude/skills/rule-*/`, `.claude/commands/`.
   Không sửa tay file trong `.claude/` có dòng "Sinh tự động". Cách viết: `.agents/rules/40-docs-and-rules.md`.
+- **Tự động lưu rule mới từ câu chat**: khi người dùng đặt quy chuẩn/ràng buộc mới chưa có trong `docs/rules/`, AI tự
+  động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy
+  ước nếu tự động kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt làm việc.
 - Skill của project: workflow chính (`start-task`, `fix`, `review-code`) và các skill hỗ trợ (`create-plan`,
   `review-plan`, `test`, `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`,
-  `check-ci`) ở `.agents/skills/`, liên kết sang
+  `check-ci`, `commit-demo`, `commit-push`) ở `.agents/skills/`, liên kết sang
   `.claude/skills/`; skill ngoài ghi nguồn/commit ở `skills-lock.json`. Chỉ `.claude/skills/rule-*/` do script rule
   sinh; `docs/rules/` thắng skill. Đổi skill project thì chạy `python scripts/check-workflow-skills.py` để kiểm
   metadata và bản Claude.
@@ -89,8 +93,7 @@ trước khi viết code Next.
 - Docstring/JSDoc và comment bằng **tiếng Việt**, giải thích nghiệp vụ và lý do, không mô tả điều hiển nhiên.
 - **Bí mật**: hệ thống tự tạo và tự kiểm thì dẫn xuất từ `DJANGO_SECRET_KEY` (`django.core.signing` /
   `salted_hmac`, salt riêng), không thêm biến env bí mật mới; bên thứ ba cấp cho cả hệ thống (OAuth secret,
-  `CRON_SECRET`, khóa R2, service account Firebase) dùng biến riêng; token bên thứ ba của từng người dùng (SePay,
-  bot Telegram) lưu DB mã hóa bằng `SecretCipher`; không đưa `DJANGO_SECRET_KEY` ra ngoài (rule chung §5).
+  `CRON_SECRET`, khóa R2, service account Firebase, bot Telegram chung `TELEGRAM_BOT_TOKEN`, khóa AI `XKIRO_API_KEY`) dùng biến riêng; token bên thứ ba của từng người dùng (SePay) và bí mật Két sắt (`VaultItem`) lưu DB mã hóa bằng `SecretCipher`; không đưa `DJANGO_SECRET_KEY` ra ngoài (rule chung §5).
 - **File env**: `.env.local` cho local + test (DB local, không R2), `.env` cho production (toannx.com),
   `.env.example` mẫu đủ biến. Backend có `.env.local` thì chỉ đọc file đó (rule chung §5).
 - **Thêm/đổi/xóa biến môi trường thì cập nhật `.env.example` cùng lần** (`backend/` hoặc `frontend/`): mỗi biến
@@ -136,8 +139,13 @@ trước khi viết code Next.
 Chi tiết: `docs/features/permission-scope.md`, `docs/features/permission-ui.md`, `docs/features/table-actions.md`.
 
 - Quyền dạng `<module>.<resource>.<action>`, nguồn sự thật là bảng IAM. Mỗi tài nguyên một class
-  `XxxPermission(PermissionCatalog)` một file. Vai trò dựng sẵn: `ADMIN` và `<MODULE>_MANAGER` / `_VIEWER` /
-  `_MEMBER` cho mỗi module, không tự đặt thêm role.
+  `XxxPermission(PermissionCatalog)` một file. Vai trò dựng sẵn: `ADMIN` (`is_superuser`/đủ quyền + `manage_all`,
+  luôn toàn quyền xem/sửa/xóa bản ghi của mọi người dùng kể cả `workspace`, không chặn ở tầng nghiệp vụ ngoại trừ
+  chốt an toàn hệ thống) và `<MODULE>_MANAGER` / `_VIEWER` / `_MEMBER` cho mỗi module, không tự đặt thêm role.
+- Toàn hệ thống chỉ dùng **một Bot Telegram chung** cấu hình qua ENV (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`),
+  hiển thị `@username` cho người dùng; nhóm/kênh/`chat_id` nhận tin do từng user tự cấu hình. Tích hợp AI dùng
+  **danh sách model fallback tuần tự** trong ngân sách serverless. Màn hình công khai/custom page chuẩn Light/Dark
+  theo token hệ thống.
 - **Quyền thành viên khai trong class quyền**: `MEMBER = (READ, CREATE, UPDATE, DELETE)`; `module.py` gom
   `member_permissions=(*XxxPermission.member(), ...)`. Không khai bằng chuỗi hay mẫu `*`. `MEMBER` không chứa
   `manage_all`/`read_private`. Phạm vi "bản ghi của mình" đến từ việc thiếu `manage_all`, không phải quyền riêng.
@@ -275,7 +283,8 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
    kỹ plan theo rule; `start-task` khi giao việc mới; `fix` khi báo lỗi; `review-code` khi
    yêu cầu rà cuối, tự sửa lỗi xác nhận được và kiểm lại; dùng `test` (tạo test BE/FE + Playwright soi ảnh + monkey
    test), `refactor`, `review-security` (giả lập tấn công + lưu `docs/reports/security-verification.md`), `i18n-audit`,
-   `permission-audit`, `db-migration`, `check-ci` (kiểm tra/tái lập GitHub CI luôn pass) đúng mục tiêu. Cả nhóm đọc source, `docs/` và rule liên quan trước khi
+   `permission-audit`, `db-migration`, `check-ci` (kiểm tra/tái lập GitHub CI luôn pass), `commit-demo` (soạn gợi ý
+   commit dán VS Code khi được yêu cầu), `commit-push` (commit và push khi người dùng gọi) đúng mục tiêu. Cả nhóm đọc source, `docs/` và rule liên quan trước khi
    sửa. Nạp skill chuyên môn theo phần việc: `security-best-practices` khi yêu cầu audit bảo mật/code an toàn;
    `django-perf-review` khi rà hiệu năng Django; `web-perf` khi đo tốc độ trang/Core Web Vitals;
    `vitest` khi viết/sửa unit test FE;
@@ -316,10 +325,10 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
 10. Chỉ chạy `graphify update .` khi có **thay đổi lớn**: thêm/xóa/gộp module, đổi cấu trúc thư mục, di chuyển
     hoặc đổi tên nhiều file (khoảng 10 file trở lên), refactor kiến trúc. Hoặc khi graph đã cũ: `graphify-out/graph.json`
     không cập nhật hơn 7 ngày, hay `graphify query` trả về file/symbol không còn tồn tại. Sửa nhỏ thì không chạy.
-11. Đọc `git status`/`git diff` ở chế độ chỉ đọc; đưa nội dung commit theo `docs/rules/git.md` cho **toàn bộ thay
-    đổi chưa commit trong project**, kể cả thay đổi có sẵn trước task. Mỗi commit gồm tiêu đề, dòng trống, body
-    giải thích thay đổi/lý do/tác động trong khối `text` để dán vào VS Code, không phải lệnh Git. Nhiều mục đích
-    độc lập thì tách commit. Không tự stage, commit hoặc push.
+11. Không tự thao tác Git và không tự gợi ý nội dung commit nếu chưa được yêu cầu (có thể đọc `git status`/`git diff` ở
+    chế độ chỉ đọc để đối chiếu phạm vi). Chỉ xuất khối commit `text` khi người dùng yêu cầu (`commit-demo`), hoặc
+    stage/commit/push khi người dùng gọi (`commit-push`), và tuyệt đối không thêm `Co-Authored-By:` hay nguồn bên
+    ngoài vào thông điệp commit.
 12. Báo cáo theo mục 6.
 
 ## 5. BẢNG KIỂM KHI MỞ MỘT FILE
@@ -333,9 +342,10 @@ Backend:
       service không gọi `Model.objects`; module không import repository của module khác.
 - [ ] Mọi service/repository dùng trong class có trong `__init__`; không `XxxService().x()`/`XxxService.x()` trong method.
 - [ ] Task/command là lớp vỏ: không nghiệp vụ, không `@transaction.atomic`.
-- [ ] Method view có `@require_permission` (hoặc `permission_classes` theo bảng); input `@validate_request`, output
-      serializer response.
-- [ ] Không magic number/string, không `print`, không nuốt lỗi; docstring tiếng Việt.
+- [ ] Method view có `@require_permission` (hoặc `permission_classes` theo bảng); `@rate_limit` và `action_rate_limits`
+      dùng `StrEnum` (`CoreRateLimitKey` / `<M>RateLimitKey` tách hằng `ModuleCode`, nhóm, `RateLimitAction`, không
+      chuỗi thô); input `@validate_request`, output serializer response.
+- [ ] Không magic number/string (gồm cả chuỗi định danh gộp dấu chấm), không `print`, không nuốt lỗi; docstring tiếng Việt.
 - [ ] Tên cookie, header, setting, biến môi trường không có tiền tố `toannx`.
 - [ ] Endpoint bên thứ ba gọi/chuyển về đã khai `webhooks`/`callbacks` trong `ModuleDescriptor`; không hardcode domain.
 - [ ] Class quyền có `MEMBER` (nếu cấp cho thành viên); `module.py` gom `member_permissions` bằng `.member()`, không chuỗi.
@@ -374,7 +384,7 @@ Frontend:
 - [ ] Class màu có token trong `globals.css`; không giá trị tùy ý khi thang Tailwind có sẵn.
 - [ ] Dialog `p-0` + `DialogFooter` có `mx-0 mb-0`; dialog có tab cao cố định.
 - [ ] Mục menu có `permission`; module hơn 5 mục thì mọi mục có `section`, cùng cụm liền nhau.
-- [ ] Hằng quyền ở file khớp đúng một class quyền BE.
+- [ ] Hằng quyền ở file `permissions/*-permission.ts` khớp đúng một class quyền BE và dùng `createResourcePermissions` + `<M>_SCOPE` + `PERMISSION_ACTION`; không hardcode chuỗi quyền, `queryKey` chuỗi thô hay mã lỗi auth ngoài `constants/` (`code-conventions.test.ts`).
 - [ ] Không `any`, không `console.log`, không đọc `process.env` ngoài `shares/config`.
 - [ ] Key localStorage/sessionStorage, cookie, query key và tên hằng giữ chúng không có tiền tố `toannx`.
 - [ ] Không tự viết lại thứ đã có trong `docs/common-catalog.md` mục 4–5 (input, bảng, form, hook, lib...).
@@ -390,7 +400,7 @@ Tài liệu:
 
 - [ ] `docs/modules/<module>/README.md` và `docs/features/*.md` liên quan khớp với code sau khi sửa.
 - [ ] Đổi `docs/rules/` hoặc quy trình → `.agents/rules/` đã sửa, `python scripts/sync-ai-rules.py --check` đạt,
-      `CLAUDE.md` ↔ `AGENTS.md` khớp.
+      `CLAUDE.md` ↔ `AGENTS.md` khớp; nếu người dùng có nêu rule mới chưa có trong tài liệu, đã tự động cập nhật đủ các nơi trên trong cùng lượt.
 
 ## 6. BÁO CÁO
 
@@ -401,9 +411,9 @@ Ngắn gọn, đủ các ý:
 3. Vi phạm rule đã sửa thêm ở file nào.
 4. Lệnh kiểm tra đã chạy và kết quả (số test pass/fail); phần nào **chưa** kiểm và lý do.
 5. Vi phạm thấy mà chưa sửa (kèm lý do), việc còn tồn.
-6. Đưa nội dung commit đúng `docs/rules/git.md` cho toàn bộ thay đổi chưa commit theo Git status/diff: mỗi khối
-   `text` có tiêu đề + body dán được vào VS Code, không có câu lệnh; phân biệt thay đổi có sẵn với thay đổi của
-   task. Không có thay đổi thì không gợi ý.
+6. Chỉ soạn nội dung commit (dùng `commit-demo`) hoặc thực hiện commit và push (dùng `commit-push`) **khi người dùng
+   yêu cầu**; mặc định không tự gợi ý commit ở cuối báo cáo, và không bao giờ chèn `Co-Authored-By:` hay nguồn AI bên
+   ngoài vào commit.
 
 ## 7. NHẮC LẠI
 

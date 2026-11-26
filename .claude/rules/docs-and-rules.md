@@ -42,6 +42,9 @@ Tên file kebab-case tiếng Anh, nội dung tiếng Việt có dấu, câu ng�
 - **Rule AI**: nguồn duy nhất là `.agents/rules/*.md` (frontmatter `trigger`). Bản cho Claude Code trong
   `.claude/rules/`, `.claude/skills/rule-*/`, `.claude/commands/` **được sinh tự động** — không sửa tay; sửa nguồn rồi
   chạy `python scripts/sync-ai-rules.py` (kiểm lệch: `--check`).
+- **Tự động cập nhật khi có rule mới**: khi người dùng đặt quy chuẩn/ràng buộc mới chưa có trong `docs/rules/`, chủ động cập
+  nhật ngay `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (và test quy ước nếu kiểm được), chạy
+  `python scripts/sync-ai-rules.py --check` trong cùng lượt mà không cần nhắc lại.
 - Skill project ở `.agents/skills/<tên>/`; `start-task`, `fix`, `review-code` là skill nội bộ liên kết sang
   `.claude/skills/<tên>/`. Skill ngoài cài bằng CLI có nguồn/commit trong `skills-lock.json`. Chỉ
   `.claude/skills/rule-*/` là đầu ra của script đồng bộ rule. Chạy `python scripts/check-workflow-skills.py`

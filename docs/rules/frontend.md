@@ -53,6 +53,10 @@ src/modules/<m>/
 - **Mỗi model một file quyền trong `permissions/`**, đặt tên `permissions/<model>-permission.ts` (khớp với
   phân quyền backend), ví dụ: `author-permission.ts`, `chapter-permission.ts`, `novel-permission.ts`. Không
   gộp chung quyền của nhiều model vào một file constants.
+  - **Không viết chuỗi gộp `"<module>.<resource>.<action>"` trong `permissions/*-permission.ts` hay component/hook**: bắt buộc
+    dùng `createResourcePermissions(<M>_SCOPE, "<resource>", { read: PERMISSION_ACTION.read, ... })` từ
+    `@/shares/lib/permissions/resource-permissions` và `PERMISSION_ACTION` (`@/shares/constants/permission-actions`) kết hợp
+    `<M>_SCOPE` xuất từ `constants/query-keys.ts` (`tests/unit/code-conventions.test.ts` kiểm tự động).
 - **Mỗi hook một file trong `hooks/`**, đặt tên `hooks/use-<tên-hành-động>.ts` (ví dụ `use-client-novel.ts`,
   `use-toggle-favorite.ts`, `use-import-novel.ts`). Tuyệt đối không gom nhiều hook vào một file `use-<m>.ts`
   (`use-iam-queries.ts`, `use-iam-mutations.ts`, `use-admin-sessions.ts` là sai). Áp dụng cho **mọi** thư mục hook,
@@ -84,8 +88,10 @@ delete/bulkUpdate/bulkDelete/history`, cùng tên với action BE), service ch�
   - Sidebar đánh dấu mục có href khớp **dài nhất** (`findActiveNavHref`), nên mục gốc của module (Tổng quan) không
     sáng cùng mục con.
   - `api-endpoints.ts`: `<M>_API_ENDPOINTS`, path tương đối với `env.apiBasePath`.
-  - `query-keys.ts`: `<m>Keys` dựng bằng `createResourceKeys` (`all`, `lists`, `list(params)`, `detail(id)`,
-    `history(id)`), thêm key riêng nếu cần.
+  - `query-keys.ts`: xuất hằng phạm vi `<M>_SCOPE` (như `WORKSPACE_SCOPE = "workspace"`), `<m>Keys` dựng từ `<M>_SCOPE` và
+    `createResourceKeys` (`all`, `lists`, `list(params)`, `detail(id)`, `history(id)`), thêm key riêng nếu cần. Module tổng hợp
+    như `portal` tái dùng key chuẩn của tài nguyên gốc trong `portal/constants/query-keys.ts`; cấm truyền `queryKey: ["chuỗi-thô", ...]`
+    trực tiếp trong component/hook ngoài `constants/`.
   - Module khác cần route/key thì import từ `@/modules/<khác>/constants/...` (ví dụ invalidate `authKeys.me()`).
 - Ngoại lệ duy nhất ở `shares/`: `shares/lib/api/session-paths.ts` (CSRF, login, refresh, logout) vì chính
   `apiClient` cần để lấy CSRF và silent refresh; module `system` dùng lại trong `SYSTEM_API_ENDPOINTS`.
@@ -486,7 +492,10 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 ## 4. Quy ước
 
 - Đa ngôn ngữ: Next.js 16 tự nhận diện locale qua `next/root-params` trong `src/i18n/request.ts`; **không** gọi `setRequestLocale` (deprecated) trong `page.tsx` hay `layout.tsx`.
-- Không hardcode path API, route, query key: lấy từ `constants/` của module.
+- Không hardcode path API, route, query key, chuỗi quyền hay mã lỗi API kiểm điều kiện trong logic:
+  - Route/endpoint/query key lấy từ `constants/` của module (`<M>_ROUTES`, `<M>_API_ENDPOINTS`, `<m>Keys`, `portalKeys`);
+  - Quyền lấy từ `modules/<m>/permissions/*-permission.ts` (dựng bằng `createResourcePermissions` + `<M>_SCOPE` + `PERMISSION_ACTION`);
+  - Mã lỗi xác thực/CSRF dùng chung của `apiClient` đặt tại `shares/constants/auth-error-codes.ts` (`AUTH_ERROR_CODES`), mã lỗi riêng module cần so sánh trong hook/logic đặt tại `modules/<m>/constants/error-codes.ts`.
 - Hằng số dùng chung toàn FE (locale, timezone, tiền tệ, tùy chọn phân trang, ID toast phiên) lấy từ
   `shares/constants/` và helper `shares/lib/number-format.ts` (`getNumberLocale`, `formatVndText`,
   `formatDisplayNumber`), `shares/lib/localized-route.ts` (`isLocalizedRouteExact`, `startsWithLocalizedRoute`);
@@ -547,6 +556,10 @@ component. Vai trò từng màu (đã đo tương phản WCAG AA):
   `[...]` khi thang không có (ví dụ `h-[min(85vh,760px)]`). Đổi `globals.css` mà trang chưa đổi màu: dev server
   (Turbopack) còn giữ CSS cũ, khởi động lại `pnpm dev`.
 - Ở dark mode màu nhấn chỉ làm nền; đường mảnh (viền focus, gạch chân) dùng `--ring` hoặc giảm độ đục.
+- **Màn hình công khai & Custom Page chuẩn Light/Dark hệ thống**: trang công khai (`/p/[slug]`, `/s/[slug]`, trang
+  chủ, sản phẩm, quyên góp/donate) bắt buộc tôn trọng và thừa hưởng đầy đủ token Light/Dark hệ thống (`bg-canvas`,
+  `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`...); không ép cứng màu nền/chữ sáng hoặc
+  tối tĩnh làm sai lệch chế độ giao diện của người dùng.
 - Email HTML (backend `templates/system/email`) không đọc được CSS biến: dùng đúng mã hex của bảng trên
   (nút `#3D812E`, link `#206A2D`).
 

@@ -35,7 +35,7 @@ canSelectRow={(row) => !row.isBase}
 
 Hiện có hàng loạt: người dùng, vai trò, phiên, nhật ký thay đổi, nhật ký gửi thông báo, cài đặt, tiền tệ (+bật/tắt), tỷ giá (dòng nhập tay), thông báo chung,
 link rút gọn, mã QR, trang, đường dẫn (+bật/tắt), quyên góp (+ẩn/hiện), truyện (+xuất bản), chương (+xuất bản), tác giả, thể loại, tag,
-khoản thu, hóa đơn, nền tảng (+bật/tắt), quy tắc (+bật/tắt). `tests/unit/table-conventions.test.ts` kiểm.
+khoản thu, hóa đơn, nền tảng (+bật/tắt), quy tắc (+bật/tắt); `workspace`: thiết bị, phiếu bảo hành, dịch vụ định kỳ (+bật/tắt), lịch sử gia hạn, két sắt, giám sát Uptime (+bật/tắt), sự cố Uptime, nhắc việc (+hoàn thành). `tests/unit/table-conventions.test.ts` kiểm.
 
 ## Cách dùng
 
@@ -74,6 +74,8 @@ Chỉ bỏ handler khi **nghiệp vụ không có** thao tác đó (không có A
 | Cài đặt (`setting-table`) | Xem, Sửa (dialog), Xóa, Xóa hàng loạt | Sửa giá trị bằng dialog thay cho trang chi tiết; xóa = quay về giá trị mặc định trong code |
 | Thư mục tệp (`attachment-folder-manager`) | Sửa, Xóa (hỏi giữ hay xóa tệp) | Xóa thư mục cần chọn cách xử lý tệp bên trong nên chưa có xóa hàng loạt |
 | Thư viện file | Lưới riêng (`AttachmentLibrary`), không dùng `DataTable` | Thao tác nằm ở panel chi tiết file |
+| Lịch sử thanh toán gia hạn (`subscription-payment-table`) | Xóa, Xóa hàng loạt | Bản ghi được sinh tự động khi gia hạn dịch vụ, không có trang tạo/sửa riêng |
+| Sự cố Uptime (`monitor-incident-table`) | Xóa, Xóa hàng loạt | Bản ghi được sinh tự động khi probe phát hiện sập/khôi phục, không có trang tạo/sửa riêng |
 
 Thêm ngoại lệ mới phải ghi vào bảng này và rule frontend §3.1.
 

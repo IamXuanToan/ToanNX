@@ -14,6 +14,6 @@
 | Tích hợp ngoài | Webhook/callback, timeout, xác thực, idempotency, outbox/task, env. | Test mock/sandbox hợp lệ, không gửi thao tác thật ngoài phạm vi; cập nhật docs/config nếu contract đổi. |
 | Secret hoặc file riêng tư | `SecretCipher`, secret nội bộ, storage visibility, API response, log, `.env.example`. | Không lộ token/URL storage; ảnh khách xem được, chứng từ chỉ qua endpoint nội dung có quyền. |
 | Thông báo sai | `NotificationService.notify`, event descriptor, recipient, outbox/QStash, transaction commit. | Không gửi trực tiếp từ request; thử nhánh thành công/lỗi/idempotency phù hợp, không gửi thật nếu chỉ test. |
-| Hành vi/cache không khớp docs | README module, feature docs, common catalog, deployment guide, source đang chạy. | Docs/config cập nhật cùng lần khi contract hoặc hành vi đổi; không sửa docs để hợp thức hóa bug sai rule. |
+| Hành vi/cache không khớp docs | README module, feature docs, common catalog, deployment guide, rule docs, source đang chạy. | Docs/config cập nhật cùng lần khi contract hoặc hành vi đổi; nếu phát sinh rule mới từ yêu cầu sửa lỗi, cập nhật rule + AI rules + `sync-ai-rules.py --check`; không sửa docs để hợp thức hóa bug sai rule. |
 
 Chỉ thêm regression test khi nó bắt hành vi có thể tái phát. Nếu không tái hiện được trước khi sửa, ghi rõ bằng chứng tĩnh và giới hạn xác minh.

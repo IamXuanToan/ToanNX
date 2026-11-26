@@ -20,6 +20,7 @@ accessibility/UX trên file đã sửa, rồi `playwright-cli` để kiểm UI t
   `<input>`, `<select>`, `<a>`, `<img>` trần. Link dùng `Link` (`@/i18n/navigation`), ảnh dùng `<Image />`.
 - Mọi control cao 40px (`h-10`, `rounded-xl`); ô chọn là `SelectField`; bộ lọc bảng là `FilterSelect` nhiều lựa chọn.
 - Chỉ Tailwind utility + `cn()`; không `style={{}}` tĩnh; mobile-first, 375px không cuộn ngang; dark mode qua token.
+  Mọi trang công khai/custom page (`/p/[slug]`, `/s/[slug]`, donate, sản phẩm) cũng phải chuẩn Light/Dark theo token hệ thống.
 - **Màu**: class màu ngữ nghĩa phải có token `--color-<tên>` trong `globals.css` (`theme-tokens.test.ts`); ưu tiên thang
   Tailwind (`h-4.5`) thay giá trị tùy ý; không hex/`bg-blue-500` cho màu thương hiệu.
 - **SVG** đặt trong `public/<nhóm>/<tên>.svg`, gọi qua hằng (`ICON_PATHS`) + `<Image />`; cấm `<svg>`/`<path>` nội

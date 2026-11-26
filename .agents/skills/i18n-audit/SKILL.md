@@ -37,4 +37,4 @@ Skill này dùng khi cần rà toàn bộ hoặc một module về đa ngôn ng�
 ## 3. Sửa và kiểm lại
 
 - Format JSON và TS/TSX đã sửa bằng `prettier --write`, kiểm `eslint` trên các file sửa, `pnpm --dir frontend typecheck` và `pnpm --dir frontend test tests/unit/messages.test.ts` + các unit test component bị sửa (bọc `NextIntlClientProvider` nếu cần).
-- Kiểm lại bằng `.agents/rules/90-done-checklist.md` và trả commit `fix(<scope>, i18n): ...` theo `docs/rules/git.md`.
+- Kiểm lại bằng `.agents/rules/90-done-checklist.md`; nếu người dùng nêu quy chuẩn i18n mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy ước nếu kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt. Không tự thao tác Git và không tự gợi ý nội dung commit trừ khi người dùng yêu cầu.

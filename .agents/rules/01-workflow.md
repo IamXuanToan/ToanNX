@@ -19,12 +19,11 @@ thông tin tối thiểu cần thiết và tiếp tục khảo sát phần độ
 3. Triển khai đúng lớp và convention hiện có, không tạo pattern mới khi đã có quy chuẩn.
 4. Tự kiểm từng file đã mở theo `.agents/rules/90-done-checklist.md`, sửa vi phạm thấy được.
 5. Chạy kiểm tra **chỉ cho phần đã sửa** (bên dưới).
-6. Cập nhật tài liệu theo bảng "đổi gì thì cập nhật gì".
+6. Cập nhật tài liệu theo bảng "đổi gì thì cập nhật gì" (nếu trong hội thoại người dùng nêu rule/quy chuẩn mới chưa có trong `docs/rules/`, tự động cập nhật luôn rule/test quy ước/bản sync trong cùng lượt).
 7. Báo cáo: đã đổi gì (BE/FE/tài liệu), common dùng lại/thêm, vi phạm đã sửa, lệnh kiểm tra + kết quả, phần chưa
-   kiểm và lý do, việc còn tồn. Đọc `git status`/`git diff` ở chế độ chỉ đọc và đưa nội dung commit theo
-   `docs/rules/git.md` cho **toàn bộ thay đổi chưa commit trong project**: mỗi commit có tiêu đề, dòng trống,
-   body mô tả cụ thể trong khối `text` để dán vào VS Code, không phải lệnh Git. Nhiều mục đích độc lập thì
-   tách nhiều khối; phân biệt thay đổi có sẵn. Không tự stage/commit/push.
+   kiểm và lý do, việc còn tồn. **Không tự thao tác Git và không tự gợi ý nội dung commit** khi chưa được yêu cầu;
+   chỉ soạn khối `text` commit khi người dùng yêu cầu (`commit-demo`) hoặc thực hiện commit và push khi người dùng gọi
+   (`commit-push`), và tuyệt đối không thêm `Co-Authored-By:` hay nguồn AI bên ngoài.
 
 ## Chọn skill đúng việc
 
@@ -42,6 +41,8 @@ thông tin tối thiểu cần thiết và tiếp tục khảo sát phần độ
 | Kiểm toán và lập ma trận phân quyền BE–FE ba tầng | `permission-audit`; đối chiếu `MEMBER`, owner, Admin/Portal và `seed_test_accounts` |
 | Thiết kế model và Django migration an toàn cho PostgreSQL/Neon | `db-migration`; kiểm `UniqueConstraint` xóa mềm, index, `sqlmigrate` và migrate local |
 | Kiểm tra, tái lập đầy đủ và sửa lỗi các cổng GitHub CI | `check-ci`; chạy parity backend, frontend, `api-types` và rules/skills check đến khi pass |
+| Soạn gợi ý nội dung commit chuẩn để dán vào VS Code | `commit-demo`; chỉ chạy khi được yêu cầu, không stage/commit/push và không thêm `Co-Authored-By:` |
+| Thực hiện stage, commit chuẩn và push lên remote | `commit-push`; chỉ chạy khi người dùng gọi rõ ràng, tôn trọng git hook, không thêm `Co-Authored-By:` |
 | Hỏi về cấu trúc, quan hệ file/symbol hoặc nội dung codebase | `graphify`; query graph hiện có trước khi đọc rộng, chỉ update theo điều kiện của `AGENTS.md` |
 | Tích hợp/tra dữ liệu SePay, chuyển khoản, VietQR, webhook thanh toán, hóa đơn | `sepay`; đọc trước khi gọi công cụ SePay |
 | Người dùng yêu cầu audit bảo mật / code an toàn | `security-best-practices`; xem rule `security-review` |

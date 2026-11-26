@@ -26,9 +26,9 @@ Chi tiết: `docs/rules/common.md` §5, `docs/guides/deployment.md`.
 
 - Hệ thống tự tạo và tự kiểm (ký token, băm, mã xác minh) → dẫn xuất từ `DJANGO_SECRET_KEY` bằng
   `django.core.signing` / `salted_hmac` với salt riêng; **không** thêm biến env bí mật mới.
-- Bên thứ ba cho cả hệ thống (OAuth secret, `CRON_SECRET`, khóa R2, Firebase service account, Upstash) → biến riêng.
-- Token bên thứ ba của từng người dùng (SePay, bot Telegram) → DB, mã hóa bằng `SecretCipher`, không qua env.
-- `DJANGO_SECRET_KEY` không rời hệ thống; đổi nó làm hỏng token đã mã hóa (Telegram, SePay) và mọi phiên.
+- Bên thứ ba cho cả hệ thống (OAuth secret, `CRON_SECRET`, khóa R2, Firebase service account, Upstash, một bot Telegram chung duy nhất `TELEGRAM_BOT_TOKEN` + `TELEGRAM_BOT_USERNAME`, khóa AI `XKIRO_API_KEY`) → biến riêng (tuyệt đối không lưu token bot Telegram vào DB theo user).
+- Bí mật nhạy cảm của từng người dùng trong DB (token SePay, mục Két sắt `VaultItem`) → DB, mã hóa bằng `SecretCipher`, không qua env.
+- `DJANGO_SECRET_KEY` không rời hệ thống; đổi nó làm hỏng dữ liệu đã mã hóa (`SecretCipher`: SePay, Két sắt) và mọi phiên.
 - **Không in giá trị bí mật** ra màn hình, log, báo cáo; kiểm env thì chỉ in tên biến và có/trống.
 - Upstash Redis chỉ nhận TLS (`rediss://`); `QSTASH_TOKEN` khác mật khẩu Redis.
 - Không tiền tố `toannx` trong tên biến.

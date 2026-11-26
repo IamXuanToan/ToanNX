@@ -61,4 +61,4 @@ Khi hoàn thành kiểm tra và xử lý:
    - **Mục `Giới hạn & Mục chưa kiểm runtime`** (nếu có case chưa bắn trực tiếp lên browser/server thật).
 3. Nếu phát sinh đợt audit lớn cần lưu snapshot riêng theo ngày, có thể ghi thêm `docs/reports/<yyyy-mm-dd>-security-review.md` nhưng **vẫn giữ `docs/reports/security-verification.md` làm nguồn baseline sống để lần sau tự động xác nhận lại**.
 
-Kiểm lại theo `.agents/rules/90-done-checklist.md` và trả nội dung commit chuẩn `docs/rules/git.md`.
+Kiểm lại theo `.agents/rules/90-done-checklist.md`. Nếu người dùng nêu quy chuẩn bảo mật mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy ước nếu kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt. Không tự thao tác Git và không tự gợi ý nội dung commit trừ khi người dùng yêu cầu riêng (`commit-demo` / `commit-push`).

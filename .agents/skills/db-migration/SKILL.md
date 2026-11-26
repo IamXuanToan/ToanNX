@@ -50,4 +50,4 @@ Skill này đảm bảo mọi thay đổi schema PostgreSQL trong `backend/` tu�
    ```
 3. Nếu migration thay đổi field serializer/API response → chạy `pnpm --dir frontend api:types` và cập nhật `docs/modules/<m>/README.md`.
 4. Chạy test model/API liên quan trên PostgreSQL local với `--reuse-db` (lưu ý nếu đổi schema, lần đầu tiên sau khi thêm migration nhớ chạy `--create-db` để pytest cập nhật lại bảng trên `test_toannx`, các lần sau dùng `--reuse-db` bình thường).
-5. Tự rà `.agents/rules/90-done-checklist.md` và trả commit block đúng `docs/rules/git.md`.
+5. Tự rà `.agents/rules/90-done-checklist.md`; nếu người dùng nêu quy chuẩn DB/migration mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt. Báo cáo kết quả migration (không tự thao tác Git hay tự gợi ý commit trừ khi người dùng yêu cầu).

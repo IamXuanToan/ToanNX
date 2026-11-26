@@ -37,6 +37,7 @@ Skill này hướng dẫn tái cấu trúc (refactor) gọn, an toàn và tuân 
 - Nếu đổi file/docstring/serializer đi vào OpenAPI: chạy `pnpm --dir frontend api:types` và cập nhật `frontend/src/shares/types/api-schema.gen.ts`.
 - Nếu di chuyển hoặc đổi tên khoảng 10 file trở lên hay tái cấu trúc module lớn: chạy `graphify update .` theo `AGENTS.md`.
 - Chỉ cập nhật `docs/modules/<m>/README.md` / `docs/features/` nếu đường đi/chức năng mô tả có thay đổi thực tế.
+- Nếu người dùng nêu quy chuẩn hoặc rule mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy ước nếu kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt.
 
 ## 4. Kiểm chứng sau refactor
 
@@ -44,4 +45,4 @@ Chạy **đúng kiểm tra của vùng bị ảnh hưởng** (không chạy full
 - **Backend**: `uv run ruff format --check <files>`, `uv run ruff check <files>`, `uv run mypy <files>`, `uv run pytest --reuse-db app/core/tests/test_one_class_per_file.py app/core/tests/test_module_conventions.py app/core/tests/test_openapi_schema.py <related_tests>`.
 - **Frontend**: `pnpm --dir frontend exec eslint <files>`, `pnpm --dir frontend exec prettier --check <files>`, `pnpm --dir frontend typecheck`, `pnpm --dir frontend test tests/unit/one-unit-per-file.test.ts tests/unit/module-structure.test.ts tests/unit/table-conventions.test.ts <related_tests>`.
 - **UI bị chạm**: kiểm tra nhanh qua `playwright-cli` / Playwright E2E của luồng đó để chắc không đổi bố cục hoặc hành vi tương tác.
-- Báo cáo theo `.agents/rules/90-done-checklist.md` kèm khối commit `ref(<scope>): ...` chuẩn `docs/rules/git.md`.
+- Báo cáo theo `.agents/rules/90-done-checklist.md`; không tự thao tác Git và không tự gợi ý nội dung commit trừ khi người dùng yêu cầu (`commit-demo` / `commit-push`).

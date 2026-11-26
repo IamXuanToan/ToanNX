@@ -113,8 +113,15 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
   Cá nhân / Hệ thống) + outbox `NotificationDelivery` theo kênh (Trình duyệt qua FCM, Email, Telegram); gửi ngay
   sau commit trong ngân sách thời gian, phần còn lại và thử lại (tối đa 5 lần) do cron-job.org gọi
   `POST /api/v1/system/notifications/dispatch` (`CRON_SECRET`). Không WebSocket: realtime nhờ FCM + polling 60 giây.
-  Bot Telegram của từng người (token mã hóa, cấu hình ở Hồ sơ → Thông báo). Nhật ký gửi:
+  Cả hệ thống dùng **một Bot Telegram chung** cấu hình qua ENV (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME` hiển
+  thị cho người dùng khi liên kết); nơi nhận (chat/nhóm/kênh) do từng người dùng tự cấu hình (`TelegramChat`). Nhật ký gửi:
   `/vi/quan-tri/he-thong/nhat-ky-thong-bao`.
+- Module **Không gian cá nhân** (`workspace`, BE `app/workspace`, FE trên Client Portal `/ca-nhan/...`, API
+  `/api/v1/workspace/...`, bảng `workspace_*`, thiết kế `docs/plans/2026/11/25/personal-assistant-plan.md`):
+  quản lý Thiết bị & Bảo hành, Gói định kỳ & Gia hạn, Két sắt bí mật (`SecretCipher`), Giám sát Uptime, Nhắc việc,
+  Lịch vạn niên/Âm lịch và Trợ lý AI (`xKiro`, API key ở ENV, danh sách model **fallback tuần tự** khi chạm hạn mức
+  hoặc lỗi, kèm cấu hình nhóm Telegram & lịch hiển thị theo từng người). Tài nguyên có owner theo chuẩn IAM:
+  `ADMIN` (`manage_all`) toàn quyền xem/sửa/xóa trên dữ liệu của mọi người dùng.
 - Nhóm Hệ thống ở FE có một module `system` với menu: Người dùng, Phiên, Vai trò, Quyền, Thư viện, Cài đặt,
   Nhật ký thông báo, Gửi thông báo, Tiền tệ, Tỷ giá, Webhook (webhook các module khai, URL theo domain backend), Callback (URL OAuth Google/GitHub theo
   domain FE), Nhật ký. URL quản trị có tiền tố module: `/quan-tri/he-thong/...`, `/quan-tri/tien-ich/...`,

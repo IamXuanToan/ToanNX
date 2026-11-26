@@ -50,4 +50,4 @@ Skill này chuyên kiểm tra toàn bộ hệ thống phân quyền theo mô hì
    ```
    Tài khoản kiểm chuẩn gồm: `ADMIN`, `*_MANAGER`, `*_VIEWER` (có `read`, không `update`/`create`/`delete`), `*_MEMBER` (`is_staff=False`, chỉ xem/sửa bản của mình qua Portal).
 3. Chạy `pytest --reuse-db` các endpoint bị chạm + `core/tests/test_endpoint_access.py`, và khi có UI thật dùng `playwright-cli` đăng nhập thử từng vai trò để chụp/kiểm trực tiếp menu, `ForbiddenView`, nút mờ + tooltip và `useEditMode`.
-4. Sửa mọi độ lệch phát hiện được (đúng `docs/rules/`), cập nhật `docs/modules/<m>/README.md` nếu đổi `MEMBER`/quyền, và trả báo cáo kèm commit block theo `docs/rules/git.md`.
+4. Sửa mọi độ lệch phát hiện được (đúng `docs/rules/`), cập nhật `docs/modules/<m>/README.md` nếu đổi `MEMBER`/quyền; nếu người dùng đặt ra rule mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy ước nếu kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`). Trả báo cáo đầy đủ (không tự thao tác Git hay tự gợi ý commit trừ khi người dùng yêu cầu).
