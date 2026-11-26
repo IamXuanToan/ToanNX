@@ -246,19 +246,13 @@ def _system(model: str) -> Callable[[Any, int], None]:
         from app.system.models.notification import Notification
         from app.system.models.notification_delivery import NotificationDelivery
         from app.system.models.system_announcement import SystemAnnouncement
-        from app.system.models.telegram_bot import TelegramBot
         from app.system.models.telegram_chat import TelegramChat
 
         usd = Currency.objects.get(code="USD")
-        bot, _ = TelegramBot.objects.get_or_create(
-            owner=owner, defaults={"token_encrypted": "x", "token_last4": "1234"}
-        )
         for index in range(count):
             uid = uuid.uuid4().hex
             if model == "chats":
-                TelegramChat.objects.create(
-                    owner=owner, bot=bot, chat_id=uid[:12], title="g", status="active"
-                )
+                TelegramChat.objects.create(owner=owner, chat_id=uid[:12], title="g", status="active")
             elif model == "deliveries":
                 notification = Notification.objects.create(
                     recipient=owner, event_code="system.auth.login", module="system", title="t", dedup_key=uid
@@ -280,6 +274,80 @@ def _system(model: str) -> Callable[[Any, int], None]:
                 )
             elif model == "announcements":
                 SystemAnnouncement.objects.create(title=uid)
+
+    return make
+
+
+def _workspace(model: str) -> Callable[[Any, int], None]:
+    def make(owner: Any, count: int) -> None:
+        from app.core.security.secret_cipher import SecretCipher
+        from app.system.models.currency import Currency
+        from app.workspace.models.asset import Asset
+        from app.workspace.models.asset_warranty_claim import AssetWarrantyClaim
+        from app.workspace.models.assistant_conversation import AssistantConversation
+        from app.workspace.models.assistant_message import AssistantMessage
+        from app.workspace.models.monitor_incident import MonitorIncident
+        from app.workspace.models.monitor_target import MonitorTarget
+        from app.workspace.models.reminder import Reminder
+        from app.workspace.models.subscription import Subscription
+        from app.workspace.models.subscription_payment import SubscriptionPayment
+        from app.workspace.models.vault_item import VaultItem
+
+        vnd = Currency.objects.get(code="VND")
+        today = timezone.localdate()
+        asset = None
+        sub = None
+        target = None
+        if model == "claims":
+            asset = Asset.objects.create(owner=owner, name="TB QC", purchase_date=today, currency=vnd)
+        elif model == "payments":
+            sub = Subscription.objects.create(owner=owner, name="Sub QC", currency=vnd, renew_date=today)
+        elif model == "incidents":
+            target = MonitorTarget.objects.create(owner=owner, name="Mon QC", url="https://example.com")
+
+        for index in range(count):
+            uid = uuid.uuid4().hex[:8]
+            if model == "assets":
+                Asset.objects.create(owner=owner, name=f"Asset {uid}", purchase_date=today, currency=vnd)
+            elif model == "claims" and asset is not None:
+                AssetWarrantyClaim.objects.create(
+                    owner=owner,
+                    asset=asset,
+                    claim_code=f"BH-QC-{uid}-{index}",
+                    submitted_date=today,
+                    service_center="TTBH",
+                    issue_description="Lỗi màn",
+                    currency=vnd,
+                )
+            elif model == "subscriptions":
+                Subscription.objects.create(owner=owner, name=f"Sub {uid}", currency=vnd, renew_date=today)
+            elif model == "payments" and sub is not None:
+                SubscriptionPayment.objects.create(
+                    owner=owner,
+                    subscription=sub,
+                    paid_on=today,
+                    period_from=today,
+                    period_to=today + timedelta(days=30),
+                    currency=vnd,
+                )
+            elif model == "vault":
+                VaultItem.objects.create(
+                    owner=owner,
+                    title=f"Secret {uid}",
+                    secret_encrypted=SecretCipher().encrypt("workspace.vault.secret", "s3cr3t"),
+                    secret_last4="cr3t",
+                )
+            elif model == "monitors":
+                MonitorTarget.objects.create(owner=owner, name=f"Mon {uid}", url="https://example.com")
+            elif model == "incidents" and target is not None:
+                MonitorIncident.objects.create(
+                    owner=owner, target=target, started_at=timezone.now(), status_code=500
+                )
+            elif model == "reminders":
+                Reminder.objects.create(owner=owner, title=f"Rem {uid}", due_date=today)
+            elif model == "conversations":
+                conv = AssistantConversation.objects.create(owner=owner, title=f"Chat {uid}")
+                AssistantMessage.objects.create(conversation=conv, content="hi")
 
     return make
 
@@ -318,6 +386,15 @@ CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/novel/authors", _authors),
     ("/api/v1/novel/genres", _genres),
     ("/api/v1/novel/tags", _tags),
+    ("/api/v1/workspace/assets", _workspace("assets")),
+    ("/api/v1/workspace/warranty-claims", _workspace("claims")),
+    ("/api/v1/workspace/subscriptions", _workspace("subscriptions")),
+    ("/api/v1/workspace/subscription-payments", _workspace("payments")),
+    ("/api/v1/workspace/vault-items", _workspace("vault")),
+    ("/api/v1/workspace/monitor-targets", _workspace("monitors")),
+    ("/api/v1/workspace/monitor-incidents", _workspace("incidents")),
+    ("/api/v1/workspace/reminders", _workspace("reminders")),
+    ("/api/v1/workspace/assistant/conversations", _workspace("conversations")),
     (
         "/api/v1/system/settings",
         lambda owner, n: [

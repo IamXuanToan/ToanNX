@@ -57,6 +57,24 @@ class CacheService:
         payload = json.dumps(value, ensure_ascii=False, separators=(",", ":"), default=str)
         self._run("set", lambda client: client.set(key, payload, ex=max(1, int(ttl_seconds))))
 
+    def set_if_absent(self, key: str, value: Any, ttl_seconds: int) -> bool:
+        """Đặt khóa nguyên tử (`SET ... NX EX`); trả False nếu khóa đã có, True nếu ghi mới/lỗi."""
+        if not self._available():
+            return True
+        payload = json.dumps(value, ensure_ascii=False, separators=(",", ":"), default=str)
+        sentinel = object()
+        acquired: list[bool] = []
+
+        def run(client: Any) -> object:
+            result = client.set(key, payload, nx=True, ex=max(1, int(ttl_seconds)))
+            acquired.append(bool(result))
+            return result if result is not None else sentinel
+
+        outcome = self._run("set_if_absent", run)
+        if outcome is None:
+            return True
+        return bool(acquired[0]) if acquired else False
+
     def delete(self, *keys: str) -> None:
         """Xóa khóa (lỗi thì bỏ qua)."""
         if keys:

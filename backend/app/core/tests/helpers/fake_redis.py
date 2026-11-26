@@ -35,9 +35,11 @@ class FakeRedis:
         self._tick()
         return self.data[key] if self._alive(key) else None
 
-    def set(self, key: str, value: Any, ex: int | None = None) -> bool:
-        """SET (EX)."""
+    def set(self, key: str, value: Any, ex: int | None = None, nx: bool = False) -> bool | None:
+        """SET (EX, NX)."""
         self._tick()
+        if nx and self._alive(key):
+            return None
         self.data[key] = str(value)
         if ex is not None:
             self.expires[key] = time.monotonic() + ex

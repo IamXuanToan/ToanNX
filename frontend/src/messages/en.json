@@ -546,8 +546,6 @@
       "SYSTEM_EXCHANGE_RATE_UNAVAILABLE": "No exchange rate available, enter it manually.",
       "SYSTEM_EXCHANGE_RATE_READ_ONLY": "API rates are read-only.",
       "TELEGRAM_BOT_TOKEN_INVALID": "Invalid Telegram bot token.",
-      "TELEGRAM_BOT_HAS_WEBHOOK": "The bot has a webhook elsewhere; remove it first.",
-      "TELEGRAM_BOT_REQUIRED": "Set up your Telegram bot first.",
       "NOTIFICATION_EVENT_FORBIDDEN": "You cannot receive this event.",
       "NOTIFICATION_CHANNEL_UNAVAILABLE": "Channel unavailable.",
       "NOTIFICATION_IN_APP_REQUIRED": "Error events always show in the app.",
@@ -559,7 +557,17 @@
       "NOTIFICATION_SEND_FAILED": "Failed to send the notification.",
       "PUSH_TOKEN_INVALID": "The browser unregistered from notifications.",
       "PUSH_UNAVAILABLE": "Browser notifications are unavailable right now.",
-      "TELEGRAM_BOT_MISSING": "No Telegram bot is configured."
+      "TELEGRAM_BOT_MISSING": "No Telegram bot is configured.",
+      "WORKSPACE_CURRENCY_RATE_REQUIRED": "No exchange rate found for this foreign currency; please enter rate > 0.",
+      "WORKSPACE_EXCHANGE_RATE_INVALID": "Exchange rate must be greater than 0.",
+      "WORKSPACE_ASSET_FORBIDDEN": "Selected asset does not exist or belongs to another owner.",
+      "WORKSPACE_CLAIM_CODE_CONFLICT": "Warranty claim code already exists.",
+      "WORKSPACE_CUSTOM_CYCLE_DAYS_REQUIRED": "Custom billing cycle days must be greater than 0.",
+      "WORKSPACE_MONITOR_URL_UNSAFE": "URL is invalid or points to a restricted internal address.",
+      "WORKSPACE_DIGEST_SLOT_INVALID": "Digest time slot must follow HH:MM (00:00–23:59).",
+      "WORKSPACE_CALENDAR_RANGE_TOO_LONG": "Calendar range cannot exceed 93 days.",
+      "WORKSPACE_AI_NOT_CONFIGURED": "AI assistant endpoint is not configured; using Slash commands.",
+      "WORKSPACE_AI_DAILY_LIMIT_EXCEEDED": "Daily AI token quota exceeded."
     },
     "generic": {
       "title": "Could not load data",

@@ -58,3 +58,21 @@ def test_upstash_url_is_upgraded_to_tls() -> None:
     )
     assert CacheService.normalize_url("rediss://default:pw@abc.upstash.io:6379").startswith("rediss://")
     assert CacheService.normalize_url("redis://localhost:6379/0") == "redis://localhost:6379/0"
+
+
+def test_set_if_absent_atomic_lock_and_fallback(fake_redis: FakeRedis, settings: Any) -> None:
+    service = CacheService()
+    assert service.set_if_absent("workspace:cron:w1_lock", "1", 30) is True
+    assert service.set_if_absent("workspace:cron:w1_lock", "1", 30) is False
+    assert 0 < fake_redis.ttl("workspace:cron:w1_lock") <= 30
+
+    # Redis tắt -> trả True để không chặn thao tác
+    settings.REDIS_URL = ""
+    CacheService.use_client(None)
+    assert CacheService().set_if_absent("workspace:cron:w1_lock", "1", 30) is True
+
+    # Redis lỗi -> fallback True
+    broken = FakeRedis(fail=True)
+    settings.REDIS_URL = "redis://fake"
+    CacheService.use_client(broken, "redis://fake")
+    assert CacheService().set_if_absent("workspace:cron:w1_lock", "1", 30) is True

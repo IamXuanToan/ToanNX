@@ -10,6 +10,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("api/v1/novel/", include("app.novel.urls")),
     path("api/v1/utilities/", include("app.utilities.urls")),
     path("api/v1/finance/", include("app.finance.urls")),
+    path("api/v1/workspace/", include("app.workspace.urls")),
 ]
 
 if settings.DEBUG:

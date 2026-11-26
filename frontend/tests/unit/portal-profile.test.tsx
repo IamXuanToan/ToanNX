@@ -67,7 +67,15 @@ vi.mock("@/modules/system/hooks/use-permission", () => ({
 }));
 
 vi.mock("@/modules/system/hooks/use-telegram-bot", () => ({
-  useTelegramBot: () => ({ data: null }),
+  useTelegramBot: () => ({
+    data: {
+      configured: false,
+      username: "",
+      displayName: "",
+      botUrl: "",
+    },
+    isPending: false,
+  }),
 }));
 
 vi.mock("@/modules/system/services/auth.service", () => ({

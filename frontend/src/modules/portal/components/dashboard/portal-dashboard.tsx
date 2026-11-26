@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
+  Bot,
   Coins,
   ExternalLink,
   FileText,
@@ -22,6 +23,9 @@ import { usePermission } from "@/modules/system/hooks/use-permission";
 import { DONATION_PERMISSIONS } from "@/modules/utilities/permissions/donation-permission";
 import { PAGE_PERMISSIONS } from "@/modules/utilities/permissions/page-permission";
 import { SHORT_LINK_PERMISSIONS } from "@/modules/utilities/permissions/short-link-permission";
+import { PortalCalendar } from "@/modules/workspace/components/calendar/portal-calendar";
+import { WorkspaceSummaryCards } from "@/modules/workspace/components/dashboard/workspace-summary-cards";
+import { WORKSPACE_ROUTES } from "@/modules/workspace/constants/routes";
 import { donationService } from "@/modules/utilities/services/donation.service";
 import { pageService } from "@/modules/utilities/services/page.service";
 import { shortLinkService } from "@/modules/utilities/services/short-link.service";
@@ -32,6 +36,7 @@ import { Skeleton } from "@/shares/components/ui/skeleton";
 import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import { PORTAL_ROUTES } from "../../constants/routes";
+import { portalKeys } from "../../constants/query-keys";
 import { formatVndText } from "@/shares/lib/number-format";
 import { PortalDonationTrendChart } from "./portal-donation-trend-chart";
 import { PortalLinkClicksChart } from "./portal-link-clicks-chart";
@@ -41,7 +46,19 @@ import { PortalLinkClicksChart } from "./portal-link-clicks-chart";
  *
  * @returns Giao diện Dashboard.
  */
-export function PortalDashboard() {
+export function PortalDashboard({
+  canReadWorkspaceSummary = false,
+  canReadCalendar = false,
+  canCreateReminder = false,
+  canUpdateReminder = false,
+  canUseAssistant = false,
+}: {
+  canReadWorkspaceSummary?: boolean;
+  canReadCalendar?: boolean;
+  canCreateReminder?: boolean;
+  canUpdateReminder?: boolean;
+  canUseAssistant?: boolean;
+} = {}) {
   const t = useTranslations("portal.dashboard");
   const tActions = useTranslations("common.actions");
   const tTable = useTranslations("common.table");
@@ -58,21 +75,21 @@ export function PortalDashboard() {
 
   // Chỉ tải trang và link do chính user tạo khi có quyền đọc tương ứng
   const pagesQuery = useQuery({
-    queryKey: ["portal-dashboard-pages", userId],
+    queryKey: portalKeys.dashboardPages(userId),
     queryFn: ({ signal }) =>
       pageService.list({ owner: userId ? [userId] : undefined, pageSize: 5 }, signal),
     enabled: Boolean(userId) && canReadPages,
   });
 
   const linksQuery = useQuery({
-    queryKey: ["portal-dashboard-links", userId],
+    queryKey: portalKeys.dashboardLinks(userId),
     queryFn: ({ signal }) =>
       shortLinkService.list({ owner: userId ? [userId] : undefined, pageSize: 5 }, signal),
     enabled: Boolean(userId) && canReadShortLinks,
   });
 
   const donationStatsQuery = useQuery({
-    queryKey: ["portal-dashboard-donations", userId],
+    queryKey: portalKeys.dashboardDonations(userId),
     queryFn: ({ signal }) => donationService.stats({ owner: userId }, signal),
     enabled: Boolean(userId) && canReadDonations,
   });
@@ -96,17 +113,37 @@ export function PortalDashboard() {
     <div className="space-y-8">
       {/* Welcome Banner */}
       <div className="border-border from-primary/10 via-card to-card relative overflow-hidden rounded-2xl border bg-gradient-to-r p-6 shadow-2xs sm:p-8">
-        <div className="relative z-10 max-w-2xl space-y-2">
-          <div className="border-primary/20 bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold">
-            <Sparkles className="size-3.5" />
-            <span>{t("studioBadge")}</span>
+        <div className="relative z-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div className="max-w-2xl space-y-2">
+            <div className="border-primary/20 bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold">
+              <Sparkles className="size-3.5" />
+              <span>{t("studioBadge")}</span>
+            </div>
+            <h1 className="text-foreground text-2xl font-extrabold tracking-tight sm:text-3xl">
+              {t("welcome", { name: currentUser?.user.fullName || currentUser?.user.email || "" })}
+            </h1>
+            <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
           </div>
-          <h1 className="text-foreground text-2xl font-extrabold tracking-tight sm:text-3xl">
-            {t("welcome", { name: currentUser?.user.fullName || currentUser?.user.email || "" })}
-          </h1>
-          <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
+          {canUseAssistant ? (
+            <Button asChild className="shrink-0">
+              <Link href={WORKSPACE_ROUTES.assistant}>
+                <Bot />
+                {t("workspace.askAssistant")}
+              </Link>
+            </Button>
+          ) : null}
         </div>
       </div>
+
+      {/* Workspace KPIs & Personal Calendar */}
+      {canReadWorkspaceSummary ? <WorkspaceSummaryCards /> : null}
+      {canReadCalendar ? (
+        <PortalCalendar
+          canReadCalendar={canReadCalendar}
+          canCreateReminder={canCreateReminder}
+          canUpdateReminder={canUpdateReminder}
+        />
+      ) : null}
 
       {/* Stats Cards */}
       {canReadDonations || canReadPages || canReadShortLinks ? (

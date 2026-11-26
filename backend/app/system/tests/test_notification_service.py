@@ -165,3 +165,25 @@ def test_expired_push_token_does_not_alert_admins(user: Any, superuser: Any) -> 
         NotificationService().dispatch_pending()
     assert NotificationDelivery.objects.get(notification__recipient=user).status == "FAILED"
     assert not Notification.objects.filter(event_code="system.notification.delivery_failed").exists()
+
+
+def test_notify_kick_false_batches_until_flush_kick(
+    user: Any, django_capture_on_commit_callbacks: Any
+) -> None:
+    """`kick=False` gom các lượt tạo thông báo rồi chỉ gọi QStash đúng 1 lần khi `flush_kick()`."""
+    PushDevice.objects.create(user=user, fcm_token="a")
+    service = NotificationService()
+    with (
+        patch.object(service.kick_service, "kick") as mock_kick,
+        django_capture_on_commit_callbacks(execute=True),
+    ):
+        service.notify(
+            "system.announcement.published", recipient=user, dedup_key="d1", payload=PAYLOAD, kick=False
+        )
+        service.notify(
+            "system.announcement.published", recipient=user, dedup_key="d2", payload=PAYLOAD, kick=False
+        )
+        assert mock_kick.call_count == 0
+        assert service.flush_kick() is True
+        assert service.flush_kick() is False
+    assert mock_kick.call_count == 1

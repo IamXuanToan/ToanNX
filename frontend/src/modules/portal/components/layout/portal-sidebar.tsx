@@ -1,35 +1,56 @@
 "use client";
 
 import {
+  Activity,
+  AlertTriangle,
   BarChart3,
+  BellRing,
+  Bot,
+  CreditCard,
   FileText,
   HeartHandshake,
+  History,
   Images,
+  KeyRound,
   Landmark,
+  Laptop,
   LayoutDashboard,
   Link2,
   ListFilter,
   QrCode,
   Receipt,
+  ShieldCheck,
+  SlidersHorizontal,
   Store,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link, usePathname } from "@/i18n/navigation";
-import { ATTACHMENT_PERMISSIONS } from "@/modules/system/permissions/attachment-permission";
-import { UserMenu } from "@/modules/system/components/current-user/user-menu";
-import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
-import { hasPermission } from "@/modules/system/services/current-user.service";
 import { INCOME_PERMISSIONS } from "@/modules/finance/permissions/income-permission";
 import { INVOICE_PERMISSIONS } from "@/modules/finance/permissions/invoice-permission";
 import { PLATFORM_PERMISSIONS } from "@/modules/finance/permissions/platform-permission";
 import { REPORT_PERMISSIONS } from "@/modules/finance/permissions/report-permission";
 import { RULE_PERMISSIONS } from "@/modules/finance/permissions/rule-permission";
 import { SEPAY_PERMISSIONS } from "@/modules/finance/permissions/sepay-permission";
+import { UserMenu } from "@/modules/system/components/current-user/user-menu";
+import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
+import { ATTACHMENT_PERMISSIONS } from "@/modules/system/permissions/attachment-permission";
+import { hasPermission } from "@/modules/system/services/current-user.service";
 import { DONATION_PERMISSIONS } from "@/modules/utilities/permissions/donation-permission";
 import { PAGE_PERMISSIONS } from "@/modules/utilities/permissions/page-permission";
 import { QR_CODE_PERMISSIONS } from "@/modules/utilities/permissions/qr-code-permission";
 import { SHORT_LINK_PERMISSIONS } from "@/modules/utilities/permissions/short-link-permission";
+import { WORKSPACE_PATHNAMES, WORKSPACE_ROUTES } from "@/modules/workspace/constants/routes";
+import { ASSET_PERMISSIONS } from "@/modules/workspace/permissions/asset-permission";
+import { ASSET_WARRANTY_CLAIM_PERMISSIONS } from "@/modules/workspace/permissions/asset-warranty-claim-permission";
+import { ASSISTANT_PERMISSIONS } from "@/modules/workspace/permissions/assistant-permission";
+import { MONITOR_INCIDENT_PERMISSIONS } from "@/modules/workspace/permissions/monitor-incident-permission";
+import { MONITOR_TARGET_PERMISSIONS } from "@/modules/workspace/permissions/monitor-target-permission";
+import { REMINDER_PERMISSIONS } from "@/modules/workspace/permissions/reminder-permission";
+import { SUBSCRIPTION_PAYMENT_PERMISSIONS } from "@/modules/workspace/permissions/subscription-payment-permission";
+import { SUBSCRIPTION_PERMISSIONS } from "@/modules/workspace/permissions/subscription-permission";
+import { VAULT_ITEM_PERMISSIONS } from "@/modules/workspace/permissions/vault-item-permission";
+import { WORKSPACE_SETTING_PERMISSIONS } from "@/modules/workspace/permissions/workspace-setting-permission";
 import { LogoMark } from "@/shares/components/layout/logo-mark";
 import { Badge } from "@/shares/components/ui/badge";
 import {
@@ -51,9 +72,8 @@ const NAV_LINK_CLASS =
   "text-foreground/70 hover:bg-item-hover hover:text-foreground data-active:bg-primary-light data-active:text-primary data-active:hover:bg-primary-light data-active:hover:text-primary h-10 gap-2.5 rounded-xl px-3 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:p-3!";
 
 /**
- * Thanh điều hướng sidebar của Client Portal:
- * Chuẩn hóa theo thiết kế của Admin, hỗ trợ thu gọn dải icon (collapsible="icon"),
- * chia nhóm rõ ràng (Tổng quan, Tiện ích, Tệp tin), trạng thái active mượt mà và footer tài khoản.
+ * Thanh điều hướng sidebar của Client Portal gồm 5 cụm chức năng:
+ * Tổng quan, Cá nhân (Workspace), Tiện ích, Tài chính và Tệp tin.
  *
  * @returns Component Sidebar Portal.
  */
@@ -63,6 +83,7 @@ export function PortalSidebar() {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
   const { data: currentUser } = useCurrentUser();
+  const allPathnames = { ...PORTAL_PATHNAMES, ...WORKSPACE_PATHNAMES };
 
   const rawSections = [
     {
@@ -75,7 +96,7 @@ export function PortalSidebar() {
           href: PORTAL_ROUTES.dashboard,
           icon: LayoutDashboard,
           permission: undefined,
-          active: isLocalizedRouteExact(pathname, PORTAL_ROUTES.dashboard, PORTAL_PATHNAMES),
+          active: isLocalizedRouteExact(pathname, PORTAL_ROUTES.dashboard, allPathnames),
         },
         {
           key: "donations",
@@ -83,7 +104,101 @@ export function PortalSidebar() {
           href: PORTAL_ROUTES.donations,
           icon: HeartHandshake,
           permission: DONATION_PERMISSIONS.read,
-          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.donations, PORTAL_PATHNAMES),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.donations, allPathnames),
+        },
+      ],
+    },
+    {
+      key: "workspace",
+      label: t("sections.workspace"),
+      items: [
+        {
+          key: "assistant",
+          title: t("assistant"),
+          href: WORKSPACE_ROUTES.assistant,
+          icon: Bot,
+          permission: ASSISTANT_PERMISSIONS.chat,
+          active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.assistant, allPathnames),
+        },
+        {
+          key: "reminders",
+          title: t("reminders"),
+          href: WORKSPACE_ROUTES.reminders,
+          icon: BellRing,
+          permission: REMINDER_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.reminders, allPathnames),
+        },
+        {
+          key: "subscriptions",
+          title: t("subscriptions"),
+          href: WORKSPACE_ROUTES.subscriptions,
+          icon: CreditCard,
+          permission: SUBSCRIPTION_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.subscriptions, allPathnames),
+        },
+        {
+          key: "subscriptionPayments",
+          title: t("subscriptionPayments"),
+          href: WORKSPACE_ROUTES.subscriptionPayments,
+          icon: History,
+          permission: SUBSCRIPTION_PAYMENT_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(
+            pathname,
+            WORKSPACE_ROUTES.subscriptionPayments,
+            allPathnames,
+          ),
+        },
+        {
+          key: "assets",
+          title: t("assets"),
+          href: WORKSPACE_ROUTES.assets,
+          icon: Laptop,
+          permission: ASSET_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.assets, allPathnames),
+        },
+        {
+          key: "warrantyClaims",
+          title: t("warrantyClaims"),
+          href: WORKSPACE_ROUTES.warrantyClaims,
+          icon: ShieldCheck,
+          permission: ASSET_WARRANTY_CLAIM_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.warrantyClaims, allPathnames),
+        },
+        {
+          key: "vault",
+          title: t("vault"),
+          href: WORKSPACE_ROUTES.vault,
+          icon: KeyRound,
+          permission: VAULT_ITEM_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.vault, allPathnames),
+        },
+        {
+          key: "monitors",
+          title: t("monitors"),
+          href: WORKSPACE_ROUTES.monitors,
+          icon: Activity,
+          permission: MONITOR_TARGET_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.monitors, allPathnames),
+        },
+        {
+          key: "monitorIncidents",
+          title: t("monitorIncidents"),
+          href: WORKSPACE_ROUTES.monitorIncidents,
+          icon: AlertTriangle,
+          permission: MONITOR_INCIDENT_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(
+            pathname,
+            WORKSPACE_ROUTES.monitorIncidents,
+            allPathnames,
+          ),
+        },
+        {
+          key: "workspaceSettings",
+          title: t("workspaceSettings"),
+          href: WORKSPACE_ROUTES.settings,
+          icon: SlidersHorizontal,
+          permission: WORKSPACE_SETTING_PERMISSIONS.read,
+          active: startsWithLocalizedRoute(pathname, WORKSPACE_ROUTES.settings, allPathnames),
         },
       ],
     },
@@ -97,7 +212,7 @@ export function PortalSidebar() {
           href: PORTAL_ROUTES.pages,
           icon: FileText,
           permission: PAGE_PERMISSIONS.read,
-          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.pages, PORTAL_PATHNAMES),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.pages, allPathnames),
         },
         {
           key: "shortLinks",
@@ -105,7 +220,7 @@ export function PortalSidebar() {
           href: PORTAL_ROUTES.shortLinks,
           icon: Link2,
           permission: SHORT_LINK_PERMISSIONS.read,
-          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.shortLinks, PORTAL_PATHNAMES),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.shortLinks, allPathnames),
         },
         {
           key: "qrCodes",
@@ -113,7 +228,7 @@ export function PortalSidebar() {
           href: PORTAL_ROUTES.qrCodes,
           icon: QrCode,
           permission: QR_CODE_PERMISSIONS.read,
-          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.qrCodes, PORTAL_PATHNAMES),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.qrCodes, allPathnames),
         },
       ],
     },
@@ -125,33 +240,25 @@ export function PortalSidebar() {
           key: "financeDashboard",
           title: t("financeDashboard"),
           href: PORTAL_ROUTES.financeDashboard,
-          icon: LayoutDashboard,
+          icon: BarChart3,
           permission: REPORT_PERMISSIONS.read,
-          active: isLocalizedRouteExact(pathname, PORTAL_ROUTES.financeDashboard, PORTAL_PATHNAMES),
+          active: isLocalizedRouteExact(pathname, PORTAL_ROUTES.financeDashboard, allPathnames),
         },
         {
           key: "financeIncomes",
           title: t("financeIncomes"),
           href: PORTAL_ROUTES.financeIncomes,
-          icon: Receipt,
+          icon: Landmark,
           permission: INCOME_PERMISSIONS.read,
-          active: startsWithLocalizedRoute(
-            pathname,
-            PORTAL_ROUTES.financeIncomes,
-            PORTAL_PATHNAMES,
-          ),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.financeIncomes, allPathnames),
         },
         {
           key: "financeInvoices",
           title: t("financeInvoices"),
           href: PORTAL_ROUTES.financeInvoices,
-          icon: FileText,
+          icon: Receipt,
           permission: INVOICE_PERMISSIONS.read,
-          active: startsWithLocalizedRoute(
-            pathname,
-            PORTAL_ROUTES.financeInvoices,
-            PORTAL_PATHNAMES,
-          ),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.financeInvoices, allPathnames),
         },
         {
           key: "financePlatforms",
@@ -159,11 +266,7 @@ export function PortalSidebar() {
           href: PORTAL_ROUTES.financePlatforms,
           icon: Store,
           permission: PLATFORM_PERMISSIONS.read,
-          active: startsWithLocalizedRoute(
-            pathname,
-            PORTAL_ROUTES.financePlatforms,
-            PORTAL_PATHNAMES,
-          ),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.financePlatforms, allPathnames),
         },
         {
           key: "financeRules",
@@ -171,7 +274,7 @@ export function PortalSidebar() {
           href: PORTAL_ROUTES.financeRules,
           icon: ListFilter,
           permission: RULE_PERMISSIONS.read,
-          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.financeRules, PORTAL_PATHNAMES),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.financeRules, allPathnames),
         },
         {
           key: "financeReports",
@@ -179,19 +282,15 @@ export function PortalSidebar() {
           href: PORTAL_ROUTES.financeReports,
           icon: BarChart3,
           permission: REPORT_PERMISSIONS.read,
-          active: startsWithLocalizedRoute(
-            pathname,
-            PORTAL_ROUTES.financeReports,
-            PORTAL_PATHNAMES,
-          ),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.financeReports, allPathnames),
         },
         {
           key: "financeSepay",
           title: t("financeSepay"),
           href: PORTAL_ROUTES.financeSepay,
-          icon: Landmark,
+          icon: Link2,
           permission: SEPAY_PERMISSIONS.manage,
-          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.financeSepay, PORTAL_PATHNAMES),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.financeSepay, allPathnames),
         },
       ],
     },
@@ -205,7 +304,7 @@ export function PortalSidebar() {
           href: PORTAL_ROUTES.library,
           icon: Images,
           permission: ATTACHMENT_PERMISSIONS.read,
-          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.library, PORTAL_PATHNAMES),
+          active: startsWithLocalizedRoute(pathname, PORTAL_ROUTES.library, allPathnames),
         },
       ],
     },
@@ -222,7 +321,6 @@ export function PortalSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      {/* Brand Header */}
       <SidebarHeader className="h-16 shrink-0 justify-center border-b px-3 py-0">
         <Link
           href={PORTAL_ROUTES.dashboard}
@@ -242,7 +340,6 @@ export function PortalSidebar() {
         </Link>
       </SidebarHeader>
 
-      {/* Nav Menu Items theo Cụm nhóm */}
       <SidebarContent className="px-3 py-3 group-data-[collapsible=icon]:[scrollbar-width:none] group-data-[collapsible=icon]:overflow-y-auto">
         {sections.map((section, index) => (
           <div key={section.key} className="mt-2 first:mt-0">
@@ -266,7 +363,7 @@ export function PortalSidebar() {
                       tooltip={`${section.label} › ${item.title}`}
                       className={NAV_LINK_CLASS}
                     >
-                      <Link href={item.href} onClick={() => setOpenMobile(false)}>
+                      <Link href={item.href as never} onClick={() => setOpenMobile(false)}>
                         <Icon aria-hidden className="size-4 shrink-0" />
                         <span className="truncate">{item.title}</span>
                       </Link>
@@ -279,7 +376,6 @@ export function PortalSidebar() {
         ))}
       </SidebarContent>
 
-      {/* Footer chứa thông tin tài khoản */}
       <SidebarFooter className="px-3 pt-2 pb-3">
         <UserMenu variant="sidebar" />
       </SidebarFooter>

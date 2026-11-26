@@ -23,6 +23,33 @@ import type { ChapterDetail } from "@/modules/novel/types/chapter.types";
 import type { FavoriteItem } from "@/modules/novel/types/favorite.types";
 import type { Novel, NovelDetail } from "@/modules/novel/types/novel.types";
 import type { ReadingHistoryItem } from "@/modules/novel/types/reading-history.types";
+import type { TelegramBot, TelegramBotCheck } from "@/modules/system/types/notification.types";
+import type { Asset } from "@/modules/workspace/types/asset.types";
+import type { AssetWarrantyClaim } from "@/modules/workspace/types/asset-warranty-claim.types";
+import type {
+  AssistantChatResult,
+  AssistantConversation,
+  AssistantConversationDetail,
+  AssistantMessage,
+} from "@/modules/workspace/types/assistant.types";
+import type { MonitorIncident } from "@/modules/workspace/types/monitor-incident.types";
+import type {
+  MonitorPingResult,
+  MonitorTarget,
+} from "@/modules/workspace/types/monitor-target.types";
+import type { Reminder } from "@/modules/workspace/types/reminder.types";
+import type { Subscription } from "@/modules/workspace/types/subscription.types";
+import type { SubscriptionPayment } from "@/modules/workspace/types/subscription-payment.types";
+import type { VaultItem, VaultItemReveal } from "@/modules/workspace/types/vault-item.types";
+import type {
+  WorkspaceCalendar,
+  WorkspaceCalendarEvent,
+} from "@/modules/workspace/types/workspace-calendar.types";
+import type {
+  WorkspaceDashboardReminder,
+  WorkspaceDashboardSummary,
+} from "@/modules/workspace/types/workspace-dashboard.types";
+import type { WorkspaceSetting } from "@/modules/workspace/types/workspace-setting.types";
 import type { ApiModel } from "@/shares/types/api-schema";
 import type { HistoryEntry } from "@/shares/types/api.types";
 
@@ -61,5 +88,56 @@ describe("hợp đồng kiểu FE ↔ OpenAPI", () => {
       keyof ApiModel<"ReadingHistoryResponse">
     >();
     expectTypeOf<keyof FavoriteItem>().toEqualTypeOf<keyof ApiModel<"FavoriteResponse">>();
+    expectTypeOf<keyof TelegramBot>().toEqualTypeOf<keyof ApiModel<"TelegramBotResponse">>();
+    expectTypeOf<keyof TelegramBotCheck>().toEqualTypeOf<
+      keyof ApiModel<"TelegramBotCheckResponse">
+    >();
+    expectTypeOf<keyof Asset>().toEqualTypeOf<keyof ApiModel<"AssetResponse">>();
+    expectTypeOf<keyof AssetWarrantyClaim>().toEqualTypeOf<
+      keyof ApiModel<"AssetWarrantyClaimResponse">
+    >();
+    expectTypeOf<keyof Subscription>().toEqualTypeOf<keyof ApiModel<"SubscriptionResponse">>();
+    expectTypeOf<keyof SubscriptionPayment>().toEqualTypeOf<
+      keyof ApiModel<"SubscriptionPaymentResponse">
+    >();
+    expectTypeOf<keyof VaultItem>().toEqualTypeOf<keyof ApiModel<"VaultItemResponse">>();
+    expectTypeOf<keyof VaultItemReveal>().toEqualTypeOf<
+      keyof ApiModel<"VaultItemRevealResponse">
+    >();
+    expectTypeOf<keyof MonitorTarget>().toEqualTypeOf<keyof ApiModel<"MonitorTargetResponse">>();
+    expectTypeOf<keyof MonitorPingResult>().toEqualTypeOf<
+      keyof ApiModel<"MonitorTargetPingResponse">
+    >();
+    expectTypeOf<keyof MonitorIncident>().toEqualTypeOf<
+      keyof ApiModel<"MonitorIncidentResponse">
+    >();
+    expectTypeOf<keyof Reminder>().toEqualTypeOf<keyof ApiModel<"ReminderResponse">>();
+    expectTypeOf<keyof WorkspaceSetting>().toEqualTypeOf<
+      keyof ApiModel<"WorkspaceSettingResponse">
+    >();
+    expectTypeOf<keyof WorkspaceDashboardSummary>().toEqualTypeOf<
+      keyof ApiModel<"WorkspaceDashboardSummaryResponse">
+    >();
+    expectTypeOf<keyof WorkspaceDashboardReminder>().toEqualTypeOf<
+      keyof ApiModel<"WorkspaceDashboardReminderResponse">
+    >();
+    expectTypeOf<keyof WorkspaceCalendar>().toEqualTypeOf<
+      keyof ApiModel<"WorkspaceCalendarResponse">
+    >();
+    expectTypeOf<keyof WorkspaceCalendarEvent>().toEqualTypeOf<
+      keyof ApiModel<"WorkspaceCalendarEventResponse">
+    >();
+    expectTypeOf<keyof AssistantConversation>().toEqualTypeOf<
+      keyof ApiModel<"AssistantConversationListResponse">
+    >();
+    expectTypeOf<keyof AssistantConversationDetail>().toEqualTypeOf<
+      keyof ApiModel<"AssistantConversationDetailResponse">
+    >();
+    expectTypeOf<keyof AssistantMessage>().toEqualTypeOf<
+      keyof ApiModel<"AssistantMessageResponse">
+    >();
+    expectTypeOf<keyof AssistantChatResult>().toEqualTypeOf<
+      keyof ApiModel<"AssistantChatResponse">
+    >();
   });
 });

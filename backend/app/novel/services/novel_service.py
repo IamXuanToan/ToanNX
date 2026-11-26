@@ -76,6 +76,10 @@ class NovelService(CoreCrudService[Novel, NovelRepository]):
             novel.tags.set(tag_ids)
         return novel
 
+    def list_stale_for(self, actor: Any, cutoff: Any, *, limit: int = 15) -> list[Novel]:
+        """Danh sách truyện do chính `actor` sở hữu bị bỏ quên trước `cutoff` (cho AI tool cá nhân)."""
+        return self.novel_repository.list_stale_for_owner(actor.pk, cutoff, limit=limit)
+
     @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> Novel:
         """Cập nhật thông tin tiểu thuyết và đồng bộ quan hệ nhiều-nhiều.

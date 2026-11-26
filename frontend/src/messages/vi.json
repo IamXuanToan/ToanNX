@@ -546,8 +546,6 @@
       "SYSTEM_EXCHANGE_RATE_UNAVAILABLE": "Không lấy được tỷ giá, hãy nhập tay.",
       "SYSTEM_EXCHANGE_RATE_READ_ONLY": "Tỷ giá lấy từ API chỉ đọc.",
       "TELEGRAM_BOT_TOKEN_INVALID": "Token bot Telegram không hợp lệ.",
-      "TELEGRAM_BOT_HAS_WEBHOOK": "Bot đang đặt webhook ở nơi khác; hãy gỡ webhook để dùng.",
-      "TELEGRAM_BOT_REQUIRED": "Hãy cấu hình bot Telegram trước.",
       "NOTIFICATION_EVENT_FORBIDDEN": "Bạn không được nhận sự kiện này.",
       "NOTIFICATION_CHANNEL_UNAVAILABLE": "Kênh chưa dùng được.",
       "NOTIFICATION_IN_APP_REQUIRED": "Sự kiện lỗi luôn hiện trong ứng dụng.",
@@ -559,7 +557,17 @@
       "NOTIFICATION_SEND_FAILED": "Gửi thông báo thất bại.",
       "PUSH_TOKEN_INVALID": "Trình duyệt đã hủy đăng ký nhận thông báo.",
       "PUSH_UNAVAILABLE": "Không gửi được thông báo trình duyệt lúc này.",
-      "TELEGRAM_BOT_MISSING": "Chưa cấu hình bot Telegram."
+      "TELEGRAM_BOT_MISSING": "Chưa cấu hình bot Telegram.",
+      "WORKSPACE_CURRENCY_RATE_REQUIRED": "Ngoại tệ chưa có tỷ giá tại ngày chứng từ, vui lòng nhập tỷ giá > 0.",
+      "WORKSPACE_EXCHANGE_RATE_INVALID": "Tỷ giá quy đổi phải lớn hơn 0.",
+      "WORKSPACE_ASSET_FORBIDDEN": "Thiết bị được chọn không tồn tại hoặc không thuộc quyền sở hữu của bạn.",
+      "WORKSPACE_CLAIM_CODE_CONFLICT": "Mã phiếu bảo hành đã tồn tại.",
+      "WORKSPACE_CUSTOM_CYCLE_DAYS_REQUIRED": "Vui lòng nhập số ngày chu kỳ (> 0).",
+      "WORKSPACE_MONITOR_URL_UNSAFE": "URL không hợp lệ hoặc trỏ tới địa chỉ nội bộ bị chặn.",
+      "WORKSPACE_DIGEST_SLOT_INVALID": "Khung giờ gửi bản tin phải theo định dạng HH:MM (00:00–23:59).",
+      "WORKSPACE_CALENDAR_RANGE_TOO_LONG": "Khoảng ngày xem lịch tối đa là 93 ngày.",
+      "WORKSPACE_AI_NOT_CONFIGURED": "Trợ lý AI chưa được cấu hình endpoint, đang dùng chế độ lệnh Slash.",
+      "WORKSPACE_AI_DAILY_LIMIT_EXCEEDED": "Bạn đã dùng hết hạn mức token AI trong ngày hôm nay."
     },
     "generic": {
       "title": "Không tải được dữ liệu",

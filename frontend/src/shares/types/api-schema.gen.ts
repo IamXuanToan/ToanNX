@@ -3019,13 +3019,11 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** @description Bot của mình (null nếu chưa có). */
+    /** @description Thông tin Bot Telegram chung của hệ thống. */
     get: operations["system_telegram_bot_retrieve"];
-    /** @description Kiểm token bằng getMe rồi lưu mã hóa. */
-    put: operations["system_telegram_bot_update"];
+    put?: never;
     post?: never;
-    /** @description Xóa bot và các nơi nhận của bot. */
-    delete: operations["system_telegram_bot_destroy"];
+    delete?: never;
     options?: never;
     head?: never;
     patch?: never;
@@ -3040,8 +3038,25 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** @description Kết quả kiểm tra. */
+    /** @description Kiểm tra token và đồng bộ webhook Bot Telegram chung. */
     post: operations["system_telegram_bot_check_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/telegram/webhook": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Nhận update Telegram, kích hoạt chat đăng ký và chuyển tiếp sang hook module. */
+    post: operations["system_telegram_webhook_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -3903,6 +3918,850 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/workspace/assets": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["workspace_assets_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["workspace_assets_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/assets/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["workspace_assets_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["workspace_assets_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["workspace_assets_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/workspace/assets/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["workspace_assets_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/assets/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_assets_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/assistant/chat": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Thực thi một lượt chat trên giao diện Web Portal. */
+    post: operations["workspace_assistant_chat_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/assistant/conversations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["workspace_assistant_conversations_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["workspace_assistant_conversations_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/assistant/conversations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết hội thoại kèm tối đa 50 tin gần nhất và cờ `has_more_messages`. */
+    get: operations["workspace_assistant_conversations_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["workspace_assistant_conversations_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/assistant/conversations/{id}/messages": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Trả danh sách tin nhắn (hỗ trợ `?page=&page_size=`). */
+    get: operations["workspace_assistant_conversations_messages_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/assistant/conversations/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_assistant_conversations_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/assistant/telegram-process": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xác thực QStash/CRON_SECRET rồi chạy xKiro + gửi phản hồi về Telegram. */
+    post: operations["workspace_assistant_telegram_process_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/calendar": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lấy toàn bộ sự kiện trong khoảng ngày theo múi giờ cài đặt của user. */
+    get: operations["workspace_calendar_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/cron/dispatch-due": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Thực thi W4 kiểm tra & gửi thông báo tới hạn kèm chống gửi trùng. */
+    post: operations["workspace_cron_dispatch_due_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/cron/tick": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Thực thi 1 nhịp W1 + W4. */
+    post: operations["workspace_cron_tick_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/dashboard/summary": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Tổng hợp số liệu chi tiêu tháng, nhắc việc hôm nay, bảo hành & monitor. */
+    get: operations["workspace_dashboard_summary_retrieve"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/monitor-incidents": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["workspace_monitor_incidents_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["workspace_monitor_incidents_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/monitor-incidents/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["workspace_monitor_incidents_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["workspace_monitor_incidents_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/monitor-incidents/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_monitor_incidents_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/monitor-targets": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Trộn trạng thái mới hơn từ Redis cho từng trang trước khi serialize. */
+    get: operations["workspace_monitor_targets_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["workspace_monitor_targets_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/monitor-targets/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết endpoint đã trộn trạng thái mới hơn từ Redis. */
+    get: operations["workspace_monitor_targets_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["workspace_monitor_targets_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["workspace_monitor_targets_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/workspace/monitor-targets/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["workspace_monitor_targets_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/monitor-targets/{id}/ping": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Ping kiểm tra thủ công URL qua SafeHttpClient (timeout <= 5s). */
+    post: operations["workspace_monitor_targets_ping_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/monitor-targets/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_monitor_targets_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/monitor-targets/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_monitor_targets_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/reminders": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["workspace_reminders_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["workspace_reminders_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/reminders/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["workspace_reminders_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["workspace_reminders_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["workspace_reminders_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/workspace/reminders/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["workspace_reminders_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/reminders/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_reminders_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/reminders/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_reminders_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/settings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lấy cấu hình của chính mình (tự tạo mặc định nếu chưa có). */
+    get: operations["workspace_settings_retrieve"];
+    /** @description Cập nhật cấu hình của chính mình (PUT). */
+    put: operations["workspace_settings_update"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần cấu hình của chính mình (PATCH). */
+    patch: operations["workspace_settings_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/workspace/settings/{owner_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lấy cấu hình theo `owner_id` (trả 404 nếu user không tồn tại). */
+    get: operations["workspace_settings_by_owner_retrieve"];
+    /** @description Cập nhật cấu hình cho `owner_id` (PUT). */
+    put: operations["workspace_settings_by_owner_update"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** @description Cập nhật cấu hình cho `owner_id` (PATCH). */
+    patch: operations["workspace_settings_by_owner_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/workspace/subscription-payments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["workspace_subscription_payments_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["workspace_subscription_payments_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/subscription-payments/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["workspace_subscription_payments_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["workspace_subscription_payments_destroy"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/subscription-payments/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_subscription_payments_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/subscriptions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["workspace_subscriptions_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["workspace_subscriptions_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/subscriptions/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["workspace_subscriptions_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["workspace_subscriptions_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["workspace_subscriptions_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/workspace/subscriptions/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["workspace_subscriptions_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/subscriptions/{id}/renew": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Ghi nhận đã thanh toán gia hạn và đẩy `renew_date` sang chu kỳ tiếp theo. */
+    post: operations["workspace_subscriptions_renew_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/subscriptions/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_subscriptions_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/subscriptions/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_subscriptions_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/vault-items": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["workspace_vault_items_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["workspace_vault_items_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/vault-items/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["workspace_vault_items_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["workspace_vault_items_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["workspace_vault_items_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/workspace/vault-items/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["workspace_vault_items_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/vault-items/{id}/reveal": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Giải mã bí mật một lần kèm ghi nhận dấu vết mở xem. */
+    post: operations["workspace_vault_items_reveal_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/vault-items/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_vault_items_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/warranty-claims": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["workspace_warranty_claims_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["workspace_warranty_claims_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/warranty-claims/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["workspace_warranty_claims_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["workspace_warranty_claims_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["workspace_warranty_claims_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/workspace/warranty-claims/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["workspace_warranty_claims_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/warranty-claims/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_warranty_claims_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4028,11 +4887,906 @@ export interface components {
       full_name: string;
     };
     /**
+     * @description * `cycle` - Cộng tiếp từ mốc gia hạn cũ
+     *     * `today` - Tính từ ngày thanh toán
+     * @enum {string}
+     */
+    AdvanceFromEnum: "cycle" | "today";
+    /**
      * @description * `OK` - Đã có số tiền
      *     * `UNKNOWN` - Không rõ số tiền
      * @enum {string}
      */
     AmountStatusEnum: "OK" | "UNKNOWN";
+    /** @description Đầu vào tạo Asset kèm nơi mua, quy đổi tiền tệ, bảo hành và hóa đơn riêng tư. */
+    AssetCreateValidateRequest: {
+      /** @description Tên nhận diện thiết bị. */
+      name: string;
+      /**
+       * @description Hãng sản xuất.
+       * @default
+       */
+      brand: string;
+      /**
+       * @description Mã model.
+       * @default
+       */
+      model_code: string;
+      /**
+       * @description Nhóm thiết bị.
+       *
+       *     * `LAPTOP` - Laptop
+       *     * `PHONE` - Điện thoại
+       *     * `TABLET` - Máy tính bảng
+       *     * `MONITOR` - Màn hình
+       *     * `PERIPHERAL` - Phụ kiện
+       *     * `AUDIO` - Âm thanh
+       *     * `NETWORK` - Thiết bị mạng
+       *     * `CAMERA` - Máy ảnh
+       *     * `OTHER` - Khác
+       * @default OTHER
+       */
+      category: components["schemas"]["WorkspaceAssetCategoryEnum"];
+      /**
+       * @description Số Serial.
+       * @default
+       */
+      serial_number: string;
+      /**
+       * @description Số IMEI.
+       * @default
+       */
+      imei: string;
+      /** @description Thông số kỹ thuật dạng JSON key-value. */
+      specs?: {
+        [key: string]: unknown;
+      };
+      /**
+       * @description Trạng thái sử dụng hiện tại.
+       *
+       *     * `IN_USE` - Đang dùng
+       *     * `BACKUP` - Dự phòng
+       *     * `IN_WARRANTY` - Đang bảo hành
+       *     * `IN_REPAIR` - Đang sửa chữa
+       *     * `SOLD` - Đã bán
+       *     * `BROKEN` - Đã hỏng
+       * @default IN_USE
+       */
+      status: components["schemas"]["WorkspaceAssetStatusEnum"];
+      /**
+       * Format: date
+       * @description Ngày mua thiết bị (YYYY-MM-DD).
+       */
+      purchase_date: string;
+      /**
+       * Format: decimal
+       * @description Giá mua theo tiền tệ gốc.
+       * @default 0.00
+       */
+      purchase_price: string;
+      /**
+       * Format: uuid
+       * @description ID tiền tệ giao dịch.
+       */
+      currency_id: string;
+      /**
+       * Format: decimal
+       * @description Tỷ giá quy đổi VNĐ (bắt buộc nhập khi ngoại tệ chưa có tỷ giá tham chiếu).
+       */
+      exchange_rate?: string | null;
+      /**
+       * @description Tên nơi mua.
+       * @default
+       */
+      purchase_store: string;
+      /**
+       * @description Kênh mua hàng.
+       *
+       *     * `OFFICIAL_STORE` - Hãng chính thức
+       *     * `RETAILER` - Đại lý / Cửa hàng
+       *     * `ECOMMERCE` - Sàn TMĐT
+       *     * `SECOND_HAND` - Mua lại / Cũ
+       *     * `COMPANY` - Công ty cấp
+       *     * `GIFT` - Được tặng
+       * @default RETAILER
+       */
+      purchase_channel: components["schemas"]["WorkspaceAssetPurchaseChannelEnum"];
+      /**
+       * @description Địa chỉ chi nhánh mua.
+       * @default
+       */
+      purchase_branch_address: string;
+      /**
+       * @description Mã đơn hàng.
+       * @default
+       */
+      purchase_order_code: string;
+      /** @description Link đơn hàng. */
+      purchase_order_url?: string;
+      /**
+       * @description Liên hệ bảo hành nơi bán.
+       * @default
+       */
+      store_warranty_contact: string;
+      /**
+       * @description Loại hình bảo hành.
+       *
+       *     * `MANUFACTURER` - Bảo hành hãng
+       *     * `STORE` - Bảo hành cửa hàng
+       *     * `EXTENDED` - Bảo hành mở rộng
+       *     * `NONE` - Không bảo hành
+       * @default MANUFACTURER
+       */
+      warranty_type: components["schemas"]["WorkspaceAssetWarrantyTypeEnum"];
+      /** @description Số tháng bảo hành. */
+      warranty_months?: number | null;
+      /**
+       * Format: date
+       * @description Ngày bắt đầu bảo hành.
+       */
+      warranty_start_date?: string | null;
+      /**
+       * Format: date
+       * @description Ngày hết hạn bảo hành.
+       */
+      warranty_end_date?: string | null;
+      /**
+       * @description Đơn vị bảo hành.
+       * @default
+       */
+      warranty_provider: string;
+      /**
+       * @description Ghi chú bảo hành.
+       * @default
+       */
+      warranty_note: string;
+      /** @description Danh sách ID tệp hóa đơn riêng tư. */
+      invoice_attachment_ids?: string[];
+      /**
+       * @description Ghi chú chung về thiết bị.
+       * @default
+       */
+      notes: string;
+    };
+    /** @description Chi tiết/danh sách thiết bị (annotations từ AssetRepository, 0 N+1). */
+    AssetResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Người sở hữu thiết bị.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
+      /**
+       * Tên thiết bị
+       * @description Tên nhận diện thiết bị.
+       */
+      readonly name: string;
+      /**
+       * Hãng sản xuất
+       * @description Thương hiệu của thiết bị.
+       */
+      readonly brand: string;
+      /**
+       * Mã model
+       * @description Mã hiệu sản phẩm (SKU/Part Number).
+       */
+      readonly model_code: string;
+      /**
+       * Loại thiết bị
+       * @description Nhóm thiết bị.
+       *
+       *     * `LAPTOP` - Laptop
+       *     * `PHONE` - Điện thoại
+       *     * `TABLET` - Máy tính bảng
+       *     * `MONITOR` - Màn hình
+       *     * `PERIPHERAL` - Phụ kiện
+       *     * `AUDIO` - Âm thanh
+       *     * `NETWORK` - Thiết bị mạng
+       *     * `CAMERA` - Máy ảnh
+       *     * `OTHER` - Khác
+       */
+      readonly category: components["schemas"]["WorkspaceAssetCategoryEnum"];
+      /**
+       * Số Serial
+       * @description Mã số sê-ri trên máy hoặc hộp.
+       */
+      readonly serial_number: string;
+      /**
+       * Số IMEI
+       * @description Mã IMEI (nếu có).
+       */
+      readonly imei: string;
+      /**
+       * Thông số kỹ thuật
+       * @description Cặp khóa-giá trị cấu hình phần cứng.
+       */
+      readonly specs: unknown;
+      /**
+       * Trạng thái
+       * @description Tình trạng sử dụng hiện tại.
+       *
+       *     * `IN_USE` - Đang dùng
+       *     * `BACKUP` - Dự phòng
+       *     * `IN_WARRANTY` - Đang bảo hành
+       *     * `IN_REPAIR` - Đang sửa chữa
+       *     * `SOLD` - Đã bán
+       *     * `BROKEN` - Đã hỏng
+       */
+      readonly status: components["schemas"]["WorkspaceAssetStatusEnum"];
+      /**
+       * Ngày mua
+       * Format: date
+       * @description Ngày mua thiết bị.
+       */
+      readonly purchase_date: string;
+      /**
+       * Giá mua gốc
+       * Format: decimal
+       * @description Số tiền thanh toán theo tiền tệ gốc.
+       */
+      readonly purchase_price: string;
+      /**
+       * Tiền tệ
+       * Format: uuid
+       * @description Đơn vị tiền tệ lúc mua.
+       */
+      readonly currency_id: string;
+      /** @description Mã tiền tệ. */
+      readonly currency_code: string;
+      /** @description Ký hiệu tiền tệ. */
+      readonly currency_symbol: string;
+      /** @description Số chữ số thập phân. */
+      readonly currency_decimal_places: number;
+      /**
+       * Tỷ giá quy đổi
+       * Format: decimal
+       * @description Tỷ giá sang VNĐ tại ngày mua.
+       */
+      readonly exchange_rate: string;
+      /**
+       * Giá mua VNĐ
+       * Format: decimal
+       * @description Giá trị quy đổi VNĐ.
+       */
+      readonly purchase_price_vnd: string;
+      /**
+       * Nơi mua
+       * @description Tên cửa hàng, đại lý hoặc sàn TMĐT.
+       */
+      readonly purchase_store: string;
+      /**
+       * Kênh mua
+       * @description Hình thức nơi bán.
+       *
+       *     * `OFFICIAL_STORE` - Hãng chính thức
+       *     * `RETAILER` - Đại lý / Cửa hàng
+       *     * `ECOMMERCE` - Sàn TMĐT
+       *     * `SECOND_HAND` - Mua lại / Cũ
+       *     * `COMPANY` - Công ty cấp
+       *     * `GIFT` - Được tặng
+       */
+      readonly purchase_channel: components["schemas"]["WorkspaceAssetPurchaseChannelEnum"];
+      /**
+       * Địa chỉ chi nhánh mua
+       * @description Địa chỉ cửa hàng lúc mua.
+       */
+      readonly purchase_branch_address: string;
+      /**
+       * Mã đơn hàng / Số hóa đơn
+       * @description Mã đơn hoặc số chứng từ bán hàng.
+       */
+      readonly purchase_order_code: string;
+      /**
+       * Link đơn hàng
+       * Format: uri
+       * @description Đường dẫn tới chi tiết đơn hàng trực tuyến.
+       */
+      readonly purchase_order_url: string;
+      /**
+       * Liên hệ bảo hành nơi bán
+       * @description Số điện thoại/email hỗ trợ của nơi bán.
+       */
+      readonly store_warranty_contact: string;
+      /**
+       * Loại bảo hành
+       * @description Phạm vi bảo hành áp dụng.
+       *
+       *     * `MANUFACTURER` - Bảo hành hãng
+       *     * `STORE` - Bảo hành cửa hàng
+       *     * `EXTENDED` - Bảo hành mở rộng
+       *     * `NONE` - Không bảo hành
+       */
+      readonly warranty_type: components["schemas"]["WorkspaceAssetWarrantyTypeEnum"];
+      /**
+       * Số tháng bảo hành
+       * @description Thời hạn bảo hành tính theo tháng.
+       */
+      readonly warranty_months: number | null;
+      /**
+       * Ngày bắt đầu BH
+       * Format: date
+       * @description Ngày tính bảo hành (mặc định bằng ngày mua).
+       */
+      readonly warranty_start_date: string | null;
+      /**
+       * Ngày hết hạn BH
+       * Format: date
+       * @description Ngày kết thúc bảo hành.
+       */
+      readonly warranty_end_date: string | null;
+      /**
+       * Đơn vị bảo hành
+       * @description Hãng hoặc trung tâm bảo hành ủy quyền.
+       */
+      readonly warranty_provider: string;
+      /**
+       * Ghi chú bảo hành
+       * @description Điều kiện hoặc phạm vi bảo hành đặc biệt.
+       */
+      readonly warranty_note: string;
+      /** @description Danh sách hóa đơn/chứng từ riêng tư. */
+      readonly invoice_attachments: components["schemas"]["AttachmentDetailResponse"][];
+      /**
+       * Ghi chú
+       * @description Ghi chú bổ sung về thiết bị.
+       */
+      readonly notes: string;
+      /**
+       * @description Tổng số phiếu bảo hành.
+       * @default 0
+       */
+      readonly warranty_claim_count: number;
+      /**
+       * @description Tổng số lần sửa chữa/bảo trì ngoài.
+       * @default 0
+       */
+      readonly repair_count: number;
+      /**
+       * @description Tổng số phiếu BH & sửa chữa.
+       * @default 0
+       */
+      readonly total_claim_count: number;
+      /**
+       * @description Số phiếu đang mở xử lý.
+       * @default 0
+       */
+      readonly open_claim_count: number;
+      /**
+       * Format: decimal
+       * @description Tổng chi phí sửa chữa/BH đã phát sinh (VNĐ).
+       * @default 0
+       */
+      readonly total_service_cost_vnd: string;
+      /**
+       * Format: date
+       * @description Ngày gửi bảo hành/sửa chữa gần nhất.
+       */
+      readonly last_claim_date: string | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Đầu vào tạo phiếu gửi bảo hành/sửa chữa cho thiết bị. */
+    AssetWarrantyClaimCreateValidateRequest: {
+      /**
+       * Format: uuid
+       * @description ID thiết bị được gửi bảo hành/sửa chữa.
+       */
+      asset_id: string;
+      /**
+       * @description Mã phiếu nội bộ (bỏ trống để tự sinh BH-YYYYMM-NNN).
+       * @default
+       */
+      claim_code: string;
+      /**
+       * @description Loại phiếu (WARRANTY, PAID_REPAIR, MAINTENANCE).
+       *
+       *     * `WARRANTY` - Bảo hành
+       *     * `PAID_REPAIR` - Sửa chữa tính phí
+       *     * `MAINTENANCE` - Bảo trì / Vệ sinh
+       * @default WARRANTY
+       */
+      claim_type: components["schemas"]["WorkspaceClaimTypeEnum"];
+      /**
+       * @description Trạng thái tiếp nhận ban đầu.
+       *
+       *     * `SUBMITTED` - Đã gửi máy
+       *     * `INSPECTING` - Đang kiểm tra
+       *     * `WAITING_PARTS` - Chờ linh kiện
+       *     * `COMPLETED` - Đã hoàn tất
+       *     * `REJECTED` - Từ chối BH
+       *     * `CANCELLED` - Đã hủy
+       * @default SUBMITTED
+       */
+      status: components["schemas"]["WorkspaceClaimStatusEnum"];
+      /**
+       * Format: date
+       * @description Ngày bàn giao thiết bị đi bảo hành.
+       */
+      submitted_date: string;
+      /**
+       * Format: date
+       * @description Ngày hẹn trả dự kiến.
+       */
+      estimated_return_date?: string | null;
+      /**
+       * Format: date
+       * @description Ngày thực tế nhận lại thiết bị.
+       */
+      returned_date?: string | null;
+      /** @description Tên trung tâm bảo hành hoặc cửa hàng sửa chữa. */
+      service_center: string;
+      /**
+       * @description Địa chỉ TTBH.
+       * @default
+       */
+      service_center_address: string;
+      /**
+       * @description Hotline/liên hệ TTBH.
+       * @default
+       */
+      service_center_contact: string;
+      /**
+       * @description Mã biên nhận bên ngoài.
+       * @default
+       */
+      external_ticket_code: string;
+      /** @description Mô tả lỗi hoặc yêu cầu kiểm tra. */
+      issue_description: string;
+      /**
+       * @description Kết quả xử lý.
+       * @default
+       */
+      resolution_notes: string;
+      /**
+       * @description Được bảo hành miễn phí hay tự trả phí.
+       * @default true
+       */
+      is_covered_by_warranty: boolean;
+      /**
+       * Format: decimal
+       * @description Chi phí phát sinh theo nguyên tệ.
+       * @default 0.00
+       */
+      cost: string;
+      /**
+       * Format: uuid
+       * @description ID tiền tệ của chi phí.
+       */
+      currency_id: string;
+      /**
+       * Format: decimal
+       * @description Tỷ giá sang VNĐ.
+       */
+      exchange_rate?: string | null;
+      /** @description Số tháng BH linh kiện mới. */
+      part_warranty_months?: number | null;
+      /**
+       * Format: date
+       * @description Ngày hết hạn BH linh kiện mới.
+       */
+      part_warranty_end_date?: string | null;
+      /** @description Danh sách ID tệp biên nhận riêng tư. */
+      attachment_ids?: string[];
+    };
+    /** @description Chi tiết/danh sách phiếu bảo hành & biên nhận riêng tư. */
+    AssetWarrantyClaimResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Chủ sở hữu phiếu bảo hành.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * Thiết bị
+       * Format: uuid
+       * @description Thiết bị được gửi bảo hành/sửa chữa.
+       */
+      readonly asset_id: string;
+      /** @description Tên thiết bị. */
+      readonly asset_name: string;
+      /**
+       * @description Hãng thiết bị.
+       * @default
+       */
+      readonly asset_brand: string;
+      /**
+       * Mã phiếu
+       * @description Mã phiếu nội bộ (tự sinh BH-YYYYMM-NNN nếu để trống).
+       */
+      readonly claim_code: string;
+      /**
+       * Loại phiếu
+       * @description Bảo hành, sửa tính phí hoặc bảo trì.
+       *
+       *     * `WARRANTY` - Bảo hành
+       *     * `PAID_REPAIR` - Sửa chữa tính phí
+       *     * `MAINTENANCE` - Bảo trì / Vệ sinh
+       */
+      readonly claim_type: components["schemas"]["WorkspaceClaimTypeEnum"];
+      /**
+       * Trạng thái
+       * @description Tiến độ xử lý tại trung tâm.
+       *
+       *     * `SUBMITTED` - Đã gửi máy
+       *     * `INSPECTING` - Đang kiểm tra
+       *     * `WAITING_PARTS` - Chờ linh kiện
+       *     * `COMPLETED` - Đã hoàn tất
+       *     * `REJECTED` - Từ chối BH
+       *     * `CANCELLED` - Đã hủy
+       */
+      readonly status: components["schemas"]["WorkspaceClaimStatusEnum"];
+      /**
+       * Ngày gửi
+       * Format: date
+       * @description Ngày bàn giao thiết bị đi bảo hành/sửa chữa.
+       */
+      readonly submitted_date: string;
+      /**
+       * Ngày hẹn trả
+       * Format: date
+       * @description Ngày trung tâm hẹn nhận lại thiết bị.
+       */
+      readonly estimated_return_date: string | null;
+      /**
+       * Ngày nhận lại
+       * Format: date
+       * @description Ngày thực tế nhận lại thiết bị.
+       */
+      readonly returned_date: string | null;
+      /**
+       * TTBH / Nơi sửa
+       * @description Tên trung tâm bảo hành hoặc cửa hàng sửa chữa.
+       */
+      readonly service_center: string;
+      /**
+       * Địa chỉ TTBH
+       * @description Địa chỉ tiếp nhận bảo hành.
+       */
+      readonly service_center_address: string;
+      /**
+       * Liên hệ TTBH
+       * @description Hotline hoặc nhân viên tiếp nhận.
+       */
+      readonly service_center_contact: string;
+      /**
+       * Mã biên nhận hãng/cửa hàng
+       * @description Số phiếu do TTBH/cửa hàng cấp.
+       */
+      readonly external_ticket_code: string;
+      /**
+       * Mô tả lỗi
+       * @description Triệu chứng hoặc yêu cầu kiểm tra.
+       */
+      readonly issue_description: string;
+      /**
+       * Kết quả xử lý
+       * @description Ghi chú linh kiện thay thế hoặc hướng khắc phục.
+       */
+      readonly resolution_notes: string;
+      /**
+       * Miễn phí theo BH
+       * @description Được bảo hành miễn phí hay tự trả phí.
+       */
+      readonly is_covered_by_warranty: boolean;
+      /**
+       * Chi phí phát sinh
+       * Format: decimal
+       * @description Số tiền phát sinh theo nguyên tệ.
+       */
+      readonly cost: string;
+      /**
+       * Tiền tệ
+       * Format: uuid
+       * @description Đơn vị tiền tệ của chi phí.
+       */
+      readonly currency_id: string;
+      /** @description Mã tiền tệ. */
+      readonly currency_code: string;
+      /** @description Ký hiệu tiền tệ. */
+      readonly currency_symbol: string;
+      /** @description Số chữ số thập phân. */
+      readonly currency_decimal_places: number;
+      /**
+       * Tỷ giá quy đổi
+       * Format: decimal
+       * @description Tỷ giá sang VNĐ.
+       */
+      readonly exchange_rate: string;
+      /**
+       * Chi phí VNĐ
+       * Format: decimal
+       * @description Chi phí quy đổi ra VNĐ.
+       */
+      readonly cost_vnd: string;
+      /**
+       * BH linh kiện mới (tháng)
+       * @description Số tháng bảo hành phần linh kiện vừa thay/sửa.
+       */
+      readonly part_warranty_months: number | null;
+      /**
+       * Hạn BH linh kiện mới
+       * Format: date
+       * @description Ngày hết hạn bảo hành phần linh kiện mới.
+       */
+      readonly part_warranty_end_date: string | null;
+      /** @description Biên nhận / hóa đơn sửa chữa riêng tư. */
+      readonly attachments: components["schemas"]["AttachmentDetailResponse"][];
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Phản hồi của Trợ lý AI kèm thông tin fallback/model/token. */
+    AssistantChatResponse: {
+      /**
+       * Format: uuid
+       * @description ID hội thoại.
+       */
+      conversation_id: string;
+      /** @description Nội dung phản hồi văn bản của Trợ lý. */
+      reply: string;
+      /** @description Tên model đã sử dụng (hoặc `slash` / `fallback`). */
+      model_used: string;
+      /** @description Tổng token ghi nhận cho lượt này. */
+      tokens_used: number;
+      /** @description Lượt này có đọc dữ liệu riêng tư. */
+      contains_private_data: boolean;
+      /** @description True nếu rơi về chế độ gợi ý lệnh Slash khi LLM không khả dụng. */
+      is_fallback: boolean;
+      /** @description Số lượt fallback giữa các model. */
+      fallback_attempts: number;
+      /** @description Mã lý do fallback nếu `is_fallback=True`. */
+      fallback_code: string;
+      /** @description Bản ghi AssistantMessage mới lưu. */
+      message: components["schemas"]["AssistantMessageResponse"];
+    };
+    /** @description Đầu vào trò chuyện Trợ lý AI Web Portal. */
+    AssistantChatValidateRequest: {
+      /** @description Câu hỏi tự nhiên hoặc lệnh Slash bắt đầu bằng `/` (tối đa 2000 ký tự). */
+      message: string;
+      /**
+       * Format: uuid
+       * @description ID phiên hội thoại muốn tiếp tục (bỏ trống để dùng phiên gần nhất hoặc tạo mới).
+       */
+      conversation_id?: string | null;
+    };
+    /** @description Chi tiết hội thoại kèm danh sách 50 tin gần nhất theo thứ tự thời gian. */
+    AssistantConversationDetailResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Người sở hữu hội thoại.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * Kênh tương tác
+       * @description Nơi diễn ra cuộc trò chuyện.
+       *
+       *     * `WEB` - Giao diện Web
+       *     * `TELEGRAM_DM` - Telegram Riêng
+       *     * `TELEGRAM_GROUP` - Telegram Nhóm
+       */
+      readonly channel: components["schemas"]["WorkspaceAssistantChannelEnum"];
+      /**
+       * ID chat ngoài
+       * @description Chat ID trên Telegram (nếu là kênh Telegram).
+       */
+      readonly external_chat_id: string;
+      /**
+       * Tiêu đề
+       * @description Tiêu đề tóm tắt của phiên trò chuyện.
+       */
+      readonly title: string;
+      /**
+       * Tin nhắn cuối lúc
+       * Format: date-time
+       * @description Thời điểm có tin nhắn mới nhất.
+       */
+      readonly last_message_at: string | null;
+      /**
+       * @description Tổng số tin nhắn trong hội thoại.
+       * @default 0
+       */
+      readonly message_count: number;
+      /** @description Tối đa 50 tin nhắn gần nhất. */
+      readonly recent_messages: components["schemas"]["AssistantMessageResponse"][];
+      /**
+       * @description Còn tin nhắn cũ hơn để phân trang qua `/messages`.
+       * @default false
+       */
+      readonly has_more_messages: boolean;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Tóm tắt hội thoại kèm số lượng tin nhắn (annotated). */
+    AssistantConversationListResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Người sở hữu hội thoại.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * Kênh tương tác
+       * @description Nơi diễn ra cuộc trò chuyện.
+       *
+       *     * `WEB` - Giao diện Web
+       *     * `TELEGRAM_DM` - Telegram Riêng
+       *     * `TELEGRAM_GROUP` - Telegram Nhóm
+       */
+      readonly channel: components["schemas"]["WorkspaceAssistantChannelEnum"];
+      /**
+       * ID chat ngoài
+       * @description Chat ID trên Telegram (nếu là kênh Telegram).
+       */
+      readonly external_chat_id: string;
+      /**
+       * Tiêu đề
+       * @description Tiêu đề tóm tắt của phiên trò chuyện.
+       */
+      readonly title: string;
+      /**
+       * Tin nhắn cuối lúc
+       * Format: date-time
+       * @description Thời điểm có tin nhắn mới nhất.
+       */
+      readonly last_message_at: string | null;
+      /**
+       * @description Tổng số tin nhắn trong hội thoại.
+       * @default 0
+       */
+      readonly message_count: number;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Chi tiết từng tin nhắn kèm `model_used`, `tokens_used` và `contains_private_data`. */
+    AssistantMessageResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Hội thoại
+       * Format: uuid
+       * @description Phiên trò chuyện chứa tin nhắn.
+       */
+      readonly conversation_id: string;
+      /**
+       * Vai trò
+       * @description Người dùng, Trợ lý, Tool hoặc Hệ thống.
+       *
+       *     * `USER` - Người dùng
+       *     * `ASSISTANT` - Trợ lý
+       *     * `TOOL` - Kết quả Tool
+       *     * `SYSTEM` - Hệ thống
+       */
+      readonly role: components["schemas"]["WorkspaceAssistantRoleEnum"];
+      /**
+       * Telegram User ID người gửi
+       * @description ID người nhắn trên Telegram.
+       */
+      readonly sender_telegram_id: number | null;
+      /**
+       * Tên người gửi
+       * @description Tên hiển thị người gửi.
+       */
+      readonly sender_name: string;
+      /**
+       * Nội dung
+       * @description Nội dung văn bản tin nhắn.
+       */
+      readonly content: string;
+      /**
+       * Lời gọi Tool
+       * @description Danh sách tool calls OpenAI JSON (nếu có).
+       */
+      readonly tool_calls: unknown;
+      /** @description Mã ánh xạ kết quả trả về cho LLM. */
+      readonly tool_call_id: string;
+      /**
+       * Model AI đã dùng
+       * @description Tên model thực sự phản hồi (hoặc slash).
+       */
+      readonly model_used: string;
+      /**
+       * Số token tiêu thụ
+       * @description Tổng token ghi nhận cho lượt này.
+       */
+      readonly tokens_used: number;
+      /**
+       * Chứa dữ liệu riêng tư
+       * @description Đánh dấu lượt hỏi có truy vấn dữ liệu cá nhân để lọc khi trả lời nhóm.
+       */
+      readonly contains_private_data: boolean;
+      /**
+       * Phản hồi lỗi / Fallback
+       * @description True nếu lượt này gặp lỗi LLM hoặc rơi về Slash fallback.
+       */
+      readonly is_error: boolean;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+    };
     /** @description Gom nhóm cùng transaction, không sửa byte hoặc URL của các file. */
     AttachmentBulkUpdateValidateRequest: {
       /** @description Id các bản ghi cần thao tác (tối đa 100). */
@@ -4104,6 +5858,25 @@ export interface components {
        * @default
        */
       readonly folder_name: string;
+    };
+    /** @description Thông tin đầy đủ của file. */
+    AttachmentDetailResponseRequest: {
+      /**
+       * Tên file gốc
+       * @description Tên file khi người dùng upload (chỉ để hiển thị).
+       */
+      original_name: string;
+      /**
+       * Kiểu nội dung
+       * @description Kiểu xác định từ chữ ký file (không tin header của client).
+       */
+      content_type: string;
+      /**
+       * Dung lượng (byte)
+       * Format: int64
+       * @description Dung lượng file tính bằng byte.
+       */
+      size: number;
     };
     /** @description Mặc định giữ file và bỏ phân loại. */
     AttachmentFolderDeleteValidateRequest: {
@@ -4279,14 +6052,6 @@ export interface components {
       /** @description Đã cấu hình client id/secret tương ứng. */
       configured: boolean;
     };
-    /**
-     * @description * `IN_APP` - Trong ứng dụng
-     *     * `PUSH` - Trình duyệt
-     *     * `EMAIL` - Email
-     *     * `TELEGRAM` - Telegram
-     * @enum {string}
-     */
-    ChannelEnum: "IN_APP" | "PUSH" | "EMAIL" | "TELEGRAM";
     /** @description Cập nhật cờ `is_published` của nhiều bản ghi cùng lúc. */
     ChapterBulkUpdateValidateRequest: {
       /** @description Id các bản ghi cần thao tác (tối đa 100). */
@@ -5750,6 +7515,242 @@ export interface components {
       /** @description Số phiên đã bị thu hồi. */
       revoked_sessions: number;
     };
+    /** @description Lịch sử sự cố downtime/phục hồi của endpoint. */
+    MonitorIncidentResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Chủ sở hữu sự cố.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * Mục tiêu giám sát
+       * Format: uuid
+       * @description Endpoint phát sinh sự cố.
+       */
+      readonly target_id: string;
+      /** @description Tên mục tiêu giám sát. */
+      readonly target_name: string;
+      /** @description URL giám sát. */
+      readonly target_url: string;
+      /**
+       * Bắt đầu lúc
+       * Format: date-time
+       * @description Thời điểm phát hiện sự cố.
+       */
+      readonly started_at: string;
+      /**
+       * Phục hồi lúc
+       * Format: date-time
+       * @description Thời điểm dịch vụ hoạt động bình thường trở lại.
+       */
+      readonly resolved_at: string | null;
+      /**
+       * Mã HTTP lỗi
+       * @description Mã phản hồi HTTP gây lỗi (nếu có).
+       */
+      readonly status_code: number | null;
+      /**
+       * Chi tiết lỗi
+       * @description Mô tả nguyên nhân sự cố.
+       */
+      readonly error_message: string;
+      /**
+       * Thời lượng gián đoạn (giây)
+       * @description Khoảng thời gian dịch vụ bị gián đoạn.
+       */
+      readonly duration_seconds: number | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Bật/tắt nhiều mục tiêu giám sát cùng lúc. */
+    MonitorTargetBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      /** @description Trạng thái bật giám sát mới (`true`/`false`). */
+      is_active: boolean;
+    };
+    /** @description Đầu vào tạo mục tiêu ping Uptime (`timeout <= 5s`, `interval >= 15 phút`). */
+    MonitorTargetCreateValidateRequest: {
+      /** @description Tên gợi nhớ dịch vụ. */
+      name: string;
+      /**
+       * Format: uri
+       * @description URL công khai cần giám sát.
+       */
+      url: string;
+      /**
+       * @description Phương thức HTTP (`GET` hoặc `HEAD`).
+       *
+       *     * `GET` - GET
+       *     * `HEAD` - HEAD
+       * @default GET
+       */
+      method: components["schemas"]["WorkspaceMonitorMethodEnum"];
+      /**
+       * @description Mã HTTP kỳ vọng (200 chấp nhận dải 200..399).
+       * @default 200
+       */
+      expected_status: number;
+      /**
+       * @description Giới hạn timeout mỗi lượt ping (1–5 giây).
+       * @default 4
+       */
+      timeout_seconds: number;
+      /**
+       * @description Chu kỳ kiểm tra tối thiểu 15 phút.
+       * @default 30
+       */
+      check_interval_minutes: number;
+      /**
+       * @description Bật/tắt ping định kỳ.
+       * @default true
+       */
+      is_active: boolean;
+    };
+    /** @description Kết quả kiểm tra tức thời một URL giám sát. */
+    MonitorTargetPingResponse: {
+      /**
+       * Format: uuid
+       * @description ID mục tiêu giám sát.
+       */
+      target_id: string;
+      /** @description Trạng thái sau lần ping (`HEALTHY`/`DOWN`). */
+      status: string;
+      /** @description HTTP status code trả về. */
+      status_code: number | null;
+      /** @description Độ trễ phản hồi (ms). */
+      latency_ms: number | null;
+      /**
+       * Format: date-time
+       * @description Thời điểm kiểm tra.
+       */
+      checked_at: string;
+      /** @description Thông báo lỗi (nếu có). */
+      error_message: string;
+      /**
+       * Format: uuid
+       * @description ID sự cố đang mở/mới đóng (nếu có).
+       */
+      incident_id: string | null;
+    };
+    /** @description Trạng thái & cấu hình mục tiêu giám sát Uptime. */
+    MonitorTargetResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Người sở hữu mục tiêu giám sát.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * Tên dịch vụ giám sát
+       * @description Tên gợi nhớ website/API.
+       */
+      readonly name: string;
+      /**
+       * URL kiểm tra
+       * Format: uri
+       * @description Đường dẫn công khai (bị chặn nếu trỏ mạng nội bộ/SSRF).
+       */
+      readonly url: string;
+      /**
+       * Phương thức
+       * @description Phương thức HTTP dùng khi ping.
+       *
+       *     * `GET` - GET
+       *     * `HEAD` - HEAD
+       */
+      readonly method: components["schemas"]["WorkspaceMonitorMethodEnum"];
+      /**
+       * Mã HTTP kỳ vọng
+       * @description Mã trạng thái HTTP coi là thành công (200..399 hoặc mã cụ thể).
+       */
+      readonly expected_status: number;
+      /**
+       * Timeout (giây)
+       * @description Giới hạn tối đa 5 giây cho mỗi lượt ping.
+       */
+      readonly timeout_seconds: number;
+      /**
+       * Chu kỳ kiểm tra (phút)
+       * @description Khoảng cách tối thiểu giữa các lần ping (tối thiểu 15 phút).
+       */
+      readonly check_interval_minutes: number;
+      /**
+       * Đang bật
+       * @description Tắt để tạm ngưng ping định kỳ.
+       */
+      readonly is_active: boolean;
+      /**
+       * Trạng thái gần nhất
+       * @description Kết quả ping mới nhất.
+       *
+       *     * `HEALTHY` - Ổn định
+       *     * `DEGRADED` - Chậm / Cảnh báo
+       *     * `DOWN` - Ngừng phản hồi
+       *     * `UNKNOWN` - Chưa kiểm tra
+       */
+      readonly last_status: components["schemas"]["WorkspaceMonitorStatusEnum"];
+      /**
+       * Mã HTTP gần nhất
+       * @description HTTP status code trả về ở lần ping gần nhất.
+       */
+      readonly last_status_code: number | null;
+      /**
+       * Độ trễ (ms)
+       * @description Thời gian phản hồi tính bằng mili-giây.
+       */
+      readonly last_latency_ms: number | null;
+      /**
+       * Kiểm tra lúc
+       * Format: date-time
+       * @description Thời điểm thực hiện lượt ping mới nhất.
+       */
+      readonly last_checked_at: string | null;
+      /**
+       * Số lỗi liên tiếp
+       * @description Số lượt ping thất bại liên tục.
+       */
+      readonly consecutive_failures: number;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
     /** @description Lần gửi + tóm tắt thông báo; đích email/Telegram/thiết bị được rút gọn. */
     NotificationDeliveryResponse: {
       /**
@@ -5780,7 +7781,7 @@ export interface components {
        *     * `EMAIL` - Email
        *     * `TELEGRAM` - Telegram
        */
-      readonly channel: components["schemas"]["ChannelEnum"];
+      readonly channel: components["schemas"]["NotificationDeliveryResponseChannelEnum"];
       /**
        * Đích
        * @description Id PushDevice, id TelegramChat hoặc email.
@@ -5825,6 +7826,14 @@ export interface components {
        */
       readonly created_at: string;
     };
+    /**
+     * @description * `IN_APP` - Trong ứng dụng
+     *     * `PUSH` - Trình duyệt
+     *     * `EMAIL` - Email
+     *     * `TELEGRAM` - Telegram
+     * @enum {string}
+     */
+    NotificationDeliveryResponseChannelEnum: "IN_APP" | "PUSH" | "EMAIL" | "TELEGRAM";
     /**
      * @description * `PENDING` - Chờ gửi
      *     * `SENT` - Đã gửi
@@ -6893,6 +8902,81 @@ export interface components {
         };
       };
     };
+    PaginatedAssetResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["AssetResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedAssetWarrantyClaimResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["AssetWarrantyClaimResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedAssistantConversationListResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["AssistantConversationListResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedAttachmentDetailResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -7193,6 +9277,56 @@ export interface components {
         };
       };
     };
+    PaginatedMonitorIncidentResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["MonitorIncidentResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedMonitorTargetResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["MonitorTargetResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedNotificationDeliveryResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -7368,6 +9502,31 @@ export interface components {
         };
       };
     };
+    PaginatedReminderResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["ReminderResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedRoleListResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -7422,6 +9581,56 @@ export interface components {
       /** @description Luôn true với response thành công. */
       success: boolean;
       data: components["schemas"]["ShortLinkListResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedSubscriptionPaymentResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["SubscriptionPaymentResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedSubscriptionResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["SubscriptionResponse"][];
       meta: {
         /** @description Id request (khớp header X-Request-ID). */
         request_id: string;
@@ -7543,6 +9752,31 @@ export interface components {
         };
       };
     };
+    PaginatedVaultItemResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["VaultItemResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     /** @description Xác nhận đặt lại mật khẩu mới. */
     PasswordResetConfirmValidateRequest: {
       /** @description Base64 encode của mã người dùng. */
@@ -7581,6 +9815,200 @@ export interface components {
       uid: string;
       /** @description Token xác thực một lần. */
       token: string;
+    };
+    /** @description Đầu vào PATCH thiết bị cá nhân. */
+    PatchedAssetUpdateValidateRequest: {
+      /** @description Tên nhận diện thiết bị. */
+      name?: string;
+      /** @description Hãng sản xuất. */
+      brand?: string;
+      /** @description Mã model. */
+      model_code?: string;
+      /**
+       * @description Nhóm thiết bị.
+       *
+       *     * `LAPTOP` - Laptop
+       *     * `PHONE` - Điện thoại
+       *     * `TABLET` - Máy tính bảng
+       *     * `MONITOR` - Màn hình
+       *     * `PERIPHERAL` - Phụ kiện
+       *     * `AUDIO` - Âm thanh
+       *     * `NETWORK` - Thiết bị mạng
+       *     * `CAMERA` - Máy ảnh
+       *     * `OTHER` - Khác
+       */
+      category?: components["schemas"]["WorkspaceAssetCategoryEnum"];
+      /** @description Số Serial. */
+      serial_number?: string;
+      /** @description Số IMEI. */
+      imei?: string;
+      /** @description Thông số kỹ thuật dạng JSON. */
+      specs?: {
+        [key: string]: unknown;
+      };
+      /**
+       * @description Trạng thái thiết bị.
+       *
+       *     * `IN_USE` - Đang dùng
+       *     * `BACKUP` - Dự phòng
+       *     * `IN_WARRANTY` - Đang bảo hành
+       *     * `IN_REPAIR` - Đang sửa chữa
+       *     * `SOLD` - Đã bán
+       *     * `BROKEN` - Đã hỏng
+       */
+      status?: components["schemas"]["WorkspaceAssetStatusEnum"];
+      /**
+       * Format: date
+       * @description Ngày mua thiết bị.
+       */
+      purchase_date?: string;
+      /**
+       * Format: decimal
+       * @description Giá mua nguyên tệ.
+       */
+      purchase_price?: string;
+      /**
+       * Format: uuid
+       * @description ID tiền tệ.
+       */
+      currency_id?: string;
+      /**
+       * Format: decimal
+       * @description Tỷ giá quy đổi VNĐ.
+       */
+      exchange_rate?: string | null;
+      /** @description Nơi mua. */
+      purchase_store?: string;
+      /**
+       * @description Kênh mua hàng.
+       *
+       *     * `OFFICIAL_STORE` - Hãng chính thức
+       *     * `RETAILER` - Đại lý / Cửa hàng
+       *     * `ECOMMERCE` - Sàn TMĐT
+       *     * `SECOND_HAND` - Mua lại / Cũ
+       *     * `COMPANY` - Công ty cấp
+       *     * `GIFT` - Được tặng
+       */
+      purchase_channel?: components["schemas"]["WorkspaceAssetPurchaseChannelEnum"];
+      /** @description Địa chỉ chi nhánh mua. */
+      purchase_branch_address?: string;
+      /** @description Mã đơn hàng. */
+      purchase_order_code?: string;
+      /** @description Link đơn hàng. */
+      purchase_order_url?: string;
+      /** @description Liên hệ bảo hành nơi bán. */
+      store_warranty_contact?: string;
+      /**
+       * @description Loại bảo hành.
+       *
+       *     * `MANUFACTURER` - Bảo hành hãng
+       *     * `STORE` - Bảo hành cửa hàng
+       *     * `EXTENDED` - Bảo hành mở rộng
+       *     * `NONE` - Không bảo hành
+       */
+      warranty_type?: components["schemas"]["WorkspaceAssetWarrantyTypeEnum"];
+      /** @description Số tháng bảo hành. */
+      warranty_months?: number | null;
+      /**
+       * Format: date
+       * @description Ngày bắt đầu bảo hành.
+       */
+      warranty_start_date?: string | null;
+      /**
+       * Format: date
+       * @description Ngày hết hạn bảo hành.
+       */
+      warranty_end_date?: string | null;
+      /** @description Đơn vị bảo hành. */
+      warranty_provider?: string;
+      /** @description Ghi chú bảo hành. */
+      warranty_note?: string;
+      /** @description Danh sách ID tệp hóa đơn riêng tư mới. */
+      invoice_attachment_ids?: string[];
+      /** @description Ghi chú chung. */
+      notes?: string;
+    };
+    /** @description Đầu vào PATCH phiếu bảo hành/sửa chữa. */
+    PatchedAssetWarrantyClaimUpdateValidateRequest: {
+      /**
+       * Format: uuid
+       * @description ID thiết bị liên quan.
+       */
+      asset_id?: string;
+      /** @description Mã phiếu nội bộ. */
+      claim_code?: string;
+      /**
+       * @description Loại phiếu.
+       *
+       *     * `WARRANTY` - Bảo hành
+       *     * `PAID_REPAIR` - Sửa chữa tính phí
+       *     * `MAINTENANCE` - Bảo trì / Vệ sinh
+       */
+      claim_type?: components["schemas"]["WorkspaceClaimTypeEnum"];
+      /**
+       * @description Trạng thái phiếu.
+       *
+       *     * `SUBMITTED` - Đã gửi máy
+       *     * `INSPECTING` - Đang kiểm tra
+       *     * `WAITING_PARTS` - Chờ linh kiện
+       *     * `COMPLETED` - Đã hoàn tất
+       *     * `REJECTED` - Từ chối BH
+       *     * `CANCELLED` - Đã hủy
+       */
+      status?: components["schemas"]["WorkspaceClaimStatusEnum"];
+      /**
+       * Format: date
+       * @description Ngày gửi thiết bị.
+       */
+      submitted_date?: string;
+      /**
+       * Format: date
+       * @description Ngày hẹn trả.
+       */
+      estimated_return_date?: string | null;
+      /**
+       * Format: date
+       * @description Ngày thực tế nhận lại.
+       */
+      returned_date?: string | null;
+      /** @description Tên TTBH. */
+      service_center?: string;
+      /** @description Địa chỉ TTBH. */
+      service_center_address?: string;
+      /** @description Liên hệ TTBH. */
+      service_center_contact?: string;
+      /** @description Mã biên nhận hãng/cửa hàng. */
+      external_ticket_code?: string;
+      /** @description Mô tả lỗi. */
+      issue_description?: string;
+      /** @description Kết quả xử lý. */
+      resolution_notes?: string;
+      /** @description Được bảo hành miễn phí. */
+      is_covered_by_warranty?: boolean;
+      /**
+       * Format: decimal
+       * @description Chi phí phát sinh nguyên tệ.
+       */
+      cost?: string;
+      /**
+       * Format: uuid
+       * @description ID tiền tệ.
+       */
+      currency_id?: string;
+      /**
+       * Format: decimal
+       * @description Tỷ giá sang VNĐ.
+       */
+      exchange_rate?: string | null;
+      /** @description Số tháng BH linh kiện mới. */
+      part_warranty_months?: number | null;
+      /**
+       * Format: date
+       * @description Ngày hết hạn BH linh kiện mới.
+       */
+      part_warranty_end_date?: string | null;
+      /** @description Danh sách ID tệp biên nhận riêng tư. */
+      attachment_ids?: string[];
     };
     /** @description Cho phép chỉ đổi cha hoặc chỉ đổi tên, không bỏ qua kiểm tra tên rỗng. */
     PatchedAttachmentFolderUpdateValidateRequest: {
@@ -7840,6 +10268,31 @@ export interface components {
       /** @description Mật khẩu mới. */
       password?: string;
     };
+    /** @description Đầu vào PATCH mục tiêu Uptime. */
+    PatchedMonitorTargetUpdateValidateRequest: {
+      /** @description Tên gợi nhớ dịch vụ. */
+      name?: string;
+      /**
+       * Format: uri
+       * @description URL công khai cần giám sát.
+       */
+      url?: string;
+      /**
+       * @description Phương thức HTTP.
+       *
+       *     * `GET` - GET
+       *     * `HEAD` - HEAD
+       */
+      method?: components["schemas"]["WorkspaceMonitorMethodEnum"];
+      /** @description Mã HTTP kỳ vọng. */
+      expected_status?: number;
+      /** @description Timeout (1–5 giây). */
+      timeout_seconds?: number;
+      /** @description Chu kỳ kiểm tra (phút, >= 15). */
+      check_interval_minutes?: number;
+      /** @description Đang bật giám sát. */
+      is_active?: boolean;
+    };
     /** @description Input cập nhật truyện (các trường tùy chọn). */
     PatchedNovelUpdateValidateRequest: {
       /** @description Tiêu đề truyện. */
@@ -8007,6 +10460,50 @@ export interface components {
        */
       logo_id?: string | null;
     };
+    /** @description Đầu vào PATCH nhắc việc. */
+    PatchedReminderUpdateValidateRequest: {
+      /** @description Tiêu đề nhắc việc. */
+      title?: string;
+      /** @description Mô tả chi tiết. */
+      description?: string;
+      /**
+       * Format: date
+       * @description Ngày đến hạn.
+       */
+      due_date?: string;
+      /**
+       * Format: time
+       * @description Giờ đến hạn (HH:MM).
+       */
+      due_time?: string | null;
+      /** @description Số phút nhắc trước. */
+      notify_minutes_before?: number;
+      /**
+       * @description Độ ưu tiên.
+       *
+       *     * `LOW` - Thấp
+       *     * `MEDIUM` - Trung bình
+       *     * `HIGH` - Cao
+       *     * `URGENT` - Khẩn cấp
+       */
+      priority?: components["schemas"]["WorkspaceReminderPriorityEnum"];
+      /** @description Đánh dấu hoàn thành. */
+      is_completed?: boolean;
+      /**
+       * @description Chu kỳ lặp lại.
+       *
+       *     * `NONE` - Không lặp
+       *     * `DAILY` - Hàng ngày
+       *     * `WEEKLY` - Hàng tuần
+       *     * `MONTHLY` - Hàng tháng
+       *     * `YEARLY` - Hàng năm
+       */
+      recurrence?: components["schemas"]["WorkspaceReminderRecurrenceEnum"];
+      /** @description Ngày chốt định kỳ. */
+      anchor_day?: number | null;
+      /** @description Danh sách nhãn. */
+      tags?: string[];
+    };
     /** @description Dữ liệu cập nhật vai trò (mã vai trò không đổi được). */
     PatchedRoleUpdateValidateRequest: {
       /** @description Tên hiển thị. */
@@ -8057,6 +10554,71 @@ export interface components {
        */
       expires_at?: string | null;
     };
+    /** @description Đầu vào PATCH dịch vụ định kỳ. */
+    PatchedSubscriptionUpdateValidateRequest: {
+      /** @description Tên dịch vụ. */
+      name?: string;
+      /** @description Nhà cung cấp. */
+      provider?: string;
+      /**
+       * @description Nhóm dịch vụ.
+       *
+       *     * `DOMAIN` - Tên miền
+       *     * `HOSTING_VPS` - Hosting / VPS
+       *     * `SAAS_TOOL` - Công cụ SaaS / AI
+       *     * `ENTERTAINMENT` - Giải trí
+       *     * `TELECOM` - Viễn thông / Internet
+       *     * `OTHER` - Khác
+       */
+      category?: components["schemas"]["WorkspaceSubscriptionCategoryEnum"];
+      /**
+       * @description Chu kỳ gia hạn.
+       *
+       *     * `WEEKLY` - Hàng tuần
+       *     * `MONTHLY` - Hàng tháng
+       *     * `QUARTERLY` - Hàng quý (3 tháng)
+       *     * `SEMI_ANNUAL` - 6 tháng
+       *     * `YEARLY` - Hàng năm
+       *     * `CUSTOM_DAYS` - Tùy chỉnh theo ngày
+       */
+      billing_cycle?: components["schemas"]["WorkspaceBillingCycleEnum"];
+      /** @description Số ngày chu kỳ tùy chỉnh. */
+      custom_cycle_days?: number | null;
+      /** @description Ngày chốt định kỳ (1–31). */
+      anchor_day?: number;
+      /**
+       * Format: decimal
+       * @description Mức phí nguyên tệ.
+       */
+      amount?: string;
+      /**
+       * Format: uuid
+       * @description ID tiền tệ.
+       */
+      currency_id?: string;
+      /**
+       * Format: decimal
+       * @description Tỷ giá quy đổi VNĐ.
+       */
+      exchange_rate?: string | null;
+      /**
+       * Format: date
+       * @description Ngày gia hạn tiếp theo.
+       */
+      renew_date?: string;
+      /** @description Tự động trừ tiền. */
+      auto_renew?: boolean;
+      /** @description Phương thức thanh toán. */
+      payment_method?: string;
+      /** @description Link trang quản trị. */
+      manage_url?: string;
+      /** @description Danh sách số ngày nhắc trước hạn. */
+      reminder_days_before?: number[];
+      /** @description Đang theo dõi gia hạn. */
+      is_active?: boolean;
+      /** @description Ghi chú. */
+      notes?: string;
+    };
     /** @description Input cập nhật thẻ. */
     PatchedTagUpdateValidateRequest: {
       /** @description Tên thẻ. */
@@ -8095,6 +10657,69 @@ export interface components {
       is_superuser?: boolean;
       /** @description Đánh dấu nhóm nghiệp vụ Novel (không tự cấp quyền). */
       is_novel?: boolean;
+    };
+    /** @description Đầu vào PATCH mục Két sắt. */
+    PatchedVaultItemUpdateValidateRequest: {
+      /** @description Tiêu đề mục bí mật. */
+      title?: string;
+      /**
+       * @description Phân loại mục bí mật.
+       *
+       *     * `SERVER` - Máy chủ / SSH
+       *     * `API_KEY` - API Key
+       *     * `ACCOUNT` - Tài khoản
+       *     * `SNIPPET` - Đoạn mã / Khóa
+       *     * `ENV_CONFIG` - Cấu hình ENV
+       *     * `OTHER` - Khác
+       */
+      category?: components["schemas"]["WorkspaceVaultCategoryEnum"];
+      /** @description Tên đăng nhập. */
+      username?: string;
+      /** @description Bí mật mới (bỏ trống để giữ nguyên bí mật hiện tại). */
+      secret?: string;
+      /** @description URL liên quan. */
+      url?: string;
+      /** @description Ghi chú bổ sung. */
+      notes?: string;
+      /** @description Danh sách thẻ. */
+      tags?: string[];
+    };
+    /** @description Đầu vào PUT/PATCH `/workspace/settings`. */
+    PatchedWorkspaceSettingUpdateValidateRequest: {
+      /** @description Múi giờ chuẩn IANA (VD: Asia/Ho_Chi_Minh). */
+      timezone?: string;
+      /** @description Bật gửi bản tin tóm tắt hàng ngày. */
+      daily_digest_enabled?: boolean;
+      /** @description Khung giờ gửi Digest định dạng HH:MM. */
+      digest_time_slots?: string[];
+      /** @description Các mục hiển thị trong Digest (`reminders`, `warranty`, `subscriptions`, `monitors`, `finance`). */
+      digest_sections?: string[];
+      /** @description Mốc ngày nhắc trước hạn bảo hành (VD: [30, 7, 1]). */
+      warranty_alert_days?: number[];
+      /** @description Mốc ngày nhắc mặc định cho dịch vụ định kỳ. */
+      subscription_default_alert_days?: number[];
+      /** @description Model AI ưu tiên (để trống = dùng thứ tự mặc định của hệ thống). */
+      preferred_ai_model?: string;
+      /** @description Giới hạn token AI mỗi ngày (null = không đặt giới hạn). */
+      ai_daily_token_limit?: number | null;
+      /** @description Bật tương tác Trợ lý AI qua Bot Telegram. */
+      telegram_ai_enabled?: boolean;
+      /** @description Danh sách UUID của `system.TelegramChat` được phép gọi Trợ lý. */
+      telegram_allowed_chat_ids?: string[];
+      /** @description Trong nhóm Telegram bắt buộc `@bot` hoặc reply tin nhắn bot. */
+      telegram_group_require_mention?: boolean;
+      /**
+       * @description Chính sách đọc dữ liệu cá nhân trong nhóm Telegram.
+       *
+       *     * `DISABLED` - Tắt trong nhóm
+       *     * `OWNER_ONLY` - Chỉ chủ sở hữu
+       *     * `ALL_MEMBERS` - Mọi thành viên nhóm
+       */
+      telegram_group_tool_policy?: components["schemas"]["WorkspaceGroupToolPolicyEnum"];
+      /** @description Ẩn số tiền nhạy cảm khi bot trả lời trong nhóm Telegram. */
+      telegram_group_hide_amounts?: boolean;
+      /** @description Gửi chi tiết riêng tư về DM chính chủ khi được hỏi trong nhóm. */
+      telegram_group_reply_in_dm?: boolean;
     };
     /** @description Thông tin quyền kèm mô tả công dụng. */
     PermissionListResponse: {
@@ -8595,6 +11220,161 @@ export interface components {
        * Format: date-time
        */
       readonly last_read_at: string;
+    };
+    /** @description Đánh dấu hoàn thành / chưa hoàn thành nhiều nhắc việc. */
+    ReminderBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      /** @description Trạng thái hoàn thành mới (`true`/`false`). */
+      is_completed: boolean;
+    };
+    /** @description Đầu vào tạo nhắc việc cá nhân. */
+    ReminderCreateValidateRequest: {
+      /** @description Tiêu đề nhắc việc. */
+      title: string;
+      /**
+       * @description Mô tả chi tiết.
+       * @default
+       */
+      description: string;
+      /**
+       * Format: date
+       * @description Ngày đến hạn (YYYY-MM-DD).
+       */
+      due_date: string;
+      /**
+       * Format: time
+       * @description Giờ đến hạn (HH:MM).
+       */
+      due_time?: string | null;
+      /**
+       * @description Số phút nhắc trước thời điểm đến hạn.
+       * @default 0
+       */
+      notify_minutes_before: number;
+      /**
+       * @description Độ ưu tiên công việc.
+       *
+       *     * `LOW` - Thấp
+       *     * `MEDIUM` - Trung bình
+       *     * `HIGH` - Cao
+       *     * `URGENT` - Khẩn cấp
+       * @default MEDIUM
+       */
+      priority: components["schemas"]["WorkspaceReminderPriorityEnum"];
+      /**
+       * @description Chu kỳ lặp lại.
+       *
+       *     * `NONE` - Không lặp
+       *     * `DAILY` - Hàng ngày
+       *     * `WEEKLY` - Hàng tuần
+       *     * `MONTHLY` - Hàng tháng
+       *     * `YEARLY` - Hàng năm
+       * @default NONE
+       */
+      recurrence: components["schemas"]["WorkspaceReminderRecurrenceEnum"];
+      /** @description Ngày chốt định kỳ (1–31). */
+      anchor_day?: number | null;
+      /** @description Danh sách nhãn. */
+      tags?: string[];
+    };
+    /** @description Chi tiết/danh sách nhắc việc cá nhân. */
+    ReminderResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Người sở hữu nhắc việc.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * Tiêu đề
+       * @description Nội dung nhắc việc ngắn gọn.
+       */
+      readonly title: string;
+      /**
+       * Mô tả chi tiết
+       * @description Ghi chú thêm cho công việc.
+       */
+      readonly description: string;
+      /**
+       * Ngày đến hạn
+       * Format: date
+       * @description Ngày thực hiện công việc.
+       */
+      readonly due_date: string;
+      /**
+       * Giờ đến hạn
+       * Format: time
+       * @description Giờ cụ thể trong ngày (để trống nếu nhắc cả ngày).
+       */
+      readonly due_time: string | null;
+      /**
+       * Nhắc trước (phút)
+       * @description Số phút thông báo trước thời điểm đến hạn.
+       */
+      readonly notify_minutes_before: number;
+      /**
+       * Độ ưu tiên
+       * @description Mức độ quan trọng của việc.
+       *
+       *     * `LOW` - Thấp
+       *     * `MEDIUM` - Trung bình
+       *     * `HIGH` - Cao
+       *     * `URGENT` - Khẩn cấp
+       */
+      readonly priority: components["schemas"]["WorkspaceReminderPriorityEnum"];
+      /**
+       * Đã hoàn thành
+       * @description Trạng thái hoàn thành công việc.
+       */
+      readonly is_completed: boolean;
+      /**
+       * Hoàn thành lúc
+       * Format: date-time
+       * @description Thời điểm đánh dấu hoàn thành.
+       */
+      readonly completed_at: string | null;
+      /**
+       * Lặp lại
+       * @description Chu kỳ tự động tạo việc kế tiếp khi hoàn thành.
+       *
+       *     * `NONE` - Không lặp
+       *     * `DAILY` - Hàng ngày
+       *     * `WEEKLY` - Hàng tuần
+       *     * `MONTHLY` - Hàng tháng
+       *     * `YEARLY` - Hàng năm
+       */
+      readonly recurrence: components["schemas"]["WorkspaceReminderRecurrenceEnum"];
+      /**
+       * Ngày chốt định kỳ
+       * @description Ngày gốc (1–31) giữ mốc lặp khi cộng tháng.
+       */
+      readonly anchor_day: number | null;
+      /**
+       * Thẻ gắn
+       * @description Nhãn phân loại công việc.
+       */
+      readonly tags: unknown;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
     };
     /** @description Tổng số gốc và tổng VNĐ của một tiền tệ. */
     ReportCurrencyResponse: {
@@ -9500,6 +12280,380 @@ export interface components {
       /** @description Đường dẫn đầy đủ chuyển hướng tới trang đăng nhập của nhà cung cấp. */
       authorization_url: string;
     };
+    /** @description Bật/tắt theo dõi nhiều dịch vụ cùng lúc. */
+    SubscriptionBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      /** @description Trạng thái theo dõi mới (`true`/`false`). */
+      is_active: boolean;
+    };
+    /** @description Đầu vào tạo gói dịch vụ định kỳ. */
+    SubscriptionCreateValidateRequest: {
+      /** @description Tên dịch vụ hoặc tên miền. */
+      name: string;
+      /**
+       * @description Nhà cung cấp.
+       * @default
+       */
+      provider: string;
+      /**
+       * @description Nhóm dịch vụ.
+       *
+       *     * `DOMAIN` - Tên miền
+       *     * `HOSTING_VPS` - Hosting / VPS
+       *     * `SAAS_TOOL` - Công cụ SaaS / AI
+       *     * `ENTERTAINMENT` - Giải trí
+       *     * `TELECOM` - Viễn thông / Internet
+       *     * `OTHER` - Khác
+       * @default SAAS_TOOL
+       */
+      category: components["schemas"]["WorkspaceSubscriptionCategoryEnum"];
+      /**
+       * @description Chu kỳ gia hạn.
+       *
+       *     * `WEEKLY` - Hàng tuần
+       *     * `MONTHLY` - Hàng tháng
+       *     * `QUARTERLY` - Hàng quý (3 tháng)
+       *     * `SEMI_ANNUAL` - 6 tháng
+       *     * `YEARLY` - Hàng năm
+       *     * `CUSTOM_DAYS` - Tùy chỉnh theo ngày
+       * @default MONTHLY
+       */
+      billing_cycle: components["schemas"]["WorkspaceBillingCycleEnum"];
+      /** @description Số ngày chu kỳ tùy chỉnh (bắt buộc > 0 khi chọn CUSTOM_DAYS). */
+      custom_cycle_days?: number | null;
+      /** @description Ngày chốt định kỳ (1–31; mặc định lấy theo ngày gia hạn). */
+      anchor_day?: number | null;
+      /**
+       * Format: decimal
+       * @description Mức phí theo nguyên tệ.
+       * @default 0.00
+       */
+      amount: string;
+      /**
+       * Format: uuid
+       * @description ID tiền tệ.
+       */
+      currency_id: string;
+      /**
+       * Format: decimal
+       * @description Tỷ giá quy đổi VNĐ (bắt buộc khi ngoại tệ chưa có tỷ giá tham chiếu).
+       */
+      exchange_rate?: string | null;
+      /**
+       * Format: date
+       * @description Ngày gia hạn tiếp theo (YYYY-MM-DD).
+       */
+      renew_date: string;
+      /**
+       * @description Tự động trừ tiền qua thẻ/ví.
+       * @default false
+       */
+      auto_renew: boolean;
+      /**
+       * @description Phương thức thanh toán.
+       * @default
+       */
+      payment_method: string;
+      /** @description Link trang quản trị/billing. */
+      manage_url?: string;
+      /** @description Số ngày nhắc trước hạn (mặc định [7, 3, 1]). */
+      reminder_days_before?: number[];
+      /**
+       * @description Đang theo dõi gia hạn.
+       * @default true
+       */
+      is_active: boolean;
+      /**
+       * @description Ghi chú.
+       * @default
+       */
+      notes: string;
+    };
+    /** @description Chi tiết một kỳ thanh toán gia hạn (bao gồm tỷ giá lịch sử và biên lai riêng tư). */
+    SubscriptionPaymentResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Người sở hữu giao dịch gia hạn.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * Dịch vụ định kỳ
+       * Format: uuid
+       * @description Gói dịch vụ được gia hạn.
+       */
+      readonly subscription_id: string;
+      /** @description Tên gói dịch vụ. */
+      readonly subscription_name: string;
+      /**
+       * Ngày thanh toán
+       * Format: date
+       * @description Ngày thực hiện thanh toán.
+       */
+      readonly paid_on: string;
+      /**
+       * Từ ngày
+       * Format: date
+       * @description Ngày bắt đầu chu kỳ mới.
+       */
+      readonly period_from: string;
+      /**
+       * Đến ngày
+       * Format: date
+       * @description Ngày kết thúc chu kỳ (mốc gia hạn kế tiếp).
+       */
+      readonly period_to: string;
+      /**
+       * Số tiền gốc
+       * Format: decimal
+       * @description Số tiền đã trả theo nguyên tệ.
+       */
+      readonly amount: string;
+      /**
+       * Tiền tệ
+       * Format: uuid
+       * @description Đơn vị tiền tệ kỳ thanh toán.
+       */
+      readonly currency_id: string;
+      /** @description Mã tiền tệ. */
+      readonly currency_code: string;
+      /** @description Ký hiệu tiền tệ. */
+      readonly currency_symbol: string;
+      /** @description Số chữ số thập phân. */
+      readonly currency_decimal_places: number;
+      /**
+       * Tỷ giá quy đổi
+       * Format: decimal
+       * @description Tỷ giá tại ngày thanh toán.
+       */
+      readonly exchange_rate: string;
+      /**
+       * Số tiền VNĐ
+       * Format: decimal
+       * @description Giá trị quy đổi VNĐ tại ngày thanh toán.
+       */
+      readonly amount_vnd: string;
+      /**
+       * Phương thức thanh toán
+       * @description Thẻ/ví/tài khoản sử dụng.
+       */
+      readonly payment_method: string;
+      /**
+       * Biên lai thanh toán
+       * Format: uuid
+       * @description Tệp chứng từ thanh toán riêng tư.
+       */
+      readonly receipt_attachment_id: string | null;
+      /** @description Biên lai thanh toán riêng tư (nếu có). */
+      readonly receipt_attachment: components["schemas"]["AttachmentDetailResponse"] | null;
+      /**
+       * Ghi chú
+       * @description Ghi chú cho kỳ gia hạn này.
+       */
+      readonly note: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Đầu vào tùy chọn khi xác nhận đã thanh toán gia hạn. */
+    SubscriptionRenewValidateRequest: {
+      /**
+       * Format: date
+       * @description Ngày thanh toán thực tế (mặc định hôm nay).
+       */
+      paid_on?: string | null;
+      /**
+       * Format: decimal
+       * @description Số tiền thực trả theo nguyên tệ (bỏ trống lấy theo giá niêm yết).
+       */
+      amount?: string | null;
+      /**
+       * Format: decimal
+       * @description Tỷ giá thực tế ngày thanh toán (nếu bỏ trống sẽ tra ExchangeRate <= paid_on).
+       */
+      exchange_rate?: string | null;
+      /**
+       * @description Phương thức thanh toán.
+       * @default
+       */
+      payment_method: string;
+      /**
+       * Format: uuid
+       * @description ID tệp biên lai riêng tư.
+       */
+      receipt_attachment_id?: string | null;
+      /**
+       * @description Ghi chú kỳ thanh toán.
+       * @default
+       */
+      note: string;
+      /**
+       * @description Tính kỳ kế tiếp từ mốc `cycle` cũ hay từ ngày thanh toán `today`.
+       *
+       *     * `cycle` - Cộng tiếp từ mốc gia hạn cũ
+       *     * `today` - Tính từ ngày thanh toán
+       * @default cycle
+       */
+      advance_from: components["schemas"]["AdvanceFromEnum"];
+    };
+    /** @description Chi tiết/danh sách gói dịch vụ định kỳ. */
+    SubscriptionResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Người sở hữu gói dịch vụ.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * Tên dịch vụ
+       * @description Tên dịch vụ hoặc tên miền cần theo dõi.
+       */
+      readonly name: string;
+      /**
+       * Nhà cung cấp
+       * @description Đơn vị cung cấp dịch vụ (Hetzner, Cloudflare, Viettel...).
+       */
+      readonly provider: string;
+      /**
+       * Nhóm dịch vụ
+       * @description Phân loại dịch vụ định kỳ.
+       *
+       *     * `DOMAIN` - Tên miền
+       *     * `HOSTING_VPS` - Hosting / VPS
+       *     * `SAAS_TOOL` - Công cụ SaaS / AI
+       *     * `ENTERTAINMENT` - Giải trí
+       *     * `TELECOM` - Viễn thông / Internet
+       *     * `OTHER` - Khác
+       */
+      readonly category: components["schemas"]["WorkspaceSubscriptionCategoryEnum"];
+      /**
+       * Chu kỳ gia hạn
+       * @description Chu kỳ tính cước lặp lại.
+       *
+       *     * `WEEKLY` - Hàng tuần
+       *     * `MONTHLY` - Hàng tháng
+       *     * `QUARTERLY` - Hàng quý (3 tháng)
+       *     * `SEMI_ANNUAL` - 6 tháng
+       *     * `YEARLY` - Hàng năm
+       *     * `CUSTOM_DAYS` - Tùy chỉnh theo ngày
+       */
+      readonly billing_cycle: components["schemas"]["WorkspaceBillingCycleEnum"];
+      /**
+       * Số ngày chu kỳ tùy chỉnh
+       * @description Bắt buộc > 0 khi chọn chu kỳ tùy chỉnh theo ngày.
+       */
+      readonly custom_cycle_days: number | null;
+      /**
+       * Ngày chốt định kỳ
+       * @description Ngày gốc trong tháng (1–31) để không bị lệch mốc sau tháng 2.
+       */
+      readonly anchor_day: number;
+      /**
+       * Giá cước gốc
+       * Format: decimal
+       * @description Mức phí theo nguyên tệ.
+       */
+      readonly amount: string;
+      /**
+       * Tiền tệ
+       * Format: uuid
+       * @description Đơn vị tiền tệ niêm yết.
+       */
+      readonly currency_id: string;
+      /** @description Mã tiền tệ. */
+      readonly currency_code: string;
+      /** @description Ký hiệu tiền tệ. */
+      readonly currency_symbol: string;
+      /** @description Số chữ số thập phân. */
+      readonly currency_decimal_places: number;
+      /**
+       * Tỷ giá quy đổi
+       * Format: decimal
+       * @description Tỷ giá quy đổi gần nhất sang VNĐ.
+       */
+      readonly exchange_rate: string;
+      /**
+       * Chi phí quy đổi VNĐ
+       * Format: decimal
+       * @description Chi phí ước tính bằng VNĐ.
+       */
+      readonly amount_vnd: string;
+      /**
+       * Ngày gia hạn tiếp theo
+       * Format: date
+       * @description Mốc ngày tới hạn thanh toán tiếp theo.
+       */
+      readonly renew_date: string;
+      /**
+       * Tự động trừ tiền
+       * @description Đánh dấu dịch vụ tự động gia hạn qua thẻ/ví.
+       */
+      readonly auto_renew: boolean;
+      /**
+       * Phương thức thanh toán
+       * @description Ví dụ: Visa •••• 1234, Momo, Chuyển khoản.
+       */
+      readonly payment_method: string;
+      /**
+       * Trang quản trị dịch vụ
+       * Format: uri
+       * @description Link trang billing/quản trị của nhà cung cấp.
+       */
+      readonly manage_url: string;
+      /**
+       * Số ngày nhắc trước
+       * @description Danh sách số ngày nhắc trước hạn (ví dụ [7, 3, 1]).
+       */
+      readonly reminder_days_before: unknown;
+      /**
+       * Đang theo dõi
+       * @description Tắt để tạm ngưng thông báo gia hạn.
+       */
+      readonly is_active: boolean;
+      /**
+       * Ghi chú
+       * @description Ghi chú gói cước hoặc tài khoản đăng ký.
+       */
+      readonly notes: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
     /** @description Thông báo hệ thống đã gửi. */
     SystemAnnouncementResponse: {
       /**
@@ -9645,66 +12799,47 @@ export interface components {
      * @enum {string}
      */
     TaxStatusEnum: "WITHHELD" | "NOT_WITHHELD" | "NO_RATE" | "UNCLASSIFIED" | "PENDING";
-    /** @description Bot + có đang đặt webhook (getUpdates không dùng được). */
+    /** @description Trạng thái xử lý tin nhắn Telegram bất đồng bộ. */
+    TelegramAsyncProcessResponse: {
+      /** @description Đã định tuyến và xử lý thành công hay chưa. */
+      handled: boolean;
+      /**
+       * @description Có đẩy hàng đợi tiếp không.
+       * @default false
+       */
+      queued: boolean;
+      /**
+       * @description Đã chuyển câu trả lời riêng tư sang DM hay chưa.
+       * @default false
+       */
+      replied_in_dm: boolean;
+      /**
+       * @description Lý do bỏ qua (nếu `handled=False`).
+       * @default
+       */
+      reason: string;
+    };
+    /** @description Thông tin bot + trạng thái đồng bộ webhook hiện tại. */
     TelegramBotCheckResponse: {
-      /** @description Bot. */
+      /** @description Thông tin bot dùng chung. */
       bot: components["schemas"]["TelegramBotResponse"];
-      /** @description Bot đang đặt webhook ở nơi khác. */
-      has_webhook: boolean;
+      /** @description Webhook Telegram đã được gắn URL hợp lệ chưa. */
+      webhook_active: boolean;
+      /** @description URL webhook hiện tại trên Telegram. */
+      webhook_url: string;
+      /** @description Thông báo/mã lỗi webhook gần nhất. */
+      last_error_code: string;
     };
-    /** @description Bot của chính người dùng. */
+    /** @description Metadata Bot Telegram chung từ cấu hình môi trường. */
     TelegramBotResponse: {
-      /**
-       * Mã định danh
-       * Format: uuid
-       * @description Định danh UUID do hệ thống sinh, không đổi.
-       */
-      readonly id: string;
-      /** @description @username của bot. */
-      readonly username: string;
-      /**
-       * Tên
-       * @description Tên bot.
-       */
-      readonly display_name: string;
-      /**
-       * 4 ký tự cuối
-       * @description Để nhận ra token.
-       */
-      readonly token_last4: string;
-      /**
-       * Đang bật
-       * @description Tắt để ngừng gửi.
-       */
-      readonly is_active: boolean;
-      /**
-       * Kiểm tra lần cuối
-       * Format: date-time
-       * @description Lần cuối getMe.
-       */
-      readonly last_checked_at: string | null;
-      /**
-       * Lỗi gần nhất
-       * @description Mã lỗi gần nhất.
-       */
-      readonly last_error_code: string;
-      /**
-       * Thời điểm tạo
-       * Format: date-time
-       * @description Thời điểm bản ghi được tạo (tự động).
-       */
-      readonly created_at: string;
-      /**
-       * Thời điểm cập nhật
-       * Format: date-time
-       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
-       */
-      readonly updated_at: string;
-    };
-    /** @description Token tạo ở @BotFather (chỉ ghi, không bao giờ trả lại). */
-    TelegramBotValidateRequest: {
-      /** @description Token bot. */
-      token: string;
+      /** @description Đã cấu hình TELEGRAM_BOT_TOKEN hay chưa. */
+      configured: boolean;
+      /** @description Username bot (không gồm @). */
+      username: string;
+      /** @description Tên hiển thị của bot. */
+      display_name: string;
+      /** @description Link mở chat với bot trên Telegram. */
+      bot_url: string;
     };
     /** @description Nơi nhận (không trả mã đăng ký sau khi xác minh). */
     TelegramChatResponse: {
@@ -10074,6 +13209,150 @@ export interface components {
       /** @description Thời điểm liên kết (ISO 8601). */
       connected_at: string | null;
     };
+    /** @description Đầu vào tạo mục Két sắt (nhận `secret` bản rõ một lần rồi mã hóa Fernet). */
+    VaultItemCreateValidateRequest: {
+      /** @description Tiêu đề gợi nhớ mục bí mật. */
+      title: string;
+      /**
+       * @description Phân loại mục bí mật.
+       *
+       *     * `SERVER` - Máy chủ / SSH
+       *     * `API_KEY` - API Key
+       *     * `ACCOUNT` - Tài khoản
+       *     * `SNIPPET` - Đoạn mã / Khóa
+       *     * `ENV_CONFIG` - Cấu hình ENV
+       *     * `OTHER` - Khác
+       * @default ACCOUNT
+       */
+      category: components["schemas"]["WorkspaceVaultCategoryEnum"];
+      /**
+       * @description Tên đăng nhập / Prefix.
+       * @default
+       */
+      username: string;
+      /** @description Chuỗi bí mật cần mã hóa. */
+      secret: string;
+      /**
+       * @description URL liên quan.
+       * @default
+       */
+      url: string;
+      /**
+       * @description Ghi chú bổ sung.
+       * @default
+       */
+      notes: string;
+      /** @description Danh sách thẻ phân loại. */
+      tags?: string[];
+    };
+    /** @description Thông tin mục két sắt che toàn bộ bí mật gốc; giải mã chỉ qua `/reveal`. */
+    VaultItemResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Người sở hữu mục két sắt.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * Tiêu đề
+       * @description Tên gợi nhớ mục bí mật.
+       */
+      readonly title: string;
+      /**
+       * Phân loại
+       * @description Nhóm bí mật lưu trữ.
+       *
+       *     * `SERVER` - Máy chủ / SSH
+       *     * `API_KEY` - API Key
+       *     * `ACCOUNT` - Tài khoản
+       *     * `SNIPPET` - Đoạn mã / Khóa
+       *     * `ENV_CONFIG` - Cấu hình ENV
+       *     * `OTHER` - Khác
+       */
+      readonly category: components["schemas"]["WorkspaceVaultCategoryEnum"];
+      /**
+       * Tài khoản / Định danh
+       * @description Tên đăng nhập hoặc key prefix công khai.
+       */
+      readonly username: string;
+      /**
+       * 4 ký tự cuối
+       * @description 4 ký tự cuối để nhận diện mà không lộ toàn bộ.
+       */
+      readonly secret_last4: string;
+      /**
+       * Đường dẫn liên quan
+       * @description URL dịch vụ hoặc địa chỉ máy chủ.
+       */
+      readonly url: string;
+      /**
+       * Ghi chú
+       * @description Ghi chú bổ sung (không chứa bí mật chính).
+       */
+      readonly notes: string;
+      /**
+       * Thẻ gắn
+       * @description Danh sách từ khóa phân loại.
+       */
+      readonly tags: unknown;
+      /**
+       * Mở xem lần cuối
+       * Format: date-time
+       * @description Thời điểm gần nhất giải mã xem bí mật.
+       */
+      readonly last_revealed_at: string | null;
+      /**
+       * Người mở xem lần cuối
+       * Format: uuid
+       * @description Tài khoản thực hiện lệnh giải mã gần nhất.
+       */
+      readonly last_revealed_by_id: string | null;
+      /** @description Email người mở xem lần cuối. */
+      readonly last_revealed_by_email: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Trả bản rõ bí mật một lần kèm thời điểm và người mở xem. */
+    VaultItemRevealResponse: {
+      /**
+       * Format: uuid
+       * @description ID mục két sắt.
+       */
+      id: string;
+      /** @description Tiêu đề mục két sắt. */
+      title: string;
+      /** @description Tên tài khoản. */
+      username: string;
+      /** @description Chuỗi bí mật đã giải mã. */
+      secret: string;
+      /** @description URL liên quan. */
+      url: string;
+      /**
+       * Format: date-time
+       * @description Thời điểm giải mã.
+       */
+      revealed_at: string;
+      /** @description Người thực hiện giải mã. */
+      revealed_by_email: string;
+    };
     /**
      * @description * `public` - Công khai
      *     * `private` - Riêng tư
@@ -10103,6 +13382,468 @@ export interface components {
       /** @description Các bước cấu hình bên thứ ba. */
       setup: string[];
     };
+    /**
+     * @description * `LAPTOP` - Laptop
+     *     * `PHONE` - Điện thoại
+     *     * `TABLET` - Máy tính bảng
+     *     * `MONITOR` - Màn hình
+     *     * `PERIPHERAL` - Phụ kiện
+     *     * `AUDIO` - Âm thanh
+     *     * `NETWORK` - Thiết bị mạng
+     *     * `CAMERA` - Máy ảnh
+     *     * `OTHER` - Khác
+     * @enum {string}
+     */
+    WorkspaceAssetCategoryEnum:
+      | "LAPTOP"
+      | "PHONE"
+      | "TABLET"
+      | "MONITOR"
+      | "PERIPHERAL"
+      | "AUDIO"
+      | "NETWORK"
+      | "CAMERA"
+      | "OTHER";
+    /**
+     * @description * `OFFICIAL_STORE` - Hãng chính thức
+     *     * `RETAILER` - Đại lý / Cửa hàng
+     *     * `ECOMMERCE` - Sàn TMĐT
+     *     * `SECOND_HAND` - Mua lại / Cũ
+     *     * `COMPANY` - Công ty cấp
+     *     * `GIFT` - Được tặng
+     * @enum {string}
+     */
+    WorkspaceAssetPurchaseChannelEnum:
+      "OFFICIAL_STORE" | "RETAILER" | "ECOMMERCE" | "SECOND_HAND" | "COMPANY" | "GIFT";
+    /**
+     * @description * `IN_USE` - Đang dùng
+     *     * `BACKUP` - Dự phòng
+     *     * `IN_WARRANTY` - Đang bảo hành
+     *     * `IN_REPAIR` - Đang sửa chữa
+     *     * `SOLD` - Đã bán
+     *     * `BROKEN` - Đã hỏng
+     * @enum {string}
+     */
+    WorkspaceAssetStatusEnum: "IN_USE" | "BACKUP" | "IN_WARRANTY" | "IN_REPAIR" | "SOLD" | "BROKEN";
+    /**
+     * @description * `MANUFACTURER` - Bảo hành hãng
+     *     * `STORE` - Bảo hành cửa hàng
+     *     * `EXTENDED` - Bảo hành mở rộng
+     *     * `NONE` - Không bảo hành
+     * @enum {string}
+     */
+    WorkspaceAssetWarrantyTypeEnum: "MANUFACTURER" | "STORE" | "EXTENDED" | "NONE";
+    /**
+     * @description * `WEB` - Giao diện Web
+     *     * `TELEGRAM_DM` - Telegram Riêng
+     *     * `TELEGRAM_GROUP` - Telegram Nhóm
+     * @enum {string}
+     */
+    WorkspaceAssistantChannelEnum: "WEB" | "TELEGRAM_DM" | "TELEGRAM_GROUP";
+    /**
+     * @description * `USER` - Người dùng
+     *     * `ASSISTANT` - Trợ lý
+     *     * `TOOL` - Kết quả Tool
+     *     * `SYSTEM` - Hệ thống
+     * @enum {string}
+     */
+    WorkspaceAssistantRoleEnum: "USER" | "ASSISTANT" | "TOOL" | "SYSTEM";
+    /**
+     * @description * `WEEKLY` - Hàng tuần
+     *     * `MONTHLY` - Hàng tháng
+     *     * `QUARTERLY` - Hàng quý (3 tháng)
+     *     * `SEMI_ANNUAL` - 6 tháng
+     *     * `YEARLY` - Hàng năm
+     *     * `CUSTOM_DAYS` - Tùy chỉnh theo ngày
+     * @enum {string}
+     */
+    WorkspaceBillingCycleEnum:
+      "WEEKLY" | "MONTHLY" | "QUARTERLY" | "SEMI_ANNUAL" | "YEARLY" | "CUSTOM_DAYS";
+    /** @description Sự kiện hợp nhất từ 5 nguồn (dịch vụ, nhắc việc, bảo hành TB, phiếu sửa, sự cố monitor). */
+    WorkspaceCalendarEventResponse: {
+      /** @description Khóa định danh duy nhất sự kiện trên lịch. */
+      id: string;
+      /**
+       * Format: uuid
+       * @description ID bản ghi gốc.
+       */
+      source_id: string;
+      /** @description Loại sự kiện (`subscription`, `reminder`, ...). */
+      type: string;
+      /**
+       * Format: date
+       * @description Ngày diễn ra sự kiện (YYYY-MM-DD).
+       */
+      date: string;
+      /** @description Giờ cụ thể nếu có (HH:MM). */
+      time: string;
+      /** @description Tiêu đề ngắn hiển thị trên ô lịch. */
+      title: string;
+      /** @description Thông tin phụ. */
+      subtitle: string;
+      /** @description Trạng thái sự kiện. */
+      status: string;
+      /**
+       * Format: decimal
+       * @description Số tiền liên quan VNĐ (nếu có).
+       */
+      amount_vnd: string | null;
+      /** @description Đã hoàn thành/xử lý hay chưa. */
+      is_completed: boolean;
+      /** @description Đường dẫn trang chi tiết nội bộ. */
+      link: string;
+    };
+    /** @description Danh sách sự kiện hợp nhất theo múi giờ và khoảng ngày yêu cầu. */
+    WorkspaceCalendarResponse: {
+      /** @description Múi giờ đang áp dụng. */
+      timezone: string;
+      /**
+       * Format: date
+       * @description Ngày bắt đầu lọc.
+       */
+      from_date: string;
+      /**
+       * Format: date
+       * @description Ngày kết thúc lọc.
+       */
+      to_date: string;
+      /** @description Các sự kiện trong khoảng ngày. */
+      events: components["schemas"]["WorkspaceCalendarEventResponse"][];
+    };
+    /**
+     * @description * `SUBMITTED` - Đã gửi máy
+     *     * `INSPECTING` - Đang kiểm tra
+     *     * `WAITING_PARTS` - Chờ linh kiện
+     *     * `COMPLETED` - Đã hoàn tất
+     *     * `REJECTED` - Từ chối BH
+     *     * `CANCELLED` - Đã hủy
+     * @enum {string}
+     */
+    WorkspaceClaimStatusEnum:
+      "SUBMITTED" | "INSPECTING" | "WAITING_PARTS" | "COMPLETED" | "REJECTED" | "CANCELLED";
+    /**
+     * @description * `WARRANTY` - Bảo hành
+     *     * `PAID_REPAIR` - Sửa chữa tính phí
+     *     * `MAINTENANCE` - Bảo trì / Vệ sinh
+     * @enum {string}
+     */
+    WorkspaceClaimTypeEnum: "WARRANTY" | "PAID_REPAIR" | "MAINTENANCE";
+    /** @description Kết quả thực thi đường W1 (Monitor) và đường W4 (Alerts). */
+    WorkspaceCronTickResponse: {
+      /** @description Số endpoint đã ping trong lượt W1. */
+      w1_checked: number;
+      /** @description Số endpoint đổi trạng thái HEALTHY <-> DOWN. */
+      w1_flipped: number;
+      /** @description Số monitor đồng bộ định kỳ 6h xuống DB. */
+      w1_flushed: number;
+      /** @description Đường W1 có mở kết nối DB hay không. */
+      w1_db_touched: boolean;
+      /** @description Đường W4 có thực sự quét DB đến hạn hay không. */
+      w4_ran: boolean;
+      /** @description Đường W4 có chạm DB hay không. */
+      w4_db_touched: boolean;
+      /** @description Tổng thông báo ghi vào outbox. */
+      notifications_queued: number;
+      /** @description Đã gọi `flush_kick()` tới QStash hay chưa. */
+      kicked: boolean;
+    };
+    /** @description Nhắc việc rút gọn hiển thị trên Dashboard Portal. */
+    WorkspaceDashboardReminderResponse: {
+      /**
+       * Format: uuid
+       * @description ID nhắc việc.
+       */
+      id: string;
+      /** @description Tiêu đề nhắc việc. */
+      title: string;
+      /**
+       * Format: date
+       * @description Ngày đến hạn.
+       */
+      due_date: string;
+      /** @description Giờ đến hạn (HH:MM). */
+      due_time: string;
+      /** @description Mức ưu tiên. */
+      priority: string;
+      /** @description Trạng thái hoàn thành. */
+      is_completed: boolean;
+    };
+    /** @description 4 chỉ số KPI tổng hợp & danh sách nhắc việc hôm nay. */
+    WorkspaceDashboardSummaryResponse: {
+      /**
+       * Format: uuid
+       * @description ID chủ sở hữu đang xem.
+       */
+      owner_id: string;
+      /** @description Múi giờ tính lịch của chủ sở hữu. */
+      timezone: string;
+      /**
+       * Format: date
+       * @description Ngày hiện tại theo múi giờ owner.
+       */
+      today: string;
+      /**
+       * Format: decimal
+       * @description Tổng chi tiêu đã ghi nhận tháng hiện tại (VNĐ).
+       */
+      monthly_spending_vnd: string;
+      /**
+       * Format: decimal
+       * @description Tiền gia hạn dịch vụ tháng này (VNĐ).
+       */
+      subscription_paid_vnd: string;
+      /**
+       * Format: decimal
+       * @description Tiền mua thiết bị tháng này (VNĐ).
+       */
+      asset_purchase_vnd: string;
+      /**
+       * Format: decimal
+       * @description Chi phí bảo hành/sửa chữa tháng này (VNĐ).
+       */
+      warranty_repair_vnd: string;
+      /**
+       * Format: decimal
+       * @description Tiền dự kiến gia hạn còn lại trong tháng (VNĐ).
+       */
+      projected_subscriptions_vnd: string;
+      /** @description Số việc hôm nay chưa hoàn thành. */
+      pending_reminders_today: number;
+      /** @description Số việc quá hạn chưa hoàn thành. */
+      overdue_reminders: number;
+      /** @description Số thiết bị sắp hết bảo hành trong 30 ngày tới. */
+      expiring_warranties_30d: number;
+      /** @description Số dịch vụ sắp gia hạn trong 14 ngày tới. */
+      upcoming_subscriptions_14d: number;
+      /**
+       * Format: decimal
+       * @description Tổng tiền dự kiến gia hạn trong 14 ngày tới.
+       */
+      upcoming_subscriptions_14d_vnd: string;
+      /** @description Tổng số mục tiêu giám sát Uptime. */
+      monitors_total: number;
+      /** @description Số mục tiêu đang ổn định (HEALTHY). */
+      monitors_healthy: number;
+      /** @description Số mục tiêu đang lỗi (DOWN). */
+      monitors_down: number;
+      /** @description Tối đa 5 nhắc việc hôm nay. */
+      today_reminders: components["schemas"]["WorkspaceDashboardReminderResponse"][];
+    };
+    /**
+     * @description * `DISABLED` - Tắt trong nhóm
+     *     * `OWNER_ONLY` - Chỉ chủ sở hữu
+     *     * `ALL_MEMBERS` - Mọi thành viên nhóm
+     * @enum {string}
+     */
+    WorkspaceGroupToolPolicyEnum: "DISABLED" | "OWNER_ONLY" | "ALL_MEMBERS";
+    /**
+     * @description * `GET` - GET
+     *     * `HEAD` - HEAD
+     * @enum {string}
+     */
+    WorkspaceMonitorMethodEnum: "GET" | "HEAD";
+    /**
+     * @description * `HEALTHY` - Ổn định
+     *     * `DEGRADED` - Chậm / Cảnh báo
+     *     * `DOWN` - Ngừng phản hồi
+     *     * `UNKNOWN` - Chưa kiểm tra
+     * @enum {string}
+     */
+    WorkspaceMonitorStatusEnum: "HEALTHY" | "DEGRADED" | "DOWN" | "UNKNOWN";
+    /**
+     * @description * `LOW` - Thấp
+     *     * `MEDIUM` - Trung bình
+     *     * `HIGH` - Cao
+     *     * `URGENT` - Khẩn cấp
+     * @enum {string}
+     */
+    WorkspaceReminderPriorityEnum: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+    /**
+     * @description * `NONE` - Không lặp
+     *     * `DAILY` - Hàng ngày
+     *     * `WEEKLY` - Hàng tuần
+     *     * `MONTHLY` - Hàng tháng
+     *     * `YEARLY` - Hàng năm
+     * @enum {string}
+     */
+    WorkspaceReminderRecurrenceEnum: "NONE" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+    /** @description Cấu hình cá nhân kèm danh sách model AI khả dụng và thông tin Bot Telegram chung. */
+    WorkspaceSettingResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Người dùng sở hữu cấu hình.
+       */
+      readonly owner_id: string;
+      /** @description Email chủ sở hữu. */
+      readonly owner_email: string;
+      /**
+       * Múi giờ
+       * @description Múi giờ chuẩn IANA để tính lịch và Digest (VD: Asia/Ho_Chi_Minh).
+       */
+      readonly timezone: string;
+      /**
+       * Bật tóm tắt hàng ngày
+       * @description Gửi bản tin tổng hợp việc & hạn theo khung giờ.
+       */
+      readonly daily_digest_enabled: boolean;
+      /**
+       * Khung giờ Digest
+       * @description Danh sách giờ định dạng HH:MM gửi bản tin.
+       */
+      readonly digest_time_slots: unknown;
+      /**
+       * Mục hiển thị trong Digest
+       * @description Các nhóm thông tin đưa vào bản tin tổng hợp.
+       */
+      readonly digest_sections: unknown;
+      /**
+       * Mốc nhắc hạn bảo hành
+       * @description Số ngày nhắc trước khi thiết bị hết bảo hành.
+       */
+      readonly warranty_alert_days: unknown;
+      /**
+       * Mốc nhắc gia hạn mặc định
+       * @description Số ngày nhắc mặc định cho gói dịch vụ mới.
+       */
+      readonly subscription_default_alert_days: unknown;
+      /**
+       * Model AI ưu tiên
+       * @description Để trống để dùng thứ tự ưu tiên hệ thống.
+       */
+      readonly preferred_ai_model: string;
+      /**
+       * Giới hạn token AI mỗi ngày
+       * @description Để trống nếu không đặt giới hạn ngày.
+       */
+      readonly ai_daily_token_limit: number | null;
+      /**
+       * Bật trợ lý AI trên Telegram
+       * @description Cho phép hỏi đáp & lệnh Slash qua Bot Telegram chung.
+       */
+      readonly telegram_ai_enabled: boolean;
+      /**
+       * Telegram User ID chính chủ
+       * @description Tự động gắn khi nhắn /start <code> hoặc /verify_owner từ DM.
+       */
+      readonly telegram_owner_user_id: number | null;
+      /**
+       * Danh sách Chat ID được phép
+       * @description Danh sách UUID của system.TelegramChat được bật tương tác AI.
+       */
+      readonly telegram_allowed_chat_ids: unknown;
+      /**
+       * Nhóm phải @tag hoặc reply bot
+       * @description Tránh bot trả lời mọi tin nhắn thông thường trong nhóm.
+       */
+      readonly telegram_group_require_mention: boolean;
+      /**
+       * Chính sách dữ liệu cá nhân trong nhóm
+       * @description Giới hạn ai có thể kích hoạt tool đọc dữ liệu cá nhân trong nhóm.
+       *
+       *     * `DISABLED` - Tắt trong nhóm
+       *     * `OWNER_ONLY` - Chỉ chủ sở hữu
+       *     * `ALL_MEMBERS` - Mọi thành viên nhóm
+       */
+      readonly telegram_group_tool_policy: components["schemas"]["WorkspaceGroupToolPolicyEnum"];
+      /**
+       * Ẩn số tiền trong nhóm
+       * @description Che giá trị tiền tệ nhạy cảm khi bot trả lời ở nhóm công khai.
+       */
+      readonly telegram_group_hide_amounts: boolean;
+      /**
+       * Gửi chi tiết riêng tư vào DM
+       * @description Chỉ gửi chi tiết riêng tư về DM của chính chủ khi được hỏi trong nhóm.
+       */
+      readonly telegram_group_reply_in_dm: boolean;
+      /** @description Danh sách model AI khả dụng do hệ thống cấu hình. */
+      readonly available_ai_models: string[];
+      /** @description Các mục dữ liệu hỗ trợ hiển thị trong Digest. */
+      readonly available_digest_sections: string[];
+      /** @description Bot Telegram hệ thống đã cấu hình token hay chưa. */
+      readonly telegram_bot_configured: boolean;
+      /** @description Username bot Telegram hệ thống (không kèm @). */
+      readonly telegram_bot_username: string;
+      /** @description Liên kết mở Bot Telegram trên trình duyệt. */
+      readonly telegram_bot_url: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Đầu vào PUT/PATCH `/workspace/settings`. */
+    WorkspaceSettingUpdateValidateRequest: {
+      /** @description Múi giờ chuẩn IANA (VD: Asia/Ho_Chi_Minh). */
+      timezone?: string;
+      /** @description Bật gửi bản tin tóm tắt hàng ngày. */
+      daily_digest_enabled?: boolean;
+      /** @description Khung giờ gửi Digest định dạng HH:MM. */
+      digest_time_slots?: string[];
+      /** @description Các mục hiển thị trong Digest (`reminders`, `warranty`, `subscriptions`, `monitors`, `finance`). */
+      digest_sections?: string[];
+      /** @description Mốc ngày nhắc trước hạn bảo hành (VD: [30, 7, 1]). */
+      warranty_alert_days?: number[];
+      /** @description Mốc ngày nhắc mặc định cho dịch vụ định kỳ. */
+      subscription_default_alert_days?: number[];
+      /** @description Model AI ưu tiên (để trống = dùng thứ tự mặc định của hệ thống). */
+      preferred_ai_model?: string;
+      /** @description Giới hạn token AI mỗi ngày (null = không đặt giới hạn). */
+      ai_daily_token_limit?: number | null;
+      /** @description Bật tương tác Trợ lý AI qua Bot Telegram. */
+      telegram_ai_enabled?: boolean;
+      /** @description Danh sách UUID của `system.TelegramChat` được phép gọi Trợ lý. */
+      telegram_allowed_chat_ids?: string[];
+      /** @description Trong nhóm Telegram bắt buộc `@bot` hoặc reply tin nhắn bot. */
+      telegram_group_require_mention?: boolean;
+      /**
+       * @description Chính sách đọc dữ liệu cá nhân trong nhóm Telegram.
+       *
+       *     * `DISABLED` - Tắt trong nhóm
+       *     * `OWNER_ONLY` - Chỉ chủ sở hữu
+       *     * `ALL_MEMBERS` - Mọi thành viên nhóm
+       */
+      telegram_group_tool_policy?: components["schemas"]["WorkspaceGroupToolPolicyEnum"];
+      /** @description Ẩn số tiền nhạy cảm khi bot trả lời trong nhóm Telegram. */
+      telegram_group_hide_amounts?: boolean;
+      /** @description Gửi chi tiết riêng tư về DM chính chủ khi được hỏi trong nhóm. */
+      telegram_group_reply_in_dm?: boolean;
+    };
+    /**
+     * @description * `DOMAIN` - Tên miền
+     *     * `HOSTING_VPS` - Hosting / VPS
+     *     * `SAAS_TOOL` - Công cụ SaaS / AI
+     *     * `ENTERTAINMENT` - Giải trí
+     *     * `TELECOM` - Viễn thông / Internet
+     *     * `OTHER` - Khác
+     * @enum {string}
+     */
+    WorkspaceSubscriptionCategoryEnum:
+      "DOMAIN" | "HOSTING_VPS" | "SAAS_TOOL" | "ENTERTAINMENT" | "TELECOM" | "OTHER";
+    /**
+     * @description * `SERVER` - Máy chủ / SSH
+     *     * `API_KEY` - API Key
+     *     * `ACCOUNT` - Tài khoản
+     *     * `SNIPPET` - Đoạn mã / Khóa
+     *     * `ENV_CONFIG` - Cấu hình ENV
+     *     * `OTHER` - Khác
+     * @enum {string}
+     */
+    WorkspaceVaultCategoryEnum:
+      "SERVER" | "API_KEY" | "ACCOUNT" | "SNIPPET" | "ENV_CONFIG" | "OTHER";
   };
   responses: never;
   parameters: never;
@@ -17683,60 +21424,6 @@ export interface operations {
       };
     };
   };
-  system_telegram_bot_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TelegramBotValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["TelegramBotResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  system_telegram_bot_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
   system_telegram_bot_check_create: {
     parameters: {
       query?: never;
@@ -17766,6 +21453,31 @@ export interface operations {
             };
           };
         };
+      };
+    };
+  };
+  system_telegram_webhook_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Đã tiếp nhận bản tin Telegram. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Sai secret token hoặc chưa cấu hình bot. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };
@@ -20072,6 +23784,2893 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["ShortLinkDestinationResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assets_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Nhóm thiết bị (nhiều giá trị phân tách dấu phẩy).
+         *
+         *     * `LAPTOP` - Laptop
+         *     * `PHONE` - Điện thoại
+         *     * `TABLET` - Máy tính bảng
+         *     * `MONITOR` - Màn hình
+         *     * `PERIPHERAL` - Phụ kiện
+         *     * `AUDIO` - Âm thanh
+         *     * `NETWORK` - Thiết bị mạng
+         *     * `CAMERA` - Máy ảnh
+         *     * `OTHER` - Khác
+         */
+        category?: (
+          | "AUDIO"
+          | "CAMERA"
+          | "LAPTOP"
+          | "MONITOR"
+          | "NETWORK"
+          | "OTHER"
+          | "PERIPHERAL"
+          | "PHONE"
+          | "TABLET"
+        )[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /**
+         * @description Kênh mua hàng (nhiều giá trị phân tách dấu phẩy).
+         *
+         *     * `OFFICIAL_STORE` - Hãng chính thức
+         *     * `RETAILER` - Đại lý / Cửa hàng
+         *     * `ECOMMERCE` - Sàn TMĐT
+         *     * `SECOND_HAND` - Mua lại / Cũ
+         *     * `COMPANY` - Công ty cấp
+         *     * `GIFT` - Được tặng
+         */
+        purchase_channel?: (
+          "COMPANY" | "ECOMMERCE" | "GIFT" | "OFFICIAL_STORE" | "RETAILER" | "SECOND_HAND"
+        )[];
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Trạng thái thiết bị (nhiều giá trị phân tách dấu phẩy).
+         *
+         *     * `IN_USE` - Đang dùng
+         *     * `BACKUP` - Dự phòng
+         *     * `IN_WARRANTY` - Đang bảo hành
+         *     * `IN_REPAIR` - Đang sửa chữa
+         *     * `SOLD` - Đã bán
+         *     * `BROKEN` - Đã hỏng
+         */
+        status?: ("BACKUP" | "BROKEN" | "IN_REPAIR" | "IN_USE" | "IN_WARRANTY" | "SOLD")[];
+        /**
+         * @description Loại bảo hành (nhiều giá trị phân tách dấu phẩy).
+         *
+         *     * `MANUFACTURER` - Bảo hành hãng
+         *     * `STORE` - Bảo hành cửa hàng
+         *     * `EXTENDED` - Bảo hành mở rộng
+         *     * `NONE` - Không bảo hành
+         */
+        warranty_type?: ("EXTENDED" | "MANUFACTURER" | "NONE" | "STORE")[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedAssetResponseList"];
+        };
+      };
+    };
+  };
+  workspace_assets_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssetCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssetResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assets_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssetResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assets_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  workspace_assets_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedAssetUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssetResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assets_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Nhóm thiết bị (nhiều giá trị phân tách dấu phẩy).
+         *
+         *     * `LAPTOP` - Laptop
+         *     * `PHONE` - Điện thoại
+         *     * `TABLET` - Máy tính bảng
+         *     * `MONITOR` - Màn hình
+         *     * `PERIPHERAL` - Phụ kiện
+         *     * `AUDIO` - Âm thanh
+         *     * `NETWORK` - Thiết bị mạng
+         *     * `CAMERA` - Máy ảnh
+         *     * `OTHER` - Khác
+         */
+        category?: (
+          | "AUDIO"
+          | "CAMERA"
+          | "LAPTOP"
+          | "MONITOR"
+          | "NETWORK"
+          | "OTHER"
+          | "PERIPHERAL"
+          | "PHONE"
+          | "TABLET"
+        )[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /**
+         * @description Kênh mua hàng (nhiều giá trị phân tách dấu phẩy).
+         *
+         *     * `OFFICIAL_STORE` - Hãng chính thức
+         *     * `RETAILER` - Đại lý / Cửa hàng
+         *     * `ECOMMERCE` - Sàn TMĐT
+         *     * `SECOND_HAND` - Mua lại / Cũ
+         *     * `COMPANY` - Công ty cấp
+         *     * `GIFT` - Được tặng
+         */
+        purchase_channel?: (
+          "COMPANY" | "ECOMMERCE" | "GIFT" | "OFFICIAL_STORE" | "RETAILER" | "SECOND_HAND"
+        )[];
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Trạng thái thiết bị (nhiều giá trị phân tách dấu phẩy).
+         *
+         *     * `IN_USE` - Đang dùng
+         *     * `BACKUP` - Dự phòng
+         *     * `IN_WARRANTY` - Đang bảo hành
+         *     * `IN_REPAIR` - Đang sửa chữa
+         *     * `SOLD` - Đã bán
+         *     * `BROKEN` - Đã hỏng
+         */
+        status?: ("BACKUP" | "BROKEN" | "IN_REPAIR" | "IN_USE" | "IN_WARRANTY" | "SOLD")[];
+        /**
+         * @description Loại bảo hành (nhiều giá trị phân tách dấu phẩy).
+         *
+         *     * `MANUFACTURER` - Bảo hành hãng
+         *     * `STORE` - Bảo hành cửa hàng
+         *     * `EXTENDED` - Bảo hành mở rộng
+         *     * `NONE` - Không bảo hành
+         */
+        warranty_type?: ("EXTENDED" | "MANUFACTURER" | "NONE" | "STORE")[];
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  workspace_assets_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assistant_chat_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssistantChatValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssistantChatResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assistant_conversations_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Kênh tương tác (WEB, TELEGRAM_DM, TELEGRAM_GROUP).
+         *
+         *     * `WEB` - Giao diện Web
+         *     * `TELEGRAM_DM` - Telegram Riêng
+         *     * `TELEGRAM_GROUP` - Telegram Nhóm
+         */
+        channel?: ("TELEGRAM_DM" | "TELEGRAM_GROUP" | "WEB")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedAssistantConversationListResponseList"];
+        };
+      };
+    };
+  };
+  workspace_assistant_conversations_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssistantConversationDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assistant_conversations_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssistantConversationDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assistant_conversations_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  workspace_assistant_conversations_messages_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssistantMessageResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assistant_conversations_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_assistant_telegram_process_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["TelegramAsyncProcessResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_calendar_retrieve: {
+    parameters: {
+      query: {
+        /** @description Ngày bắt đầu (YYYY-MM-DD). */
+        from: string;
+        /** @description UUID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string;
+        /** @description Ngày kết thúc (YYYY-MM-DD, tối đa +93 ngày). */
+        to: string;
+        /** @description Các loại sự kiện phân tách dấu phẩy. */
+        types?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WorkspaceCalendarResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_cron_dispatch_due_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WorkspaceCronTickResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_cron_tick_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WorkspaceCronTickResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_dashboard_summary_retrieve: {
+    parameters: {
+      query?: {
+        /** @description UUID chủ sở hữu (chỉ có hiệu lực khi có quyền manage_all). */
+        owner?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WorkspaceDashboardSummaryResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_monitor_incidents_list: {
+    parameters: {
+      query?: {
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /**
+         * @description Đã phục hồi (`true` = đã có resolved_at, `false` = chưa phục hồi).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        resolved?: ("false" | "true")[];
+        /** @description A search term. */
+        search?: string;
+        /** @description Mã HTTP lỗi ghi nhận. */
+        status_code?: number;
+        /** @description ID mục tiêu giám sát. */
+        target?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedMonitorIncidentResponseList"];
+        };
+      };
+    };
+  };
+  workspace_monitor_incidents_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["MonitorIncidentResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_monitor_incidents_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["MonitorIncidentResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_monitor_incidents_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  workspace_monitor_incidents_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_monitor_targets_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Đang bật giám sát (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /**
+         * @description Trạng thái kiểm tra gần nhất (HEALTHY, DEGRADED, DOWN, UNKNOWN).
+         *
+         *     * `HEALTHY` - Ổn định
+         *     * `DEGRADED` - Chậm / Cảnh báo
+         *     * `DOWN` - Ngừng phản hồi
+         *     * `UNKNOWN` - Chưa kiểm tra
+         */
+        last_status?: ("DEGRADED" | "DOWN" | "HEALTHY" | "UNKNOWN")[];
+        /**
+         * @description Phương thức HTTP (`GET`, `HEAD`).
+         *
+         *     * `GET` - GET
+         *     * `HEAD` - HEAD
+         */
+        method?: ("GET" | "HEAD")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedMonitorTargetResponseList"];
+        };
+      };
+    };
+  };
+  workspace_monitor_targets_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MonitorTargetCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["MonitorTargetResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_monitor_targets_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["MonitorTargetResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_monitor_targets_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  workspace_monitor_targets_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedMonitorTargetUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["MonitorTargetResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_monitor_targets_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Đang bật giám sát (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /**
+         * @description Trạng thái kiểm tra gần nhất (HEALTHY, DEGRADED, DOWN, UNKNOWN).
+         *
+         *     * `HEALTHY` - Ổn định
+         *     * `DEGRADED` - Chậm / Cảnh báo
+         *     * `DOWN` - Ngừng phản hồi
+         *     * `UNKNOWN` - Chưa kiểm tra
+         */
+        last_status?: ("DEGRADED" | "DOWN" | "HEALTHY" | "UNKNOWN")[];
+        /**
+         * @description Phương thức HTTP (`GET`, `HEAD`).
+         *
+         *     * `GET` - GET
+         *     * `HEAD` - HEAD
+         */
+        method?: ("GET" | "HEAD")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  workspace_monitor_targets_ping_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["MonitorTargetPingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_monitor_targets_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_monitor_targets_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MonitorTargetBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_reminders_list: {
+    parameters: {
+      query?: {
+        /** @description Ngày đến hạn từ (YYYY-MM-DD). */
+        due_from?: string;
+        /** @description Ngày đến hạn đến (YYYY-MM-DD). */
+        due_to?: string;
+        /**
+         * @description Đã hoàn thành (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_completed?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /**
+         * @description Độ ưu tiên (LOW, MEDIUM, HIGH, URGENT).
+         *
+         *     * `LOW` - Thấp
+         *     * `MEDIUM` - Trung bình
+         *     * `HIGH` - Cao
+         *     * `URGENT` - Khẩn cấp
+         */
+        priority?: ("HIGH" | "LOW" | "MEDIUM" | "URGENT")[];
+        /**
+         * @description Chu kỳ lặp lại.
+         *
+         *     * `NONE` - Không lặp
+         *     * `DAILY` - Hàng ngày
+         *     * `WEEKLY` - Hàng tuần
+         *     * `MONTHLY` - Hàng tháng
+         *     * `YEARLY` - Hàng năm
+         */
+        recurrence?: ("DAILY" | "MONTHLY" | "NONE" | "WEEKLY" | "YEARLY")[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedReminderResponseList"];
+        };
+      };
+    };
+  };
+  workspace_reminders_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReminderCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReminderResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_reminders_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReminderResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_reminders_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  workspace_reminders_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedReminderUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReminderResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_reminders_history_list: {
+    parameters: {
+      query?: {
+        /** @description Ngày đến hạn từ (YYYY-MM-DD). */
+        due_from?: string;
+        /** @description Ngày đến hạn đến (YYYY-MM-DD). */
+        due_to?: string;
+        /**
+         * @description Đã hoàn thành (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_completed?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /**
+         * @description Độ ưu tiên (LOW, MEDIUM, HIGH, URGENT).
+         *
+         *     * `LOW` - Thấp
+         *     * `MEDIUM` - Trung bình
+         *     * `HIGH` - Cao
+         *     * `URGENT` - Khẩn cấp
+         */
+        priority?: ("HIGH" | "LOW" | "MEDIUM" | "URGENT")[];
+        /**
+         * @description Chu kỳ lặp lại.
+         *
+         *     * `NONE` - Không lặp
+         *     * `DAILY` - Hàng ngày
+         *     * `WEEKLY` - Hàng tuần
+         *     * `MONTHLY` - Hàng tháng
+         *     * `YEARLY` - Hàng năm
+         */
+        recurrence?: ("DAILY" | "MONTHLY" | "NONE" | "WEEKLY" | "YEARLY")[];
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  workspace_reminders_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_reminders_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReminderBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_settings_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WorkspaceSettingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_settings_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["WorkspaceSettingUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WorkspaceSettingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_settings_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedWorkspaceSettingUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WorkspaceSettingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_settings_by_owner_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        owner_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WorkspaceSettingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_settings_by_owner_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        owner_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["WorkspaceSettingUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WorkspaceSettingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_settings_by_owner_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        owner_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedWorkspaceSettingUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["WorkspaceSettingResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_subscription_payments_list: {
+    parameters: {
+      query?: {
+        /** @description ID tiền tệ thanh toán. */
+        currency?: string[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /** @description ID gói dịch vụ (nhiều giá trị phân tách dấu phẩy). */
+        subscription?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedSubscriptionPaymentResponseList"];
+        };
+      };
+    };
+  };
+  workspace_subscription_payments_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SubscriptionPaymentResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_subscription_payments_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SubscriptionPaymentResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_subscription_payments_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  workspace_subscription_payments_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_subscriptions_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Tự động trừ tiền (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        auto_renew?: ("false" | "true")[];
+        /**
+         * @description Chu kỳ gia hạn (WEEKLY, MONTHLY, YEARLY...).
+         *
+         *     * `WEEKLY` - Hàng tuần
+         *     * `MONTHLY` - Hàng tháng
+         *     * `QUARTERLY` - Hàng quý (3 tháng)
+         *     * `SEMI_ANNUAL` - 6 tháng
+         *     * `YEARLY` - Hàng năm
+         *     * `CUSTOM_DAYS` - Tùy chỉnh theo ngày
+         */
+        billing_cycle?: (
+          "CUSTOM_DAYS" | "MONTHLY" | "QUARTERLY" | "SEMI_ANNUAL" | "WEEKLY" | "YEARLY"
+        )[];
+        /**
+         * @description Nhóm dịch vụ (DOMAIN, HOSTING_VPS, SAAS_TOOL...).
+         *
+         *     * `DOMAIN` - Tên miền
+         *     * `HOSTING_VPS` - Hosting / VPS
+         *     * `SAAS_TOOL` - Công cụ SaaS / AI
+         *     * `ENTERTAINMENT` - Giải trí
+         *     * `TELECOM` - Viễn thông / Internet
+         *     * `OTHER` - Khác
+         */
+        category?: (
+          "DOMAIN" | "ENTERTAINMENT" | "HOSTING_VPS" | "OTHER" | "SAAS_TOOL" | "TELECOM"
+        )[];
+        /**
+         * @description Đang theo dõi (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedSubscriptionResponseList"];
+        };
+      };
+    };
+  };
+  workspace_subscriptions_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SubscriptionCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SubscriptionResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_subscriptions_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SubscriptionResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_subscriptions_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  workspace_subscriptions_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedSubscriptionUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SubscriptionResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_subscriptions_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Tự động trừ tiền (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        auto_renew?: ("false" | "true")[];
+        /**
+         * @description Chu kỳ gia hạn (WEEKLY, MONTHLY, YEARLY...).
+         *
+         *     * `WEEKLY` - Hàng tuần
+         *     * `MONTHLY` - Hàng tháng
+         *     * `QUARTERLY` - Hàng quý (3 tháng)
+         *     * `SEMI_ANNUAL` - 6 tháng
+         *     * `YEARLY` - Hàng năm
+         *     * `CUSTOM_DAYS` - Tùy chỉnh theo ngày
+         */
+        billing_cycle?: (
+          "CUSTOM_DAYS" | "MONTHLY" | "QUARTERLY" | "SEMI_ANNUAL" | "WEEKLY" | "YEARLY"
+        )[];
+        /**
+         * @description Nhóm dịch vụ (DOMAIN, HOSTING_VPS, SAAS_TOOL...).
+         *
+         *     * `DOMAIN` - Tên miền
+         *     * `HOSTING_VPS` - Hosting / VPS
+         *     * `SAAS_TOOL` - Công cụ SaaS / AI
+         *     * `ENTERTAINMENT` - Giải trí
+         *     * `TELECOM` - Viễn thông / Internet
+         *     * `OTHER` - Khác
+         */
+        category?: (
+          "DOMAIN" | "ENTERTAINMENT" | "HOSTING_VPS" | "OTHER" | "SAAS_TOOL" | "TELECOM"
+        )[];
+        /**
+         * @description Đang theo dõi (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_active?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  workspace_subscriptions_renew_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["SubscriptionRenewValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["SubscriptionPaymentResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_subscriptions_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_subscriptions_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SubscriptionBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_vault_items_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Phân loại bí mật (SERVER, API_KEY, ACCOUNT...).
+         *
+         *     * `SERVER` - Máy chủ / SSH
+         *     * `API_KEY` - API Key
+         *     * `ACCOUNT` - Tài khoản
+         *     * `SNIPPET` - Đoạn mã / Khóa
+         *     * `ENV_CONFIG` - Cấu hình ENV
+         *     * `OTHER` - Khác
+         */
+        category?: ("ACCOUNT" | "API_KEY" | "ENV_CONFIG" | "OTHER" | "SERVER" | "SNIPPET")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedVaultItemResponseList"];
+        };
+      };
+    };
+  };
+  workspace_vault_items_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VaultItemCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["VaultItemResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_vault_items_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["VaultItemResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_vault_items_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  workspace_vault_items_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedVaultItemUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["VaultItemResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_vault_items_history_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Phân loại bí mật (SERVER, API_KEY, ACCOUNT...).
+         *
+         *     * `SERVER` - Máy chủ / SSH
+         *     * `API_KEY` - API Key
+         *     * `ACCOUNT` - Tài khoản
+         *     * `SNIPPET` - Đoạn mã / Khóa
+         *     * `ENV_CONFIG` - Cấu hình ENV
+         *     * `OTHER` - Khác
+         */
+        category?: ("ACCOUNT" | "API_KEY" | "ENV_CONFIG" | "OTHER" | "SERVER" | "SNIPPET")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  workspace_vault_items_reveal_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["VaultItemRevealResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_vault_items_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_warranty_claims_list: {
+    parameters: {
+      query?: {
+        /** @description ID thiết bị (nhiều giá trị phân tách dấu phẩy). */
+        asset?: string[];
+        /**
+         * @description Loại phiếu (WARRANTY, PAID_REPAIR, MAINTENANCE).
+         *
+         *     * `WARRANTY` - Bảo hành
+         *     * `PAID_REPAIR` - Sửa chữa tính phí
+         *     * `MAINTENANCE` - Bảo trì / Vệ sinh
+         */
+        claim_type?: ("MAINTENANCE" | "PAID_REPAIR" | "WARRANTY")[];
+        /**
+         * @description Được bảo hành miễn phí (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_covered_by_warranty?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Trạng thái phiếu (nhiều giá trị phân tách dấu phẩy).
+         *
+         *     * `SUBMITTED` - Đã gửi máy
+         *     * `INSPECTING` - Đang kiểm tra
+         *     * `WAITING_PARTS` - Chờ linh kiện
+         *     * `COMPLETED` - Đã hoàn tất
+         *     * `REJECTED` - Từ chối BH
+         *     * `CANCELLED` - Đã hủy
+         */
+        status?: (
+          "CANCELLED" | "COMPLETED" | "INSPECTING" | "REJECTED" | "SUBMITTED" | "WAITING_PARTS"
+        )[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedAssetWarrantyClaimResponseList"];
+        };
+      };
+    };
+  };
+  workspace_warranty_claims_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssetWarrantyClaimCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssetWarrantyClaimResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_warranty_claims_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssetWarrantyClaimResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_warranty_claims_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  workspace_warranty_claims_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedAssetWarrantyClaimUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssetWarrantyClaimResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_warranty_claims_history_list: {
+    parameters: {
+      query?: {
+        /** @description ID thiết bị (nhiều giá trị phân tách dấu phẩy). */
+        asset?: string[];
+        /**
+         * @description Loại phiếu (WARRANTY, PAID_REPAIR, MAINTENANCE).
+         *
+         *     * `WARRANTY` - Bảo hành
+         *     * `PAID_REPAIR` - Sửa chữa tính phí
+         *     * `MAINTENANCE` - Bảo trì / Vệ sinh
+         */
+        claim_type?: ("MAINTENANCE" | "PAID_REPAIR" | "WARRANTY")[];
+        /**
+         * @description Được bảo hành miễn phí (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_covered_by_warranty?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all). */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /**
+         * @description Trạng thái phiếu (nhiều giá trị phân tách dấu phẩy).
+         *
+         *     * `SUBMITTED` - Đã gửi máy
+         *     * `INSPECTING` - Đang kiểm tra
+         *     * `WAITING_PARTS` - Chờ linh kiện
+         *     * `COMPLETED` - Đã hoàn tất
+         *     * `REJECTED` - Từ chối BH
+         *     * `CANCELLED` - Đã hủy
+         */
+        status?: (
+          "CANCELLED" | "COMPLETED" | "INSPECTING" | "REJECTED" | "SUBMITTED" | "WAITING_PARTS"
+        )[];
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  workspace_warranty_claims_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;

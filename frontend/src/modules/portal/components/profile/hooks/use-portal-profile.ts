@@ -5,7 +5,8 @@ import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { ATTACHMENT_PERMISSIONS } from "@/modules/system/permissions/attachment-permission";
 import { NOTIFICATION_PREFERENCE_PERMISSIONS } from "@/modules/system/permissions/notification-preference-permission";
-import { TELEGRAM_BOT_PERMISSIONS } from "@/modules/system/permissions/telegram-bot-permission";
+import { PUSH_DEVICE_PERMISSIONS } from "@/modules/system/permissions/push-device-permission";
+import { TELEGRAM_CHAT_PERMISSIONS } from "@/modules/system/permissions/telegram-chat-permission";
 
 /**
  * Hook điều khiển trang Hồ sơ cá nhân trong Client Portal.
@@ -30,9 +31,9 @@ export function usePortalProfile() {
   const canPreferenceUpdate = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.update);
   const canReadAttachments = usePermission(ATTACHMENT_PERMISSIONS.read);
   const canUploadAttachments = usePermission(ATTACHMENT_PERMISSIONS.create);
-  const hasTelegramBotPermission = usePermission(TELEGRAM_BOT_PERMISSIONS.read);
-  const canTelegramBot = Boolean(user?.isSuperuser) && hasTelegramBotPermission;
-  const canNotifications = canPreferences || canTelegramBot;
+  const canPushDevices = usePermission(PUSH_DEVICE_PERMISSIONS.read);
+  const canTelegramChats = usePermission(TELEGRAM_CHAT_PERMISSIONS.read);
+  const canNotifications = canPreferences || canPushDevices || canTelegramChats;
 
   const allRoles: {
     key: string;

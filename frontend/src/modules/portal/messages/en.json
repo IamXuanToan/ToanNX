@@ -2,11 +2,23 @@
   "navigation": {
     "sections": {
       "overview": "Overview",
+      "workspace": "Workspace",
       "utilities": "Utilities",
       "finance": "Finance",
       "media": "Media"
     },
     "dashboard": "Dashboard",
+    "assistant": "AI Assistant",
+    "reminders": "Reminders",
+    "subscriptions": "Subscriptions",
+    "subscriptionPayments": "Renewal History",
+    "assets": "Assets",
+    "warrantyClaims": "Warranty Claims",
+    "vault": "Secret Vault",
+    "monitors": "Uptime Monitors",
+    "monitorIncidents": "Uptime Incidents",
+    "workspaceSettings": "Assistant Settings",
+    "mobileMenu": "More",
     "financeDashboard": "Finance Dashboard",
     "financeIncomes": "Incomes",
     "financeInvoices": "Invoices",
@@ -74,7 +86,18 @@
     "studioBadge": "Personal Studio",
     "start": "Get started",
     "emptyPages": "No pages yet. Create your first page!",
-    "emptyLinks": "No short links yet. Create your first link!"
+    "emptyLinks": "No short links yet. Create your first link!",
+    "workspace": {
+      "monthlySpending": "Monthly Spending",
+      "monthlySpendingHint": "Upcoming 14d renewals: {amount}",
+      "remindersToday": "Reminders Today",
+      "remindersOverdue": "{count} overdue",
+      "expiringWarranty": "Expiring Warranties",
+      "expiringWarrantyHint": "Within next 30 days",
+      "monitorsHealth": "Uptime Monitors",
+      "monitorsDownHint": "{count} endpoints down",
+      "askAssistant": "Ask AI Assistant"
+    }
   },
   "pages": {
     "title": "My Pages",

@@ -2,11 +2,23 @@
   "navigation": {
     "sections": {
       "overview": "Tổng quan",
+      "workspace": "Cá nhân",
       "utilities": "Tiện ích",
       "finance": "Tài chính",
       "media": "Tệp tin"
     },
     "dashboard": "Tổng quan",
+    "assistant": "Trợ lý AI",
+    "reminders": "Nhắc việc",
+    "subscriptions": "Dịch vụ định kỳ",
+    "subscriptionPayments": "Lịch sử gia hạn",
+    "assets": "Thiết bị & Tài sản",
+    "warrantyClaims": "Phiếu bảo hành",
+    "vault": "Két sắt bí mật",
+    "monitors": "Giám sát Uptime",
+    "monitorIncidents": "Sự cố Uptime",
+    "workspaceSettings": "Cài đặt Trợ lý",
+    "mobileMenu": "Thêm",
     "financeDashboard": "Tổng quan tài chính",
     "financeIncomes": "Thu nhập",
     "financeInvoices": "Hóa đơn",
@@ -74,7 +86,18 @@
     "studioBadge": "Studio Cá Nhân",
     "start": "Bắt đầu",
     "emptyPages": "Chưa có trang nào. Hãy tạo trang đầu tiên của bạn!",
-    "emptyLinks": "Chưa có link rút gọn nào. Hãy tạo link đầu tiên!"
+    "emptyLinks": "Chưa có link rút gọn nào. Hãy tạo link đầu tiên!",
+    "workspace": {
+      "monthlySpending": "Chi tiêu tháng này",
+      "monthlySpendingHint": "Sắp gia hạn 14 ngày: {amount}",
+      "remindersToday": "Nhắc việc hôm nay",
+      "remindersOverdue": "{count} việc quá hạn",
+      "expiringWarranty": "Sắp hết bảo hành",
+      "expiringWarrantyHint": "Trong 30 ngày tới",
+      "monitorsHealth": "Uptime Monitor",
+      "monitorsDownHint": "{count} dịch vụ đang lỗi",
+      "askAssistant": "Hỏi Trợ lý AI"
+    }
   },
   "pages": {
     "title": "Trang của tôi",
