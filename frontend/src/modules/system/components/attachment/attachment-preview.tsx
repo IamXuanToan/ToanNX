@@ -40,12 +40,9 @@ export function AttachmentPreview({
             "transition-transform duration-200",
             contain ? "object-contain" : "object-cover group-hover:scale-105",
           )}
-          // Ảnh riêng tư đi qua API có kiểm quyền: trình duyệt tải trực tiếp, không để Next lưu bản tối ưu công khai.
-          unoptimized={
-            file.visibility === "private" ||
-            file.url.startsWith("data:") ||
-            file.url.startsWith("blob:")
-          }
+          // Ảnh Thư viện do R2 CDN tối ưu và cache dài hạn, hoặc ảnh riêng tư/data/blob:
+          // bỏ qua Vercel Image Optimization để tránh vượt hạn mức 1.000 source images.
+          unoptimized={true}
         />
       ) : file.contentType.startsWith("video/") && !state.failed ? (
         contain ? (

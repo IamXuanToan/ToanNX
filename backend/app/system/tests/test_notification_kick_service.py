@@ -7,7 +7,11 @@ from unittest.mock import MagicMock
 from django.utils import timezone
 
 from app.core.tests.helpers.fake_redis import FakeRedis
-from app.system.services.notification_kick_service import NEXT_DUE_KEY, NotificationKickService
+from app.system.services.notification_kick_service import (
+    IDLE_RECHECK_SECONDS,
+    NEXT_DUE_KEY,
+    NotificationKickService,
+)
 
 
 def _service() -> tuple[NotificationKickService, MagicMock]:
@@ -51,3 +55,34 @@ def test_remember_next_due_in_future(fake_redis: FakeRedis) -> None:
     service, _ = _service()
     service.remember_next_due(timezone.now() + timedelta(minutes=5), service.read_marker())
     assert float(fake_redis.data[NEXT_DUE_KEY]) > time.time() + 200
+
+
+def test_idle_recheck_is_24h_and_preserves_early_retry_and_qstash_failure_fallback(
+    fake_redis: FakeRedis,
+) -> None:
+    """Kiểm chứng điều kiện an toàn khi nâng IDLE_RECHECK_SECONDS lên 24h."""
+    assert IDLE_RECHECK_SECONDS == 24 * 3600
+
+    qstash = MagicMock()
+    qstash.publish.return_value = False  # QStash lỗi không được làm mất mốc
+    service = NotificationKickService(qstash_client=qstash)
+
+    # 1. Idle đặt mốc 24h với TTL 24h
+    service.remember_next_due(None, service.read_marker())
+    idle_marker = float(fake_redis.data[NEXT_DUE_KEY])
+    assert idle_marker > time.time() + 23 * 3600
+    assert not service.has_due_work()
+
+    # 2. Khi notify() kích ngay cả lúc QStash publish thất bại -> mốc vẫn bị hạ <= now
+    service.kick(0)
+    assert service.has_due_work()
+
+    # 3. Retry sau 5 phút không bị chặn bởi idle 24h
+    service.remember_next_due(timezone.now() + timedelta(minutes=5), service.read_marker())
+    retry_marker = float(fake_redis.data[NEXT_DUE_KEY])
+    assert time.time() + 200 < retry_marker < time.time() + 400
+    assert not service.has_due_work()
+
+    # 4. Khi hết TTL hoặc key bị xóa khỏi Redis -> has_due_work() về True ngay không trễ
+    fake_redis.delete(NEXT_DUE_KEY)
+    assert service.has_due_work()

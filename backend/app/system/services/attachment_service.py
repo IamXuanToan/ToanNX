@@ -20,6 +20,10 @@ from app.core.services.core_crud_service import CoreCrudService
 from app.core.storage.r2_usage_service import R2UsageService
 from app.system.constants.attachment_error_code import AttachmentErrorCode
 from app.system.constants.notification_defaults import STORAGE_WARNING_PERCENT
+from app.system.constants.storage_cache import (
+    STORAGE_USAGE_CACHE_KEY,
+    STORAGE_USAGE_CACHE_TTL_SECONDS,
+)
 from app.system.constants.system_notification_event import SystemNotificationEvent
 from app.system.models.attachment import Attachment
 from app.system.permissions.attachment_permission import AttachmentPermission
@@ -93,16 +97,34 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
             ),
         )
 
-    def get_current_storage_usage_bytes(self) -> int:
-        """Lấy tổng dung lượng lưu trữ hiện tại.
+    def invalidate_storage_usage_cache(self) -> None:
+        """Xóa cache thống kê dung lượng R2 sau commit khi file thay đổi (upload/xóa/purge/chuyển kho)."""
+        if self.cache_service.enabled:
+            transaction.on_commit(lambda: self.cache_service.delete(STORAGE_USAGE_CACHE_KEY))
 
-        Ưu tiên:
-        1. Gọi trực tiếp Cloudflare R2 Usage API nếu có cấu hình `CLOUDFLARE_API_TOKEN`.
-        2. Fallback về tổng dung lượng của các tệp vật lý chưa bị purged (purged_at IS NULL).
+    def get_current_storage_usage_bytes(self, *, use_cache: bool = True) -> int:
+        """Lấy tổng dung lượng lưu trữ hiện tại (hỗ trợ cache Redis 300s cho đọc thống kê).
+
+        - `use_cache=True` (mặc định, dùng cho hiển thị/cảnh báo): đọc Redis TTL 300s trước khi gọi
+          Cloudflare R2 API / fallback DB; lỗi Redis tự fallback nguồn gốc.
+        - `use_cache=False` (dùng khi kiểm tra quota upload thật): bỏ qua cache cũ để không vượt
+          hạn mức lưu trữ, đồng thời làm mới cache sau khi tính xong.
 
         Returns:
             Số bytes nguyên.
         """
+        if use_cache and self.cache_service.enabled:
+            cached = self.cache_service.get_json(STORAGE_USAGE_CACHE_KEY)
+            if isinstance(cached, int) and not isinstance(cached, bool) and cached >= 0:
+                return cached
+
+        total = self._measure_storage_usage_bytes()
+        if self.cache_service.enabled:
+            self.cache_service.set_json(STORAGE_USAGE_CACHE_KEY, total, STORAGE_USAGE_CACHE_TTL_SECONDS)
+        return total
+
+    def _measure_storage_usage_bytes(self) -> int:
+        """Đo trực tiếp tổng dung lượng từ Cloudflare R2 API (fallback tổng DB nếu API lỗi/chưa bật)."""
         public_usage = self.r2_usage_service.get_bucket_usage_bytes()
         if public_usage is None:
             # Không đo được bucket công khai: tổng DB của cả hai chế độ (công khai + riêng tư).
@@ -190,10 +212,10 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
                 raise ValidationError(problem, details={"file": [problem]})
 
         # ============================================================
-        # BƯỚC 2: Kiểm tra tổng dung lượng lưu trữ hệ thống (Storage Quota)
+        # BƯỚC 2: Kiểm tra tổng dung lượng lưu trữ hệ thống (đo tươi, không dùng cache)
         # ============================================================
         file_size = upload.size or 0
-        current_total = self.get_current_storage_usage_bytes()
+        current_total = self.get_current_storage_usage_bytes(use_cache=False)
         self._warn_quota(current_total + file_size)
         if current_total + file_size > settings.ATTACHMENT_MAX_TOTAL_STORAGE_BYTES:
             max_gb = round(settings.ATTACHMENT_MAX_TOTAL_STORAGE_BYTES / (1024 * 1024 * 1024), 2)
@@ -214,7 +236,7 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         upload.seek(0)
         stored_name = self.storage_service.save_upload(visibility, upload)
         try:
-            return self.repository.create(
+            created = self.repository.create(
                 actor=actor,
                 file=stored_name,
                 visibility=visibility,
@@ -228,6 +250,8 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         except Exception:
             self.storage_service.delete(visibility, stored_name)
             raise
+        self.invalidate_storage_usage_cache()
+        return created
 
     def find_alive_images(self, ids: Any) -> dict[str, Attachment]:
         """Ảnh còn tồn tại theo id (một query), dùng khi dựng nội dung công khai.
@@ -324,6 +348,7 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
                 self.storage_service.delete(visibility, new_name)
                 raise
             transaction.on_commit(lambda: self.storage_service.delete(source_visibility, old_name))
+            self.invalidate_storage_usage_cache()
         return updated
 
     # ==================================================================
@@ -358,6 +383,7 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         self.repository.delete(instance, actor=actor)
         self.repository.mark_purged([instance.pk], timezone.now())
         self.storage_service.delete(visibility, file_name)
+        self.invalidate_storage_usage_cache()
 
     @transaction.atomic
     def replace_content(self, actor: Any, attachment_id: Any, content: bytes, name: str) -> Attachment:
@@ -390,6 +416,7 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
         )
         if old_file_name and old_file_name != stored_name:
             self.storage_service.delete(updated.visibility, old_file_name)
+        self.invalidate_storage_usage_cache()
         return updated
 
     @transaction.atomic
@@ -406,6 +433,7 @@ class AttachmentService(CoreCrudService[Attachment, AttachmentRepository]):
             self.repository.delete(attachment, actor=actor)
             self.repository.mark_purged([attachment.pk], timezone.now())
             self.storage_service.delete(attachment.visibility, file_name)
+            self.invalidate_storage_usage_cache()
 
     @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> Attachment:

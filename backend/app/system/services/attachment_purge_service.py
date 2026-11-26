@@ -14,6 +14,8 @@ from django.conf import settings
 from django.core.files.storage import Storage
 from django.utils import timezone
 
+from app.core.cache.cache_service import CacheService
+from app.system.constants.storage_cache import STORAGE_USAGE_CACHE_KEY
 from app.system.models.attachment import Attachment
 from app.system.repositories.attachment_repository import AttachmentRepository
 from app.system.services.attachment_storage_service import AttachmentStorageService
@@ -29,24 +31,30 @@ class AttachmentPurgeService:
         self,
         repository: AttachmentRepository | None = None,
         storage_service: AttachmentStorageService | None = None,
+        cache_service: CacheService | None = None,
     ) -> None:
         """Khởi tạo service.
 
         Args:
             repository: Repository file đính kèm.
             storage_service: Chọn kho theo chế độ xem.
+            cache_service: Cache Redis dung lượng R2.
         """
         self.repository = repository or AttachmentRepository()
         self.storage_service = storage_service or AttachmentStorageService()
+        self.cache_service = cache_service or CacheService()
 
     def purge(self) -> int:
-        """Chạy cả hai bước dọn.
+        """Chạy cả hai bước dọn và xóa cache dung lượng R2 nếu có file bị xóa.
 
         Returns:
             Số file đã xóa khỏi storage.
         """
         before = timezone.now() - timedelta(days=settings.ATTACHMENT_PURGE_DAYS)
-        return self.purge_deleted(before) + self.purge_orphans(before)
+        removed = self.purge_deleted(before) + self.purge_orphans(before)
+        if removed > 0 and self.cache_service.enabled:
+            self.cache_service.delete(STORAGE_USAGE_CACHE_KEY)
+        return removed
 
     def purge_deleted(self, before: Any) -> int:
         """Xóa file của tệp đã xóa mềm trước mốc, theo lô.

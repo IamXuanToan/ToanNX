@@ -63,6 +63,7 @@ export function NovelTable({
                 alt={novel.title}
                 fill
                 sizes="40px"
+                unoptimized
                 className="object-cover"
               />
             </div>

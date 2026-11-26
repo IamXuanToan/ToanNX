@@ -18,3 +18,4 @@ Header công khai và các thành phần trang chủ nằm ở `components/`.
 
 - Trang công khai không kiểm quyền; không import gì từ `manage-app`.
 - Metadata qua `createPageMetadata` (`shares/lib/seo.ts`).
+- Widget thời tiết trang chủ (`useWeatherWidget` + `WeatherStore`) cache kết quả Open-Meteo **`15 phút`** (`900s`) qua Zustand `persist` vào `localStorage` (`home_weather_cache`) để tải lại trang (F5) không gọi trùng API.

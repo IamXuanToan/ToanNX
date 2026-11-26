@@ -10,6 +10,8 @@ import {
   LEGACY_WEATHER_CACHE_KEYS,
   WEATHER_LOCATION_STORAGE_KEY,
   WEATHER_LOCATIONS,
+  WEATHER_QUERY_CURRENT_FIELDS,
+  WEATHER_QUERY_DAILY_FIELDS,
 } from "../../../constants/weather-config";
 import {
   detectRainIntensity,
@@ -73,13 +75,15 @@ export function useWeatherWidget({
   const [selectedEffect, setSelectedEffect] = useState<WeatherEffectType>("auto");
   const [rainIntensity, setRainIntensity] = useState<RainIntensityType>("medium");
   const [windMultiplier, setWindMultiplier] = useState<number>(1);
-  const { isUpdating, setIsUpdating, getCachedWeather, setCachedWeather } = useWeatherStore();
+  const { isUpdating, setIsUpdating, getCachedWeather, setCachedWeather, clearCache } =
+    useWeatherStore();
+  const [hasHydrated, setHasHydrated] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState<{ force: boolean; count: number }>({
     force: false,
     count: 0,
   });
 
-  // Dọn dẹp key cache cũ trong LocalStorage nếu còn sót lại
+  // Khởi tạo rehydrate từ LocalStorage sau SSR và dọn key cache cũ
   useEffect(() => {
     try {
       for (const cacheKey of LEGACY_WEATHER_CACHE_KEYS) {
@@ -88,6 +92,9 @@ export function useWeatherWidget({
     } catch {
       // bỏ qua
     }
+    Promise.resolve(useWeatherStore.persist.rehydrate())
+      .catch(() => undefined)
+      .finally(() => setHasHydrated(true));
   }, []);
 
   // Xác định trạng thái ngày/đêm hiệu lực: khi chọn "night", bắt buộc là ban đêm
@@ -97,14 +104,17 @@ export function useWeatherWidget({
   // Sử dụng effectiveIsDay để widget phản ánh ngay trạng thái theme khi người dùng chọn hiệu ứng
   const isDay = parentIsDay && effectiveIsDay;
 
-  // Fetch dữ liệu thời tiết chi tiết từ Open-Meteo API kèm cache LocalStorage 3 phút
+  // Fetch dữ liệu thời tiết chi tiết từ Open-Meteo API kèm cache LocalStorage 15 phút qua Zustand persist
   useEffect(() => {
+    if (!hasHydrated) return;
+
     const loc = WEATHER_LOCATIONS[selectedLocation];
+    const querySignature = `${loc.lat}:${loc.lon}:${WEATHER_QUERY_CURRENT_FIELDS}:${WEATHER_QUERY_DAILY_FIELDS}:${DEFAULT_TIMEZONE}`;
     let isCancelled = false;
 
     const loadWeather = async () => {
       if (!refreshTrigger.force) {
-        const cached = getCachedWeather(selectedLocation);
+        const cached = getCachedWeather(selectedLocation, querySignature);
         if (cached) {
           if (!isCancelled) {
             setLiveWeatherData({
@@ -120,12 +130,13 @@ export function useWeatherWidget({
           }
           return;
         }
+        clearCache(selectedLocation);
       }
 
       setIsUpdating(true);
       try {
         const res = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_gusts_10m&daily=sunrise,sunset&timezone=${encodeURIComponent(DEFAULT_TIMEZONE)}`,
+          `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=${WEATHER_QUERY_CURRENT_FIELDS}&daily=${WEATHER_QUERY_DAILY_FIELDS}&timezone=${encodeURIComponent(DEFAULT_TIMEZONE)}`,
         );
 
         if (!res.ok) throw new Error("Network error");
@@ -174,7 +185,7 @@ export function useWeatherWidget({
         if (!isCancelled) {
           setLiveWeatherData(parsedData);
           setRainIntensity(calculatedRainIntensity);
-          setCachedWeather(selectedLocation, parsedData);
+          setCachedWeather(selectedLocation, parsedData, querySignature);
         }
       } catch {
         if (!isCancelled) {
@@ -203,7 +214,15 @@ export function useWeatherWidget({
     return () => {
       isCancelled = true;
     };
-  }, [selectedLocation, refreshTrigger, getCachedWeather, setCachedWeather, setIsUpdating]);
+  }, [
+    hasHydrated,
+    selectedLocation,
+    refreshTrigger,
+    getCachedWeather,
+    setCachedWeather,
+    clearCache,
+    setIsUpdating,
+  ]);
 
   // Cập nhật tự động khi thời gian hệ thống vượt mốc bình minh/hoàng hôn mà không cần tải lại API
   useEffect(() => {

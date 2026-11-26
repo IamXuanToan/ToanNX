@@ -90,6 +90,7 @@ export function NovelDetail({ slug }: { slug: string }) {
               alt={novel.title}
               fill
               sizes="(max-width: 768px) 100vw, 256px"
+              unoptimized
               className="object-cover"
               priority
             />

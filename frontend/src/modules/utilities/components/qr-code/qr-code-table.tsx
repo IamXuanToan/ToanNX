@@ -64,6 +64,7 @@ export function QrCodeTable({
               alt={code.name}
               fill
               sizes="40px"
+              unoptimized
               className="object-contain p-0.5"
             />
           </div>

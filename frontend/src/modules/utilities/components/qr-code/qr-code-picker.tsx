@@ -73,6 +73,7 @@ export function QrCodePicker({
                     alt={code.name}
                     fill
                     sizes="(max-width: 640px) 50vw, 25vw"
+                    unoptimized
                     className="object-contain p-1"
                   />
                 </div>

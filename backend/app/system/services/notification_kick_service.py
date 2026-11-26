@@ -19,8 +19,10 @@ from app.system.services.qstash_client import QstashClient
 
 DISPATCH_PATH = "/api/v1/system/notifications/dispatch"
 NEXT_DUE_KEY = "notification:next_due"
-# Không còn việc thì vẫn kiểm DB một lần mỗi khoảng này (lưới an toàn khi mốc bị ghi đè sai).
-IDLE_RECHECK_SECONDS = 6 * 3600
+# Không còn việc thì vẫn kiểm DB một lần mỗi 24h (lưới an toàn khi Redis mất mốc/lệch).
+# Đã xác minh an toàn vì: notify() và retry đều hạ mốc ngay (trước khi publish QStash),
+# cron 10 phút kiểm DB ngay khi marker <= now hoặc khi key hết hạn TTL (24h).
+IDLE_RECHECK_SECONDS = 24 * 3600
 
 
 class NotificationKickService:

@@ -1,14 +1,19 @@
 // @vitest-environment jsdom
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_TIMEZONE } from "@/shares/constants/locale";
 import { WeatherWidget } from "@/modules/home/components/landing/weather-widget";
 import {
+  WEATHER_CACHE_STORAGE_KEY,
+  WEATHER_CACHE_TTL_MS,
+} from "@/modules/home/constants/weather-config";
+import {
   getTimezoneClockMinutes,
   isDaytimeBySchedule,
   parseClockMinutes,
 } from "@/modules/home/lib/weather-detection";
+import { useWeatherStore } from "@/modules/home/store/weather-store";
 
 vi.mock("next-intl", () => ({
   useLocale: () => "vi",
@@ -18,9 +23,11 @@ vi.mock("next-intl", () => ({
 describe("Logic thời tiết, bình minh & hoàng hôn trang Home", () => {
   beforeEach(() => {
     localStorage.clear();
+    useWeatherStore.getState().clearCache();
   });
 
   afterEach(() => {
+    cleanup();
     vi.restoreAllMocks();
   });
 
@@ -84,6 +91,76 @@ describe("Logic thời tiết, bình minh & hoàng hôn trang Home", () => {
           sunset: "17:12",
         }),
       );
+    });
+  });
+
+  it("persist cache 15 phút vào localStorage, đọc lại khi F5 và vẫn cho phép bấm nút làm mới", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        current: {
+          temperature_2m: 29,
+          apparent_temperature: 32,
+          relative_humidity_2m: 72,
+          is_day: 1,
+          precipitation: 0,
+          weather_code: 1,
+          cloud_cover: 20,
+          surface_pressure: 1014,
+          wind_speed_10m: 11,
+          wind_gusts_10m: 18,
+        },
+        daily: {
+          sunrise: ["2026-11-26T05:51"],
+          sunset: ["2026-11-26T17:18"],
+        },
+      }),
+    } as Response);
+
+    const onWeatherChange = vi.fn();
+    const view1 = render(<WeatherWidget onWeatherChange={onWeatherChange} isDay />);
+    await waitFor(() => {
+      expect(screen.getByText("05:51")).toBeTruthy();
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const rawStored = localStorage.getItem(WEATHER_CACHE_STORAGE_KEY);
+    expect(rawStored).toBeTruthy();
+    expect(rawStored).toContain("queryKey");
+    expect(rawStored).not.toMatch(/token|secret|password/i);
+
+    // Mô phỏng F5 reload (xóa store in-memory nhưng giữ nguyên localStorage đã persist)
+    view1.unmount();
+    useWeatherStore.setState({ cache: {} });
+    if (rawStored) localStorage.setItem(WEATHER_CACHE_STORAGE_KEY, rawStored);
+
+    render(<WeatherWidget onWeatherChange={onWeatherChange} isDay />);
+    await waitFor(() => {
+      expect(screen.getByText("05:51")).toBeTruthy();
+    });
+    // Dùng lại cache từ localStorage -> 0 lượt fetch thêm!
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    // Bấm nút làm mới thủ công -> bỏ qua cache, gọi fetch mới
+    const reloadButton = screen.getByTitle("weather.reload");
+    fireEvent.click(reloadButton);
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    // Giả lập cache quá hạn 15 phút -> tự gọi fetch lại khi re-mount
+    const storedObj = JSON.parse(localStorage.getItem(WEATHER_CACHE_STORAGE_KEY) ?? "{}") as {
+      state?: { cache?: Record<string, { timestamp?: number }> };
+    };
+    if (storedObj.state?.cache?.danang) {
+      storedObj.state.cache.danang.timestamp = Date.now() - WEATHER_CACHE_TTL_MS - 1000;
+      localStorage.setItem(WEATHER_CACHE_STORAGE_KEY, JSON.stringify(storedObj));
+    }
+    cleanup();
+    useWeatherStore.setState({ cache: {} });
+    render(<WeatherWidget onWeatherChange={onWeatherChange} isDay />);
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(3);
     });
   });
 });

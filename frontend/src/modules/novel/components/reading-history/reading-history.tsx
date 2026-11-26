@@ -115,6 +115,8 @@ export function ReadingHistory() {
                       src={item.novelThumbnail.url}
                       alt={item.novelTitle}
                       fill
+                      sizes="48px"
+                      unoptimized
                       className="object-cover"
                     />
                   ) : (

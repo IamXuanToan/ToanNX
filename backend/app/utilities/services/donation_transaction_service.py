@@ -22,7 +22,12 @@ from app.core.services.core_crud_service import CoreCrudService
 from app.core.utils.csv_safety import sanitize_csv_row
 from app.finance.services.income_service import IncomeService
 from app.finance.utils.vn_time import parse_sepay_datetime
-from app.utilities.constants.donation_constants import DEFAULT_TIER_EXPIRY_DAYS
+from app.utilities.constants.donation_constants import (
+    DEFAULT_TIER_EXPIRY_DAYS,
+    DONATION_DEFAULT_LEADERBOARD_LIMIT,
+    DONATION_MISSING_PAGE_CACHE_TTL_SECONDS,
+)
+from app.utilities.constants.public_cache import PUBLIC_CACHE_NAMESPACE, PUBLIC_CACHE_TTL_SECONDS
 from app.utilities.models.donation_transaction import DonationTransaction
 from app.utilities.models.page import Page
 from app.utilities.permissions.donation_permission import DonationPermission
@@ -40,6 +45,7 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
     repository_class = DonationTransactionRepository
     owner_field = "owner"
     manage_all_permission = DonationPermission.MANAGE_ALL.code
+    public_cache_namespace = PUBLIC_CACHE_NAMESPACE
 
     def __init__(
         self,
@@ -163,6 +169,7 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
         )
 
         self._sync_to_finance_income(donation)
+        self.invalidate_public_cache()
         return donation, True
 
     def _sync_to_finance_income(self, donation: DonationTransaction) -> None:
@@ -180,9 +187,23 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
             logger.warning("Lỗi đồng bộ giao dịch quyên góp sang thu nhập tài chính: %s", exc)
 
     def list_public_feed(self, page_id: Any, limit: int = 20, page: int = 1) -> list[dict[str, Any]]:
-        """Lấy danh sách các lượt ủng hộ công khai cho trang Donate (hỗ trợ phân trang cuộn)."""
+        """Lấy danh sách các lượt ủng hộ công khai cho trang Donate (Redis TTL 600s)."""
+        safe_page = max(1, int(page))
+        safe_limit = max(1, int(limit))
+        version = self.cache_service.namespace_version(PUBLIC_CACHE_NAMESPACE)
+        cache_key = (
+            None
+            if version is None
+            else f"{PUBLIC_CACHE_NAMESPACE}:{version}:donation_feed:{page_id}:p{safe_page}:l{safe_limit}"
+        )
+        cached = self.cache_service.get_json(cache_key) if cache_key else None
+        if isinstance(cached, list):
+            return cached
+
         page_obj = self.page_repository.find_published_by_id(page_id)
         if not page_obj:
+            if cache_key:
+                self.cache_service.set_json(cache_key, [], DONATION_MISSING_PAGE_CACHE_TTL_SECONDS)
             return []
 
         # Kiểm tra cờ ẩn số tiền của cấp trang hoặc của từng mã QR
@@ -197,8 +218,8 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
                     any_qr_hidden = True
                     hidden_amount_qr_ids.add(str(q.get("id") or ""))
 
-        offset = max(0, (page - 1) * limit)
-        transactions = self.repository.list_public_feed_for_page(page_id, offset, limit)
+        offset = max(0, (safe_page - 1) * safe_limit)
+        transactions = self.repository.list_public_feed_for_page(page_id, offset, safe_limit)
 
         results = []
         for tx in transactions:
@@ -218,12 +239,24 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
                 }
             )
 
+        if cache_key:
+            self.cache_service.set_json(cache_key, results, PUBLIC_CACHE_TTL_SECONDS)
         return results
 
     def list_public_leaderboard(self, page_id: Any) -> list[dict[str, Any]]:
-        """Lấy danh sách Bảng Vinh danh (Đồng, Bạc, Vàng) còn hiệu lực đếm ngược."""
+        """Lấy danh sách Bảng Vinh danh (Đồng, Bạc, Vàng) còn hiệu lực đếm ngược (Redis TTL 600s)."""
+        version = self.cache_service.namespace_version(PUBLIC_CACHE_NAMESPACE)
+        cache_key = (
+            None if version is None else f"{PUBLIC_CACHE_NAMESPACE}:{version}:donation_leaderboard:{page_id}"
+        )
+        cached = self.cache_service.get_json(cache_key) if cache_key else None
+        if isinstance(cached, list):
+            return cached
+
         page_obj = self.page_repository.find_published_by_id(page_id)
         if not page_obj:
+            if cache_key:
+                self.cache_service.set_json(cache_key, [], DONATION_MISSING_PAGE_CACHE_TTL_SECONDS)
             return []
         config = page_obj.content_config or {}
         is_page_hidden = bool(config.get("hideAmount") or config.get("hide_amount"))
@@ -237,10 +270,17 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
                     hidden_amount_qr_ids.add(str(q.get("id") or ""))
 
         now = timezone.now()
-        transactions = self.repository.list_public_leaderboard_for_page(page_id, now, 30)
+        transactions = self.repository.list_public_leaderboard_for_page(
+            page_id, now, DONATION_DEFAULT_LEADERBOARD_LIMIT
+        )
 
         results = []
+        ttl = PUBLIC_CACHE_TTL_SECONDS
         for tx in transactions:
+            if tx.tier_expires_at is not None:
+                remaining = int((tx.tier_expires_at - now).total_seconds())
+                if remaining > 0:
+                    ttl = min(ttl, remaining)
             hide_amount = is_page_hidden or (tx.qr_item_id in hidden_amount_qr_ids) or any_qr_hidden
             results.append(
                 {
@@ -256,14 +296,24 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
                 }
             )
 
+        if cache_key:
+            self.cache_service.set_json(cache_key, results, max(1, ttl))
         return results
 
+    @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> DonationTransaction:
-        """Chỉ cho phép cập nhật cờ is_hidden của giao dịch quyên góp."""
-        donation = self.get_by_id_for(actor, pk)
+        """Chỉ cho phép cập nhật cờ is_hidden/is_censored của giao dịch và xóa cache công khai sau commit."""
+        donation = self.get_for_write(actor, pk)
+        update_fields: dict[str, Any] = {}
         if "is_hidden" in data:
-            return self.repository.update(donation, actor=actor, is_hidden=bool(data["is_hidden"]))
-        return donation
+            update_fields["is_hidden"] = bool(data["is_hidden"])
+        if "is_censored" in data:
+            update_fields["is_censored"] = bool(data["is_censored"])
+        if not update_fields:
+            return donation
+        updated = self.repository.update(donation, actor=actor, **update_fields)
+        self.invalidate_public_cache()
+        return updated
 
     def toggle_hidden(self, actor: Any, pk: Any, is_hidden: bool) -> DonationTransaction:
         """Chủ trang hoặc Admin có quyền MANAGE_ALL ẩn/hiện bình luận."""

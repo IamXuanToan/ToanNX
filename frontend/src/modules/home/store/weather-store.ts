@@ -1,4 +1,7 @@
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+
+import { WEATHER_CACHE_STORAGE_KEY, WEATHER_CACHE_TTL_MS } from "../constants/weather-config";
 
 export type LocationKey = "danang" | "quangtri";
 
@@ -94,52 +97,77 @@ export function getMoonPhaseDetails(phase: number): MoonPhaseInfo {
 export interface WeatherCacheItem {
   data: WeatherData;
   timestamp: number;
+  queryKey?: string;
 }
 
 interface WeatherStoreState {
   cache: Partial<Record<LocationKey, WeatherCacheItem>>;
   isUpdating: boolean;
-  setCachedWeather: (location: LocationKey, data: WeatherData) => void;
-  getCachedWeather: (location: LocationKey, maxAgeMs?: number) => WeatherData | null;
+  setCachedWeather: (location: LocationKey, data: WeatherData, queryKey?: string) => void;
+  getCachedWeather: (
+    location: LocationKey,
+    queryKey?: string,
+    maxAgeMs?: number,
+  ) => WeatherData | null;
   setIsUpdating: (isUpdating: boolean) => void;
   clearCache: (location?: LocationKey) => void;
 }
 
-export const CACHE_TTL_MS = 3 * 60 * 1000; // 3 phút
+export const CACHE_TTL_MS = WEATHER_CACHE_TTL_MS;
+
+const noopStorage = {
+  getItem: () => null,
+  setItem: () => undefined,
+  removeItem: () => undefined,
+};
 
 /**
- * Zustand store lưu trữ dữ liệu thời tiết và cache in-memory 3 phút.
- * Khi người dùng reload/F5 trình duyệt, cache in-memory tự động được xóa để cho phép gọi API lấy dữ liệu mới nhất.
+ * Zustand store lưu trữ dữ liệu thời tiết qua `persist` (`localStorage`, TTL 15 phút).
+ * Dùng `skipHydration` để HTML SSR/client pass đầu tiên đồng bộ hoàn toàn trước khi đọc LocalStorage.
  */
-export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
-  cache: {},
-  isUpdating: false,
-  setCachedWeather: (location, data) =>
-    set((state) => ({
-      cache: {
-        ...state.cache,
-        [location]: {
-          data,
-          timestamp: Date.now(),
-        },
+export const useWeatherStore = create<WeatherStoreState>()(
+  persist(
+    (set, get) => ({
+      cache: {},
+      isUpdating: false,
+      setCachedWeather: (location, data, queryKey) =>
+        set((state) => ({
+          cache: {
+            ...state.cache,
+            [location]: {
+              data,
+              timestamp: Date.now(),
+              queryKey,
+            },
+          },
+        })),
+      getCachedWeather: (location, queryKey, maxAgeMs = CACHE_TTL_MS) => {
+        const item = get().cache[location];
+        if (!item) return null;
+        if (queryKey && item.queryKey !== queryKey) return null;
+        if (Date.now() - item.timestamp < maxAgeMs) {
+          return item.data;
+        }
+        return null;
       },
-    })),
-  getCachedWeather: (location, maxAgeMs = CACHE_TTL_MS) => {
-    const item = get().cache[location];
-    if (!item) return null;
-    if (Date.now() - item.timestamp < maxAgeMs) {
-      return item.data;
-    }
-    return null;
-  },
-  setIsUpdating: (isUpdating) => set({ isUpdating }),
-  clearCache: (location) =>
-    set((state) => {
-      if (location) {
-        const next = { ...state.cache };
-        delete next[location];
-        return { cache: next };
-      }
-      return { cache: {} };
+      setIsUpdating: (isUpdating) => set({ isUpdating }),
+      clearCache: (location) =>
+        set((state) => {
+          if (location) {
+            const next = { ...state.cache };
+            delete next[location];
+            return { cache: next };
+          }
+          return { cache: {} };
+        }),
     }),
-}));
+    {
+      name: WEATHER_CACHE_STORAGE_KEY,
+      storage: createJSONStorage(() =>
+        typeof window === "undefined" ? noopStorage : window.localStorage,
+      ),
+      partialize: (state) => ({ cache: state.cache }),
+      skipHydration: true,
+    },
+  ),
+);

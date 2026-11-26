@@ -48,13 +48,16 @@ Mỗi phía (`backend/`, `frontend/`) có ba file; chỉ `.env.example` được
   `Authorization: Bearer <CRON_SECRET>`. Cron chạy mọi `cleanup_tasks` của module: phiên/token/bucket hết hạn,
   journal quá `JOURNAL_RETENTION_DAYS`, file của tệp đã xóa mềm và file mồ côi quá `ATTACHMENT_PURGE_DAYS`,
   gửi nốt thông báo (`dispatch_notifications`), dọn thông báo cũ (`purge_notifications`).
+- Health check ngoài (cấu hình ngoài repo): gọi `GET /api/v1/system/health` **mỗi 10 phút** (0 SQL, 0 Redis); chỉ gọi `/api/v1/system/health/ready` để kiểm kết nối DB sau deploy hoặc theo sự kiện.
+- Workspace Cron (`cron-job.org` kèm `Authorization: Bearer <CRON_SECRET>`): `POST /api/v1/workspace/cron/tick` **mỗi 15 phút** (đã cấu hình ngoài — kiểm tra Uptime Monitor chỉ chạm Redis 0 SQL khi rảnh và đọc mốc W4 `workspace:alerts_next_due`). Endpoint `POST /api/v1/workspace/cron/dispatch-due` **chạy qua QStash theo sự kiện** khi có lịch nhắc/cảnh báo/digest sắp tới (không cấu hình cron định kỳ 15 phút để Neon Scale-to-Zero).
+- Bot Telegram chung & AI (`backend/.env`): cấu hình `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_BOT_WEBHOOK_SECRET` (tùy chọn), `XKIRO_API_BASE`, `XKIRO_API_KEY`, `XKIRO_MODEL`, `XKIRO_FALLBACK_MODELS`, `XKIRO_TIMEOUT_SECONDS`, `XKIRO_COOLDOWN_SECONDS`.
 - **Cron gửi thông báo** (Vercel Cron chỉ 1 lần/ngày): tạo job miễn phí ở cron-job.org gọi
   `POST https://api.toannx.com/api/v1/system/notifications/dispatch` **mỗi 10 phút** (lưới an toàn; QStash gửi ngay), header
   `Authorization: Bearer <CRON_SECRET>`. Xem [notification-setup-guide.md](notification-setup.md).
 - **Webhook SePay theo từng người**: mỗi người dùng tự cấu hình ở Tài chính → Kết nối SePay (token API lưu DB mã
   hóa, URL `https://api.toannx.com/api/v1/finance/sepay/webhook/<mã riêng>`, secret riêng). Không còn biến env
   token/secret SePay. Xem [finance-setup-guide.md](finance-setup.md).
-- **Đổi `DJANGO_SECRET_KEY`** làm mất hiệu lực token SePay, token bot Telegram (mã hóa bằng khóa dẫn xuất) và secret
+- **Đổi `DJANGO_SECRET_KEY`** làm mất hiệu lực token SePay, mục Két sắt `VaultItem` (mã hóa bằng `SecretCipher`), webhook secret dẫn xuất và secret
   webhook SePay (dẫn xuất): mọi người phải nhập lại token và dán secret mới vào SePay.
 
 Biến môi trường (Vercel → Settings → Environment Variables):

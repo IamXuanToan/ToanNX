@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NextIntlClientProvider } from "next-intl";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
@@ -7,6 +7,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import commonEn from "@/messages/en.json";
 import commonVi from "@/messages/vi.json";
 import { DonationPublicFeed } from "@/modules/utilities/components/page/donation-public-feed";
+import { UTILITIES_POLLING_MS } from "@/modules/utilities/constants/polling";
 import utilitiesEn from "@/modules/utilities/messages/en.json";
 import utilitiesVi from "@/modules/utilities/messages/vi.json";
 
@@ -112,5 +113,98 @@ describe("DonationPublicFeed", () => {
     expect(screen.queryByText(/Thanks:/i)).toBeNull();
     expect(screen.getByRole("tab", { name: /Leaderboard/i })).toBeTruthy();
     expect(screen.getByRole("tab", { name: /Recent Donations/i })).toBeTruthy();
+  });
+
+  it("tuân thủ chu kỳ polling 60s/120s theo tab đang mở và tạm dừng khi ẩn tab trình duyệt", async () => {
+    vi.useFakeTimers({
+      toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval", "Date"],
+    });
+    try {
+      mockGetPublicLeaderboard.mockResolvedValue([
+        {
+          id: "lb-poll",
+          donorTitle: "Khách ủng hộ",
+          amount: 200000,
+          hideAmount: false,
+          giftLabel: "Cà phê",
+          tier: "SILVER",
+          tierExpiresAt: new Date(Date.now() + 86_400_000).toISOString(),
+          message: "Cố lên",
+          receivedAt: new Date().toISOString(),
+        },
+      ]);
+      mockGetPublicFeed.mockResolvedValue([
+        {
+          id: "feed-poll",
+          donorTitle: "Bạn dev",
+          amount: 50000,
+          hideAmount: false,
+          giftType: "COFFEE",
+          giftLabel: "1 ly cà phê",
+          tier: "NORMAL",
+          tierExpiresAt: null,
+          message: "Chúc vui",
+          receivedAt: new Date().toISOString(),
+        },
+      ]);
+
+      renderFeed({ locale: "vi", pageId: "page-poll" });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10);
+      });
+      // Mount ban đầu tải cả hai một lần; tab Leaderboard đang mở -> Feed không poll ở mốc 60s
+      expect(mockGetPublicLeaderboard).toHaveBeenCalledTimes(1);
+      expect(mockGetPublicFeed).toHaveBeenCalledTimes(1);
+
+      // Ở 60s: tab đang mở là Leaderboard -> cả Leaderboard (120s) lẫn Feed (đang ở tab ẩn) đều chưa poll
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(60_000);
+      });
+      expect(mockGetPublicLeaderboard).toHaveBeenCalledTimes(1);
+      expect(mockGetPublicFeed).toHaveBeenCalledTimes(1);
+
+      // Đủ 120s: Leaderboard poll lần 2; Feed vẫn không poll khi đang ở tab Leaderboard
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(UTILITIES_POLLING_MS.donationLeaderboard - 60_000 + 100);
+      });
+      expect(mockGetPublicLeaderboard).toHaveBeenCalledTimes(2);
+      expect(mockGetPublicFeed).toHaveBeenCalledTimes(1);
+
+      // Chuyển sang tab Ủng hộ gần đây -> Feed bắt đầu poll theo chu kỳ 60s (không phải 20s)
+      const recentTab = screen.getByRole("tab", { name: /Ủng hộ gần đây/i });
+      fireEvent.mouseDown(recentTab);
+      fireEvent.click(recentTab);
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10);
+      });
+      const feedCallsAfterSwitch = mockGetPublicFeed.mock.calls.length;
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(20_000);
+      });
+      expect(mockGetPublicFeed).toHaveBeenCalledTimes(feedCallsAfterSwitch);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(UTILITIES_POLLING_MS.donationFeed - 20_000 + 100);
+      });
+      expect(mockGetPublicFeed).toHaveBeenCalledTimes(feedCallsAfterSwitch + 1);
+      // Khi đang ở tab Ủng hộ gần đây, Leaderboard không còn tự poll nữa
+      expect(mockGetPublicLeaderboard).toHaveBeenCalledTimes(2);
+
+      // Ẩn tab trình duyệt -> dừng toàn bộ polling
+      Object.defineProperty(document, "visibilityState", { value: "hidden", configurable: true });
+      act(() => {
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(3 * 60_000);
+      });
+      expect(mockGetPublicFeed).toHaveBeenCalledTimes(feedCallsAfterSwitch + 1);
+      expect(mockGetPublicLeaderboard).toHaveBeenCalledTimes(2);
+    } finally {
+      Object.defineProperty(document, "visibilityState", { value: "visible", configurable: true });
+      vi.useRealTimers();
+    }
   });
 });

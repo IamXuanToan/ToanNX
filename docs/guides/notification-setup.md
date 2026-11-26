@@ -6,8 +6,8 @@ Cập nhật 22/11/2026. Thiết kế: [plans/2026/11/22/notification-system-pla
 
 - **Chuông** trên thanh quản trị có 2 tab: **Cá nhân** (tiền vào qua SePay, đăng nhập, thiết bị mới, đổi mật
   khẩu, dung lượng sắp đầy) và **Hệ thống** (thông báo admin gửi, lỗi gửi thông báo). Mức: Thông tin / Cảnh báo / Lỗi.
-- **Kênh**: Trong app (luôn có), Trình duyệt (popup qua Firebase Cloud Messaging), Email, Telegram (bot của từng
-  người). Mỗi người chọn kênh theo sự kiện ở **Hồ sơ → Thông báo** (tab chỉ hiện khi có quyền).
+- **Kênh**: Trong app (luôn có), Trình duyệt (popup qua Firebase Cloud Messaging), Email, Telegram (bot chung của
+  hệ thống cấu hình qua ENV). Mỗi người chọn kênh theo sự kiện và liên kết đích nhận ở **Hồ sơ → Thông báo** (tab chỉ hiện khi có quyền).
 - **Gửi ngầm (outbox)**: request nghiệp vụ (đăng nhập, tiền vào...) chỉ lưu thông báo + bản gửi trong
   transaction, **không bao giờ gọi FCM/SMTP/Telegram** (trước đây gửi ngay trong request làm đăng nhập mất ~23
   giây). Sau commit, hệ thống "đá" **Upstash QStash** gọi lại `POST /api/v1/system/notifications/dispatch` ở một
@@ -15,8 +15,8 @@ Cập nhật 22/11/2026. Thiết kế: [plans/2026/11/22/notification-system-pla
   lần) được hẹn trễ qua QStash. **cron-job.org mỗi 10 phút** là lưới an toàn: mốc "có việc" nằm trong Redis,
   chưa tới thì endpoint trả về ngay mà không chạm DB (Neon được ngủ). Xem lịch sử ở **Hệ thống → Nhật ký
   thông báo**.
-- Không có QStash: thông báo chỉ được gửi khi cron chạy (≤ chu kỳ cron). Không có Redis: cron luôn kiểm DB.
-- Không có WebSocket (Vercel serverless): realtime nhờ FCM, không có FCM thì chuông tự hỏi lại mỗi 60 giây.
+- Không có QStash: thông báo chỉ được gửi khi cron chạy (≤ chu kỳ cron). Khi rảnh không có bản chờ, mốc `notification:next_due` trên Redis giữ tối đa **24 giờ** (`IDLE_RECHECK_SECONDS`) và được làm mới kèm lượt dọn dẹp 03:00 UTC hằng ngày. Không có Redis: cron luôn kiểm DB.
+- Không có WebSocket (Vercel serverless): realtime nhờ FCM, không có FCM thì chuông tự hỏi lại mỗi **15 phút** ở tab foreground (**30 phút** nếu đã bật FCM, tắt polling khi tab ẩn).
 
 ## 2. Firebase (popup trình duyệt) — tùy chọn
 
@@ -56,16 +56,17 @@ Vercel Cron gói miễn phí chỉ chạy 1 lần/ngày (dọn dẹp, có gửi 
 3. Advanced → Headers: `Authorization: Bearer <CRON_SECRET>` (cùng giá trị biến `CRON_SECRET` của backend).
 4. Lưu, bấm **Test run**: kết quả 200. `CRON_SECRET` trống hoặc sai → 404.
 
-## 5. Telegram (mỗi người một bot)
+## 5. Telegram (1 Bot hệ thống qua ENV + Đích nhận theo người dùng)
 
-Không còn biến `TELEGRAM_BOT_TOKEN`. Ở **Hồ sơ → Thông báo** (cần quyền dùng bot Telegram):
+Cấu hình `TELEGRAM_BOT_TOKEN` (bắt buộc) và `TELEGRAM_BOT_USERNAME` (tùy chọn, tự lấy từ `getMe`) trên máy chủ BE. Ở **Hồ sơ → Thông báo** (cần quyền `system.telegram_chat.read`):
 
 1. Chat với @BotFather → `/newbot` → chép token → dán → **Lưu và kiểm tra** (token lưu DB đã mã hóa).
 2. **Chat riêng với bot** hoặc **Thêm nhóm** → mở Telegram bằng nút trên màn → quay lại bấm **Kiểm tra**.
 3. **Gửi thử** để xác nhận. Bot đang đặt webhook ở nơi khác thì phải gỡ webhook đó trước.
 
-Token không giải mã được (thường do đổi `DJANGO_SECRET_KEY`) hoặc Telegram báo token sai: bot **tự tắt** (một
-cảnh báo "gửi thất bại"), các thông báo sau không thử Telegram nữa. Dán lại token ở Hồ sơ để bật lại.
+Khi Telegram báo bot bị chặn / không gửi được tới chat đã lưu (401/403/404): đích nhận đó bị đánh dấu lỗi
+`TELEGRAM_CHAT_UNREACHABLE` kèm một cảnh báo trong ứng dụng. Quản trị viên có quyền `setting.update` có thể
+bấm **Kiểm tra trạng thái webhook & bot** ngay tại card Bot Telegram.
 
 ## 6. Module khác phát thông báo
 
