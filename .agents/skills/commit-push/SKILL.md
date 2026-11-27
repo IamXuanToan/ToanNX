@@ -46,13 +46,15 @@ Skill này tái lập đầy đủ pipeline CI của `.github/workflows/ci.yml` 
 
 Xem bảng tra cứu lỗi thường gặp và cách sửa chuẩn tại [bảng đối chiếu GitHub CI](references/ci-matrix.md). Lưu ý: `scripts/check-all.*` chưa bao gồm bước `spectacular --validate`, `makemigrations --check --dry-run` và kiểm lệch `api-types`, nên chạy đủ 4 pha sau (từ nhanh đến nặng):
 
-### 2.1 Pha 0 — Rule AI, Skill & Lockfile
+### 2.1 Pha 0 — Rule AI, Skill, Sổ theo dõi Audit & Lockfile
 
 Từ gốc repo:
 ```powershell
 uv run --no-project python scripts/sync-ai-rules.py --check
 uv run --no-project python scripts/check-workflow-skills.py
+uv run --no-project python scripts/audit_tracker.py sync
 ```
+Kiểm tra `uv run --no-project python scripts/audit_tracker.py list-pending --format table` để biết còn file nào vừa sửa đang `NEEDS_CHECK` (nếu có và người dùng yêu cầu kiểm đủ trước khi push thì nhắc hoặc thực hiện audit đúng trục trước khi commit; nếu đồng bộ tạo thay đổi ở `docs/reports/code-audit-tracker.md`, nhớ kiểm tra và stage kèm).
 Nếu có sửa dependency (`backend/pyproject.toml` hoặc `frontend/package.json`), kiểm khóa version tương ứng CI: `uv sync --frozen` (trong `backend/`) và `pnpm install --frozen-lockfile` (trong `frontend/`).
 
 ### 2.2 Pha 1 — Job `backend` (`.github/workflows/ci.yml`)

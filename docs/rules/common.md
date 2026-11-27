@@ -159,7 +159,13 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
   - đổi cách cài đặt/vận hành → `docs/guides/`; đổi kiến trúc nền → `docs/architecture/`;
   - thêm module → thêm `docs/modules/<module>/README.md`;
   - viết hoặc cập nhật kế hoạch triển khai → lưu vào `docs/plans/<YYYY>/<MM>/<DD>/<ten-kebab-case>-plan.md`
-    theo ngày lập để dễ tra cứu theo ngày; không đặt file plan trực tiếp ở gốc `docs/plans/`.
+    theo ngày lập để dễ tra cứu theo ngày; không đặt file plan trực tiếp ở gốc `docs/plans/`;
+  - cập nhật sổ theo dõi rà soát (`docs/reports/code-audit-tracker.md`): mọi lượt thêm/sửa file qua các skill
+    triển khai (`start-task`, `fix`, `refactor`, `test`, `db-migration`, `create-plan`, `review-plan`) ghi nhận
+    ngày thay đổi qua `uv run --no-project python scripts/audit_tracker.py mark-changed --files <...>`; các lượt
+    `review-code`, `review-security`, `i18n-audit`, `permission-audit` gọi `list-pending --axis <trục>` để mặc định
+    chỉ rà các file vừa đổi / `NEEDS_CHECK` (cùng caller/contract liên quan) và đóng dấu `mark-checked` sau khi đạt
+    (chỉ rà toàn bộ repo khi người dùng yêu cầu).
   Tài liệu lệch với code coi như việc chưa xong.
 
 ## 5. Bảo mật

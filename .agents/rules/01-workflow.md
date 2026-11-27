@@ -19,7 +19,7 @@ thông tin tối thiểu cần thiết và tiếp tục khảo sát phần độ
 3. Triển khai đúng lớp và convention hiện có, không tạo pattern mới khi đã có quy chuẩn.
 4. Tự kiểm từng file đã mở theo `.agents/rules/90-done-checklist.md`, sửa vi phạm thấy được.
 5. Chạy kiểm tra **chỉ cho phần đã sửa** (bên dưới).
-6. Cập nhật tài liệu theo bảng "đổi gì thì cập nhật gì" (nếu trong hội thoại người dùng nêu rule/quy chuẩn mới chưa có trong `docs/rules/`, tự động cập nhật luôn rule/test quy ước/bản sync trong cùng lượt).
+6. Cập nhật tài liệu theo bảng "đổi gì thì cập nhật gì" và sổ theo dõi `docs/reports/code-audit-tracker.md`: skill sửa/thêm code hoặc doc chạy `uv run --no-project python scripts/audit_tracker.py mark-changed --files ...`, còn 4 skill audit (`review-code`, `review-security`, `i18n-audit`, `permission-audit`) gọi `list-pending --axis <trục>` ở bước đầu để mặc định chỉ kiểm phần mới đổi rồi đóng dấu `mark-checked` sau khi đạt (nếu trong hội thoại người dùng nêu rule/quy chuẩn mới chưa có trong `docs/rules/`, tự động cập nhật luôn rule/test quy ước/bản sync trong cùng lượt).
 7. Báo cáo: đã đổi gì (BE/FE/tài liệu), common dùng lại/thêm, vi phạm đã sửa, lệnh kiểm tra + kết quả, phần chưa
    kiểm và lý do, việc còn tồn. **Không tự thao tác Git và không tự gợi ý nội dung commit** khi chưa được yêu cầu;
    chỉ soạn khối `text` commit khi người dùng yêu cầu (`commit-demo`) hoặc thực hiện commit và push khi người dùng gọi

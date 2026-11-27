@@ -30,10 +30,12 @@ kèm lý do. Bản đầy đủ: `prompt.md` mục 5.
 - [ ] Một component/hook/class mỗi file; không hook trong `.tsx`; context tách ba file.
 - [ ] File nằm đúng `components/<model>/` (+ `hooks/`) và `views/<model>/`; không `views/hooks/`, không `shared`.
 - [ ] View chỉ `usePermission`/`useTranslations`/`useEditMode`; component không gọi service/`apiClient` trực tiếp.
-- [ ] Primitive shadcn, control `h-10`, `SelectField`/`FilterSelect`/`DataTable`/`FormPage`, chuỗi qua i18n.
+- [ ] Primitive shadcn, `AppTooltip`/shadcn `Tooltip` (không dùng thuộc tính HTML `title=` thô trên thẻ DOM hay `Button`/`Badge`/`Link`/`Image`), control `h-10`, `SelectField`/`FilterSelect`/`DataTable`/`FormPage`, chuỗi qua i18n.
 - [ ] Trang tải dữ liệu ở Client qua React Query → service → `apiClient`; `page.tsx` không gọi API ngầm ở server.
 - [ ] Link dùng `<Link />` từ `@/i18n/navigation` (không `next/link` trong module), ảnh dùng `<Image />`; không
       `<a>`/`<img>` trần; không hardcode locale/timezone/tiền tệ/toast, `queryKey` chuỗi thô, mã lỗi auth hay chuỗi quyền ngoài `constants/`/`permissions/` (`createResourcePermissions` + `PERMISSION_ACTION`, `code-conventions.test.ts`).
+- [ ] Người tạo/chủ sở hữu/người dùng dùng `formatUserDisplayName` / `formatOwnerDisplayName` (`fullname (username)` hoặc `username`); mốc thời gian dùng `<TimestampText />` / `formatDateTimeWithRelative` (`dd/MM/yyyy HH:mm:ss (thời gian đếm)`), cột chỉ có ngày dùng `formatExplicitDate` (`dd/MM/yyyy`).
+- [ ] Model có `JournalTracker` trên trang `[id]` (Admin & Portal) đều có tab `?tab=history` qua `RecordDetailTabs` + `RecordHistoryView` / `ActivityTimeline` (kèm dịch field/enum), và `<FormPage backHref=...>` + `<FormBackButton />` để giữ nút `Quay lại` khi đổi tab.
 - [ ] Request React Query truyền `signal` xuống `apiClient`; loading/error/empty/forbidden có trạng thái đúng.
 - [ ] Bảng đủ `onView`/`onEdit`/`onDelete` + `can`; có Xóa → bulk delete; cờ boolean → `bulkStatus`.
 - [ ] Màu có token `--color-*`; dialog `p-0` → footer `mx-0 mb-0`; SVG trong `public/`.
@@ -43,6 +45,7 @@ kèm lý do. Bản đầy đủ: `prompt.md` mục 5.
 ## Tài liệu và kiểm tra
 
 - [ ] `docs/modules/<m>/README.md`, `docs/features/*.md`, `docs/common-catalog.md` khớp code.
+- [ ] Đã cập nhật `docs/reports/code-audit-tracker.md` qua `scripts/audit_tracker.py` (`mark-changed` khi sửa/thêm file hoặc `mark-checked` khi xong audit).
 - [ ] Đổi `docs/rules/` → đã sửa rule AI trong `.agents/rules/` và chạy `python scripts/sync-ai-rules.py`.
 - [ ] `CLAUDE.md` ↔ `AGENTS.md` khớp; `prompt.md` cập nhật nếu đổi quy trình/bảng kiểm; nếu người dùng có rule/quy chuẩn mới chưa có trong tài liệu, đã tự động cập nhật vào `docs/rules/` + `.agents/rules/` + `AGENTS.md`/`CLAUDE.md`/`prompt.md` và chạy `sync-ai-rules.py --check`.
 - [ ] Đã chạy lint/type/test của phần sửa; ghi rõ phần chưa kiểm (đặc biệt giao diện thật).

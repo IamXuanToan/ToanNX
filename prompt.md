@@ -186,7 +186,7 @@ Chi tiết: `docs/features/permission-scope.md`, `docs/features/permission-ui.md
   Chi tiết bản ghi: component `<model>-profile.tsx` tự tải dữ liệu; chuyển trang sau khi tạo nằm trong hook form.
 - Service mỗi model BE một file. Route, API endpoint, query key do từng module tự khai trong `constants/`.
 - `shares/` không import module. UI dùng component chung có sẵn (`DataTable`, `SelectField`, `FilterSelect`,
-  `FormPage`...). Control cao 40px. Form tạo/sửa/chi tiết dùng chung một component, không dùng dialog.
+  `FormPage`...). Control cao 40px. Form tạo/sửa/chi tiết dùng chung một component, không dùng dialog; mọi header trang con Admin & Client thống nhất nút **`Quay lại`** đứng bên trái nút chính (`[...phụ] [Quay lại] [Sửa/Lưu/Tạo]`), từ **`Hủy`** chỉ dùng trong dialog/popup.
 - **Không nhãn module thừa**: nhóm chỉ có một module thì sidebar không hiện nhãn module IN HOA (tên đã ở bộ
   chuyển nhóm).
 - **Menu module chia cụm**: module hơn 5 mục thì mọi mục khai `section: "<module>.navSections.<cụm>"`, mục cùng
@@ -221,7 +221,9 @@ Chi tiết: rule frontend §3.1 (chuẩn giao diện), §3.2 (shadcn), §4.0 (m�
 - Kiểu dáng qua `variant`/`size` sẵn có (`variant="outline" | "ghost" | "destructive"`, `size="icon"`); không đè
   `className` để giả một variant khác. Không sửa file trong `components/ui/*` trừ khi chỉnh cho khớp token, có ghi lý do.
 - Ngữ nghĩa và trợ năng: không bọc `Checkbox`/`Button` trong `<label>` (dùng `Label htmlFor` + `id`); nút chỉ có icon
-  phải có `aria-label` (+ `Tooltip`); giữ focus/phím của Radix, không chặn `onKeyDown` mặc định.
+  phải có `aria-label` (+ `AppTooltip` / `Tooltip`); mọi tooltip hover/focus dùng `AppTooltip` hoặc shadcn `Tooltip`,
+  cấm gắn thuộc tính HTML `title=` thô lên thẻ DOM hoặc UI primitive; giữ focus/phím của Radix, không chặn `onKeyDown` mặc định.
+- Hiển thị người dùng và thời gian: tên người tạo/chủ sở hữu/người dùng dùng `formatUserDisplayName` / `formatOwnerDisplayName` (`fullname (username)` hoặc `username` nếu thiếu `fullname`); mốc thời gian dùng `<TimestampText />` hoặc `formatDateTimeWithRelative` (`dd/MM/yyyy HH:mm:ss (thời gian đếm)`), ngày thuần dùng `formatExplicitDate` (`dd/MM/yyyy`).
 - Item dạng thẻ trong lưới/danh sách dùng `Card`; icon dùng `lucide-react` (SVG riêng để ở `public/`).
 
 **Tailwind CSS v4**
@@ -261,6 +263,9 @@ Chi tiết: `docs/features/attachment-visibility.md`, rule chung §5.2.
   mục lục ở `docs/README.md`. Thêm module → thêm `docs/modules/<module>/README.md`.
 - Kế hoạch triển khai lưu theo ngày lập tại `docs/plans/<YYYY>/<MM>/<DD>/<ten-kebab-case>-plan.md`;
   không đặt file thẳng ở gốc `docs/plans/`.
+- Ghi nhận file thêm/sửa vào sổ theo dõi `docs/reports/code-audit-tracker.md` qua `scripts/audit_tracker.py`
+  (`mark-changed` sau khi sửa, `list-pending` khi bắt đầu và `mark-checked` khi hoàn tất `/review-code`,
+  `/review-security`, `/i18n-audit`, `/permission-audit` để tránh quét thừa file chưa đổi).
 - Đổi rule trong `docs/rules/`, quy trình hay bảng kiểm → sửa rule AI trong `.agents/rules/`, chạy
   `python scripts/sync-ai-rules.py`, cập nhật `CLAUDE.md`, `AGENTS.md`, `prompt.md` cùng lần.
 - Tài liệu lệch với code coi như việc chưa xong.
@@ -374,7 +379,9 @@ Frontend:
       `<select>`/`<a>`/`<img>` trần; liên kết dùng `<Link />` từ `@/i18n/navigation` (không import `next/link` trong
       module); ảnh dùng `<Image />`; không lặp `locale === "en" ? "en-US" : "vi-VN"`, `.toLocaleString("vi-VN")` hay
       export hằng `UPPER_CASE` trong `.tsx` (`tests/unit/code-conventions.test.ts`); kiểu dáng qua `variant`/`size`; nút
-      chỉ icon có `aria-label`.
+      chỉ icon có `aria-label`; mọi tooltip dùng `AppTooltip` / shadcn `Tooltip` (cấm thuộc tính HTML `title=` thô).
+- [ ] Người tạo/chủ sở hữu/người dùng dùng `formatUserDisplayName` / `formatOwnerDisplayName` (`fullname (username)` hoặc `username`); mốc thời gian dùng `<TimestampText />` / `formatDateTimeWithRelative` (`dd/MM/yyyy HH:mm:ss (thời gian đếm)`), cột chỉ có ngày dùng `formatExplicitDate` (`dd/MM/yyyy`).
+- [ ] Model có `JournalTracker` trên trang `[id]` (Admin & Portal) đều có tab `?tab=history` qua `RecordDetailTabs` + `RecordHistoryView` / `ActivityTimeline` (lọc thao tác, xem thêm, dịch field/enum), và `<FormPage backHref=...>` + `<FormBackButton />` giữ nút `Quay lại` khi đổi tab.
 - [ ] Chỉ Tailwind utility + `cn()`; không `style={{}}` tĩnh, không hex/`bg-blue-500` cho màu thương hiệu; mobile-first,
       375px không cuộn ngang; dark mode đúng nhờ token.
 - [ ] View kiểm quyền: `ForbiddenView` khi thiếu quyền trang; trang chi tiết dùng `useEditMode` + `EditModeProvider`.
@@ -399,6 +406,7 @@ Frontend:
 Tài liệu:
 
 - [ ] `docs/modules/<module>/README.md` và `docs/features/*.md` liên quan khớp với code sau khi sửa.
+- [ ] `docs/reports/code-audit-tracker.md` đã ghi nhận ngày sửa/kiểm bằng `scripts/audit_tracker.py` (`mark-changed` hoặc `mark-checked`).
 - [ ] Đổi `docs/rules/` hoặc quy trình → `.agents/rules/` đã sửa, `python scripts/sync-ai-rules.py --check` đạt,
       `CLAUDE.md` ↔ `AGENTS.md` khớp; nếu người dùng có nêu rule mới chưa có trong tài liệu, đã tự động cập nhật đủ các nơi trên trong cùng lượt.
 

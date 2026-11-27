@@ -13,9 +13,9 @@ FE kiểm chỉ để giao diện đúng.
 
 ## Trang chi tiết: chỉ xem và sửa
 
-- Mặc định trang chi tiết (`/…/{id}`) **chỉ xem**: form `disabled`, nút ở header là "Quay lại".
-- Có quyền `update` thì header có nút **Sửa** (`EditModeButton`, tự hiện trong `FormPage`); bấm thì URL thêm
-  `?mode=edit` và form mở khóa.
+- Mặc định trang chi tiết (`/…/{id}`) **chỉ xem**: form `disabled`, nút ở header theo thứ tự cố định `[Quay lại]` (bên trái) rồi `[Sửa]` (nút chính bên phải).
+- Có quyền `update` thì header có nút **Sửa** (`EditModeButton`, tự hiện sau slot của `FormActions` trong `FormPage`); bấm thì URL thêm
+  `?mode=edit` và form mở khóa, nút `Quay lại` giữ nguyên vị trí bên trái nút `Lưu`.
 - Nút Sửa ở bảng mở thẳng `?mode=edit` (`withEditMode(<M>_ROUTES.xxxDetail(id))`).
 - Thiếu quyền mà gõ `?mode=edit` thì vẫn chỉ xem.
 

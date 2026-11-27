@@ -78,7 +78,7 @@ Neon chỉ tốn CU-giờ khi đang thức. **Mỗi truy vấn đánh thức nó
 
 | Nguồn đánh thức | Ước lượng CU-giờ/tháng (0,25 CU) |
 | --- | --- |
-| Rảnh hoàn toàn (`cleanup` `03:00` + `backup` 1/ngày + `W4` kiểm lại `1/ngày` qua TTL `24h`; `0` monitor) | ~1,6–2,0 |
+| Rảnh hoàn toàn (`cleanup` `03:00` + `backup` 1/ngày + `W4` kiểm lại `1/ngày` qua TTL `24h`) | ~1,6–2,0 |
 | Chủ site dùng trang quản trị ~2,5 giờ/ngày + tab nền poll `15–30p` | ~20–25 |
 | Khách vào `/p/[slug]`, `/s/[slug]`, Donate, Cài đặt công khai (cache Redis `600s`) | ~8–14 (chủ yếu từ `ShortLink` ghi click + miss cache) |
 | Bộ hẹn giờ thông báo **chạm DB mỗi lần** (nếu không có Redis / `IDLE_RECHECK` ngắn) | **>100**, Neon không bao giờ ngủ |
@@ -101,7 +101,7 @@ cảnh báo (chuông + email) khi dùng từ 80% của `DATABASE_MAX_BYTES`.
 | Rate limit (`INCR`, chỉ `EXPIRE` ở lần đầu của cửa sổ) | ~1–2 | ~15.000–60.000 |
 | Cache công khai (`utilities:public`, `system:settings:public` TTL `600s`) | 2–3 | ~5.000–35.000 |
 | Cờ thông báo (`GET notification:next_due` mỗi 10p; `IDLE_RECHECK=24h`) | 1–2 | ~9.000 |
-| Workspace Tick W1/W4 mỗi 15p (`lock` + `monitors:active` + `alerts_next_due`) | 4–8 | ~12.000–25.000 |
+| Workspace Tick W4 mỗi 15p (`lock` + `alerts_next_due`) | 1–3 | ~3.000–9.000 |
 | Cache dung lượng R2 (`system:storage:r2_usage_bytes` TTL `300s`) & làm mới cache (`INCR` + `EXPIRE`) | 1–2 | vài trăm |
 | **Tổng** | | **~21.000 (Idle) – ~60.000 (Normal)**, khoảng 4–12% hạn mức |
 
@@ -149,7 +149,7 @@ Quy tắc:
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME` | BE | Bot Telegram chung toàn hệ thống (thông báo + trợ lý 2 chiều); trống thì tắt Telegram |
 | `XKIRO_API_BASE`, `XKIRO_API_KEY`, `XKIRO_MODEL`, `XKIRO_FALLBACK_MODELS` | BE | API AI OpenAI-compatible + chuỗi fallback multi-model; trống thì chỉ chạy slash command 0 token |
 
-> Workspace Cron (W1 `/api/v1/workspace/cron/tick` dùng Redis-only để kiểm Uptime Monitor 0 SQL khi rảnh mỗi **15 phút** từ `cron-job.org`; W4 `/api/v1/workspace/cron/dispatch-due` chạy qua QStash theo sự kiện để kiểm Digest/Nhắc việc/Bảo hành/Gia hạn — đặt mốc `+7 ngày` khi rảnh và không tự lặp QStash mỗi 24 giờ) tuân thủ ngân sách Neon tối ưu Scale-to-Zero.
+> Workspace Cron (W4 `/api/v1/workspace/cron/tick` kiểm mốc Redis `workspace:cron:alerts_next_due` 0 SQL khi chưa đến hạn; `/api/v1/workspace/cron/dispatch-due` chạy qua QStash theo sự kiện để kiểm Digest/Nhắc việc/Bảo hành/Gia hạn — đặt mốc `+7 ngày` khi rảnh và đồng bộ lại lúc `03:00 UTC`) tuân thủ ngân sách Neon tối ưu Scale-to-Zero.
 
 Danh sách đầy đủ và cách điền: [`backend/.env.example`](../../backend/.env.example),
 [`frontend/.env.example`](../../frontend/.env.example), [deployment.md](../guides/deployment.md).

@@ -45,4 +45,5 @@ Chạy **đúng kiểm tra của vùng bị ảnh hưởng** (không chạy full
 - **Backend**: `uv run ruff format --check <files>`, `uv run ruff check <files>`, `uv run mypy <files>`, `uv run pytest --reuse-db app/core/tests/test_one_class_per_file.py app/core/tests/test_module_conventions.py app/core/tests/test_openapi_schema.py <related_tests>`.
 - **Frontend**: `pnpm --dir frontend exec eslint <files>`, `pnpm --dir frontend exec prettier --check <files>`, `pnpm --dir frontend typecheck`, `pnpm --dir frontend test tests/unit/one-unit-per-file.test.ts tests/unit/module-structure.test.ts tests/unit/table-conventions.test.ts <related_tests>`.
 - **UI bị chạm**: kiểm tra nhanh qua `playwright-cli` / Playwright E2E của luồng đó để chắc không đổi bố cục hoặc hành vi tương tác.
+- **Cập nhật sổ theo dõi rà soát**: chạy `uv run --no-project python scripts/audit_tracker.py mark-changed --files <files...> --source refactor --note "<tóm tắt>"` để đánh dấu file vừa tái cấu trúc cần kiểm lại ở các lượt audit kế tiếp.
 - Báo cáo theo `.agents/rules/90-done-checklist.md`; không tự thao tác Git và không tự gợi ý nội dung commit trừ khi người dùng yêu cầu (`commit-demo` / `commit-push`).
