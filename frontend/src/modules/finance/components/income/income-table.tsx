@@ -1,16 +1,19 @@
 "use client";
 
 import { Calculator, Download, ScanSearch } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { env } from "@/shares/config/env";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge } from "@/shares/components/common/status-badge";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Button } from "@/shares/components/ui/button";
 import { DEFAULT_CURRENCY } from "@/shares/constants/currency";
+import { formatOwnerDisplayName, formatOwnerDisplayTooltip } from "@/shares/lib/user-display";
 
 import { FINANCE_API_ENDPOINTS } from "../../constants/api-endpoints";
 import { INCOME_SOURCES, TAX_STATUSES } from "../../constants/finance-enums";
@@ -60,7 +63,6 @@ export function IncomeTable({
 }) {
   const t = useTranslations("finance.incomes");
   const tTax = useTranslations("finance.taxStatus");
-  const format = useFormatter();
   const routes = useFinanceRoutes();
   const state = useIncomeTable(scope);
   const { table, query } = state;
@@ -75,7 +77,7 @@ export function IncomeTable({
           href={routes.incomeDetail(income.id)}
           className="hover:text-primary font-medium underline-offset-4 hover:underline"
         >
-          {format.dateTime(new Date(income.receivedAt), { dateStyle: "short", timeStyle: "short" })}
+          <TimestampText value={income.receivedAt} />
         </Link>
       ),
     },
@@ -91,14 +93,16 @@ export function IncomeTable({
             id: "owner",
             header: t("fields.owner"),
             hideBelow: "xl" as const,
-            cell: (income: Income) => (
-              <span
-                className="text-muted-foreground block max-w-44 truncate"
-                title={income.ownerEmail}
-              >
-                {income.ownerName || income.ownerEmail}
-              </span>
-            ),
+            cell: (income: Income) => {
+              const ownerLabel = formatOwnerDisplayName(income);
+              return (
+                <AppTooltip content={formatOwnerDisplayTooltip(income)}>
+                  <span className="text-muted-foreground block max-w-44 truncate">
+                    {ownerLabel || "—"}
+                  </span>
+                </AppTooltip>
+              );
+            },
           },
         ]
       : []),
@@ -108,9 +112,9 @@ export function IncomeTable({
       className: "md:w-full",
       hideBelow: "lg",
       cell: (income) => (
-        <span className="text-muted-foreground block max-w-80 truncate" title={income.content}>
-          {income.content}
-        </span>
+        <AppTooltip content={income.content}>
+          <span className="text-muted-foreground block max-w-80 truncate">{income.content}</span>
+        </AppTooltip>
       ),
     },
     {
@@ -122,18 +126,20 @@ export function IncomeTable({
         income.currencyCode === DEFAULT_CURRENCY ? (
           <span className="text-muted-foreground">—</span>
         ) : (
-          <span
-            title={t("rateTooltip", {
+          <AppTooltip
+            content={t("rateTooltip", {
               rate: Number(income.exchangeRate),
               source: t(`rateSource.${income.rateSource}`),
             })}
           >
-            <MoneyText
-              value={income.originalAmount}
-              currency={income.currencyCode}
-              decimals={income.currencyDecimalPlaces}
-            />
-          </span>
+            <span>
+              <MoneyText
+                value={income.originalAmount}
+                currency={income.currencyCode}
+                decimals={income.currencyDecimalPlaces}
+              />
+            </span>
+          </AppTooltip>
         ),
     },
     {

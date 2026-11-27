@@ -9,6 +9,7 @@ import {
   FolderTree,
   Globe,
   Heart,
+  History,
   Package,
   Palette,
   Settings,
@@ -17,11 +18,12 @@ import {
   UserCheck,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { Controller } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { AttachmentImageUploadView } from "@/modules/system/views/attachment/attachment-image-upload-view";
 import { AttachmentTiptapImagePlugin } from "@/modules/system/views/attachment/attachment-tiptap-image-plugin";
 import { Form } from "@/shares/components/common/form";
@@ -78,6 +80,7 @@ export function PageForm({
   canCreatePath,
   canUpdatePath,
   backHref,
+  history,
   onCreated,
   onReload,
 }: {
@@ -86,11 +89,13 @@ export function PageForm({
   canCreatePath: boolean;
   canUpdatePath: boolean;
   backHref?: string;
+  history?: ReactNode;
   onCreated?: (saved: PageDetail) => void;
   onReload?: () => unknown;
 }) {
   const t = useTranslations("utilities.customPages.pages");
   const tCommon = useTranslations("common.actions");
+  const tTabs = useTranslations("common.tabs");
   const state = usePageForm({ page, onReload, onCreated });
   const registry = useTiptapPluginRegistry();
   const [showLivePreview, setShowLivePreview] = useState(true);
@@ -121,19 +126,22 @@ export function PageForm({
     }
   }, [state.pageType]);
 
+  const hasHistory = Boolean(history);
   const validTabs = useMemo(() => {
     const tabs = isLegacy ? ["settings"] : ["design", "settings"];
     if (isAffiliate) tabs.unshift("products", "categories");
     else if (isBio) tabs.unshift("bio");
     else if (isDonation) tabs.unshift("donation");
     else if (isLegacy) tabs.unshift("content");
+    if (hasHistory) tabs.push("history");
     return tabs;
-  }, [isAffiliate, isBio, isDonation, isLegacy]);
+  }, [isAffiliate, isBio, isDonation, isLegacy, hasHistory]);
 
   const [activeTab, setActiveTab] = useTabState({
     validTabs,
     defaultTab,
   });
+  const showPreviewPanel = showLivePreview && activeTab !== "history";
 
   const handleApplyPreset = (preset: ThemePreset, applyMode = true) => {
     form.setValue("primaryColor", preset.primary, { shouldDirty: true, shouldValidate: true });
@@ -248,12 +256,11 @@ export function PageForm({
             <span className="text-muted-foreground text-[11px]">{t("quickLinkHint")}</span>
           </div>
           <div className="border-border bg-background flex flex-col gap-2 rounded-lg border p-2.5 sm:flex-row sm:items-center sm:justify-between">
-            <span
-              className="text-foreground min-w-0 truncate font-mono text-xs font-medium"
-              title={page.publicUrl}
-            >
-              {page.publicUrl}
-            </span>
+            <AppTooltip content={page.publicUrl}>
+              <span className="text-foreground min-w-0 truncate font-mono text-xs font-medium">
+                {page.publicUrl}
+              </span>
+            </AppTooltip>
             <div className="flex shrink-0 items-center gap-1.5">
               <Button
                 type="button"
@@ -351,9 +358,9 @@ export function PageForm({
           </div>
         </div>
 
-        <div className={`grid gap-6 ${showLivePreview ? "xl:grid-cols-12" : "grid-cols-1"}`}>
+        <div className={`grid gap-6 ${showPreviewPanel ? "xl:grid-cols-12" : "grid-cols-1"}`}>
           {/* Form Section bên trái */}
-          <div className={showLivePreview ? "min-w-0 xl:col-span-6 2xl:col-span-7" : "min-w-0"}>
+          <div className={showPreviewPanel ? "min-w-0 xl:col-span-6 2xl:col-span-7" : "min-w-0"}>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="mb-4 w-full max-w-full scrollbar-none justify-start overflow-x-auto">
                 {isAffiliate ? (
@@ -402,9 +409,21 @@ export function PageForm({
                   <Settings className="size-3.5" />
                   <span>{t("tabs.settings")}</span>
                 </TabsTrigger>
+                {history ? (
+                  <TabsTrigger value="history" className="gap-1.5 px-3 py-1.5 text-xs font-medium">
+                    <History className="size-3.5" />
+                    <span>{tTabs("history")}</span>
+                  </TabsTrigger>
+                ) : null}
               </TabsList>
 
-              <div className="border-border bg-card rounded-xl border p-4 shadow-2xs">
+              <div
+                className={
+                  activeTab === "history"
+                    ? "hidden"
+                    : "border-border bg-card rounded-xl border p-4 shadow-2xs"
+                }
+              >
                 {isAffiliate ? (
                   <>
                     <TabsContent value="products">
@@ -546,11 +565,12 @@ export function PageForm({
 
                 <TabsContent value="settings">{settings}</TabsContent>
               </div>
+              {history ? <TabsContent value="history">{history}</TabsContent> : null}
             </Tabs>
           </div>
 
           {/* Live Preview Frame bên phải */}
-          {showLivePreview ? (
+          {showPreviewPanel ? (
             <div className="min-w-0 xl:col-span-6 2xl:col-span-5">
               <div className="sticky top-[var(--tiptap-sticky-top,1.5rem)]">
                 <PagePreviewFrame
@@ -588,9 +608,7 @@ export function PageForm({
           </Button>
         ) : null}
         <Button type="button" variant="outline" asChild>
-          <Link href={(backHref ?? UTILITIES_ROUTES.pages) as never}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
-          </Link>
+          <Link href={(backHref ?? UTILITIES_ROUTES.pages) as never}>{tCommon("back")}</Link>
         </Button>
         {disabled ? null : (
           <FormSubmitButton

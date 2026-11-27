@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
 import { DataPagination } from "@/shares/components/common/data-pagination";
 import { EmptyState } from "@/shares/components/common/empty-state";
@@ -179,18 +180,21 @@ export function AttachmentPicker({
               className="h-10 min-w-0 flex-1 rounded-xl"
             />
             <AttachmentViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="size-10 shrink-0 rounded-xl"
-              disabled={query.isFetching}
-              onClick={() => query.refetch()}
-              aria-label={t("reload")}
-              title={t("reload")}
-            >
-              <RotateCw className={cn("size-4", query.isFetching && "animate-spin")} />
-            </Button>
+            <AppTooltip content={t("reload")}>
+              <span className="inline-flex shrink-0">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="size-10 rounded-xl"
+                  disabled={query.isFetching}
+                  onClick={() => query.refetch()}
+                  aria-label={t("reload")}
+                >
+                  <RotateCw className={cn("size-4", query.isFetching && "animate-spin")} />
+                </Button>
+              </span>
+            </AppTooltip>
             {canUpload ? (
               <Button
                 type="button"
@@ -436,27 +440,27 @@ export function AttachmentPicker({
                 <AttachmentPreview file={state.selected} className="size-full" />
               </div>
               <div className="min-w-0 pr-1">
-                <p
-                  className="max-w-[120px] truncate text-xs font-medium sm:max-w-xs sm:text-sm"
-                  title={state.selected.originalName}
-                >
-                  {state.selected.originalName}
-                </p>
+                <AppTooltip content={state.selected.originalName}>
+                  <p className="max-w-[120px] truncate text-xs font-medium sm:max-w-xs sm:text-sm">
+                    {state.selected.originalName}
+                  </p>
+                </AppTooltip>
                 <p className="text-muted-foreground text-[11px] tabular-nums">
                   {formatAttachmentSize(state.selected.size)}
                 </p>
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setDetailFile(state.selected)}
-                className="text-muted-foreground hover:text-foreground h-8 gap-1 rounded-lg px-2 text-xs"
-                title={t("viewDetails")}
-              >
-                <Eye className="size-3.5" />
-                <span className="hidden md:inline">{t("viewDetails")}</span>
-              </Button>
+              <AppTooltip content={t("viewDetails")}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setDetailFile(state.selected)}
+                  className="text-muted-foreground hover:text-foreground h-8 gap-1 rounded-lg px-2 text-xs"
+                >
+                  <Eye className="size-3.5" />
+                  <span className="hidden md:inline">{t("viewDetails")}</span>
+                </Button>
+              </AppTooltip>
             </div>
           ) : (
             <span className="text-muted-foreground text-xs sm:text-sm">

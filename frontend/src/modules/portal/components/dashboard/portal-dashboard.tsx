@@ -25,13 +25,16 @@ import { FinanceTrendChart } from "@/modules/finance/components/dashboard/financ
 import { YearSelect } from "@/modules/finance/components/dashboard/year-select";
 import { PortalCalendar } from "@/modules/workspace/components/calendar/portal-calendar";
 import { WorkspaceSummaryCards } from "@/modules/workspace/components/dashboard/workspace-summary-cards";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shares/components/ui/card";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { withEditMode } from "@/shares/lib/edit-mode";
 import { formatVndText } from "@/shares/lib/number-format";
 import { toSafeHttpUrl } from "@/shares/lib/safe-url";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 import { PORTAL_ROUTES } from "../../constants/routes";
 import { usePortalDashboard } from "./hooks/use-portal-dashboard";
@@ -116,7 +119,7 @@ export function PortalDashboard({
               <span>{t("studioBadge")}</span>
             </div>
             <h1 className="text-foreground text-2xl font-extrabold tracking-tight sm:text-3xl">
-              {t("welcome", { name: currentUser?.user.fullName || currentUser?.user.email || "" })}
+              {t("welcome", { name: formatUserDisplayName(currentUser?.user) })}
             </h1>
             <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
           </div>
@@ -478,33 +481,36 @@ export function PortalDashboard({
                           </p>
                         </div>
                         <div className="flex shrink-0 items-center gap-1.5">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-xs"
-                            onClick={() => handleCopy(p.publicUrl)}
-                            title={tPages("copyLink")}
-                            className="size-7"
-                          >
-                            <Link2 className="size-3.5" />
-                          </Button>
-                          <Button
-                            asChild
-                            variant="ghost"
-                            size="icon-xs"
-                            className="size-7"
-                            title={tPages("view")}
-                          >
-                            <Link
-                              href={(toSafeHttpUrl(p.publicUrl) ?? "#") as never}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                          <AppTooltip content={tPages("copyLink")}>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon-xs"
+                              onClick={() => handleCopy(p.publicUrl)}
+                              className="size-7"
                             >
-                              <ExternalLink className="size-3.5" />
-                            </Link>
-                          </Button>
+                              <Link2 className="size-3.5" />
+                            </Button>
+                          </AppTooltip>
+                          <AppTooltip content={tPages("view")}>
+                            <Button asChild variant="ghost" size="icon-xs" className="size-7">
+                              <Link
+                                href={(toSafeHttpUrl(p.publicUrl) ?? "#") as never}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <ExternalLink className="size-3.5" />
+                              </Link>
+                            </Button>
+                          </AppTooltip>
                           <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
-                            <Link href={PORTAL_ROUTES.pageDetail(p.id)}>
+                            <Link
+                              href={
+                                canUpdatePages
+                                  ? withEditMode(PORTAL_ROUTES.pageDetail(p.id))
+                                  : PORTAL_ROUTES.pageDetail(p.id)
+                              }
+                            >
                               {canUpdatePages ? tActions("edit") : tTable("view")}
                             </Link>
                           </Button>
@@ -559,7 +565,13 @@ export function PortalDashboard({
                             <span>{l.clicksCount ?? 0}</span>
                           </Badge>
                           <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
-                            <Link href={PORTAL_ROUTES.shortLinkDetail(l.id)}>
+                            <Link
+                              href={
+                                canUpdateShortLinks
+                                  ? withEditMode(PORTAL_ROUTES.shortLinkDetail(l.id))
+                                  : PORTAL_ROUTES.shortLinkDetail(l.id)
+                              }
+                            >
                               {canUpdateShortLinks ? tActions("edit") : tTable("view")}
                             </Link>
                           </Button>

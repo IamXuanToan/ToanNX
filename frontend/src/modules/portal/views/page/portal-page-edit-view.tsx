@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { PAGE_PATH_PERMISSIONS } from "@/modules/utilities/permissions/page-path-permission";
 import { PAGE_PERMISSIONS } from "@/modules/utilities/permissions/page-permission";
@@ -12,10 +14,10 @@ import { PortalPageEdit } from "../../components/page/portal-page-edit";
 /**
  * View chi tiết và sửa trang trong Client Portal.
  *
- * @param props - Id trang.
+ * @param props - Id trang và slot lịch sử thay đổi.
  * @returns Giao diện view.
  */
-export function PortalPageEditView({ id }: { id: string }) {
+export function PortalPageEditView({ id, history }: { id: string; history?: ReactNode }) {
   const canRead = usePermission(PAGE_PERMISSIONS.read);
   const canUpdate = usePermission(PAGE_PERMISSIONS.update);
   const canManageAll = usePermission(PAGE_PERMISSIONS.manageAll);
@@ -35,6 +37,7 @@ export function PortalPageEditView({ id }: { id: string }) {
         canManageAll={canManageAll}
         canCreatePath={canCreatePath && isEditing}
         canUpdatePath={canUpdatePath && isEditing}
+        history={history}
       />
     </EditModeProvider>
   );

@@ -10,4 +10,10 @@ class QrCodeOwnerResponseSerializer(serializers.Serializer[Any]):
 
     id = serializers.UUIDField(help_text="Id người dùng.")
     email = serializers.EmailField(help_text="Email.")
+    username = serializers.CharField(
+        allow_null=True, allow_blank=True, default="", help_text="Tên đăng nhập."
+    )
+    username = serializers.CharField(
+        allow_null=True, allow_blank=True, default="", help_text="Tên đăng nhập."
+    )
     full_name = serializers.CharField(help_text="Họ tên đầy đủ.")

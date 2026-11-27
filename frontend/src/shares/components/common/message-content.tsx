@@ -26,7 +26,7 @@ export function MessageContent({
     <div
       data-slot="message-content"
       className={cn(
-        "rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed break-words whitespace-pre-wrap shadow-2xs",
+        "max-w-full min-w-0 rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed break-words whitespace-pre-wrap shadow-2xs",
         isUser
           ? "bg-primary text-primary-foreground rounded-br-xs"
           : isError

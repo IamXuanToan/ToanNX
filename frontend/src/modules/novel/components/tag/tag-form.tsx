@@ -6,10 +6,10 @@
 
 import { useTranslations } from "next-intl";
 
-import { Link } from "@/i18n/navigation";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { FormLayout } from "@/shares/components/common/form-layout";
@@ -79,17 +79,17 @@ export function TagForm({
 
         <FormActions>
           {onCancel ? (
-            <Button type="button" variant="outline" onClick={onCancel} disabled={locked}>
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
               {tActions("cancel")}
             </Button>
           ) : (
-            <Button asChild variant="outline" disabled={locked}>
-              <Link href={NOVEL_ROUTES.adminTags}>{tActions("cancel")}</Link>
-            </Button>
+            <FormBackButton href={NOVEL_ROUTES.adminTags} />
           )}
-          <FormSubmitButton isSubmitting={isSubmitting} disabled={locked}>
-            {tag ? tActions("save") : tActions("create")}
-          </FormSubmitButton>
+          {disabled ? null : (
+            <FormSubmitButton isSubmitting={isSubmitting}>
+              {tag ? tActions("save") : tActions("create")}
+            </FormSubmitButton>
+          )}
         </FormActions>
       </FormLayout>
     </Form>

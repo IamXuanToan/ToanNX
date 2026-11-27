@@ -48,7 +48,9 @@
       "defaultCurrency": "Tiền tệ mặc định",
       "isActive": "Đang dùng",
       "pattern": "Regex",
-      "priority": "Ưu tiên"
+      "priority": "Ưu tiên",
+      "color": "Màu biểu đồ",
+      "owner": "Chủ sở hữu"
     }
   },
   "platforms": {

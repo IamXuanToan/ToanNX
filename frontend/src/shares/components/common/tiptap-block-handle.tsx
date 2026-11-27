@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shares/components/ui/dropdown-menu";
 
+import { AppTooltip } from "./app-tooltip";
 import type { TiptapDragBlockState, TiptapHoveredBlockInfo } from "./hooks/use-tiptap-block-handle";
 
 /**
@@ -98,37 +99,39 @@ export function TiptapBlockHandle({
           onMouseDown={(event) => event.stopPropagation()}
           className="absolute left-1 z-20 flex items-center gap-0.5 transition-[top] duration-75"
         >
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-xs"
-            aria-label={t("addBlockHint")}
-            title={t("addBlockHint")}
-            onClick={() => onAddBelow(hoveredBlock.index)}
-            className="text-muted-foreground hover:text-foreground size-6 rounded-md"
-          >
-            <Plus className="size-3.5" />
-          </Button>
-
-          <div className="relative">
+          <AppTooltip content={t("addBlockHint")}>
             <Button
               type="button"
               variant="ghost"
               size="icon-xs"
-              data-testid="tiptap-block-grip"
-              aria-label={t("dragHandleHint")}
-              title={t("dragHandleHint")}
-              onPointerDown={onGripPointerDown}
-              onPointerMove={onGripPointerMove}
-              onPointerUp={onGripPointerUp}
-              onPointerCancel={onGripPointerCancel}
-              className={cn(
-                "text-muted-foreground hover:text-foreground size-6 cursor-grab touch-none rounded-md active:cursor-grabbing",
-                dragState && "bg-primary/15 text-primary",
-              )}
+              aria-label={t("addBlockHint")}
+              onClick={() => onAddBelow(hoveredBlock.index)}
+              className="text-muted-foreground hover:text-foreground size-6 rounded-md"
             >
-              <GripVertical className="size-3.5" />
+              <Plus className="size-3.5" />
             </Button>
+          </AppTooltip>
+
+          <div className="relative">
+            <AppTooltip content={t("dragHandleHint")}>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                data-testid="tiptap-block-grip"
+                aria-label={t("dragHandleHint")}
+                onPointerDown={onGripPointerDown}
+                onPointerMove={onGripPointerMove}
+                onPointerUp={onGripPointerUp}
+                onPointerCancel={onGripPointerCancel}
+                className={cn(
+                  "text-muted-foreground hover:text-foreground size-6 cursor-grab touch-none rounded-md active:cursor-grabbing",
+                  dragState && "bg-primary/15 text-primary",
+                )}
+              >
+                <GripVertical className="size-3.5" />
+              </Button>
+            </AppTooltip>
 
             {/* Trigger ẩn neo chính xác vào vị trí nút ⠿ để giữ pointerDown riêng cho thao tác kéo */}
             <DropdownMenu open={menuOpen} onOpenChange={onMenuOpenChange}>

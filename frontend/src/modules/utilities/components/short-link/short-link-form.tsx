@@ -1,6 +1,7 @@
 "use client";
 
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import type { ComponentProps } from "react";
 import { Controller, useWatch } from "react-hook-form";
 
 import { Link } from "@/i18n/navigation";
@@ -9,6 +10,7 @@ import { DateTimePicker } from "@/shares/components/common/date-time-picker";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { FormLayout } from "@/shares/components/common/form-layout";
@@ -16,6 +18,7 @@ import { NumberInput } from "@/shares/components/common/number-input";
 import { PasswordInput } from "@/shares/components/common/password-input";
 import { RadioGroupField } from "@/shares/components/common/radio-group-field";
 import { SlugInput } from "@/shares/components/common/slug-input";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
@@ -35,18 +38,19 @@ import { useShortLinkForm } from "./hooks/use-short-link-form";
 export function ShortLinkForm({
   link,
   disabled = false,
+  backHref,
   onSaved,
   onCancel,
 }: {
   link?: ShortLinkDetail;
   disabled?: boolean;
+  backHref?: ComponentProps<typeof Link>["href"];
   onSaved?: (link: ShortLinkDetail) => unknown;
   onCancel?: () => void;
 }) {
   const t = useTranslations("utilities.shortLinks");
   const tCommon = useTranslations("common.actions");
   const tStatus = useTranslations("common.status");
-  const format = useFormatter();
   const { form, onSubmit, isSubmitting } = useShortLinkForm({ link, onSaved });
   const locked = disabled || isSubmitting;
   const redirectMode = useWatch({ control: form.control, name: "redirectMode" });
@@ -258,11 +262,7 @@ export function ShortLinkForm({
                   <>
                     <span>•</span>
                     <span>
-                      {t("fields.lastAccessedAt")}:{" "}
-                      {format.dateTime(new Date(link.lastAccessedAt), {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      })}
+                      {t("fields.lastAccessedAt")}: <TimestampText value={link.lastAccessedAt} />
                     </span>
                   </>
                 ) : null}
@@ -300,11 +300,7 @@ export function ShortLinkForm({
             {tCommon("cancel")}
           </Button>
         ) : (
-          <Button type="button" variant="outline" asChild>
-            <Link href={UTILITIES_ROUTES.shortLinks}>
-              {disabled ? tCommon("back") : tCommon("cancel")}
-            </Link>
-          </Button>
+          <FormBackButton href={backHref ?? UTILITIES_ROUTES.shortLinks} />
         )}
         {disabled ? null : (
           <FormSubmitButton

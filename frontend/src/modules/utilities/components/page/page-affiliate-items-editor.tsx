@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { SortableList } from "@/shares/components/common/sortable-list";
 import { Button } from "@/shares/components/ui/button";
 import { Checkbox } from "@/shares/components/ui/checkbox";
@@ -104,61 +105,73 @@ export function PageAffiliateItemsEditor({
           ) : null}
 
           {/* Nút Thêm sản phẩm (Thêm thường thủ công - nút chính màu xanh) */}
-          <Button
-            type="button"
-            size="sm"
-            variant="default"
-            onClick={onOpenAddManual}
-            disabled={disabled}
-            className="h-8 gap-1.5 text-xs font-semibold shadow-2xs"
-            title={t("addProductTooltip")}
-          >
-            <Plus className="size-3.5" />
-            <span>{t("addProduct")}</span>
-          </Button>
+          <AppTooltip content={t("addProductTooltip")}>
+            <span className="inline-flex">
+              <Button
+                type="button"
+                size="sm"
+                variant="default"
+                onClick={onOpenAddManual}
+                disabled={disabled}
+                className="h-8 gap-1.5 text-xs font-semibold shadow-2xs"
+              >
+                <Plus className="size-3.5" />
+                <span>{t("addProduct")}</span>
+              </Button>
+            </span>
+          </AppTooltip>
 
           {/* Nút Thêm nhanh bằng URL (nút phụ outline) */}
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={onOpenQuickAdd}
-            disabled={disabled}
-            className="h-8 gap-1.5 text-xs font-medium shadow-2xs"
-            title={t("quickAddTooltip")}
-          >
-            <Sparkles className="text-primary size-3.5" />
-            <span>{tPages("quickAdd")}</span>
-          </Button>
+          <AppTooltip content={t("quickAddTooltip")}>
+            <span className="inline-flex">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={onOpenQuickAdd}
+                disabled={disabled}
+                className="h-8 gap-1.5 text-xs font-medium shadow-2xs"
+              >
+                <Sparkles className="text-primary size-3.5" />
+                <span>{tPages("quickAdd")}</span>
+              </Button>
+            </span>
+          </AppTooltip>
 
           {/* Nút Xuất file JSON */}
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={handleExportJson}
-            disabled={disabled || items.length === 0}
-            className="h-8 gap-1.5 text-xs font-medium shadow-2xs"
-            title={t("exportTooltip")}
-          >
-            <Download className="size-3.5" />
-            <span>{t("export")}</span>
-          </Button>
+          <AppTooltip content={t("exportTooltip")}>
+            <span className="inline-flex">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={handleExportJson}
+                disabled={disabled || items.length === 0}
+                className="h-8 gap-1.5 text-xs font-medium shadow-2xs"
+              >
+                <Download className="size-3.5" />
+                <span>{t("export")}</span>
+              </Button>
+            </span>
+          </AppTooltip>
 
           {/* Nút Nhập file JSON */}
           {onImportItems ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => setImportDialogOpen(true)}
-              disabled={disabled}
-              className="h-8 gap-1.5 text-xs font-medium shadow-2xs"
-              title={t("importTooltip")}
-            >
-              <Upload className="size-3.5" />
-              <span>{t("import")}</span>
-            </Button>
+            <AppTooltip content={t("importTooltip")}>
+              <span className="inline-flex">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setImportDialogOpen(true)}
+                  disabled={disabled}
+                  className="h-8 gap-1.5 text-xs font-medium shadow-2xs"
+                >
+                  <Upload className="size-3.5" />
+                  <span>{t("import")}</span>
+                </Button>
+              </span>
+            </AppTooltip>
           ) : null}
         </div>
       </div>

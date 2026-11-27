@@ -6,6 +6,7 @@ import { ImageIcon, ImageOff, Smile } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { TiptapContent } from "@/shares/components/common/tiptap-content";
 import { TiptapEditor } from "@/shares/components/common/tiptap-editor";
 import type { TiptapInsertItem } from "@/shares/components/common/tiptap-editor.types";
@@ -125,17 +126,18 @@ export function NotionDemoEditor({
         <div className="mb-3 flex items-end gap-3">
           {previewMode === "edit" ? (
             <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  aria-label={t("pickIcon")}
-                  title={t("pickIcon")}
-                  className="bg-background hover:bg-muted relative z-10 size-14 rounded-2xl border text-3xl shadow-sm"
-                >
-                  <span aria-hidden>{icon}</span>
-                </Button>
-              </PopoverTrigger>
+              <AppTooltip content={t("pickIcon")}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    aria-label={t("pickIcon")}
+                    className="bg-background hover:bg-muted relative z-10 size-14 rounded-2xl border text-3xl shadow-sm"
+                  >
+                    <span aria-hidden>{icon}</span>
+                  </Button>
+                </PopoverTrigger>
+              </AppTooltip>
               <PopoverContent align="start" className="w-auto rounded-xl p-2">
                 <div className="flex flex-wrap gap-1">
                   {NOTION_EMOJI_OPTIONS.map((emoji) => (

@@ -3,6 +3,7 @@
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Button } from "@/shares/components/ui/button";
 import {
   DialogDescription,
@@ -45,9 +46,9 @@ export function AttachmentEditForm({
           <AttachmentPreview file={file} contain className="size-full" />
         </div>
         <div className="min-w-0 flex-1 text-xs">
-          <p className="text-foreground truncate font-semibold" title={file.originalName}>
-            {file.originalName}
-          </p>
+          <AppTooltip content={file.originalName}>
+            <p className="text-foreground truncate font-semibold">{file.originalName}</p>
+          </AppTooltip>
           <p className="text-muted-foreground mt-0.5">
             {file.contentType.split("/")[1]?.toUpperCase() || file.contentType} ·{" "}
             {formatAttachmentSize(file.size)}

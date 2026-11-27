@@ -142,7 +142,7 @@ describe("Logic thời tiết, bình minh & hoàng hôn trang Home", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
     // Bấm nút làm mới thủ công -> bỏ qua cache, gọi fetch mới
-    const reloadButton = screen.getByTitle("weather.reload");
+    const reloadButton = screen.getByRole("button", { name: "weather.reload" });
     fireEvent.click(reloadButton);
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(2);

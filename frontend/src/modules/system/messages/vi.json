@@ -654,6 +654,7 @@
     "title": "Nhật ký thay đổi",
     "history": "Lịch sử thay đổi",
     "empty": "Chưa có thay đổi nào.",
+    "emptyHint": "Các thao tác tạo mới, chỉnh sửa hoặc thay đổi trạng thái sẽ được ghi nhận tự động tại đây.",
     "searchPlaceholder": "Tìm theo bản ghi, người thực hiện…",
     "system": "Hệ thống",
     "masked": "(ẩn)",
@@ -673,6 +674,12 @@
       "DELETE": "đã xóa",
       "EVENT": "sự kiện"
     },
+    "actionBadges": {
+      "CREATE": "Tạo mới",
+      "UPDATE": "Cập nhật",
+      "DELETE": "Đã xóa",
+      "EVENT": "Sự kiện"
+    },
     "events": {
       "system_role_assigned": "đã gán vai trò",
       "system_role_revoked": "đã gỡ vai trò",
@@ -686,7 +693,22 @@
       "permissions": "Quyền",
       "roles": "Vai trò",
       "permission": "Quyền",
-      "role": "Vai trò"
+      "role": "Vai trò",
+      "owner": "Chủ sở hữu",
+      "notificationChannels": "Kênh nhận thông báo",
+      "autoGrant": "Tự cấp cho tài khoản mới",
+      "isSystem": "Vai trò hệ thống",
+      "emailVerifiedAt": "Thời điểm xác minh email",
+      "isVerified": "Đã xác minh email",
+      "thumbnail": "Ảnh bìa",
+      "favoritesCount": "Lượt yêu thích",
+      "viewsCount": "Lượt xem",
+      "contentVersion": "Phiên bản nội dung",
+      "responsiveConfig": "Cấu hình đáp ứng",
+      "styleConfig": "Cấu hình kiểu dáng",
+      "templateKey": "Mẫu giao diện",
+      "templateVersion": "Phiên bản mẫu",
+      "passwordHash": "Mật khẩu bảo vệ"
     },
     "detail": {
       "title": "Chi tiết thay đổi",
@@ -857,6 +879,7 @@
         "body": "Nội dung",
         "level": "Mức",
         "link": "Đường dẫn",
+        "linkPlaceholder": "/quan-tri",
         "linkHint": "Đường dẫn trong site, bắt đầu bằng /.",
         "target": "Gửi tới",
         "roles": "Vai trò",
@@ -924,7 +947,8 @@
       "symbol": "Ký hiệu",
       "decimalPlaces": "Số lẻ",
       "position": "Thứ tự",
-      "isActive": "Đang dùng"
+      "isActive": "Đang dùng",
+      "isBase": "Tiền tệ gốc"
     },
     "validation": {
       "required": "Bắt buộc nhập.",

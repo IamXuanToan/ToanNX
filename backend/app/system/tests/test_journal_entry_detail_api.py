@@ -30,6 +30,7 @@ class TestJournalEntryDetailApi(BaseApiTestCase):
         data = self.assert_success(api.get(f"{URL}/{entry.pk}"))
         assert data["changes"] == {"name": ["Một", "Hai"]}
         assert data["request_id"]
+        assert data["actor_display_name"] == superuser.display_name
 
     def test_entry_detail_not_found(self, superuser: User, login: Any) -> None:
         """ID không tồn tại trả về 404 NOT_FOUND."""

@@ -6,6 +6,7 @@ import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge } from "@/shares/components/common/status-badge";
+import { formatExplicitDate } from "@/shares/lib/date-time-format";
 
 import type { ExchangeRate } from "../../types/currency.types";
 import { useExchangeRateTable } from "./hooks/use-exchange-rate-table";
@@ -24,7 +25,9 @@ export function ExchangeRateTable({ canDelete }: { canDelete: boolean }) {
       header: t("fields.rateDate"),
       sortKey: "rate_date",
       mobile: "title",
-      cell: (row) => format.dateTime(new Date(row.rateDate), { dateStyle: "medium" }),
+      cell: (row) => (
+        <span className="whitespace-nowrap tabular-nums">{formatExplicitDate(row.rateDate)}</span>
+      ),
     },
     { id: "currency", header: t("fields.currency"), cell: (row) => row.currencyCode },
     {

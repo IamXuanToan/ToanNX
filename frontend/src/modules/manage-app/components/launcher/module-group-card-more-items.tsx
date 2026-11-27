@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Badge } from "@/shares/components/ui/badge";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shares/components/ui/hover-card";
 import { useMessage } from "@/shares/hooks/use-message";
@@ -84,15 +85,15 @@ export function ModuleGroupCardMoreItems({
         {/* Danh sách toàn bộ tính năng có thể điều hướng trực tiếp */}
         <div className="mt-2 flex max-h-80 flex-col gap-0.5 overflow-y-auto pr-0.5">
           {items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              title={message(item.labelKey)}
-              className="hover:bg-muted/80 hover:text-primary text-foreground/85 flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors"
-            >
-              <item.icon className="text-primary size-3.5 shrink-0" aria-hidden />
-              <span className="truncate">{message(item.labelKey)}</span>
-            </Link>
+            <AppTooltip key={item.href} content={message(item.labelKey)} side="right">
+              <Link
+                href={item.href}
+                className="hover:bg-muted/80 hover:text-primary text-foreground/85 flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors"
+              >
+                <item.icon className="text-primary size-3.5 shrink-0" aria-hidden />
+                <span className="truncate">{message(item.labelKey)}</span>
+              </Link>
+            </AppTooltip>
           ))}
         </div>
       </HoverCardContent>

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { AttachmentDetailDialog } from "@/modules/system/components/attachment/attachment-detail-dialog";
 import type { Attachment } from "@/modules/system/types/attachment.types";
@@ -69,8 +69,10 @@ vi.mock("next-intl", () => ({
     };
     return map[key] ?? key;
   },
+  useNow: () => new Date("2026-11-20T13:49:06Z"),
   useFormatter: () => ({
     dateTime: () => "20:49 20 thg 11, 2026",
+    relativeTime: () => "6 giây trước",
   }),
 }));
 
@@ -88,6 +90,16 @@ const mockFile: Attachment = {
   altText: "Chân dung cô gái tươi cười",
   createdAt: "2026-11-20T13:49:00Z",
 };
+
+beforeAll(() => {
+  if (!globalThis.ResizeObserver) {
+    globalThis.ResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  }
+});
 
 describe("AttachmentDetailDialog", () => {
   afterEach(() => {

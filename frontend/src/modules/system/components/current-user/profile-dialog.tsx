@@ -16,14 +16,16 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import Image from "next/image";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
 import { EmailInput } from "@/shares/components/common/email-input";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
 import { PasswordInput } from "@/shares/components/common/password-input";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { UserAvatar } from "@/shares/components/common/user-avatar";
 import { ICON_PATHS } from "@/shares/lib/asset-paths";
 import { Badge } from "@/shares/components/ui/badge";
@@ -87,9 +89,6 @@ export function ProfileDialog({
   onOpenChange,
   renderAttachmentPicker,
 }: ProfileDialogProps) {
-  const format = useFormatter();
-  const now = useNow({ updateInterval: 60_000 });
-
   const canPreferences = usePermission(NOTIFICATION_PREFERENCE_PERMISSIONS.read);
   const canReadAttachments = usePermission(ATTACHMENT_PERMISSIONS.read);
   const canUploadAttachments = usePermission(ATTACHMENT_PERMISSIONS.create);
@@ -216,19 +215,22 @@ export function ProfileDialog({
                   ) : null}
 
                   {user?.avatar ? (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="xs"
-                      className="text-destructive hover:bg-destructive/10 hover:text-destructive h-8 rounded-lg px-2 text-xs"
-                      onClick={() => void handleRemoveAvatar()}
-                      disabled={isSaving}
-                      title={t("avatarRemove")}
-                      data-testid="profile-remove-avatar-button"
-                    >
-                      <Trash2 className="size-3.5" aria-hidden />
-                      <span>{t("avatarRemove")}</span>
-                    </Button>
+                    <AppTooltip content={t("avatarRemove")}>
+                      <span className="inline-flex">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="xs"
+                          className="text-destructive hover:bg-destructive/10 hover:text-destructive h-8 rounded-lg px-2 text-xs"
+                          onClick={() => void handleRemoveAvatar()}
+                          disabled={isSaving}
+                          data-testid="profile-remove-avatar-button"
+                        >
+                          <Trash2 className="size-3.5" aria-hidden />
+                          <span>{t("avatarRemove")}</span>
+                        </Button>
+                      </span>
+                    </AppTooltip>
                   ) : null}
                 </div>
 
@@ -315,19 +317,8 @@ export function ProfileDialog({
                   <Clock className="size-3" aria-hidden />
                   <span>{t("activity.lastLogin")}</span>
                 </span>
-                <span className="text-foreground truncate text-right font-medium">
-                  {user?.lastLogin ? (
-                    <span
-                      title={format.dateTime(new Date(user.lastLogin), {
-                        dateStyle: "full",
-                        timeStyle: "medium",
-                      })}
-                    >
-                      {format.relativeTime(new Date(user.lastLogin), now)}
-                    </span>
-                  ) : (
-                    t("activity.never")
-                  )}
+                <span className="text-foreground text-right font-medium">
+                  {user?.lastLogin ? <TimestampText value={user.lastLogin} /> : t("activity.never")}
                 </span>
               </div>
 
@@ -336,10 +327,8 @@ export function ProfileDialog({
                   <Calendar className="size-3" aria-hidden />
                   <span>{t("activity.dateJoined")}</span>
                 </span>
-                <span className="text-foreground truncate text-right font-medium">
-                  {user?.dateJoined
-                    ? format.dateTime(new Date(user.dateJoined), { dateStyle: "medium" })
-                    : "—"}
+                <span className="text-foreground text-right font-medium">
+                  {user?.dateJoined ? <TimestampText value={user.dateJoined} /> : "—"}
                 </span>
               </div>
             </div>

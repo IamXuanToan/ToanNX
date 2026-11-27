@@ -75,8 +75,8 @@ export type PortalNavSectionConfig = {
 
 /**
  * Danh sách cụm menu tối ưu của Client Portal:
- * - Gộp các màn con nhật ký/lịch sử/cài đặt (Phiếu bảo hành, Lịch sử gia hạn, Sự cố Uptime, Cài đặt Trợ lý)
- *   vào bên trong từng mục cha (`Thiết bị`, `Dịch vụ`, `Uptime`, `Trợ lý AI`) để sidebar gọn còn 4 cụm chính.
+ * - Gộp các màn con nhật ký/lịch sử/cài đặt (Phiếu bảo hành, Lịch sử gia hạn, Cài đặt Trợ lý)
+ *   vào bên trong từng mục cha (`Thiết bị`, `Dịch vụ`, `Trợ lý AI`) để sidebar gọn còn 4 cụm chính.
  * - Gộp `Thư viện` (trước đây lẻ 1 mục ở cuối) vào cụm `Tiện ích`.
  */
 export const PORTAL_NAV_SECTIONS: readonly PortalNavSectionConfig[] = [

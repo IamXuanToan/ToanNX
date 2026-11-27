@@ -3,11 +3,11 @@
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
-import { Link } from "@/i18n/navigation";
 import { ChoiceList } from "@/shares/components/common/choice-list";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { FormLayout } from "@/shares/components/common/form-layout";
@@ -123,11 +123,7 @@ export function PagePathForm({
             {tCommon("cancel")}
           </Button>
         ) : (
-          <Button type="button" variant="outline" asChild>
-            <Link href={UTILITIES_ROUTES.pagePaths}>
-              {disabled ? tCommon("back") : tCommon("cancel")}
-            </Link>
-          </Button>
+          <FormBackButton href={UTILITIES_ROUTES.pagePaths} />
         )}
         {disabled ? null : (
           <FormSubmitButton

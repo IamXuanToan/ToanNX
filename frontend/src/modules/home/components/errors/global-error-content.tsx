@@ -92,8 +92,8 @@ export function GlobalErrorContent({ error, retry }: { error: unknown; retry: ()
             </Button>
           </div>
 
-          {/* Khối cảnh báo lỗi nổi bật khi phát triển hoặc khi có chi tiết lỗi */}
-          {isDev || errorMessage ? (
+          {/* Chỉ hiển thị khối chi tiết lỗi kỹ thuật ở môi trường phát triển */}
+          {isDev ? (
             <Card className="border-destructive/60 bg-destructive/10 text-destructive mt-8 w-full text-left shadow-md">
               <CardContent className="p-4 sm:p-5">
                 <div className="border-destructive/20 flex items-center gap-2 border-b pb-3">
@@ -110,7 +110,7 @@ export function GlobalErrorContent({ error, retry }: { error: unknown; retry: ()
 
                   {digest ? (
                     <div className="text-muted-foreground text-xs">
-                      <span className="text-foreground font-semibold">Digest:</span>{" "}
+                      <span className="text-foreground font-semibold">{t.digest}:</span>{" "}
                       <code className="bg-muted/60 rounded px-1.5 py-0.5 font-mono select-all">
                         {digest}
                       </code>

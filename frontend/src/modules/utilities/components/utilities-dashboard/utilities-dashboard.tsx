@@ -30,6 +30,7 @@ import { Skeleton } from "@/shares/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui/tabs";
 import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
 import { useTabState } from "@/shares/hooks/use-tab-state";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 import { donationKeys, pageKeys, qrCodeKeys, shortLinkKeys } from "../../constants/query-keys";
 import { UTILITIES_ROUTES } from "../../constants/routes";
@@ -321,7 +322,7 @@ export function UtilitiesDashboard() {
                           <p className="truncate text-xs font-semibold">{page.title}</p>
                           <p className="text-muted-foreground truncate text-[11px]">
                             {t("ownerLabel", {
-                              owner: page.owner?.fullName || page.owner?.email || "—",
+                              owner: formatUserDisplayName(page.owner) || "—",
                             })}
                           </p>
                         </div>
@@ -363,7 +364,7 @@ export function UtilitiesDashboard() {
                           <p className="truncate text-xs font-semibold">{qr.name}</p>
                           <p className="text-muted-foreground truncate text-[11px]">
                             {t("ownerLabel", {
-                              owner: qr.owner?.fullName || qr.owner?.email || "—",
+                              owner: formatUserDisplayName(qr.owner) || "—",
                             })}
                           </p>
                         </div>

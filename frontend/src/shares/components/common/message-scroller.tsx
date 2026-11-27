@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { Button } from "@/shares/components/ui/button";
 import { cn } from "cn";
 
+import { AppTooltip } from "./app-tooltip";
 import { useMessageScroller } from "./hooks/use-message-scroller";
 
 /**
@@ -40,18 +41,19 @@ export function MessageScroller({
       </div>
 
       {showScrollButton ? (
-        <Button
-          type="button"
-          size="icon"
-          variant="secondary"
-          onClick={() => scrollToBottom("smooth")}
-          aria-label={scrollToBottomLabel}
-          title={scrollToBottomLabel}
-          data-testid="message-scroller-bottom-btn"
-          className="border-border/80 absolute right-3 bottom-3 size-8 rounded-full border shadow-md"
-        >
-          <ArrowDown className="size-4" />
-        </Button>
+        <AppTooltip content={scrollToBottomLabel}>
+          <Button
+            type="button"
+            size="icon"
+            variant="secondary"
+            onClick={() => scrollToBottom("smooth")}
+            aria-label={scrollToBottomLabel}
+            data-testid="message-scroller-bottom-btn"
+            className="border-border/80 absolute right-3 bottom-3 size-8 rounded-full border shadow-md"
+          >
+            <ArrowDown className="size-4" />
+          </Button>
+        </AppTooltip>
       ) : null}
     </div>
   );

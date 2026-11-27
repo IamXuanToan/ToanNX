@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { ProfileDialog } from "@/modules/system/components/current-user/profile-dialog";
 import type { AuthRole, AuthUser } from "@/modules/system/types/auth.types";
@@ -85,8 +85,9 @@ vi.mock("next-intl", () => ({
     };
     return map[key] ?? key;
   },
+  useLocale: () => "vi",
   useFormatter: () => ({
-    dateTime: () => "01/01/2026 12:00",
+    dateTime: () => "01/01/2026 12:00:00",
     relativeTime: () => "vừa xong",
   }),
   useNow: () => new Date(),
@@ -118,6 +119,16 @@ function renderWithClient(ui: React.ReactElement) {
   return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
 }
 
+beforeAll(() => {
+  if (!globalThis.ResizeObserver) {
+    globalThis.ResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  }
+});
+
 describe("ProfileDialog", () => {
   afterEach(() => {
     cleanup();
@@ -137,7 +148,7 @@ describe("ProfileDialog", () => {
 
     // Header & Tên hiển thị
     expect(screen.getByText("Hồ sơ cá nhân")).toBeTruthy();
-    expect(screen.getByText("Nguyễn Xuân Toàn")).toBeTruthy();
+    expect(screen.getByText("Nguyễn Xuân Toàn (toannx)")).toBeTruthy();
     expect(screen.getByText("Siêu quản trị")).toBeTruthy();
     expect(screen.getByText("Biên tập viên")).toBeTruthy();
 

@@ -16,6 +16,7 @@ const SERVER_SNAPSHOT: ClockSnapshot = {
   hours24: "--:--",
   seconds: "--",
   period: "--",
+  periodEn: "--",
   dateString: "",
   dateStringVi: "",
   dateStringEn: "",
@@ -48,12 +49,19 @@ const CHI = [
 ] as const;
 
 function calculateClockSnapshot(now: Date): ClockSnapshot {
-  // 1. Phân tách giờ 12h và 24h
+  // 1. Phân tách giờ 12h (song ngữ VI/EN) và 24h
   const parts12 = new Intl.DateTimeFormat(APP_NUMBER_LOCALE, {
     timeZone: DEFAULT_TIMEZONE,
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
+    hour12: true,
+  }).formatToParts(now);
+
+  const parts12En = new Intl.DateTimeFormat(EN_NUMBER_LOCALE, {
+    timeZone: DEFAULT_TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: true,
   }).formatToParts(now);
 
@@ -69,11 +77,15 @@ function calculateClockSnapshot(now: Date): ClockSnapshot {
   let m12 = "00";
   let s12 = "00";
   let p12 = "";
+  let p12En = "";
   for (const p of parts12) {
     if (p.type === "hour") h12 = p.value;
     if (p.type === "minute") m12 = p.value;
     if (p.type === "second") s12 = p.value;
     if (p.type === "dayPeriod") p12 = p.value;
+  }
+  for (const p of parts12En) {
+    if (p.type === "dayPeriod") p12En = p.value;
   }
 
   let h24 = "00";
@@ -165,6 +177,7 @@ function calculateClockSnapshot(now: Date): ClockSnapshot {
     hours24: `${h24}:${m24}`,
     seconds: s12,
     period: p12,
+    periodEn: p12En,
     dateString: dateStringVi,
     dateStringVi,
     dateStringEn,

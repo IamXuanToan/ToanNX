@@ -1,9 +1,10 @@
 "use client";
 
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Badge } from "@/shares/components/ui/badge";
 
 import type { SystemSetting } from "../../types/setting.types";
@@ -25,7 +26,6 @@ interface SettingTableProps {
  */
 export function SettingTable({ canUpdate, canDelete }: SettingTableProps) {
   const t = useTranslations("system.settings.table");
-  const format = useFormatter();
   const state = useSettingTable();
   const { query, table, selectedSetting, isEditDialogOpen, isReadOnly, closeEditDialog } = state;
 
@@ -106,10 +106,7 @@ export function SettingTable({ canUpdate, canDelete }: SettingTableProps) {
       mobile: "hidden",
       cell: (setting) => (
         <span className="text-muted-foreground text-xs">
-          {format.dateTime(new Date(setting.updatedAt), {
-            dateStyle: "short",
-            timeStyle: "short",
-          })}
+          <TimestampText value={setting.updatedAt} />
         </span>
       ),
     },

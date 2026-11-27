@@ -3,6 +3,7 @@
 import { Music, Pause, Play, Volume1, Volume2, VolumeX, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Button } from "@/shares/components/ui/button";
 import { Slider } from "@/shares/components/ui/slider";
 
@@ -143,27 +144,28 @@ export function ChillAudio({ isDay = true, suggestedTrack, thunderTrigger }: Chi
 
       {/* 3. Nút chỉnh âm lượng chuẩn Shadcn UI Slider trên cùng 1 dòng */}
       <div className="flex shrink-0 items-center gap-1.5">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={toggleMute}
-          title={isMuted ? t("trackMute") : `${t("volume")}: ${volume}%`}
-          aria-label={isMuted ? t("trackMute") : `${t("volume")}: ${volume}%`}
-          className={`size-7.5 rounded-full transition-colors ${
-            isDay
-              ? "text-slate-600 hover:bg-slate-900/5 hover:text-slate-900"
-              : "text-slate-400 hover:bg-white/10 hover:text-slate-200"
-          }`}
-        >
-          {isMuted || volume === 0 ? (
-            <VolumeX className="size-3.5 text-rose-500" />
-          ) : volume < 50 ? (
-            <Volume1 className="size-3.5" />
-          ) : (
-            <Volume2 className="size-3.5" />
-          )}
-        </Button>
+        <AppTooltip content={isMuted ? t("trackMute") : `${t("volume")}: ${volume}%`}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={toggleMute}
+            aria-label={isMuted ? t("trackMute") : `${t("volume")}: ${volume}%`}
+            className={`size-7.5 rounded-full transition-colors ${
+              isDay
+                ? "text-slate-600 hover:bg-slate-900/5 hover:text-slate-900"
+                : "text-slate-400 hover:bg-white/10 hover:text-slate-200"
+            }`}
+          >
+            {isMuted || volume === 0 ? (
+              <VolumeX className="size-3.5 text-rose-500" />
+            ) : volume < 50 ? (
+              <Volume1 className="size-3.5" />
+            ) : (
+              <Volume2 className="size-3.5" />
+            )}
+          </Button>
+        </AppTooltip>
 
         {/* Thanh trượt âm lượng Slider Shadcn UI */}
         <div className="flex items-center gap-1">

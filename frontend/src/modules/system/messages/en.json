@@ -654,6 +654,7 @@
     "title": "Change journal",
     "history": "Change history",
     "empty": "No changes yet.",
+    "emptyHint": "Create, edit, and status updates will automatically appear here.",
     "searchPlaceholder": "Search by record or actor…",
     "system": "System",
     "masked": "(hidden)",
@@ -673,6 +674,12 @@
       "DELETE": "deleted",
       "EVENT": "event"
     },
+    "actionBadges": {
+      "CREATE": "Created",
+      "UPDATE": "Updated",
+      "DELETE": "Deleted",
+      "EVENT": "Event"
+    },
     "events": {
       "system_role_assigned": "assigned a role",
       "system_role_revoked": "removed a role",
@@ -686,7 +693,22 @@
       "permissions": "Permissions",
       "roles": "Roles",
       "permission": "Permission",
-      "role": "Role"
+      "role": "Role",
+      "owner": "Owner",
+      "notificationChannels": "Notification channels",
+      "autoGrant": "Auto-assign to new users",
+      "isSystem": "System role",
+      "emailVerifiedAt": "Email verified at",
+      "isVerified": "Email verified",
+      "thumbnail": "Thumbnail",
+      "favoritesCount": "Favorites",
+      "viewsCount": "Views",
+      "contentVersion": "Content version",
+      "responsiveConfig": "Responsive layout",
+      "styleConfig": "Style config",
+      "templateKey": "Template",
+      "templateVersion": "Template version",
+      "passwordHash": "Password protection"
     },
     "detail": {
       "title": "Change details",
@@ -857,6 +879,7 @@
         "body": "Body",
         "level": "Level",
         "link": "Link",
+        "linkPlaceholder": "/admin",
         "linkHint": "An in-site path starting with /.",
         "target": "Send to",
         "roles": "Roles",
@@ -924,7 +947,8 @@
       "symbol": "Symbol",
       "decimalPlaces": "Decimal places",
       "position": "Order",
-      "isActive": "Active"
+      "isActive": "Active",
+      "isBase": "Base currency"
     },
     "validation": {
       "required": "Required.",

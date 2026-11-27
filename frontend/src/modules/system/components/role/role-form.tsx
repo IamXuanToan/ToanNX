@@ -3,13 +3,13 @@
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
-import { Link } from "@/i18n/navigation";
 import { ChoiceGroups } from "@/shares/components/common/choice-groups";
 import { ChoiceList } from "@/shares/components/common/choice-list";
 import { CodeInput } from "@/shares/components/common/code-input";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormLayout } from "@/shares/components/common/form-layout";
@@ -170,10 +170,7 @@ export function RoleForm({
       ) : null}
 
       <FormActions start={canSave && role && state.isDirty ? tCommon("unsaved") : null}>
-        {/* Hủy là lối quay lại danh sách; chỉ xem thì nút này ghi "Quay lại". */}
-        <Button asChild variant="outline">
-          <Link href={SYSTEM_ROUTES.roles}>{canSave ? tCommon("cancel") : tCommon("back")}</Link>
-        </Button>
+        <FormBackButton href={SYSTEM_ROUTES.roles} />
         {canSave ? (
           <FormSubmitButton isSubmitting={isSubmitting} disabled={Boolean(role) && !state.isDirty}>
             {role ? tCommon("save") : tCommon("create")}

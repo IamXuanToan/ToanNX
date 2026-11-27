@@ -33,7 +33,7 @@ export type QrCode = {
   name: string;
   qrType: QrType;
   image: AttachmentSummary;
-  owner: { id: string; email: string; fullName: string };
+  owner: { id: string; email: string; username: string | null; fullName: string };
   createdAt: string;
   updatedAt: string;
 };

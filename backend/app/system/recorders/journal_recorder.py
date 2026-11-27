@@ -2,7 +2,6 @@
 
 from typing import Any
 
-from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 
 from app.core.context.user_context import get_current_user, get_request_id
@@ -10,6 +9,7 @@ from app.core.tracking.change_recorder import ChangeRecorder
 from app.core.tracking.change_set import ChangeSet
 from app.system.models.journal_entry import JournalEntry
 from app.system.repositories.journal_entry_repository import JournalEntryRepository
+from app.system.repositories.user_repository import UserRepository
 
 
 class JournalRecorder(ChangeRecorder):
@@ -18,6 +18,7 @@ class JournalRecorder(ChangeRecorder):
     def __init__(self) -> None:
         """Khởi tạo repository."""
         self.repository = JournalEntryRepository()
+        self.user_repository = UserRepository()
 
     def record(self, change: ChangeSet) -> None:
         """Lưu một thay đổi.
@@ -49,13 +50,11 @@ class JournalRecorder(ChangeRecorder):
         """
         return self.repository.for_object(resource, object_id)
 
-    @staticmethod
-    def _actor_label(actor_id: Any) -> str:
+    def _actor_label(self, actor_id: Any) -> str:
         """Email người thực hiện; dùng người dùng của request nếu khớp để không tốn query."""
         if actor_id is None:
             return ""
         current = get_current_user()
         if current is not None and str(current.pk) == str(actor_id):
             return str(current.email)
-        email = get_user_model()._default_manager.filter(pk=actor_id).values_list("email", flat=True).first()
-        return str(email or "")
+        return self.user_repository.find_email_by_id(actor_id)

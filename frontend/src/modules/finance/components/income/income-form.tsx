@@ -3,11 +3,11 @@
 import { useTranslations } from "next-intl";
 import { Controller, useWatch } from "react-hook-form";
 
-import { Link } from "@/i18n/navigation";
 import { ChoiceList } from "@/shares/components/common/choice-list";
 import { DateTimePicker } from "@/shares/components/common/date-time-picker";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormLayout } from "@/shares/components/common/form-layout";
 import { FormSection } from "@/shares/components/common/form-section";
@@ -15,7 +15,6 @@ import { FormSubmitButton } from "@/shares/components/common/form-submit-button"
 import { NumberInput } from "@/shares/components/common/number-input";
 import { RadioGroupField } from "@/shares/components/common/radio-group-field";
 import { SelectField } from "@/shares/components/common/select-field";
-import { Button } from "@/shares/components/ui/button";
 import { Textarea } from "@/shares/components/ui/textarea";
 
 import { useFinanceRoutes } from "../../hooks/use-finance-routes";
@@ -308,9 +307,7 @@ export function IncomeForm({ income, disabled = false }: { income?: Income; disa
         </FormSection>
       </FormLayout>
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
-        <Button type="button" variant="outline" asChild>
-          <Link href={routes.incomes}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
-        </Button>
+        <FormBackButton href={routes.incomes} />
         {disabled ? null : (
           <FormSubmitButton
             isSubmitting={state.isSubmitting}

@@ -12,6 +12,7 @@ export type Invoice = {
   ownerId: string;
   ownerEmail: string;
   ownerName: string;
+  ownerUsername: string | null;
   docType: DocType;
   number: string;
   issuer: string;

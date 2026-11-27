@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { Calendar, Hash, Mail, User as UserIcon } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Badge } from "@/shares/components/ui/badge";
 
 import type { UserConnectedSocial } from "../../types/user.types";
@@ -29,7 +30,6 @@ export function UserSocialAccountCard({
   account,
 }: UserSocialAccountCardProps) {
   const t = useTranslations("system.account.users");
-  const format = useFormatter();
 
   return (
     <div className="border-border/60 bg-muted/20 space-y-3 rounded-xl border p-3.5 transition-colors">
@@ -90,10 +90,7 @@ export function UserSocialAccountCard({
             <div className="text-muted-foreground flex items-center gap-2 pt-0.5">
               <Calendar className="size-3.5 shrink-0" aria-hidden />
               <span className="text-[11px]">
-                {format.dateTime(new Date(account.createdAt), {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                })}
+                <TimestampText value={account.createdAt} />
               </span>
             </div>
           ) : null}

@@ -18,7 +18,7 @@ import {
   User,
 } from "lucide-react";
 import Image from "next/image";
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { AttachmentPicker } from "@/modules/system/components/attachment/attachment-picker";
 import { NotificationSettingsTab } from "@/modules/system/components/notification-preference/notification-settings-tab";
@@ -33,6 +33,7 @@ import { EmailInput } from "@/shares/components/common/email-input";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
 import { PasswordInput } from "@/shares/components/common/password-input";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { UserAvatar } from "@/shares/components/common/user-avatar";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
@@ -58,8 +59,6 @@ const SOCIAL_PROVIDERS = [
 export function PortalProfile() {
   const tPortal = useTranslations("portal.profile");
   const tPreferences = useTranslations("system.notifications.preferences");
-  const format = useFormatter();
-  const now = useNow({ updateInterval: 60_000 });
 
   const {
     t,
@@ -270,16 +269,9 @@ export function PortalProfile() {
                     <Clock className="size-3" aria-hidden />
                     <span>{t("activity.lastLogin")}</span>
                   </span>
-                  <span className="text-foreground truncate text-right font-medium">
+                  <span className="text-foreground text-right font-medium">
                     {user.lastLogin ? (
-                      <span
-                        title={format.dateTime(new Date(user.lastLogin), {
-                          dateStyle: "full",
-                          timeStyle: "medium",
-                        })}
-                      >
-                        {format.relativeTime(new Date(user.lastLogin), now)}
-                      </span>
+                      <TimestampText value={user.lastLogin} />
                     ) : (
                       t("activity.never")
                     )}
@@ -291,10 +283,8 @@ export function PortalProfile() {
                     <Calendar className="size-3" aria-hidden />
                     <span>{t("activity.dateJoined")}</span>
                   </span>
-                  <span className="text-foreground truncate text-right font-medium">
-                    {user.dateJoined
-                      ? format.dateTime(new Date(user.dateJoined), { dateStyle: "medium" })
-                      : "—"}
+                  <span className="text-foreground text-right font-medium">
+                    {user.dateJoined ? <TimestampText value={user.dateJoined} /> : "—"}
                   </span>
                 </div>
               </div>

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
@@ -46,19 +47,23 @@ export function PlatformProfile({
       />
     );
   return (
-    <FormPage title={query.data.name}>
-      <div className="space-y-6">
-        <PlatformForm
-          platform={query.data}
-          disabled={!canUpdate}
-          canReadRules={canReadRules}
-          canCreateRule={canCreateRule}
-          canUpdateRule={canUpdateRule}
-          canDeleteRule={canDeleteRule}
-        />
-        <PlatformTaxRatesSection platformId={id} canUpdate={canUpdate} />
-        {history}
-      </div>
+    <FormPage title={query.data.name} backHref={routes.platforms}>
+      <RecordDetailTabs
+        general={
+          <div className="space-y-6">
+            <PlatformForm
+              platform={query.data}
+              disabled={!canUpdate}
+              canReadRules={canReadRules}
+              canCreateRule={canCreateRule}
+              canUpdateRule={canUpdateRule}
+              canDeleteRule={canDeleteRule}
+            />
+            <PlatformTaxRatesSection platformId={id} canUpdate={canUpdate} />
+          </div>
+        }
+        history={history}
+      />
     </FormPage>
   );
 }

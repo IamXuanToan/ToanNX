@@ -2,17 +2,20 @@
 
 import type { ComponentProps } from "react";
 import { Copy, ExternalLink } from "lucide-react";
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge } from "@/shares/components/common/status-badge";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { toSafeHttpUrl } from "@/shares/lib/safe-url";
+import { formatUserDisplayName, formatUserDisplayTooltip } from "@/shares/lib/user-display";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { PAGE_STATUSES, PAGE_TYPES, type Page } from "../../types/page.types";
@@ -48,8 +51,6 @@ export function PageTable({
   detailRoute?: DetailRouteFn;
 }) {
   const t = useTranslations("utilities.customPages.pages");
-  const format = useFormatter();
-  const now = useNow({ updateInterval: 60_000 });
   const state = usePageTable({ ownerOnly, ownerId, detailRoute });
   const { table, query } = state;
 
@@ -115,11 +116,16 @@ export function PageTable({
             id: "owner",
             header: t("columns.owner"),
             hideBelow: "xl" as const,
-            cell: (page: Page) => (
-              <span className="text-muted-foreground truncate">
-                {page.owner.fullName || page.owner.email}
-              </span>
-            ),
+            cell: (page: Page) => {
+              const ownerLabel = formatUserDisplayName(page.owner);
+              return (
+                <AppTooltip content={formatUserDisplayTooltip(page.owner)}>
+                  <span className="text-muted-foreground block max-w-44 truncate">
+                    {ownerLabel || "—"}
+                  </span>
+                </AppTooltip>
+              );
+            },
           },
         ]
       : []),
@@ -130,7 +136,7 @@ export function PageTable({
       hideBelow: "lg",
       cell: (page) => (
         <span className="text-muted-foreground">
-          {format.relativeTime(new Date(page.updatedAt), now)}
+          <TimestampText value={page.updatedAt} />
         </span>
       ),
     },

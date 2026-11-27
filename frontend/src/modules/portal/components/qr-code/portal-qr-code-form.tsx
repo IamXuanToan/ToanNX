@@ -9,6 +9,7 @@ import { Link } from "@/i18n/navigation";
 import { ColorInput } from "@/shares/components/common/color-input";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
@@ -356,9 +357,7 @@ export function PortalQrCodeForm({
       </div>
 
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
-        <Button type="button" variant="outline" asChild>
-          <Link href={PORTAL_ROUTES.qrCodes}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
-        </Button>
+        <FormBackButton href={PORTAL_ROUTES.qrCodes} />
         {disabled ? null : (
           <FormSubmitButton
             isSubmitting={state.isSubmitting}

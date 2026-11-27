@@ -33,7 +33,12 @@ export function Message({
       className={cn("flex items-end gap-2.5", isUser ? "justify-end" : "justify-start", className)}
     >
       {!isUser && avatar ? <div className="shrink-0">{avatar}</div> : null}
-      <div className={cn("flex max-w-[82%] flex-col gap-1", isUser ? "items-end" : "items-start")}>
+      <div
+        className={cn(
+          "flex max-w-[82%] min-w-0 flex-col gap-1",
+          isUser ? "items-end" : "items-start",
+        )}
+      >
         {children}
         {meta}
       </div>

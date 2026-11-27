@@ -3,6 +3,7 @@
 import { Calendar, Clock, Compass, Hourglass } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
@@ -65,20 +66,21 @@ export function ClockWidget({ isDay = true }: ClockWidgetProps) {
         </div>
 
         <div className="flex items-center gap-1.5">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={toggleFormat}
-            title={t("clock.toggleFormat")}
-            className={`h-auto rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold transition-all hover:scale-105 active:scale-95 ${
-              isDay
-                ? "border-white/50 bg-white/40 text-slate-700 hover:bg-white/70"
-                : "border-white/10 bg-white/[0.06] text-slate-300 hover:bg-white/[0.12]"
-            }`}
-          >
-            {timeFormat.toUpperCase()}
-          </Button>
+          <AppTooltip content={t("clock.toggleFormat")}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={toggleFormat}
+              className={`h-auto rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold transition-all hover:scale-105 active:scale-95 ${
+                isDay
+                  ? "border-white/50 bg-white/40 text-slate-700 hover:bg-white/70"
+                  : "border-white/10 bg-white/[0.06] text-slate-300 hover:bg-white/[0.12]"
+              }`}
+            >
+              {timeFormat.toUpperCase()}
+            </Button>
+          </AppTooltip>
           <Badge
             variant="outline"
             className={`text-[11px] font-medium ${
@@ -111,7 +113,7 @@ export function ClockWidget({ isDay = true }: ClockWidgetProps) {
                   isDay ? "text-slate-500" : "text-slate-400"
                 }`}
               >
-                {clock.period}
+                {locale === "vi" ? clock.period : clock.periodEn}
               </span>
             ) : null}
           </div>
@@ -140,47 +142,53 @@ export function ClockWidget({ isDay = true }: ClockWidgetProps) {
           isDay ? "border-slate-900/10 text-slate-600" : "border-white/10 text-slate-300"
         }`}
       >
-        <div
-          title={t("clock.dayOfYearTooltip", { current: clock.dayOfYear, total: clock.totalDays })}
-          className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
+        <AppTooltip
+          content={t("clock.dayOfYearTooltip", {
+            current: clock.dayOfYear,
+            total: clock.totalDays,
+          })}
         >
-          <Calendar className="size-3 text-sky-500 sm:size-3.5" />
-          <span>
-            {t("clock.dayLabel")}:{" "}
-            <strong className={isDay ? "text-slate-900" : "text-white"}>
-              {clock.dayOfYear}/{clock.totalDays}
-            </strong>
-          </span>
-        </div>
+          <div className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5">
+            <Calendar className="size-3 text-sky-500 sm:size-3.5" />
+            <span>
+              {t("clock.dayLabel")}:{" "}
+              <strong className={isDay ? "text-slate-900" : "text-white"}>
+                {clock.dayOfYear}/{clock.totalDays}
+              </strong>
+            </span>
+          </div>
+        </AppTooltip>
 
-        <div
-          title={t("clock.weekOfYearTooltip", { current: clock.weekOfYear, total: 52 })}
-          className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
+        <AppTooltip
+          content={t("clock.weekOfYearTooltip", { current: clock.weekOfYear, total: 52 })}
         >
-          <Compass className="size-3 text-teal-500 sm:size-3.5" />
-          <span>
-            {t("clock.weekLabel")}:{" "}
-            <strong className={isDay ? "text-slate-900" : "text-white"}>
-              {clock.weekOfYear}/52
-            </strong>
-          </span>
-        </div>
+          <div className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5">
+            <Compass className="size-3 text-teal-500 sm:size-3.5" />
+            <span>
+              {t("clock.weekLabel")}:{" "}
+              <strong className={isDay ? "text-slate-900" : "text-white"}>
+                {clock.weekOfYear}/52
+              </strong>
+            </span>
+          </div>
+        </AppTooltip>
 
-        <div
-          title={t("clock.yearProgressTooltip", {
+        <AppTooltip
+          content={t("clock.yearProgressTooltip", {
             total: clock.totalDays,
             current: clock.dayOfYear,
           })}
-          className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
         >
-          <Hourglass className="size-3 text-amber-500 sm:size-3.5" />
-          <span>
-            {t("clock.yearProgressLabel")}:{" "}
-            <strong className={isDay ? "text-slate-900" : "text-white"}>
-              {clock.yearProgress}%
-            </strong>
-          </span>
-        </div>
+          <div className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5">
+            <Hourglass className="size-3 text-amber-500 sm:size-3.5" />
+            <span>
+              {t("clock.yearProgressLabel")}:{" "}
+              <strong className={isDay ? "text-slate-900" : "text-white"}>
+                {clock.yearProgress}%
+              </strong>
+            </span>
+          </div>
+        </AppTooltip>
       </div>
     </div>
   );

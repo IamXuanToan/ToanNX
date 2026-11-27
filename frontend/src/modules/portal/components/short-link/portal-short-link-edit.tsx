@@ -1,12 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 import { useRouter } from "@/i18n/navigation";
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 import { ShortLinkForm } from "@/modules/utilities/components/short-link/short-link-form";
 import { useShortLink } from "@/modules/utilities/hooks/use-short-link";
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
@@ -23,10 +25,12 @@ export function PortalShortLinkEdit({
   id,
   canUpdate,
   canManageAll = false,
+  history,
 }: {
   id: string;
   canUpdate: boolean;
   canManageAll?: boolean;
+  history?: ReactNode;
 }) {
   const t = useTranslations("portal.shortLinks");
   const router = useRouter();
@@ -63,16 +67,19 @@ export function PortalShortLinkEdit({
   }
 
   return (
-    <FormPage title={t("editTitle", { name: link.name })}>
-      <ShortLinkForm
-        link={link}
-        disabled={!canUpdate}
-        onSaved={() => {
-          router.push(PORTAL_ROUTES.shortLinks);
-        }}
-        onCancel={() => {
-          router.push(PORTAL_ROUTES.shortLinks);
-        }}
+    <FormPage title={t("editTitle", { name: link.name })} backHref={PORTAL_ROUTES.shortLinks}>
+      <RecordDetailTabs
+        general={
+          <ShortLinkForm
+            link={link}
+            disabled={!canUpdate}
+            backHref={PORTAL_ROUTES.shortLinks}
+            onSaved={() => {
+              router.push(PORTAL_ROUTES.shortLinks);
+            }}
+          />
+        }
+        history={history}
       />
     </FormPage>
   );

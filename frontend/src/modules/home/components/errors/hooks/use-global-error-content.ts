@@ -1,5 +1,7 @@
 "use client";
 
+import { env } from "@/shares/config/env";
+
 import { useReportClientError } from "../../../hooks/use-report-client-error";
 
 /**
@@ -28,9 +30,11 @@ export function useGlobalErrorContent(error: unknown) {
       ? error.message
       : typeof error === "string"
         ? error
-        : "Đã xảy ra lỗi hệ thống.";
+        : isEn
+          ? "An unexpected system error occurred."
+          : "Đã xảy ra lỗi hệ thống.";
   const errorStack = error instanceof Error ? (error.stack ?? null) : null;
-  const isDev = process.env.NODE_ENV === "development";
+  const isDev = !env.isProduction;
 
   return { locale, digest, errorName, errorMessage, errorStack, isDev };
 }

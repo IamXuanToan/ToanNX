@@ -3,11 +3,11 @@
 import { useFormatter, useTranslations } from "next-intl";
 import { Controller, useWatch } from "react-hook-form";
 
-import { Link } from "@/i18n/navigation";
 import { ChoiceList } from "@/shares/components/common/choice-list";
 import { DatePicker } from "@/shares/components/common/date-picker";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormLayout } from "@/shares/components/common/form-layout";
 import { FormSection } from "@/shares/components/common/form-section";
@@ -15,7 +15,6 @@ import { FormSubmitButton } from "@/shares/components/common/form-submit-button"
 import { NumberInput } from "@/shares/components/common/number-input";
 import { RadioGroupField } from "@/shares/components/common/radio-group-field";
 import { SelectField } from "@/shares/components/common/select-field";
-import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
 import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
@@ -302,9 +301,7 @@ export function InvoiceForm({
         </FormSection>
       </FormLayout>
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
-        <Button type="button" variant="outline" asChild>
-          <Link href={routes.invoices}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
-        </Button>
+        <FormBackButton href={routes.invoices} />
         {disabled ? null : (
           <FormSubmitButton
             isSubmitting={state.isSubmitting}

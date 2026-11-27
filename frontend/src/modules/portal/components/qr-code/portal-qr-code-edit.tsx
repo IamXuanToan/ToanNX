@@ -1,10 +1,12 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 import { useQrCode } from "@/modules/utilities/hooks/use-qr-code";
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
@@ -22,10 +24,12 @@ export function PortalQrCodeEdit({
   id,
   canUpdate,
   canManageAll = false,
+  history,
 }: {
   id: string;
   canUpdate: boolean;
   canManageAll?: boolean;
+  history?: ReactNode;
 }) {
   const t = useTranslations("portal.qrCodes");
   const { data: currentUser, isPending: isUserPending } = useCurrentUser();
@@ -47,8 +51,11 @@ export function PortalQrCodeEdit({
   }
 
   return (
-    <FormPage title={t("editTitle", { name: code.name })}>
-      <PortalQrCodeForm code={code} disabled={!canUpdate} />
+    <FormPage title={t("editTitle", { name: code.name })} backHref={PORTAL_ROUTES.qrCodes}>
+      <RecordDetailTabs
+        general={<PortalQrCodeForm code={code} disabled={!canUpdate} />}
+        history={history}
+      />
     </FormPage>
   );
 }

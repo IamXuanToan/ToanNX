@@ -5,6 +5,8 @@ import { cn } from "cn";
 import { FileText, ImageOff, Lock, Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
+
 import type { Attachment } from "../../types/attachment.types";
 import { AttachmentVideoPlayer } from "./attachment-video-player";
 import { useAttachmentPreview } from "./hooks/use-attachment-preview";
@@ -61,12 +63,11 @@ export function AttachmentPreview({
         <FileText className="size-10" aria-hidden />
       )}
       {file.visibility === "private" ? (
-        <span
-          className="bg-background/90 text-foreground absolute bottom-1.5 left-1.5 z-10 inline-flex size-6 items-center justify-center rounded-md border shadow-2xs"
-          title={t("privateBadge")}
-        >
-          <Lock className="size-3.5" aria-label={t("privateBadge")} />
-        </span>
+        <AppTooltip content={t("privateBadge")}>
+          <span className="bg-background/90 text-foreground absolute bottom-1.5 left-1.5 z-10 inline-flex size-6 items-center justify-center rounded-md border shadow-2xs">
+            <Lock className="size-3.5" aria-label={t("privateBadge")} />
+          </span>
+        </AppTooltip>
       ) : null}
     </div>
   );

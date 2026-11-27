@@ -140,7 +140,7 @@ export function useProfileDialog({
     if (connectingProvider) return;
     setConnectingProvider(provider);
     try {
-      const state = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      const state = crypto.randomUUID();
       sessionStorage.setItem(OAUTH_STORAGE_KEYS.state, state);
       sessionStorage.setItem(OAUTH_STORAGE_KEYS.mode, OAUTH_MODE.link);
       const redirectUri = `${window.location.origin}/auth/callback/${provider}`;

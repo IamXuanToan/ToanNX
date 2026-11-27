@@ -47,9 +47,9 @@ export function PageProfile({
         disabled={!canUpdate}
         canCreatePath={canCreatePath}
         canUpdatePath={canUpdatePath}
+        history={history}
         onReload={() => query.refetch()}
       />
-      {history ? <div className="mt-6">{history}</div> : null}
     </FormPage>
   );
 }

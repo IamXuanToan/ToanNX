@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import type { AppPathname } from "@/i18n/routing";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
 import { PasswordInput } from "@/shares/components/common/password-input";
@@ -41,50 +42,57 @@ export function LoginForm({ redirectTo }: { redirectTo: AppPathname }) {
     <div className="space-y-3.5">
       {/* 1. Đăng nhập nhanh bằng Google & GitHub */}
       <div className="space-y-2">
-        <Button
-          type="button"
-          variant="outline"
-          className="border-border/80 hover:bg-muted/50 h-10 w-full gap-2.5 rounded-xl text-xs font-medium shadow-2xs transition-colors sm:h-10.5 sm:text-sm"
-          onClick={() => void handleSocialLogin("google")}
-          disabled={isSubmitting || Boolean(socialLoading) || !isGoogleEnabled}
-          title={!isGoogleEnabled ? t("socialDisabledHint") : undefined}
-          data-testid="login-google-button"
-        >
-          {socialLoading === "google" ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Image src={ICON_PATHS.google} alt="Google" width={18} height={18} />
-          )}
-          <span className="truncate">
-            {t("continueWithGoogle")} {!isGoogleEnabled ? `(${t("temporarilyDisabled")})` : ""}
+        <AppTooltip content={!isGoogleEnabled ? t("socialDisabledHint") : undefined}>
+          <span className="inline-flex w-full" tabIndex={!isGoogleEnabled ? 0 : undefined}>
+            <Button
+              type="button"
+              variant="outline"
+              className="border-border/80 hover:bg-muted/50 h-10 w-full gap-2.5 rounded-xl text-xs font-medium shadow-2xs transition-colors sm:h-10.5 sm:text-sm"
+              onClick={() => void handleSocialLogin("google")}
+              disabled={isSubmitting || Boolean(socialLoading) || !isGoogleEnabled}
+              data-testid="login-google-button"
+            >
+              {socialLoading === "google" ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Image src={ICON_PATHS.google} alt="Google" width={18} height={18} />
+              )}
+              <span className="truncate">
+                {t("continueWithGoogle")} {!isGoogleEnabled ? `(${t("temporarilyDisabled")})` : ""}
+              </span>
+            </Button>
           </span>
-        </Button>
+        </AppTooltip>
 
         {isGithubEnabled ? (
-          <Button
-            type="button"
-            variant="outline"
-            className="border-border/80 hover:bg-muted/50 h-10 w-full gap-2.5 rounded-xl text-xs font-medium shadow-2xs transition-colors sm:h-10.5 sm:text-sm"
-            onClick={() => void handleSocialLogin("github")}
-            disabled={isSubmitting || Boolean(socialLoading) || !isGithubEnabled}
-            title={!isGithubEnabled ? t("socialDisabledHint") : undefined}
-            data-testid="login-github-button"
-          >
-            {socialLoading === "github" ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Image
-                src={ICON_PATHS.github}
-                alt="GitHub"
-                width={18}
-                height={18}
-                className="dark:invert"
-              />
-            )}
-            <span className="truncate">
-              {t("continueWithGithub")} {!isGithubEnabled ? `(${t("temporarilyDisabled")})` : ""}
+          <AppTooltip content={!isGithubEnabled ? t("socialDisabledHint") : undefined}>
+            <span className="inline-flex w-full" tabIndex={!isGithubEnabled ? 0 : undefined}>
+              <Button
+                type="button"
+                variant="outline"
+                className="border-border/80 hover:bg-muted/50 h-10 w-full gap-2.5 rounded-xl text-xs font-medium shadow-2xs transition-colors sm:h-10.5 sm:text-sm"
+                onClick={() => void handleSocialLogin("github")}
+                disabled={isSubmitting || Boolean(socialLoading) || !isGithubEnabled}
+                data-testid="login-github-button"
+              >
+                {socialLoading === "github" ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Image
+                    src={ICON_PATHS.github}
+                    alt="GitHub"
+                    width={18}
+                    height={18}
+                    className="dark:invert"
+                  />
+                )}
+                <span className="truncate">
+                  {t("continueWithGithub")}{" "}
+                  {!isGithubEnabled ? `(${t("temporarilyDisabled")})` : ""}
+                </span>
+              </Button>
             </span>
-          </Button>
+          </AppTooltip>
         ) : (
           <div className="hidden" data-testid="login-github-button" />
         )}

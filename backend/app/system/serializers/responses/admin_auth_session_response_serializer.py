@@ -16,6 +16,13 @@ class AdminAuthSessionResponseSerializer(SessionListResponseSerializer):
     user_id = serializers.UUIDField(read_only=True, help_text="UUID chủ sở hữu phiên.")
     user_email = serializers.EmailField(source="user.email", read_only=True, help_text="Email chủ phiên.")
     user_name = serializers.CharField(source="user.full_name", read_only=True, help_text="Họ tên chủ phiên.")
+    user_username = serializers.CharField(
+        source="user.username",
+        read_only=True,
+        allow_null=True,
+        default="",
+        help_text="Tên đăng nhập chủ phiên.",
+    )
     user_is_superuser = serializers.BooleanField(
         source="user.is_superuser", read_only=True, help_text="Chủ phiên là superuser."
     )
@@ -27,6 +34,7 @@ class AdminAuthSessionResponseSerializer(SessionListResponseSerializer):
             "user_id",
             "user_email",
             "user_name",
+            "user_username",
             "user_is_superuser",
             "status",
             "revoked_at",

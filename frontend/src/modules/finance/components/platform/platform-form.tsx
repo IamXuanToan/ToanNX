@@ -4,11 +4,12 @@ import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
-import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { ChoiceList } from "@/shares/components/common/choice-list";
 import { ColorInput } from "@/shares/components/common/color-input";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormLayout } from "@/shares/components/common/form-layout";
 import { FormSection } from "@/shares/components/common/form-section";
@@ -118,18 +119,18 @@ export function PlatformForm({
                     />
                     <div className="flex flex-wrap items-center gap-1.5">
                       {PLATFORM_COLOR_PRESETS.map((preset) => (
-                        <Button
-                          key={preset}
-                          type="button"
-                          variant="outline"
-                          size="icon-xs"
-                          disabled={locked}
-                          aria-label={t("fields.colorPreset", { color: preset })}
-                          title={preset}
-                          onClick={() => field.onChange(preset)}
-                          className="size-6 rounded-full p-0"
-                          style={{ backgroundColor: preset }}
-                        />
+                        <AppTooltip key={preset} content={preset}>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon-xs"
+                            disabled={locked}
+                            aria-label={t("fields.colorPreset", { color: preset })}
+                            onClick={() => field.onChange(preset)}
+                            className="size-6 rounded-full p-0"
+                            style={{ backgroundColor: preset }}
+                          />
+                        </AppTooltip>
                       ))}
                     </div>
                   </div>
@@ -169,28 +170,27 @@ export function PlatformForm({
                   </div>
                   <p className="text-muted-foreground text-xs">{t("rulesShortcutHint")}</p>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setRulesDialogOpen(true)}
-                  data-testid="platform-rules-shortcut-btn"
-                  title="Alt+R"
-                >
-                  <Plus />
-                  <span>{t("manageRules")}</span>
-                  <kbd className="border-border bg-muted text-muted-foreground ml-1 hidden rounded border px-1.5 py-0.5 font-mono text-[10px] sm:inline-block">
-                    Alt+R
-                  </kbd>
-                </Button>
+                <AppTooltip content="Alt+R">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setRulesDialogOpen(true)}
+                    data-testid="platform-rules-shortcut-btn"
+                  >
+                    <Plus />
+                    <span>{t("manageRules")}</span>
+                    <kbd className="border-border bg-muted text-muted-foreground ml-1 hidden rounded border px-1.5 py-0.5 font-mono text-[10px] sm:inline-block">
+                      Alt+R
+                    </kbd>
+                  </Button>
+                </AppTooltip>
               </div>
             </FormSection>
           ) : null}
         </FormLayout>
         <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
-          <Button type="button" variant="outline" asChild>
-            <Link href={routes.platforms}>{disabled ? tCommon("back") : tCommon("cancel")}</Link>
-          </Button>
+          <FormBackButton href={routes.platforms} />
           {disabled ? null : (
             <FormSubmitButton
               isSubmitting={isSubmitting}

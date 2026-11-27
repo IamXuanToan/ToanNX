@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Controller, useWatch } from "react-hook-form";
 
-import { Link } from "@/i18n/navigation";
 import { AttachmentImageUploadView } from "@/modules/system/views/attachment/attachment-image-upload-view";
 import { getUserInitials } from "@/shares/components/common/user-avatar";
 import { ChoiceList } from "@/shares/components/common/choice-list";
@@ -14,12 +13,12 @@ import { Form } from "@/shares/components/common/form";
 import { FormExtensionContext } from "@/shares/components/common/hooks/use-form-extension";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormLayout } from "@/shares/components/common/form-layout";
 import { PasswordInput } from "@/shares/components/common/password-input";
 import { ErrorState } from "@/shares/components/errors/error-state";
-import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { Skeleton } from "@/shares/components/ui/skeleton";
@@ -234,10 +233,7 @@ export function UserForm({
         </div>
       ) : null}
       <FormActions start={canEdit && user && state.isDirty ? tCommon("unsaved") : null}>
-        {/* Hủy là lối quay lại danh sách; chỉ xem thì nút này ghi "Quay lại". */}
-        <Button asChild variant="outline">
-          <Link href={SYSTEM_ROUTES.users}>{canEdit ? tCommon("cancel") : tCommon("back")}</Link>
-        </Button>
+        <FormBackButton href={SYSTEM_ROUTES.users} />
         {canEdit ? (
           <FormSubmitButton isSubmitting={isSubmitting} disabled={Boolean(user) && !state.isDirty}>
             {user

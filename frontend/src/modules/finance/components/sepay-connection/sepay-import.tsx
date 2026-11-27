@@ -1,11 +1,13 @@
 "use client";
 
 import { Download, Search } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DatePicker } from "@/shares/components/common/date-picker";
 import { FormSection } from "@/shares/components/common/form-section";
 import { StatusBadge } from "@/shares/components/common/status-badge";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Button } from "@/shares/components/ui/button";
 import { Checkbox } from "@/shares/components/ui/checkbox";
 import { Label } from "@/shares/components/ui/label";
@@ -37,7 +39,6 @@ const TONES: Record<SepayPreviewStatus, "success" | "neutral" | "warning" | "dan
  */
 export function SepayImport() {
   const t = useTranslations("finance.sepay.import");
-  const format = useFormatter();
   const state = useSepayImportState();
   return (
     <FormSection title={t("title")}>
@@ -102,10 +103,7 @@ export function SepayImport() {
                       </StatusBadge>
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
-                      {format.dateTime(new Date(row.receivedAt), {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      })}
+                      <TimestampText value={row.receivedAt} />
                     </TableCell>
                     <TableCell className="text-end">
                       <MoneyText value={row.amount} />
@@ -115,8 +113,10 @@ export function SepayImport() {
                         </span>
                       ) : null}
                     </TableCell>
-                    <TableCell className="max-w-80 truncate" title={row.content}>
-                      {row.content}
+                    <TableCell className="max-w-80">
+                      <AppTooltip content={row.content}>
+                        <span className="block truncate">{row.content}</span>
+                      </AppTooltip>
                     </TableCell>
                     <TableCell>
                       {row.platformName || "—"}

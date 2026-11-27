@@ -19,6 +19,8 @@ import { Input } from "@/shares/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shares/components/ui/popover";
 import { Separator } from "@/shares/components/ui/separator";
 
+import { AppTooltip } from "./app-tooltip";
+
 import {
   formatTiptapImageWidth,
   getTiptapImageWrapperAlignClass,
@@ -81,50 +83,54 @@ export function TiptapImageNodeView(props: NodeViewProps) {
           aria-label={t("resizeImage")}
           className="bg-popover/95 border-border/80 animate-in fade-in-0 zoom-in-95 absolute bottom-full left-1/2 z-10 mb-2 flex w-max max-w-[calc(100%-0.5rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-0.5 rounded-xl border p-1 shadow-lg backdrop-blur-md duration-150"
         >
-          <Button
-            type="button"
-            size="icon-xs"
-            variant={align === "left" ? "secondary" : "ghost"}
-            onClick={() => handleSetAlign("left")}
-            aria-label={t("alignLeft")}
-            title={t("alignLeft")}
-            className="rounded-lg"
-          >
-            <AlignLeft className="size-3.5" />
-          </Button>
-          <Button
-            type="button"
-            size="icon-xs"
-            variant={align === "center" ? "secondary" : "ghost"}
-            onClick={() => handleSetAlign("center")}
-            aria-label={t("alignCenter")}
-            title={t("alignCenter")}
-            className="rounded-lg"
-          >
-            <AlignCenter className="size-3.5" />
-          </Button>
-          <Button
-            type="button"
-            size="icon-xs"
-            variant={align === "right" ? "secondary" : "ghost"}
-            onClick={() => handleSetAlign("right")}
-            aria-label={t("alignRight")}
-            title={t("alignRight")}
-            className="rounded-lg"
-          >
-            <AlignRight className="size-3.5" />
-          </Button>
-          <Button
-            type="button"
-            size="icon-xs"
-            variant={align === "full" ? "secondary" : "ghost"}
-            onClick={() => handleSetAlign("full")}
-            aria-label={t("alignFull")}
-            title={t("alignFull")}
-            className="rounded-lg"
-          >
-            <Maximize2 className="size-3.5" />
-          </Button>
+          <AppTooltip content={t("alignLeft")}>
+            <Button
+              type="button"
+              size="icon-xs"
+              variant={align === "left" ? "secondary" : "ghost"}
+              onClick={() => handleSetAlign("left")}
+              aria-label={t("alignLeft")}
+              className="rounded-lg"
+            >
+              <AlignLeft className="size-3.5" />
+            </Button>
+          </AppTooltip>
+          <AppTooltip content={t("alignCenter")}>
+            <Button
+              type="button"
+              size="icon-xs"
+              variant={align === "center" ? "secondary" : "ghost"}
+              onClick={() => handleSetAlign("center")}
+              aria-label={t("alignCenter")}
+              className="rounded-lg"
+            >
+              <AlignCenter className="size-3.5" />
+            </Button>
+          </AppTooltip>
+          <AppTooltip content={t("alignRight")}>
+            <Button
+              type="button"
+              size="icon-xs"
+              variant={align === "right" ? "secondary" : "ghost"}
+              onClick={() => handleSetAlign("right")}
+              aria-label={t("alignRight")}
+              className="rounded-lg"
+            >
+              <AlignRight className="size-3.5" />
+            </Button>
+          </AppTooltip>
+          <AppTooltip content={t("alignFull")}>
+            <Button
+              type="button"
+              size="icon-xs"
+              variant={align === "full" ? "secondary" : "ghost"}
+              onClick={() => handleSetAlign("full")}
+              aria-label={t("alignFull")}
+              className="rounded-lg"
+            >
+              <Maximize2 className="size-3.5" />
+            </Button>
+          </AppTooltip>
 
           <Separator orientation="vertical" className="mx-0.5 h-4" />
 
@@ -150,18 +156,19 @@ export function TiptapImageNodeView(props: NodeViewProps) {
           <Separator orientation="vertical" className="mx-0.5 h-4" />
 
           <Popover open={altOpen} onOpenChange={setAltOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                size="icon-xs"
-                variant={alt ? "secondary" : "ghost"}
-                aria-label={t("imageAlt")}
-                title={t("imageAlt")}
-                className="rounded-lg"
-              >
-                <Captions className="size-3.5" />
-              </Button>
-            </PopoverTrigger>
+            <AppTooltip content={t("imageAlt")}>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  size="icon-xs"
+                  variant={alt ? "secondary" : "ghost"}
+                  aria-label={t("imageAlt")}
+                  className="rounded-lg"
+                >
+                  <Captions className="size-3.5" />
+                </Button>
+              </PopoverTrigger>
+            </AppTooltip>
             <PopoverContent
               className="w-72 space-y-2 rounded-xl"
               align="center"
@@ -190,17 +197,18 @@ export function TiptapImageNodeView(props: NodeViewProps) {
             </PopoverContent>
           </Popover>
 
-          <Button
-            type="button"
-            size="icon-xs"
-            variant="ghost"
-            onClick={handleDelete}
-            aria-label={t("deleteImage")}
-            title={t("deleteImage")}
-            className="text-destructive hover:bg-destructive/10 hover:text-destructive rounded-lg"
-          >
-            <Trash2 className="size-3.5" />
-          </Button>
+          <AppTooltip content={t("deleteImage")}>
+            <Button
+              type="button"
+              size="icon-xs"
+              variant="ghost"
+              onClick={handleDelete}
+              aria-label={t("deleteImage")}
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive rounded-lg"
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </AppTooltip>
         </div>
       ) : null}
 

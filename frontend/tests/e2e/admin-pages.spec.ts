@@ -61,14 +61,17 @@ test.describe("Trang quản trị", () => {
       await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
     }
     await expect(page.getByText("Đang trực tuyến").first()).toBeVisible();
-    // Không có nút ← trong form (đã có Hủy); thanh nút nằm trong card đầu trang.
+    // Không có nút ← trong form (đã có Quay lại ở cụm phải đứng trước nút chính); thanh nút nằm trong card đầu trang.
     await expect(page.getByTestId("page-back")).toHaveCount(0);
     await expect(page.getByTestId("form-actions")).toBeInViewport();
+    await expect(page.getByRole("link", { name: "Quay lại", exact: true })).toBeVisible();
     await expect(page.getByText("Vai trò", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Superuser có toàn quyền; vai trò không ảnh hưởng.")).toBeVisible();
   });
 
-  test("tạo người dùng là trang riêng, không popup; Hủy quay về danh sách", async ({ page }) => {
+  test("tạo người dùng là trang riêng, không popup; Quay lại đưa về danh sách", async ({
+    page,
+  }) => {
     await loginViaUi(page);
     await page.goto("/vi/quan-tri/he-thong/nguoi-dung");
     await page.getByRole("link", { name: "Tạo người dùng" }).click();
@@ -78,7 +81,7 @@ test.describe("Trang quản trị", () => {
     await page.getByRole("button", { name: "Tạo", exact: true }).click();
     await expect(page.getByText("Email không hợp lệ.")).toBeVisible();
 
-    await page.getByRole("link", { name: "Hủy" }).click();
+    await page.getByRole("link", { name: "Quay lại" }).click();
     await expect(page).toHaveURL(/\/vi\/quan-tri\/he-thong\/nguoi-dung$/);
   });
 

@@ -1,12 +1,13 @@
 "use client";
 
 import { RotateCcw } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge } from "@/shares/components/common/status-badge";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 
 import type { NotificationDelivery } from "../../types/notification.types";
 import { useNotificationDeliveryTable } from "./hooks/use-notification-delivery-table";
@@ -29,7 +30,6 @@ export function NotificationDeliveryTable({
   canDelete: boolean;
 }) {
   const t = useTranslations("system.notifications.deliveries");
-  const format = useFormatter();
   const state = useNotificationDeliveryTable();
   const { table, query } = state;
   const columns: DataTableColumn<NotificationDelivery>[] = [
@@ -38,8 +38,7 @@ export function NotificationDeliveryTable({
       header: t("columns.createdAt"),
       sortKey: "created_at",
       mobile: "title",
-      cell: (row) =>
-        format.dateTime(new Date(row.createdAt), { dateStyle: "short", timeStyle: "short" }),
+      cell: (row) => <TimestampText value={row.createdAt} />,
     },
     {
       id: "title",

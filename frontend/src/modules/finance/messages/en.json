@@ -48,7 +48,9 @@
       "defaultCurrency": "Default currency",
       "isActive": "Active",
       "pattern": "Regex",
-      "priority": "Priority"
+      "priority": "Priority",
+      "color": "Chart color",
+      "owner": "Owner"
     }
   },
   "platforms": {

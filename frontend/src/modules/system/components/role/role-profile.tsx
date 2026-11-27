@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
@@ -49,14 +50,18 @@ export function RoleProfile({
     );
 
   return (
-    <FormPage title={role.data.name}>
-      <RoleForm
-        role={role.data}
-        disabled={!canUpdate || !editable}
-        canReadPermissions={canReadPermissions}
-        canAssignPermissions={canAssignPermissions && editable}
+    <FormPage title={role.data.name} backHref={SYSTEM_ROUTES.roles}>
+      <RecordDetailTabs
+        general={
+          <RoleForm
+            role={role.data}
+            disabled={!canUpdate || !editable}
+            canReadPermissions={canReadPermissions}
+            canAssignPermissions={canAssignPermissions && editable}
+          />
+        }
+        history={history}
       />
-      {history ? <div className="mt-6">{history}</div> : null}
     </FormPage>
   );
 }

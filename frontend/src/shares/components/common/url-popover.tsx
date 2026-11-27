@@ -8,6 +8,7 @@ import { FieldError } from "@/shares/components/ui/field";
 import { Input } from "@/shares/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shares/components/ui/popover";
 
+import { AppTooltip } from "./app-tooltip";
 import { useUrlPopover } from "./hooks/use-url-popover";
 
 /** Ô nhập URL trong popover (liên kết, ảnh URL ngoài, video). */
@@ -37,19 +38,20 @@ export function UrlPopover({
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          size="icon-sm"
-          variant="ghost"
-          aria-label={label}
-          title={label}
-          disabled={disabled}
-          className="rounded-lg"
-        >
-          {icon}
-        </Button>
-      </PopoverTrigger>
+      <AppTooltip content={label}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            size="icon-sm"
+            variant="ghost"
+            aria-label={label}
+            disabled={disabled}
+            className="rounded-lg"
+          >
+            {icon}
+          </Button>
+        </PopoverTrigger>
+      </AppTooltip>
       <PopoverContent className="w-80 space-y-2 rounded-xl" align="start">
         <div className="flex gap-2" role="group" aria-label={label}>
           <Input

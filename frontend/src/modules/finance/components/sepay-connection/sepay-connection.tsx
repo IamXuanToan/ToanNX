@@ -1,7 +1,7 @@
 "use client";
 
 import { Copy, KeyRound, Plug, RefreshCcw, Trash2 } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useNow, useTranslations } from "next-intl";
 
 import { FormSection } from "@/shares/components/common/form-section";
 import { PasswordInput } from "@/shares/components/common/password-input";
@@ -10,6 +10,7 @@ import { SwitchField } from "@/shares/components/common/switch-field";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { Button } from "@/shares/components/ui/button";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { formatDateTimeWithRelative } from "@/shares/lib/date-time-format";
 
 import { useSepayConnection } from "./hooks/use-sepay-connection";
 
@@ -24,6 +25,8 @@ const SETUP_STEPS = ["1", "2", "3", "4"] as const;
 export function SepayConnection() {
   const t = useTranslations("finance.sepay");
   const format = useFormatter();
+  const locale = useLocale();
+  const now = useNow({ updateInterval: 60_000 });
   const state = useSepayConnection();
   if (state.status.isPending) return <Skeleton className="h-64 w-full rounded-xl" />;
   if (state.status.isError) return <ErrorState onRetry={() => state.status.refetch()} />;
@@ -118,12 +121,13 @@ export function SepayConnection() {
               </Button>
             </div>
           </div>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-xs tabular-nums">
             {t("lastWebhook", {
               at: status.lastWebhookAt
-                ? format.dateTime(new Date(status.lastWebhookAt), {
-                    dateStyle: "short",
-                    timeStyle: "short",
+                ? formatDateTimeWithRelative(status.lastWebhookAt, {
+                    now,
+                    locale,
+                    relativeFormatter: (date, baseNow) => format.relativeTime(date, baseNow),
                   })
                 : "—",
             })}

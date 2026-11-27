@@ -6,6 +6,7 @@ import { useState } from "react";
 import { cn } from "cn";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Button } from "@/shares/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/shares/components/ui/dialog";
 
@@ -90,31 +91,33 @@ export function PagePreviewFrame({
             </div>
 
             {/* Mở xem phóng to toàn màn hình */}
-            <Button
-              type="button"
-              size="icon-xs"
-              variant="outline"
-              onClick={() => setFullModalOpen(true)}
-              className="size-7 rounded-lg"
-              title={t("maximizePreview")}
-            >
-              <Maximize2 className="size-3.5" />
-            </Button>
-
-            {/* Nút mở tab mới xem trang thật nếu đã lưu */}
-            {page.canonicalUrl ? (
+            <AppTooltip content={t("maximizePreview")}>
               <Button
                 type="button"
                 size="icon-xs"
                 variant="outline"
-                asChild
+                onClick={() => setFullModalOpen(true)}
                 className="size-7 rounded-lg"
-                title={t("view")}
               >
-                <Link href={page.canonicalUrl as never} target="_blank" rel="noreferrer">
-                  <ExternalLink className="size-3.5" />
-                </Link>
+                <Maximize2 className="size-3.5" />
               </Button>
+            </AppTooltip>
+
+            {/* Nút mở tab mới xem trang thật nếu đã lưu */}
+            {page.canonicalUrl ? (
+              <AppTooltip content={t("view")}>
+                <Button
+                  type="button"
+                  size="icon-xs"
+                  variant="outline"
+                  asChild
+                  className="size-7 rounded-lg"
+                >
+                  <Link href={page.canonicalUrl as never} target="_blank" rel="noreferrer">
+                    <ExternalLink className="size-3.5" />
+                  </Link>
+                </Button>
+              </AppTooltip>
             ) : null}
           </div>
         </div>
@@ -246,32 +249,34 @@ export function PagePreviewFrame({
               </div>
 
               {page.canonicalUrl ? (
-                <Button
-                  type="button"
-                  size="icon-xs"
-                  variant="outline"
-                  asChild
-                  className="size-7 rounded-lg"
-                  title={t("view")}
-                >
-                  <Link href={page.canonicalUrl as never} target="_blank" rel="noreferrer">
-                    <ExternalLink className="size-3.5" />
-                  </Link>
-                </Button>
+                <AppTooltip content={t("view")}>
+                  <Button
+                    type="button"
+                    size="icon-xs"
+                    variant="outline"
+                    asChild
+                    className="size-7 rounded-lg"
+                  >
+                    <Link href={page.canonicalUrl as never} target="_blank" rel="noreferrer">
+                      <ExternalLink className="size-3.5" />
+                    </Link>
+                  </Button>
+                </AppTooltip>
               ) : null}
 
               {/* Nút đóng modal thẳng hàng chuẩn chỉnh */}
-              <Button
-                type="button"
-                size="icon-xs"
-                variant="ghost"
-                onClick={() => setFullModalOpen(false)}
-                className="text-muted-foreground hover:text-foreground size-7 rounded-lg"
-                title={tCommon("close")}
-              >
-                <X className="size-4" />
-                <span className="sr-only">{tCommon("close")}</span>
-              </Button>
+              <AppTooltip content={tCommon("close")}>
+                <Button
+                  type="button"
+                  size="icon-xs"
+                  variant="ghost"
+                  onClick={() => setFullModalOpen(false)}
+                  className="text-muted-foreground hover:text-foreground size-7 rounded-lg"
+                >
+                  <X className="size-4" />
+                  <span className="sr-only">{tCommon("close")}</span>
+                </Button>
+              </AppTooltip>
             </div>
           </div>
 

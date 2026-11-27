@@ -2,8 +2,10 @@
 
 import { cn } from "cn";
 import { Check, Eye, Pencil } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Button } from "@/shares/components/ui/button";
 import { Card } from "@/shares/components/ui/card";
 import { Checkbox } from "@/shares/components/ui/checkbox";
@@ -57,7 +59,6 @@ export function AttachmentGrid({
   className?: string;
 }) {
   const t = useTranslations("system.attachment");
-  const format = useFormatter();
 
   // =========================================================================
   // 1. CHẾ ĐỘ XEM DANH SÁCH CHI TIẾT (LIST / TABLE VIEW)
@@ -79,7 +80,7 @@ export function AttachmentGrid({
           <div className="hidden w-20 text-center sm:block">{t("type")}</div>
           <div className="w-24 text-right">{t("size")}</div>
           <div className="hidden w-32 md:block">{t("folder")}</div>
-          <div className="hidden w-36 text-right lg:block">{t("uploadedAt")}</div>
+          <div className="hidden w-56 text-right lg:block">{t("uploadedAt")}</div>
           <div className="w-16 shrink-0 text-right">{t("actions")}</div>
         </div>
 
@@ -148,7 +149,6 @@ export function AttachmentGrid({
                           "truncate text-xs font-medium sm:text-sm",
                           isActive ? "text-primary" : "text-foreground",
                         )}
-                        title={file.originalName}
                       >
                         {file.originalName}
                       </p>
@@ -175,11 +175,8 @@ export function AttachmentGrid({
                 </div>
 
                 {/* Ngày tải lên */}
-                <div className="text-muted-foreground hidden w-36 text-right text-xs tabular-nums lg:block">
-                  {format.dateTime(new Date(file.createdAt), {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                  })}
+                <div className="text-muted-foreground hidden w-56 text-right text-xs tabular-nums lg:block">
+                  <TimestampText value={file.createdAt} />
                 </div>
 
                 {/* Thao tác Xem / Sửa */}
@@ -188,29 +185,31 @@ export function AttachmentGrid({
                   onClick={(event) => event.stopPropagation()}
                 >
                   {onViewDetails ? (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onViewDetails(file)}
-                      className="text-muted-foreground hover:text-foreground size-7 rounded-lg"
-                      title={t("viewDetails")}
-                      aria-label={t("viewDetails")}
-                    >
-                      <Eye className="size-3.5" />
-                    </Button>
+                    <AppTooltip content={t("viewDetails")}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onViewDetails(file)}
+                        className="text-muted-foreground hover:text-foreground size-7 rounded-lg"
+                        aria-label={t("viewDetails")}
+                      >
+                        <Eye className="size-3.5" />
+                      </Button>
+                    </AppTooltip>
                   ) : onEdit ? (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onEdit(file)}
-                      className="text-muted-foreground hover:text-foreground size-7 rounded-lg"
-                      title={t("editFile")}
-                      aria-label={t("editFile")}
-                    >
-                      <Pencil className="size-3.5" />
-                    </Button>
+                    <AppTooltip content={t("editFile")}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onEdit(file)}
+                        className="text-muted-foreground hover:text-foreground size-7 rounded-lg"
+                        aria-label={t("editFile")}
+                      >
+                        <Pencil className="size-3.5" />
+                      </Button>
+                    </AppTooltip>
                   ) : null}
                 </div>
               </div>
@@ -281,7 +280,6 @@ export function AttachmentGrid({
                       "text-foreground truncate font-medium",
                       isCompact ? "text-[11px] leading-tight" : "text-xs leading-snug sm:text-sm",
                     )}
-                    title={file.originalName}
                   >
                     {file.originalName}
                   </p>
@@ -331,47 +329,49 @@ export function AttachmentGrid({
 
             {/* Nút xem chi tiết hoặc sửa trên thẻ */}
             {onViewDetails && !isSelected ? (
-              <Button
-                type="button"
-                variant="secondary"
-                size="icon"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onViewDetails(file);
-                }}
-                className={cn(
-                  "bg-background/90 text-muted-foreground hover:text-foreground absolute top-2 right-2 z-10 rounded-lg shadow-xs backdrop-blur-xs transition-opacity duration-150",
-                  isCompact ? "size-6" : "size-7",
-                  isActive
-                    ? "right-8 opacity-0 group-hover:opacity-100"
-                    : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
-                )}
-                title={t("viewDetails")}
-                aria-label={t("viewDetails")}
-              >
-                <Eye className={isCompact ? "size-3" : "size-3.5"} />
-              </Button>
+              <AppTooltip content={t("viewDetails")}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onViewDetails(file);
+                  }}
+                  className={cn(
+                    "bg-background/90 text-muted-foreground hover:text-foreground absolute top-2 right-2 z-10 rounded-lg shadow-xs backdrop-blur-xs transition-opacity duration-150",
+                    isCompact ? "size-6" : "size-7",
+                    isActive
+                      ? "right-8 opacity-0 group-hover:opacity-100"
+                      : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                  )}
+                  aria-label={t("viewDetails")}
+                >
+                  <Eye className={isCompact ? "size-3" : "size-3.5"} />
+                </Button>
+              </AppTooltip>
             ) : onEdit && !isSelected ? (
-              <Button
-                type="button"
-                variant="secondary"
-                size="icon"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onEdit(file);
-                }}
-                className={cn(
-                  "bg-background/90 text-muted-foreground hover:text-foreground absolute top-2 right-2 z-10 rounded-lg shadow-xs backdrop-blur-xs transition-opacity duration-150",
-                  isCompact ? "size-6" : "size-7",
-                  isActive
-                    ? "right-8 opacity-0 group-hover:opacity-100"
-                    : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
-                )}
-                title={t("editFile")}
-                aria-label={t("editFile")}
-              >
-                <Pencil className={isCompact ? "size-3" : "size-3.5"} />
-              </Button>
+              <AppTooltip content={t("editFile")}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onEdit(file);
+                  }}
+                  className={cn(
+                    "bg-background/90 text-muted-foreground hover:text-foreground absolute top-2 right-2 z-10 rounded-lg shadow-xs backdrop-blur-xs transition-opacity duration-150",
+                    isCompact ? "size-6" : "size-7",
+                    isActive
+                      ? "right-8 opacity-0 group-hover:opacity-100"
+                      : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                  )}
+                  aria-label={t("editFile")}
+                >
+                  <Pencil className={isCompact ? "size-3" : "size-3.5"} />
+                </Button>
+              </AppTooltip>
             ) : null}
           </Card>
         );

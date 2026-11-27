@@ -19,6 +19,13 @@ class InvoiceResponseSerializer(serializers.ModelSerializer[Invoice]):
     owner_name = serializers.CharField(
         source="owner.full_name", read_only=True, default="", help_text="Tên chủ sở hữu."
     )
+    owner_username = serializers.CharField(
+        source="owner.username",
+        read_only=True,
+        allow_null=True,
+        default="",
+        help_text="Tên đăng nhập chủ sở hữu.",
+    )
     platform_name = serializers.CharField(
         source="platform.name", read_only=True, default=None, help_text="Nền tảng."
     )
@@ -55,6 +62,7 @@ class InvoiceResponseSerializer(serializers.ModelSerializer[Invoice]):
             "owner_id",
             "owner_email",
             "owner_name",
+            "owner_username",
             "doc_type",
             "number",
             "issuer",

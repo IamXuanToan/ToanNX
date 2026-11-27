@@ -8,12 +8,13 @@
 
 import { Eye, Heart } from "lucide-react";
 import Image from "next/image";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Badge } from "@/shares/components/ui/badge";
 
 import { createBooleanBulkStatus } from "@/shares/lib/bulk-status";
@@ -43,7 +44,6 @@ export function NovelTable({
 }) {
   const t = useTranslations("novel");
   const tPublish = useTranslations("novel.novelForm.fields");
-  const format = useFormatter();
   const state = useNovelTable();
   const { table, query } = state;
 
@@ -123,11 +123,7 @@ export function NovelTable({
       sortKey: "created_at",
       cell: (novel) => (
         <span className="text-muted-foreground text-xs whitespace-nowrap">
-          {format.dateTime(new Date(novel.createdAt), {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          })}
+          <TimestampText value={novel.createdAt} />
         </span>
       ),
     },

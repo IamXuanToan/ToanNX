@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 import { PageForm } from "@/modules/utilities/components/page/page-form";
 import { usePage } from "@/modules/utilities/hooks/use-page";
@@ -23,12 +25,14 @@ export function PortalPageEdit({
   canManageAll = false,
   canCreatePath,
   canUpdatePath,
+  history,
 }: {
   id: string;
   canUpdate: boolean;
   canManageAll?: boolean;
   canCreatePath: boolean;
   canUpdatePath: boolean;
+  history?: ReactNode;
 }) {
   const { data: currentUser, isPending: isUserPending } = useCurrentUser();
   const pageQuery = usePage(id);
@@ -62,6 +66,7 @@ export function PortalPageEdit({
         canCreatePath={canCreatePath}
         canUpdatePath={canUpdatePath}
         backHref={PORTAL_ROUTES.pages}
+        history={history}
         onReload={() => pageQuery.refetch()}
       />
     </FormPage>

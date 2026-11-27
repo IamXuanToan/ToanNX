@@ -1,12 +1,13 @@
 "use client";
 
 import { Check, Copy, ExternalLink, FolderInput, Pencil, Trash2, X } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Button } from "@/shares/components/ui/button";
 import { Card } from "@/shares/components/ui/card";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
 import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
 import { formatAttachmentSize } from "../../services/attachment.service";
@@ -34,7 +35,6 @@ export function AttachmentDetails({
   canEdit?: boolean;
 }) {
   const t = useTranslations("system.attachment");
-  const format = useFormatter();
   const state = useAttachmentDetails(file);
   const { copyName, copiedName, editOpen, setEditOpen } = state;
 
@@ -69,49 +69,48 @@ export function AttachmentDetails({
             <span className="font-medium">{t("name")}</span>
             <div className="flex items-center gap-1">
               {canEdit ? (
+                <AppTooltip content={t("editFile")}>
+                  <span className="inline-flex">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setEditOpen(true)}
+                      disabled={disabled}
+                      className="text-muted-foreground hover:text-foreground h-6 gap-1 px-1.5 text-[11px]"
+                    >
+                      <Pencil className="size-3" />
+                      <span>{t("edit")}</span>
+                    </Button>
+                  </span>
+                </AppTooltip>
+              ) : null}
+              <AppTooltip content={t("copyName")}>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => setEditOpen(true)}
-                  disabled={disabled}
+                  onClick={copyName}
                   className="text-muted-foreground hover:text-foreground h-6 gap-1 px-1.5 text-[11px]"
-                  title={t("editFile")}
                 >
-                  <Pencil className="size-3" />
-                  <span>{t("edit")}</span>
+                  {copiedName ? (
+                    <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
+                  ) : (
+                    <Copy className="size-3" />
+                  )}
+                  <span>{copiedName ? t("copiedName") : t("copyName")}</span>
                 </Button>
-              ) : null}
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={copyName}
-                className="text-muted-foreground hover:text-foreground h-6 gap-1 px-1.5 text-[11px]"
-                title={t("copyName")}
-              >
-                {copiedName ? (
-                  <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
-                ) : (
-                  <Copy className="size-3" />
-                )}
-                <span>{copiedName ? t("copiedName") : t("copyName")}</span>
-              </Button>
+              </AppTooltip>
             </div>
           </div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <p
-                className="text-foreground line-clamp-3 cursor-default leading-relaxed font-medium break-all"
-                title={file.originalName}
-              >
-                {file.originalName}
-              </p>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs text-xs font-normal break-all">
+          <AppTooltip
+            content={file.originalName}
+            className="max-w-xs text-xs font-normal break-all"
+          >
+            <p className="text-foreground line-clamp-3 cursor-default leading-relaxed font-medium break-all">
               {file.originalName}
-            </TooltipContent>
-          </Tooltip>
+            </p>
+          </AppTooltip>
         </div>
 
         <div className="border-border/50 grid grid-cols-2 gap-2.5 border-t pt-2.5">
@@ -129,60 +128,49 @@ export function AttachmentDetails({
           </div>
           <div className="border-border/40 col-span-2 border-t pt-2.5">
             <span className="text-muted-foreground">{t("folder")}</span>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <p className="text-foreground mt-0.5 cursor-default truncate font-medium">
-                  {file.folderName || t("unfiled")}
-                </p>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs text-xs font-normal break-all">
+            <AppTooltip
+              content={file.folderName || t("unfiled")}
+              className="max-w-xs text-xs font-normal break-all"
+            >
+              <p className="text-foreground mt-0.5 cursor-default truncate font-medium">
                 {file.folderName || t("unfiled")}
-              </TooltipContent>
-            </Tooltip>
+              </p>
+            </AppTooltip>
           </div>
           <div className="border-border/40 col-span-2 border-t pt-2.5">
             <span className="text-muted-foreground">{t("uploader")}</span>
             {file.uploaderName ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <p className="text-foreground mt-0.5 cursor-default truncate font-medium">
-                    {file.uploaderName}
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs text-xs font-normal break-all">
+              <AppTooltip
+                content={file.uploaderName}
+                className="max-w-xs text-xs font-normal break-all"
+              >
+                <p className="text-foreground mt-0.5 cursor-default truncate font-medium">
                   {file.uploaderName}
-                </TooltipContent>
-              </Tooltip>
+                </p>
+              </AppTooltip>
             ) : (
               <p className="text-foreground mt-0.5 truncate font-medium">—</p>
             )}
           </div>
           <div className="col-span-2">
             <span className="text-muted-foreground">{t("altText")}</span>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <p className="text-foreground mt-0.5 cursor-default truncate font-medium">
-                  {file.altText ? (
-                    file.altText
-                  ) : (
-                    <span className="text-muted-foreground font-normal italic">
-                      {t("noAltText")}
-                    </span>
-                  )}
-                </p>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs text-xs font-normal break-all">
-                {file.altText || t("noAltText")}
-              </TooltipContent>
-            </Tooltip>
+            <AppTooltip
+              content={file.altText || t("noAltText")}
+              className="max-w-xs text-xs font-normal break-all"
+            >
+              <p className="text-foreground mt-0.5 cursor-default truncate font-medium">
+                {file.altText ? (
+                  file.altText
+                ) : (
+                  <span className="text-muted-foreground font-normal italic">{t("noAltText")}</span>
+                )}
+              </p>
+            </AppTooltip>
           </div>
           <div className="col-span-2">
             <span className="text-muted-foreground">{t("uploadedAt")}</span>
             <p className="text-foreground mt-0.5 font-medium tabular-nums">
-              {format.dateTime(new Date(file.createdAt), {
-                dateStyle: "medium",
-                timeStyle: "short",
-              })}
+              <TimestampText value={file.createdAt} />
             </p>
           </div>
         </div>

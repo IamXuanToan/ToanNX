@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/shares/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui/tabs";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
 import { usePageVisibility } from "@/shares/hooks/use-page-visibility";
 
@@ -417,7 +418,7 @@ export function DonationPublicFeed({
                         </p>
                       )}
                       <p className="text-muted-foreground text-[11px]">
-                        {format.relativeTime(new Date(item.receivedAt), { now: new Date(now) })}
+                        <TimestampText value={item.receivedAt} />
                       </p>
                     </div>
                   </div>

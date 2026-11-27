@@ -18,6 +18,7 @@ import {
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { PasswordInput } from "@/shares/components/common/password-input";
 import { LogoMark } from "@/shares/components/layout/logo-mark";
 import { Alert } from "@/shares/components/ui/alert";
@@ -228,26 +229,29 @@ export function ShortLinkLandingCard({
                   </span>
 
                   {/* Nút sao chép URL đích */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={state.copyDestination}
-                    className="hover:border-primary/30 hover:bg-primary/5 h-7.5 cursor-pointer gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-all active:scale-95"
-                    title={state.copied ? tShortLinks("copied") : t("copyAction")}
-                  >
-                    {state.copied ? (
-                      <>
-                        <Check aria-hidden="true" className="text-success size-3.5" />
-                        <span className="text-success font-semibold">{tShortLinks("copied")}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy aria-hidden="true" className="text-muted-foreground size-3.5" />
-                        <span>{t("copyAction")}</span>
-                      </>
-                    )}
-                  </Button>
+                  <AppTooltip content={state.copied ? tShortLinks("copied") : t("copyAction")}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={state.copyDestination}
+                      className="hover:border-primary/30 hover:bg-primary/5 h-7.5 cursor-pointer gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-all active:scale-95"
+                    >
+                      {state.copied ? (
+                        <>
+                          <Check aria-hidden="true" className="text-success size-3.5" />
+                          <span className="text-success font-semibold">
+                            {tShortLinks("copied")}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy aria-hidden="true" className="text-muted-foreground size-3.5" />
+                          <span>{t("copyAction")}</span>
+                        </>
+                      )}
+                    </Button>
+                  </AppTooltip>
                 </div>
 
                 {/* Khối hiển thị URL đích đầy đủ */}

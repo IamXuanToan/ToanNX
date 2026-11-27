@@ -93,7 +93,7 @@ export function SettingEditForm({
           onClick={onCancel}
           disabled={updateSetting.isPending}
         >
-          {readOnly ? tActions("back") : tActions("cancel")}
+          {readOnly ? tActions("close") : tActions("cancel")}
         </Button>
         {readOnly ? null : (
           <Button type="submit" disabled={updateSetting.isPending}>

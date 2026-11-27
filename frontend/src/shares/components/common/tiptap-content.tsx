@@ -3,6 +3,7 @@ import { renderToReactElement } from "@tiptap/static-renderer/pm/react";
 import { cn } from "cn";
 import Image from "next/image";
 
+import { AppTooltip } from "./app-tooltip";
 import {
   createBaseExtensions,
   formatTiptapImageWidth,
@@ -62,22 +63,25 @@ export function TiptapContent({
               const align = typeof node.attrs?.align === "string" ? node.attrs.align : null;
               const cssWidth = formatTiptapImageWidth(node.attrs?.width, align);
 
+              const imageElement = (
+                <Image
+                  src={src}
+                  alt={alt}
+                  width={1200}
+                  height={800}
+                  unoptimized
+                  style={{ width: cssWidth ? "100%" : "auto", height: "auto" }}
+                  className="block max-w-full rounded-xl"
+                />
+              );
+
               return (
                 <figure className={cn("my-3 flex w-full", getTiptapImageWrapperAlignClass(align))}>
                   <div
                     className={cn("max-w-full", !cssWidth && "w-auto")}
                     style={cssWidth ? { width: cssWidth } : undefined}
                   >
-                    <Image
-                      src={src}
-                      alt={alt}
-                      title={title}
-                      width={1200}
-                      height={800}
-                      unoptimized
-                      style={{ width: cssWidth ? "100%" : "auto", height: "auto" }}
-                      className="block max-w-full rounded-xl"
-                    />
+                    {title ? <AppTooltip content={title}>{imageElement}</AppTooltip> : imageElement}
                     {alt ? (
                       <figcaption className="text-muted-foreground mt-1.5 text-center text-xs">
                         {alt}

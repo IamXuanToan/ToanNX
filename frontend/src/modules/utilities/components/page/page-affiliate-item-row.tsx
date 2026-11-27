@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
@@ -132,31 +133,37 @@ export function PageAffiliateItemRow({
 
       <div className="flex shrink-0 items-center gap-1">
         {onEdit ? (
-          <Button
-            type="button"
-            size="icon-xs"
-            variant="ghost"
-            disabled={disabled}
-            onClick={() => onEdit(item)}
-            className="text-muted-foreground hover:bg-muted hover:text-foreground size-8 rounded-lg transition-colors"
-            aria-label={t("editItem")}
-            title={t("editItem")}
-          >
-            <Pencil className="size-3.5" />
-          </Button>
+          <AppTooltip content={t("editItem")}>
+            <span className="inline-flex">
+              <Button
+                type="button"
+                size="icon-xs"
+                variant="ghost"
+                disabled={disabled}
+                onClick={() => onEdit(item)}
+                className="text-muted-foreground hover:bg-muted hover:text-foreground size-8 rounded-lg transition-colors"
+                aria-label={t("editItem")}
+              >
+                <Pencil className="size-3.5" />
+              </Button>
+            </span>
+          </AppTooltip>
         ) : null}
-        <Button
-          type="button"
-          size="icon-xs"
-          variant="ghost"
-          disabled={disabled}
-          onClick={() => onRemove(item.id)}
-          className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive size-8 rounded-lg transition-colors"
-          aria-label={t("deleteItem")}
-          title={t("deleteItem")}
-        >
-          <Trash2 className="size-4" />
-        </Button>
+        <AppTooltip content={t("deleteItem")}>
+          <span className="inline-flex">
+            <Button
+              type="button"
+              size="icon-xs"
+              variant="ghost"
+              disabled={disabled}
+              onClick={() => onRemove(item.id)}
+              className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive size-8 rounded-lg transition-colors"
+              aria-label={t("deleteItem")}
+            >
+              <Trash2 className="size-4" />
+            </Button>
+          </span>
+        </AppTooltip>
       </div>
     </div>
   );

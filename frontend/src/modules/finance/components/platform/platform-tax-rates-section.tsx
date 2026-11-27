@@ -1,7 +1,7 @@
 "use client";
 
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { DatePicker } from "@/shares/components/common/date-picker";
@@ -14,6 +14,7 @@ import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { formatExplicitDate } from "@/shares/lib/date-time-format";
 
 import { INCOME_PERMISSIONS } from "../../permissions/income-permission";
 import { usePlatformTaxRatesSection } from "./hooks/use-platform-tax-rates-section";
@@ -34,7 +35,6 @@ export function PlatformTaxRatesSection({
 }) {
   const t = useTranslations("finance.taxRates");
   const tCommon = useTranslations("common.actions");
-  const format = useFormatter();
   const canUpdateIncomes = usePermission(INCOME_PERMISSIONS.update);
   const state = usePlatformTaxRatesSection(platformId);
   const { draft } = state;
@@ -123,9 +123,9 @@ export function PlatformTaxRatesSection({
         <ul className="divide-y rounded-xl border">
           {state.query.data.map((entry) => (
             <li key={entry.id} className="flex flex-wrap items-center gap-3 px-3 py-2 text-sm">
-              <span className="min-w-28 font-medium">
+              <span className="min-w-28 font-medium tabular-nums">
                 {t("from", {
-                  date: format.dateTime(new Date(entry.effectiveFrom), { dateStyle: "medium" }),
+                  date: formatExplicitDate(entry.effectiveFrom),
                 })}
               </span>
               <StatusBadge tone={entry.taxWithheld ? "success" : "neutral"}>

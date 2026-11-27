@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { cn } from "cn";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
@@ -428,21 +429,22 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                     <span className="text-primary font-mono text-sm font-extrabold tracking-wider break-all sm:text-base">
                       {currentAccountNumber}
                     </span>
-                    <Button
-                      type="button"
-                      size="icon-xs"
-                      variant="outline"
-                      onClick={handleCopyAccount}
-                      title={t("copyAccount")}
-                      aria-label={t("copyAccount")}
-                      className="border-border/80 bg-background/80 hover:bg-muted size-7 shrink-0 rounded-lg shadow-2xs transition-all"
-                    >
-                      {copied ? (
-                        <Check className="size-3.5 text-emerald-500" />
-                      ) : (
-                        <Copy className="size-3.5" />
-                      )}
-                    </Button>
+                    <AppTooltip content={t("copyAccount")}>
+                      <Button
+                        type="button"
+                        size="icon-xs"
+                        variant="outline"
+                        onClick={handleCopyAccount}
+                        aria-label={t("copyAccount")}
+                        className="border-border/80 bg-background/80 hover:bg-muted size-7 shrink-0 rounded-lg shadow-2xs transition-all"
+                      >
+                        {copied ? (
+                          <Check className="size-3.5 text-emerald-500" />
+                        ) : (
+                          <Copy className="size-3.5" />
+                        )}
+                      </Button>
+                    </AppTooltip>
                   </div>
                 </div>
               ) : null}
@@ -454,21 +456,22 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
                     <span className="text-primary truncate font-mono text-xs font-bold">
                       {transferNote}
                     </span>
-                    <Button
-                      type="button"
-                      size="icon-xs"
-                      variant="outline"
-                      onClick={handleCopyNote}
-                      title={t("copyNote")}
-                      aria-label={t("copyNote")}
-                      className="border-border/80 bg-background/80 hover:bg-muted size-7 shrink-0 rounded-lg shadow-2xs transition-all"
-                    >
-                      {copiedNote ? (
-                        <Check className="size-3.5 text-emerald-500" />
-                      ) : (
-                        <Copy className="size-3.5" />
-                      )}
-                    </Button>
+                    <AppTooltip content={t("copyNote")}>
+                      <Button
+                        type="button"
+                        size="icon-xs"
+                        variant="outline"
+                        onClick={handleCopyNote}
+                        aria-label={t("copyNote")}
+                        className="border-border/80 bg-background/80 hover:bg-muted size-7 shrink-0 rounded-lg shadow-2xs transition-all"
+                      >
+                        {copiedNote ? (
+                          <Check className="size-3.5 text-emerald-500" />
+                        ) : (
+                          <Copy className="size-3.5" />
+                        )}
+                      </Button>
+                    </AppTooltip>
                   </div>
                 </div>
               )}

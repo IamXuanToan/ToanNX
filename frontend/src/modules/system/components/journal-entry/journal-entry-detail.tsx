@@ -1,10 +1,11 @@
 "use client";
 
 import { History } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/shares/components/common/page-header";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
@@ -32,7 +33,7 @@ import { useJournalEntryDetail } from "./hooks/use-journal-entry-detail";
  */
 export function JournalEntryDetail({ id }: { id: string }) {
   const t = useTranslations("system.journal");
-  const format = useFormatter();
+  const tCommon = useTranslations("common.actions");
   const { query, entry, resourceName, changes, journal } = useJournalEntryDetail(id);
 
   if (query.isPending) return <Skeleton className="h-96 w-full rounded-xl" />;
@@ -47,13 +48,8 @@ export function JournalEntryDetail({ id }: { id: string }) {
   }
 
   const meta: Array<[string, React.ReactNode]> = [
-    [
-      t("columns.createdAt"),
-      <time key="time" dateTime={entry.createdAt}>
-        {format.dateTime(new Date(entry.createdAt), { dateStyle: "full", timeStyle: "medium" })}
-      </time>,
-    ],
-    [t("columns.actor"), entry.actorLabel || t("system")],
+    [t("columns.createdAt"), <TimestampText key="time" value={entry.createdAt} />],
+    [t("columns.actor"), entry.actorDisplayName || entry.actorLabel || t("system")],
     [
       t("columns.action"),
       <Badge key="action" variant={entry.action === "DELETE" ? "destructive" : "secondary"}>
@@ -84,19 +80,23 @@ export function JournalEntryDetail({ id }: { id: string }) {
     <div className="space-y-6">
       <PageHeader
         title={t("detail.title")}
-        backHref={SYSTEM_ROUTES.journalEntries}
         actions={
-          <Button asChild variant="outline">
-            <Link
-              href={{
-                pathname: SYSTEM_ROUTES.journalEntries,
-                query: { resource: entry.resource, search: entry.objectId },
-              }}
-            >
-              <History />
-              {t("detail.recordHistory")}
-            </Link>
-          </Button>
+          <>
+            <Button asChild variant="outline">
+              <Link href={SYSTEM_ROUTES.journalEntries}>{tCommon("back")}</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link
+                href={{
+                  pathname: SYSTEM_ROUTES.journalEntries,
+                  query: { resource: entry.resource, search: entry.objectId },
+                }}
+              >
+                <History />
+                {t("detail.recordHistory")}
+              </Link>
+            </Button>
+          </>
         }
       />
       <Card className="rounded-xl">
@@ -143,6 +143,10 @@ export function JournalEntryDetail({ id }: { id: string }) {
                               value={change.before ?? []}
                               marked={change.diff.removed}
                               tone="removed"
+                              fieldContext={{
+                                field: change.field,
+                                fieldPrefix: change.fieldPrefix,
+                              }}
                             />
                             {change.diff.removed.length ? (
                               <p className="text-destructive mt-2 text-xs">
@@ -155,6 +159,10 @@ export function JournalEntryDetail({ id }: { id: string }) {
                               value={change.after}
                               marked={change.diff.added}
                               tone="added"
+                              fieldContext={{
+                                field: change.field,
+                                fieldPrefix: change.fieldPrefix,
+                              }}
                             />
                             {change.diff.added.length ? (
                               <p className="text-success mt-2 text-xs">
@@ -166,10 +174,22 @@ export function JournalEntryDetail({ id }: { id: string }) {
                       ) : (
                         <>
                           <TableCell className="text-muted-foreground whitespace-normal">
-                            <JournalValue value={change.before} />
+                            <JournalValue
+                              value={change.before}
+                              fieldContext={{
+                                field: change.field,
+                                fieldPrefix: change.fieldPrefix,
+                              }}
+                            />
                           </TableCell>
                           <TableCell className="whitespace-normal">
-                            <JournalValue value={change.after} />
+                            <JournalValue
+                              value={change.after}
+                              fieldContext={{
+                                field: change.field,
+                                fieldPrefix: change.fieldPrefix,
+                              }}
+                            />
                           </TableCell>
                         </>
                       )}

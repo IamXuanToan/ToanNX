@@ -11,7 +11,7 @@ import { usePermission } from "@/modules/system/hooks/use-permission";
 import { ForbiddenView } from "@/shares/components/errors/forbidden-view";
 import { Button } from "@/shares/components/ui/button";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/shares/components/ui/sidebar";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import type { AdminGroup } from "@/shares/types/navigation.types";
 
 import { MANAGE_APP_ROUTES } from "../../constants/routes";
@@ -64,20 +64,17 @@ export function WorkspaceLayout({
             toggleLabel={tActions("toggleSidebar")}
             className="-ml-2 size-10 rounded-xl"
           />
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button asChild variant="ghost" size="icon" className="text-muted-foreground">
-                <Link
-                  href={MANAGE_APP_ROUTES.admin}
-                  aria-label={t("backToModules")}
-                  data-testid="back-to-modules"
-                >
-                  <ArrowLeft />
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("backToModules")}</TooltipContent>
-          </Tooltip>
+          <AppTooltip content={t("backToModules")} side="bottom">
+            <Button asChild variant="ghost" size="icon" className="text-muted-foreground">
+              <Link
+                href={MANAGE_APP_ROUTES.admin}
+                aria-label={t("backToModules")}
+                data-testid="back-to-modules"
+              >
+                <ArrowLeft />
+              </Link>
+            </Button>
+          </AppTooltip>
           <div className="min-w-0 flex-1">
             <AdminBreadcrumb items={breadcrumb} />
           </div>

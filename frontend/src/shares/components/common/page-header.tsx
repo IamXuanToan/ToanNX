@@ -7,15 +7,16 @@ import type { ComponentProps, ReactNode } from "react";
 
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/shares/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
+
+import { AppTooltip } from "./app-tooltip";
 
 /** Đích của nút quay lại (route có kiểu của next-intl). */
 export type PageBackHref = ComponentProps<typeof Link>["href"];
 
 /**
- * Tiêu đề trang quản trị kèm nút quay lại, mô tả và hành động.
- * Trang con (tạo, chi tiết, sửa) luôn có `backHref` về trang danh sách; trang danh sách không cần
- * (header của workspace đã có nút về màn chọn module).
+ * Tiêu đề trang quản trị / portal kèm mô tả và cụm hành động bên phải.
+ * Trang tạo/chi tiết/sửa dùng `FormPage` + `FormActions` để đặt `[Quay lại]` đứng trái nút chính;
+ * prop `backHref` giữ lại cho các trường hợp đặc thù cần icon `←` cạnh tiêu đề.
  *
  * @param props - Tiêu đề, đích quay lại, mô tả, hành động.
  * @returns Header trang.
@@ -47,16 +48,13 @@ export function PageHeader({
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
         {backHref ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button asChild variant="outline" size="icon" className="shrink-0">
-                <Link href={backHref} aria-label={t("back")} data-testid="page-back">
-                  <ArrowLeft />
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("back")}</TooltipContent>
-          </Tooltip>
+          <AppTooltip content={t("back")} side="bottom">
+            <Button asChild variant="outline" size="icon" className="shrink-0">
+              <Link href={backHref} aria-label={t("back")} data-testid="page-back">
+                <ArrowLeft />
+              </Link>
+            </Button>
+          </AppTooltip>
         ) : null}
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-xl font-semibold">{title}</h1>

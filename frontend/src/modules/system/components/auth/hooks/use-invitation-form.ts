@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import type { AppPathname } from "@/i18n/routing";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 import { AUTH_WORKSPACE_PATHS } from "../../../constants/auth-storage";
 import { authKeys } from "../../../constants/query-keys";
@@ -112,7 +113,7 @@ export function useInvitationForm() {
       });
 
       queryClient.setQueryData(authKeys.me(), result);
-      toast.success(t("welcomeSuccess", { name: result.user.fullName || result.user.email }));
+      toast.success(t("welcomeSuccess", { name: formatUserDisplayName(result.user) }));
 
       const targetPath: AppPathname = AUTH_WORKSPACE_PATHS.portal;
       router.replace(targetPath as never);

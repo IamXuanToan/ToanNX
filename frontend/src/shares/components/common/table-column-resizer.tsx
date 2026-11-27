@@ -4,6 +4,8 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import type { ComponentProps } from "react";
 
+import { AppTooltip } from "./app-tooltip";
+
 type ResizeControl = Pick<
   ComponentProps<"div">,
   | "onPointerDown"
@@ -20,27 +22,28 @@ export function TableColumnResizer({ label, control }: { label: string; control:
   const t = useTranslations("common.table");
   const { min, max, value, active, edge, ...events } = control;
   return (
-    <div
-      {...events}
-      role="separator"
-      aria-orientation="vertical"
-      aria-label={t("resizeColumn", { column: label })}
-      aria-valuemin={min}
-      aria-valuemax={max}
-      aria-valuenow={value}
-      tabIndex={0}
-      title={t("resizeColumnHint")}
-      onClick={(event) => event.stopPropagation()}
-      onDoubleClick={(event) => {
-        event.stopPropagation();
-        control.onDoubleClick?.(event);
-      }}
-      className={cn(
-        "group/resize absolute inset-y-0 z-30 hidden w-3 cursor-col-resize touch-none outline-none select-none md:block",
-        "after:bg-border hover:after:bg-primary focus-visible:after:bg-primary after:absolute after:inset-y-2 after:w-px after:transition-colors hover:after:w-0.5 focus-visible:after:w-0.5",
-        edge === "left" ? "left-0 after:left-0" : "right-0 after:right-0",
-        active && "after:bg-primary after:w-0.5",
-      )}
-    />
+    <AppTooltip content={t("resizeColumnHint")}>
+      <div
+        {...events}
+        role="separator"
+        aria-orientation="vertical"
+        aria-label={t("resizeColumn", { column: label })}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={value}
+        tabIndex={0}
+        onClick={(event) => event.stopPropagation()}
+        onDoubleClick={(event) => {
+          event.stopPropagation();
+          control.onDoubleClick?.(event);
+        }}
+        className={cn(
+          "group/resize absolute inset-y-0 z-30 hidden w-3 cursor-col-resize touch-none outline-none select-none md:block",
+          "after:bg-border hover:after:bg-primary focus-visible:after:bg-primary after:absolute after:inset-y-2 after:w-px after:transition-colors hover:after:w-0.5 focus-visible:after:w-0.5",
+          edge === "left" ? "left-0 after:left-0" : "right-0 after:right-0",
+          active && "after:bg-primary after:w-0.5",
+        )}
+      />
+    </AppTooltip>
   );
 }

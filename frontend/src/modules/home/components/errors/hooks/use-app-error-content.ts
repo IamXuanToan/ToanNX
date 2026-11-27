@@ -3,6 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+import { env } from "@/shares/config/env";
+
 import { useReportClientError } from "../../../hooks/use-report-client-error";
 
 /**
@@ -38,7 +40,7 @@ export function useAppErrorContent(error: unknown) {
         ? error
         : t("fallbackMessage");
   const errorStack = error instanceof Error ? (error.stack ?? null) : null;
-  const isDev = process.env.NODE_ENV === "development";
+  const isDev = !env.isProduction;
 
   const handleCopy = () => {
     const fullDetails = [

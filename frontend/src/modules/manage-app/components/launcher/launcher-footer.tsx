@@ -1,8 +1,9 @@
 "use client";
 
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import type { AuthUser } from "@/modules/system/types/auth.types";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 
 /**
  * Thanh trạng thái hệ thống ở chân màn chọn module: hiển thị trạng thái vận hành và thời điểm đăng nhập gần nhất.
@@ -12,14 +13,6 @@ import type { AuthUser } from "@/modules/system/types/auth.types";
  */
 export function LauncherFooter({ user }: { user?: AuthUser }) {
   const t = useTranslations("manageApp");
-  const format = useFormatter();
-
-  const formattedLastLogin = user?.lastLogin
-    ? format.dateTime(new Date(user.lastLogin), {
-        dateStyle: "medium",
-        timeStyle: "short",
-      })
-    : null;
 
   return (
     <footer className="text-muted-foreground flex flex-col items-center justify-between gap-3 px-2 pt-2 text-xs sm:flex-row">
@@ -31,9 +24,11 @@ export function LauncherFooter({ user }: { user?: AuthUser }) {
         <span className="text-foreground/80 font-medium">{t("systemOnline")}</span>
       </div>
 
-      {formattedLastLogin ? (
+      {user?.lastLogin ? (
         <p className="text-muted-foreground text-xs">
-          {t("lastLogin", { time: formattedLastLogin })}
+          {t.rich("lastLogin", {
+            time: () => <TimestampText value={user.lastLogin} />,
+          })}
         </p>
       ) : null}
     </footer>
