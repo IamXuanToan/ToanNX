@@ -18,10 +18,6 @@ from app.workspace.views.workspace_calendar_view import WorkspaceCalendarView
 from app.workspace.views.workspace_cron_dispatch_due_view import WorkspaceCronDispatchDueView
 from app.workspace.views.workspace_cron_tick_view import WorkspaceCronTickView
 from app.workspace.views.workspace_dashboard_summary_view import WorkspaceDashboardSummaryView
-from app.workspace.views.workspace_setting_view import (
-    WorkspaceSettingObjectView,
-    WorkspaceSettingView,
-)
 
 app_name = "workspace"
 
@@ -34,12 +30,6 @@ router.register("vault-items", VaultItemViewSet, basename="vault-items")
 router.register("reminders", ReminderViewSet, basename="reminders")
 
 urlpatterns: list[URLPattern | URLResolver] = [
-    path("settings", WorkspaceSettingView.as_view(), name="workspace-settings"),
-    path(
-        "settings/<uuid:owner_id>",
-        WorkspaceSettingObjectView.as_view(),
-        name="workspace-settings-object",
-    ),
     path(
         "dashboard/summary",
         WorkspaceDashboardSummaryView.as_view(),

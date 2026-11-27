@@ -119,7 +119,9 @@ export function PortalDashboard({
               <span>{t("studioBadge")}</span>
             </div>
             <h1 className="text-foreground text-2xl font-extrabold tracking-tight sm:text-3xl">
-              {t("welcome", { name: formatUserDisplayName(currentUser?.user) })}
+              {t("welcome", {
+                name: formatUserDisplayName(currentUser?.user, { includeUsername: false }),
+              })}
             </h1>
             <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
           </div>

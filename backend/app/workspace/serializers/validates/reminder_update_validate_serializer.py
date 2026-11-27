@@ -16,6 +16,12 @@ class ReminderUpdateValidateSerializer(CoreValidateSerializer):
     notify_minutes_before = serializers.IntegerField(
         min_value=0, max_value=10080, required=False, help_text="Số phút nhắc trước."
     )
+    reminder_days_before = serializers.ListField(
+        child=serializers.IntegerField(min_value=1, max_value=365),
+        max_length=12,
+        required=False,
+        help_text="Danh sách số ngày nhắc trước hạn (ví dụ [7, 3, 1]).",
+    )
     priority = serializers.ChoiceField(
         choices=Reminder.Priority.choices, required=False, help_text="Độ ưu tiên."
     )

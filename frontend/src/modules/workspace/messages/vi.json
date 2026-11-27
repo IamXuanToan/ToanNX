@@ -44,6 +44,7 @@
     "customDays": "Chu kỳ tùy chỉnh phải từ 1 đến 3650 ngày.",
     "anchorDay": "Ngày cố định trong tháng phải từ 1 đến 31.",
     "notifyMinutes": "Số phút báo trước tối đa 10080 phút.",
+    "reminderDays": "Số ngày nhắc trước phải từ 1 đến 365.",
     "timeSlot": "Khung giờ phải đúng định dạng HH:MM (ví dụ 08:00).",
     "alertDay": "Số ngày cảnh báo phải là số nguyên từ 0 đến 365.",
     "positiveInt": "Giá trị tối thiểu phải từ 100 trở lên.",
@@ -55,6 +56,7 @@
     "prevMonth": "Tháng trước",
     "nextMonth": "Tháng sau",
     "today": "Hôm nay",
+    "millionSuffix": "tr",
     "quickAddReminder": "Thêm nhắc việc nhanh",
     "quickAddTitle": "Tạo nhắc việc nhanh cho ngày {date}",
     "selectedDay": "Sự kiện ngày {date}",
@@ -75,7 +77,9 @@
       "subscription": "Gia hạn dịch vụ",
       "reminder": "Nhắc việc",
       "asset_warranty": "Hết bảo hành",
-      "warranty_claim": "Hẹn trả bảo hành"
+      "warranty_claim": "Hẹn trả bảo hành",
+      "income": "Tiền vào",
+      "donation": "Donate"
     }
   },
   "assets": {
@@ -328,13 +332,21 @@
       "dueTime": "Giờ đến hạn",
       "dueDateTime": "Ngày & giờ đến hạn",
       "notifyMinutesBefore": "Nhắc trước (phút)",
+      "reminderDaysBefore": "Thông báo trước (ngày)",
       "priority": "Mức độ ưu tiên",
       "isCompleted": "Đã hoàn thành",
       "completedAt": "Hoàn thành lúc",
       "recurrence": "Lặp lại",
       "anchorDay": "Ngày cố định",
+      "reminderDaysBefore": "Thông báo trước (ngày)",
       "tags": "Nhãn"
     },
+    "reminderDaysDesc": "Chọn nhanh các mốc mẫu hoặc gõ số ngày bất kỳ (VD: 3, 6, 8) rồi nhấn Enter.",
+    "addReminderDayPlaceholder": "VD: 3, 6, 8",
+    "addReminderDay": "Thêm mốc",
+    "reminderDaysTooltip": "Nhập số ngày nguyên (1–365) rồi nhấn Enter hoặc bấm Thêm mốc.",
+    "emptyReminderDays": "Chưa chọn ngày nhắc trước (chỉ nhắc đúng ngày đến hạn).",
+    "reminderDayUnit": "{days} ngày",
     "priorities": {
       "LOW": "Thấp",
       "MEDIUM": "Trung bình",
@@ -399,7 +411,8 @@
     "sections": {
       "identity": "Avatar & Nhận diện Chatbot AI",
       "policy": "Policy trả lời & Trí tuệ nhân tạo",
-      "telegram": "Quy tắc Bot Telegram hai chiều"
+      "telegram": "Quy tắc Bot Telegram hai chiều",
+      "digest": "Lịch bản tin & Mốc cảnh báo mặc định"
     },
     "avatarHint": "Chọn ảnh công khai từ Thư viện hoặc dùng icon Bot mặc định.",
     "avatarMissingPerm": "Cần quyền Thư viện để đổi ảnh đại diện.",

@@ -120,7 +120,9 @@ into both `.agents/skills/` and `.claude/skills/` and verify its trigger. The us
 - **Notifications only through `NotificationService.notify`**: events declare `scope`/`audience`/`permission` in
   `ModuleDescriptor.notification_events`; `OWNER` events must pass `recipient`; never send email/Telegram/push
   directly. A request never calls FCM/SMTP/Telegram: `notify` only writes the outbox and kicks QStash after commit
-  (cron is the safety net); every external call has a timeout (rule backend §9).
+  (cron is the safety net); every external call has a timeout. Batch multi-user notification resolution and outbox
+  writes by `NOTIFICATION_BULK_BATCH` (500/batch) instead of unbounded `for user in users:` loops or `IN (...)` queries
+  (rule backend §9).
 - **Free-tier budget**: Redis (`CacheService`) only speeds things up (PostgreSQL stays the source, Redis down →
   fallback, never 500); cache public data only; visitor requests and cron must not touch Neon while cache/marker is
   valid. Check [docs/architecture/infrastructure.md](docs/architecture/infrastructure.md) before adding work that

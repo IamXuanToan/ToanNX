@@ -406,6 +406,10 @@ class UserRoleView(CoreApiView):
   đá `NotificationKickService` (QStash gọi lại `POST /system/notifications/dispatch` ở lượt function riêng; cron
   ngoài là lưới an toàn). Không thêm đường gửi inline, không tăng timeout để che việc gửi chậm. Ngoại lệ duy nhất:
   nút "Gửi lại" (`retry`) do người dùng bấm. Lời gọi dịch vụ ngoài nào cũng phải có timeout (≤ 5 giây).
+- **Xử lý theo lô (batch) khi gửi/truy vấn nhiều người dùng**: tuyệt đối không `for user in users:` xử lý dồn một cục
+  hay truyền mảng `IN (...)` không giới hạn khi danh sách người dùng lớn; `NotificationService._create`,
+  `NotificationPreferenceService.resolve`/`resolve_explicit`, `bulk_create` (`Notification`, `NotificationDelivery`)
+  và tác vụ cron phải chia lô theo `NOTIFICATION_BULK_BATCH` (500 bản ghi/lô) kèm kiểm soát ngân sách thời gian.
 - **Redis (`CacheService`) chỉ để tăng tốc**: dữ liệu gốc, outbox, phiên đăng nhập ở PostgreSQL; Redis trống/lỗi thì
   tự về dự phòng, không trả 500. Chỉ cache dữ liệu **công khai** (không cache request của quản trị viên); khóa
   `<module>:<resource>:...` có TTL; service có dữ liệu công khai khai `public_cache_namespace`. Lượt khách và cron

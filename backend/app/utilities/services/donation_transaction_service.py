@@ -465,3 +465,32 @@ class DonationTransactionService(CoreCrudService[DonationTransaction, DonationTr
         except ValueError as exc:
             raise ValidationError(details={field: ["Định dạng ngày/giờ không hợp lệ (ISO 8601)."]}) from exc
         return raw
+
+    def list_calendar_items(self, owner_id: Any, from_date: Any, to_date: Any) -> list[dict[str, Any]]:
+        """Lấy danh sách giao dịch ủng hộ theo khoảng ngày cho Lịch tổng hợp."""
+        rows = self.repository.filter(
+            owner_id=owner_id,
+            received_at__date__gte=from_date,
+            received_at__date__lte=to_date,
+        ).order_by("received_at")[:200]
+        items: list[dict[str, Any]] = []
+        for row in rows:
+            local_dt = timezone.localtime(row.received_at)
+            donor = (row.donor_title or "").strip() or "Ẩn danh"
+            page_title = row.page.title if row.page else ""
+            items.append(
+                {
+                    "id": f"don:{row.pk}:{local_dt.date().isoformat()}",
+                    "source_id": str(row.pk),
+                    "type": "donation",
+                    "date": local_dt.date(),
+                    "time": local_dt.strftime("%H:%M"),
+                    "title": f"Donate từ {donor}",
+                    "subtitle": row.message or page_title,
+                    "status": row.tier or "DONATED",
+                    "amount_vnd": Decimal(row.amount),
+                    "is_completed": True,
+                    "link": "/portal/donations",
+                }
+            )
+        return items

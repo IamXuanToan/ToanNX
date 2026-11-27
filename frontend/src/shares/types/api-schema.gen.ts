@@ -4233,44 +4233,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/workspace/settings": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Lấy cấu hình của chính mình (tự tạo mặc định nếu chưa có). */
-    get: operations["workspace_settings_retrieve"];
-    /** @description Cập nhật cấu hình của chính mình (PUT). */
-    put: operations["workspace_settings_update"];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** @description Cập nhật một phần cấu hình của chính mình (PATCH). */
-    patch: operations["workspace_settings_partial_update"];
-    trace?: never;
-  };
-  "/api/v1/workspace/settings/{owner_id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Lấy cấu hình theo `owner_id` (trả 404 nếu user không tồn tại). */
-    get: operations["workspace_settings_by_owner_retrieve"];
-    /** @description Cập nhật cấu hình cho `owner_id` (PUT). */
-    put: operations["workspace_settings_by_owner_update"];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** @description Cập nhật cấu hình cho `owner_id` (PATCH). */
-    patch: operations["workspace_settings_by_owner_partial_update"];
-    trace?: never;
-  };
   "/api/v1/workspace/subscription-payments": {
     parameters: {
       query?: never;
@@ -5508,6 +5470,16 @@ export interface components {
       telegram_bot_url: string;
       /** @description Danh sách câu lệnh chuẩn có sẵn để Admin khai báo vào @BotFather (/setcommands). */
       telegram_commands: components["schemas"]["AssistantCommandResponse"][];
+      /** @description Khung giờ gửi bản tin hàng ngày (`HH:MM`). */
+      digest_time_slots: string[];
+      /** @description Các mục hiển thị trong bản tin hàng ngày. */
+      digest_sections: string[];
+      /** @description Danh sách mục bản tin hợp lệ được hỗ trợ. */
+      available_digest_sections: string[];
+      /** @description Mốc ngày nhắc bảo hành mặc định. */
+      warranty_alert_days: number[];
+      /** @description Mốc ngày nhắc gia hạn mặc định. */
+      subscription_default_alert_days: number[];
     };
     /** @description Đầu vào PUT/PATCH `/workspace/assistant/config` (chỉ Admin). */
     AssistantConfigUpdateValidateRequest: {
@@ -5548,6 +5520,14 @@ export interface components {
       telegram_group_hide_amounts?: boolean;
       /** @description Gửi chi tiết riêng tư về DM chính chủ khi được hỏi trong nhóm. */
       telegram_group_reply_in_dm?: boolean;
+      /** @description Khung giờ gửi bản tin hàng ngày toàn hệ thống (`HH:MM`). */
+      digest_time_slots?: string[];
+      /** @description Các mục hiển thị trong bản tin hàng ngày. */
+      digest_sections?: string[];
+      /** @description Số ngày nhắc trước mặc định khi thiết bị sắp hết bảo hành. */
+      warranty_alert_days?: number[];
+      /** @description Số ngày nhắc trước mặc định khi dịch vụ định kỳ sắp gia hạn. */
+      subscription_default_alert_days?: number[];
     };
     /** @description Chi tiết từng tin nhắn kèm `model_used`, `tokens_used` và `contains_private_data`. */
     AssistantMessageResponse: {
@@ -9611,6 +9591,14 @@ export interface components {
       telegram_group_hide_amounts?: boolean;
       /** @description Gửi chi tiết riêng tư về DM chính chủ khi được hỏi trong nhóm. */
       telegram_group_reply_in_dm?: boolean;
+      /** @description Khung giờ gửi bản tin hàng ngày toàn hệ thống (`HH:MM`). */
+      digest_time_slots?: string[];
+      /** @description Các mục hiển thị trong bản tin hàng ngày. */
+      digest_sections?: string[];
+      /** @description Số ngày nhắc trước mặc định khi thiết bị sắp hết bảo hành. */
+      warranty_alert_days?: number[];
+      /** @description Số ngày nhắc trước mặc định khi dịch vụ định kỳ sắp gia hạn. */
+      subscription_default_alert_days?: number[];
     };
     /** @description Cho phép chỉ đổi cha hoặc chỉ đổi tên, không bỏ qua kiểm tra tên rỗng. */
     PatchedAttachmentFolderUpdateValidateRequest: {
@@ -10057,6 +10045,8 @@ export interface components {
       due_time?: string | null;
       /** @description Số phút nhắc trước. */
       notify_minutes_before?: number;
+      /** @description Danh sách số ngày nhắc trước hạn (ví dụ [7, 3, 1]). */
+      reminder_days_before?: number[];
       /**
        * @description Độ ưu tiên.
        *
@@ -10262,23 +10252,6 @@ export interface components {
       notes?: string;
       /** @description Danh sách thẻ. */
       tags?: string[];
-    };
-    /** @description Đầu vào PUT/PATCH `/workspace/settings` (người dùng chỉ cấu hình Digest & Múi giờ cá nhân). */
-    PatchedWorkspaceSettingUpdateValidateRequest: {
-      /** @description Múi giờ chuẩn IANA (VD: Asia/Ho_Chi_Minh). */
-      timezone?: string;
-      /** @description Bật gửi bản tin tóm tắt hàng ngày. */
-      daily_digest_enabled?: boolean;
-      /** @description Khung giờ gửi Digest định dạng HH:MM. */
-      digest_time_slots?: string[];
-      /** @description Các mục hiển thị trong Digest (`reminders`, `warranty`, `subscriptions`, `finance`). */
-      digest_sections?: string[];
-      /** @description Mốc ngày nhắc trước hạn bảo hành (VD: [30, 7, 1]). */
-      warranty_alert_days?: number[];
-      /** @description Mốc ngày nhắc mặc định cho dịch vụ định kỳ. */
-      subscription_default_alert_days?: number[];
-      /** @description Danh sách UUID của `system.TelegramChat` nhận bản tin/tương tác. */
-      telegram_allowed_chat_ids?: string[];
     };
     /** @description Thông tin quyền kèm mô tả công dụng. */
     PermissionListResponse: {
@@ -10823,6 +10796,8 @@ export interface components {
        * @default 0
        */
       notify_minutes_before: number;
+      /** @description Danh sách số ngày nhắc trước hạn (ví dụ [7, 3, 1]). */
+      reminder_days_before?: number[];
       /**
        * @description Độ ưu tiên công việc.
        *
@@ -10902,6 +10877,11 @@ export interface components {
        * @description Số phút thông báo trước thời điểm đến hạn.
        */
       readonly notify_minutes_before: number;
+      /**
+       * Số ngày nhắc trước
+       * @description Danh sách số ngày thông báo trước hạn (ví dụ [7, 3, 1]).
+       */
+      readonly reminder_days_before: unknown;
       /**
        * Độ ưu tiên
        * @description Mức độ quan trọng của việc.
@@ -13272,110 +13252,6 @@ export interface components {
      * @enum {string}
      */
     WorkspaceReminderRecurrenceEnum: "NONE" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
-    /** @description Cấu hình cá nhân: múi giờ, digest, mốc nhắc mặc định và chat Telegram đã liên kết. */
-    WorkspaceSettingResponse: {
-      /**
-       * Mã định danh
-       * Format: uuid
-       * @description Định danh UUID do hệ thống sinh, không đổi.
-       */
-      readonly id: string;
-      /**
-       * Chủ sở hữu
-       * Format: uuid
-       * @description Người dùng sở hữu cấu hình.
-       */
-      readonly owner_id: string;
-      /** @description Email chủ sở hữu. */
-      readonly owner_email: string;
-      /**
-       * @description Tên chủ sở hữu.
-       * @default
-       */
-      readonly owner_name: string;
-      /**
-       * @description Tên đăng nhập chủ sở hữu.
-       * @default
-       */
-      readonly owner_username: string | null;
-      /**
-       * Múi giờ
-       * @description Múi giờ chuẩn IANA để tính lịch và Digest (VD: Asia/Ho_Chi_Minh).
-       */
-      readonly timezone: string;
-      /**
-       * Bật tóm tắt hàng ngày
-       * @description Gửi bản tin tổng hợp việc & hạn theo khung giờ.
-       */
-      readonly daily_digest_enabled: boolean;
-      /**
-       * Khung giờ Digest
-       * @description Danh sách giờ định dạng HH:MM gửi bản tin.
-       */
-      readonly digest_time_slots: unknown;
-      /**
-       * Mục hiển thị trong Digest
-       * @description Các nhóm thông tin đưa vào bản tin tổng hợp.
-       */
-      readonly digest_sections: unknown;
-      /**
-       * Mốc nhắc hạn bảo hành
-       * @description Số ngày nhắc trước khi thiết bị hết bảo hành.
-       */
-      readonly warranty_alert_days: unknown;
-      /**
-       * Mốc nhắc gia hạn mặc định
-       * @description Số ngày nhắc mặc định cho gói dịch vụ mới.
-       */
-      readonly subscription_default_alert_days: unknown;
-      /**
-       * Telegram User ID chính chủ
-       * @description Tự động gắn khi nhắn /start <code> hoặc /verify_owner từ DM.
-       */
-      readonly telegram_owner_user_id: number | null;
-      /**
-       * Danh sách Chat ID được phép
-       * @description Danh sách UUID của system.TelegramChat được bật nhận tin/tương tác.
-       */
-      readonly telegram_allowed_chat_ids: unknown;
-      /** @description Các mục dữ liệu hỗ trợ hiển thị trong Digest. */
-      readonly available_digest_sections: string[];
-      /** @description Bot Telegram hệ thống đã cấu hình token hay chưa. */
-      readonly telegram_bot_configured: boolean;
-      /** @description Username bot Telegram hệ thống (không kèm @). */
-      readonly telegram_bot_username: string;
-      /** @description Liên kết mở Bot Telegram trên trình duyệt. */
-      readonly telegram_bot_url: string;
-      /**
-       * Thời điểm tạo
-       * Format: date-time
-       * @description Thời điểm bản ghi được tạo (tự động).
-       */
-      readonly created_at: string;
-      /**
-       * Thời điểm cập nhật
-       * Format: date-time
-       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
-       */
-      readonly updated_at: string;
-    };
-    /** @description Đầu vào PUT/PATCH `/workspace/settings` (người dùng chỉ cấu hình Digest & Múi giờ cá nhân). */
-    WorkspaceSettingUpdateValidateRequest: {
-      /** @description Múi giờ chuẩn IANA (VD: Asia/Ho_Chi_Minh). */
-      timezone?: string;
-      /** @description Bật gửi bản tin tóm tắt hàng ngày. */
-      daily_digest_enabled?: boolean;
-      /** @description Khung giờ gửi Digest định dạng HH:MM. */
-      digest_time_slots?: string[];
-      /** @description Các mục hiển thị trong Digest (`reminders`, `warranty`, `subscriptions`, `finance`). */
-      digest_sections?: string[];
-      /** @description Mốc ngày nhắc trước hạn bảo hành (VD: [30, 7, 1]). */
-      warranty_alert_days?: number[];
-      /** @description Mốc ngày nhắc mặc định cho dịch vụ định kỳ. */
-      subscription_default_alert_days?: number[];
-      /** @description Danh sách UUID của `system.TelegramChat` nhận bản tin/tương tác. */
-      telegram_allowed_chat_ids?: string[];
-    };
     /**
      * @description * `DOMAIN` - Tên miền
      *     * `HOSTING_VPS` - Hosting / VPS
@@ -24431,220 +24307,6 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["CoreBulkResultResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_settings_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["WorkspaceSettingResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_settings_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["WorkspaceSettingUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["WorkspaceSettingResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_settings_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["PatchedWorkspaceSettingUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["WorkspaceSettingResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_settings_by_owner_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        owner_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["WorkspaceSettingResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_settings_by_owner_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        owner_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["WorkspaceSettingUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["WorkspaceSettingResponse"];
-            meta: {
-              /** @description Id request (khớp header X-Request-ID). */
-              request_id: string;
-              /**
-               * Format: date-time
-               * @description Thời điểm phản hồi.
-               */
-              timestamp: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  workspace_settings_by_owner_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        owner_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["PatchedWorkspaceSettingUpdateValidateRequest"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Luôn true với response thành công. */
-            success: boolean;
-            data: components["schemas"]["WorkspaceSettingResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;

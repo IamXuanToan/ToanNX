@@ -264,27 +264,31 @@ export function PortalProfile() {
                   </span>
                 </div>
 
-                <div className="border-border/40 flex items-center justify-between gap-2 border-t pt-2">
-                  <span className="text-muted-foreground flex shrink-0 items-center gap-1">
-                    <Clock className="size-3" aria-hidden />
+                <div className="border-border/40 flex flex-col gap-1 border-t pt-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5">
+                    <Clock className="size-3 shrink-0" aria-hidden />
                     <span>{t("activity.lastLogin")}</span>
                   </span>
-                  <span className="text-foreground text-right font-medium">
+                  <span className="text-foreground pl-[18px] font-medium">
                     {user.lastLogin ? (
-                      <TimestampText value={user.lastLogin} />
+                      <TimestampText value={user.lastLogin} className="whitespace-nowrap" />
                     ) : (
                       t("activity.never")
                     )}
                   </span>
                 </div>
 
-                <div className="border-border/40 flex items-center justify-between gap-2 border-t pt-2">
-                  <span className="text-muted-foreground flex shrink-0 items-center gap-1">
-                    <Calendar className="size-3" aria-hidden />
+                <div className="border-border/40 flex flex-col gap-1 border-t pt-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5">
+                    <Calendar className="size-3 shrink-0" aria-hidden />
                     <span>{t("activity.dateJoined")}</span>
                   </span>
-                  <span className="text-foreground text-right font-medium">
-                    {user.dateJoined ? <TimestampText value={user.dateJoined} /> : "—"}
+                  <span className="text-foreground pl-[18px] font-medium">
+                    {user.dateJoined ? (
+                      <TimestampText value={user.dateJoined} className="whitespace-nowrap" />
+                    ) : (
+                      "—"
+                    )}
                   </span>
                 </div>
               </div>

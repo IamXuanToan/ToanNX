@@ -47,7 +47,6 @@ import type {
   WorkspaceDashboardReminder,
   WorkspaceDashboardSummary,
 } from "@/modules/workspace/types/workspace-dashboard.types";
-import type { WorkspaceSetting } from "@/modules/workspace/types/workspace-setting.types";
 import type { ApiModel } from "@/shares/types/api-schema";
 import type { HistoryEntry } from "@/shares/types/api.types";
 
@@ -103,9 +102,6 @@ describe("hợp đồng kiểu FE ↔ OpenAPI", () => {
       keyof ApiModel<"VaultItemRevealResponse">
     >();
     expectTypeOf<keyof Reminder>().toEqualTypeOf<keyof ApiModel<"ReminderResponse">>();
-    expectTypeOf<keyof WorkspaceSetting>().toEqualTypeOf<
-      keyof ApiModel<"WorkspaceSettingResponse">
-    >();
     expectTypeOf<keyof WorkspaceDashboardSummary>().toEqualTypeOf<
       keyof ApiModel<"WorkspaceDashboardSummaryResponse">
     >();

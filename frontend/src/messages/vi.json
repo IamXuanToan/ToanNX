@@ -578,6 +578,7 @@
       "PUSH_TOKEN_INVALID": "Trình duyệt đã hủy đăng ký nhận thông báo.",
       "PUSH_UNAVAILABLE": "Không gửi được thông báo trình duyệt lúc này.",
       "TELEGRAM_BOT_MISSING": "Chưa cấu hình bot Telegram.",
+      "TELEGRAM_WEBHOOK_HTTPS_REQUIRED": "Webhook Telegram bắt buộc dùng URL HTTPS công khai (không hỗ trợ localhost/http).",
       "WORKSPACE_CURRENCY_RATE_REQUIRED": "Ngoại tệ chưa có tỷ giá tại ngày chứng từ, vui lòng nhập tỷ giá > 0.",
       "WORKSPACE_EXCHANGE_RATE_INVALID": "Tỷ giá quy đổi phải lớn hơn 0.",
       "WORKSPACE_ASSET_FORBIDDEN": "Thiết bị được chọn không tồn tại hoặc không thuộc quyền sở hữu của bạn.",

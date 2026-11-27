@@ -61,3 +61,27 @@ class AssistantConfigUpdateValidateSerializer(CoreValidateSerializer):
     telegram_group_reply_in_dm = serializers.BooleanField(
         required=False, help_text="Gửi chi tiết riêng tư về DM chính chủ khi được hỏi trong nhóm."
     )
+    digest_time_slots = serializers.ListField(
+        child=serializers.CharField(max_length=5),
+        required=False,
+        max_length=8,
+        help_text="Khung giờ gửi bản tin hàng ngày toàn hệ thống (`HH:MM`).",
+    )
+    digest_sections = serializers.ListField(
+        child=serializers.CharField(max_length=32),
+        required=False,
+        max_length=10,
+        help_text="Các mục hiển thị trong bản tin hàng ngày.",
+    )
+    warranty_alert_days = serializers.ListField(
+        child=serializers.IntegerField(min_value=0, max_value=365),
+        required=False,
+        max_length=10,
+        help_text="Số ngày nhắc trước mặc định khi thiết bị sắp hết bảo hành.",
+    )
+    subscription_default_alert_days = serializers.ListField(
+        child=serializers.IntegerField(min_value=0, max_value=365),
+        required=False,
+        max_length=10,
+        help_text="Số ngày nhắc trước mặc định khi dịch vụ định kỳ sắp gia hạn.",
+    )

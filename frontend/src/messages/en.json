@@ -578,6 +578,7 @@
       "PUSH_TOKEN_INVALID": "The browser unregistered from notifications.",
       "PUSH_UNAVAILABLE": "Browser notifications are unavailable right now.",
       "TELEGRAM_BOT_MISSING": "No Telegram bot is configured.",
+      "TELEGRAM_WEBHOOK_HTTPS_REQUIRED": "Telegram webhook requires a public HTTPS URL (localhost/http is not supported).",
       "WORKSPACE_CURRENCY_RATE_REQUIRED": "No exchange rate found for this foreign currency; please enter rate > 0.",
       "WORKSPACE_EXCHANGE_RATE_INVALID": "Exchange rate must be greater than 0.",
       "WORKSPACE_ASSET_FORBIDDEN": "Selected asset does not exist or belongs to another owner.",

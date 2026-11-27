@@ -2,6 +2,7 @@
 
 import json
 import logging
+import re
 from typing import Any
 
 from app.core.utils.url import build_backend_url
@@ -11,13 +12,10 @@ from app.system.services.telegram_chat_service import TelegramChatService
 from app.workspace.constants.group_tool_policy import GroupToolPolicy
 from app.workspace.constants.workspace_defaults import SLASH_COMMAND_ALIASES
 from app.workspace.models.assistant_conversation import AssistantConversation
-from app.workspace.models.workspace_setting import WorkspaceSetting
-from app.workspace.repositories.workspace_setting_repository import WorkspaceSettingRepository
 from app.workspace.services.assistant_config_service import AssistantConfigService
 from app.workspace.services.assistant_service import AssistantService
 from app.workspace.services.assistant_slash_service import AssistantSlashService
 from app.workspace.services.telegram_assistant_reply_service import TelegramAssistantReplyService
-from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 
 logger = logging.getLogger(__name__)
 GROUP_CHAT_TYPES = frozenset({"group", "supergroup"})
@@ -28,8 +26,6 @@ class TelegramAssistantRouterService:
 
     def __init__(
         self,
-        setting_repository: WorkspaceSettingRepository | None = None,
-        setting_service: WorkspaceSettingService | None = None,
         telegram_chat_service: TelegramChatService | None = None,
         telegram_bot_service: TelegramBotService | None = None,
         qstash_client: QstashClient | None = None,
@@ -39,18 +35,14 @@ class TelegramAssistantRouterService:
         reply_service: TelegramAssistantReplyService | None = None,
     ) -> None:
         """Khởi tạo toàn bộ phụ thuộc định tuyến Telegram & xử lý AI."""
-        self.setting_repository = setting_repository or WorkspaceSettingRepository()
-        self.setting_service = setting_service or WorkspaceSettingService(repository=self.setting_repository)
         self.config_service = config_service or AssistantConfigService()
         self.telegram_bot_service = telegram_bot_service or TelegramBotService()
         self.telegram_chat_service = telegram_chat_service or TelegramChatService(
             telegram_bot_service=self.telegram_bot_service
         )
         self.qstash_client = qstash_client or QstashClient()
-        self.assistant_service = assistant_service or AssistantService(
-            setting_service=self.setting_service, config_service=self.config_service
-        )
-        self.slash_service = slash_service or AssistantSlashService(setting_service=self.setting_service)
+        self.assistant_service = assistant_service or AssistantService(config_service=self.config_service)
+        self.slash_service = slash_service or AssistantSlashService()
         self.reply_service = reply_service or TelegramAssistantReplyService(
             bot_service=self.telegram_bot_service
         )
@@ -96,45 +88,28 @@ class TelegramAssistantRouterService:
         # Khi nhắn /start <code>, /xac_minh hoặc /verify_owner từ Private DM: tự gắn telegram_owner_user_id.
         cmd, _ = self.slash_service.parse_command(text)
         canonical_cmd = SLASH_COMMAND_ALIASES.get(cmd)
-        if (
-            chat_type == "private"
-            and sender_tg_id is not None
-            and (cmd == "/start" or canonical_cmd == "verify_owner")
-        ):
-            owner_chat = active_chats[0]
-            self.setting_service.attach_telegram_owner_from_dm(owner_chat.owner, sender_tg_id)
+        if chat_type == "private" and (cmd == "/start" or canonical_cmd == "verify_owner"):
             if canonical_cmd == "verify_owner":
                 self.reply_service.send_reply(
                     chat_id,
-                    "✅ Đã xác minh Telegram User ID chính chủ cho Trợ lý cá nhân.",
+                    "✅ Tài khoản Telegram DM này đã được liên kết sẵn trong Hồ sơ cá nhân.",
                     reply_to_message_id=reply_to_id,
                 )
             return {"handled": True, "reason": "owner_verified"}
 
-        target_setting, telegram_chat = self._resolve_setting(
-            active_chats, chat_type=chat_type, sender_tg_id=sender_tg_id
+        is_group = chat_type in GROUP_CHAT_TYPES
+        telegram_chat, is_owner, owner_dm_chat_id = self._resolve_chat_owner(
+            active_chats, is_group=is_group, sender_tg_id=sender_tg_id
         )
-        if target_setting is None or telegram_chat is None:
+        if telegram_chat is None:
             return {"handled": False, "reason": "assistant_disabled_or_chat_not_allowed"}
 
-        is_group = chat_type in GROUP_CHAT_TYPES
         if (
             is_group
             and bool(admin_cfg.get("telegram_group_require_mention", True))
             and not self._is_bot_mentioned(message, text)
         ):
             return {"handled": False, "reason": "mention_required"}
-
-        # Xác định ngữ cảnh chính chủ, quyền dùng tool & ẩn số tiền trong Group theo cấu hình Admin.
-        is_owner = (
-            sender_tg_id is not None
-            and target_setting.telegram_owner_user_id is not None
-            and int(sender_tg_id) == int(target_setting.telegram_owner_user_id)
-        )
-        if not is_group and sender_tg_id is not None and target_setting.telegram_owner_user_id is None:
-            # Lần đầu chat trực tiếp trong DM đã liên kết thì xem như chính chủ.
-            self.setting_service.attach_telegram_owner_from_dm(target_setting.owner, sender_tg_id)
-            is_owner = True
 
         allow_personal_tools = True
         exclude_private_history = False
@@ -147,6 +122,8 @@ class TelegramAssistantRouterService:
                 exclude_private_history = True
 
         # Nếu là câu hỏi tự nhiên + có QStash ở pha webhook -> đẩy 1-hop để trả 200 OK < 200ms.
+        cleaned_text = self._strip_bot_mention(text)
+        cmd, _ = self.slash_service.parse_command(cleaned_text)
         is_slash = bool(cmd)
         if not is_slash and allow_qstash_offload and self.qstash_client.is_configured():
             update_id = update.get("update_id") or f"{chat_id}-{reply_to_id}"
@@ -164,8 +141,8 @@ class TelegramAssistantRouterService:
             else AssistantConversation.Channel.TELEGRAM_DM
         )
         res = self.assistant_service.chat(
-            target_setting.owner,
-            text,
+            telegram_chat.owner,
+            cleaned_text,
             channel=channel,
             external_chat_id=chat_id,
             sender_telegram_id=sender_tg_id,
@@ -182,10 +159,10 @@ class TelegramAssistantRouterService:
             and bool(admin_cfg.get("telegram_group_reply_in_dm", False))
             and is_owner
             and res.get("contains_private_data")
-            and target_setting.telegram_owner_user_id
+            and owner_dm_chat_id is not None
         ):
             self.reply_service.send_private_dm_with_fallback(
-                dm_chat_id=int(target_setting.telegram_owner_user_id),
+                dm_chat_id=owner_dm_chat_id,
                 group_chat_id=chat_id,
                 group_reply_to_message_id=reply_to_id,
                 private_text=str(res["reply"]),
@@ -201,38 +178,27 @@ class TelegramAssistantRouterService:
         )
         return {"handled": True, "queued": False, "replied_in_dm": False}
 
-    def _resolve_setting(
-        self, active_chats: list[Any], *, chat_type: str, sender_tg_id: int | None
-    ) -> tuple[WorkspaceSetting | None, Any | None]:
-        """Định tuyến đa chủ sở hữu: lọc chat nằm trong `telegram_allowed_chat_ids` của Setting."""
-        chat_by_owner = {chat.owner_id: chat for chat in active_chats}
-        settings_list = self.setting_repository.find_by_owners(list(chat_by_owner.keys()))
+    def _resolve_chat_owner(
+        self,
+        active_chats: list[Any],
+        *,
+        is_group: bool,
+        sender_tg_id: int | None,
+    ) -> tuple[Any | None, bool, int | None]:
+        """Định tuyến chủ sở hữu theo `system.TelegramChat` đang bật ở Hồ sơ → Thông báo."""
+        if not active_chats:
+            return None, False, None
+        if not is_group:
+            return active_chats[0], True, sender_tg_id
 
-        candidates: list[tuple[WorkspaceSetting, Any]] = []
-        for setting in settings_list:
-            owner_chat = chat_by_owner.get(setting.owner_id)
-            if owner_chat is None:
-                continue
-            allowed_ids = {str(cid) for cid in (setting.telegram_allowed_chat_ids or [])}
-            if str(owner_chat.pk) in allowed_ids:
-                candidates.append((setting, owner_chat))
-
-        if not candidates:
-            return None, None
-        if len(candidates) == 1:
-            return candidates[0]
-
-        # Nhiều user chung 1 nhóm cùng bật AI: ưu tiên đúng người có telegram_owner_user_id == sender.
         if sender_tg_id is not None:
-            for setting, owner_chat in candidates:
-                if setting.telegram_owner_user_id is not None and int(setting.telegram_owner_user_id) == int(
-                    sender_tg_id
-                ):
-                    return setting, owner_chat
+            sender_dms = self.telegram_chat_service.active_by_chat_id(str(sender_tg_id))
+            sender_owner_ids = {chat.owner_id for chat in sender_dms}
+            for group_chat in active_chats:
+                if group_chat.owner_id in sender_owner_ids:
+                    return group_chat, True, sender_tg_id
 
-        if chat_type == "private":
-            return candidates[0]
-        return None, None
+        return active_chats[0], False, None
 
     def _is_bot_mentioned(self, message: dict[str, Any], text: str) -> bool:
         info = self.telegram_bot_service.bot_info()
@@ -251,3 +217,17 @@ class TelegramAssistantRouterService:
             ):
                 return True
         return False
+
+    def _strip_bot_mention(self, text: str) -> str:
+        """Gỡ `@bot_username` ở đầu câu để nhận diện chính xác cả `@bot /hom_nay` lẫn `@bot hôm nay có gì`."""
+        info = self.telegram_bot_service.bot_info()
+        username = str(info.get("username") or "").lstrip("@").strip()
+        if not username:
+            return text
+        cleaned = re.sub(
+            rf"^(?:@{re.escape(username)}[\s,:;-]*)+",
+            "",
+            text.strip(),
+            flags=re.IGNORECASE,
+        ).strip()
+        return cleaned or text

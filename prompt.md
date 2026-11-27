@@ -119,7 +119,8 @@ trước khi viết code Next.
 - Xóa mềm mặc định; response theo envelope cố định với mã lỗi ổn định.
 - Input qua `@validate_request` + `serializers/validates/`, output qua `serializers/responses/`.
 - Thông báo chỉ phát qua `NotificationService.notify` (sự kiện khai `scope`/`audience`/`permission`; sự kiện
-  `OWNER` phải truyền `recipient`); không tự gửi email/Telegram/push.
+  `OWNER` phải truyền `recipient`); không tự gửi email/Telegram/push; chia lô `NOTIFICATION_BULK_BATCH` (500/lô)
+  khi phân giải kênh/tạo outbox cho nhiều user (không `for user in users:` dồn một cục).
 - ViewSet chỉ đọc mở `post` cho `bulk-delete` thì khai `"create": DENY`. Model không có `deleted_at` mà cần xoá:
   service ghi đè `delete` bằng `hard_delete` kèm lý do. Field unique ngắn (mã 3 ký tự) dùng `UniqueConstraint` có
   điều kiện `deleted_at__isnull=True` (rule backend mục 9).

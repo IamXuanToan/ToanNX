@@ -5,6 +5,7 @@ import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Circle, Plus } f
 import { useLocale, useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { PORTAL_ROUTES } from "@/modules/portal/constants/routes";
 import { FormDialog } from "@/shares/components/common/form-dialog";
 import { StatusBadge, type StatusTone } from "@/shares/components/common/status-badge";
 import { Button } from "@/shares/components/ui/button";
@@ -34,6 +35,10 @@ function resolveEventHref(ev: WorkspaceCalendarEvent) {
       return WORKSPACE_ROUTES.assetDetail(ev.sourceId);
     case "warranty_claim":
       return WORKSPACE_ROUTES.warrantyClaimDetail(ev.sourceId);
+    case "income":
+      return PORTAL_ROUTES.financeIncomeDetail(ev.sourceId);
+    case "donation":
+      return PORTAL_ROUTES.donations;
   }
 }
 
@@ -42,6 +47,8 @@ const EVENT_TONE: Record<CalendarEventType, StatusTone> = {
   reminder: "info",
   asset_warranty: "neutral",
   warranty_claim: "success",
+  income: "success",
+  donation: "info",
 };
 
 const DOT_CLASS: Record<CalendarEventType, string> = {
@@ -49,7 +56,43 @@ const DOT_CLASS: Record<CalendarEventType, string> = {
   reminder: "bg-info",
   asset_warranty: "bg-primary",
   warranty_claim: "bg-success",
+  income: "bg-emerald-500",
+  donation: "bg-pink-500",
 };
+
+const CELL_PILL_CLASS: Record<CalendarEventType, string> = {
+  subscription: "bg-warning/15 text-warning",
+  reminder: "bg-info/15 text-info",
+  asset_warranty: "bg-primary/10 text-primary",
+  warranty_claim: "bg-success/15 text-success",
+  income: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  donation: "bg-pink-500/15 text-pink-700 dark:text-pink-300",
+};
+
+function formatCompactMoney(amountRaw: string, millionSuffix: string): string {
+  const num = Number(amountRaw);
+  if (!Number.isFinite(num) || num <= 0) return "";
+  if (num >= 1_000_000) {
+    const m = (num / 1_000_000).toFixed(num % 1_000_000 === 0 ? 0 : 1);
+    return `${m}${millionSuffix}`;
+  }
+  if (num >= 1_000) {
+    return `${Math.round(num / 1_000)}k`;
+  }
+  return `${Math.round(num)}₫`;
+}
+
+function formatCellEventLabel(ev: WorkspaceCalendarEvent, millionSuffix: string): string {
+  if (ev.type === "income") {
+    const shortMoney = ev.amountVnd ? formatCompactMoney(ev.amountVnd, millionSuffix) : "";
+    return shortMoney ? `+${shortMoney}` : ev.title;
+  }
+  if (ev.type === "donation") {
+    const shortMoney = ev.amountVnd ? formatCompactMoney(ev.amountVnd, millionSuffix) : "";
+    return shortMoney ? `Donate +${shortMoney}` : ev.title;
+  }
+  return ev.title;
+}
 
 const WEEKDAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
@@ -170,26 +213,46 @@ export function PortalCalendar({
                     variant="ghost"
                     onClick={() => state.selectDate(dateStr)}
                     className={cn(
-                      "flex h-16 flex-col items-start justify-between rounded-lg border p-1.5 text-left font-normal",
+                      "flex min-h-22 flex-col items-stretch justify-between rounded-lg border p-1.5 text-left font-normal",
                       !inMonth && "text-muted-foreground/50 bg-muted/20",
                       today && "border-primary/60",
                       selected && "bg-primary-light border-primary text-foreground",
                     )}
                   >
-                    <span className={cn("text-xs tabular-nums", today && "text-primary font-bold")}>
-                      {format(day, "d")}
-                    </span>
+                    <div className="flex items-center justify-between gap-1">
+                      <span
+                        className={cn("text-xs tabular-nums", today && "text-primary font-bold")}
+                      >
+                        {format(day, "d")}
+                      </span>
+                      {dayEvents.length > 0 ? (
+                        <div className="flex items-center gap-0.5">
+                          {dayEvents.slice(0, 3).map((ev) => (
+                            <span
+                              key={ev.id}
+                              className={cn("size-1.5 rounded-full", DOT_CLASS[ev.type])}
+                            />
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
                     {dayEvents.length > 0 ? (
-                      <div className="flex w-full flex-wrap items-center gap-0.5">
-                        {dayEvents.slice(0, 4).map((ev) => (
-                          <span
+                      <div className="mt-1 space-y-0.5 overflow-hidden">
+                        {dayEvents.slice(0, 2).map((ev) => (
+                          <div
                             key={ev.id}
-                            className={cn("size-1.5 rounded-full", DOT_CLASS[ev.type])}
-                          />
+                            className={cn(
+                              "truncate rounded px-1 py-0.5 text-[10px] leading-tight font-medium",
+                              CELL_PILL_CLASS[ev.type],
+                              ev.isCompleted && ev.type === "reminder" && "line-through opacity-60",
+                            )}
+                          >
+                            {formatCellEventLabel(ev, t("millionSuffix"))}
+                          </div>
                         ))}
-                        {dayEvents.length > 4 ? (
-                          <span className="text-muted-foreground text-[10px]">
-                            +{dayEvents.length - 4}
+                        {dayEvents.length > 2 ? (
+                          <span className="text-muted-foreground block px-0.5 text-[10px] font-medium">
+                            +{dayEvents.length - 2}
                           </span>
                         ) : null}
                       </div>

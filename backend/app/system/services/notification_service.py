@@ -271,44 +271,57 @@ class NotificationService:
     ) -> tuple[int, list[Any]]:
         if not users:
             return 0, []
-        existing = self.repository.existing_recipient_ids(event.code, dedup_key, [user.pk for user in users])
-        users = [user for user in users if user.pk not in existing]
         level = payload.level or event.default_level
-        resolved_map = self.preference_service.resolve(users, event, level)
         now = timezone.now()
-        notifications: list[Notification] = []
-        for user in users:
-            resolved = resolved_map[user.pk]
-            if not resolved.any:
+        total_created = 0
+        delivery_ids: list[Any] = []
+
+        for start in range(0, len(users), NOTIFICATION_BULK_BATCH):
+            batch_users = users[start : start + NOTIFICATION_BULK_BATCH]
+            existing = self.repository.existing_recipient_ids(
+                event.code, dedup_key, [user.pk for user in batch_users]
+            )
+            pending_users = [user for user in batch_users if user.pk not in existing]
+            if not pending_users:
                 continue
-            notifications.append(
-                Notification(
-                    recipient=user,
-                    scope=event.scope,
-                    level=level,
-                    event_code=event.code,
-                    module=event.module,
-                    title=payload.title[:200],
-                    body=payload.body,
-                    message_key=payload.message_key,
-                    params=payload.params,
-                    link=payload.link,
-                    data={**payload.data, "details": [list(row) for row in payload.details]}
-                    if payload.details
-                    else payload.data,
-                    dedup_key=dedup_key[:200],
-                    # Tắt IN_APP: vẫn cần bản ghi làm nội dung cho email/Telegram/push nhưng ẩn khỏi chuông.
-                    expires_at=payload.expires_at if resolved.in_app else now,
+
+            resolved_map = self.preference_service.resolve(pending_users, event, level)
+            notifications: list[Notification] = []
+            for user in pending_users:
+                resolved = resolved_map[user.pk]
+                if not resolved.any:
+                    continue
+                notifications.append(
+                    Notification(
+                        recipient=user,
+                        scope=event.scope,
+                        level=level,
+                        event_code=event.code,
+                        module=event.module,
+                        title=payload.title[:200],
+                        body=payload.body,
+                        message_key=payload.message_key,
+                        params=payload.params,
+                        link=payload.link,
+                        data={**payload.data, "details": [list(row) for row in payload.details]}
+                        if payload.details
+                        else payload.data,
+                        dedup_key=dedup_key[:200],
+                        # Tắt IN_APP: vẫn lưu bản ghi cho email/Telegram/push nhưng ẩn khỏi chuông.
+                        expires_at=payload.expires_at if resolved.in_app else now,
+                    )
                 )
-            )
-        created: list[Notification] = []
-        for start in range(0, len(notifications), NOTIFICATION_BULK_BATCH):
-            created.extend(
-                self.repository.bulk_create(notifications[start : start + NOTIFICATION_BULK_BATCH])
-            )
-        deliveries = self._deliveries(created, resolved_map)
-        self.delivery_repository.bulk_create(deliveries)
-        return len(created), [delivery.pk for delivery in deliveries]
+            if not notifications:
+                continue
+            created = self.repository.bulk_create(notifications)
+            total_created += len(created)
+            deliveries = self._deliveries(created, resolved_map)
+            for d_start in range(0, len(deliveries), NOTIFICATION_BULK_BATCH):
+                created_deliveries = self.delivery_repository.bulk_create(
+                    deliveries[d_start : d_start + NOTIFICATION_BULK_BATCH]
+                )
+                delivery_ids.extend(delivery.pk for delivery in created_deliveries)
+        return total_created, delivery_ids
 
     def _deliveries(
         self, notifications: list[Notification], channels: dict[Any, Any]

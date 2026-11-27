@@ -67,6 +67,10 @@ class UserService(CoreCrudService[User, UserRepository]):
         """
         return self.repository.find_by_id(user_id)
 
+    def list_active(self) -> list[User]:
+        """Danh sách người dùng đang hoạt động."""
+        return list(self.repository.active_with_permission(None))
+
     def username_exists(self, username: str) -> bool:
         """Tên người dùng đã có người dùng (kể cả tài khoản bị khóa).
 

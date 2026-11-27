@@ -809,7 +809,10 @@
       "checkOk": "Bot and webhook are working properly.",
       "errors": {
         "TELEGRAM_BOT_TOKEN_INVALID": "The system Telegram bot token is invalid.",
-        "TELEGRAM_BOT_MISSING": "Telegram bot is not configured on the server."
+        "TELEGRAM_BOT_MISSING": "Telegram bot is not configured on the server.",
+        "NOTIFICATION_TELEGRAM_UNAVAILABLE": "Unable to reach Telegram or Telegram rejected the webhook URL.",
+        "TELEGRAM_WEBHOOK_HTTPS_REQUIRED": "Telegram webhook requires a public HTTPS URL (localhost/http is not supported).",
+        "unknown": "Webhook error detail: {detail}"
       }
     },
     "telegramChats": {

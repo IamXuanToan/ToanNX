@@ -6,13 +6,13 @@ from typing import Any
 from django.db import transaction
 from django.utils import timezone
 
+from app.core.constants.defaults import DEFAULT_TIMEZONE
 from app.core.services.core_crud_service import CoreCrudService
 from app.workspace.constants.workspace_defaults import AI_TOOL_ITEM_LIMIT
 from app.workspace.models.reminder import Reminder
 from app.workspace.permissions.reminder_permission import ReminderPermission
 from app.workspace.repositories.reminder_repository import ReminderRepository
 from app.workspace.services.workspace_alerts_cache_service import WorkspaceAlertsCacheService
-from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 from app.workspace.utils.date_math import add_months_clamped
 
@@ -28,13 +28,11 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
         self,
         repository: ReminderRepository | None = None,
         alerts_cache_service: WorkspaceAlertsCacheService | None = None,
-        setting_service: WorkspaceSettingService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
     ) -> None:
-        """Khởi tạo phụ thuộc repository nhắc việc, cấu hình múi giờ và cache W4."""
+        """Khởi tạo phụ thuộc repository nhắc việc, dịch vụ múi giờ và cache W4."""
         super().__init__(repository or ReminderRepository())
         self.alerts_cache_service = alerts_cache_service or WorkspaceAlertsCacheService()
-        self.setting_service = setting_service or WorkspaceSettingService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
 
     @transaction.atomic
@@ -43,6 +41,8 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
         payload = dict(data)
         if not payload.get("anchor_day"):
             payload["anchor_day"] = payload["due_date"].day
+        if "reminder_days_before" in payload:
+            payload["reminder_days_before"] = self._normalize_days_before(payload["reminder_days_before"])
         reminder = super().create(actor, payload)
         self.alerts_cache_service.schedule_alerts_next_due_on_commit()
         return reminder
@@ -61,6 +61,9 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
             elif not target_completed and was_completed:
                 payload["completed_at"] = None
 
+        if "reminder_days_before" in payload:
+            payload["reminder_days_before"] = self._normalize_days_before(payload["reminder_days_before"])
+
         updated = self.repository.update(reminder, actor=actor, **payload)
 
         if not was_completed and target_completed and updated.recurrence != Reminder.Recurrence.NONE:
@@ -77,6 +80,7 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
                 due_date=next_due,
                 due_time=updated.due_time,
                 notify_minutes_before=updated.notify_minutes_before,
+                reminder_days_before=list(updated.reminder_days_before or []),
                 priority=updated.priority,
                 is_completed=False,
                 recurrence=updated.recurrence,
@@ -95,8 +99,7 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
 
     def get_pending(self, actor: Any, *, scope: str = "today") -> tuple[list[Reminder], int]:
         """Lấy danh sách việc chưa xong của `actor` (`overdue`/`today`/`week`/`all`)."""
-        setting = self.setting_service.get_or_create_for_owner(actor)
-        today_local = self.tz_service.local_today(setting.timezone)
+        today_local = self.tz_service.local_today(DEFAULT_TIMEZONE)
         if scope == "overdue":
             return self.repository.list_pending_between(
                 actor.pk, end_date=today_local - timedelta(days=1), limit=AI_TOOL_ITEM_LIMIT
@@ -124,3 +127,14 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
         if recurrence == Reminder.Recurrence.YEARLY:
             return add_months_clamped(current_due, 12, anchor_day=anchor_day)
         return current_due
+
+    @staticmethod
+    def _normalize_days_before(raw_days: Any) -> list[int]:
+        if not isinstance(raw_days, list):
+            return []
+        unique: set[int] = set()
+        for item in raw_days:
+            val = int(item)
+            if 1 <= val <= 365:
+                unique.add(val)
+        return sorted(unique, reverse=True)

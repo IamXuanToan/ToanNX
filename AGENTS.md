@@ -122,7 +122,9 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
 - **Thông báo chỉ qua `NotificationService.notify`**: sự kiện khai `scope`/`audience`/`permission` trong
   `ModuleDescriptor.notification_events`; sự kiện `OWNER` phải truyền `recipient`; không tự gửi email/Telegram/push.
   Request không bao giờ gọi FCM/SMTP/Telegram: `notify` chỉ ghi outbox rồi đá QStash sau commit (cron là lưới an
-  toàn); mọi lời gọi dịch vụ ngoài đều có timeout (rule backend mục 9).
+  toàn); mọi lời gọi dịch vụ ngoài đều có timeout. Khi gửi/phân giải kênh nhiều người dùng (`NotificationService._create`,
+  `NotificationPreferenceService.resolve`/`resolve_explicit`, cron), bắt buộc chia lô theo `NOTIFICATION_BULK_BATCH`
+  (500 bản ghi/lô), không `for user in users:` xử lý dồn một cục (rule backend mục 9).
 - **Ngân sách gói free**: Redis (`CacheService`) chỉ để tăng tốc (PostgreSQL vẫn là nguồn gốc, Redis lỗi → dự phòng,
   không 500); chỉ cache dữ liệu công khai; lượt khách và cron không chạm Neon khi cache/mốc còn hiệu lực. Xem
   [docs/architecture/infrastructure.md](docs/architecture/infrastructure.md) trước khi thêm việc tốn

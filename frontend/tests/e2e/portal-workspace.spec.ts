@@ -257,17 +257,6 @@ test.describe("Client Portal — Không gian cá nhân & Trợ lý AI", () => {
       await page.getByRole("button", { name: "Ngắn gọn · Tiếng Việt" }).click();
       await page.getByRole("button", { name: "Lưu", exact: true }).click();
 
-      // 8. Cài đặt cá nhân (Múi giờ +7, Digest, chip ngày cảnh báo & nút Quay lại) + đổi ngôn ngữ /vi <-> /en
-      await memberPage.goto("/vi/ca-nhan/cai-dat");
-      await expect(memberPage.getByRole("link", { name: "Quay lại" })).toBeVisible();
-      await memberPage.getByRole("button", { name: "Lưu cài đặt" }).click();
-      await memberPage.getByTestId("language-switcher").click();
-      await memberPage.getByTestId("locale-en").click();
-      await expect(memberPage).toHaveURL(/\/en\/portal\/settings$/);
-      await expect(
-        memberPage.getByRole("heading", { name: "Personal Digest & Alert Settings" }),
-      ).toBeVisible();
-
       expect(pageErrors, `Page errors: ${pageErrors.join("; ")}`).toEqual([]);
       expect(consoleErrors, `Console errors: ${consoleErrors.join("; ")}`).toEqual([]);
       expect(serverErrors, `Server 5xx errors: ${serverErrors.join("; ")}`).toEqual([]);

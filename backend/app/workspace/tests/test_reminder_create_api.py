@@ -30,6 +30,7 @@ class TestReminderCreateApi(BaseApiTestCase):
                 "due_date": "2026-01-31",
                 "due_time": "09:30",
                 "notify_minutes_before": 15,
+                "reminder_days_before": [3, 8, 6, 3],
                 "priority": "URGENT",
                 "recurrence": "MONTHLY",
                 "tags": ["ssl", "ops"],
@@ -39,6 +40,7 @@ class TestReminderCreateApi(BaseApiTestCase):
         data = self.assert_success(res, 201)
         assert data["anchor_day"] == 31
         assert data["due_time"] == "09:30:00"
+        assert data["reminder_days_before"] == [8, 6, 3]
         assert data["is_completed"] is False
         assert "notification_channels" not in data
 

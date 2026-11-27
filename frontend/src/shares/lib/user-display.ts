@@ -20,9 +20,13 @@ export type UserDisplaySource =
  * @param user - Đối tượng chứa thông tin định danh người dùng.
  * @returns Chuỗi nhãn hiển thị đã chuẩn hóa.
  */
-export function formatUserDisplayName(user: UserDisplaySource): string {
+export function formatUserDisplayName(
+  user: UserDisplaySource,
+  options?: { includeUsername?: boolean },
+): string {
   if (!user) return "";
 
+  const includeUsername = options?.includeUsername ?? true;
   const explicitFullName = user.fullName?.trim() ?? "";
   const combinedParts = [user.lastName?.trim(), user.firstName?.trim()]
     .filter(Boolean)
@@ -31,7 +35,7 @@ export function formatUserDisplayName(user: UserDisplaySource): string {
   const fullName = explicitFullName || combinedParts;
   const username = user.username?.trim() ?? "";
 
-  if (fullName && username) {
+  if (includeUsername && fullName && username) {
     return `${fullName} (${username})`;
   }
   if (fullName) {

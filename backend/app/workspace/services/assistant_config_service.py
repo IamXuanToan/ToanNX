@@ -1,5 +1,6 @@
 """Nghiệp vụ cấu hình Chatbot AI toàn hệ thống (chỉ Admin chỉnh sửa, lưu trong `system.Setting`)."""
 
+from datetime import time
 from typing import Any
 
 from django.conf import settings
@@ -12,8 +13,13 @@ from app.system.services.telegram_bot_service import TelegramBotService
 from app.workspace.constants.assistant_launcher_size import AssistantLauncherSize
 from app.workspace.constants.group_tool_policy import GroupToolPolicy
 from app.workspace.constants.workspace_defaults import (
+    ALLOWED_DIGEST_SECTIONS,
     ASSISTANT_COMMANDS,
     DEFAULT_ASSISTANT_SYSTEM_PROMPT,
+    DEFAULT_DIGEST_SECTIONS,
+    DEFAULT_DIGEST_TIME_SLOTS,
+    DEFAULT_REMINDER_DAYS_BEFORE,
+    DEFAULT_WARRANTY_ALERT_DAYS,
 )
 
 VALID_GROUP_POLICIES = frozenset(item.value for item in GroupToolPolicy)
@@ -72,6 +78,27 @@ class AssistantConfigService:
             ),
             "telegram_group_hide_amounts": bool(raw.get("telegram_group_hide_amounts", False)),
             "telegram_group_reply_in_dm": bool(raw.get("telegram_group_reply_in_dm", False)),
+            "digest_time_slots": (
+                list(raw["digest_time_slots"])
+                if isinstance(raw.get("digest_time_slots"), list) and raw.get("digest_time_slots")
+                else list(DEFAULT_DIGEST_TIME_SLOTS)
+            ),
+            "digest_sections": (
+                list(raw["digest_sections"])
+                if isinstance(raw.get("digest_sections"), list)
+                else list(DEFAULT_DIGEST_SECTIONS)
+            ),
+            "warranty_alert_days": (
+                list(raw["warranty_alert_days"])
+                if isinstance(raw.get("warranty_alert_days"), list) and raw.get("warranty_alert_days")
+                else list(DEFAULT_WARRANTY_ALERT_DAYS)
+            ),
+            "subscription_default_alert_days": (
+                list(raw["subscription_default_alert_days"])
+                if isinstance(raw.get("subscription_default_alert_days"), list)
+                and raw.get("subscription_default_alert_days")
+                else list(DEFAULT_REMINDER_DAYS_BEFORE)
+            ),
         }
 
     def get_config(self) -> dict[str, Any]:
@@ -100,6 +127,11 @@ class AssistantConfigService:
             "telegram_bot_username": str(bot_info.get("username") or ""),
             "telegram_bot_url": str(bot_info.get("url") or ""),
             "telegram_commands": [dict(item) for item in ASSISTANT_COMMANDS],
+            "digest_time_slots": raw["digest_time_slots"],
+            "digest_sections": raw["digest_sections"],
+            "available_digest_sections": list(DEFAULT_DIGEST_SECTIONS),
+            "warranty_alert_days": raw["warranty_alert_days"],
+            "subscription_default_alert_days": raw["subscription_default_alert_days"],
         }
 
     def get_bot_profile(self) -> dict[str, Any]:
@@ -173,12 +205,81 @@ class AssistantConfigService:
                 )
             current["telegram_group_tool_policy"] = policy
 
+        if "digest_time_slots" in payload:
+            current["digest_time_slots"] = self._normalize_slots(payload["digest_time_slots"])
+
+        if "digest_sections" in payload:
+            current["digest_sections"] = self._normalize_sections(payload["digest_sections"])
+
+        if "warranty_alert_days" in payload:
+            current["warranty_alert_days"] = self._normalize_days(
+                payload["warranty_alert_days"], "warranty_alert_days"
+            )
+
+        if "subscription_default_alert_days" in payload:
+            current["subscription_default_alert_days"] = self._normalize_days(
+                payload["subscription_default_alert_days"], "subscription_default_alert_days"
+            )
+
         self.setting_service.set_setting_value(
             SettingKey.WORKSPACE_ASSISTANT_CONFIG,
             current,
-            description="Cấu hình Chatbot AI toàn hệ thống (Avatar, Policy, Model, Token, Telegram).",
+            description="Cấu hình Chatbot AI & Lịch bản tin toàn hệ thống.",
             category="assistant",
             is_public=False,
             actor=actor,
         )
         return self.get_config()
+
+    @staticmethod
+    def _normalize_slots(raw_slots: Any) -> list[str]:
+        if not isinstance(raw_slots, list):
+            raise ValidationError(details={"digest_time_slots": ["Định dạng danh sách không hợp lệ."]})
+        unique: set[str] = set()
+        for item in raw_slots:
+            cleaned = str(item or "").strip()
+            parts = cleaned.split(":")
+            if len(parts) != 2 or not (parts[0].isdigit() and parts[1].isdigit()):
+                raise ValidationError(
+                    details={
+                        "digest_time_slots": [f"Khung giờ '{cleaned}' phải có dạng HH:MM (00:00–23:59)."]
+                    }
+                )
+            hour, minute = int(parts[0]), int(parts[1])
+            try:
+                time(hour, minute)
+            except ValueError as exc:
+                raise ValidationError(
+                    details={"digest_time_slots": [f"Khung giờ '{cleaned}' không hợp lệ."]}
+                ) from exc
+            unique.add(f"{hour:02d}:{minute:02d}")
+        if not unique:
+            raise ValidationError(details={"digest_time_slots": ["Cần ít nhất 1 khung giờ gửi bản tin."]})
+        return sorted(unique)
+
+    @staticmethod
+    def _normalize_sections(raw_sections: Any) -> list[str]:
+        if not isinstance(raw_sections, list):
+            raise ValidationError(details={"digest_sections": ["Danh sách mục Digest không hợp lệ."]})
+        result: list[str] = []
+        for item in raw_sections:
+            name = str(item or "").strip()
+            if name not in ALLOWED_DIGEST_SECTIONS:
+                raise ValidationError(
+                    details={"digest_sections": [f"Mục Digest '{name}' không được hỗ trợ."]}
+                )
+            if name not in result:
+                result.append(name)
+        return result
+
+    @staticmethod
+    def _normalize_days(raw_days: Any, field_name: str) -> list[int]:
+        if not isinstance(raw_days, list):
+            raise ValidationError(details={field_name: ["Danh sách số ngày không hợp lệ."]})
+        unique: set[int] = set()
+        for item in raw_days:
+            val = int(item)
+            if val < 0 or val > 365:
+                raise ValidationError(details={field_name: ["Số ngày nhắc trước phải từ 0 đến 365."]})
+            unique.add(val)
+        return sorted(unique, reverse=True)

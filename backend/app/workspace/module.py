@@ -23,7 +23,6 @@ from app.workspace.permissions.subscription_permission import SubscriptionPermis
 from app.workspace.permissions.vault_item_permission import VaultItemPermission
 from app.workspace.permissions.workspace_calendar_permission import WorkspaceCalendarPermission
 from app.workspace.permissions.workspace_dashboard_permission import WorkspaceDashboardPermission
-from app.workspace.permissions.workspace_setting_permission import WorkspaceSettingPermission
 
 MODULE = ModuleDescriptor(
     code="workspace",
@@ -41,7 +40,6 @@ MODULE = ModuleDescriptor(
         *SubscriptionPaymentPermission.all(),
         *VaultItemPermission.all(),
         *ReminderPermission.all(),
-        *WorkspaceSettingPermission.all(),
         *AssistantPermission.all(),
         *AssistantConfigPermission.all(),
         *WorkspaceDashboardPermission.all(),
@@ -54,7 +52,6 @@ MODULE = ModuleDescriptor(
         *SubscriptionPaymentPermission.member(),
         *VaultItemPermission.member(),
         *ReminderPermission.member(),
-        *WorkspaceSettingPermission.member(),
         *AssistantPermission.member(),
         *WorkspaceDashboardPermission.member(),
         *WorkspaceCalendarPermission.member(),
@@ -78,7 +75,7 @@ MODULE = ModuleDescriptor(
             "Bản tin tổng hợp việc, gia hạn và bảo hành thiết bị theo khung giờ cấu hình.",
             scope=NOTIFICATION_SCOPE_PERSONAL,
             audience=NOTIFICATION_AUDIENCE_OWNER,
-            permission=WorkspaceSettingPermission.READ.code,
+            permission=WorkspaceDashboardPermission.READ.code,
             default_level=NOTIFICATION_LEVEL_INFO,
             default_channels=(NOTIFICATION_CHANNEL_IN_APP, NOTIFICATION_CHANNEL_TELEGRAM),
             kind="business",

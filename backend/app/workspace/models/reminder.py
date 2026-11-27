@@ -18,6 +18,7 @@ class Reminder(JournalTracker, CoreModel):
         "priority",
         "is_completed",
         "recurrence",
+        "reminder_days_before",
     )
 
     class Priority(models.TextChoices):
@@ -76,6 +77,13 @@ class Reminder(JournalTracker, CoreModel):
         verbose_name="Nhắc trước (phút)",
         help_text="Số phút thông báo trước thời điểm đến hạn.",
         db_comment="Nhắc trước phút",
+    )
+    reminder_days_before = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="Số ngày nhắc trước",
+        help_text="Danh sách số ngày thông báo trước hạn (ví dụ [7, 3, 1]).",
+        db_comment="Danh sách ngày nhắc trước",
     )
     priority = models.CharField(
         max_length=16,

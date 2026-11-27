@@ -631,3 +631,35 @@ class IncomeService(CoreCrudService[Income, IncomeRepository]):
         )
         self._notify_new(income)
         return income
+
+    def list_calendar_items(self, owner_id: Any, from_date: Any, to_date: Any) -> list[dict[str, Any]]:
+        """Lấy danh sách khoản tiền vào theo khoảng ngày để hiển thị trên Lịch tổng hợp."""
+        rows = self.repository.filter(
+            owner_id=owner_id,
+            received_date__gte=from_date,
+            received_date__lte=to_date,
+        ).order_by("received_date", "received_at")[:200]
+        items: list[dict[str, Any]] = []
+        for row in rows:
+            platform_name = row.platform.name if row.platform else ""
+            title = (
+                f"{platform_name}: {row.content}"
+                if platform_name and row.content
+                else (platform_name or row.content or "Tiền vào")
+            )
+            items.append(
+                {
+                    "id": f"inc:{row.pk}:{row.received_date.isoformat()}",
+                    "source_id": str(row.pk),
+                    "type": "income",
+                    "date": row.received_date,
+                    "time": row.received_at.strftime("%H:%M") if row.received_at else "",
+                    "title": title[:120],
+                    "subtitle": row.bank_name or row.get_source_display(),
+                    "status": row.tax_status,
+                    "amount_vnd": Decimal(row.amount or 0),
+                    "is_completed": True,
+                    "link": f"/portal/finance/incomes/{row.pk}",
+                }
+            )
+        return items

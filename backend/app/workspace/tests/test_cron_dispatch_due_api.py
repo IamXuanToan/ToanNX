@@ -12,6 +12,7 @@ from app.core.tests.helpers.fake_redis import FakeRedis
 from app.system.constants.notification_channel import NotificationChannel
 from app.system.models.notification import Notification
 from app.system.models.notification_delivery import NotificationDelivery
+from app.system.models.notification_preference import NotificationPreference
 from app.system.models.telegram_chat import TelegramChat
 from app.system.services.notification_preference_service import NotificationPreferenceService
 from app.system.tests.helpers.permission_helper import grant
@@ -19,11 +20,11 @@ from app.workspace.constants.workspace_notification_event import WorkspaceNotifi
 from app.workspace.models.asset import Asset
 from app.workspace.models.reminder import Reminder
 from app.workspace.models.subscription import Subscription
-from app.workspace.models.workspace_setting import WorkspaceSetting
 from app.workspace.permissions.asset_permission import AssetPermission
 from app.workspace.permissions.reminder_permission import ReminderPermission
 from app.workspace.permissions.subscription_permission import SubscriptionPermission
-from app.workspace.permissions.workspace_setting_permission import WorkspaceSettingPermission
+from app.workspace.permissions.workspace_dashboard_permission import WorkspaceDashboardPermission
+from app.workspace.services.assistant_config_service import AssistantConfigService
 from app.workspace.services.reminder_service import ReminderService
 from app.workspace.services.workspace_alerts_cache_service import WorkspaceAlertsCacheService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
@@ -40,19 +41,19 @@ class TestCronDispatchDueApi(BaseApiTestCase):
     ) -> None:
         settings.CRON_SECRET = "cron-dispatch-secret"  # noqa: S105 - giá trị test
         assert client.post(URL).status_code == 404
-        grant(user, ReminderPermission.READ, WorkspaceSettingPermission.READ)
+        grant(user, ReminderPermission.READ, WorkspaceDashboardPermission.READ)
 
         tz_svc = WorkspaceTimezoneService()
         now = timezone.now()
         local_now = tz_svc.local_now("Asia/Ho_Chi_Minh", now=now)
         slot_str = local_now.strftime("%H:%M")
 
-        WorkspaceSetting.objects.create(
-            owner=user,
-            timezone="Asia/Ho_Chi_Minh",
-            daily_digest_enabled=True,
-            digest_time_slots=[slot_str],
-            digest_sections=["reminders", "warranty", "finance"],
+        AssistantConfigService().update_config(
+            user,
+            {
+                "digest_time_slots": [slot_str],
+                "digest_sections": ["reminders", "warranty", "finance"],
+            },
         )
         due_time = (local_now - timedelta(minutes=2)).time().replace(second=0, microsecond=0)
         # Chỉ khi còn chưa sang ngày trước thì mới dùng đúng local_now.date()
@@ -125,7 +126,7 @@ class TestCronDispatchDueApi(BaseApiTestCase):
             user,
             ReminderPermission.READ,
             ReminderPermission.UPDATE,
-            WorkspaceSettingPermission.READ,
+            WorkspaceDashboardPermission.READ,
         )
 
         tz_svc = WorkspaceTimezoneService()
@@ -133,12 +134,12 @@ class TestCronDispatchDueApi(BaseApiTestCase):
         local_now = tz_svc.local_now("Asia/Ho_Chi_Minh", now=now)
         slot_20m_ago = (local_now - timedelta(minutes=20)).strftime("%H:%M")
         # Nếu -20p lùi sang hôm qua vẫn hợp lệ nhờ offset (-1, 0) & grace 1800s!
-        WorkspaceSetting.objects.create(
-            owner=user,
-            timezone="Asia/Ho_Chi_Minh",
-            daily_digest_enabled=True,
-            digest_time_slots=[slot_20m_ago],
-            digest_sections=["reminders"],
+        AssistantConfigService().update_config(
+            user,
+            {
+                "digest_time_slots": [slot_20m_ago],
+                "digest_sections": ["reminders"],
+            },
         )
         due_1 = (local_now - timedelta(minutes=10)).time().replace(second=0, microsecond=0)
         rem = Reminder.objects.create(
@@ -262,3 +263,58 @@ class TestCronDispatchDueApi(BaseApiTestCase):
             NotificationDelivery.objects.filter(notification=sub_notif).values_list("channel", flat=True)
         )
         assert sub_channels == {NotificationChannel.TELEGRAM}
+
+    def test_profile_email_preference_triggers_email_for_reminder_with_default_website_channel(
+        self, user: Any, client: Any, settings: Any, fake_redis: Any
+    ) -> None:
+        """Tích Email/Telegram ở Hồ sơ vẫn gửi đúng dù nhắc việc mặc định WEBSITE."""
+        settings.CRON_SECRET = "cron-dispatch-secret"  # noqa: S105 - giá trị test
+        settings.TELEGRAM_BOT_TOKEN = "123:TG-BOT"  # noqa: S105 - giá trị test
+        grant(user, ReminderPermission.READ)
+
+        tg_chat = TelegramChat.objects.create(
+            owner=user,
+            chat_id="900200",
+            chat_type="private",
+            title="Private",
+            status=TelegramChat.Status.ACTIVE,
+            is_active=True,
+        )
+        NotificationPreference.objects.create(
+            user=user,
+            event_code="workspace.reminder.due",
+            channel=NotificationChannel.EMAIL,
+            is_enabled=True,
+        )
+        NotificationPreference.objects.create(
+            user=user,
+            event_code="workspace.reminder.due",
+            channel=NotificationChannel.TELEGRAM,
+            telegram_chat_id=str(tg_chat.pk),
+            is_enabled=True,
+        )
+
+        now = timezone.now()
+        local_now = WorkspaceTimezoneService().local_now("Asia/Ho_Chi_Minh", now=now)
+        due_time = (local_now - timedelta(minutes=2)).time().replace(second=0, microsecond=0)
+        safe_time = due_time if due_time <= local_now.time() else local_now.time()
+
+        Reminder.objects.create(
+            owner=user,
+            title="Nhắc việc mặc định WEBSITE nhưng Hồ sơ bật Email & Telegram",
+            due_date=local_now.date(),
+            due_time=safe_time,
+        )
+
+        with patch("app.system.services.notification_service.NotificationService.flush_kick"):
+            res = client.post(URL, HTTP_AUTHORIZATION="Bearer cron-dispatch-secret")
+        assert self.assert_success(res)["notifications_queued"] == 1
+
+        rem_notif = Notification.objects.get(recipient=user, event_code="workspace.reminder.due")
+        assert rem_notif.expires_at is None
+        deliveries = list(NotificationDelivery.objects.filter(notification=rem_notif))
+        assert {(d.channel, d.target) for d in deliveries} == {
+            (NotificationChannel.EMAIL, user.email),
+            (NotificationChannel.TELEGRAM, str(tg_chat.pk)),
+        }
+        assert len(deliveries) == 2

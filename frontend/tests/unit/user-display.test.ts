@@ -24,6 +24,17 @@ describe("user-display", () => {
         username: "toannx",
       }),
     ).toBe("Nguyễn Xuân Toàn (toannx)");
+
+    expect(
+      formatUserDisplayName(
+        {
+          fullName: "Nguyễn Xuân Toàn",
+          username: "toannx",
+          email: "nxtoan2k4@gmail.com",
+        },
+        { includeUsername: false },
+      ),
+    ).toBe("Nguyễn Xuân Toàn");
   });
 
   it("chỉ hiển thị username khi không có fullname, và fallback về fullname/email khi thiếu", () => {

@@ -17,6 +17,7 @@ export type Reminder = {
   dueDate: string;
   dueTime: string | null;
   notifyMinutesBefore: number;
+  reminderDaysBefore: number[];
   priority: ReminderPriority;
   isCompleted: boolean;
   completedAt: string | null;
@@ -34,6 +35,7 @@ export type ReminderInput = {
   dueDate: string;
   dueTime?: string | null;
   notifyMinutesBefore?: number;
+  reminderDaysBefore?: number[];
   priority?: ReminderPriority;
   recurrence?: ReminderRecurrence;
   anchorDay?: number | null;

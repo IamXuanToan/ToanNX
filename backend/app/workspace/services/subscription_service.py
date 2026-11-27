@@ -7,6 +7,7 @@ from typing import Any
 from django.db import transaction
 from django.utils import timezone
 
+from app.core.constants.defaults import DEFAULT_TIMEZONE
 from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
 from app.system.models.attachment import Attachment
@@ -20,7 +21,6 @@ from app.workspace.repositories.subscription_payment_repository import Subscript
 from app.workspace.repositories.subscription_repository import SubscriptionRepository
 from app.workspace.services.workspace_alerts_cache_service import WorkspaceAlertsCacheService
 from app.workspace.services.workspace_exchange_service import WorkspaceExchangeService
-from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 from app.workspace.utils.date_math import add_months_clamped
 
@@ -39,7 +39,6 @@ class SubscriptionService(CoreCrudService[Subscription, SubscriptionRepository])
         exchange_service: WorkspaceExchangeService | None = None,
         attachment_service: AttachmentService | None = None,
         alerts_cache_service: WorkspaceAlertsCacheService | None = None,
-        setting_service: WorkspaceSettingService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
     ) -> None:
         """Khởi tạo phụ thuộc repository thanh toán, tỷ giá, file đính kèm và lịch."""
@@ -48,7 +47,6 @@ class SubscriptionService(CoreCrudService[Subscription, SubscriptionRepository])
         self.exchange_service = exchange_service or WorkspaceExchangeService()
         self.attachment_service = attachment_service or AttachmentService()
         self.alerts_cache_service = alerts_cache_service or WorkspaceAlertsCacheService()
-        self.setting_service = setting_service or WorkspaceSettingService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
 
     @transaction.atomic
@@ -130,8 +128,7 @@ class SubscriptionService(CoreCrudService[Subscription, SubscriptionRepository])
         """Ghi nhận thanh toán gia hạn: luôn tra tỷ giá <= `paid_on`, đẩy `renew_date` theo `anchor_day`."""
         subscription = self.get_for_write(actor, pk)
         owner = subscription.owner
-        setting = self.setting_service.get_or_create_for_owner(owner)
-        today_local = self.tz_service.local_today(setting.timezone)
+        today_local = self.tz_service.local_today(DEFAULT_TIMEZONE)
 
         paid_on = data.get("paid_on") or today_local
         amount_override = data.get("amount")
@@ -200,8 +197,7 @@ class SubscriptionService(CoreCrudService[Subscription, SubscriptionRepository])
 
     def get_upcoming(self, actor: Any, *, days_ahead: int = 14) -> tuple[list[Subscription], int]:
         """Lấy gói sắp tới hạn của chính `actor` cho AI Tool (tối đa 15 mục)."""
-        setting = self.setting_service.get_or_create_for_owner(actor)
-        today_local = self.tz_service.local_today(setting.timezone)
+        today_local = self.tz_service.local_today(DEFAULT_TIMEZONE)
         safe_days = max(1, min(int(days_ahead), 90))
         return self.repository.list_upcoming_for_owner(
             actor.pk,

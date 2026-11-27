@@ -809,7 +809,10 @@
       "checkOk": "Bot và webhook hoạt động bình thường.",
       "errors": {
         "TELEGRAM_BOT_TOKEN_INVALID": "Token Bot Telegram hệ thống không hợp lệ.",
-        "TELEGRAM_BOT_MISSING": "Chưa cấu hình Bot Telegram trên máy chủ."
+        "TELEGRAM_BOT_MISSING": "Chưa cấu hình Bot Telegram trên máy chủ.",
+        "NOTIFICATION_TELEGRAM_UNAVAILABLE": "Không kết nối được Telegram hoặc Telegram từ chối URL webhook.",
+        "TELEGRAM_WEBHOOK_HTTPS_REQUIRED": "Webhook Telegram bắt buộc dùng URL HTTPS công khai (không hỗ trợ localhost/http).",
+        "unknown": "Chi tiết lỗi webhook: {detail}"
       }
     },
     "telegramChats": {
