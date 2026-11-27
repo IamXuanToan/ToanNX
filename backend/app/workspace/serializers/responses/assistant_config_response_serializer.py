@@ -48,3 +48,18 @@ class AssistantConfigResponseSerializer(serializers.Serializer[Any]):
         many=True,
         help_text="Danh sách câu lệnh chuẩn có sẵn để Admin khai báo vào @BotFather (/setcommands).",
     )
+    digest_time_slots = serializers.ListField(
+        child=serializers.CharField(), help_text="Khung giờ gửi bản tin hàng ngày (`HH:MM`)."
+    )
+    digest_sections = serializers.ListField(
+        child=serializers.CharField(), help_text="Các mục hiển thị trong bản tin hàng ngày."
+    )
+    available_digest_sections = serializers.ListField(
+        child=serializers.CharField(), help_text="Danh sách mục bản tin hợp lệ được hỗ trợ."
+    )
+    warranty_alert_days = serializers.ListField(
+        child=serializers.IntegerField(), help_text="Mốc ngày nhắc bảo hành mặc định."
+    )
+    subscription_default_alert_days = serializers.ListField(
+        child=serializers.IntegerField(), help_text="Mốc ngày nhắc gia hạn mặc định."
+    )

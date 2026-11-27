@@ -10,7 +10,7 @@ ra sao và cách vận hành nó.
 | [../.agents/skills/](../.agents/skills/) | Skill project (`create-plan`, `review-plan`, `start-task`, `fix`, `review-code`, `test`, `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`, `commit-demo`, `commit-push`) và skill chuyên môn; Claude dùng bản liên kết trong `.claude/skills/` | Khi lên/review plan trong `docs/plans/<YYYY>/<MM>/<DD>/`, bắt đầu việc mới, sửa lỗi, kiểm thử, tái cấu trúc, rà bảo mật/i18n/quyền hoặc kiểm GitHub CI / soạn / đẩy commit |
 | [common-catalog.md](common-catalog.md) | Danh mục common BE + FE đang có | Trước khi viết code (tránh viết lại thứ đã có) |
 | [architecture/](architecture/) | Kiến trúc tổng, xác thực, phân quyền, i18n, kiểm thử, đối chiếu tham chiếu, [hạ tầng và hạn mức gói free](architecture/infrastructure.md) | Sửa phần nền, cần hiểu luồng chung; thêm việc tốn DB/Redis/R2/function |
-| [guides/](guides/) | Hướng dẫn cài đặt, vận hành: triển khai, Cloudflare R2, OAuth, thông báo, tài chính | Cài môi trường, cấu hình dịch vụ ngoài |
+| [guides/](guides/) | Hướng dẫn cài đặt, vận hành: triển khai, Cloudflare R2, OAuth, thông báo, [Telegram Webhook](guides/telegram-webhook.md), tài chính | Cài môi trường, cấu hình dịch vụ ngoài |
 | [modules/](modules/) | Mỗi module một thư mục: mục đích, model, quyền, route, sự kiện, webhook | Làm việc trong một module |
 | [features/](features/) | **Mô tả chức năng**: mỗi file một chức năng, đọc là hiểu luồng xử lý | Sửa hoặc dùng lại một chức năng |
 | [plans/](plans/) | Kế hoạch đã/đang làm (chia thư mục `YYYY/MM/DD/` theo ngày lập) | Tiếp tục một việc dở dang |

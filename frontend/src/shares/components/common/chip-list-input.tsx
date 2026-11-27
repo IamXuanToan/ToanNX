@@ -14,9 +14,10 @@ import { InlineHelpTooltip } from "./inline-help-tooltip";
 
 /**
  * Ô quản lý danh sách giá trị dạng chip/badge (khung giờ `HH:MM`, mốc ngày `30, 7, 1`…):
- * hiển thị các chip dễ xoá kèm ô gõ + nút Thêm + biểu tượng chấm than Tooltip giải thích phím Enter.
+ * hiển thị các chip dễ xoá kèm ô gõ + nút Thêm + biểu tượng chấm than Tooltip giải thích phím Enter,
+ * và tùy chọn hàng nút mẫu chọn nhanh (`presets`).
  *
- * @param props - Danh sách giá trị, callback, bộ chuẩn hoá và cấu hình hiển thị.
+ * @param props - Danh sách giá trị, callback, bộ chuẩn hoá, nút mẫu và cấu hình hiển thị.
  * @returns Thành phần nhập danh sách chip.
  */
 export function ChipListInput({
@@ -26,6 +27,7 @@ export function ChipListInput({
   parseItem,
   sortItems,
   formatItem,
+  presets,
   placeholder,
   addLabel,
   emptyText,
@@ -41,6 +43,7 @@ export function ChipListInput({
   parseItem?: (raw: string) => ChipItemParseResult;
   sortItems?: (items: string[]) => string[];
   formatItem?: (value: string) => string;
+  presets?: readonly { value: string; label: string }[];
   placeholder?: string;
   addLabel?: string;
   emptyText?: string;
@@ -53,6 +56,16 @@ export function ChipListInput({
   const t = useTranslations("common.chipListInput");
   const errorId = useId();
   const state = useChipListInput({ values, onChange, parseItem, sortItems });
+
+  const togglePreset = (presetValue: string) => {
+    if (disabled) return;
+    const exists = values.includes(presetValue);
+    const rawNext = exists
+      ? values.filter((item) => item !== presetValue)
+      : [...values, presetValue];
+    const next = sortItems ? sortItems(rawNext) : rawNext;
+    onChange(next);
+  };
 
   return (
     <div className={cn("space-y-2.5", className)}>
@@ -93,6 +106,27 @@ export function ChipListInput({
         <p id={errorId} role="alert" className="text-destructive text-xs">
           {state.error}
         </p>
+      ) : null}
+
+      {presets?.length ? (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {presets.map((preset) => {
+            const active = values.includes(preset.value);
+            return (
+              <Button
+                key={preset.value}
+                type="button"
+                size="sm"
+                variant={active ? "secondary" : "outline"}
+                disabled={disabled}
+                onClick={() => togglePreset(preset.value)}
+                className="h-7 rounded-lg px-2.5 text-xs"
+              >
+                {preset.label}
+              </Button>
+            );
+          })}
+        </div>
       ) : null}
 
       {values.length > 0 ? (

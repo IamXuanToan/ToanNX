@@ -7,6 +7,7 @@ from typing import Any
 
 from django.utils import timezone as dj_timezone
 
+from app.core.constants.defaults import DEFAULT_TIMEZONE
 from app.core.exceptions.app_exception import AppException
 from app.finance.services.finance_report_service import FinanceReportService
 from app.novel.services.novel_service import NovelService
@@ -22,7 +23,6 @@ from app.workspace.services.asset_service import AssetService
 from app.workspace.services.reminder_service import ReminderService
 from app.workspace.services.subscription_service import SubscriptionService
 from app.workspace.services.workspace_calendar_service import WorkspaceCalendarService
-from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_spending_service import WorkspaceSpendingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 
@@ -54,7 +54,6 @@ class AssistantToolsService:
         page_service: PageService | None = None,
         novel_service: NovelService | None = None,
         calendar_service: WorkspaceCalendarService | None = None,
-        setting_service: WorkspaceSettingService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
     ) -> None:
         """Khởi tạo toàn bộ service nghiệp vụ được phép gọi từ Trợ lý AI."""
@@ -66,7 +65,6 @@ class AssistantToolsService:
         self.page_service = page_service or PageService()
         self.novel_service = novel_service or NovelService()
         self.calendar_service = calendar_service or WorkspaceCalendarService()
-        self.setting_service = setting_service or WorkspaceSettingService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
 
     def tool_schemas(self, *, is_owner: bool = True) -> list[dict[str, Any]]:
@@ -193,8 +191,7 @@ class AssistantToolsService:
             if isinstance(raw_types, list)
             else None
         ) or None
-        setting = self.setting_service.get_or_create_for_owner(actor)
-        today_local = self.tz_service.local_today(setting.timezone)
+        today_local = self.tz_service.local_today(DEFAULT_TIMEZONE)
         calendar_data = self.calendar_service.events(
             actor,
             from_date=today_local,
@@ -242,8 +239,7 @@ class AssistantToolsService:
         }
 
     def _run_finance_income(self, actor: Any, args: dict[str, Any], *, hide_amounts: bool) -> dict[str, Any]:
-        setting = self.setting_service.get_or_create_for_owner(actor)
-        today_local = self.tz_service.local_today(setting.timezone)
+        today_local = self.tz_service.local_today(DEFAULT_TIMEZONE)
         year = self._int_arg(args.get("year"), 2020, 2100) or today_local.year
         month = self._int_arg(args.get("month"), 1, 12) if args.get("month") is not None else None
         platform_filter = str(args.get("platform_name") or "").strip().lower()

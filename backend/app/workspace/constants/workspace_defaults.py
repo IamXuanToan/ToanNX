@@ -61,7 +61,9 @@ DEFAULT_WARRANTY_ALERT_DAYS = [30, 7, 1]
 DEFAULT_DIGEST_TIME_SLOTS = ["08:00"]
 DEFAULT_DIGEST_SECTIONS = ["reminders", "warranty", "subscriptions", "finance"]
 ALLOWED_DIGEST_SECTIONS = frozenset(DEFAULT_DIGEST_SECTIONS)
-ALLOWED_CALENDAR_TYPES = frozenset({"subscription", "reminder", "asset_warranty", "warranty_claim"})
+ALLOWED_CALENDAR_TYPES = frozenset(
+    {"subscription", "reminder", "asset_warranty", "warranty_claim", "income", "donation"}
+)
 
 
 class AssistantCommandSpec(TypedDict):

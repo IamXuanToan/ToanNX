@@ -1,7 +1,7 @@
 "use client";
 
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
-import { getUserDisplayName } from "@/shares/components/common/user-avatar";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 import { useAdminGroups } from "../../shell/hooks/use-admin-groups";
 
@@ -14,7 +14,7 @@ export function useModuleLauncher() {
   const groups = useAdminGroups();
   const { data } = useCurrentUser();
   const user = data?.user;
-  const displayName = getUserDisplayName(user);
+  const displayName = formatUserDisplayName(user, { includeUsername: false });
 
   return {
     groups,

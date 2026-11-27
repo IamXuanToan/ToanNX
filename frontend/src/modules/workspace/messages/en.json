@@ -44,6 +44,7 @@
     "customDays": "Custom cycle days must be between 1 and 3650.",
     "anchorDay": "Anchor day must be between 1 and 31.",
     "notifyMinutes": "Lead minutes cannot exceed 10080.",
+    "reminderDays": "Reminder lead days must be between 1 and 365.",
     "timeSlot": "Time slot must be HH:MM format (e.g., 08:00).",
     "alertDay": "Lead days must be a whole number from 0 to 365.",
     "positiveInt": "Minimum value is 100.",
@@ -55,6 +56,7 @@
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
     "today": "Today",
+    "millionSuffix": "M",
     "quickAddReminder": "Quick add reminder",
     "quickAddTitle": "Create reminder for {date}",
     "selectedDay": "Events on {date}",
@@ -75,7 +77,9 @@
       "subscription": "Subscription Renewal",
       "reminder": "Reminder",
       "asset_warranty": "Warranty Expiry",
-      "warranty_claim": "Repair Return"
+      "warranty_claim": "Repair Return",
+      "income": "Income",
+      "donation": "Donations"
     }
   },
   "assets": {
@@ -328,13 +332,21 @@
       "dueTime": "Due Time",
       "dueDateTime": "Due date & time",
       "notifyMinutesBefore": "Notify Before (min)",
+      "reminderDaysBefore": "Notify Before (days)",
       "priority": "Priority",
       "isCompleted": "Completed",
       "completedAt": "Completed At",
       "recurrence": "Recurrence",
       "anchorDay": "Anchor Day",
+      "reminderDaysBefore": "Notify Before (days)",
       "tags": "Tags"
     },
+    "reminderDaysDesc": "Pick preset milestones or type any number of days (e.g., 3, 6, 8) and press Enter.",
+    "addReminderDayPlaceholder": "e.g., 3, 6, 8",
+    "addReminderDay": "Add",
+    "reminderDaysTooltip": "Enter a whole number (1–365) and press Enter or click Add.",
+    "emptyReminderDays": "No advance-day alerts selected (due date only).",
+    "reminderDayUnit": "{days}d",
     "priorities": {
       "LOW": "Low",
       "MEDIUM": "Medium",
@@ -399,7 +411,8 @@
     "sections": {
       "identity": "AI Chatbot Avatar & Identity",
       "policy": "Response Policy & AI Model",
-      "telegram": "Two-way Telegram Bot Rules"
+      "telegram": "Two-way Telegram Bot Rules",
+      "digest": "Daily Digest & Default Alert Schedule"
     },
     "avatarHint": "Pick a public image from Library or keep the default Bot icon.",
     "avatarMissingPerm": "Library read permission is required to change avatar.",

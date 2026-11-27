@@ -5,7 +5,7 @@ import {
   TELEGRAM_GROUP_TOOL_POLICIES,
 } from "../constants/defaults";
 
-type Translate = (key: "positiveInt") => string;
+type Translate = (key: "positiveInt" | "timeSlot" | "alertDay") => string;
 
 /** Tên trường form Cấu hình Chatbot AI dùng chung trên màn Admin. */
 export const ASSISTANT_CONFIG_FORM_FIELDS = [
@@ -20,6 +20,10 @@ export const ASSISTANT_CONFIG_FORM_FIELDS = [
   "telegramGroupToolPolicy",
   "telegramGroupHideAmounts",
   "telegramGroupReplyInDm",
+  "digestTimeSlots",
+  "digestSections",
+  "warrantyAlertDays",
+  "subscriptionDefaultAlertDays",
 ] as const;
 
 /**
@@ -42,6 +46,10 @@ export function assistantConfigSchema(t: Translate) {
       telegramGroupToolPolicy: z.enum(TELEGRAM_GROUP_TOOL_POLICIES),
       telegramGroupHideAmounts: z.boolean(),
       telegramGroupReplyInDm: z.boolean(),
+      digestTimeSlots: z.array(z.string()),
+      digestSections: z.array(z.string()),
+      warrantyAlertDays: z.array(z.string()),
+      subscriptionDefaultAlertDays: z.array(z.string()),
     })
     .superRefine((value, ctx) => {
       if (

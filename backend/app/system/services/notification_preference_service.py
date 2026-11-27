@@ -9,6 +9,7 @@ from app.core.exceptions.business_rule_error import BusinessRuleError
 from app.core.registry.module_registry import ModuleRegistry, module_registry
 from app.core.registry.notification_event_definition import NotificationEventDefinition
 from app.system.constants.notification_channel import NotificationChannel
+from app.system.constants.notification_defaults import NOTIFICATION_BULK_BATCH
 from app.system.constants.notification_error_code import NotificationErrorCode
 from app.system.constants.notification_level import NotificationLevel
 from app.system.models.notification_preference import NotificationPreference
@@ -141,17 +142,18 @@ class NotificationPreferenceService:
     def resolve(
         self, users: list[Any], event: NotificationEventDefinition, level: str
     ) -> dict[Any, ResolvedChannels]:
-        """Kênh của từng người cho một sự kiện (2 truy vấn cho cả danh sách).
+        """Kênh của từng người cho một sự kiện (chia lô `NOTIFICATION_BULK_BATCH`)."""
+        result: dict[Any, ResolvedChannels] = {}
+        for start in range(0, len(users), NOTIFICATION_BULK_BATCH):
+            result.update(self._resolve_batch(users[start : start + NOTIFICATION_BULK_BATCH], event, level))
+        return result
 
-        Args:
-            users: Người nhận.
-            event: Định nghĩa sự kiện.
-            level: Mức thực tế của thông báo (ERROR thì luôn có IN_APP).
-
-        Returns:
-            Map user id → kênh.
-        """
+    def _resolve_batch(
+        self, users: list[Any], event: NotificationEventDefinition, level: str
+    ) -> dict[Any, ResolvedChannels]:
         user_ids = [user.pk for user in users]
+        if not user_ids:
+            return {}
         rows: dict[Any, list[NotificationPreference]] = defaultdict(list)
         for row in self.repository.for_users(user_ids, event.code):
             rows[row.user_id].append(row)

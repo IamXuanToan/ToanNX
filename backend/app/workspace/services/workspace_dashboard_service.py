@@ -4,12 +4,13 @@ from datetime import timedelta
 from decimal import Decimal
 from typing import Any
 
+from app.core.constants.defaults import DEFAULT_TIMEZONE
+from app.core.exceptions.not_found_error import NotFoundError
 from app.system.services.user_service import UserService
 from app.workspace.permissions.workspace_dashboard_permission import WorkspaceDashboardPermission
 from app.workspace.repositories.asset_repository import AssetRepository
 from app.workspace.repositories.reminder_repository import ReminderRepository
 from app.workspace.repositories.subscription_repository import SubscriptionRepository
-from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_spending_service import WorkspaceSpendingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 
@@ -20,7 +21,6 @@ class WorkspaceDashboardService:
     def __init__(
         self,
         spending_service: WorkspaceSpendingService | None = None,
-        setting_service: WorkspaceSettingService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
         user_service: UserService | None = None,
         asset_repository: AssetRepository | None = None,
@@ -29,7 +29,6 @@ class WorkspaceDashboardService:
     ) -> None:
         """Khởi tạo các service và repository phục vụ KPI dashboard."""
         self.spending_service = spending_service or WorkspaceSpendingService()
-        self.setting_service = setting_service or WorkspaceSettingService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
         self.user_service = user_service or UserService()
         self.asset_repository = asset_repository or AssetRepository()
@@ -44,11 +43,12 @@ class WorkspaceDashboardService:
             and str(target_owner_id) != str(actor.pk)
             and actor.has_perm(WorkspaceDashboardPermission.MANAGE_ALL.code)
         ):
-            _, _ = self.setting_service.get_for_target_owner(target_owner_id)
-            target_owner = self.user_service.find_by_id(target_owner_id) or actor
+            found = self.user_service.find_by_id(target_owner_id)
+            if found is None:
+                raise NotFoundError()
+            target_owner = found
 
-        setting = self.setting_service.get_or_create_for_owner(target_owner)
-        today_local = self.tz_service.local_today(setting.timezone)
+        today_local = self.tz_service.local_today(DEFAULT_TIMEZONE)
 
         spending = self.spending_service.summary(actor, owner=target_owner)
 
@@ -78,7 +78,7 @@ class WorkspaceDashboardService:
 
         return {
             "owner_id": str(target_owner.pk),
-            "timezone": setting.timezone,
+            "timezone": DEFAULT_TIMEZONE,
             "today": today_local,
             "monthly_spending_vnd": spending["total_spent_vnd"],
             "subscription_paid_vnd": spending["subscription_paid_vnd"],

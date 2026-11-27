@@ -12,7 +12,6 @@ from app.system.tests.factories.user_factory import UserFactory
 from app.system.types.telegram_send_result import TelegramSendResult
 from app.workspace.models.assistant_conversation import AssistantConversation
 from app.workspace.models.assistant_message import AssistantMessage
-from app.workspace.models.workspace_setting import WorkspaceSetting
 from app.workspace.services.assistant_config_service import AssistantConfigService
 
 pytestmark = pytest.mark.django_db
@@ -45,7 +44,7 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
                 "telegram_group_reply_in_dm": True,
             },
         )
-        group_chat_1 = TelegramChat.objects.create(
+        TelegramChat.objects.create(
             owner=user,
             chat_id="-100999",
             chat_type="supergroup",
@@ -53,7 +52,7 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
             status=TelegramChat.Status.ACTIVE,
             is_active=True,
         )
-        group_chat_2 = TelegramChat.objects.create(
+        TelegramChat.objects.create(
             owner=owner2,
             chat_id="-100999",
             chat_type="supergroup",
@@ -61,15 +60,21 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
             status=TelegramChat.Status.ACTIVE,
             is_active=True,
         )
-        WorkspaceSetting.objects.create(
+        TelegramChat.objects.create(
             owner=user,
-            telegram_owner_user_id=111001,
-            telegram_allowed_chat_ids=[str(group_chat_1.pk)],
+            chat_id="111001",
+            chat_type="private",
+            title="Owner 1 DM",
+            status=TelegramChat.Status.ACTIVE,
+            is_active=True,
         )
-        WorkspaceSetting.objects.create(
+        TelegramChat.objects.create(
             owner=owner2,
-            telegram_owner_user_id=222002,
-            telegram_allowed_chat_ids=[str(group_chat_2.pk)],
+            chat_id="222002",
+            chat_type="private",
+            title="Owner 2 DM",
+            status=TelegramChat.Status.ACTIVE,
+            is_active=True,
         )
 
         # Gửi lệnh /spending trong nhóm có @helper_bot từ owner1 (111001) với reply_in_dm=True:
@@ -111,7 +116,7 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
 
         # Khi thành viên lạ (999999) nhắn ở nhóm chỉ còn owner1 cho phép chat,
         # Policy OWNER_ONLY buộc EXCLUDE lịch sử `contains_private_data=True` & tắt tools!
-        WorkspaceSetting.objects.filter(owner=owner2).update(telegram_allowed_chat_ids=[])
+        TelegramChat.objects.filter(owner=owner2).update(is_active=False)
         captured_messages: list[Any] = []
 
         def fake_xkiro(self: Any, messages: Any, **kwargs: Any) -> dict[str, Any]:
@@ -158,7 +163,7 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
         with patch(
             "app.system.services.telegram_client.TelegramClient.send_message",
             return_value=TelegramSendResult(ok=True),
-        ):
+        ) as send_mock:
             res = client.post(
                 "/api/v1/system/telegram/webhook",
                 {
@@ -174,6 +179,91 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
                 HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN=secret,
             )
         assert res.status_code == 200
-        ws = WorkspaceSetting.objects.get(owner=user)
-        assert ws.telegram_owner_user_id == 555111
+        assert send_mock.call_count == 1
         assert AssistantMessage.Role.USER == "USER"
+
+    def test_group_mention_strips_bot_username_for_chat_and_slash(
+        self, user: Any, client: Any, settings: Any, vnd: Any
+    ) -> None:
+        settings.TELEGRAM_BOT_USERNAME = "helper_bot"
+        settings.TELEGRAM_BOT_TOKEN = "123:TG-BOT"  # noqa: S105 - giá trị test
+        settings.CRON_SECRET = "cron-tg-secret"  # noqa: S105 - giá trị test
+        settings.XKIRO_API_BASE = "https://xkiro.example.com/v1"
+        settings.XKIRO_API_KEY = "test-key"
+        settings.XKIRO_MODEL = "gpt-4o-mini"
+        TelegramChat.objects.create(
+            owner=user,
+            chat_id="444111",
+            chat_type="private",
+            status=TelegramChat.Status.ACTIVE,
+            is_active=True,
+        )
+        TelegramChat.objects.create(
+            owner=user,
+            chat_id="-100888",
+            chat_type="supergroup",
+            status=TelegramChat.Status.ACTIVE,
+            is_active=True,
+        )
+
+        captured: list[tuple[list[dict[str, Any]], Any]] = []
+
+        def fake_xkiro(self: Any, messages: Any, **kwargs: Any) -> dict[str, Any]:
+            captured.append((messages, kwargs.get("tools")))
+            return {"ok": True, "model": "gpt-4o-mini", "message": {"content": "Hôm nay ổn!"}, "tokens": 10}
+
+        chat_update = {
+            "update": {
+                "update_id": 8901,
+                "message": {
+                    "message_id": 61,
+                    "text": "@helper_bot hôm nay có gì",
+                    "from": {"id": 444111, "username": "toan"},
+                    "chat": {"id": -100888, "type": "supergroup", "title": "ToanNX Group"},
+                },
+            }
+        }
+        with (
+            patch("app.workspace.services.xkiro_client.XkiroClient.chat_completion", fake_xkiro),
+            patch(
+                "app.system.services.telegram_client.TelegramClient.send_message",
+                return_value=TelegramSendResult(ok=True),
+            ) as send_mock,
+        ):
+            self.assert_success(
+                client.post(URL, chat_update, format="json", HTTP_AUTHORIZATION="Bearer cron-tg-secret")
+            )
+
+        assert len(captured) == 1
+        sent_history, sent_tools = captured[0]
+        assert sent_tools is not None
+        assert sent_history[-1]["content"] == "hôm nay có gì"
+        assert send_mock.call_args.args[1] == "-100888"
+
+        secret = TelegramBotService().webhook_secret()
+        with (
+            patch(
+                "app.system.services.telegram_client.TelegramClient.send_message",
+                return_value=TelegramSendResult(ok=True),
+            ) as slash_send_mock,
+            patch("app.system.services.qstash_client.QstashClient.publish") as qstash_mock,
+        ):
+            slash_res = client.post(
+                "/api/v1/system/telegram/webhook",
+                {
+                    "update_id": 8902,
+                    "message": {
+                        "message_id": 62,
+                        "text": "@helper_bot /spending",
+                        "from": {"id": 444111, "username": "toan"},
+                        "chat": {"id": -100888, "type": "supergroup", "title": "ToanNX Group"},
+                    },
+                },
+                format="json",
+                HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN=secret,
+            )
+
+        assert slash_res.status_code == 200
+        assert qstash_mock.call_count == 0
+        assert slash_send_mock.call_count == 1
+        assert slash_send_mock.call_args.args[1] == "-100888"

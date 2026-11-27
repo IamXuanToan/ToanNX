@@ -1,19 +1,23 @@
 """Kiểm thử Lịch Tổng hợp 4 nguồn: GET /api/v1/workspace/calendar."""
 
-from datetime import date
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Any
 
 import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
+from app.finance.models.income import Income
+from app.finance.models.platform import Platform
 from app.system.tests.factories.user_factory import UserFactory
 from app.system.tests.helpers.permission_helper import grant
+from app.utilities.models.donation_transaction import DonationTransaction
+from app.utilities.models.page import Page
+from app.utilities.models.page_path import PagePath
 from app.workspace.models.asset import Asset
 from app.workspace.models.asset_warranty_claim import AssetWarrantyClaim
 from app.workspace.models.reminder import Reminder
 from app.workspace.models.subscription import Subscription
-from app.workspace.models.workspace_setting import WorkspaceSetting
 from app.workspace.permissions.workspace_calendar_permission import WorkspaceCalendarPermission as P
 
 pytestmark = pytest.mark.django_db
@@ -27,7 +31,6 @@ class TestWorkspaceCalendarApi(BaseApiTestCase):
         self, user: Any, login: Any, client: Any, vnd: Any
     ) -> None:
         other = UserFactory()
-        WorkspaceSetting.objects.create(owner=user, timezone="Asia/Ho_Chi_Minh")
 
         asset = Asset.objects.create(
             owner=user,
@@ -56,6 +59,36 @@ class TestWorkspaceCalendarApi(BaseApiTestCase):
         )
         Reminder.objects.create(owner=user, title="Gọi TTBH", due_date=date(2026, 11, 21))
         Reminder.objects.create(owner=other, title="Việc người khác", due_date=date(2026, 11, 21))
+        platform = Platform.objects.create(owner=user, code="youtube", name="YouTube", default_currency=vnd)
+        Income.objects.create(
+            owner=user,
+            platform=platform,
+            currency=vnd,
+            original_amount=Decimal("500000"),
+            amount=Decimal("500000"),
+            received_at=datetime(2026, 11, 23, 10, 0, tzinfo=UTC),
+            received_date=date(2026, 11, 23),
+            content="Doanh thu tháng 11",
+        )
+        page_path = PagePath.objects.get_or_create(
+            segment="p", defaults={"name": "Trang test", "is_active": True}
+        )[0]
+        donate_page = Page.objects.create(
+            owner=user,
+            path=page_path,
+            slug="donate-cal-test",
+            title="Donate Test",
+            page_type=Page.PageType.DONATION,
+        )
+        DonationTransaction.objects.create(
+            owner=user,
+            page=donate_page,
+            sepay_id="cal-don-1",
+            donor_title="Fan A",
+            message="Chúc mừng",
+            amount=Decimal("100000"),
+            received_at=datetime(2026, 11, 24, 14, 0, tzinfo=UTC),
+        )
 
         self.assert_unauthorized(client.get(URL, {"from": "2026-11-01", "to": "2026-11-30"}))
         self.assert_forbidden(
@@ -79,6 +112,8 @@ class TestWorkspaceCalendarApi(BaseApiTestCase):
             "reminder",
             "asset_warranty",
             "warranty_claim",
+            "income",
+            "donation",
         }
         assert all("Việc người khác" not in ev["title"] for ev in data["events"])
 

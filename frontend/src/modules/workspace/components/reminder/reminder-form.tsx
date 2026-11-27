@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
+import { ChipListInput } from "@/shares/components/common/chip-list-input";
 import { DateTimePicker } from "@/shares/components/common/date-time-picker";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
@@ -20,7 +21,7 @@ import { Textarea } from "@/shares/components/ui/textarea";
 import { REMINDER_PRIORITIES, REMINDER_RECURRENCES } from "../../constants/defaults";
 import { WORKSPACE_ROUTES } from "../../constants/routes";
 import type { Reminder } from "../../types/reminder.types";
-import { useReminderForm } from "./hooks/use-reminder-form";
+import { REMINDER_DAY_PRESETS, useReminderForm } from "./hooks/use-reminder-form";
 
 /**
  * Form Tạo / Sửa Nhắc việc cá nhân (tái sử dụng cả trang riêng lẫn trong `FormDialog` trên Lịch).
@@ -139,6 +140,35 @@ export function ReminderForm({
               />
             )}
           </FormField>
+          <div className="sm:col-span-2">
+            <FormField
+              control={form.control}
+              name="reminderDaysBefore"
+              label={t("fields.reminderDaysBefore")}
+              description={t("reminderDaysDesc")}
+            >
+              {(field) => (
+                <ChipListInput
+                  id={field.id}
+                  values={field.value}
+                  onChange={field.onChange}
+                  parseItem={state.parseReminderDay}
+                  sortItems={state.sortDaysDesc}
+                  formatItem={(days) => t("reminderDayUnit", { days })}
+                  presets={REMINDER_DAY_PRESETS.map((days) => ({
+                    value: days,
+                    label: t("reminderDayUnit", { days }),
+                  }))}
+                  placeholder={t("addReminderDayPlaceholder")}
+                  addLabel={t("addReminderDay")}
+                  tooltip={t("reminderDaysTooltip")}
+                  emptyText={t("emptyReminderDays")}
+                  disabled={locked}
+                  maxLength={3}
+                />
+              )}
+            </FormField>
+          </div>
           <div className="sm:col-span-2">
             <FormField control={form.control} name="tags" label={t("fields.tags")}>
               {(field) => (

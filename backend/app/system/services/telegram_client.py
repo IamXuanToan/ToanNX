@@ -47,9 +47,15 @@ class TelegramClient:
         payload: dict[str, Any] = {"allowed_updates": ["message", "my_chat_member"]}
         if offset is not None:
             payload["offset"] = int(offset)
-        if timeout > 0:
-            payload["timeout"] = min(int(timeout), TELEGRAM_TIMEOUT_SECONDS)
-        result = self._call(token, "getUpdates", payload)
+        long_poll_timeout = max(0, min(int(timeout), 30)) if timeout > 0 else 0
+        if long_poll_timeout > 0:
+            payload["timeout"] = long_poll_timeout
+        result = self._call(
+            token,
+            "getUpdates",
+            payload,
+            timeout_seconds=TELEGRAM_TIMEOUT_SECONDS + long_poll_timeout,
+        )
         return result if isinstance(result, list) else []
 
     def get_chat_member(self, token: str, chat_id: str, user_id: int) -> dict[str, Any]:
@@ -97,11 +103,16 @@ class TelegramClient:
             else None,
         )
 
-    def _call(self, token: str, method: str, payload: dict[str, Any]) -> Any:
+    def _call(
+        self,
+        token: str,
+        method: str,
+        payload: dict[str, Any],
+        *,
+        timeout_seconds: int = TELEGRAM_TIMEOUT_SECONDS,
+    ) -> Any:
         try:
-            response = self.session.post(
-                self._url(token, method), json=payload, timeout=TELEGRAM_TIMEOUT_SECONDS
-            )
+            response = self.session.post(self._url(token, method), json=payload, timeout=timeout_seconds)
             body = response.json()
         except (requests.RequestException, ValueError) as exc:
             logger.warning("Telegram %s lỗi kết nối: %s", method, type(exc).__name__)

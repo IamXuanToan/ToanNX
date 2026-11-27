@@ -1,6 +1,6 @@
 # Xác nhận bảo mật hệ thống — ToanNX
 
-- **Cập nhật gần nhất**: `2026-11-27 09:35`
+- **Cập nhật gần nhất**: `2026-11-27 22:22`
 - **Phạm vi đã kiểm**: Toàn hệ thống BE (`core`, `system`, `utilities`, `novel`, `finance`, `workspace`) và FE (`src/proxy.ts`, `next.config.ts`, `modules/home`, `modules/system`, `modules/utilities`, `modules/novel`, `modules/finance`, `modules/workspace`, `modules/portal`, `modules/manage-app`, `shares`), đồng bộ theo sổ theo dõi `docs/reports/code-audit-tracker.md` qua `/review-security`, `/review-code`, `/permission-audit`, `/i18n-audit`.
 - **Môi trường kiểm nghiệm**: PostgreSQL local (`--reuse-db`), `ruff format --check` / `ruff check` / `mypy` (`936` file nguồn BE), full Django `pytest --reuse-db` (`1.254 passed`), Next.js 16 `eslint --max-warnings 0` + `prettier --check` + `pnpm typecheck` + Vitest (đầy đủ 70 file) + `NEXT_DIST_DIR=.next-verify pnpm build` (199 route), kiểm tra giao diện thật trên `http://localhost:3001` bằng headless Chromium đa vai trò (`ADMIN`, `portal.member`) & `/vi` ↔ `/en`.
 
@@ -33,6 +33,7 @@
 | SEC-LOG-01 | Log Injection (CRLF) | `backend/app/system/views/client_error_view.py` | Gửi `\r`/`\n` trong `digest`, `url`, `message` tới endpoint `AllowAny /health/client-errors` để giả mạo dòng log | Chuẩn hóa loại bỏ `\r`/`\n` trước khi ghi log ERROR | `app/system/tests/test_security_hardening.py` | PASS | 2026-11-27 |
 | SEC-DOS-01 | Unbounded Chapter Import | `NovelImportValidateSerializer`, `NovelChapterImportItemSerializer` | Gửi hàng chục nghìn chương hoặc chương quá dài gây phình bộ nhớ/DB DoS qua API import truyện | Giới hạn `MAX_IMPORT_CHAPTERS = 1000` và `content` tối đa `200_000` ký tự | `app/system/tests/test_security_hardening.py` | PASS | 2026-11-27 |
 | SEC-FE-06 | Error Boundary Stack Leak | `AppErrorContent`, `GlobalErrorContent`, `use-app-error-content.ts`, `use-global-error-content.ts` | Lộ `errorMessage` và stack trace chi tiết ở production khi có `error.message` | Chỉ hiển thị khung kỹ thuật khi `isDev` (`!env.isProduction`), ẩn message/stack ở production | `frontend/tests/unit/error-boundary-security.test.tsx` | PASS | 2026-11-27 |
+| SEC-HOOK-03 | Telegram Webhook & Group Owner | `/api/v1/system/telegram/webhook`, `/api/v1/system/telegram/bot/check`, `TelegramAssistantRouterService` | Giả mạo `X-Telegram-Bot-Api-Secret-Token` (phải trả 404); gắn webhook `http://` không phải HTTPS; thành viên chưa liên kết DM nhắn `@bot` ở nhóm `OWNER_ONLY` phải bị chặn tools & lịch sử riêng tư | `app/system/tests/test_system_telegram_webhook_api.py`, `app/system/tests/test_telegram_bot_api.py`, `app/workspace/tests/test_telegram_assistant_async_api.py` | PASS | 2026-11-27 |
 
 ## 2. Lỗi đã phát hiện & đã xử lý trong kỳ
 

@@ -61,7 +61,11 @@ export function TelegramBotCard({ canCheck }: { canCheck: boolean }) {
       ) : null}
 
       {errorCode ? (
-        <p className="text-warning text-sm">{t(`errors.${errorCode}` as never)}</p>
+        <p className="text-warning text-sm">
+          {t.has(`errors.${errorCode}` as never)
+            ? t(`errors.${errorCode}` as never)
+            : t("errors.unknown", { detail: errorCode })}
+        </p>
       ) : null}
 
       <div className="flex flex-wrap gap-2">

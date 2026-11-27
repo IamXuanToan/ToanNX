@@ -4,6 +4,7 @@ from datetime import date, time
 from decimal import Decimal
 from typing import Any
 
+from app.core.constants.defaults import DEFAULT_TIMEZONE
 from app.workspace.constants.workspace_defaults import (
     ASSISTANT_COMMANDS,
     SLASH_COMMAND_ALIASES,
@@ -11,7 +12,6 @@ from app.workspace.constants.workspace_defaults import (
 )
 from app.workspace.models.reminder import Reminder
 from app.workspace.services.assistant_tools_service import AssistantToolsService
-from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 
 PRIORITY_LABELS_VI: dict[str, str] = {
@@ -37,12 +37,10 @@ class AssistantSlashService:
     def __init__(
         self,
         tools_service: AssistantToolsService | None = None,
-        setting_service: WorkspaceSettingService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
     ) -> None:
-        """Khởi tạo service tool và múi giờ người dùng."""
+        """Khởi tạo service tool và múi giờ mặc định."""
         self.tools_service = tools_service or AssistantToolsService()
-        self.setting_service = setting_service or WorkspaceSettingService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
 
     def parse_command(self, text: str) -> tuple[str, str]:
@@ -202,8 +200,7 @@ class AssistantSlashService:
             }
         date_str, time_str, title = parts[0], parts[1], parts[2].strip()
         day_parts = date_str.split("/")
-        setting = self.setting_service.get_or_create_for_owner(actor)
-        today_local = self.tz_service.local_today(setting.timezone)
+        today_local = self.tz_service.local_today(DEFAULT_TIMEZONE)
         try:
             day_num = int(day_parts[0])
             month_num = int(day_parts[1])

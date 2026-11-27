@@ -1,11 +1,15 @@
-"""Nghiệp vụ Lịch Tổng hợp 4 nguồn sự kiện trên Client Portal theo múi giờ người dùng."""
+"""Nghiệp vụ Lịch Tổng hợp 6 nguồn sự kiện trên Client Portal theo múi giờ hệ thống."""
 
 from datetime import date
 from decimal import Decimal
 from typing import Any
 
+from app.core.constants.defaults import DEFAULT_TIMEZONE
+from app.core.exceptions.not_found_error import NotFoundError
 from app.core.exceptions.validation_error import ValidationError
+from app.finance.services.income_service import IncomeService
 from app.system.services.user_service import UserService
+from app.utilities.services.donation_transaction_service import DonationTransactionService
 from app.workspace.constants.workspace_defaults import (
     ALLOWED_CALENDAR_TYPES,
     MAX_CALENDAR_RANGE_DAYS,
@@ -16,27 +20,25 @@ from app.workspace.repositories.asset_repository import AssetRepository
 from app.workspace.repositories.asset_warranty_claim_repository import AssetWarrantyClaimRepository
 from app.workspace.repositories.reminder_repository import ReminderRepository
 from app.workspace.repositories.subscription_repository import SubscriptionRepository
-from app.workspace.services.workspace_setting_service import WorkspaceSettingService
-from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 
 
 class WorkspaceCalendarService:
-    """Gom 4 loại sự kiện (dịch vụ, nhắc việc, bảo hành TB, phiếu sửa)."""
+    """Gom 6 loại sự kiện (dịch vụ, nhắc việc, bảo hành TB, phiếu sửa, tiền vào, donate)."""
 
     def __init__(
         self,
-        setting_service: WorkspaceSettingService | None = None,
-        tz_service: WorkspaceTimezoneService | None = None,
         user_service: UserService | None = None,
+        income_service: IncomeService | None = None,
+        donation_service: DonationTransactionService | None = None,
         subscription_repository: SubscriptionRepository | None = None,
         reminder_repository: ReminderRepository | None = None,
         asset_repository: AssetRepository | None = None,
         claim_repository: AssetWarrantyClaimRepository | None = None,
     ) -> None:
-        """Khởi tạo các repository nguồn sự kiện và dịch vụ múi giờ."""
-        self.setting_service = setting_service or WorkspaceSettingService()
-        self.tz_service = tz_service or WorkspaceTimezoneService()
+        """Khởi tạo các repository/service nguồn sự kiện."""
         self.user_service = user_service or UserService()
+        self.income_service = income_service or IncomeService()
+        self.donation_service = donation_service or DonationTransactionService()
         self.subscription_repository = subscription_repository or SubscriptionRepository()
         self.reminder_repository = reminder_repository or ReminderRepository()
         self.asset_repository = asset_repository or AssetRepository()
@@ -72,10 +74,11 @@ class WorkspaceCalendarService:
             and str(target_owner_id) != str(actor.pk)
             and actor.has_perm(WorkspaceCalendarPermission.MANAGE_ALL.code)
         ):
-            _, _ = self.setting_service.get_for_target_owner(target_owner_id)
-            target_owner = self.user_service.find_by_id(target_owner_id) or actor
+            found = self.user_service.find_by_id(target_owner_id)
+            if found is None:
+                raise NotFoundError()
+            target_owner = found
 
-        setting = self.setting_service.get_or_create_for_owner(target_owner)
         items: list[dict[str, Any]] = []
 
         if "subscription" in selected_types:
@@ -175,9 +178,15 @@ class WorkspaceCalendarService:
                         }
                     )
 
+        if "income" in selected_types:
+            items.extend(self.income_service.list_calendar_items(target_owner.pk, from_date, to_date))
+
+        if "donation" in selected_types:
+            items.extend(self.donation_service.list_calendar_items(target_owner.pk, from_date, to_date))
+
         items.sort(key=lambda item: (item["date"], item["time"], item["type"], item["title"]))
         return {
-            "timezone": setting.timezone,
+            "timezone": DEFAULT_TIMEZONE,
             "from_date": from_date,
             "to_date": to_date,
             "events": items,

@@ -41,9 +41,18 @@ def test_check_webhook_requires_setting_update_and_syncs_webhook(
     api = login(user)
     assert api.post("/api/v1/system/telegram/bot/check").status_code == 403
 
+    settings.TELEGRAM_BOT_TOKEN = "123:SECRET-TOKEN"
     grant(user, "system.setting.update")
     user = type(user).objects.get(pk=user.pk)
     api = login(user)
+    with (
+        patch(f"{CLIENT}.get_me", return_value=ME),
+        patch(f"{CLIENT}.get_webhook_info", return_value={"url": ""}),
+    ):
+        local_res = api.post("/api/v1/system/telegram/bot/check")
+    assert local_res.status_code == 200
+    assert local_res.json()["data"]["last_error_code"] == "TELEGRAM_WEBHOOK_HTTPS_REQUIRED"
+
     with (
         patch(f"{CLIENT}.get_me", return_value=ME),
         patch(f"{CLIENT}.set_webhook", return_value=True) as set_wh,
@@ -52,7 +61,7 @@ def test_check_webhook_requires_setting_update_and_syncs_webhook(
             return_value={"url": "https://api.example.com/api/v1/system/telegram/webhook"},
         ),
     ):
-        res = api.post("/api/v1/system/telegram/bot/check")
+        res = api.post("/api/v1/system/telegram/bot/check", secure=True)
     assert res.status_code == 200
     data = res.json()["data"]
     assert data["webhook_active"] is True

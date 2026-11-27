@@ -81,6 +81,11 @@ export type AssistantConfig = {
   telegramBotUsername: string;
   telegramBotUrl: string;
   telegramCommands: AssistantCommand[];
+  digestTimeSlots: string[];
+  digestSections: string[];
+  availableDigestSections: string[];
+  warrantyAlertDays: number[];
+  subscriptionDefaultAlertDays: number[];
 };
 
 /** Đầu vào cập nhật cấu hình Chatbot AI trên màn Admin. */
@@ -96,6 +101,10 @@ export type AssistantConfigUpdateInput = {
   telegramGroupToolPolicy?: TelegramGroupToolPolicy;
   telegramGroupHideAmounts?: boolean;
   telegramGroupReplyInDm?: boolean;
+  digestTimeSlots?: string[];
+  digestSections?: string[];
+  warrantyAlertDays?: number[];
+  subscriptionDefaultAlertDays?: number[];
 };
 
 /** Đầu vào gửi tin nhắn / slash command trong luồng chat Web duy nhất. */

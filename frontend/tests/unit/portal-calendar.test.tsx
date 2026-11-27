@@ -103,8 +103,8 @@ describe("PortalCalendar", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Kiểm tra SSL Server")).toBeTruthy();
-      expect(screen.getByText("Gia hạn VPS")).toBeTruthy();
+      expect(screen.getAllByText("Kiểm tra SSL Server").length).toBeGreaterThanOrEqual(2);
+      expect(screen.getAllByText("Gia hạn VPS").length).toBeGreaterThanOrEqual(2);
     });
 
     // Tắt bộ lọc subscription -> đồng bộ ?types= lên URL

@@ -111,7 +111,7 @@ export function useAssistantChatPanel(canChat: boolean, enabled = true) {
       conversationId: "",
       role: "USER",
       senderTelegramId: null,
-      senderName: formatUserDisplayName(currentUser.data?.user),
+      senderName: formatUserDisplayName(currentUser.data?.user, { includeUsername: false }),
       content: text,
       toolCalls: [],
       toolCallId: "",

@@ -58,13 +58,7 @@ describe("Portal Navigation Refactor", () => {
     const workspaceKeys = PORTAL_NAV_SECTIONS.find((s) => s.key === "workspace")?.items.map(
       (i) => i.key,
     );
-    expect(workspaceKeys).toEqual([
-      "reminders",
-      "subscriptions",
-      "assets",
-      "vault",
-      "workspaceSettings",
-    ]);
+    expect(workspaceKeys).toEqual(["reminders", "subscriptions", "assets", "vault"]);
 
     const utilitiesKeys = PORTAL_NAV_SECTIONS.find((s) => s.key === "utilities")?.items.map(
       (i) => i.key,
@@ -77,13 +71,11 @@ describe("Portal Navigation Refactor", () => {
     const workspace = PORTAL_NAV_SECTIONS.find((s) => s.key === "workspace")!.items;
     const assetsItem = workspace.find((i) => i.key === "assets")!;
     const subsItem = workspace.find((i) => i.key === "subscriptions")!;
-    const settingsItem = workspace.find((i) => i.key === "workspaceSettings")!;
     const dashboardItem = PORTAL_NAV_SECTIONS[0].items[0];
 
     expect(isPortalNavItemActive("/portal/warranty-claims", assetsItem)).toBe(true);
     expect(isPortalNavItemActive("/portal/warranty-claims/claim-123", assetsItem)).toBe(true);
     expect(isPortalNavItemActive("/portal/subscription-payments", subsItem)).toBe(true);
-    expect(isPortalNavItemActive("/portal/settings", settingsItem)).toBe(true);
 
     expect(isPortalNavItemActive("/portal", dashboardItem)).toBe(true);
     expect(isPortalNavItemActive("/portal/assets", dashboardItem)).toBe(false);

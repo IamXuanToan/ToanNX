@@ -5,6 +5,7 @@ import time
 from datetime import time as dt_time
 from typing import Any
 
+from app.core.constants.defaults import DEFAULT_TIMEZONE
 from app.workspace.constants.workspace_defaults import (
     AI_HISTORY_CONTEXT_LIMIT,
     AI_MAX_TOOL_ROUNDS,
@@ -18,7 +19,6 @@ from app.workspace.services.assistant_config_service import AssistantConfigServi
 from app.workspace.services.assistant_conversation_service import AssistantConversationService
 from app.workspace.services.assistant_slash_service import AssistantSlashService
 from app.workspace.services.assistant_tools_service import AssistantToolsService
-from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 from app.workspace.services.xkiro_client import XkiroClient
 
@@ -53,23 +53,20 @@ class AssistantService:
     def __init__(
         self,
         conversation_service: AssistantConversationService | None = None,
-        setting_service: WorkspaceSettingService | None = None,
         config_service: AssistantConfigService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
         xkiro_client: XkiroClient | None = None,
         tools_service: AssistantToolsService | None = None,
         slash_service: AssistantSlashService | None = None,
     ) -> None:
-        """Khởi tạo service hội thoại, cài đặt, cấu hình Bot Admin, client AI và bộ tool."""
+        """Khởi tạo service hội thoại, cấu hình Bot Admin, client AI và bộ tool."""
         self.conversation_service = conversation_service or AssistantConversationService()
-        self.setting_service = setting_service or WorkspaceSettingService()
         self.config_service = config_service or AssistantConfigService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
         self.xkiro_client = xkiro_client or XkiroClient()
         self.tools_service = tools_service or AssistantToolsService()
         self.slash_service = slash_service or AssistantSlashService(
             tools_service=self.tools_service,
-            setting_service=self.setting_service,
             tz_service=self.tz_service,
         )
 
@@ -140,14 +137,13 @@ class AssistantService:
             )
             return self._build_response(conversation, assistant_msg, is_fallback=False, fallback_attempts=0)
 
-        setting = self.setting_service.get_or_create_for_owner(owner)
         bot_cfg = self.config_service.get_config()
         daily_limit = bot_cfg.get("ai_daily_token_limit")
         preferred_model = str(bot_cfg.get("preferred_ai_model") or "")
         custom_policy = str(bot_cfg.get("assistant_system_prompt") or "")
 
         if daily_limit is not None:
-            used_today = self._tokens_used_today(owner.pk, setting.timezone)
+            used_today = self._tokens_used_today(owner.pk, DEFAULT_TIMEZONE)
             if used_today >= int(daily_limit):
                 return self._save_fallback(
                     conversation,
@@ -166,7 +162,7 @@ class AssistantService:
 
         llm_messages = self._assemble_llm_context(
             conversation.pk,
-            tz_name=setting.timezone,
+            tz_name=DEFAULT_TIMEZONE,
             exclude_private=exclude_private_history,
             hide_amounts=hide_amounts,
             allow_tools=allow_personal_tools,

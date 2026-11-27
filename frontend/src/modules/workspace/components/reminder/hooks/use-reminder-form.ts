@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { useRouter } from "@/i18n/navigation";
+import type { ChipItemParseResult } from "@/shares/components/common/hooks/use-chip-list-input";
 import { useApiErrorMessage } from "@/shares/hooks/use-api-error-message";
 import { isApiError } from "@/shares/lib/api/api-error";
 
@@ -19,6 +20,12 @@ import {
 } from "../../../schemas/reminder.schema";
 import type { Reminder, ReminderInput } from "../../../types/reminder.types";
 
+export const REMINDER_DAY_PRESETS = ["1", "3", "7", "14", "30"] as const;
+
+function sortDaysDesc(items: string[]): string[] {
+  return [...items].sort((a, b) => Number(b) - Number(a));
+}
+
 function toFormValues(item: Reminder): ReminderFormValues {
   return {
     title: item.title,
@@ -26,6 +33,7 @@ function toFormValues(item: Reminder): ReminderFormValues {
     dueDate: item.dueDate,
     dueTime: item.dueTime ? item.dueTime.slice(0, 5) : "",
     notifyMinutesBefore: String(item.notifyMinutesBefore ?? 30),
+    reminderDaysBefore: (item.reminderDaysBefore ?? []).map(String),
     priority: item.priority,
     recurrence: item.recurrence,
     anchorDay: item.anchorDay !== null ? String(item.anchorDay) : "",
@@ -59,6 +67,7 @@ export function useReminderForm(
       dueDate: options.defaultDueDate || new Date().toISOString().slice(0, 10),
       dueTime: "",
       notifyMinutesBefore: "30",
+      reminderDaysBefore: [],
       priority: "MEDIUM",
       recurrence: "NONE",
       anchorDay: "",
@@ -74,6 +83,9 @@ export function useReminderForm(
       dueDate: values.dueDate,
       dueTime: values.dueTime || null,
       notifyMinutesBefore: values.notifyMinutesBefore ? Number(values.notifyMinutesBefore) : 30,
+      reminderDaysBefore: values.reminderDaysBefore
+        .map((d) => Number(d))
+        .filter((d) => Number.isInteger(d) && d >= 1 && d <= 365),
       priority: values.priority,
       recurrence: values.recurrence,
       anchorDay: values.anchorDay ? Number(values.anchorDay) : null,
@@ -95,5 +107,16 @@ export function useReminderForm(
     }
   });
 
-  return { form, onSubmit, isSubmitting: save.isPending };
+  const parseReminderDay = (raw: string): ChipItemParseResult => {
+    if (!/^\d+$/.test(raw)) {
+      return { error: tValidation("reminderDays") };
+    }
+    const day = Number(raw);
+    if (day < 1 || day > 365) {
+      return { error: tValidation("reminderDays") };
+    }
+    return { value: String(day) };
+  };
+
+  return { form, onSubmit, isSubmitting: save.isPending, parseReminderDay, sortDaysDesc };
 }

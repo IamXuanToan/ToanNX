@@ -108,3 +108,46 @@ def test_qstash_failure_still_dispatches_via_cron_fallback_without_duplicates(
     assert r2.status_code == 200 and r2.json()["data"] == {"sent": 0}
     assert mock_send.call_count == 1
     assert NotificationDelivery.objects.get().status == "SENT"
+
+
+def test_multi_user_notification_processes_in_batches(monkeypatch: Any) -> None:
+    """Gửi nhiều người dùng phải chia lô `NOTIFICATION_BULK_BATCH` thay vì xử lý dồn 1 cục."""
+    from app.system.models.notification import Notification
+    from app.system.models.notification_preference import NotificationPreference
+    from app.system.repositories.notification_preference_repository import (
+        NotificationPreferenceRepository,
+    )
+    from app.system.services import notification_preference_service, notification_service
+    from app.system.tests.factories.user_factory import UserFactory
+
+    users = [UserFactory() for _ in range(5)]
+    for u in users:
+        NotificationPreference.objects.create(
+            user=u,
+            event_code="system.announcement.published",
+            channel="EMAIL",
+            is_enabled=True,
+        )
+    monkeypatch.setattr(notification_service, "NOTIFICATION_BULK_BATCH", 2)
+    monkeypatch.setattr(notification_preference_service, "NOTIFICATION_BULK_BATCH", 2)
+
+    batch_sizes: list[int] = []
+    orig_for_users = NotificationPreferenceRepository.for_users
+
+    def tracked_for_users(self: Any, user_ids: list[Any], event_code: str) -> Any:
+        batch_sizes.append(len(user_ids))
+        return orig_for_users(self, user_ids, event_code)
+
+    with patch.object(NotificationPreferenceRepository, "for_users", tracked_for_users):
+        created = NotificationService().notify(
+            "system.announcement.published",
+            recipients=users,
+            dedup_key="batch-test-5",
+            payload=NotificationPayload(title="Thông báo theo lô"),
+            kick=False,
+        )
+
+    assert created == 5
+    assert batch_sizes == [2, 2, 1]
+    assert Notification.objects.filter(dedup_key="batch-test-5").count() == 5
+    assert NotificationDelivery.objects.filter(notification__dedup_key="batch-test-5").count() == 5

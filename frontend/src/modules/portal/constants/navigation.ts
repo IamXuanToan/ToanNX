@@ -13,7 +13,6 @@ import {
   type LucideIcon,
   QrCode,
   Receipt,
-  SlidersHorizontal,
   Store,
 } from "lucide-react";
 
@@ -32,7 +31,6 @@ import { ASSET_PERMISSIONS } from "@/modules/workspace/permissions/asset-permiss
 import { REMINDER_PERMISSIONS } from "@/modules/workspace/permissions/reminder-permission";
 import { SUBSCRIPTION_PERMISSIONS } from "@/modules/workspace/permissions/subscription-permission";
 import { VAULT_ITEM_PERMISSIONS } from "@/modules/workspace/permissions/vault-item-permission";
-import { WORKSPACE_SETTING_PERMISSIONS } from "@/modules/workspace/permissions/workspace-setting-permission";
 import { isLocalizedRouteExact, startsWithLocalizedRoute } from "@/shares/lib/localized-route";
 
 import type portalMessages from "../messages/vi.json";
@@ -127,13 +125,6 @@ export const PORTAL_NAV_SECTIONS: readonly PortalNavSectionConfig[] = [
         href: WORKSPACE_ROUTES.vault,
         icon: KeyRound,
         permission: VAULT_ITEM_PERMISSIONS.read,
-      },
-      {
-        key: "workspaceSettings",
-        labelKey: "workspaceSettings",
-        href: WORKSPACE_ROUTES.settings,
-        icon: SlidersHorizontal,
-        permission: WORKSPACE_SETTING_PERMISSIONS.read,
       },
     ],
   },
@@ -233,7 +224,7 @@ export const PORTAL_BOTTOM_NAV_KEYS = [
 
 /**
  * Kiểm tra một mục menu Portal có đang khớp với `pathname` hiện tại hay không
- * (tính cả các route con ẩn như `/bao-hanh`, `/gia-han`, `/su-co`, `/cai-dat`).
+ * (tính cả các route con ẩn như `/bao-hanh`, `/gia-han`, `/su-co`).
  *
  * @param pathname - Đường dẫn hiện tại từ `usePathname()`.
  * @param item - Cấu hình mục menu.

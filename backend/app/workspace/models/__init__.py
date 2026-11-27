@@ -8,7 +8,6 @@ from app.workspace.models.reminder import Reminder
 from app.workspace.models.subscription import Subscription
 from app.workspace.models.subscription_payment import SubscriptionPayment
 from app.workspace.models.vault_item import VaultItem
-from app.workspace.models.workspace_setting import WorkspaceSetting
 
 __all__ = [
     "Asset",
@@ -19,5 +18,4 @@ __all__ = [
     "Subscription",
     "SubscriptionPayment",
     "VaultItem",
-    "WorkspaceSetting",
 ]

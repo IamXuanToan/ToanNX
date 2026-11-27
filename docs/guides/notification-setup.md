@@ -62,7 +62,7 @@ Cấu hình `TELEGRAM_BOT_TOKEN` (bắt buộc) và `TELEGRAM_BOT_USERNAME` (tù
 
 1. Kiểm tra card **Bot Telegram hệ thống** hiển thị `@username` và link `https://t.me/<username>`.
 2. Chọn **Chat riêng với bot** hoặc **Thêm nhóm** → mở Telegram bằng nút trên màn (gửi `/start <mã>` hoặc mời bot vào nhóm) → quay lại bấm **Kiểm tra**.
-3. Bấm **Gửi thử** để xác nhận. Cần bật webhook (`POST /api/v1/system/telegram/webhook`) hoặc chạy local `uv run python manage.py poll_telegram_assistant` để nhận `/start`.
+3. Bấm **Gửi thử** để xác nhận. Cần bật webhook (`POST /api/v1/system/telegram/webhook`) hoặc chạy local `uv run python manage.py poll_telegram_assistant` để nhận `/start`. Xem hướng dẫn chi tiết từng bước cài webhook Production & Local tại [telegram-webhook.md](telegram-webhook.md).
 
 Khi Telegram báo bot bị chặn / không gửi được tới chat đã lưu (401/403/404): đích nhận đó bị đánh dấu lỗi
 `TELEGRAM_CHAT_UNREACHABLE` kèm một cảnh báo trong ứng dụng. Quản trị viên có quyền `setting.update` có thể

@@ -3,7 +3,8 @@
 import { useCallback, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-import { getUserDisplayName, getUserInitials } from "@/shares/components/common/user-avatar";
+import { getUserInitials } from "@/shares/components/common/user-avatar";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 import { PROFILE_DIALOG_QUERY } from "../../../constants/auth-storage";
 import { useCurrentUser } from "../../../hooks/use-current-user";
@@ -47,7 +48,7 @@ export function useUserMenu() {
 
   const user = data?.user;
   const roles = data?.roles ?? [];
-  const displayName = getUserDisplayName(user);
+  const displayName = formatUserDisplayName(user, { includeUsername: false });
   const initials = getUserInitials(user);
 
   return {

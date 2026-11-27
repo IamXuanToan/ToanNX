@@ -7,6 +7,7 @@ import { Controller } from "react-hook-form";
 import { Link } from "@/i18n/navigation";
 import { AttachmentPicker } from "@/modules/system/components/attachment/attachment-picker";
 import { SYSTEM_ROUTES } from "@/modules/system/constants/routes";
+import { ChipListInput } from "@/shares/components/common/chip-list-input";
 import { ChoiceList } from "@/shares/components/common/choice-list";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
@@ -57,6 +58,7 @@ export function AssistantAdminPanel({
   canUploadAttachments: boolean;
 }) {
   const t = useTranslations("workspace.assistantAdmin");
+  const tSettings = useTranslations("workspace.settings");
   const tAssistant = useTranslations("workspace.assistant");
   const tCommon = useTranslations("common.actions");
   const state = useAssistantAdminPanel(canReadConfig);
@@ -352,6 +354,117 @@ export function AssistantAdminPanel({
                 />
                 <Label htmlFor="admin-tg-reply-dm">{t("fields.telegramGroupReplyInDm")}</Label>
               </div>
+            </div>
+          </FormSection>
+
+          <FormSection title={t("sections.digest")}>
+            <FormField
+              control={form.control}
+              name="digestTimeSlots"
+              label={tSettings("fields.digestTimeSlots")}
+            >
+              {() => (
+                <ChipListInput
+                  values={state.digestTimeSlots}
+                  onChange={(next) =>
+                    form.setValue("digestTimeSlots", next, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                  parseItem={state.parseTimeSlot}
+                  sortItems={state.sortTimeAsc}
+                  placeholder={tSettings("addSlotPlaceholder")}
+                  addLabel={tSettings("addSlot")}
+                  tooltip={tSettings("addSlotTooltip")}
+                  emptyText={tSettings("emptySlots")}
+                  disabled={locked}
+                  maxLength={5}
+                />
+              )}
+            </FormField>
+
+            <FormField
+              control={form.control}
+              name="digestSections"
+              label={tSettings("fields.digestSections")}
+            >
+              {() => (
+                <div className="grid gap-2.5 sm:grid-cols-2">
+                  {(config.availableDigestSections ?? []).map((sec) => (
+                    <div
+                      key={sec}
+                      className="hover:bg-muted/40 flex items-center gap-2.5 rounded-xl border px-3 py-2.5 transition-colors"
+                    >
+                      <Checkbox
+                        id={`admin-digest-sec-${sec}`}
+                        checked={state.digestSections.includes(sec)}
+                        onCheckedChange={(checked) => state.toggleSection(sec, Boolean(checked))}
+                        disabled={locked}
+                      />
+                      <Label htmlFor={`admin-digest-sec-${sec}`} className="cursor-pointer">
+                        {tSettings(`digestSectionLabels.${sec}` as never)}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </FormField>
+
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 [&>*]:min-w-0">
+              <FormField
+                control={form.control}
+                name="warrantyAlertDays"
+                label={tSettings("fields.warrantyAlertDays")}
+              >
+                {() => (
+                  <ChipListInput
+                    values={state.warrantyAlertDays}
+                    onChange={(next) =>
+                      form.setValue("warrantyAlertDays", next, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                    parseItem={state.parseAlertDay}
+                    sortItems={state.sortDaysDesc}
+                    formatItem={(days) => tSettings("alertDaysUnit", { days })}
+                    placeholder={tSettings("addAlertDayPlaceholder")}
+                    addLabel={tSettings("addAlertDay")}
+                    tooltip={tSettings("alertDaysTooltip")}
+                    emptyText={tSettings("emptyAlertDays")}
+                    disabled={locked}
+                    maxLength={3}
+                  />
+                )}
+              </FormField>
+
+              <FormField
+                control={form.control}
+                name="subscriptionDefaultAlertDays"
+                label={tSettings("fields.subscriptionDefaultAlertDays")}
+              >
+                {() => (
+                  <ChipListInput
+                    values={state.subscriptionDefaultAlertDays}
+                    onChange={(next) =>
+                      form.setValue("subscriptionDefaultAlertDays", next, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                    parseItem={state.parseAlertDay}
+                    sortItems={state.sortDaysDesc}
+                    formatItem={(days) => tSettings("alertDaysUnit", { days })}
+                    placeholder={tSettings("addAlertDayPlaceholder")}
+                    addLabel={tSettings("addAlertDay")}
+                    tooltip={tSettings("alertDaysTooltip")}
+                    emptyText={tSettings("emptyAlertDays")}
+                    disabled={locked}
+                    maxLength={3}
+                  />
+                )}
+              </FormField>
             </div>
           </FormSection>
         </FormLayout>

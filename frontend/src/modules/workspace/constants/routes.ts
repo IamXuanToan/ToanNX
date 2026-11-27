@@ -31,7 +31,6 @@ export const WORKSPACE_ROUTES = {
     pathname: "/portal/reminders/[id]" as const,
     params: { id },
   }),
-  settings: "/portal/settings",
   adminAssistant: "/admin/workspace/assistant",
 } as const;
 
@@ -62,7 +61,6 @@ export const WORKSPACE_PATHNAMES = {
   "/portal/reminders": { vi: "/ca-nhan/nhac-viec", en: "/portal/reminders" },
   "/portal/reminders/new": { vi: "/ca-nhan/nhac-viec/tao-moi", en: "/portal/reminders/new" },
   "/portal/reminders/[id]": { vi: "/ca-nhan/nhac-viec/[id]", en: "/portal/reminders/[id]" },
-  "/portal/settings": { vi: "/ca-nhan/cai-dat", en: "/portal/settings" },
   "/admin/workspace/assistant": {
     vi: "/quan-tri/he-thong/tro-ly-ai",
     en: "/admin/system/assistant",

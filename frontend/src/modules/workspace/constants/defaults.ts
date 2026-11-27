@@ -106,6 +106,8 @@ export const CALENDAR_EVENT_TYPES = [
   "reminder",
   "asset_warranty",
   "warranty_claim",
+  "income",
+  "donation",
 ] as const;
 
 import type { AssistantCommand } from "../types/assistant.types";

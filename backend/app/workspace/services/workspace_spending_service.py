@@ -5,11 +5,11 @@ from datetime import date
 from decimal import Decimal
 from typing import Any
 
+from app.core.constants.defaults import DEFAULT_TIMEZONE
 from app.workspace.repositories.asset_repository import AssetRepository
 from app.workspace.repositories.asset_warranty_claim_repository import AssetWarrantyClaimRepository
 from app.workspace.repositories.subscription_payment_repository import SubscriptionPaymentRepository
 from app.workspace.repositories.subscription_repository import SubscriptionRepository
-from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 
 
@@ -22,7 +22,6 @@ class WorkspaceSpendingService:
         claim_repository: AssetWarrantyClaimRepository | None = None,
         payment_repository: SubscriptionPaymentRepository | None = None,
         subscription_repository: SubscriptionRepository | None = None,
-        setting_service: WorkspaceSettingService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
     ) -> None:
         """Khởi tạo các repository chi tiêu và dịch vụ múi giờ."""
@@ -30,7 +29,6 @@ class WorkspaceSpendingService:
         self.claim_repository = claim_repository or AssetWarrantyClaimRepository()
         self.payment_repository = payment_repository or SubscriptionPaymentRepository()
         self.subscription_repository = subscription_repository or SubscriptionRepository()
-        self.setting_service = setting_service or WorkspaceSettingService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
 
     def summary(
@@ -43,8 +41,7 @@ class WorkspaceSpendingService:
     ) -> dict[str, Any]:
         """Tổng hợp chi tiêu thực tế + dự kiến gia hạn theo tháng cho `owner` (mặc định `actor`)."""
         target_owner = owner or actor
-        setting = self.setting_service.get_or_create_for_owner(target_owner)
-        today_local = self.tz_service.local_today(setting.timezone)
+        today_local = self.tz_service.local_today(DEFAULT_TIMEZONE)
         target_year = int(year or today_local.year)
         target_month = int(month or today_local.month)
         last_day = calendar.monthrange(target_year, target_month)[1]

@@ -33,6 +33,7 @@ class ReminderResponseSerializer(serializers.ModelSerializer[Reminder]):
             "due_date",
             "due_time",
             "notify_minutes_before",
+            "reminder_days_before",
             "priority",
             "is_completed",
             "completed_at",

@@ -110,10 +110,13 @@ class TelegramBotService:
         bot = self._store_bot_info(me)
         last_error = ""
         if webhook_url and "://" in webhook_url:
-            try:
-                self.client.set_webhook(token, webhook_url, secret_token=self.webhook_secret())
-            except BusinessRuleError as exc:
-                last_error = str(exc)
+            if not webhook_url.startswith("https://"):
+                last_error = str(NotificationErrorCode.TELEGRAM_WEBHOOK_HTTPS_REQUIRED)
+            else:
+                try:
+                    self.client.set_webhook(token, webhook_url, secret_token=self.webhook_secret())
+                except BusinessRuleError as exc:
+                    last_error = str(exc.code or NotificationErrorCode.TELEGRAM_UNAVAILABLE)
         webhook = self.client.get_webhook_info(token)
         resolved_url = str(webhook.get("url") or "")
         webhook_error = str(webhook.get("last_error_message") or "")
