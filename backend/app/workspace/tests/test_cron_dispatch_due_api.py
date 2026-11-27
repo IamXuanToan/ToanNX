@@ -141,7 +141,8 @@ class TestCronDispatchDueApi(BaseApiTestCase):
                 "digest_sections": ["reminders"],
             },
         )
-        due_1 = (local_now - timedelta(minutes=10)).time().replace(second=0, microsecond=0)
+        today_start = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
+        due_1 = max(local_now - timedelta(minutes=10), today_start).time().replace(second=0, microsecond=0)
         rem = Reminder.objects.create(
             owner=user,
             title="Dời giờ cùng ngày",
@@ -158,7 +159,7 @@ class TestCronDispatchDueApi(BaseApiTestCase):
         assert self.assert_success(res1)["notifications_queued"] == 2
 
         # Dời giờ qua ReminderService để hook on_commit tính lại alerts_next_due và gửi lại trong cùng ngày.
-        due_2 = (local_now - timedelta(minutes=1)).time().replace(second=0, microsecond=0)
+        due_2 = max(local_now - timedelta(minutes=1), today_start).time().replace(second=0, microsecond=0)
         payload: dict[str, Any] = {"notify_minutes_before": 1} if due_2 == due_1 else {"due_time": due_2}
         with django_capture_on_commit_callbacks(execute=True):
             ReminderService().update(user, rem.pk, payload)

@@ -1,7 +1,7 @@
 # Sổ theo dõi rà soát code toàn hệ thống (Code / Security / i18n / Permission)
 
-- **Cập nhật lần cuối**: `2026-11-27 23:53`
-- **Tổng file theo dõi**: `3230` · **PASS**: `3166` · **FIXED**: `47` · **NEEDS_CHECK**: `17`
+- **Cập nhật lần cuối**: `2026-11-28 00:12`
+- **Tổng file theo dõi**: `3230` · **PASS**: `3164` · **FIXED**: `47` · **NEEDS_CHECK**: `19`
 - **Script đồng bộ & truy vấn**: [`scripts/audit_tracker.py`](../../scripts/audit_tracker.py)
 
 ## Quy trình vận hành với các skill
@@ -35,7 +35,7 @@
 | Backend · Utilities (`backend/app/utilities`) | 180 | 180 | 0 | 0 | 180/180 | 174/174 | 1/1 | 33/33 |
 | Backend · Novel (`backend/app/novel`) | 130 | 130 | 0 | 0 | 130/130 | 127/127 | 1/1 | 40/40 |
 | Backend · Finance (`backend/app/finance`) | 160 | 160 | 0 | 0 | 160/160 | 156/156 | 1/1 | 46/46 |
-| Backend · Workspace (`backend/app/workspace`) | 184 | 179 | 4 | 1 | 183/184 | 176/177 | 1/1 | 50/51 |
+| Backend · Workspace (`backend/app/workspace`) | 184 | 177 | 4 | 3 | 181/184 | 174/177 | 1/1 | 50/51 |
 | Backend · Config & Root (`backend/config`, env, pyproject) | 16 | 14 | 0 | 2 | 14/16 | 7/9 | N/A | N/A |
 | Frontend · Shares (`frontend/src/shares`) | 213 | 210 | 1 | 2 | 211/213 | 210/212 | 204/206 | 7/7 |
 | Frontend · System (`frontend/src/modules/system`) | 317 | 314 | 2 | 1 | 316/317 | 314/315 | 281/282 | 96/96 |
@@ -53,33 +53,35 @@
 | Scripts & CI (`scripts/`, `.github/`) | 10 | 10 | 0 | 0 | 10/10 | 10/10 | N/A | N/A |
 | Rules, Skills & Prompts (`.agents/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md`) | 384 | 365 | 19 | 0 | 384/384 | 1/1 | N/A | N/A |
 | Tài liệu hệ thống (`docs/`) | 62 | 49 | 12 | 1 | 61/62 | N/A | N/A | N/A |
-| **TỔNG CỘNG** | **3230** | **3166** | **47** | **17** | — | — | — | — |
+| **TỔNG CỘNG** | **3230** | **3164** | **47** | **19** | — | — | — | — |
 <!-- AUDIT_SUMMARY:END -->
 
 ## 2. Hàng đợi file cần rà soát lại (`NEEDS_CHECK`)
 
 <!-- AUDIT_QUEUE:START -->
-Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần nhất hoặc mới tạo):
+Hiện có **19** file cần rà soát lại (đã sửa sau lần kiểm gần nhất hoặc mới tạo):
 
 | File | Nhóm | Thay đổi gần nhất | Nguồn | Trục chờ check | Ghi chú |
 | --- | --- | --- | --- | --- | --- |
-| `backend/.env.example` | backend/config | 2026-11-27 | working-tree (M) | code, security | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
-| `backend/app/core/logging/max_level_filter.py` | backend/core | 2026-11-27 | working-tree (??) | code, security | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
-| `backend/app/core/logging/readable_console_formatter.py` | backend/core | 2026-11-27 | working-tree (??) | code, security | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
-| `backend/app/core/middleware/request_context_middleware.py` | backend/core | 2026-11-27 | working-tree (M) | code, security, permission | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
-| `backend/app/core/tests/test_logging_config.py` | backend/core | 2026-11-27 | working-tree (??) | code, security | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
-| `backend/app/workspace/services/telegram_assistant_reply_service.py` | backend/workspace | 2026-11-27 | working-tree (M) | code, security, permission | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/config/settings.py` | backend/config | 2026-11-27 | working-tree (M) | code, security | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
-| `docs/common-catalog.md` | docs | 2026-11-27 | working-tree (M) | code | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
-| `frontend/src/modules/portal/components/layout/portal-bottom-nav.tsx` | frontend/portal | 2026-11-27 | working-tree (M) | code, security, i18n, permission | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
-| `frontend/src/modules/portal/components/layout/portal-shell.tsx` | frontend/portal | 2026-11-27 | working-tree (M) | code, security, i18n, permission | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
-| `frontend/src/modules/system/components/current-user/profile-dialog.tsx` | frontend/system | 2026-11-27 | working-tree (M) | code, security, i18n | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
-| `frontend/src/modules/workspace/components/calendar/portal-calendar.tsx` | frontend/workspace | 2026-11-27 | working-tree (M) | code, security, i18n | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
+| `backend/.env.example` | backend/config | 2026-11-28 | 69dc537 | code, security | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/app/core/logging/max_level_filter.py` | backend/core | 2026-11-28 | 69dc537 | code, security | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/app/core/logging/readable_console_formatter.py` | backend/core | 2026-11-28 | 69dc537 | code, security | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/app/core/middleware/request_context_middleware.py` | backend/core | 2026-11-28 | 69dc537 | code, security, permission | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/app/core/tests/test_logging_config.py` | backend/core | 2026-11-28 | 69dc537 | code, security | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/app/workspace/services/telegram_assistant_reply_service.py` | backend/workspace | 2026-11-28 | 69dc537 | code, security, permission | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/tests/test_cron_dispatch_due_api.py` | backend/workspace | 2026-11-28 | working-tree (M) | code, security | Chặn due_1/due_2 lùi qua nửa đêm khi test chạy lúc 00:00-00:09 |
+| `backend/app/workspace/tests/test_telegram_assistant_async_api.py` | backend/workspace | 2026-11-28 | 69dc537 | code, security | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/config/settings.py` | backend/config | 2026-11-28 | 69dc537 | code, security | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `docs/common-catalog.md` | docs | 2026-11-28 | 69dc537 | code | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `frontend/src/modules/portal/components/layout/portal-bottom-nav.tsx` | frontend/portal | 2026-11-28 | 69dc537 | code, security, i18n, permission | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
+| `frontend/src/modules/portal/components/layout/portal-shell.tsx` | frontend/portal | 2026-11-28 | 69dc537 | code, security, i18n, permission | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
+| `frontend/src/modules/system/components/current-user/profile-dialog.tsx` | frontend/system | 2026-11-28 | 69dc537 | code, security, i18n | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
+| `frontend/src/modules/workspace/components/calendar/portal-calendar.tsx` | frontend/workspace | 2026-11-28 | 69dc537 | code, security, i18n | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
 | `frontend/src/modules/workspace/messages/en.json` | frontend/workspace | 2026-11-27 | 44f39cc | i18n | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `frontend/src/modules/workspace/messages/vi.json` | frontend/workspace | 2026-11-27 | 44f39cc | i18n | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `frontend/src/shares/components/analytics/app-analytics.tsx` | frontend/shares | 2026-11-27 | working-tree (M) | code, security, i18n | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
-| `frontend/src/shares/config/env.ts` | frontend/shares | 2026-11-27 | working-tree (M) | code, security, i18n | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
-| `frontend/tests/unit/app-analytics.test.tsx` | frontend/tests | 2026-11-27 | working-tree (??) | code, security | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
+| `frontend/src/shares/components/analytics/app-analytics.tsx` | frontend/shares | 2026-11-28 | 69dc537 | code, security, i18n | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
+| `frontend/src/shares/config/env.ts` | frontend/shares | 2026-11-28 | 69dc537 | code, security, i18n | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
+| `frontend/tests/unit/app-analytics.test.tsx` | frontend/tests | 2026-11-28 | 69dc537 | code, security | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
 <!-- AUDIT_QUEUE:END -->
 
 ## 3. Nhật ký các đợt rà soát
@@ -138,12 +140,12 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `backend/app/core/filters/core_search_filter.py` | filter | 2026-11-15 | 57e39df | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/filters/core_uuid_in_filter.py` | filter | 2026-11-15 | a0e6900 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/logging/__init__.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/core/logging/max_level_filter.py` | be-module | 2026-11-27 | working-tree (??) | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
-| `backend/app/core/logging/readable_console_formatter.py` | be-module | 2026-11-27 | working-tree (??) | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/app/core/logging/max_level_filter.py` | be-module | 2026-11-28 | 69dc537 | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/app/core/logging/readable_console_formatter.py` | be-module | 2026-11-28 | 69dc537 | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
 | `backend/app/core/logging/request_context_filter.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/logging/step_timer.py` | be-module | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/middleware/__init__.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/core/middleware/request_context_middleware.py` | be-module | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/app/core/middleware/request_context_middleware.py` | be-module | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
 | `backend/app/core/models/__init__.py` | model | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/models/core_model.py` | model | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/models/core_query_set.py` | model | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -198,7 +200,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `backend/app/core/tests/test_endpoint_access.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/tests/test_error_codes.py` | test | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/tests/test_list_query_count.py` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/core/tests/test_logging_config.py` | test | 2026-11-27 | working-tree (??) | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/app/core/tests/test_logging_config.py` | test | 2026-11-28 | 69dc537 | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
 | `backend/app/core/tests/test_module_conventions.py` | test | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/tests/test_module_registry.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/tests/test_one_class_per_file.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1331,7 +1333,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `backend/app/workspace/services/reminder_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/services/subscription_payment_service.py` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/services/subscription_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/services/telegram_assistant_reply_service.py` | service | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/services/telegram_assistant_reply_service.py` | service | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/services/telegram_assistant_router_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/services/telegram_polling_service.py` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/services/vault_item_service.py` | service | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -1358,7 +1360,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `backend/app/workspace/tests/test_assistant_chat_api.py` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/tests/test_assistant_config_api.py` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/tests/test_assistant_thread_api.py` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/tests/test_cron_dispatch_due_api.py` | test | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/tests/test_cron_dispatch_due_api.py` | test | 2026-11-28 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Chặn due_1/due_2 lùi qua nửa đêm khi test chạy lúc 00:00-00:09 |
 | `backend/app/workspace/tests/test_cron_tick_api.py` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_reminder_bulk_delete_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_reminder_bulk_update_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1378,7 +1380,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `backend/app/workspace/tests/test_subscription_payment_list_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_subscription_renew_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_subscription_update_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/tests/test_telegram_assistant_async_api.py` | test | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/tests/test_telegram_assistant_async_api.py` | test | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/tests/test_vault_bulk_delete_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_vault_create_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_vault_delete_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1417,7 +1419,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `backend/.env.example` | be-module | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/.env.example` | be-module | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
 | `backend/.python-version` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/.vercelignore` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/README.md` | be-module | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1425,7 +1427,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `backend/build_files.sh` | be-module | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/config/__init__.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/config/asgi.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/config/settings.py` | settings | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `backend/config/settings.py` | settings | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
 | `backend/config/urls.py` | urls | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/config/wsgi.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/conftest.py` | be-module | 2026-11-26 | 507f42d | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1438,7 +1440,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `frontend/src/shares/components/analytics/app-analytics.tsx` | component | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
+| `frontend/src/shares/components/analytics/app-analytics.tsx` | component | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
 | `frontend/src/shares/components/common/activity-change-row.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/activity-change-value.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/activity-timeline-item.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -1598,7 +1600,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `frontend/src/shares/components/ui/tabs.tsx` | component | 2026-11-25 | 35091cb | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/ui/textarea.tsx` | component | 2026-11-15 | 0fb19eb | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/ui/tooltip.tsx` | component | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/config/env.ts` | fe-module | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
+| `frontend/src/shares/config/env.ts` | fe-module | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
 | `frontend/src/shares/constants/auth-error-codes.ts` | constant | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/constants/auth-session.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/constants/currency.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1721,7 +1723,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `frontend/src/modules/system/components/current-user/account-email.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/current-user/hooks/use-profile-dialog.ts` | hook | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/current-user/hooks/use-user-menu.ts` | hook | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/system/components/current-user/profile-dialog.tsx` | component | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
+| `frontend/src/modules/system/components/current-user/profile-dialog.tsx` | component | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
 | `frontend/src/modules/system/components/current-user/user-menu.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/components/exchange-rate/exchange-rate-form.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/exchange-rate/exchange-rate-table.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -2459,7 +2461,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-chat-panel.ts` | hook | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-floating-widget.ts` | hook | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/components/calendar/hooks/use-portal-calendar.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/workspace/components/calendar/portal-calendar.tsx` | component | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
+| `frontend/src/modules/workspace/components/calendar/portal-calendar.tsx` | component | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
 | `frontend/src/modules/workspace/components/dashboard/workspace-summary-cards.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-detail.ts` | hook | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-form.ts` | hook | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -2593,9 +2595,9 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `frontend/src/modules/portal/components/donation/portal-donation-gift-chart.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/layout/hooks/use-portal-shell.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/layout/hooks/use-portal-sidebar-section.ts` | hook | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/portal/components/layout/portal-bottom-nav.tsx` | component | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
+| `frontend/src/modules/portal/components/layout/portal-bottom-nav.tsx` | component | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
 | `frontend/src/modules/portal/components/layout/portal-header.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/portal/components/layout/portal-shell.tsx` | component | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
+| `frontend/src/modules/portal/components/layout/portal-shell.tsx` | component | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Sửa hiển thị mobile: bottom-nav grid-cols-5 chống dính chữ, DialogFooter ProfileDialog 1 hàng, ô lịch PortalCalendar gọn trên mobile |
 | `frontend/src/modules/portal/components/layout/portal-sidebar-section.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/layout/portal-sidebar.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/library/portal-library.tsx` | component | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2881,7 +2883,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `frontend/tests/unit/admin-navigation.test.ts` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/api-client-cancel.test.ts` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/api-contract.test.ts` | test | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/tests/unit/app-analytics.test.tsx` | test | 2026-11-27 | working-tree (??) | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
+| `frontend/tests/unit/app-analytics.test.tsx` | test | 2026-11-28 | 69dc537 | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | Sửa lỗi Umami 400 Missing website ID (beforeSend 2 tham số + data-before-send) và bỏ hardcode fallback ID ở env.ts |
 | `frontend/tests/unit/asset-warranty-claim.test.tsx` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/assistant-admin.test.tsx` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/assistant-chat.test.tsx` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -3393,7 +3395,7 @@ Hiện có **17** file cần rà soát lại (đã sửa sau lần kiểm gần 
 | `docs/architecture/testing.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/audit/free-tier-optimization-handoff.md` | doc | 2026-11-26 | 296a57a | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/audit/infrastructure-free-tier-audit.md` | doc | 2026-11-26 | 296a57a | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/common-catalog.md` | doc | 2026-11-27 | working-tree (M) | PENDING (cũ: 2026-11-27) | N/A | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
+| `docs/common-catalog.md` | doc | 2026-11-28 | 69dc537 | PENDING (cũ: 2026-11-27) | N/A | N/A | N/A | NEEDS_CHECK | Tách luồng log stdout/stderr, phân mức 2xx/4xx/5xx và định dạng [LEVEL] rõ ràng |
 | `docs/features/admin-navigation.md` | doc | 2026-11-22 | 1b3e870 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/features/attachment-visibility.md` | doc | 2026-11-26 | 296a57a | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/features/permission-scope.md` | doc | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
