@@ -45,7 +45,7 @@ export function PortalBottomNav() {
   return (
     <nav
       aria-label={tPortal("mobileNavAria")}
-      className="border-border bg-background/95 fixed inset-x-0 bottom-0 z-40 flex h-16 items-center justify-around border-t px-2 backdrop-blur-md md:hidden"
+      className="border-border bg-background/95 fixed inset-x-0 bottom-0 z-40 grid h-16 grid-cols-5 items-center border-t px-1 backdrop-blur-md md:hidden"
     >
       {navItems.map((item) => {
         const Icon = item.icon;
@@ -54,7 +54,7 @@ export function PortalBottomNav() {
             key={item.href}
             href={item.href as never}
             className={cn(
-              "flex flex-1 flex-col items-center justify-center gap-1 py-1 text-center transition-colors",
+              "flex min-w-0 flex-col items-center justify-center gap-1 px-1 py-1 text-center transition-colors",
               item.active
                 ? "text-primary font-semibold"
                 : "text-muted-foreground hover:text-foreground",
@@ -68,7 +68,9 @@ export function PortalBottomNav() {
             >
               <Icon className="size-4 shrink-0" />
             </div>
-            <span className="truncate text-[10px] leading-tight font-medium">{item.title}</span>
+            <span className="w-full truncate text-[10px] leading-tight font-medium">
+              {item.title}
+            </span>
           </Link>
         );
       })}
@@ -76,12 +78,14 @@ export function PortalBottomNav() {
         type="button"
         variant="ghost"
         onClick={toggleSidebar}
-        className="text-muted-foreground hover:text-foreground flex h-auto flex-1 flex-col items-center justify-center gap-1 rounded-none py-1 text-center"
+        className="text-muted-foreground hover:text-foreground flex h-auto min-w-0 flex-col items-center justify-center gap-1 rounded-none px-1 py-1 text-center"
       >
         <div className="flex size-7 items-center justify-center rounded-xl">
           <Menu className="size-4 shrink-0" />
         </div>
-        <span className="truncate text-[10px] leading-tight font-medium">{t("mobileMenu")}</span>
+        <span className="w-full truncate text-[10px] leading-tight font-medium">
+          {t("mobileMenu")}
+        </span>
       </Button>
     </nav>
   );

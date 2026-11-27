@@ -45,7 +45,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
       <SidebarInset>
         <PortalHeader />
         <div
-          className="w-full max-w-[1600px] flex-1 p-4 pb-20 sm:p-6 md:pb-8 lg:p-8"
+          className="w-full max-w-[1600px] flex-1 p-4 pb-24 sm:p-6 md:pb-8 lg:p-8"
           data-testid="portal-content"
         >
           {children}

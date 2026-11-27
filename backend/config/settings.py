@@ -492,19 +492,38 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
 
+_VALID_LOG_LEVELS = frozenset({"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"})
+_raw_log_level = env.str("LOG_LEVEL", default="INFO" if DEBUG else "WARNING").strip().upper()
+LOG_LEVEL = _raw_log_level if _raw_log_level in _VALID_LOG_LEVELS else ("INFO" if DEBUG else "WARNING")
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "filters": {"request_context": {"()": "app.core.logging.request_context_filter.RequestContextFilter"}},
+    "filters": {
+        "request_context": {"()": "app.core.logging.request_context_filter.RequestContextFilter"},
+        "max_info": {"()": "app.core.logging.max_level_filter.MaxLevelFilter"},
+    },
     "formatters": {
-        "default": {"format": "%(asctime)s %(levelname)s [%(request_id)s] %(name)s: %(message)s"},
+        "default": {"()": "app.core.logging.readable_console_formatter.ReadableConsoleFormatter"},
     },
     "handlers": {
-        "console": {
+        "console_stdout": {
             "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "default",
+            "filters": ["request_context", "max_info"],
+        },
+        "console_stderr": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+            "level": "WARNING",
             "formatter": "default",
             "filters": ["request_context"],
         },
     },
-    "root": {"handlers": ["console"], "level": env.str("LOG_LEVEL", default="INFO")},
+    "root": {"handlers": ["console_stdout", "console_stderr"], "level": LOG_LEVEL},
+    "loggers": {
+        "django.request": {"level": "WARNING", "propagate": True},
+        "urllib3": {"level": "WARNING", "propagate": True},
+    },
 }

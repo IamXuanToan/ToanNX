@@ -1,6 +1,7 @@
 """Định dạng phản hồi Telegram HTML an toàn, cắt đoạn dài & hỗ trợ gửi DM kèm phát hiện lỗi 403."""
 
 import html
+import re
 
 from app.system.services.telegram_bot_service import TelegramBotService
 from app.system.services.telegram_client import TelegramClient
@@ -34,7 +35,7 @@ class TelegramAssistantReplyService:
             return TelegramSendResult(ok=False, error_code="TELEGRAM_BOT_MISSING")
 
         token = self.bot_service.token()
-        body = html.escape(text or "")
+        body = self._markdown_to_telegram_html(text or "")
         if model_used and model_used not in ("slash", "fallback"):
             body = f"{body}\n\n<i>🤖 {html.escape(model_used)}</i>"
 
@@ -83,12 +84,56 @@ class TelegramAssistantReplyService:
             reply_to_message_id=group_reply_to_message_id,
         )
 
+    def _markdown_to_telegram_html(self, text: str) -> str:
+        """Chuyển Markdown phổ biến của LLM sang thẻ HTML chuẩn của Telegram Bot API."""
+        placeholders: dict[str, str] = {}
+
+        def store(rendered: str) -> str:
+            key = f"\x00TGPH{len(placeholders)}\x00"
+            placeholders[key] = rendered
+            return key
+
+        def replace_fenced(match: re.Match[str]) -> str:
+            code = html.escape(match.group(1).strip("\r\n"))
+            return store(f"<pre>{code}</pre>")
+
+        def replace_inline(match: re.Match[str]) -> str:
+            return store(f"<code>{html.escape(match.group(1))}</code>")
+
+        working = re.sub(r"```[a-zA-Z0-9_-]*\n([\s\S]*?)```", replace_fenced, text)
+        working = re.sub(r"`([^`\n]+)`", replace_inline, working)
+        working = html.escape(working)
+
+        working = re.sub(
+            r"\[([^\]]+)\]\((https?://[^\s)]+)\)",
+            lambda m: store(f'<a href="{html.escape(m.group(2), quote=True)}">{m.group(1)}</a>'),
+            working,
+        )
+        working = re.sub(r"^#{1,6}\s+(.+)$", r"<b>\1</b>", working, flags=re.MULTILINE)
+        working = re.sub(r"^&gt;\s?(.*)$", r"<blockquote>\1</blockquote>", working, flags=re.MULTILINE)
+        working = working.replace("</blockquote>\n<blockquote>", "\n")
+        working = re.sub(r"^[-*]\s+(.+)$", r"• \1", working, flags=re.MULTILINE)
+        working = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", working)
+        working = re.sub(r"__(.+?)__", r"<b>\1</b>", working)
+        working = re.sub(r"~~(.+?)~~", r"<s>\1</s>", working)
+        working = re.sub(r"(?<!\*)\*(?!\s)([^*\n]+?)(?<!\s)\*(?!\*)", r"<i>\1</i>", working)
+
+        for key, rendered in placeholders.items():
+            working = working.replace(key, rendered)
+        return working
+
     def _split_chunks(self, text: str) -> list[str]:
         if len(text) <= MAX_TELEGRAM_CHARS:
             return [text]
         chunks: list[str] = []
         remaining = text
         while remaining:
-            chunks.append(remaining[:MAX_TELEGRAM_CHARS])
-            remaining = remaining[MAX_TELEGRAM_CHARS:]
+            if len(remaining) <= MAX_TELEGRAM_CHARS:
+                chunks.append(remaining)
+                break
+            cut = remaining.rfind("\n", 0, MAX_TELEGRAM_CHARS)
+            if cut <= 0:
+                cut = MAX_TELEGRAM_CHARS
+            chunks.append(remaining[:cut].rstrip())
+            remaining = remaining[cut:].lstrip("\n")
         return chunks

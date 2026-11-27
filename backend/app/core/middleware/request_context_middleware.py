@@ -46,11 +46,15 @@ class RequestContextMiddleware:
         with request_context(request_id, request):
             response = self.get_response(request)
             response[REQUEST_ID_HEADER] = request_id
-            logger.info(
-                "%s %s %s %.1fms",
-                request.method,
-                request.path,
-                response.status_code,
-                (time.perf_counter() - started) * 1000,
-            )
+            elapsed_ms = (time.perf_counter() - started) * 1000
+            if response.status_code >= 500:
+                logger.error(
+                    "%s %s %s %.1fms", request.method, request.path, response.status_code, elapsed_ms
+                )
+            elif response.status_code >= 400:
+                logger.warning(
+                    "%s %s %s %.1fms", request.method, request.path, response.status_code, elapsed_ms
+                )
+            else:
+                logger.info("%s %s %s %.1fms", request.method, request.path, response.status_code, elapsed_ms)
         return response

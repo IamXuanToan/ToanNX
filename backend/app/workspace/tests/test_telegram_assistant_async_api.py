@@ -267,3 +267,29 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
         assert qstash_mock.call_count == 0
         assert slash_send_mock.call_count == 1
         assert slash_send_mock.call_args.args[1] == "-100888"
+
+    def test_reply_converts_markdown_to_telegram_html_safely(self, settings: Any) -> None:
+        from app.workspace.services.telegram_assistant_reply_service import (
+            TelegramAssistantReplyService,
+        )
+
+        settings.TELEGRAM_BOT_TOKEN = "123:TG-BOT"  # noqa: S105 - giá trị test
+        markdown_text = (
+            "### Hỗ trợ nhanh\n"
+            "- **Tạo nhắc việc** – thêm ghi chú & *ưu tiên*\n"
+            "- Dùng `/hom_nay` hoặc [mở trang](https://toannx.com)\n"
+            "<script>alert(1)</script>"
+        )
+        with patch(
+            "app.system.services.telegram_client.TelegramClient.send_message",
+            return_value=TelegramSendResult(ok=True),
+        ) as send_mock:
+            res = TelegramAssistantReplyService().send_reply("-100888", markdown_text)
+
+        assert res.ok is True
+        sent_html = send_mock.call_args.args[2]
+        assert "<b>Hỗ trợ nhanh</b>" in sent_html
+        assert "• <b>Tạo nhắc việc</b> – thêm ghi chú &amp; <i>ưu tiên</i>" in sent_html
+        assert "<code>/hom_nay</code>" in sent_html
+        assert '<a href="https://toannx.com">mở trang</a>' in sent_html
+        assert "&lt;script&gt;alert(1)&lt;/script&gt;" in sent_html

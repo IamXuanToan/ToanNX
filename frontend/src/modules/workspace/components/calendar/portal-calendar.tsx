@@ -53,20 +53,20 @@ const EVENT_TONE: Record<CalendarEventType, StatusTone> = {
 
 const DOT_CLASS: Record<CalendarEventType, string> = {
   subscription: "bg-warning",
-  reminder: "bg-info",
-  asset_warranty: "bg-primary",
-  warranty_claim: "bg-success",
-  income: "bg-emerald-500",
-  donation: "bg-pink-500",
+  reminder: "bg-primary",
+  asset_warranty: "bg-muted-foreground",
+  warranty_claim: "bg-muted-foreground",
+  income: "bg-success",
+  donation: "bg-success",
 };
 
 const CELL_PILL_CLASS: Record<CalendarEventType, string> = {
-  subscription: "bg-warning/15 text-warning",
-  reminder: "bg-info/15 text-info",
-  asset_warranty: "bg-primary/10 text-primary",
-  warranty_claim: "bg-success/15 text-success",
-  income: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-  donation: "bg-pink-500/15 text-pink-700 dark:text-pink-300",
+  subscription: "bg-warning/10 text-warning",
+  reminder: "bg-muted text-foreground",
+  asset_warranty: "bg-muted text-muted-foreground",
+  warranty_claim: "bg-muted text-muted-foreground",
+  income: "bg-success/10 text-success",
+  donation: "bg-success/10 text-success",
 };
 
 function formatCompactMoney(amountRaw: string, millionSuffix: string): string {
@@ -213,10 +213,11 @@ export function PortalCalendar({
                     variant="ghost"
                     onClick={() => state.selectDate(dateStr)}
                     className={cn(
-                      "flex min-h-22 flex-col items-stretch justify-between rounded-lg border p-1.5 text-left font-normal",
+                      "flex min-h-14 flex-col items-stretch justify-between rounded-lg border p-1 text-left font-normal sm:min-h-22 sm:p-1.5",
                       !inMonth && "text-muted-foreground/50 bg-muted/20",
                       today && "border-primary/60",
-                      selected && "bg-primary-light border-primary text-foreground",
+                      selected &&
+                        "bg-primary/10 border-primary text-foreground hover:bg-primary/15",
                     )}
                   >
                     <div className="flex items-center justify-between gap-1">
