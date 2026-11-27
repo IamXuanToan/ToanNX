@@ -16,15 +16,15 @@ afterEach(() => {
 
 describe("date-time-format và TimestampText", () => {
   it("định dạng ngày thuần theo mẫu dd/MM/yyyy và trả fallback khi rỗng", () => {
-    const sample = new Date(2026, 10, 27, 13, 24, 5);
-    expect(formatExplicitDate(sample)).toBe("27/11/2026");
+    expect(formatExplicitDate("2026-11-27")).toBe("27/11/2026");
+    expect(formatExplicitDate(new Date("2026-11-27T13:24:05+07:00"))).toBe("27/11/2026");
     expect(formatExplicitDate(null)).toBe("—");
     expect(formatExplicitDate("invalid-date", "Trống")).toBe("Trống");
   });
 
   it("định dạng ngày giờ đầy đủ theo mẫu dd/MM/yyyy HH:mm:ss kèm thời gian đếm trong ngoặc", () => {
-    const sample = new Date(2026, 10, 27, 13, 24, 5);
-    const now = new Date(2026, 10, 27, 13, 24, 11);
+    const sample = new Date("2026-11-27T06:24:05Z");
+    const now = new Date("2026-11-27T06:24:11Z");
 
     expect(formatExplicitDateTime(sample)).toBe("27/11/2026 13:24:05");
     expect(
@@ -44,8 +44,8 @@ describe("date-time-format và TimestampText", () => {
   });
 
   it("TimestampText render thẻ time theo mẫu dd/MM/yyyy HH:mm:ss (thời gian đếm)", () => {
-    const sample = new Date(2026, 10, 27, 13, 24, 5);
-    const fixedNow = new Date(2026, 10, 27, 13, 24, 11);
+    const sample = new Date("2026-11-27T06:24:05Z");
+    const fixedNow = new Date("2026-11-27T06:24:11Z");
 
     render(
       <NextIntlClientProvider locale="vi" timeZone="Asia/Ho_Chi_Minh" now={fixedNow} messages={{}}>
