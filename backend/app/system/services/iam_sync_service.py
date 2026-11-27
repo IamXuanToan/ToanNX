@@ -55,7 +55,7 @@ class IamSyncService:
         deactivated = self.permission_repository.deactivate_except(item.code for item in definitions)
 
         # ============================================================
-        # BƯỚC 3: Cấp quyền cho vai trò theo cấu hình auto_grant
+        # BƯỚC 3: Cấp và làm sạch quyền cho vai trò theo cấu hình auto_grant
         # ============================================================
         active = list(self.permission_repository.get_all())
         granted = 0
@@ -63,6 +63,7 @@ class IamSyncService:
             expected = (
                 active if role.auto_grant == RoleAutoGrant.ALL else [p for p in active if p.action == "read"]
             )
+            self.role_permission_repository.remove_except(role.pk, [p.pk for p in expected])
             granted += self.role_permission_repository.add_missing(role, expected)
 
         return {"created": created, "deactivated": deactivated, "granted": granted}

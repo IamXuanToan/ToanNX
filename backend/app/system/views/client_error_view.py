@@ -43,9 +43,9 @@ class ClientErrorView(CoreApiView):
             204 không body.
         """
         stack = str(validated_data.get("stack") or "").strip()
-        digest = str(validated_data.get("digest") or "").strip()
-        url = validated_data["url"]
-        message = validated_data["message"]
+        digest = str(validated_data.get("digest") or "").replace("\r", " ").replace("\n", " ").strip()
+        url = str(validated_data["url"]).replace("\r", " ").replace("\n", " ").strip()
+        message = str(validated_data["message"]).replace("\r", " ").replace("\n", " ").strip()
 
         if stack:
             log_message = (

@@ -56,7 +56,7 @@ class GitHubOAuthService(OAuthProviderService):
                 self.TOKEN_URL,
                 data=token_data,
                 headers={"Accept": "application/json"},
-                timeout=10,
+                timeout=5,
             )
         except requests.RequestException as exc:
             raise BusinessRuleError(
@@ -82,7 +82,7 @@ class GitHubOAuthService(OAuthProviderService):
         }
 
         try:
-            user_resp = requests.get(self.USERINFO_URL, headers=headers, timeout=10)
+            user_resp = requests.get(self.USERINFO_URL, headers=headers, timeout=5)
         except requests.RequestException as exc:
             raise BusinessRuleError(
                 "Không thể lấy thông tin người dùng từ GitHub.",
@@ -107,7 +107,7 @@ class GitHubOAuthService(OAuthProviderService):
         email = str(user_json.get("email") or "").lower().strip()
         if not email:
             try:
-                emails_resp = requests.get(self.EMAILS_URL, headers=headers, timeout=10)
+                emails_resp = requests.get(self.EMAILS_URL, headers=headers, timeout=5)
                 if emails_resp.status_code == 200:
                     emails_data = emails_resp.json()
                     for item in emails_data:
@@ -117,7 +117,8 @@ class GitHubOAuthService(OAuthProviderService):
                     if not email and emails_data:
                         email = str(emails_data[0].get("email", "")).lower().strip()
             except requests.RequestException:
-                pass
+                # Email từ `/user` có thể để trống với GitHub private email; lỗi mạng không chặn đăng nhập.
+                email = email or ""
 
         display_name = str(user_json.get("name") or user_json.get("login") or "").strip()
         avatar_url = str(user_json.get("avatar_url") or "")

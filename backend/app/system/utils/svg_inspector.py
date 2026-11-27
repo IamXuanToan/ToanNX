@@ -49,7 +49,8 @@ _DANGEROUS_VALUE = re.compile(
     re.IGNORECASE,
 )
 _WHITESPACE_CONTROL = re.compile(r"[\s\x00-\x1f\x7f]+")
-_TEXT_SNIFF = re.compile(rb"^\s*(<\?xml[^>]*>\s*)?(<!--.*?-->\s*)*<svg[\s>]", re.DOTALL | re.IGNORECASE)
+_FORBIDDEN_PI = re.compile(rb"<\?(?!xml\s)", re.IGNORECASE)
+_TEXT_SNIFF = re.compile(rb"^\s*(<\?xml\s[^>]*>\s*)?(<!--.*?-->\s*)*<svg[\s>]", re.DOTALL | re.IGNORECASE)
 _SNIFF_SIZE = 1024
 
 
@@ -75,6 +76,11 @@ def find_svg_problem(stream: IO[bytes]) -> str | None:
         Mô tả vấn đề, hoặc None nếu SVG an toàn.
     """
     stream.seek(0)
+    raw_bytes = stream.read()
+    stream.seek(0)
+    if _FORBIDDEN_PI.search(raw_bytes):
+        return "SVG không được chứa chỉ thị xử lý XML không hợp lệ."
+
     try:
         root = ElementTree.parse(stream).getroot()
     except (ElementTree.ParseError, DefusedXmlException):
