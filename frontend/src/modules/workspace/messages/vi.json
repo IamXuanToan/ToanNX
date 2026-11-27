@@ -7,14 +7,11 @@
     "assistantConfig": "Chatbot AI"
   },
   "notificationChannels": {
-    "label": "Kênh nhận thông báo",
-    "hint": "Mặc định qua Website (chuông & push). Có thể chọn thêm hoặc đổi sang Telegram, Email.",
     "options": {
       "WEBSITE": "Website (Chuông & Push)",
       "TELEGRAM": "Telegram",
       "EMAIL": "Email"
-    },
-    "atLeastOne": "Vui lòng chọn ít nhất một kênh nhận thông báo."
+    }
   },
   "common": {
     "yes": "Có",
@@ -50,8 +47,7 @@
     "timeSlot": "Khung giờ phải đúng định dạng HH:MM (ví dụ 08:00).",
     "alertDay": "Số ngày cảnh báo phải là số nguyên từ 0 đến 365.",
     "positiveInt": "Giá trị tối thiểu phải từ 100 trở lên.",
-    "daysList": "Danh sách số ngày phải cách nhau bởi dấu phẩy (0–365).",
-    "atLeastOneChannel": "Vui lòng chọn ít nhất một kênh nhận thông báo."
+    "daysList": "Danh sách số ngày phải cách nhau bởi dấu phẩy (0–365)."
   },
   "calendar": {
     "title": "Lịch việc & Gia hạn",
@@ -375,12 +371,6 @@
     "channelWeb": "Web",
     "channelTelegramDm": "Telegram riêng",
     "channelTelegramGroup": "Telegram nhóm",
-    "sizeLabel": "Kích thước khung chat",
-    "sizes": {
-      "compact": "Nhỏ",
-      "default": "Vừa",
-      "large": "Lớn"
-    },
     "slashLabel": "Lệnh nhanh:",
     "slashSuggestTitle": "Gợi ý câu lệnh nhanh",
     "slashSuggestHint": "↑↓ chọn · Tab chèn · Enter chạy · Esc đóng",
@@ -390,6 +380,7 @@
       "spending": "Chi tiêu",
       "assets": "Thiết bị",
       "remind": "Nhắc việc",
+      "clear": "Xóa lịch sử",
       "help": "Trợ giúp"
     },
     "slashCommands": {
@@ -398,6 +389,7 @@
       "spending": "Tổng hợp chi tiêu cá nhân trong tháng",
       "assets": "Tra cứu thiết bị & hạn bảo hành",
       "remind": "Tạo nhắc việc nhanh theo ngày giờ",
+      "clear": "Xóa lịch sử trò chuyện hiện tại để bắt đầu mới",
       "help": "Xem danh sách & hướng dẫn câu lệnh nhanh"
     }
   },
@@ -413,6 +405,21 @@
     "avatarMissingPerm": "Cần quyền Thư viện để đổi ảnh đại diện.",
     "selectAvatar": "Chọn ảnh",
     "removeAvatar": "Gỡ ảnh",
+    "launcherSizeHint": "Chọn kích thước biểu tượng tròn Chatbot AI nổi trên Portal.",
+    "launcherSizes": {
+      "sm": {
+        "label": "Nhỏ (40px)",
+        "description": "Gọn nhẹ, tiết kiệm không gian góc màn hình"
+      },
+      "md": {
+        "label": "Vừa (48px)",
+        "description": "Kích thước cân đối mặc định"
+      },
+      "lg": {
+        "label": "Lớn (60px)",
+        "description": "Nổi bật, dễ bấm trên màn hình rộng"
+      }
+    },
     "presetsLabel": "Gợi ý Policy nhanh:",
     "presets": {
       "standardSafety": {
@@ -450,6 +457,7 @@
     "fields": {
       "assistantName": "Tên hiển thị Chatbot AI",
       "assistantNamePlaceholder": "VD: ToanNX Assistant",
+      "launcherSize": "Kích thước nút tròn Chatbot AI",
       "assistantSystemPrompt": "Policy / Chỉ dẫn trả lời của Chatbot AI",
       "assistantSystemPromptPlaceholder": "VD: Luôn xưng hô lịch sự, tóm tắt thành gạch đầu dòng ngắn gọn và ưu tiên nêu số tiền bằng VNĐ...",
       "preferredAiModel": "Model AI ưu tiên",
@@ -499,6 +507,7 @@
     "noTelegramChats": "Chưa có nơi nhận Telegram nào. Hãy liên kết trong Hồ sơ cá nhân → Thông báo.",
     "fields": {
       "timezone": "Múi giờ cá nhân",
+      "timezoneVietnamLabel": "(UTC+07:00) Hà Nội / TP.HCM",
       "dailyDigestEnabled": "Bật gửi bản tin tổng hợp hàng ngày",
       "digestTimeSlots": "Khung giờ gửi Digest (HH:MM)",
       "digestSections": "Nội dung đưa vào Digest",

@@ -17,11 +17,13 @@ export function AssistantAvatar({
   name,
   size = "default",
   className,
+  iconClassName,
 }: {
   avatarUrl?: string | null;
   name?: string;
   size?: "sm" | "default" | "lg";
   className?: string;
+  iconClassName?: string;
 }) {
   return (
     <Avatar
@@ -36,6 +38,7 @@ export function AssistantAvatar({
             size === "sm" && "size-3.5",
             size === "default" && "size-4",
             size === "lg" && "size-7",
+            iconClassName,
           )}
           aria-hidden
         />

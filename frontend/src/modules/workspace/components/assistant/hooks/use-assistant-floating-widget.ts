@@ -8,10 +8,10 @@ import { usePermission } from "@/modules/system/hooks/use-permission";
 import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
 
 import {
+  ASSISTANT_LAUNCHER_SIZES,
   ASSISTANT_POPUP_DIMENSIONS,
-  ASSISTANT_POPUP_SIZE_KEY,
   ASSISTANT_WIDGET_POSITION_KEY,
-  type AssistantPopupSize,
+  type AssistantLauncherSize,
 } from "../../../constants/defaults";
 import { useAssistantBotProfile } from "../../../hooks/use-assistant-bot-profile";
 import { ASSISTANT_PERMISSIONS } from "../../../permissions/assistant-permission";
@@ -19,7 +19,6 @@ import { ASSISTANT_PERMISSIONS } from "../../../permissions/assistant-permission
 type StoredRatio = { xRatio: number; yRatio: number };
 type Point = { x: number; y: number };
 
-const BUTTON_SIZE = 48;
 const EDGE_MARGIN = 16;
 const TOP_NAV_CLEARANCE = 76;
 const MOBILE_BOTTOM_NAV_CLEARANCE = 76;
@@ -27,8 +26,8 @@ const POPUP_GAP = 10;
 const DRAG_THRESHOLD_PX = 5;
 const DEFAULT_RATIO: StoredRatio = { xRatio: 1, yRatio: 1 };
 
-function isPopupSize(value: unknown): value is AssistantPopupSize {
-  return value === "compact" || value === "default" || value === "large";
+function resolveLauncherSize(value: unknown): AssistantLauncherSize {
+  return value === "sm" || value === "md" || value === "lg" ? value : "md";
 }
 
 function isStoredRatio(value: unknown): value is StoredRatio {
@@ -59,11 +58,11 @@ function getServerViewportSnapshot() {
   return "1280x800";
 }
 
-function clampPoint(x: number, y: number, vw: number, vh: number): Point {
+function clampPoint(x: number, y: number, vw: number, vh: number, buttonSize: number): Point {
   const isMobile = vw < 768;
   const bottomPad = isMobile ? MOBILE_BOTTOM_NAV_CLEARANCE : EDGE_MARGIN;
-  const maxX = Math.max(EDGE_MARGIN, vw - BUTTON_SIZE - EDGE_MARGIN);
-  const maxY = Math.max(TOP_NAV_CLEARANCE, vh - BUTTON_SIZE - bottomPad);
+  const maxX = Math.max(EDGE_MARGIN, vw - buttonSize - EDGE_MARGIN);
+  const maxY = Math.max(TOP_NAV_CLEARANCE, vh - buttonSize - bottomPad);
   return {
     x: Math.min(maxX, Math.max(EDGE_MARGIN, Math.round(x))),
     y: Math.min(maxY, Math.max(TOP_NAV_CLEARANCE, Math.round(y))),
@@ -71,15 +70,15 @@ function clampPoint(x: number, y: number, vw: number, vh: number): Point {
 }
 
 /** Kéo thả xong luôn hít nút tròn sát vào cạnh gần nhất trong 4 cạnh màn hình (chừa header trên). */
-function snapToNearestEdge(point: Point, vw: number, vh: number): Point {
+function snapToNearestEdge(point: Point, vw: number, vh: number, buttonSize: number): Point {
   const isMobile = vw < 768;
   const bottomPad = isMobile ? MOBILE_BOTTOM_NAV_CLEARANCE : EDGE_MARGIN;
   const minX = EDGE_MARGIN;
-  const maxX = Math.max(EDGE_MARGIN, vw - BUTTON_SIZE - EDGE_MARGIN);
+  const maxX = Math.max(EDGE_MARGIN, vw - buttonSize - EDGE_MARGIN);
   const minY = TOP_NAV_CLEARANCE;
-  const maxY = Math.max(TOP_NAV_CLEARANCE, vh - BUTTON_SIZE - bottomPad);
+  const maxY = Math.max(TOP_NAV_CLEARANCE, vh - buttonSize - bottomPad);
 
-  const clamped = clampPoint(point.x, point.y, vw, vh);
+  const clamped = clampPoint(point.x, point.y, vw, vh, buttonSize);
   const candidates: Array<{ dist: number; point: Point }> = [
     { dist: Math.abs(clamped.x - minX), point: { x: minX, y: clamped.y } },
     { dist: Math.abs(maxX - clamped.x), point: { x: maxX, y: clamped.y } },
@@ -90,24 +89,25 @@ function snapToNearestEdge(point: Point, vw: number, vh: number): Point {
   return candidates[0]?.point ?? clamped;
 }
 
-function ratioToPoint(ratio: StoredRatio, vw: number, vh: number): Point {
+function ratioToPoint(ratio: StoredRatio, vw: number, vh: number, buttonSize: number): Point {
   const isMobile = vw < 768;
   const bottomPad = isMobile ? MOBILE_BOTTOM_NAV_CLEARANCE : EDGE_MARGIN;
-  const usableW = Math.max(0, vw - BUTTON_SIZE - EDGE_MARGIN * 2);
-  const usableH = Math.max(0, vh - BUTTON_SIZE - TOP_NAV_CLEARANCE - bottomPad);
+  const usableW = Math.max(0, vw - buttonSize - EDGE_MARGIN * 2);
+  const usableH = Math.max(0, vh - buttonSize - TOP_NAV_CLEARANCE - bottomPad);
   return clampPoint(
     EDGE_MARGIN + ratio.xRatio * usableW,
     TOP_NAV_CLEARANCE + ratio.yRatio * usableH,
     vw,
     vh,
+    buttonSize,
   );
 }
 
-function pointToRatio(point: Point, vw: number, vh: number): StoredRatio {
+function pointToRatio(point: Point, vw: number, vh: number, buttonSize: number): StoredRatio {
   const isMobile = vw < 768;
   const bottomPad = isMobile ? MOBILE_BOTTOM_NAV_CLEARANCE : EDGE_MARGIN;
-  const usableW = Math.max(1, vw - BUTTON_SIZE - EDGE_MARGIN * 2);
-  const usableH = Math.max(1, vh - BUTTON_SIZE - TOP_NAV_CLEARANCE - bottomPad);
+  const usableW = Math.max(1, vw - buttonSize - EDGE_MARGIN * 2);
+  const usableH = Math.max(1, vh - buttonSize - TOP_NAV_CLEARANCE - bottomPad);
   return {
     xRatio: Math.min(1, Math.max(0, (point.x - EDGE_MARGIN) / usableW)),
     yRatio: Math.min(1, Math.max(0, (point.y - TOP_NAV_CLEARANCE) / usableH)),
@@ -117,10 +117,10 @@ function pointToRatio(point: Point, vw: number, vh: number): StoredRatio {
 /**
  * Điều phối Widget Chatbot AI tròn kéo-thả kiểu Next.js DevTools toàn Client Portal:
  * - Bấm tròn để đóng/mở; kéo > 5px để di chuyển tự do và lưu tỷ lệ vị trí vào `localStorage`.
+ * - Kích thước nút tròn (`sm` / `md` / `lg`) đồng bộ từ cấu hình Admin `assistant/bot-profile`.
  * - Tự động tính hướng bung popup (trên/dưới, trái/phải) hướng vào khoảng trống rộng nhất của màn hình.
- * - Chỉ đọc Avatar/Tên/Model từ `assistant/bot-profile` (người dùng không cấu hình AI Bot).
  *
- * @returns Trạng thái hiển thị, tọa độ nút tròn, tọa độ popup bung ra và bộ xử lý Pointer Events.
+ * @returns Trạng thái hiển thị, kích cỡ nút tròn, tọa độ popup bung ra và bộ xử lý Pointer Events.
  */
 export function useAssistantFloatingWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -129,11 +129,6 @@ export function useAssistantFloatingWidget() {
     ASSISTANT_WIDGET_POSITION_KEY,
     DEFAULT_RATIO,
     isStoredRatio,
-  );
-  const [popupSize, setPopupSize] = useStoredPreference<AssistantPopupSize>(
-    ASSISTANT_POPUP_SIZE_KEY,
-    "default",
-    isPopupSize,
   );
 
   const dragMetaRef = useRef<{
@@ -161,6 +156,8 @@ export function useAssistantFloatingWidget() {
 
   const profileQuery = useAssistantBotProfile(isVisible);
   const profile = profileQuery.data;
+  const launcherSize = resolveLauncherSize(profile?.launcherSize);
+  const buttonSize = ASSISTANT_LAUNCHER_SIZES[launcherSize];
 
   useEffect(() => {
     if (!isOpen) return;
@@ -171,28 +168,32 @@ export function useAssistantFloatingWidget() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen]);
 
-  const basePoint = snapToNearestEdge(ratioToPoint(storedRatio, vw, vh), vw, vh);
+  const basePoint = snapToNearestEdge(
+    ratioToPoint(storedRatio, vw, vh, buttonSize),
+    vw,
+    vh,
+    buttonSize,
+  );
   const activePoint = dragPoint ?? basePoint;
 
-  const sizePreset = ASSISTANT_POPUP_DIMENSIONS[popupSize];
   const bottomPad = isMobile ? MOBILE_BOTTOM_NAV_CLEARANCE : EDGE_MARGIN;
-  const popupWidth = Math.min(sizePreset.width, vw - EDGE_MARGIN * 2);
+  const popupWidth = Math.min(ASSISTANT_POPUP_DIMENSIONS.width, vw - EDGE_MARGIN * 2);
   const spaceAbove = activePoint.y - TOP_NAV_CLEARANCE - POPUP_GAP;
-  const spaceBelow = vh - (activePoint.y + BUTTON_SIZE) - POPUP_GAP - bottomPad;
+  const spaceBelow = vh - (activePoint.y + buttonSize) - POPUP_GAP - bottomPad;
   const openAbove = spaceAbove >= spaceBelow;
-  const openLeft = activePoint.x + BUTTON_SIZE / 2 >= vw / 2;
+  const openLeft = activePoint.x + buttonSize / 2 >= vw / 2;
 
   const canOpenSideways =
     !isMobile &&
-    Math.max(spaceAbove, spaceBelow) < Math.min(sizePreset.height, 440) &&
-    vw - EDGE_MARGIN * 2 - BUTTON_SIZE - POPUP_GAP >= popupWidth;
+    Math.max(spaceAbove, spaceBelow) < Math.min(ASSISTANT_POPUP_DIMENSIONS.height, 440) &&
+    vw - EDGE_MARGIN * 2 - buttonSize - POPUP_GAP >= popupWidth;
 
   const rawPopupLeft = canOpenSideways
     ? openLeft
       ? activePoint.x - POPUP_GAP - popupWidth
-      : activePoint.x + BUTTON_SIZE + POPUP_GAP
+      : activePoint.x + buttonSize + POPUP_GAP
     : openLeft
-      ? activePoint.x + BUTTON_SIZE - popupWidth
+      ? activePoint.x + buttonSize - popupWidth
       : activePoint.x;
   const popupLeft = Math.min(
     Math.max(EDGE_MARGIN, vw - popupWidth - EDGE_MARGIN),
@@ -202,12 +203,12 @@ export function useAssistantFloatingWidget() {
   const availableVertical = canOpenSideways
     ? maxViewportHeight
     : Math.max(260, openAbove ? spaceAbove : spaceBelow);
-  const popupHeight = Math.min(sizePreset.height, availableVertical);
+  const popupHeight = Math.min(ASSISTANT_POPUP_DIMENSIONS.height, availableVertical);
   const rawPopupTop = canOpenSideways
-    ? Math.round(activePoint.y + BUTTON_SIZE / 2 - popupHeight / 2)
+    ? Math.round(activePoint.y + buttonSize / 2 - popupHeight / 2)
     : openAbove
       ? activePoint.y - POPUP_GAP - popupHeight
-      : activePoint.y + BUTTON_SIZE + POPUP_GAP;
+      : activePoint.y + buttonSize + POPUP_GAP;
   const popupTop = Math.min(
     Math.max(TOP_NAV_CLEARANCE, vh - bottomPad - popupHeight),
     Math.max(TOP_NAV_CLEARANCE, rawPopupTop),
@@ -239,7 +240,7 @@ export function useAssistantFloatingWidget() {
     const dy = event.clientY - meta.startY;
     if (!meta.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
     meta.moved = true;
-    setDragPoint(clampPoint(meta.originX + dx, meta.originY + dy, vw, vh));
+    setDragPoint(clampPoint(meta.originX + dx, meta.originY + dy, vw, vh, buttonSize));
   }
 
   function finishPointer(event: ReactPointerEvent<HTMLButtonElement>, cancelled = false) {
@@ -257,11 +258,12 @@ export function useAssistantFloatingWidget() {
       const dx = event.clientX - meta.startX;
       const dy = event.clientY - meta.startY;
       const landed = snapToNearestEdge(
-        clampPoint(meta.originX + dx, meta.originY + dy, vw, vh),
+        clampPoint(meta.originX + dx, meta.originY + dy, vw, vh, buttonSize),
         vw,
         vh,
+        buttonSize,
       );
-      setStoredRatio(pointToRatio(landed, vw, vh));
+      setStoredRatio(pointToRatio(landed, vw, vh, buttonSize));
       setDragPoint(null);
       return;
     }
@@ -277,16 +279,15 @@ export function useAssistantFloatingWidget() {
     setIsOpen,
     isDragging: Boolean(dragPoint),
     canChat,
+    launcherSize,
     assistantName: profile?.name?.trim() || "",
     assistantAvatarUrl: profile?.avatar?.url ?? null,
-    popupSize,
-    setPopupSize,
     placement: `${openAbove ? "top" : "bottom"}-${openLeft ? "left" : "right"}`,
     buttonStyle: {
       left: activePoint.x,
       top: activePoint.y,
-      width: BUTTON_SIZE,
-      height: BUTTON_SIZE,
+      width: buttonSize,
+      height: buttonSize,
       touchAction: "none" as const,
     },
     popupStyle: {

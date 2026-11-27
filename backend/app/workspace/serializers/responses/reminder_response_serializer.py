@@ -9,6 +9,16 @@ class ReminderResponseSerializer(serializers.ModelSerializer[Reminder]):
     """Chi tiết/danh sách nhắc việc cá nhân."""
 
     owner_email = serializers.CharField(source="owner.email", read_only=True, help_text="Email chủ sở hữu.")
+    owner_name = serializers.CharField(
+        source="owner.full_name", read_only=True, default="", help_text="Tên chủ sở hữu."
+    )
+    owner_username = serializers.CharField(
+        source="owner.username",
+        read_only=True,
+        allow_null=True,
+        default="",
+        help_text="Tên đăng nhập chủ sở hữu.",
+    )
 
     class Meta:
         model = Reminder
@@ -16,6 +26,8 @@ class ReminderResponseSerializer(serializers.ModelSerializer[Reminder]):
             "id",
             "owner_id",
             "owner_email",
+            "owner_name",
+            "owner_username",
             "title",
             "description",
             "due_date",
@@ -27,7 +39,6 @@ class ReminderResponseSerializer(serializers.ModelSerializer[Reminder]):
             "recurrence",
             "anchor_day",
             "tags",
-            "notification_channels",
             "created_at",
             "updated_at",
         )

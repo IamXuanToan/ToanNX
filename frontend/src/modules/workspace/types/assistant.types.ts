@@ -1,6 +1,6 @@
 import type { AttachmentVisibility } from "@/modules/system/types/attachment.types";
 
-import type { TELEGRAM_GROUP_TOOL_POLICIES } from "../constants/defaults";
+import type { AssistantLauncherSize, TELEGRAM_GROUP_TOOL_POLICIES } from "../constants/defaults";
 
 export type AssistantChannel = "WEB" | "TELEGRAM_DM" | "TELEGRAM_GROUP";
 export type AssistantRole = "USER" | "ASSISTANT" | "TOOL" | "SYSTEM";
@@ -34,6 +34,7 @@ export type AssistantMessage = {
 export type AssistantBotProfile = {
   name: string;
   avatar: AssistantAvatarSummary | null;
+  launcherSize: AssistantLauncherSize;
   activeModel: string;
   hasCustomPolicy: boolean;
 };
@@ -66,6 +67,7 @@ export type AssistantCommand = {
 export type AssistantConfig = {
   assistantName: string;
   assistantAvatar: AssistantAvatarSummary | null;
+  launcherSize: AssistantLauncherSize;
   assistantSystemPrompt: string;
   preferredAiModel: string;
   aiDailyTokenLimit: number | null;
@@ -85,6 +87,7 @@ export type AssistantConfig = {
 export type AssistantConfigUpdateInput = {
   assistantName?: string;
   assistantAvatarId?: string | null;
+  launcherSize?: AssistantLauncherSize;
   assistantSystemPrompt?: string;
   preferredAiModel?: string;
   aiDailyTokenLimit?: number | null;

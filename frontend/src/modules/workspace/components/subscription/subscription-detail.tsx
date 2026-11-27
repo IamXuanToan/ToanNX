@@ -5,10 +5,10 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Button } from "@/shares/components/ui/button";
 import { Skeleton } from "@/shares/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui/tabs";
 
 import { WORKSPACE_ROUTES } from "../../constants/routes";
 import { useSubscriptionDetail } from "./hooks/use-subscription-detail";
@@ -37,9 +37,8 @@ export function SubscriptionDetail({
   history?: ReactNode;
 }) {
   const t = useTranslations("workspace.subscriptions");
-  const tCommon = useTranslations("workspace.common");
   const state = useSubscriptionDetail(id);
-  const { query, activeTab, setActiveTab } = state;
+  const { query } = state;
 
   if (query.isPending) return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
   if (query.isError) {
@@ -55,6 +54,7 @@ export function SubscriptionDetail({
   return (
     <FormPage
       title={query.data.name || t("editTitle")}
+      backHref={WORKSPACE_ROUTES.subscriptions}
       actions={
         canRenew ? (
           <Button type="button" variant="outline" onClick={() => state.setRenewOpen(true)}>
@@ -64,27 +64,22 @@ export function SubscriptionDetail({
         ) : null
       }
     >
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-        <TabsList>
-          <TabsTrigger value="general">{tCommon("tabGeneral")}</TabsTrigger>
-          <TabsTrigger value="payments">
-            {t("tabPayments", { count: state.paymentCount })}
-          </TabsTrigger>
-          {history ? <TabsTrigger value="history">{tCommon("tabHistory")}</TabsTrigger> : null}
-        </TabsList>
-
-        <TabsContent value="general" className="mt-4">
-          <SubscriptionForm subscription={query.data} disabled={!canUpdate} />
-        </TabsContent>
-        <TabsContent value="payments" className="mt-4">
-          <SubscriptionPaymentsTab subscriptionId={query.data.id} canDelete={canDeletePayment} />
-        </TabsContent>
-        {history ? (
-          <TabsContent value="history" className="mt-4">
-            {history}
-          </TabsContent>
-        ) : null}
-      </Tabs>
+      <RecordDetailTabs
+        general={<SubscriptionForm subscription={query.data} disabled={!canUpdate} />}
+        extraTabs={[
+          {
+            value: "payments",
+            label: t("tabPayments", { count: state.paymentCount }),
+            content: (
+              <SubscriptionPaymentsTab
+                subscriptionId={query.data.id}
+                canDelete={canDeletePayment}
+              />
+            ),
+          },
+        ]}
+        history={history}
+      />
 
       {state.renewOpen ? (
         <SubscriptionRenewDialog

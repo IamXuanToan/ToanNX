@@ -1,6 +1,9 @@
 import { z } from "zod";
 
-import { TELEGRAM_GROUP_TOOL_POLICIES } from "../constants/defaults";
+import {
+  ASSISTANT_LAUNCHER_SIZE_OPTIONS,
+  TELEGRAM_GROUP_TOOL_POLICIES,
+} from "../constants/defaults";
 
 type Translate = (key: "positiveInt") => string;
 
@@ -8,6 +11,7 @@ type Translate = (key: "positiveInt") => string;
 export const ASSISTANT_CONFIG_FORM_FIELDS = [
   "assistantName",
   "assistantAvatarId",
+  "launcherSize",
   "assistantSystemPrompt",
   "preferredAiModel",
   "aiDailyTokenLimit",
@@ -29,6 +33,7 @@ export function assistantConfigSchema(t: Translate) {
     .object({
       assistantName: z.string().trim().max(80),
       assistantAvatarId: z.string().nullable(),
+      launcherSize: z.enum(ASSISTANT_LAUNCHER_SIZE_OPTIONS),
       assistantSystemPrompt: z.string().trim().max(2000),
       preferredAiModel: z.string().trim().max(120),
       aiDailyTokenLimit: z.string().trim(),

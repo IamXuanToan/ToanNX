@@ -17,7 +17,6 @@ from app.workspace.repositories.asset_repository import AssetRepository
 from app.workspace.services.workspace_alerts_cache_service import WorkspaceAlertsCacheService
 from app.workspace.services.workspace_exchange_service import WorkspaceExchangeService
 from app.workspace.utils.date_math import add_months_clamped
-from app.workspace.utils.notification_channels import normalize_workspace_channels
 
 
 class AssetService(CoreCrudService[Asset, AssetRepository]):
@@ -59,8 +58,6 @@ class AssetService(CoreCrudService[Asset, AssetRepository]):
         payload["purchase_price_vnd"] = price_vnd
 
         self._apply_warranty_dates(payload)
-        if "notification_channels" in payload:
-            payload["notification_channels"] = normalize_workspace_channels(payload["notification_channels"])
 
         asset = super().create(actor, payload)
         if invoice_ids:
@@ -103,8 +100,6 @@ class AssetService(CoreCrudService[Asset, AssetRepository]):
             payload["purchase_price_vnd"] = price_vnd
 
         self._apply_warranty_dates(payload, existing=asset)
-        if "notification_channels" in payload:
-            payload["notification_channels"] = normalize_workspace_channels(payload["notification_channels"])
         updated = self.repository.update(asset, actor=actor, **payload)
 
         if invoice_ids is not None:

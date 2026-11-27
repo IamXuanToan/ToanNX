@@ -17,6 +17,13 @@ class AssetResponseSerializer(serializers.ModelSerializer[Asset]):
     owner_name = serializers.CharField(
         source="owner.full_name", read_only=True, default="", help_text="Tên chủ sở hữu."
     )
+    owner_username = serializers.CharField(
+        source="owner.username",
+        read_only=True,
+        allow_null=True,
+        default="",
+        help_text="Tên đăng nhập chủ sở hữu.",
+    )
     currency_code = serializers.CharField(source="currency.code", read_only=True, help_text="Mã tiền tệ.")
     currency_symbol = serializers.CharField(
         source="currency.symbol", read_only=True, help_text="Ký hiệu tiền tệ."
@@ -60,6 +67,7 @@ class AssetResponseSerializer(serializers.ModelSerializer[Asset]):
             "owner_id",
             "owner_email",
             "owner_name",
+            "owner_username",
             "name",
             "brand",
             "model_code",
@@ -90,7 +98,6 @@ class AssetResponseSerializer(serializers.ModelSerializer[Asset]):
             "warranty_note",
             "invoice_attachments",
             "notes",
-            "notification_channels",
             "warranty_claim_count",
             "repair_count",
             "total_claim_count",

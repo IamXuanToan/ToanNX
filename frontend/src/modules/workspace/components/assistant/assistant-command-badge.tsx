@@ -1,6 +1,6 @@
 "use client";
 
-import { BellPlus, CalendarCheck, Clock3, HelpCircle, Laptop, Wallet } from "lucide-react";
+import { BellPlus, CalendarCheck, Clock3, HelpCircle, Laptop, Trash2, Wallet } from "lucide-react";
 
 import { Badge } from "@/shares/components/ui/badge";
 import { cn } from "cn";
@@ -16,6 +16,7 @@ const COMMAND_ICONS: Record<AssistantSlashCommandSpec["key"], typeof CalendarChe
   spending: Wallet,
   assets: Laptop,
   remind: BellPlus,
+  clear: Trash2,
   help: HelpCircle,
 };
 

@@ -171,7 +171,11 @@ class XkiroClient:
         if not choices or not isinstance(choices[0], dict):
             return {"ok": False, "error_type": "empty_choices", "status_code": 200}
 
-        message = choices[0].get("message") or {}
+        raw_message = choices[0].get("message") or {}
+        if not isinstance(raw_message, dict):
+            raw_message = {}
+        message = dict(raw_message)
+        message["content"] = self._extract_message_content(message.get("content"))
         usage = body.get("usage") or {}
         tokens = int(usage.get("total_tokens") or 0)
         return {
@@ -180,6 +184,22 @@ class XkiroClient:
             "message": message,
             "tokens": max(0, tokens),
         }
+
+    def _extract_message_content(self, raw_content: Any) -> str:
+        """Chuẩn hóa nội dung text từ string hoặc mảng multi-part OpenAI-compatible."""
+        if isinstance(raw_content, str):
+            return raw_content
+        if isinstance(raw_content, list):
+            parts: list[str] = []
+            for item in raw_content:
+                if isinstance(item, str) and item.strip():
+                    parts.append(item)
+                elif isinstance(item, dict):
+                    text_val = item.get("text")
+                    if isinstance(text_val, str) and text_val.strip():
+                        parts.append(text_val)
+            return "\n".join(parts)
+        return ""
 
     def _mark_cooldown(self, model: str, reason: str) -> None:
         if not self.cache_service.enabled:

@@ -1,14 +1,17 @@
 "use client";
 
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge, type StatusTone } from "@/shares/components/common/status-badge";
 import { TableStatusSwitch } from "@/shares/components/common/table-status-switch";
 import { createBooleanBulkStatus } from "@/shares/lib/bulk-status";
+import { formatExplicitDate } from "@/shares/lib/date-time-format";
+import { formatOwnerDisplayName, formatOwnerDisplayTooltip } from "@/shares/lib/user-display";
 
 import { REMINDER_PRIORITIES, REMINDER_RECURRENCES } from "../../constants/defaults";
 import { WORKSPACE_ROUTES } from "../../constants/routes";
@@ -32,7 +35,6 @@ export function ReminderTable({
 }) {
   const t = useTranslations("workspace.reminders");
   const tCommon = useTranslations("workspace.common");
-  const format = useFormatter();
   const state = useReminderTable();
   const { table, query } = state;
 
@@ -62,8 +64,8 @@ export function ReminderTable({
       header: t("fields.dueDate"),
       sortKey: "due_date",
       cell: (item) => (
-        <span className="tabular-nums">
-          {format.dateTime(new Date(item.dueDate), { dateStyle: "short" })}
+        <span className="whitespace-nowrap tabular-nums">
+          {formatExplicitDate(item.dueDate)}
           {item.dueTime ? ` · ${item.dueTime.slice(0, 5)}` : ""}
         </span>
       ),
@@ -104,11 +106,16 @@ export function ReminderTable({
             id: "owner",
             header: tCommon("owner"),
             hideBelow: "xl" as const,
-            cell: (item: Reminder) => (
-              <span className="text-muted-foreground block max-w-44 truncate">
-                {item.ownerEmail}
-              </span>
-            ),
+            cell: (item: Reminder) => {
+              const ownerLabel = formatOwnerDisplayName(item);
+              return (
+                <AppTooltip content={formatOwnerDisplayTooltip(item)}>
+                  <span className="text-muted-foreground block max-w-44 truncate">
+                    {ownerLabel || "—"}
+                  </span>
+                </AppTooltip>
+              );
+            },
           },
         ]
       : []),

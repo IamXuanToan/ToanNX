@@ -1,14 +1,17 @@
 "use client";
 
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { StatusBadge, type StatusTone } from "@/shares/components/common/status-badge";
 import { DEFAULT_CURRENCY } from "@/shares/constants/currency";
+import { formatExplicitDate } from "@/shares/lib/date-time-format";
 import { formatDisplayMoney } from "@/shares/lib/number-format";
+import { formatOwnerDisplayName, formatOwnerDisplayTooltip } from "@/shares/lib/user-display";
 
 import {
   ASSET_CATEGORIES,
@@ -33,7 +36,6 @@ const STATUS_TONE: Record<AssetStatus, StatusTone> = {
 export function AssetTable({ canUpdate, canDelete }: { canUpdate: boolean; canDelete: boolean }) {
   const t = useTranslations("workspace.assets");
   const tCommon = useTranslations("workspace.common");
-  const format = useFormatter();
   const state = useAssetTable();
   const { table, query } = state;
 
@@ -89,9 +91,13 @@ export function AssetTable({ canUpdate, canDelete }: { canUpdate: boolean; canDe
       sortKey: "warranty_end_date",
       hideBelow: "lg",
       cell: (item) =>
-        item.warrantyEndDate
-          ? format.dateTime(new Date(item.warrantyEndDate), { dateStyle: "short" })
-          : "—",
+        item.warrantyEndDate ? (
+          <span className="whitespace-nowrap tabular-nums">
+            {formatExplicitDate(item.warrantyEndDate)}
+          </span>
+        ) : (
+          "—"
+        ),
     },
     {
       id: "claims",
@@ -118,11 +124,16 @@ export function AssetTable({ canUpdate, canDelete }: { canUpdate: boolean; canDe
             id: "owner",
             header: tCommon("owner"),
             hideBelow: "xl" as const,
-            cell: (item: Asset) => (
-              <span className="text-muted-foreground block max-w-44 truncate">
-                {item.ownerName || item.ownerEmail}
-              </span>
-            ),
+            cell: (item: Asset) => {
+              const ownerLabel = formatOwnerDisplayName(item);
+              return (
+                <AppTooltip content={formatOwnerDisplayTooltip(item)}>
+                  <span className="text-muted-foreground block max-w-44 truncate">
+                    {ownerLabel || "—"}
+                  </span>
+                </AppTooltip>
+              );
+            },
           },
         ]
       : []),

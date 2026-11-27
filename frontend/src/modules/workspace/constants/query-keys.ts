@@ -14,9 +14,12 @@ export const workspaceKeys = {
   reminders: createResourceKeys(WORKSPACE_SCOPE, "reminders"),
   assistantConfig: () => [WORKSPACE_SCOPE, "assistant-config"] as const,
   assistantBotProfile: () => [WORKSPACE_SCOPE, "assistant-bot-profile"] as const,
+  assistantThreadRoot: () => [WORKSPACE_SCOPE, "assistant-thread"] as const,
   assistantThread: (page: number) => [WORKSPACE_SCOPE, "assistant-thread", page] as const,
   setting: (ownerId?: string | null) => [WORKSPACE_SCOPE, "setting", ownerId ?? "me"] as const,
+  dashboardSummaryRoot: () => [WORKSPACE_SCOPE, "dashboard-summary"] as const,
   dashboardSummary: (ownerId?: string | null) =>
     [WORKSPACE_SCOPE, "dashboard-summary", ownerId ?? "me"] as const,
+  calendarRoot: () => [WORKSPACE_SCOPE, "calendar"] as const,
   calendar: (params: object) => [WORKSPACE_SCOPE, "calendar", params] as const,
 };

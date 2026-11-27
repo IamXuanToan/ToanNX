@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any
 
-from django.db.models import QuerySet, Sum, Value
+from django.db.models import Q, QuerySet, Sum, Value
 from django.db.models.functions import Coalesce
 
 from app.core.repositories.core_repository import CoreRepository
@@ -27,8 +27,26 @@ class AssistantMessageRepository(CoreRepository[AssistantMessage]):
         items = list(reversed(rows[:limit]))
         return items, has_more
 
+    def visible_queryset_for_conversation(self, conversation_id: Any) -> QuerySet[AssistantMessage]:
+        """QuerySet tin nhắn hiển thị (ẩn hoàn toàn bước Tool nội bộ & bong bóng rỗng)."""
+        return (
+            self.get_queryset()
+            .filter(
+                conversation_id=conversation_id,
+                role__in=[AssistantMessage.Role.USER, AssistantMessage.Role.ASSISTANT],
+            )
+            .filter(Q(tool_calls__isnull=True) | Q(tool_calls=[]))
+            .exclude(content__regex=r"^\s*$")
+            .order_by("-created_at", "-id")
+        )
+
+    def list_recent_chat_turns(self, conversation_id: Any, *, limit: int = 10) -> list[AssistantMessage]:
+        """Lấy tối đa `limit` lượt hỏi-đáp sạch gần nhất cho LLM (bỏ TOOL, stub rỗng và lỗi fallback)."""
+        qs = self.visible_queryset_for_conversation(conversation_id).filter(is_error=False)
+        return list(reversed(list(qs[:limit])))
+
     def queryset_for_conversation(self, conversation_id: Any) -> QuerySet[AssistantMessage]:
-        """QuerySet phân trang lịch sử cũ theo thứ tự mới → cũ hoặc cũ → mới cho endpoint `/messages`."""
+        """QuerySet toàn bộ bản ghi hội thoại (kể cả Tool) theo thứ tự mới → cũ."""
         return self.get_queryset().filter(conversation_id=conversation_id).order_by("-created_at", "-id")
 
     def sum_tokens_since(self, owner_id: Any, since_dt: datetime) -> int:

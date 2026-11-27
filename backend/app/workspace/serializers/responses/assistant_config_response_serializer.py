@@ -7,17 +7,22 @@ from rest_framework import serializers
 from app.system.serializers.responses.attachment_summary_response_serializer import (
     AttachmentSummaryResponseSerializer,
 )
+from app.workspace.constants.assistant_launcher_size import AssistantLauncherSize
 from app.workspace.serializers.responses.assistant_command_response_serializer import (
     AssistantCommandResponseSerializer,
 )
 
 
 class AssistantConfigResponseSerializer(serializers.Serializer[Any]):
-    """Trọn bộ cấu hình Avatar, Tên, Policy, Model, Token Limit và Bot Telegram AI."""
+    """Trọn bộ cấu hình Avatar, Tên, Kích thước nút tròn, Policy, Model, Token Limit và Telegram AI."""
 
     assistant_name = serializers.CharField(allow_blank=True, help_text="Tên Chatbot AI.")
     assistant_avatar = AttachmentSummaryResponseSerializer(
         allow_null=True, help_text="Ảnh đại diện Chatbot AI (null nếu dùng icon mặc định)."
+    )
+    launcher_size = serializers.ChoiceField(
+        choices=[(item.value, item.value) for item in AssistantLauncherSize],
+        help_text="Kích thước nút tròn Chatbot AI nổi trên giao diện Portal (`sm`, `md`, `lg`).",
     )
     assistant_system_prompt = serializers.CharField(
         allow_blank=True, help_text="Policy / chỉ dẫn trả lời của Chatbot AI."

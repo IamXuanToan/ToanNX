@@ -66,6 +66,8 @@ vi.mock("@/modules/workspace/services/workspace-setting.service", () => ({
       id: "ws-1",
       ownerId: "u1",
       ownerEmail: "u1@test.local",
+      ownerName: "U1",
+      ownerUsername: "u1",
       timezone: "Asia/Ho_Chi_Minh",
       dailyDigestEnabled: true,
       digestTimeSlots: ["08:00"],
@@ -106,9 +108,9 @@ describe("WorkspaceSettingForm (Digest, Mốc cảnh báo & Telegram cá nhân)"
       expect(screen.getByText(/DevOps Nhóm/)).toBeTruthy();
     });
 
-    // Có nút Hủy quay về dashboard Client Portal
-    const cancelLink = screen.getByRole("link", { name: "cancel" });
-    expect(cancelLink.getAttribute("href")).toBe(PORTAL_ROUTES.dashboard);
+    // Có nút Quay lại điều hướng về dashboard Client Portal
+    const backLink = screen.getByRole("link", { name: "back" });
+    expect(backLink.getAttribute("href")).toBe(PORTAL_ROUTES.dashboard);
 
     // Không cho người dùng sửa AI Bot Avatar/Policy ở cài đặt cá nhân
     expect(screen.queryByText("fields.assistantSystemPrompt")).toBeNull();

@@ -40,24 +40,22 @@ class TestReminderCreateApi(BaseApiTestCase):
         assert data["anchor_day"] == 31
         assert data["due_time"] == "09:30:00"
         assert data["is_completed"] is False
-        assert data["notification_channels"] == ["WEBSITE"]
+        assert "notification_channels" not in data
 
-        custom_res = api.post(
+        min_res = api.post(
             URL,
             {
                 "title": "Đặt vé tàu",
                 "due_date": "2026-12-01",
-                "notification_channels": ["TELEGRAM", "EMAIL", "TELEGRAM"],
             },
             format="json",
         )
-        custom_data = self.assert_success(custom_res, 201)
-        assert custom_data["notification_channels"] == ["TELEGRAM", "EMAIL"]
-        assert custom_data["priority"] == "MEDIUM"
+        min_data = self.assert_success(min_res, 201)
+        assert min_data["priority"] == "MEDIUM"
 
         bad_ch = api.post(
             URL,
-            {"title": "Bad channel", "due_date": "2026-12-02", "notification_channels": ["SMS"]},
+            {"title": "Bad channel", "due_date": "2026-12-02", "notification_channels": ["WEBSITE"]},
             format="json",
         )
         self.assert_error(bad_ch, 400, "VALIDATION_ERROR")

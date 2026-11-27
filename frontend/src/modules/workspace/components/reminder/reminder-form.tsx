@@ -3,10 +3,10 @@
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
-import { Link } from "@/i18n/navigation";
 import { DateTimePicker } from "@/shares/components/common/date-time-picker";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
@@ -20,7 +20,6 @@ import { Textarea } from "@/shares/components/ui/textarea";
 import { REMINDER_PRIORITIES, REMINDER_RECURRENCES } from "../../constants/defaults";
 import { WORKSPACE_ROUTES } from "../../constants/routes";
 import type { Reminder } from "../../types/reminder.types";
-import { NotificationChannelsField } from "../workspace-setting/notification-channels-field";
 import { useReminderForm } from "./hooks/use-reminder-form";
 
 /**
@@ -43,7 +42,6 @@ export function ReminderForm({
   onCancel?: () => void;
 }) {
   const t = useTranslations("workspace.reminders");
-  const tChannels = useTranslations("workspace.notificationChannels");
   const tCommon = useTranslations("common.actions");
   const state = useReminderForm(reminder, { defaultDueDate, onSaved });
   const { form } = state;
@@ -153,36 +151,16 @@ export function ReminderForm({
               {(field) => <Textarea {...field} disabled={locked} rows={3} />}
             </FormField>
           </div>
-          <div className="sm:col-span-2">
-            <FormField
-              control={form.control}
-              name="notificationChannels"
-              label={tChannels("label")}
-            >
-              {(field) => (
-                <NotificationChannelsField
-                  value={field.value}
-                  onChange={field.onChange}
-                  disabled={locked}
-                  idPrefix="rem-channel"
-                />
-              )}
-            </FormField>
-          </div>
         </div>
       </FormSection>
 
       <FormActions>
         {onCancel ? (
           <Button type="button" variant="outline" onClick={onCancel}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
+            {tCommon("cancel")}
           </Button>
         ) : (
-          <Button asChild type="button" variant="outline">
-            <Link href={WORKSPACE_ROUTES.reminders}>
-              {disabled ? tCommon("back") : tCommon("cancel")}
-            </Link>
-          </Button>
+          <FormBackButton href={WORKSPACE_ROUTES.reminders} />
         )}
         {disabled ? null : (
           <FormSubmitButton isSubmitting={state.isSubmitting}>{tCommon("save")}</FormSubmitButton>

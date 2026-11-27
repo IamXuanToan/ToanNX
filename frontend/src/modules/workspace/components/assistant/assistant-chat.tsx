@@ -1,16 +1,19 @@
 "use client";
 
-import { Send, Sparkles, Trash2 } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { Send, Sparkles, Trash2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef } from "react";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
 import { Form } from "@/shares/components/common/form";
+import { MarkdownContent } from "@/shares/components/common/markdown-content";
 import { Message } from "@/shares/components/common/message";
 import { MessageAvatar } from "@/shares/components/common/message-avatar";
 import { MessageContent } from "@/shares/components/common/message-content";
 import { MessageMeta } from "@/shares/components/common/message-meta";
 import { MessageScroller } from "@/shares/components/common/message-scroller";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { UserAvatar } from "@/shares/components/common/user-avatar";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
@@ -35,29 +38,117 @@ export function AssistantChat({
   variant = "popup",
   canChat,
   enabled = true,
+  onClose,
 }: {
   variant?: "popup" | "page";
   canChat: boolean;
   enabled?: boolean;
+  onClose?: () => void;
 }) {
   const t = useTranslations("workspace.assistant");
   const tTable = useTranslations("common.table");
-  const format = useFormatter();
   const state = useAssistantChatPanel(canChat, enabled);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const assistantTitle = state.botProfile?.name || t("defaultName");
   const isPopup = variant === "popup";
-  const visibleCommands = isPopup ? state.commands.slice(0, 4) : state.commands;
+  const footerCommands = state.commands.filter((cmd) => cmd.key !== "clear");
+  const visibleCommands = isPopup ? footerCommands.slice(0, 4) : footerCommands;
   const scrollWatchKey = `${state.messages.length}:${state.isSending ? "1" : "0"}`;
+  const canClear = state.messages.length > 0 && canChat;
 
   return (
     <>
+      {isPopup ? (
+        <header className="border-border/60 bg-muted/25 flex shrink-0 items-center justify-between gap-2 border-b px-3.5 py-2.5">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <AssistantAvatar
+              avatarUrl={state.botProfile?.avatar?.url ?? null}
+              name={assistantTitle}
+              size="default"
+              className="size-9 shrink-0"
+            />
+            <div className="min-w-0">
+              <p className="text-foreground truncate text-sm font-bold">{assistantTitle}</p>
+              <p className="text-muted-foreground truncate text-[11px]">{t("readySubtitle")}</p>
+            </div>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1">
+            {canClear ? (
+              <AppTooltip content={t("clearThreadShort")}>
+                <span className="inline-flex">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t("clearThreadShort")}
+                    onClick={() => state.setClearConfirmOpen(true)}
+                    disabled={state.isClearing || state.isSending}
+                    data-testid="assistant-clear-thread-btn"
+                    className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive size-8 shrink-0 rounded-lg"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </span>
+              </AppTooltip>
+            ) : null}
+
+            {onClose ? (
+              <AppTooltip content={t("closePopup")}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t("closePopup")}
+                  onClick={onClose}
+                  data-testid="assistant-popup-close"
+                  className="size-8 shrink-0 rounded-lg"
+                >
+                  <X className="size-4" />
+                </Button>
+              </AppTooltip>
+            ) : null}
+          </div>
+        </header>
+      ) : null}
+
       <div
         className={cn(
           "flex min-h-0 flex-1 flex-col justify-between",
           isPopup ? "p-3" : "bg-card rounded-2xl border p-4 shadow-2xs",
         )}
       >
+        {!isPopup && canClear ? (
+          <div className="border-border/60 mb-2 flex shrink-0 items-center justify-between gap-2 border-b pb-2.5">
+            <div className="flex min-w-0 items-center gap-2">
+              <AssistantAvatar
+                avatarUrl={state.botProfile?.avatar?.url ?? null}
+                name={assistantTitle}
+                size="sm"
+                className="size-7 shrink-0"
+              />
+              <span className="text-foreground truncate text-sm font-semibold">
+                {assistantTitle}
+              </span>
+            </div>
+            <AppTooltip content={t("clearThread")}>
+              <span className="inline-flex">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => state.setClearConfirmOpen(true)}
+                  disabled={state.isClearing || state.isSending}
+                  data-testid="assistant-clear-thread-btn"
+                  className="text-muted-foreground hover:text-destructive h-8 gap-1.5 rounded-lg px-2.5 text-xs"
+                >
+                  <Trash2 className="size-3.5" />
+                  <span>{t("clearThreadShort")}</span>
+                </Button>
+              </span>
+            </AppTooltip>
+          </div>
+        ) : null}
         <MessageScroller
           watchValue={scrollWatchKey}
           scrollToBottomLabel={t("scrollToBottom")}
@@ -116,13 +207,17 @@ export function AssistantChat({
                   }
                   meta={
                     <MessageMeta align={role === "user" ? "end" : "start"}>
-                      <span>
-                        {format.dateTime(new Date(msg.createdAt), { timeStyle: "short" })}
-                      </span>
+                      <TimestampText value={msg.createdAt} />
                     </MessageMeta>
                   }
                 >
-                  <MessageContent role={role} isError={msg.isError}>
+                  <MessageContent
+                    role={role}
+                    isError={msg.isError}
+                    className={
+                      role === "assistant" && !msg.isError ? "whitespace-normal" : undefined
+                    }
+                  >
                     {slashBadge ? (
                       <div className="flex flex-wrap items-center gap-1.5">
                         <AssistantCommandBadge
@@ -132,6 +227,8 @@ export function AssistantChat({
                         />
                         {slashBadge.rest ? <span>{slashBadge.rest}</span> : null}
                       </div>
+                    ) : role === "assistant" && !msg.isError ? (
+                      <MarkdownContent content={msg.content} />
                     ) : (
                       msg.content
                     )}
@@ -160,44 +257,29 @@ export function AssistantChat({
             }}
           />
 
-          <div className="flex flex-wrap items-center justify-between gap-1.5">
-            <div className="flex flex-wrap items-center gap-1.5">
-              {visibleCommands.map((cmd) => (
-                <Button
-                  key={cmd.key}
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  title={cmd.command.trim()}
-                  disabled={!canChat || state.isSending}
-                  onClick={() => {
-                    if (state.selectSlashCommand(cmd)) inputRef.current?.focus();
-                  }}
-                  className="h-auto rounded-full p-0 hover:bg-transparent"
-                >
-                  <AssistantCommandBadge
-                    commandKey={cmd.key}
-                    label={t(`slashBadges.${cmd.key}`)}
-                    className="hover:opacity-85"
-                  />
-                </Button>
-              ))}
-            </div>
-
-            {state.messages.length > 0 && canChat ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => state.setClearConfirmOpen(true)}
-                disabled={state.isClearing || state.isSending}
-                data-testid="assistant-clear-thread-btn"
-                className="text-muted-foreground hover:text-destructive h-6 gap-1 px-2 text-[11px]"
-              >
-                <Trash2 className="size-3" />
-                <span>{t("clearThreadShort")}</span>
-              </Button>
-            ) : null}
+          <div className="flex flex-wrap items-center gap-1.5">
+            {visibleCommands.map((cmd) => (
+              <AppTooltip key={cmd.key} content={cmd.command.trim()}>
+                <span className="inline-flex">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    disabled={!canChat || state.isSending}
+                    onClick={() => {
+                      if (state.selectSlashCommand(cmd)) inputRef.current?.focus();
+                    }}
+                    className="h-auto rounded-full p-0 hover:bg-transparent"
+                  >
+                    <AssistantCommandBadge
+                      commandKey={cmd.key}
+                      label={t(`slashBadges.${cmd.key}`)}
+                      className="hover:opacity-85"
+                    />
+                  </Button>
+                </span>
+              </AppTooltip>
+            ))}
           </div>
 
           <Form

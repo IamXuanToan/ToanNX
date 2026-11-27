@@ -23,7 +23,10 @@ import { Skeleton } from "@/shares/components/ui/skeleton";
 import { Switch } from "@/shares/components/ui/switch";
 import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
-import { WORKSPACE_TIMEZONE_SELECT_OPTIONS } from "../../constants/defaults";
+import {
+  DEFAULT_WORKSPACE_TIMEZONE,
+  WORKSPACE_TIMEZONE_SELECT_OPTIONS,
+} from "../../constants/defaults";
 import { useWorkspaceSettingForm } from "./hooks/use-workspace-setting-form";
 
 /**
@@ -142,7 +145,10 @@ export function WorkspaceSettingForm({ canUpdate }: { canUpdate: boolean }) {
                   disabled={locked}
                   options={WORKSPACE_TIMEZONE_SELECT_OPTIONS.map((tz) => ({
                     value: tz.value,
-                    label: tz.label,
+                    label:
+                      tz.value === DEFAULT_WORKSPACE_TIMEZONE
+                        ? t("fields.timezoneVietnamLabel")
+                        : tz.label,
                   }))}
                 />
               )}
@@ -287,9 +293,7 @@ export function WorkspaceSettingForm({ canUpdate }: { canUpdate: boolean }) {
 
       <FormActions>
         <Button asChild type="button" variant="outline">
-          <Link href={PORTAL_ROUTES.dashboard}>
-            {canUpdate ? tActions("cancel") : tActions("back")}
-          </Link>
+          <Link href={PORTAL_ROUTES.dashboard}>{tActions("back")}</Link>
         </Button>
         {canUpdate ? (
           <FormSubmitButton isSubmitting={state.isSubmitting}>{t("save")}</FormSubmitButton>

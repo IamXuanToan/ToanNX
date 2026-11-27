@@ -22,6 +22,8 @@ function toFormValues(config: AssistantConfig): AssistantConfigFormValues {
   return {
     assistantName: config.assistantName || "",
     assistantAvatarId: config.assistantAvatar?.id ?? null,
+    launcherSize:
+      config.launcherSize === "sm" || config.launcherSize === "lg" ? config.launcherSize : "md",
     assistantSystemPrompt: config.assistantSystemPrompt || "",
     preferredAiModel: config.preferredAiModel || "",
     aiDailyTokenLimit: config.aiDailyTokenLimit !== null ? String(config.aiDailyTokenLimit) : "",
@@ -39,7 +41,7 @@ function toFormValues(config: AssistantConfig): AssistantConfigFormValues {
 
 /**
  * State quản trị Chatbot AI dùng chung trên Admin (`/quan-tri/he-thong/tro-ly-ai`):
- * đồng bộ form Avatar/Tên/Policy/Model/Telegram AI và trình chọn ảnh Thư viện.
+ * đồng bộ form Avatar/Tên/Kích thước nút tròn/Policy/Model/Telegram AI và trình chọn ảnh Thư viện.
  *
  * @param canReadConfig - Quyền đọc `workspace.assistant_config.read`.
  * @returns Query, form, avatar preview và handlers thao tác.
@@ -58,6 +60,7 @@ export function useAssistantAdminPanel(canReadConfig: boolean) {
   const defaults: AssistantConfigFormValues = {
     assistantName: "",
     assistantAvatarId: null,
+    launcherSize: "md",
     assistantSystemPrompt: "",
     preferredAiModel: "",
     aiDailyTokenLimit: "",
@@ -91,6 +94,7 @@ export function useAssistantAdminPanel(canReadConfig: boolean) {
       await save.mutateAsync({
         assistantName: values.assistantName,
         assistantAvatarId: values.assistantAvatarId,
+        launcherSize: values.launcherSize,
         assistantSystemPrompt: values.assistantSystemPrompt,
         preferredAiModel: values.preferredAiModel,
         aiDailyTokenLimit: values.aiDailyTokenLimit ? Number(values.aiDailyTokenLimit) : null,

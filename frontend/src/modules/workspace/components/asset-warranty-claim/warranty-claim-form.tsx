@@ -3,17 +3,16 @@
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
-import { Link } from "@/i18n/navigation";
 import { DatePicker } from "@/shares/components/common/date-picker";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormLayout } from "@/shares/components/common/form-layout";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { NumberInput } from "@/shares/components/common/number-input";
 import { SelectField } from "@/shares/components/common/select-field";
-import { Button } from "@/shares/components/ui/button";
 import { Checkbox } from "@/shares/components/ui/checkbox";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
@@ -286,11 +285,7 @@ export function WarrantyClaimForm({
       </FormLayout>
 
       <FormActions>
-        <Button asChild type="button" variant="outline">
-          <Link href={state.cancelHref as never}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
-          </Link>
-        </Button>
+        <FormBackButton href={state.cancelHref as never} />
         {disabled ? null : (
           <FormSubmitButton isSubmitting={state.isSubmitting}>{tCommon("save")}</FormSubmitButton>
         )}

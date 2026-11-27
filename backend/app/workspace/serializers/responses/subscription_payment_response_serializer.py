@@ -12,6 +12,16 @@ class SubscriptionPaymentResponseSerializer(serializers.ModelSerializer[Subscrip
     """Chi tiết một kỳ thanh toán gia hạn (bao gồm tỷ giá lịch sử và biên lai riêng tư)."""
 
     owner_email = serializers.CharField(source="owner.email", read_only=True, help_text="Email chủ sở hữu.")
+    owner_name = serializers.CharField(
+        source="owner.full_name", read_only=True, default="", help_text="Tên chủ sở hữu."
+    )
+    owner_username = serializers.CharField(
+        source="owner.username",
+        read_only=True,
+        allow_null=True,
+        default="",
+        help_text="Tên đăng nhập chủ sở hữu.",
+    )
     subscription_name = serializers.CharField(
         source="subscription.name", read_only=True, help_text="Tên gói dịch vụ."
     )
@@ -32,6 +42,8 @@ class SubscriptionPaymentResponseSerializer(serializers.ModelSerializer[Subscrip
             "id",
             "owner_id",
             "owner_email",
+            "owner_name",
+            "owner_username",
             "subscription_id",
             "subscription_name",
             "paid_on",

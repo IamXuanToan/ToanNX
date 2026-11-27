@@ -65,6 +65,14 @@ class TestAssistantChatApi(BaseApiTestCase):
             == 1
         )
 
+        # Lệnh /xoa_lich_su (/clear) dọn toàn bộ tin nhắn cũ trong luồng với 0 token.
+        clear_res = self.assert_success(api.post(URL, {"message": "/xoa_lich_su"}, format="json"))
+        assert clear_res["model_used"] == "slash"
+        assert clear_res["tokens_used"] == 0
+        assert clear_res["conversation_id"] == rem_res["conversation_id"]
+        assert "xóa lịch sử" in clear_res["reply"].lower()
+        assert AssistantConversation.objects.get(pk=clear_res["conversation_id"]).messages.count() == 1
+
     def test_xkiro_multi_model_fallback_cooldown_and_401_stop(
         self, user: Any, login: Any, settings: Any, fake_redis: Any
     ) -> None:
@@ -271,3 +279,109 @@ class TestAssistantChatApi(BaseApiTestCase):
         assert "phân biệt vùng miền" in sys_prompt.lower()
         assert "Xưng hô bằng Anh/Em và trả lời tối đa 3 gạch đầu dòng." in sys_prompt
         assert sys_prompt.index("Két sắt") < sys_prompt.index("Xưng hô bằng Anh/Em")
+        assert "múi giờ" in sys_prompt.lower()
+
+    def test_tool_calls_hidden_from_thread_upcoming_events_and_no_leaked_json_synthesis(
+        self, superuser: Any, login: Any, settings: Any, vnd: Any
+    ) -> None:
+        settings.XKIRO_API_BASE = "https://xkiro.example.com/v1"
+        settings.XKIRO_API_KEY = "test-secret"
+        settings.XKIRO_MODEL = "model-a"
+        api = login(superuser)
+
+        other = UserFactory()
+        soon = timezone.localdate() + timezone.timedelta(days=2)
+        Reminder.objects.create(owner=superuser, title="Họp triển khai", due_date=soon)
+        Reminder.objects.create(owner=other, title="Việc bí mật người khác", due_date=soon)
+
+        # Kiểm tra tool mới `get_upcoming_events` lọc theo owner & ẩn tiền khi hide_amounts=True
+        events_out = AssistantToolsService().execute_tool(
+            superuser,
+            "get_upcoming_events",
+            {"days_ahead": 7},
+            hide_amounts=True,
+        )
+        assert events_out["ok"] is True
+        titles = [item["title"] for item in events_out["items"]]
+        assert "Họp triển khai" in titles
+        assert "Việc bí mật người khác" not in titles
+
+        # Giả lập LLM tạo nhắc việc xong trả multi-part hoặc raw JSON → tự tổng hợp, không lộ JSON!
+        step = {"idx": 0}
+
+        def fake_post(url: str, *, json: Any, headers: Any, timeout: float) -> MagicMock:
+            resp = MagicMock()
+            resp.status_code = 200
+            if step["idx"] == 0:
+                step["idx"] += 1
+                tool_args = (
+                    f'{{"title": "Công việc test", "due_date": "{soon.isoformat()}", '
+                    '"due_time": "12h", "priority": "trung bình"}'
+                )
+                resp.json.return_value = {
+                    "model": "model-a",
+                    "choices": [
+                        {
+                            "message": {
+                                "content": "",
+                                "tool_calls": [
+                                    {
+                                        "id": "call_create_1",
+                                        "function": {
+                                            "name": "create_quick_reminder",
+                                            "arguments": tool_args,
+                                        },
+                                    }
+                                ],
+                            }
+                        }
+                    ],
+                    "usage": {"total_tokens": 30},
+                }
+                return resp
+
+            # Kiểm tra LLM lỡ trả raw JSON `{"ok": true, ...}` -> backend tự tổng hợp xác nhận đẹp
+            resp.json.return_value = {
+                "model": "model-a",
+                "choices": [
+                    {"message": {"content": [{"type": "text", "text": '{"ok": true, "created": {}}'}]}}
+                ],
+                "usage": {"total_tokens": 10},
+            }
+            return resp
+
+        with patch("requests.Session.post", side_effect=fake_post):
+            chat_res = self.assert_success(
+                api.post(URL, {"message": "Công việc test, 12h ưu tiên trung bình"}, format="json")
+            )
+
+        assert Reminder.objects.filter(owner=superuser, title="Công việc test").exists() is True
+        assert '{"ok":' not in chat_res["reply"]
+        assert "Đã tạo nhắc việc" in chat_res["reply"]
+        assert "Công việc test" in chat_res["reply"]
+
+        # GET /thread chỉ thấy tin USER + ASSISTANT cuối, KHÔNG có stub `""` hay JSON `TOOL`
+        thread_data = self.assert_success(api.get("/api/v1/workspace/assistant/thread"))
+        assert thread_data["total_messages"] == 2
+        assert [m["role"] for m in thread_data["messages"]] == ["USER", "ASSISTANT"]
+
+        # Lượt kế tiếp: context LLM KHÔNG chứa assistant content="" hay role=tool mồ côi
+        captured_messages: list[list[dict[str, Any]]] = []
+
+        def fake_next_turn(url: str, *, json: Any, headers: Any, timeout: float) -> MagicMock:
+            captured_messages.append(json["messages"])
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json.return_value = {
+                "model": "model-a",
+                "choices": [{"message": {"content": "Tôi vẫn nhớ ngữ cảnh vừa rồi."}}],
+                "usage": {"total_tokens": 10},
+            }
+            return resp
+
+        with patch("requests.Session.post", side_effect=fake_next_turn):
+            self.assert_success(api.post(URL, {"message": "Nhắc lại vừa tạo gì"}, format="json"))
+
+        sent_roles = [(m["role"], m["content"]) for m in captured_messages[0]]
+        assert all(role in ("system", "user", "assistant") for role, _ in sent_roles)
+        assert all(bool(str(content or "").strip()) for _, content in sent_roles)

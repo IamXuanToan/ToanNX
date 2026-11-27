@@ -9,6 +9,7 @@ from app.system.constants.setting_key import SettingKey
 from app.system.services.attachment_service import AttachmentService
 from app.system.services.setting_service import SettingService
 from app.system.services.telegram_bot_service import TelegramBotService
+from app.workspace.constants.assistant_launcher_size import AssistantLauncherSize
 from app.workspace.constants.group_tool_policy import GroupToolPolicy
 from app.workspace.constants.workspace_defaults import (
     ASSISTANT_COMMANDS,
@@ -16,6 +17,7 @@ from app.workspace.constants.workspace_defaults import (
 )
 
 VALID_GROUP_POLICIES = frozenset(item.value for item in GroupToolPolicy)
+VALID_LAUNCHER_SIZES = frozenset(item.value for item in AssistantLauncherSize)
 
 
 class AssistantConfigService:
@@ -51,6 +53,11 @@ class AssistantConfigService:
             "assistant_avatar_id": (
                 str(raw["assistant_avatar_id"]).strip() if raw.get("assistant_avatar_id") else None
             ),
+            "launcher_size": (
+                str(raw.get("launcher_size"))
+                if raw.get("launcher_size") in VALID_LAUNCHER_SIZES
+                else str(AssistantLauncherSize.MEDIUM)
+            ),
             "assistant_system_prompt": str(prompt_raw or "").strip()[:2000],
             "preferred_ai_model": str(raw.get("preferred_ai_model") or "").strip()[:120],
             "ai_daily_token_limit": (
@@ -79,6 +86,7 @@ class AssistantConfigService:
         return {
             "assistant_name": raw["assistant_name"],
             "assistant_avatar": avatar,
+            "launcher_size": raw["launcher_size"],
             "assistant_system_prompt": raw["assistant_system_prompt"],
             "preferred_ai_model": raw["preferred_ai_model"],
             "ai_daily_token_limit": raw["ai_daily_token_limit"],
@@ -102,12 +110,13 @@ class AssistantConfigService:
         return {
             "name": cfg["assistant_name"],
             "avatar": cfg["assistant_avatar"],
+            "launcher_size": cfg["launcher_size"],
             "active_model": active_model,
             "has_custom_policy": bool(cfg["assistant_system_prompt"]),
         }
 
     def update_config(self, actor: Any, data: dict[str, Any]) -> dict[str, Any]:
-        """Kiểm tra chặt chẽ Avatar công khai, Model, Policy và lưu cấu hình Bot AI."""
+        """Kiểm tra chặt chẽ Avatar công khai, Kích thước nút, Model, Policy và lưu cấu hình Bot AI."""
         current = self._raw_config()
         payload = dict(data)
 
@@ -134,6 +143,14 @@ class AssistantConfigService:
                 current["assistant_avatar_id"] = str(img.pk)
             else:
                 current["assistant_avatar_id"] = None
+
+        if "launcher_size" in payload:
+            size = str(payload["launcher_size"] or "").strip()
+            if size not in VALID_LAUNCHER_SIZES:
+                raise ValidationError(
+                    details={"launcher_size": ["Kích thước nút tròn Trợ lý AI không hợp lệ."]}
+                )
+            current["launcher_size"] = size
 
         if "ai_daily_token_limit" in payload:
             limit_val = payload["ai_daily_token_limit"]

@@ -51,6 +51,7 @@ class TestVaultRevealApi(BaseApiTestCase):
         revealed = self.assert_success(api.post(f"/api/v1/workspace/vault-items/{item.pk}/reveal"))
         assert revealed["secret"] == "UltraSecret!123"
         assert revealed["revealed_by_email"] == user.email
+        assert revealed["revealed_by_username"] == (user.username or "")
 
         item.refresh_from_db()
         assert item.last_revealed_at is not None

@@ -2,12 +2,25 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
+import type { AnchorHTMLAttributes } from "react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import commonVi from "@/messages/vi.json";
 import systemVi from "@/modules/system/messages/vi.json";
 import { AssistantChat } from "@/modules/workspace/components/assistant/assistant-chat";
 import workspaceVi from "@/modules/workspace/messages/vi.json";
+
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({
+    children,
+    href,
+    ...props
+  }: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+}));
 
 const mockChat = vi.fn().mockResolvedValue({
   conversationId: "conv-1",
@@ -244,5 +257,122 @@ describe("AssistantChat (1 luồng chat shadcn + badge trường trộn + thinki
     await waitFor(() => {
       expect(mockClearThread).toHaveBeenCalledTimes(1);
     });
+
+    // Gõ `/xoa_lich_su` cũng xóa lịch sử trực tiếp không tốn LLM token
+    fireEvent.change(input, { target: { value: "/xoa_lich_su" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() => {
+      expect(mockClearThread).toHaveBeenCalledTimes(2);
+    });
+    expect(mockChat).toHaveBeenCalledTimes(1);
+  });
+
+  it("render Markdown đẹp cho tin nhắn Trợ lý AI hợp lệ và giữ nguyên text thô cho user / lỗi", async () => {
+    mockGetThread.mockResolvedValueOnce({
+      messages: [
+        {
+          id: "u-plain",
+          conversationId: "conv-1",
+          role: "USER",
+          senderTelegramId: null,
+          senderName: "User",
+          content: "Giữ **raw user text** nhé",
+          toolCalls: [],
+          toolCallId: "",
+          modelUsed: "",
+          tokensUsed: 0,
+          containsPrivateData: false,
+          isError: false,
+          createdAt: "2026-11-26T09:58:00Z",
+        },
+        {
+          id: "a-stub",
+          conversationId: "conv-1",
+          role: "ASSISTANT",
+          senderTelegramId: null,
+          senderName: "ToanNX Bot",
+          content: "",
+          toolCalls: [{ id: "call_1" }],
+          toolCallId: "",
+          modelUsed: "cohere/command-a-plus",
+          tokensUsed: 0,
+          containsPrivateData: true,
+          isError: false,
+          createdAt: "2026-11-26T09:58:30Z",
+        },
+        {
+          id: "t-raw-json",
+          conversationId: "conv-1",
+          role: "TOOL",
+          senderTelegramId: null,
+          senderName: "",
+          content: '{"ok": true, "scope": "today", "total_count": 0, "items": []}',
+          toolCalls: [],
+          toolCallId: "call_1",
+          modelUsed: "cohere/command-a-plus",
+          tokensUsed: 0,
+          containsPrivateData: true,
+          isError: false,
+          createdAt: "2026-11-26T09:58:40Z",
+        },
+        {
+          id: "a-md",
+          conversationId: "conv-1",
+          role: "ASSISTANT",
+          senderTelegramId: null,
+          senderName: "ToanNX Bot",
+          content: "**Quản lý công việc:**\n- Tạo nhắc việc nhanh",
+          toolCalls: [],
+          toolCallId: "",
+          modelUsed: "cohere/command-a-plus",
+          tokensUsed: 90,
+          containsPrivateData: false,
+          isError: false,
+          createdAt: "2026-11-26T09:59:00Z",
+        },
+        {
+          id: "a-err",
+          conversationId: "conv-1",
+          role: "ASSISTANT",
+          senderTelegramId: null,
+          senderName: "ToanNX Bot",
+          content: "Lỗi **kết nối**",
+          toolCalls: [],
+          toolCallId: "",
+          modelUsed: "cohere/command-a-plus",
+          tokensUsed: 0,
+          containsPrivateData: false,
+          isError: true,
+          createdAt: "2026-11-26T10:00:00Z",
+        },
+      ],
+      hasMoreMessages: false,
+      totalMessages: 5,
+    });
+
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const { container } = render(
+      <QueryClientProvider client={client}>
+        <NextIntlClientProvider
+          locale="vi"
+          timeZone="Asia/Ho_Chi_Minh"
+          messages={{ ...commonVi, system: systemVi, workspace: workspaceVi }}
+        >
+          <AssistantChat variant="page" canChat />
+        </NextIntlClientProvider>
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Quản lý công việc:")).toBeTruthy();
+    });
+
+    expect(container.querySelector("strong")?.textContent).toBe("Quản lý công việc:");
+    expect(container.querySelector("ul li")?.textContent?.trim()).toBe("Tạo nhắc việc nhanh");
+    expect(screen.getByText("Giữ **raw user text** nhé")).toBeTruthy();
+    expect(screen.getByText("Lỗi **kết nối**")).toBeTruthy();
+    // Tuyệt đối không render JSON TOOL hay bong bóng stub rỗng lên giao diện
+    expect(container.textContent).not.toContain('"total_count"');
+    expect(container.querySelectorAll('[data-slot="message"]')).toHaveLength(3);
   });
 });

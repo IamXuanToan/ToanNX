@@ -29,6 +29,7 @@ class TestAssistantBotProfileApi(BaseApiTestCase):
             superuser,
             {
                 "assistant_name": "Trợ lý ToanNX",
+                "launcher_size": "lg",
                 "assistant_system_prompt": "Bí mật cấu hình nội bộ của Admin",
                 "preferred_ai_model": "gemini-2.5-flash",
             },
@@ -36,6 +37,7 @@ class TestAssistantBotProfileApi(BaseApiTestCase):
         grant(user, P.CHAT)
         data = self.assert_success(login(user).get(URL))
         assert data["name"] == "Trợ lý ToanNX"
+        assert data["launcher_size"] == "lg"
         assert data["active_model"] == "gemini-2.5-flash"
         assert data["has_custom_policy"] is True
         assert "assistant_system_prompt" not in data

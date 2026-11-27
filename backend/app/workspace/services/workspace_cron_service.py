@@ -31,13 +31,12 @@ from app.workspace.repositories.workspace_setting_repository import WorkspaceSet
 from app.workspace.services.workspace_alerts_cache_service import WorkspaceAlertsCacheService
 from app.workspace.services.workspace_spending_service import WorkspaceSpendingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
-from app.workspace.utils.notification_channels import to_delivery_channels
 
 SIGNATURE_HEADER = "Upstash-Signature"
 
 
 class WorkspaceCronService:
-    """Chạy nền trên Serverless: Neon 0 CU khi rảnh, W4 quét theo mốc Redis & gửi đúng kênh."""
+    """Chạy nền trên Serverless: Neon 0 CU khi rảnh, W4 quét theo mốc Redis & gửi theo cấu hình Hồ sơ."""
 
     def __init__(
         self,
@@ -168,7 +167,6 @@ class WorkspaceCronService:
                 WorkspaceNotificationEvent.REMINDER_DUE,
                 dedup_key=f"rem:{reminder.pk}:{schedule_key}",
                 recipient=reminder.owner,
-                channels=to_delivery_channels(reminder.notification_channels),
                 payload=NotificationPayload(
                     title=f"Nhắc việc: {reminder.title}",
                     body=reminder.description or f"Đến hạn ngày {reminder.due_date:%d/%m/%Y}.",
@@ -207,7 +205,6 @@ class WorkspaceCronService:
                 WorkspaceNotificationEvent.WARRANTY_EXPIRING,
                 dedup_key=dedup_key,
                 recipient=asset.owner,
-                channels=to_delivery_channels(asset.notification_channels),
                 payload=NotificationPayload(
                     title=f"{asset.name} còn {days_left} ngày bảo hành",
                     body=(
@@ -253,7 +250,6 @@ class WorkspaceCronService:
                 WorkspaceNotificationEvent.SUBSCRIPTION_RENEWING,
                 dedup_key=dedup_key,
                 recipient=sub.owner,
-                channels=to_delivery_channels(sub.notification_channels),
                 payload=NotificationPayload(
                     title=f"{sub.name} sắp gia hạn ({days_left} ngày)",
                     body=f"Chi phí dự kiến {amount_text} vào {sub.renew_date:%d/%m/%Y}.",

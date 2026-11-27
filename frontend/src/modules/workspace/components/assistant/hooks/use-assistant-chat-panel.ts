@@ -6,8 +6,10 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 import {
+  isClearSlashCommand,
   resolveLocaleSlashCommands,
   type ResolvedAssistantSlashCommand,
 } from "../../../constants/defaults";
@@ -71,6 +73,9 @@ export function useAssistantChatPanel(canChat: boolean, enabled = true) {
   const recentMessages = threadQuery.data?.messages ?? [];
   const mergedMap = new Map<string, AssistantMessage>();
   for (const msg of [...olderMessages, ...recentMessages]) {
+    if (msg.role === "TOOL" || msg.role === "SYSTEM") continue;
+    if (!msg.content?.trim()) continue;
+    if (Array.isArray(msg.toolCalls) && msg.toolCalls.length > 0) continue;
     mergedMap.set(msg.id, msg);
   }
   if (pendingUserMsg && !mergedMap.has(pendingUserMsg.id)) {
@@ -90,10 +95,15 @@ export function useAssistantChatPanel(canChat: boolean, enabled = true) {
 
   async function sendMessage(rawText?: string) {
     const text = (rawText ?? draft).trim();
-    if (!text || !canChat || chatMutation.isPending) return;
+    if (!text || !canChat || chatMutation.isPending || clearMutation.isPending) return;
     if (!rawText) {
       setDraftState("");
       setSlashDismissed(false);
+    }
+
+    if (isClearSlashCommand(text)) {
+      await confirmClearThread();
+      return;
     }
 
     setPendingUserMsg({
@@ -101,7 +111,7 @@ export function useAssistantChatPanel(canChat: boolean, enabled = true) {
       conversationId: "",
       role: "USER",
       senderTelegramId: null,
-      senderName: currentUser.data?.user.fullName || "",
+      senderName: formatUserDisplayName(currentUser.data?.user),
       content: text,
       toolCalls: [],
       toolCallId: "",
@@ -115,7 +125,6 @@ export function useAssistantChatPanel(canChat: boolean, enabled = true) {
     try {
       await chatMutation.mutateAsync({ message: text });
       setPendingUserMsg(null);
-      await threadQuery.refetch();
     } catch {
       setPendingUserMsg(null);
     }

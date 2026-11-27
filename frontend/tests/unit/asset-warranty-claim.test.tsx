@@ -108,6 +108,7 @@ vi.mock("@/modules/workspace/hooks/use-asset", () => ({
       updatedAt: "2026-11-20T00:00:00Z",
       ownerId: "u1",
       ownerEmail: "u1@test.local",
+      ownerUsername: "u1",
       ownerName: "U1",
     },
   }),

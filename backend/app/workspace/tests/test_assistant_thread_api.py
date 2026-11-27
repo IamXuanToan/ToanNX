@@ -60,3 +60,36 @@ class TestAssistantThreadApi(BaseApiTestCase):
         assert after["total_messages"] == 0
         assert AssistantMessage.objects.filter(conversation=other_web).count() == 1
         assert AssistantMessage.objects.filter(conversation=tg_conv).count() == 1
+
+        # Tin nhắn nội bộ (role=TOOL, stub tool_calls rỗng `content=""`) bị ẩn hoàn toàn khỏi GET /thread
+        web_conv = AssistantConversation.objects.get(owner=user, channel=AssistantConversation.Channel.WEB)
+        AssistantMessage.objects.create(
+            conversation=web_conv, role=AssistantMessage.Role.USER, content="Sắp tới có gì?"
+        )
+        AssistantMessage.objects.create(
+            conversation=web_conv,
+            role=AssistantMessage.Role.ASSISTANT,
+            content="",
+            tool_calls=[{"id": "c1", "function": {"name": "get_upcoming_events", "arguments": "{}"}}],
+        )
+        AssistantMessage.objects.create(
+            conversation=web_conv,
+            role=AssistantMessage.Role.TOOL,
+            content='{"ok": true, "total_count": 0, "items": []}',
+            tool_call_id="c1",
+        )
+        AssistantMessage.objects.create(
+            conversation=web_conv,
+            role=AssistantMessage.Role.ASSISTANT,
+            content="Không có sự kiện sắp tới nào.",
+        )
+
+        visible = self.assert_success(api.get(URL))
+        assert visible["total_messages"] == 2
+        assert [m["role"] for m in visible["messages"]] == ["USER", "ASSISTANT"]
+        assert [m["content"] for m in visible["messages"]] == [
+            "Sắp tới có gì?",
+            "Không có sự kiện sắp tới nào.",
+        ]
+        # DELETE /thread vẫn dọn sạch tất cả bản ghi DB kể cả TOOL/stub ẩn
+        assert self.assert_success(api.delete(URL))["deleted_count"] == 4

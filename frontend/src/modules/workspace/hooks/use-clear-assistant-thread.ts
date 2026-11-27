@@ -10,7 +10,7 @@ import type { AssistantThreadClearResult } from "../types/assistant.types";
 export function useClearAssistantThread() {
   return useResourceMutation<void, AssistantThreadClearResult>({
     mutationFn: () => assistantConfigService.clearThread(),
-    invalidate: [workspaceKeys.all],
+    invalidate: [workspaceKeys.assistantThreadRoot()],
     success: false,
   });
 }

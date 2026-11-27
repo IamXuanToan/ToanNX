@@ -9,6 +9,7 @@ from app.workspace.constants.workspace_defaults import (
     AI_HISTORY_CONTEXT_LIMIT,
     AI_MAX_TOOL_ROUNDS,
     AI_REQUEST_DEADLINE_SECONDS,
+    SLASH_COMMAND_ALIASES,
     SLASH_COMMAND_NAMES,
 )
 from app.workspace.models.assistant_conversation import AssistantConversation
@@ -21,18 +22,33 @@ from app.workspace.services.workspace_setting_service import WorkspaceSettingSer
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 from app.workspace.services.xkiro_client import XkiroClient
 
+WEEKDAY_NAMES_VI = (
+    "Thứ Hai",
+    "Thứ Ba",
+    "Thứ Tư",
+    "Thứ Năm",
+    "Thứ Sáu",
+    "Thứ Bảy",
+    "Chủ Nhật",
+)
+
 SYSTEM_PROMPT = (
     "Bạn là Trợ lý AI cá nhân thông minh trong hệ thống ToanNX. "
     "Chốt an toàn bắt buộc: tuyệt đối KHÔNG nói về khủng bố, bạo lực cực đoan, vũ khí, quân sự, "
     "chiến tranh hay phân biệt vùng miền, sắc tộc, tôn giáo, giới tính; nếu bị hỏi hãy từ chối ngắn gọn. "
-    "Trả lời súc tích, rõ ràng bằng tiếng Việt có dấu (trừ khi người dùng dùng tiếng Anh). "
+    "Trả lời súc tích, lịch sự bằng tiếng Việt có dấu (trừ khi người dùng dùng tiếng Anh), trình bày "
+    "Markdown rõ ràng (**in đậm**, danh sách gạch đầu dòng `- `, bảng khi có nhiều mục). "
     "Chỉ dùng dữ liệu thật từ các tool đã cung cấp, tuyệt đối không bịa đặt số liệu "
-    "và không bao giờ truy cập hay suy đoán mật khẩu/API key trong Két sắt."
+    "và không bao giờ truy cập hay suy đoán mật khẩu/API key trong Két sắt. "
+    "Khi người dùng hỏi về lịch/sự kiện sắp tới, tuần tới hoặc các hạn sắp đến, hãy ưu tiên gọi "
+    "`get_upcoming_events` (hoặc kết hợp nhắc việc + dịch vụ sắp gia hạn). "
+    "Khi tạo nhắc việc xong (`create_quick_reminder`), xác nhận rõ tiêu đề, ngày, giờ và mức ưu tiên. "
+    "Tuyệt đối KHÔNG bao giờ in JSON thô hay UUID nội bộ ra câu trả lời cho người dùng."
 )
 
 
 class AssistantService:
-    """Điều phối 1 luồng chat Web & kênh Telegram qua `xKiro`, 7 tool cá nhân & 6 lệnh Slash 0-token."""
+    """Điều phối 1 luồng chat Web & kênh Telegram qua `xKiro`, 8 tool cá nhân & 7 lệnh Slash 0-token."""
 
     def __init__(
         self,
@@ -74,6 +90,7 @@ class AssistantService:
         """Xử lý 1 lượt trò chuyện vào luồng chat duy nhất của Web hoặc kênh Telegram."""
         cleaned = (message_text or "").strip()
         cmd, _ = self.slash_service.parse_command(cleaned)
+        canonical = SLASH_COMMAND_ALIASES.get(cmd, "")
 
         conversation = self.conversation_service.get_or_create_active(
             owner,
@@ -81,6 +98,20 @@ class AssistantService:
             external_chat_id=external_chat_id,
             title=cleaned[:120],
         )
+
+        if canonical == "clear":
+            deleted_count = self.conversation_service.clear_conversation(conversation, actor=owner)
+            reply = f"🧹 Đã xóa lịch sử trò chuyện ({deleted_count} tin nhắn)."
+            saved = self.conversation_service.append_message(
+                conversation,
+                role=AssistantMessage.Role.ASSISTANT,
+                content=reply,
+                model_used="slash",
+                tokens_used=0,
+                contains_private_data=False,
+                is_error=False,
+            )
+            return self._build_response(conversation, saved, is_fallback=False, fallback_attempts=0)
 
         self.conversation_service.append_message(
             conversation,
@@ -135,6 +166,7 @@ class AssistantService:
 
         llm_messages = self._assemble_llm_context(
             conversation.pk,
+            tz_name=setting.timezone,
             exclude_private=exclude_private_history,
             hide_amounts=hide_amounts,
             allow_tools=allow_personal_tools,
@@ -147,8 +179,10 @@ class AssistantService:
         fallback_attempts = 0
         last_model = ""
         used_private_tool = False
+        executed_tools: list[tuple[str, dict[str, Any]]] = []
+        seen_signatures: set[str] = set()
 
-        for _ in range(AI_MAX_TOOL_ROUNDS):
+        for round_idx in range(AI_MAX_TOOL_ROUNDS):
             result = self.xkiro_client.chat_completion(
                 llm_messages,
                 tools=tools,
@@ -157,6 +191,8 @@ class AssistantService:
             )
             fallback_attempts += int(result.get("fallback_attempts") or 0)
             if not result.get("ok"):
+                if executed_tools:
+                    break
                 return self._save_fallback(
                     conversation,
                     "Hệ thống AI tạm thời quá tải hoặc đang giới hạn tốc độ.",
@@ -164,13 +200,15 @@ class AssistantService:
                     attempts=fallback_attempts,
                 )
 
-            last_model = str(result.get("model") or "")
+            last_model = str(result.get("model") or last_model)
             total_tokens += int(result.get("tokens") or 0)
             ai_msg = result.get("message") or {}
-            tool_calls = ai_msg.get("tool_calls") or []
+            normalized_calls = self._normalize_tool_calls(ai_msg.get("tool_calls") or [], round_idx)
 
-            if not tool_calls or not allow_personal_tools:
-                reply_text = str(ai_msg.get("content") or "").strip() or "Mình đã ghi nhận yêu cầu."
+            if not normalized_calls or not allow_personal_tools:
+                reply_text = self._finalize_reply_text(
+                    str(ai_msg.get("content") or ""), executed_tools, default_text="Mình đã ghi nhận yêu cầu."
+                )
                 saved = self.conversation_service.append_message(
                     conversation,
                     role=AssistantMessage.Role.ASSISTANT,
@@ -187,34 +225,43 @@ class AssistantService:
                     fallback_attempts=fallback_attempts,
                 )
 
+            batch_signature = json.dumps(
+                [(c["function"]["name"], c["function"]["arguments"]) for c in normalized_calls],
+                sort_keys=True,
+            )
+            if batch_signature in seen_signatures:
+                break
+            seen_signatures.add(batch_signature)
+
             used_private_tool = True
             self.conversation_service.append_message(
                 conversation,
                 role=AssistantMessage.Role.ASSISTANT,
-                content=str(ai_msg.get("content") or ""),
-                tool_calls=tool_calls,
+                content="",
+                tool_calls=normalized_calls,
                 model_used=last_model,
                 contains_private_data=True,
             )
             llm_messages.append(
                 {
                     "role": "assistant",
-                    "content": str(ai_msg.get("content") or ""),
-                    "tool_calls": tool_calls,
+                    "content": None,
+                    "tool_calls": normalized_calls,
                 }
             )
 
-            for call in tool_calls:
-                fn = call.get("function") or {}
-                fn_name = str(fn.get("name") or "")
-                call_id = str(call.get("id") or fn_name)
+            for call in normalized_calls:
+                fn = call["function"]
+                fn_name = fn["name"]
+                call_id = call["id"]
                 tool_out = self.tools_service.execute_tool(
                     owner,
                     fn_name,
-                    fn.get("arguments"),
+                    fn["arguments"],
                     is_owner=is_owner,
                     hide_amounts=hide_amounts,
                 )
+                executed_tools.append((fn_name, tool_out))
                 serialized_out = json.dumps(tool_out, ensure_ascii=False)
                 self.conversation_service.append_message(
                     conversation,
@@ -239,20 +286,29 @@ class AssistantService:
             deadline_monotonic=deadline,
         )
         fallback_attempts += int(final_res.get("fallback_attempts") or 0)
-        if not final_res.get("ok"):
+        if final_res.get("ok"):
+            final_msg = final_res.get("message") or {}
+            last_model = str(final_res.get("model") or last_model)
+            total_tokens += int(final_res.get("tokens") or 0)
+            reply_text = self._finalize_reply_text(
+                str(final_msg.get("content") or ""),
+                executed_tools,
+                default_text="Đã hoàn tất kiểm tra.",
+            )
+        elif executed_tools:
+            reply_text = self._synthesize_reply_from_tools(executed_tools)
+        else:
             return self._save_fallback(
                 conversation,
                 "Đã tra cứu dữ liệu nhưng không thể tổng hợp phản hồi lúc này.",
                 code="WORKSPACE_AI_UNAVAILABLE",
                 attempts=fallback_attempts,
             )
-        final_msg = final_res.get("message") or {}
-        last_model = str(final_res.get("model") or last_model)
-        total_tokens += int(final_res.get("tokens") or 0)
+
         saved = self.conversation_service.append_message(
             conversation,
             role=AssistantMessage.Role.ASSISTANT,
-            content=str(final_msg.get("content") or "").strip() or "Đã hoàn tất kiểm tra.",
+            content=reply_text,
             model_used=last_model,
             tokens_used=total_tokens,
             contains_private_data=used_private_tool,
@@ -261,6 +317,87 @@ class AssistantService:
         return self._build_response(
             conversation, saved, is_fallback=False, fallback_attempts=fallback_attempts
         )
+
+    def _normalize_tool_calls(self, raw_calls: list[Any], round_idx: int) -> list[dict[str, Any]]:
+        normalized: list[dict[str, Any]] = []
+        for idx, call in enumerate(raw_calls):
+            if not isinstance(call, dict):
+                continue
+            fn = call.get("function")
+            if not isinstance(fn, dict):
+                continue
+            fn_name = str(fn.get("name") or "").strip()
+            if not fn_name:
+                continue
+            raw_args = fn.get("arguments")
+            if isinstance(raw_args, dict):
+                args_str = json.dumps(raw_args, ensure_ascii=False)
+            elif raw_args is None:
+                args_str = "{}"
+            else:
+                args_str = str(raw_args)
+            call_id = str(call.get("id") or "").strip() or f"call_{round_idx}_{idx}"
+            normalized.append(
+                {
+                    "id": call_id,
+                    "type": "function",
+                    "function": {"name": fn_name, "arguments": args_str},
+                }
+            )
+        return normalized
+
+    def _finalize_reply_text(
+        self,
+        raw_text: str,
+        executed_tools: list[tuple[str, dict[str, Any]]],
+        *,
+        default_text: str,
+    ) -> str:
+        cleaned = (raw_text or "").strip()
+        if cleaned and not self._looks_like_leaked_tool_json(cleaned):
+            return cleaned
+        if executed_tools:
+            return self._synthesize_reply_from_tools(executed_tools)
+        return default_text
+
+    def _looks_like_leaked_tool_json(self, text: str) -> bool:
+        stripped = text.strip()
+        if not (stripped.startswith("{") and stripped.endswith("}")):
+            return False
+        try:
+            parsed = json.loads(stripped)
+        except ValueError:
+            return False
+        return isinstance(parsed, dict) and (
+            "ok" in parsed or "tool_calls" in parsed or "items" in parsed or "created" in parsed
+        )
+
+    def _synthesize_reply_from_tools(self, executed_tools: list[tuple[str, dict[str, Any]]]) -> str:
+        if not executed_tools:
+            return "Mình đã ghi nhận yêu cầu."
+        fn_name, result = executed_tools[-1]
+        if not result.get("ok"):
+            return f"⚠️ Không thể thực hiện: {result.get('error') or 'Dữ liệu không hợp lệ.'}"
+        if fn_name == "create_quick_reminder" and isinstance(result.get("created"), dict):
+            created = result["created"]
+            title_str = str(created.get("title") or "")
+            date_str = str(created.get("due_date") or "")
+            time_part = f" lúc **{created['due_time']}**" if created.get("due_time") else ""
+            return f"✅ Đã tạo nhắc việc **{title_str}** vào ngày **{date_str}**{time_part}."
+        items = result.get("items")
+        if isinstance(items, list):
+            if not items:
+                return "Hiện tại bạn chưa có mục nào khớp với yêu cầu."
+            lines = [
+                f"- **{item.get('title') or item.get('name') or 'Mục'}**"
+                + (f" ({item['date']})" if item.get("date") else "")
+                + (f" — {item['due_date']}" if item.get("due_date") else "")
+                for item in items[:10]
+                if isinstance(item, dict)
+            ]
+            if lines:
+                return "\n".join(lines)
+        return "Mình đã tra cứu và xử lý xong yêu cầu của bạn."
 
     def _tokens_used_today(self, owner_id: Any, tz_name: str) -> int:
         local_today = self.tz_service.local_today(tz_name)
@@ -271,12 +408,21 @@ class AssistantService:
         self,
         conversation_id: Any,
         *,
+        tz_name: str,
         exclude_private: bool,
         hide_amounts: bool,
         allow_tools: bool,
         custom_policy: str = "",
     ) -> list[dict[str, Any]]:
-        prompt_parts = [SYSTEM_PROMPT]
+        local_now = self.tz_service.local_now(tz_name)
+        weekday = WEEKDAY_NAMES_VI[local_now.weekday()]
+        prompt_parts = [
+            SYSTEM_PROMPT,
+            (
+                f"Thời điểm hiện tại của người dùng: {weekday}, ngày {local_now.strftime('%Y-%m-%d')}, "
+                f"giờ {local_now.strftime('%H:%M')} (múi giờ {local_now.tzinfo or tz_name})."
+            ),
+        ]
         cleaned_policy = (custom_policy or "").strip()
         if cleaned_policy:
             prompt_parts.append(f"Policy và phong cách trả lời ưu tiên của quản trị viên: {cleaned_policy}")
@@ -293,21 +439,12 @@ class AssistantService:
             exclude_private=exclude_private,
         )
         messages: list[dict[str, Any]] = [{"role": "system", "content": " ".join(prompt_parts)}]
-        cutoff_idx = max(0, len(history) - 4)
-        for idx, msg in enumerate(history):
-            if msg.role == AssistantMessage.Role.TOOL:
+        for msg in history:
+            if msg.role not in (AssistantMessage.Role.USER, AssistantMessage.Role.ASSISTANT):
                 continue
-            if (
-                msg.role == AssistantMessage.Role.ASSISTANT
-                and msg.tool_calls
-                and idx < cutoff_idx
-                and not msg.content
-            ):
+            if not msg.content or not msg.content.strip() or msg.tool_calls or msg.is_error:
                 continue
-            role_name = msg.role.lower()
-            if role_name not in ("user", "assistant", "system"):
-                continue
-            messages.append({"role": role_name, "content": msg.content})
+            messages.append({"role": msg.role.lower(), "content": msg.content})
         return messages
 
     def _save_fallback(

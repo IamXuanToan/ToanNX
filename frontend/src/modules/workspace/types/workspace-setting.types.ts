@@ -3,6 +3,8 @@ export type WorkspaceSetting = {
   id: string;
   ownerId: string;
   ownerEmail: string;
+  ownerName: string;
+  ownerUsername: string | null;
   timezone: string;
   dailyDigestEnabled: boolean;
   digestTimeSlots: string[];

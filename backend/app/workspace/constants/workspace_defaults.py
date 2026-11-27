@@ -61,7 +61,6 @@ DEFAULT_WARRANTY_ALERT_DAYS = [30, 7, 1]
 DEFAULT_DIGEST_TIME_SLOTS = ["08:00"]
 DEFAULT_DIGEST_SECTIONS = ["reminders", "warranty", "subscriptions", "finance"]
 ALLOWED_DIGEST_SECTIONS = frozenset(DEFAULT_DIGEST_SECTIONS)
-DEFAULT_WORKSPACE_NOTIFICATION_CHANNELS = ("WEBSITE",)
 ALLOWED_CALENDAR_TYPES = frozenset({"subscription", "reminder", "asset_warranty", "warranty_claim"})
 
 
@@ -130,6 +129,16 @@ ASSISTANT_COMMANDS: tuple[AssistantCommandSpec, ...] = (
         "telegram_only": False,
     },
     {
+        "canonical": "clear",
+        "command": "/xoa_lich_su",
+        "en_command": "/clear",
+        "syntax": "/xoa_lich_su",
+        "en_syntax": "/clear",
+        "description": "Xóa lịch sử trò chuyện hiện tại để bắt đầu mới",
+        "en_description": "Clear current chat history to start fresh",
+        "telegram_only": False,
+    },
+    {
         "canonical": "help",
         "command": "/tro_giup",
         "en_command": "/help",
@@ -169,6 +178,9 @@ SLASH_COMMAND_ALIASES: dict[str, str] = {
     "/nhac_viec": "remind",
     "/nhacviec": "remind",
     "/remind": "remind",
+    "/xoa_lich_su": "clear",
+    "/xoalichsu": "clear",
+    "/clear": "clear",
     "/tro_giup": "help",
     "/trogiup": "help",
     "/help": "help",

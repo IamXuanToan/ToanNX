@@ -1,16 +1,19 @@
 "use client";
 
 import { RefreshCw } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { TableStatusSwitch } from "@/shares/components/common/table-status-switch";
 import { DEFAULT_CURRENCY } from "@/shares/constants/currency";
 import { createBooleanBulkStatus } from "@/shares/lib/bulk-status";
+import { formatExplicitDate } from "@/shares/lib/date-time-format";
 import { formatDisplayMoney } from "@/shares/lib/number-format";
+import { formatOwnerDisplayName, formatOwnerDisplayTooltip } from "@/shares/lib/user-display";
 
 import { BILLING_CYCLES, SUBSCRIPTION_CATEGORIES } from "../../constants/defaults";
 import { WORKSPACE_ROUTES } from "../../constants/routes";
@@ -28,7 +31,6 @@ export function SubscriptionTable({
 }) {
   const t = useTranslations("workspace.subscriptions");
   const tCommon = useTranslations("workspace.common");
-  const format = useFormatter();
   const state = useSubscriptionTable();
   const { table, query } = state;
 
@@ -68,7 +70,9 @@ export function SubscriptionTable({
       id: "renewDate",
       header: t("fields.renewDate"),
       sortKey: "renew_date",
-      cell: (item) => format.dateTime(new Date(item.renewDate), { dateStyle: "short" }),
+      cell: (item) => (
+        <span className="whitespace-nowrap tabular-nums">{formatExplicitDate(item.renewDate)}</span>
+      ),
     },
     {
       id: "amountVnd",
@@ -102,11 +106,16 @@ export function SubscriptionTable({
             id: "owner",
             header: tCommon("owner"),
             hideBelow: "xl" as const,
-            cell: (item: Subscription) => (
-              <span className="text-muted-foreground block max-w-44 truncate">
-                {item.ownerEmail}
-              </span>
-            ),
+            cell: (item: Subscription) => {
+              const ownerLabel = formatOwnerDisplayName(item);
+              return (
+                <AppTooltip content={formatOwnerDisplayTooltip(item)}>
+                  <span className="text-muted-foreground block max-w-44 truncate">
+                    {ownerLabel || "—"}
+                  </span>
+                </AppTooltip>
+              );
+            },
           },
         ]
       : []),

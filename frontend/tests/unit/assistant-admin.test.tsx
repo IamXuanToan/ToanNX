@@ -35,6 +35,7 @@ const SAMPLE_COMMANDS = vi.hoisted(() => [
 const mockUpdateConfig = vi.fn().mockResolvedValue({
   assistantName: "Admin Bot",
   assistantAvatar: null,
+  launcherSize: "lg",
   assistantSystemPrompt: "Ngắn gọn",
   preferredAiModel: "gemini-2.5-flash",
   aiDailyTokenLimit: null,
@@ -85,6 +86,7 @@ vi.mock("@/modules/workspace/services/assistant-config.service", () => ({
     get: vi.fn().mockResolvedValue({
       assistantName: "ToanNX AI",
       assistantAvatar: null,
+      launcherSize: "md",
       assistantSystemPrompt: "",
       preferredAiModel: "",
       aiDailyTokenLimit: null,
@@ -155,8 +157,9 @@ describe("AssistantAdminPanel (FormPage chuẩn Admin & Lệnh BotFather Telegra
     );
 
     const nameInput = await screen.findByPlaceholderText(/ToanNX Assistant/);
-    expect(screen.getByRole("link", { name: "Hủy" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Quay lại" })).toBeTruthy();
     fireEvent.change(nameInput, { target: { value: "Admin Bot" } });
+    fireEvent.click(screen.getByLabelText(/Lớn \(60px\)/i));
     fireEvent.click(screen.getByRole("button", { name: "Chuẩn an toàn hệ thống" }));
     fireEvent.click(screen.getByRole("button", { name: "Lưu" }));
 
@@ -165,6 +168,7 @@ describe("AssistantAdminPanel (FormPage chuẩn Admin & Lệnh BotFather Telegra
     });
     expect(mockUpdateConfig.mock.calls[0]?.[0]).toMatchObject({
       assistantName: "Admin Bot",
+      launcherSize: "lg",
     });
     expect(mockUpdateConfig.mock.calls[0]?.[0].assistantSystemPrompt).toContain("khủng bố");
     expect(mockUpdateConfig.mock.calls[0]?.[0].assistantSystemPrompt).toContain("quân sự");

@@ -175,6 +175,13 @@ class AssistantSlashService:
                 }
             return self._handle_remind(actor, rest)
 
+        if canonical == "clear":
+            return {
+                "reply": "🧹 Đã xóa lịch sử trò chuyện hiện tại.",
+                "contains_private_data": False,
+                "is_new_chat": True,
+            }
+
         supported = ", ".join(SLASH_COMMAND_NAMES)
         return {
             "reply": f"Lệnh '{cmd}' chưa được hỗ trợ. Dùng một trong: {supported}",

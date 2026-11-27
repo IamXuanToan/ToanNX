@@ -117,16 +117,16 @@ class TestAssetCreateApi(BaseApiTestCase):
         )
         data = self.assert_success(res, 201)
         assert data["status"] == "IN_USE"
-        assert data["notification_channels"] == ["WEBSITE"]
+        assert "notification_channels" not in data
 
-        custom_asset = api.post(
+        unknown_channels = api.post(
             URL,
             {
                 "name": "Bàn phím cơ",
                 "purchase_date": "2026-11-15",
                 "currency_id": str(vnd.pk),
-                "notification_channels": ["EMAIL", "TELEGRAM"],
+                "notification_channels": ["EMAIL"],
             },
             format="json",
         )
-        assert self.assert_success(custom_asset, 201)["notification_channels"] == ["TELEGRAM", "EMAIL"]
+        self.assert_error(unknown_channels, 400, "VALIDATION_ERROR")

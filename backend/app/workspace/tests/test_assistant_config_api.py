@@ -34,12 +34,14 @@ class TestAssistantConfigApi(BaseApiTestCase):
         grant(user, P.READ)
         member_api = login(user)
         initial = self.assert_success(member_api.get(URL))
+        assert initial["launcher_size"] == "md"
         assert initial["available_ai_models"] == ["gpt-4o-mini", "gemini-2.5-flash"]
         assert "khủng bố" in initial["assistant_system_prompt"].lower()
         assert "quân sự" in initial["assistant_system_prompt"].lower()
         assert "phân biệt vùng miền" in initial["assistant_system_prompt"].lower()
         command_names = [item["command"] for item in initial["telegram_commands"]]
         assert "/hom_nay" in command_names
+        assert "/xoa_lich_su" in command_names
         assert "/tro_giup" in command_names
         assert "/xac_minh" in command_names
         self.assert_forbidden(
@@ -93,6 +95,11 @@ class TestAssistantConfigApi(BaseApiTestCase):
             400,
             "VALIDATION_ERROR",
         )
+        self.assert_error(
+            admin_api.patch(URL, {"launcher_size": "giant"}, format="json"),
+            400,
+            "VALIDATION_ERROR",
+        )
 
         saved = self.assert_success(
             admin_api.patch(
@@ -100,6 +107,7 @@ class TestAssistantConfigApi(BaseApiTestCase):
                 {
                     "assistant_name": "  ToanNX Assistant  ",
                     "assistant_avatar_id": str(staff_public_img.pk),
+                    "launcher_size": "lg",
                     "assistant_system_prompt": "  Trả lời súc tích tiếng Việt có dấu.  ",
                     "preferred_ai_model": "gemini-2.5-flash",
                     "ai_daily_token_limit": 5000,
@@ -114,6 +122,7 @@ class TestAssistantConfigApi(BaseApiTestCase):
         )
         assert saved["assistant_name"] == "ToanNX Assistant"
         assert saved["assistant_avatar"]["id"] == str(staff_public_img.pk)
+        assert saved["launcher_size"] == "lg"
         assert saved["assistant_system_prompt"] == "Trả lời súc tích tiếng Việt có dấu."
         assert saved["preferred_ai_model"] == "gemini-2.5-flash"
         assert saved["ai_daily_token_limit"] == 5000

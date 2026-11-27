@@ -16,6 +16,7 @@ import { FormPage } from "@/shares/components/common/form-page";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { NumberInput } from "@/shares/components/common/number-input";
+import { RadioGroupField } from "@/shares/components/common/radio-group-field";
 import { SelectField } from "@/shares/components/common/select-field";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Button } from "@/shares/components/ui/button";
@@ -26,7 +27,11 @@ import { Skeleton } from "@/shares/components/ui/skeleton";
 import { Textarea } from "@/shares/components/ui/textarea";
 import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
-import { ASSISTANT_POLICY_PRESETS, TELEGRAM_GROUP_TOOL_POLICIES } from "../../constants/defaults";
+import {
+  ASSISTANT_LAUNCHER_SIZE_OPTIONS,
+  ASSISTANT_POLICY_PRESETS,
+  TELEGRAM_GROUP_TOOL_POLICIES,
+} from "../../constants/defaults";
 import { AssistantAvatar } from "./assistant-avatar";
 import { AssistantTelegramCommandsCard } from "./assistant-telegram-commands-card";
 import { useAssistantAdminPanel } from "./hooks/use-assistant-admin-panel";
@@ -139,6 +144,27 @@ export function AssistantAdminPanel({
                 )}
               </FormField>
             </div>
+
+            <Controller
+              control={form.control}
+              name="launcherSize"
+              render={({ field }) => (
+                <RadioGroupField
+                  name="launcherSize"
+                  legend={t("fields.launcherSize")}
+                  description={t("launcherSizeHint")}
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={locked}
+                  groupClassName="grid gap-2.5 sm:grid-cols-3"
+                  options={ASSISTANT_LAUNCHER_SIZE_OPTIONS.map((size) => ({
+                    value: size,
+                    label: t(`launcherSizes.${size}.label`),
+                    description: t(`launcherSizes.${size}.description`),
+                  }))}
+                />
+              )}
+            />
           </FormSection>
 
           <FormSection title={t("sections.policy")}>
@@ -332,9 +358,7 @@ export function AssistantAdminPanel({
 
         <FormActions>
           <Button asChild type="button" variant="outline">
-            <Link href={SYSTEM_ROUTES.settings}>
-              {canUpdateConfig ? tCommon("cancel") : tCommon("back")}
-            </Link>
+            <Link href={SYSTEM_ROUTES.settings}>{tCommon("back")}</Link>
           </Button>
           {canUpdateConfig ? (
             <FormSubmitButton isSubmitting={state.isSubmitting}>{tCommon("save")}</FormSubmitButton>

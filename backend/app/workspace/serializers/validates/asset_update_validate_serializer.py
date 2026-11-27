@@ -5,7 +5,6 @@ from decimal import Decimal
 from rest_framework import serializers
 
 from app.core.serializers.core_validate_serializer import CoreValidateSerializer
-from app.workspace.constants.workspace_notification_channel import WorkspaceNotificationChannel
 from app.workspace.models.asset import Asset
 
 
@@ -87,10 +86,3 @@ class AssetUpdateValidateSerializer(CoreValidateSerializer):
         help_text="Danh sách ID tệp hóa đơn riêng tư mới.",
     )
     notes = serializers.CharField(required=False, allow_blank=True, help_text="Ghi chú chung.")
-    notification_channels = serializers.ListField(
-        child=serializers.ChoiceField(choices=[(c.value, c.value) for c in WorkspaceNotificationChannel]),
-        min_length=1,
-        max_length=len(WorkspaceNotificationChannel),
-        required=False,
-        help_text="Kênh nhận thông báo hết bảo hành (`WEBSITE`, `TELEGRAM`, `EMAIL`).",
-    )

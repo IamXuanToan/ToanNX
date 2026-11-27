@@ -247,9 +247,6 @@ SPECTACULAR_SETTINGS = {
         "WorkspaceReminderPriorityEnum": "app.workspace.models.reminder.Reminder.Priority",
         "WorkspaceReminderRecurrenceEnum": "app.workspace.models.reminder.Reminder.Recurrence",
         "WorkspaceGroupToolPolicyEnum": "app.workspace.constants.group_tool_policy.GroupToolPolicy",
-        "WorkspaceNotificationChannelEnum": (
-            "app.workspace.constants.workspace_notification_channel.WorkspaceNotificationChannel"
-        ),
         "WorkspaceAssistantChannelEnum": (
             "app.workspace.models.assistant_conversation.AssistantConversation.Channel"
         ),

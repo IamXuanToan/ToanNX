@@ -7,14 +7,11 @@
     "assistantConfig": "AI Chatbot"
   },
   "notificationChannels": {
-    "label": "Notification Channels",
-    "hint": "Defaults to Website (web bell & push). Optionally add or switch to Telegram and Email.",
     "options": {
       "WEBSITE": "Website (Bell & Web Push)",
       "TELEGRAM": "Telegram",
       "EMAIL": "Email"
-    },
-    "atLeastOne": "Please select at least one notification channel."
+    }
   },
   "common": {
     "yes": "Yes",
@@ -50,8 +47,7 @@
     "timeSlot": "Time slot must be HH:MM format (e.g., 08:00).",
     "alertDay": "Lead days must be a whole number from 0 to 365.",
     "positiveInt": "Minimum value is 100.",
-    "daysList": "Comma-separated days must be between 0 and 365.",
-    "atLeastOneChannel": "Please select at least one notification channel."
+    "daysList": "Comma-separated days must be between 0 and 365."
   },
   "calendar": {
     "title": "Personal Calendar",
@@ -375,12 +371,6 @@
     "channelWeb": "Web",
     "channelTelegramDm": "Telegram DM",
     "channelTelegramGroup": "Telegram Group",
-    "sizeLabel": "Chat window size",
-    "sizes": {
-      "compact": "Compact",
-      "default": "Medium",
-      "large": "Large"
-    },
     "slashLabel": "Quick commands:",
     "slashSuggestTitle": "Quick command suggestions",
     "slashSuggestHint": "↑↓ select · Tab insert · Enter run · Esc close",
@@ -390,6 +380,7 @@
       "spending": "Spending",
       "assets": "Devices",
       "remind": "Remind",
+      "clear": "Clear",
       "help": "Help"
     },
     "slashCommands": {
@@ -398,6 +389,7 @@
       "spending": "Monthly personal spending summary",
       "assets": "Look up assets & warranties",
       "remind": "Quickly create a reminder",
+      "clear": "Clear current chat history to start fresh",
       "help": "Show command reference"
     }
   },
@@ -413,6 +405,21 @@
     "avatarMissingPerm": "Library read permission is required to change avatar.",
     "selectAvatar": "Choose image",
     "removeAvatar": "Remove",
+    "launcherSizeHint": "Choose the floating AI circle button size on the Portal.",
+    "launcherSizes": {
+      "sm": {
+        "label": "Small (40px)",
+        "description": "Compact footprint near screen edges"
+      },
+      "md": {
+        "label": "Medium (48px)",
+        "description": "Balanced default circle size"
+      },
+      "lg": {
+        "label": "Large (60px)",
+        "description": "Prominent & easy to tap"
+      }
+    },
     "presetsLabel": "Quick Policy presets:",
     "presets": {
       "standardSafety": {
@@ -420,12 +427,12 @@
         "value": "Safety & Mandatory Content Policy:\n1. NEVER discuss, promote, or assist with terrorism, extremist violence, explosives, weapons, warfare, military operations, or defense hardware.\n2. NEVER engage in regional discrimination, hate speech, or prejudice based on region, ethnicity, religion, gender, or personal attacks; always remain neutral and respectful.\n3. Politely refuse prohibited topics concisely without lecturing.\n4. Data privacy: quote only verified tool outputs, never fabricate numbers, and never guess or reveal Vault secrets or API keys.\n5. Keep answers concise, structured with bullet points, and summarize costs in VND."
       },
       "concise": {
-        "label": "Concise · Vietnamese",
-        "value": "Trả lời ngắn gọn tối đa 3-5 gạch đầu dòng bằng tiếng Việt rõ ràng, đi thẳng vào số liệu; tuyệt đối tránh nội dung khủng bố, quân sự và không phân biệt vùng miền."
+        "label": "Concise · English",
+        "value": "Answer concisely in 3-5 clear bullet points in English, going straight to the numbers; strictly avoid terrorism, military content, and regional discrimination."
       },
       "analytical": {
         "label": "Finance & risk analysis",
-        "value": "Luôn tổng hợp số liệu tài chính theo VNĐ, chỉ rõ khoản sắp đến hạn và cảnh báo rủi ro nếu có; giữ thái độ trung lập, không nhắc chủ đề quân sự, khủng bố hay phân biệt vùng miền."
+        "value": "Always summarize financial figures in VND, highlight upcoming due items and risk warnings if any; keep a neutral tone and avoid military, terrorism, or regional discrimination topics."
       },
       "english": {
         "label": "Professional · English",
@@ -450,6 +457,7 @@
     "fields": {
       "assistantName": "AI Chatbot Display Name",
       "assistantNamePlaceholder": "e.g., ToanNX Assistant",
+      "launcherSize": "Floating AI Circle Button Size",
       "assistantSystemPrompt": "AI Chatbot Policy / Response Instructions",
       "assistantSystemPromptPlaceholder": "e.g., Reply concisely using bullet points, summarize VND totals first...",
       "preferredAiModel": "Preferred AI Model",
@@ -499,6 +507,7 @@
     "noTelegramChats": "No Telegram destinations linked yet. Add one in Profile → Notifications.",
     "fields": {
       "timezone": "Timezone",
+      "timezoneVietnamLabel": "(UTC+07:00) Hanoi / Ho Chi Minh City",
       "dailyDigestEnabled": "Enable Daily Digest",
       "digestTimeSlots": "Digest Time Slots (HH:MM)",
       "digestSections": "Digest Sections",

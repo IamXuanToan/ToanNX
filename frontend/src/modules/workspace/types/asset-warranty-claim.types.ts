@@ -11,6 +11,8 @@ export type AssetWarrantyClaim = {
   id: string;
   ownerId: string;
   ownerEmail: string;
+  ownerName: string;
+  ownerUsername: string | null;
   assetId: string;
   assetName: string;
   assetBrand: string;

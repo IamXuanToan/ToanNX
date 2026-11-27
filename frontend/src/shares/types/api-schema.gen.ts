@@ -4653,6 +4653,11 @@ export interface components {
       readonly user_email: string;
       /** @description Họ tên chủ phiên. */
       readonly user_name: string;
+      /**
+       * @description Tên đăng nhập chủ phiên.
+       * @default
+       */
+      readonly user_username: string | null;
       /** @description Chủ phiên là superuser. */
       readonly user_is_superuser: boolean;
       /** @description ACTIVE, REVOKED hoặc EXPIRED. */
@@ -4873,8 +4878,6 @@ export interface components {
        * @default
        */
       notes: string;
-      /** @description Kênh nhận thông báo hết bảo hành (`WEBSITE`, `TELEGRAM`, `EMAIL`). */
-      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
     };
     /** @description Chi tiết/danh sách thiết bị (annotations từ AssetRepository, 0 N+1). */
     AssetResponse: {
@@ -4897,6 +4900,11 @@ export interface components {
        * @default
        */
       readonly owner_name: string;
+      /**
+       * @description Tên đăng nhập chủ sở hữu.
+       * @default
+       */
+      readonly owner_username: string | null;
       /**
        * Tên thiết bị
        * @description Tên nhận diện thiết bị.
@@ -5073,11 +5081,6 @@ export interface components {
        */
       readonly notes: string;
       /**
-       * Kênh nhận thông báo
-       * @description Danh sách kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`).
-       */
-      readonly notification_channels: unknown;
-      /**
        * @description Tổng số phiếu bảo hành.
        * @default 0
        */
@@ -5241,6 +5244,16 @@ export interface components {
       /** @description Email chủ sở hữu. */
       readonly owner_email: string;
       /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
+      /**
+       * @description Tên đăng nhập chủ sở hữu.
+       * @default
+       */
+      readonly owner_username: string | null;
+      /**
        * Thiết bị
        * Format: uuid
        * @description Thiết bị được gửi bảo hành/sửa chữa.
@@ -5388,12 +5401,20 @@ export interface components {
        */
       readonly updated_at: string;
     };
-    /** @description Avatar, tên hiển thị và model đang chạy (không lộ policy nội bộ hay quyền cấu hình). */
+    /** @description Avatar, tên hiển thị, kích thước nút tròn và model đang chạy (không lộ policy nội bộ). */
     AssistantBotProfileResponse: {
       /** @description Tên hiển thị Chatbot AI. */
       name: string;
       /** @description Ảnh đại diện Chatbot AI. */
       avatar: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /**
+       * @description Kích thước nút tròn Chatbot AI nổi trên giao diện Portal (`sm`, `md`, `lg`).
+       *
+       *     * `sm` - sm
+       *     * `md` - md
+       *     * `lg` - lg
+       */
+      launcher_size: components["schemas"]["LauncherSizeEnum"];
       /** @description Model AI đang kích hoạt. */
       active_model: string;
       /** @description Admin đã thiết lập Policy riêng hay chưa. */
@@ -5447,12 +5468,20 @@ export interface components {
       /** @description Chỉ dùng trực tiếp trên Telegram Bot. */
       telegram_only: boolean;
     };
-    /** @description Trọn bộ cấu hình Avatar, Tên, Policy, Model, Token Limit và Bot Telegram AI. */
+    /** @description Trọn bộ cấu hình Avatar, Tên, Kích thước nút tròn, Policy, Model, Token Limit và Telegram AI. */
     AssistantConfigResponse: {
       /** @description Tên Chatbot AI. */
       assistant_name: string;
       /** @description Ảnh đại diện Chatbot AI (null nếu dùng icon mặc định). */
       assistant_avatar: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /**
+       * @description Kích thước nút tròn Chatbot AI nổi trên giao diện Portal (`sm`, `md`, `lg`).
+       *
+       *     * `sm` - sm
+       *     * `md` - md
+       *     * `lg` - lg
+       */
+      launcher_size: components["schemas"]["LauncherSizeEnum"];
       /** @description Policy / chỉ dẫn trả lời của Chatbot AI. */
       assistant_system_prompt: string;
       /** @description Model AI ưu tiên. */
@@ -5489,6 +5518,14 @@ export interface components {
        * @description ID ảnh công khai (upload qua /attachments) làm avatar Chatbot AI; null để gỡ.
        */
       assistant_avatar_id?: string | null;
+      /**
+       * @description Kích thước nút tròn Chatbot AI nổi trên Portal (`sm`, `md`, `lg`).
+       *
+       *     * `sm` - sm
+       *     * `md` - md
+       *     * `lg` - lg
+       */
+      launcher_size?: components["schemas"]["LauncherSizeEnum"];
       /** @description Policy / chỉ dẫn trả lời bổ sung của Chatbot AI. */
       assistant_system_prompt?: string;
       /** @description Model AI ưu tiên (để trống = tự động fallback theo ENV). */
@@ -6156,6 +6193,8 @@ export interface components {
       actor_id: string | null;
       /** @description Email người thực hiện lúc thay đổi. */
       actor_label: string;
+      /** @description Tên hiển thị người thực hiện theo chuẩn `fullname (username)` hoặc `username`. */
+      readonly actor_display_name: string;
       /** @description `{field: [cũ, mới]}`; field ẩn là `***`. */
       changes: unknown;
       /** @description Request id của thao tác (đối chiếu log). */
@@ -6796,6 +6835,11 @@ export interface components {
        */
       readonly owner_name: string;
       /**
+       * @description Tên đăng nhập chủ sở hữu.
+       * @default
+       */
+      readonly owner_username: string | null;
+      /**
        * Nguồn
        * @description MANUAL / SEPAY.
        *
@@ -7078,6 +7122,11 @@ export interface components {
        */
       readonly owner_name: string;
       /**
+       * @description Tên đăng nhập chủ sở hữu.
+       * @default
+       */
+      readonly owner_username: string | null;
+      /**
        * Loại
        * @description Loại chứng từ.
        *
@@ -7316,6 +7365,13 @@ export interface components {
      * @enum {string}
      */
     KindEnum: "group" | "private";
+    /**
+     * @description * `sm` - sm
+     *     * `md` - md
+     *     * `lg` - lg
+     * @enum {string}
+     */
+    LauncherSizeEnum: "sm" | "md" | "lg";
     /**
      * @description * `INFO` - Thông tin
      *     * `WARNING` - Cảnh báo
@@ -8265,6 +8321,11 @@ export interface components {
        * @description Email.
        */
       email: string;
+      /**
+       * @description Tên đăng nhập.
+       * @default
+       */
+      username: string | null;
       /** @description Họ tên đầy đủ. */
       full_name: string;
     };
@@ -9428,8 +9489,6 @@ export interface components {
       invoice_attachment_ids?: string[];
       /** @description Ghi chú chung. */
       notes?: string;
-      /** @description Kênh nhận thông báo hết bảo hành (`WEBSITE`, `TELEGRAM`, `EMAIL`). */
-      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
     };
     /** @description Đầu vào PATCH phiếu bảo hành/sửa chữa. */
     PatchedAssetWarrantyClaimUpdateValidateRequest: {
@@ -9522,6 +9581,14 @@ export interface components {
        * @description ID ảnh công khai (upload qua /attachments) làm avatar Chatbot AI; null để gỡ.
        */
       assistant_avatar_id?: string | null;
+      /**
+       * @description Kích thước nút tròn Chatbot AI nổi trên Portal (`sm`, `md`, `lg`).
+       *
+       *     * `sm` - sm
+       *     * `md` - md
+       *     * `lg` - lg
+       */
+      launcher_size?: components["schemas"]["LauncherSizeEnum"];
       /** @description Policy / chỉ dẫn trả lời bổ sung của Chatbot AI. */
       assistant_system_prompt?: string;
       /** @description Model AI ưu tiên (để trống = tự động fallback theo ENV). */
@@ -10015,8 +10082,6 @@ export interface components {
       anchor_day?: number | null;
       /** @description Danh sách nhãn. */
       tags?: string[];
-      /** @description Kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`). */
-      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
     };
     /** @description Dữ liệu cập nhật vai trò (mã vai trò không đổi được). */
     PatchedRoleUpdateValidateRequest: {
@@ -10128,8 +10193,6 @@ export interface components {
       manage_url?: string;
       /** @description Danh sách số ngày nhắc trước hạn. */
       reminder_days_before?: number[];
-      /** @description Kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`). */
-      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
       /** @description Đang theo dõi gia hạn. */
       is_active?: boolean;
       /** @description Ghi chú. */
@@ -10623,6 +10686,11 @@ export interface components {
        * @description Email.
        */
       email: string;
+      /**
+       * @description Tên đăng nhập.
+       * @default
+       */
+      username: string | null;
       /** @description Họ tên đầy đủ. */
       full_name: string;
     };
@@ -10780,8 +10848,6 @@ export interface components {
       anchor_day?: number | null;
       /** @description Danh sách nhãn. */
       tags?: string[];
-      /** @description Kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`). Mặc định `['WEBSITE']`. */
-      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
     };
     /** @description Chi tiết/danh sách nhắc việc cá nhân. */
     ReminderResponse: {
@@ -10799,6 +10865,16 @@ export interface components {
       readonly owner_id: string;
       /** @description Email chủ sở hữu. */
       readonly owner_email: string;
+      /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
+      /**
+       * @description Tên đăng nhập chủ sở hữu.
+       * @default
+       */
+      readonly owner_username: string | null;
       /**
        * Tiêu đề
        * @description Nội dung nhắc việc ngắn gọn.
@@ -10868,11 +10944,6 @@ export interface components {
        * @description Nhãn phân loại công việc.
        */
       readonly tags: unknown;
-      /**
-       * Kênh nhận thông báo
-       * @description Danh sách kênh thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`).
-       */
-      readonly notification_channels: unknown;
       /**
        * Thời điểm tạo
        * Format: date-time
@@ -11746,6 +11817,11 @@ export interface components {
        * @description Email.
        */
       email: string;
+      /**
+       * @description Tên đăng nhập.
+       * @default
+       */
+      username: string | null;
       /** @description Họ tên đầy đủ. */
       full_name: string;
     };
@@ -11873,8 +11949,6 @@ export interface components {
       manage_url?: string;
       /** @description Số ngày nhắc trước hạn (mặc định [7, 3, 1]). */
       reminder_days_before?: number[];
-      /** @description Kênh nhận thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`). Mặc định `['WEBSITE']`. */
-      notification_channels?: components["schemas"]["WorkspaceNotificationChannelEnum"][];
       /**
        * @description Đang theo dõi gia hạn.
        * @default true
@@ -11902,6 +11976,16 @@ export interface components {
       readonly owner_id: string;
       /** @description Email chủ sở hữu. */
       readonly owner_email: string;
+      /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
+      /**
+       * @description Tên đăng nhập chủ sở hữu.
+       * @default
+       */
+      readonly owner_username: string | null;
       /**
        * Dịch vụ định kỳ
        * Format: uuid
@@ -12047,6 +12131,16 @@ export interface components {
       /** @description Email chủ sở hữu. */
       readonly owner_email: string;
       /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
+      /**
+       * @description Tên đăng nhập chủ sở hữu.
+       * @default
+       */
+      readonly owner_username: string | null;
+      /**
        * Tên dịch vụ
        * @description Tên dịch vụ hoặc tên miền cần theo dõi.
        */
@@ -12147,11 +12241,6 @@ export interface components {
        * @description Danh sách số ngày nhắc trước hạn (ví dụ [7, 3, 1]).
        */
       readonly reminder_days_before: unknown;
-      /**
-       * Kênh nhận thông báo
-       * @description Danh sách kênh thông báo (`WEBSITE`, `TELEGRAM`, `EMAIL`).
-       */
-      readonly notification_channels: unknown;
       /**
        * Đang theo dõi
        * @description Tắt để tạm ngưng thông báo gia hạn.
@@ -12783,6 +12872,16 @@ export interface components {
       /** @description Email chủ sở hữu. */
       readonly owner_email: string;
       /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
+      /**
+       * @description Tên đăng nhập chủ sở hữu.
+       * @default
+       */
+      readonly owner_username: string | null;
+      /**
        * Tiêu đề
        * @description Tên gợi nhớ mục bí mật.
        */
@@ -12839,6 +12938,16 @@ export interface components {
       /** @description Email người mở xem lần cuối. */
       readonly last_revealed_by_email: string;
       /**
+       * @description Họ tên người mở xem lần cuối.
+       * @default
+       */
+      readonly last_revealed_by_name: string;
+      /**
+       * @description Tên đăng nhập người mở xem lần cuối.
+       * @default
+       */
+      readonly last_revealed_by_username: string | null;
+      /**
        * Thời điểm tạo
        * Format: date-time
        * @description Thời điểm bản ghi được tạo (tự động).
@@ -12871,8 +12980,18 @@ export interface components {
        * @description Thời điểm giải mã.
        */
       revealed_at: string;
-      /** @description Người thực hiện giải mã. */
+      /** @description Email người thực hiện giải mã. */
       revealed_by_email: string;
+      /**
+       * @description Họ tên người thực hiện giải mã.
+       * @default
+       */
+      revealed_by_name: string;
+      /**
+       * @description Tên đăng nhập người thực hiện giải mã.
+       * @default
+       */
+      revealed_by_username: string | null;
     };
     /**
      * @description * `public` - Công khai
@@ -13137,13 +13256,6 @@ export interface components {
      */
     WorkspaceGroupToolPolicyEnum: "DISABLED" | "OWNER_ONLY" | "ALL_MEMBERS";
     /**
-     * @description * `WEBSITE` - WEBSITE
-     *     * `TELEGRAM` - TELEGRAM
-     *     * `EMAIL` - EMAIL
-     * @enum {string}
-     */
-    WorkspaceNotificationChannelEnum: "WEBSITE" | "TELEGRAM" | "EMAIL";
-    /**
      * @description * `LOW` - Thấp
      *     * `MEDIUM` - Trung bình
      *     * `HIGH` - Cao
@@ -13176,6 +13288,16 @@ export interface components {
       readonly owner_id: string;
       /** @description Email chủ sở hữu. */
       readonly owner_email: string;
+      /**
+       * @description Tên chủ sở hữu.
+       * @default
+       */
+      readonly owner_name: string;
+      /**
+       * @description Tên đăng nhập chủ sở hữu.
+       * @default
+       */
+      readonly owner_username: string | null;
       /**
        * Múi giờ
        * @description Múi giờ chuẩn IANA để tính lịch và Digest (VD: Asia/Ho_Chi_Minh).

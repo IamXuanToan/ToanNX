@@ -13,6 +13,16 @@ class WorkspaceSettingResponseSerializer(serializers.ModelSerializer[WorkspaceSe
     """Cấu hình cá nhân: múi giờ, digest, mốc nhắc mặc định và chat Telegram đã liên kết."""
 
     owner_email = serializers.CharField(source="owner.email", read_only=True, help_text="Email chủ sở hữu.")
+    owner_name = serializers.CharField(
+        source="owner.full_name", read_only=True, default="", help_text="Tên chủ sở hữu."
+    )
+    owner_username = serializers.CharField(
+        source="owner.username",
+        read_only=True,
+        allow_null=True,
+        default="",
+        help_text="Tên đăng nhập chủ sở hữu.",
+    )
     available_digest_sections = serializers.SerializerMethodField(
         help_text="Các mục dữ liệu hỗ trợ hiển thị trong Digest."
     )
@@ -32,6 +42,8 @@ class WorkspaceSettingResponseSerializer(serializers.ModelSerializer[WorkspaceSe
             "id",
             "owner_id",
             "owner_email",
+            "owner_name",
+            "owner_username",
             "timezone",
             "daily_digest_enabled",
             "digest_time_slots",

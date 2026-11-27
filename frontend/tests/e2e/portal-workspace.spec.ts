@@ -184,7 +184,7 @@ test.describe("Client Portal — Không gian cá nhân & Trợ lý AI", () => {
       await expect(memberPage).toHaveURL(/\/vi\/ca-nhan\/bao-hanh\/[0-9a-f-]{36}$/);
 
       // Quay về thẳng tab Bảo hành của thiết bị và xác nhận phiếu hiển thị trong bảng theo thiết bị
-      await memberPage.getByRole("link", { name: "Về thiết bị" }).click();
+      await memberPage.getByRole("link", { name: "Quay lại", exact: true }).click();
       await expect(memberPage).toHaveURL(
         new RegExp(`/vi/ca-nhan/thiet-bi/${assetId}\\?tab=claims$`),
       );
@@ -221,47 +221,45 @@ test.describe("Client Portal — Không gian cá nhân & Trợ lý AI", () => {
       await memberPage.goto("/vi/ca-nhan/ket-sat");
       await expect(memberPage.getByRole("table")).toContainText("9876");
 
-      // 5. Nhắc việc + DateTimePicker gọn 1 khung + Tooltip Nhãn + Kênh nhận thông báo + nút Hủy/Quay lại
+      // 5. Nhắc việc + DateTimePicker gọn 1 khung + Tooltip Nhãn + nút Quay lại thống nhất (kênh thông báo cấu hình tại Hồ sơ → Thông báo)
       await memberPage.goto("/vi/ca-nhan/nhac-viec/tao-moi");
-      await expect(memberPage.getByRole("link", { name: "Hủy" })).toBeVisible();
+      await expect(memberPage.getByRole("link", { name: "Quay lại" })).toBeVisible();
       await expect(memberPage.getByRole("button", { name: "Hướng dẫn nhập thẻ" })).toBeVisible();
       await memberPage.getByLabel("Tiêu đề việc").fill(`Reminder E2E ${suffix}`);
-      await memberPage.getByRole("checkbox", { name: /Telegram/i }).click();
-      await memberPage.getByRole("checkbox", { name: /Email/i }).click();
       await memberPage.getByRole("button", { name: "Lưu", exact: true }).click();
       await expect(memberPage).toHaveURL(/\/vi\/ca-nhan\/nhac-viec\/[0-9a-f-]{36}$/);
       await expect(memberPage.getByRole("link", { name: "Quay lại" })).toBeVisible();
 
-      // 6. Nút tròn Trợ lý AI kéo-thả hít 4 cạnh & Popup 1 luồng chat (badge trường trộn + cỡ popup + gõ /)
+      // 6. Nút tròn Trợ lý AI kéo-thả hít 4 cạnh & Popup 1 luồng chat (badge trường trộn + gõ / + xóa lịch sử ở header)
       const aiTrigger = memberPage.getByTestId("assistant-floating-trigger");
       await expect(aiTrigger).toBeVisible();
+      await expect(aiTrigger).toHaveAttribute("data-launcher-size", /^(sm|md|lg)$/);
       await aiTrigger.click();
       const aiPopup = memberPage.getByTestId("assistant-popup-panel");
       await expect(aiPopup).toBeVisible();
       await expect(memberPage.getByTestId("assistant-popup-config")).toHaveCount(0);
-      await aiPopup.getByTestId("assistant-size-compact").click();
-      await expect(aiPopup.getByTestId("assistant-size-compact")).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
+      await expect(aiPopup.getByTestId("assistant-size-compact")).toHaveCount(0);
       await aiPopup.getByRole("textbox").fill("/");
       await expect(aiPopup.getByTestId("assistant-slash-suggestions")).toBeVisible();
+      await expect(aiPopup.getByTestId("slash-option-clear")).toBeVisible();
       await aiPopup.getByTestId("slash-option-today").dispatchEvent("mousedown");
       await expect(aiPopup.getByText(`Reminder E2E ${suffix}`)).toBeVisible();
+      await expect(aiPopup.getByTestId("assistant-clear-thread-btn")).toBeVisible();
       await memberPage.getByTestId("assistant-popup-close").click();
       await expect(aiPopup).toHaveCount(0);
 
-      // 7. Admin cấu hình Chatbot AI theo form chuẩn & xem danh sách lệnh Telegram + có nút Hủy
+      // 7. Admin cấu hình Chatbot AI theo form chuẩn (kích thước nút tròn, policy, lệnh Telegram) & có nút Quay lại
       await page.goto("/vi/quan-tri/he-thong/tro-ly-ai");
       await expect(page.getByRole("heading", { name: "Cấu hình Chatbot AI" })).toBeVisible();
-      await expect(page.getByRole("link", { name: "Hủy" })).toBeVisible();
+      await expect(page.getByRole("link", { name: "Quay lại" })).toBeVisible();
       await expect(page.getByTestId("admin-command-list")).toBeVisible();
+      await page.getByLabel(/Lớn \(60px\)/i).click();
       await page.getByRole("button", { name: "Ngắn gọn · Tiếng Việt" }).click();
       await page.getByRole("button", { name: "Lưu", exact: true }).click();
 
-      // 8. Cài đặt cá nhân (Múi giờ +7, Digest, chip ngày cảnh báo & nút Hủy) + đổi ngôn ngữ /vi <-> /en
+      // 8. Cài đặt cá nhân (Múi giờ +7, Digest, chip ngày cảnh báo & nút Quay lại) + đổi ngôn ngữ /vi <-> /en
       await memberPage.goto("/vi/ca-nhan/cai-dat");
-      await expect(memberPage.getByRole("link", { name: "Hủy" })).toBeVisible();
+      await expect(memberPage.getByRole("link", { name: "Quay lại" })).toBeVisible();
       await memberPage.getByRole("button", { name: "Lưu cài đặt" }).click();
       await memberPage.getByTestId("language-switcher").click();
       await memberPage.getByTestId("locale-en").click();

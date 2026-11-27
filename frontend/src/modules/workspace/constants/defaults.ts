@@ -99,11 +99,6 @@ export const REMINDER_PRIORITIES = ["LOW", "MEDIUM", "HIGH", "URGENT"] as const;
 
 export const REMINDER_RECURRENCES = ["NONE", "DAILY", "WEEKLY", "MONTHLY", "YEARLY"] as const;
 
-/** Kênh gửi thông báo tùy chọn cho Nhắc việc, Dịch vụ định kỳ & Thiết bị. */
-export const WORKSPACE_NOTIFICATION_CHANNELS = ["WEBSITE", "TELEGRAM", "EMAIL"] as const;
-
-export type WorkspaceNotificationChannel = (typeof WORKSPACE_NOTIFICATION_CHANNELS)[number];
-
 export const TELEGRAM_GROUP_TOOL_POLICIES = ["DISABLED", "OWNER_ONLY", "ALL_MEMBERS"] as const;
 
 export const CALENDAR_EVENT_TYPES = [
@@ -116,7 +111,7 @@ export const CALENDAR_EVENT_TYPES = [
 import type { AssistantCommand } from "../types/assistant.types";
 
 export type AssistantSlashCommandSpec = {
-  key: "today" | "upcoming" | "spending" | "assets" | "remind" | "help";
+  key: "today" | "upcoming" | "spending" | "assets" | "remind" | "clear" | "help";
   commandVi: string;
   commandEn: string;
   syntaxVi: string;
@@ -160,6 +155,13 @@ export const ASSISTANT_SLASH_COMMANDS: readonly AssistantSlashCommandSpec[] = [
     syntaxVi: "/nhac_viec <DD/MM> <HH:MM> <nội_dung>",
     syntaxEn: "/remind <DD/MM> <HH:MM> <title>",
     insertOnly: true,
+  },
+  {
+    key: "clear",
+    commandVi: "/xoa_lich_su",
+    commandEn: "/clear",
+    syntaxVi: "/xoa_lich_su",
+    syntaxEn: "/clear",
   },
   {
     key: "help",
@@ -245,21 +247,22 @@ export const ASSISTANT_POLICY_PRESETS = [
 /** Khóa `localStorage` ghi nhớ tọa độ nút tròn Chatbot AI nổi trên màn hình. */
 export const ASSISTANT_WIDGET_POSITION_KEY = "assistant_launcher_position";
 
-/** Khóa `localStorage` ghi nhớ cỡ khung popup Chatbot AI. */
-export const ASSISTANT_POPUP_SIZE_KEY = "assistant_popup_size";
+export const ASSISTANT_LAUNCHER_SIZE_OPTIONS = ["sm", "md", "lg"] as const;
 
-export const ASSISTANT_POPUP_SIZE_OPTIONS = ["compact", "default", "large"] as const;
+export type AssistantLauncherSize = (typeof ASSISTANT_LAUNCHER_SIZE_OPTIONS)[number];
 
-export type AssistantPopupSize = (typeof ASSISTANT_POPUP_SIZE_OPTIONS)[number];
-
-export const ASSISTANT_POPUP_DIMENSIONS: Record<
-  AssistantPopupSize,
-  { width: number; height: number }
-> = {
-  compact: { width: 360, height: 460 },
-  default: { width: 420, height: 560 },
-  large: { width: 540, height: 680 },
+/** Kích thước (px) nút tròn Chatbot AI nổi do Admin cấu hình. */
+export const ASSISTANT_LAUNCHER_SIZES: Record<AssistantLauncherSize, number> = {
+  sm: 40,
+  md: 48,
+  lg: 60,
 };
+
+/** Kích thước chuẩn cố định của khung popup chat Chatbot AI (tự thu gọn theo viewport). */
+export const ASSISTANT_POPUP_DIMENSIONS = {
+  width: 420,
+  height: 560,
+} as const;
 
 /** Class badge theo token Light/Dark hệ thống cho từng câu lệnh nhanh. */
 export const ASSISTANT_SLASH_BADGE_STYLES: Record<AssistantSlashCommandSpec["key"], string> = {
@@ -268,8 +271,15 @@ export const ASSISTANT_SLASH_BADGE_STYLES: Record<AssistantSlashCommandSpec["key
   spending: "border-info/25 bg-info-bg text-info",
   assets: "border-success/25 bg-success-bg text-success",
   remind: "border-border bg-accent text-accent-foreground",
+  clear: "border-destructive/30 bg-destructive/10 text-destructive",
   help: "border-border bg-secondary text-secondary-foreground",
 };
+
+/** Kiểm tra xem nội dung nhập vào có phải câu lệnh xóa lịch sử (`/xoa_lich_su`, `/clear`) hay không. */
+export function isClearSlashCommand(content: string): boolean {
+  const token = content.trim().toLowerCase();
+  return token === "/xoa_lich_su" || token === "/xoalichsu" || token === "/clear";
+}
 
 /**
  * Nhận diện câu lệnh `/` ở đầu tin nhắn để hiển thị dưới dạng badge trường trộn đẹp mắt.

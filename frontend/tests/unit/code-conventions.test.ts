@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
+import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -141,5 +142,102 @@ describe("Quy ước tập trung hằng số và Link", () => {
       );
     });
     expect(rawAuthErrorCodeFiles.map(toRel)).toEqual([]);
+  });
+
+  it("không gắn thuộc tính HTML title= lên thẻ DOM hay UI primitive (dùng AppTooltip / shadcn Tooltip)", () => {
+    const primitiveTooltipForwarders = new Set([
+      "Badge",
+      "Button",
+      "Card",
+      "Checkbox",
+      "DropdownMenuTrigger",
+      "Image",
+      "Input",
+      "Link",
+      "PopoverTrigger",
+      "Switch",
+      "TableCell",
+      "TableHead",
+      "TableRow",
+      "TabsTrigger",
+      "Textarea",
+      "TiptapToggle",
+      "Toggle",
+      "TooltipTrigger",
+    ]);
+
+    const violations: string[] = [];
+    const tsxFiles = tsFiles.filter((file) => file.endsWith(".tsx"));
+
+    for (const file of tsxFiles) {
+      const content = readFileSync(file, "utf8");
+      if (!content.includes("title")) continue;
+
+      const sf = ts.createSourceFile(
+        file,
+        content,
+        ts.ScriptTarget.Latest,
+        true,
+        ts.ScriptKind.TSX,
+      );
+      const visit = (node: ts.Node) => {
+        if (ts.isJsxAttribute(node) && node.name.getText(sf) === "title") {
+          const opening = node.parent?.parent;
+          if (opening && (ts.isJsxOpeningElement(opening) || ts.isJsxSelfClosingElement(opening))) {
+            const tagName = opening.tagName.getText(sf);
+            const isDomTag = /^[a-z]/.test(tagName) && tagName !== "iframe";
+            if (isDomTag || primitiveTooltipForwarders.has(tagName)) {
+              const line = sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1;
+              violations.push(`${toRel(file)}:${line} <${tagName} title=...>`);
+            }
+          }
+        }
+        ts.forEachChild(node, visit);
+      };
+      visit(sf);
+    }
+
+    expect(violations).toEqual([]);
+  });
+
+  it("không gọi format.relativeTime trực tiếp hoặc dateStyle/timeStyle ngoài helper thời gian chuẩn", () => {
+    const allowedRelativeTime = new Set([
+      "shares/components/common/timestamp-text.tsx",
+      "shares/lib/date-time-format.ts",
+    ]);
+    const relativeOffenders = tsFiles.filter((file) => {
+      const rel = toRel(file);
+      if (allowedRelativeTime.has(rel)) return false;
+      const content = readFileSync(file, "utf8");
+      if (content.includes("formatDateTimeWithRelative")) return false;
+      return /\bformat\.relativeTime\s*\(/.test(content);
+    });
+    expect(relativeOffenders.map(toRel)).toEqual([]);
+
+    const shorthandStyleOffenders = tsFiles.filter((file) => {
+      const content = readFileSync(file, "utf8");
+      return /\b(dateStyle|timeStyle)\s*:/.test(content);
+    });
+    expect(shorthandStyleOffenders.map(toRel)).toEqual([]);
+  });
+
+  it("không fallback trực tiếp ownerName || ownerEmail hoặc fullName || email trong component/hook", () => {
+    const offenders = tsFiles.filter((file) => {
+      const rel = toRel(file);
+      if (rel === "shares/lib/user-display.ts") return false;
+      const content = readFileSync(file, "utf8");
+      return /\b(ownerName|fullName)\s*\|\|[\s\S]{0,40}\b(ownerEmail|email)\b/.test(content);
+    });
+    expect(offenders.map(toRel)).toEqual([]);
+  });
+
+  it("tooltip của cột chủ sở hữu/người dùng không được ưu tiên email thô trước nhãn fullname (username)", () => {
+    const offenders = tsFiles.filter((file) => {
+      const content = readFileSync(file, "utf8");
+      return /<AppTooltip\s+content=\{[^}]*(ownerEmail|userEmail|owner\.email)\s*\|\|/.test(
+        content,
+      );
+    });
+    expect(offenders.map(toRel)).toEqual([]);
   });
 });

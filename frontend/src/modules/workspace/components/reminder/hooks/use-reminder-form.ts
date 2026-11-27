@@ -30,9 +30,6 @@ function toFormValues(item: Reminder): ReminderFormValues {
     recurrence: item.recurrence,
     anchorDay: item.anchorDay !== null ? String(item.anchorDay) : "",
     tags: item.tags ?? [],
-    notificationChannels: item.notificationChannels?.length
-      ? item.notificationChannels
-      : ["WEBSITE"],
   };
 }
 
@@ -66,7 +63,6 @@ export function useReminderForm(
       recurrence: "NONE",
       anchorDay: "",
       tags: [],
-      notificationChannels: ["WEBSITE"],
     },
     values: reminder ? toFormValues(reminder) : undefined,
   });
@@ -82,7 +78,6 @@ export function useReminderForm(
       recurrence: values.recurrence,
       anchorDay: values.anchorDay ? Number(values.anchorDay) : null,
       tags: values.tags,
-      notificationChannels: values.notificationChannels,
     };
     try {
       const saved = await save.mutateAsync(input);

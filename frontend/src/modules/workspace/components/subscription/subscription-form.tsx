@@ -3,16 +3,15 @@
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
-import { Link } from "@/i18n/navigation";
 import { DatePicker } from "@/shares/components/common/date-picker";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { NumberInput } from "@/shares/components/common/number-input";
 import { SelectField } from "@/shares/components/common/select-field";
-import { Button } from "@/shares/components/ui/button";
 import { Checkbox } from "@/shares/components/ui/checkbox";
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
@@ -21,7 +20,6 @@ import { Textarea } from "@/shares/components/ui/textarea";
 import { BILLING_CYCLES, SUBSCRIPTION_CATEGORIES } from "../../constants/defaults";
 import { WORKSPACE_ROUTES } from "../../constants/routes";
 import type { Subscription } from "../../types/subscription.types";
-import { NotificationChannelsField } from "../workspace-setting/notification-channels-field";
 import { useSubscriptionForm } from "./hooks/use-subscription-form";
 
 /**
@@ -38,7 +36,6 @@ export function SubscriptionForm({
   disabled?: boolean;
 }) {
   const t = useTranslations("workspace.subscriptions");
-  const tChannels = useTranslations("workspace.notificationChannels");
   const tCommon = useTranslations("common.actions");
   const state = useSubscriptionForm(subscription);
   const { form } = state;
@@ -210,31 +207,11 @@ export function SubscriptionForm({
               {(field) => <Textarea {...field} disabled={locked} rows={3} />}
             </FormField>
           </div>
-          <div className="sm:col-span-2">
-            <FormField
-              control={form.control}
-              name="notificationChannels"
-              label={tChannels("label")}
-            >
-              {(field) => (
-                <NotificationChannelsField
-                  value={field.value}
-                  onChange={field.onChange}
-                  disabled={locked}
-                  idPrefix="sub-channel"
-                />
-              )}
-            </FormField>
-          </div>
         </div>
       </FormSection>
 
       <FormActions>
-        <Button asChild type="button" variant="outline">
-          <Link href={WORKSPACE_ROUTES.subscriptions}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
-          </Link>
-        </Button>
+        <FormBackButton href={WORKSPACE_ROUTES.subscriptions} />
         {disabled ? null : (
           <FormSubmitButton isSubmitting={state.isSubmitting}>{tCommon("save")}</FormSubmitButton>
         )}

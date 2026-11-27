@@ -3,6 +3,7 @@
 from rest_framework import serializers
 
 from app.core.serializers.core_validate_serializer import CoreValidateSerializer
+from app.workspace.constants.assistant_launcher_size import AssistantLauncherSize
 from app.workspace.constants.group_tool_policy import GroupToolPolicy
 
 
@@ -19,6 +20,11 @@ class AssistantConfigUpdateValidateSerializer(CoreValidateSerializer):
         required=False,
         allow_null=True,
         help_text="ID ảnh công khai (upload qua /attachments) làm avatar Chatbot AI; null để gỡ.",
+    )
+    launcher_size = serializers.ChoiceField(
+        choices=[(item.value, item.value) for item in AssistantLauncherSize],
+        required=False,
+        help_text="Kích thước nút tròn Chatbot AI nổi trên Portal (`sm`, `md`, `lg`).",
     )
     assistant_system_prompt = serializers.CharField(
         max_length=2000,

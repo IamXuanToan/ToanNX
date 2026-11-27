@@ -8,11 +8,20 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import commonVi from "@/messages/vi.json";
 import systemVi from "@/modules/system/messages/vi.json";
 import { AssistantFloatingWidget } from "@/modules/workspace/components/assistant/assistant-floating-widget";
-import {
-  ASSISTANT_POPUP_SIZE_KEY,
-  ASSISTANT_WIDGET_POSITION_KEY,
-} from "@/modules/workspace/constants/defaults";
+import { ASSISTANT_WIDGET_POSITION_KEY } from "@/modules/workspace/constants/defaults";
 import workspaceVi from "@/modules/workspace/messages/vi.json";
+
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({
+    children,
+    href,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+}));
 
 const mockChat = vi.fn().mockResolvedValue({
   conversationId: "conv-1",
@@ -71,15 +80,32 @@ vi.mock("@/modules/workspace/services/assistant-config.service", () => ({
     getBotProfile: vi.fn().mockResolvedValue({
       name: "ToanNX Bot",
       avatar: null,
+      launcherSize: "lg",
       activeModel: "cohere/command-a-plus",
       hasCustomPolicy: true,
     }),
     getThread: vi.fn().mockResolvedValue({
-      messages: [],
+      messages: [
+        {
+          id: "m-init",
+          conversationId: "conv-1",
+          role: "USER",
+          senderTelegramId: null,
+          senderName: "Nguyễn Toàn",
+          content: "/today",
+          toolCalls: [],
+          toolCallId: "",
+          modelUsed: "",
+          tokensUsed: 0,
+          containsPrivateData: false,
+          isError: false,
+          createdAt: "2026-11-26T09:58:00Z",
+        },
+      ],
       hasMoreMessages: false,
-      totalMessages: 0,
+      totalMessages: 1,
     }),
-    clearThread: vi.fn().mockResolvedValue({ deletedCount: 0 }),
+    clearThread: vi.fn().mockResolvedValue({ deletedCount: 1 }),
   },
 }));
 
@@ -120,6 +146,15 @@ describe("AssistantFloatingWidget (Nút tròn kéo-thả & Popup bung thông min
 
     const trigger = await screen.findByTestId("assistant-floating-trigger");
     expect(trigger.className).toContain("rounded-full");
+    await waitFor(() => {
+      expect(trigger.getAttribute("data-launcher-size")).toBe("lg");
+      expect(trigger.style.width).toBe("60px");
+      expect(trigger.style.height).toBe("60px");
+      const avatar = trigger.querySelector('[data-slot="assistant-avatar"]');
+      expect(avatar?.className).toContain("size-full");
+      expect(avatar?.className).not.toContain("data-[size=lg]:size-10");
+      expect(avatar?.className).not.toContain("size-10");
+    });
 
     // Click nút tròn (không kéo) -> mở popup bung ra phía trên-trái
     fireEvent.pointerDown(trigger, { pointerId: 1, button: 0, clientX: 1220, clientY: 740 });
@@ -128,19 +163,20 @@ describe("AssistantFloatingWidget (Nút tròn kéo-thả & Popup bung thông min
     const panel = await screen.findByTestId("assistant-popup-panel");
     expect(panel.getAttribute("data-placement")).toBe("top-left");
     expect(panel.textContent).toContain("ToanNX Bot");
+    expect(panel.style.width).toBe("420px");
 
-    // User Portal không còn nút mở config, lịch sử luồng hay nhãn kỹ thuật model/tokens
+    // User Portal không còn nút mở config, đổi cỡ popup, lịch sử luồng hay nhãn kỹ thuật model/tokens
     expect(screen.queryByTestId("assistant-popup-config")).toBeNull();
     expect(screen.queryByTestId("assistant-popup-threads")).toBeNull();
+    expect(screen.queryByTestId("assistant-size-compact")).toBeNull();
+    expect(screen.queryByTestId("assistant-size-large")).toBeNull();
     expect(panel.textContent).not.toContain("cohere/command-a-plus");
     expect(panel.textContent).not.toContain("Policy");
 
-    // Đổi kích thước popup Nhỏ / Vừa / Lớn và lưu localStorage
-    const sizeLarge = screen.getByTestId("assistant-size-large");
-    fireEvent.click(sizeLarge);
-    expect(sizeLarge.getAttribute("aria-pressed")).toBe("true");
-    expect(window.localStorage.getItem(ASSISTANT_POPUP_SIZE_KEY)).toBe('"large"');
-    expect(panel.style.width).toBe("540px");
+    // Nút xóa lịch sử nằm gọn trên header cạnh nút đóng & mở hộp xác nhận
+    await waitFor(() => {
+      expect(screen.getByTestId("assistant-clear-thread-btn")).toBeTruthy();
+    });
 
     // Bấm badge lệnh nhanh thân thiện ("Hôm nay") vẫn gửi `/hom_nay`
     fireEvent.click(screen.getByRole("button", { name: "Hôm nay" }));

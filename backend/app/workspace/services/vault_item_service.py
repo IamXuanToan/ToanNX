@@ -86,4 +86,6 @@ class VaultItemService(CoreCrudService[VaultItem, VaultItemRepository]):
             "url": updated.url,
             "revealed_at": now,
             "revealed_by_email": getattr(actor, "email", ""),
+            "revealed_by_name": getattr(actor, "full_name", "") or "",
+            "revealed_by_username": getattr(actor, "username", "") or "",
         }

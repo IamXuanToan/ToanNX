@@ -76,13 +76,13 @@ class AssistantConversationService(CoreCrudService[AssistantConversation, Assist
     def get_web_thread_messages(
         self, actor: Any, *, page: int = 1, page_size: int = AI_INITIAL_MESSAGES_LIMIT
     ) -> dict[str, Any]:
-        """Lấy lịch sử tin nhắn trong đúng 1 luồng chat Web của `actor` (mặc định 50 tin gần nhất)."""
+        """Lấy lịch sử tin nhắn hiển thị trong đúng 1 luồng chat Web của `actor` (ẩn bước gọi Tool nội bộ)."""
         thread = self.repository.find_web_thread(actor.pk)
         if thread is None:
             return {"messages": [], "has_more_messages": False, "total_messages": 0}
         safe_page = max(1, int(page))
         safe_size = max(1, min(100, int(page_size)))
-        qs = self.message_repository.queryset_for_conversation(thread.pk)
+        qs = self.message_repository.visible_queryset_for_conversation(thread.pk)
         total = qs.count()
         offset = (safe_page - 1) * safe_size
         rows = list(qs[offset : offset + safe_size + 1])
@@ -95,14 +95,19 @@ class AssistantConversationService(CoreCrudService[AssistantConversation, Assist
         }
 
     @transaction.atomic
+    def clear_conversation(self, conversation: AssistantConversation, *, actor: Any) -> int:
+        """Xóa toàn bộ tin nhắn thuộc một hội thoại bất kỳ (Web hoặc Telegram)."""
+        deleted = self.message_repository.hard_delete_where(conversation_id=conversation.pk)
+        self.repository.update(conversation, actor=actor, last_message_at=timezone.now())
+        return deleted
+
+    @transaction.atomic
     def clear_web_thread(self, actor: Any) -> int:
         """Xóa toàn bộ tin nhắn trong luồng chat Web duy nhất của `actor` (bắt đầu lại màn sạch)."""
         thread = self.repository.find_web_thread(actor.pk)
         if thread is None:
             return 0
-        deleted = self.message_repository.hard_delete_where(conversation_id=thread.pk)
-        self.repository.update(thread, actor=actor, last_message_at=timezone.now())
-        return deleted
+        return self.clear_conversation(thread, actor=actor)
 
     @transaction.atomic
     def append_message(
@@ -144,8 +149,8 @@ class AssistantConversationService(CoreCrudService[AssistantConversation, Assist
     def recent_context_messages(
         self, conversation_id: Any, *, limit: int = 10, exclude_private: bool = False
     ) -> list[AssistantMessage]:
-        """Nạp tối đa `limit` tin nhắn gần nhất để đưa vào context LLM (lọc private nếu ở Group)."""
-        rows, _ = self.message_repository.list_recent(conversation_id, limit=limit * 2)
+        """Nạp tối đa `limit` lượt hỏi-đáp sạch gần nhất cho ngữ cảnh LLM (lọc private nếu ở Group)."""
+        rows = self.message_repository.list_recent_chat_turns(conversation_id, limit=limit * 2)
         if exclude_private:
             rows = [msg for msg in rows if not msg.contains_private_data]
         return rows[-limit:]

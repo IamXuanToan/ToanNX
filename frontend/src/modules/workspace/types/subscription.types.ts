@@ -1,10 +1,6 @@
 import type { ListParams } from "@/shares/types/api.types";
 
-import type {
-  BILLING_CYCLES,
-  SUBSCRIPTION_CATEGORIES,
-  WorkspaceNotificationChannel,
-} from "../constants/defaults";
+import type { BILLING_CYCLES, SUBSCRIPTION_CATEGORIES } from "../constants/defaults";
 
 export type SubscriptionCategory = (typeof SUBSCRIPTION_CATEGORIES)[number];
 export type BillingCycle = (typeof BILLING_CYCLES)[number];
@@ -15,6 +11,8 @@ export type Subscription = {
   id: string;
   ownerId: string;
   ownerEmail: string;
+  ownerName: string;
+  ownerUsername: string | null;
   name: string;
   provider: string;
   category: SubscriptionCategory;
@@ -35,7 +33,6 @@ export type Subscription = {
   reminderDaysBefore: number[];
   isActive: boolean;
   notes: string;
-  notificationChannels: WorkspaceNotificationChannel[];
   createdAt: string;
   updatedAt: string;
 };
@@ -58,7 +55,6 @@ export type SubscriptionInput = {
   reminderDaysBefore?: number[];
   isActive?: boolean;
   notes?: string;
-  notificationChannels?: WorkspaceNotificationChannel[];
 };
 
 /** Đầu vào gia hạn dịch vụ định kỳ. */

@@ -6,6 +6,8 @@ export type SubscriptionPayment = {
   id: string;
   ownerId: string;
   ownerEmail: string;
+  ownerName: string;
+  ownerUsername: string | null;
   subscriptionId: string;
   subscriptionName: string;
   paidOn: string;

@@ -44,5 +44,7 @@ class TestVaultListApi(BaseApiTestCase):
         items, pag = self.assert_paginated(res)
         assert pag["total"] == 1
         assert items[0]["secret_last4"] == "9999"
+        assert items[0]["owner_username"] == (user.username or "")
+        assert items[0]["last_revealed_by_name"] == ""
         assert "secret_encrypted" not in items[0]
         assert "SuperSecret9999" not in str(items[0])

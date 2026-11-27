@@ -48,8 +48,8 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("NotificationChannelsField trong Nhắc việc", () => {
-  it("mặc định bật WEBSITE và cho phép bật thêm TELEGRAM, EMAIL khi lưu", async () => {
+describe("Form Nhắc việc dùng cấu hình kênh tại Hồ sơ → Thông báo", () => {
+  it("không hiển thị chọn kênh Website/Telegram/Email khi tạo mới và không gửi notificationChannels", async () => {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={client}>
@@ -62,16 +62,10 @@ describe("NotificationChannelsField trong Nhắc việc", () => {
       </QueryClientProvider>,
     );
 
-    const webCheckbox = screen.getByRole("checkbox", { name: /Website/i });
-    const tgCheckbox = screen.getByRole("checkbox", { name: /Telegram/i });
-    const emailCheckbox = screen.getByRole("checkbox", { name: /Email/i });
-
-    expect(webCheckbox.getAttribute("data-state")).toBe("checked");
-    expect(tgCheckbox.getAttribute("data-state")).toBe("unchecked");
-    expect(emailCheckbox.getAttribute("data-state")).toBe("unchecked");
-
-    fireEvent.click(tgCheckbox);
-    fireEvent.click(emailCheckbox);
+    expect(screen.queryByRole("checkbox", { name: /Website/i })).toBeNull();
+    expect(screen.queryByRole("checkbox", { name: /Telegram/i })).toBeNull();
+    expect(screen.queryByRole("checkbox", { name: /Email/i })).toBeNull();
+    expect(screen.queryByText(/Kênh nhận thông báo/i)).toBeNull();
 
     fireEvent.change(screen.getByLabelText(/Tiêu đề việc/), {
       target: { value: "Gia hạn tên miền" },
@@ -81,9 +75,8 @@ describe("NotificationChannelsField trong Nhắc việc", () => {
     await waitFor(() => {
       expect(mockSaveReminder).toHaveBeenCalledTimes(1);
     });
-    expect(mockSaveReminder.mock.calls[0]?.[0]).toMatchObject({
-      title: "Gia hạn tên miền",
-      notificationChannels: ["WEBSITE", "TELEGRAM", "EMAIL"],
-    });
+    const submitted = mockSaveReminder.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(submitted).toMatchObject({ title: "Gia hạn tên miền" });
+    expect("notificationChannels" in submitted).toBe(false);
   });
 });

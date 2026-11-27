@@ -9,6 +9,8 @@ export type VaultItem = {
   id: string;
   ownerId: string;
   ownerEmail: string;
+  ownerName: string;
+  ownerUsername: string | null;
   title: string;
   category: VaultCategory;
   username: string;
@@ -19,6 +21,8 @@ export type VaultItem = {
   lastRevealedAt: string | null;
   lastRevealedById: string | null;
   lastRevealedByEmail: string;
+  lastRevealedByName: string;
+  lastRevealedByUsername: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -32,6 +36,8 @@ export type VaultItemReveal = {
   url: string;
   revealedAt: string;
   revealedByEmail: string;
+  revealedByName: string;
+  revealedByUsername: string | null;
 };
 
 /** Đầu vào tạo mục két sắt. */

@@ -13,7 +13,9 @@ from app.system.constants.notification_channel import NotificationChannel
 from app.system.models.notification import Notification
 from app.system.models.notification_delivery import NotificationDelivery
 from app.system.models.telegram_chat import TelegramChat
+from app.system.services.notification_preference_service import NotificationPreferenceService
 from app.system.tests.helpers.permission_helper import grant
+from app.workspace.constants.workspace_notification_event import WorkspaceNotificationEvent
 from app.workspace.models.asset import Asset
 from app.workspace.models.reminder import Reminder
 from app.workspace.models.subscription import Subscription
@@ -164,15 +166,15 @@ class TestCronDispatchDueApi(BaseApiTestCase):
         assert self.assert_success(res2)["notifications_queued"] == 1
         assert Notification.objects.filter(recipient=user, event_code="workspace.reminder.due").count() == 2
 
-    def test_explicit_notification_channels_dispatch_for_reminder_asset_subscription(
+    def test_profile_notification_preferences_dispatch_for_reminder_asset_subscription(
         self, user: Any, client: Any, settings: Any, vnd: Any, fake_redis: FakeRedis
     ) -> None:
-        """Mỗi bản ghi gửi đúng kênh WEBSITE / TELEGRAM / EMAIL đã chọn (bỏ WEBSITE → hết hạn chuông ngay)."""
+        """Nhắc việc, bảo hành & gia hạn tuân theo cấu hình kênh trong Hồ sơ → Thông báo."""
         settings.CRON_SECRET = "cron-dispatch-secret"  # noqa: S105 - giá trị test
         settings.TELEGRAM_BOT_TOKEN = "123:TG-BOT"  # noqa: S105 - giá trị test
         grant(user, ReminderPermission.READ, AssetPermission.READ, SubscriptionPermission.READ)
 
-        TelegramChat.objects.create(
+        chat = TelegramChat.objects.create(
             owner=user,
             chat_id="900100",
             chat_type="private",
@@ -180,37 +182,60 @@ class TestCronDispatchDueApi(BaseApiTestCase):
             status=TelegramChat.Status.ACTIVE,
             is_active=True,
         )
+        NotificationPreferenceService().update(
+            user,
+            [
+                {
+                    "event_code": WorkspaceNotificationEvent.REMINDER_DUE,
+                    "in_app": False,
+                    "push": False,
+                    "email": True,
+                    "telegram_chat_ids": [str(chat.pk)],
+                },
+                {
+                    "event_code": WorkspaceNotificationEvent.WARRANTY_EXPIRING,
+                    "in_app": True,
+                    "push": False,
+                    "email": True,
+                    "telegram_chat_ids": [],
+                },
+                {
+                    "event_code": WorkspaceNotificationEvent.SUBSCRIPTION_RENEWING,
+                    "in_app": False,
+                    "push": False,
+                    "email": False,
+                    "telegram_chat_ids": [str(chat.pk)],
+                },
+            ],
+        )
         now = timezone.now()
         local_now = WorkspaceTimezoneService().local_now("Asia/Ho_Chi_Minh", now=now)
         today = local_now.date()
         due_time = (local_now - timedelta(minutes=2)).time().replace(second=0, microsecond=0)
         safe_time = due_time if due_time <= local_now.time() else local_now.time()
 
-        # Nhắc việc chỉ chọn TELEGRAM + EMAIL (bỏ WEBSITE)
+        # Nhắc việc theo tùy chọn Hồ sơ: tắt IN_APP, bật TELEGRAM + EMAIL
         Reminder.objects.create(
             owner=user,
             title="Nhắc qua Telegram & Email",
             due_date=today,
             due_time=safe_time,
-            notification_channels=["TELEGRAM", "EMAIL"],
         )
-        # Thiết bị hết bảo hành trong 7 ngày, chọn WEBSITE + EMAIL
+        # Thiết bị hết bảo hành trong 7 ngày: bật IN_APP + EMAIL
         Asset.objects.create(
             owner=user,
             name="Monitor Dell",
             purchase_date=today - timedelta(days=358),
             warranty_end_date=today + timedelta(days=7),
             currency=vnd,
-            notification_channels=["WEBSITE", "EMAIL"],
         )
-        # Dịch vụ sắp gia hạn trong 3 ngày, chỉ chọn TELEGRAM
+        # Dịch vụ sắp gia hạn trong 3 ngày: chỉ bật TELEGRAM
         Subscription.objects.create(
             owner=user,
             name="Cloud Pro",
             currency=vnd,
             renew_date=today + timedelta(days=3),
             reminder_days_before=[3],
-            notification_channels=["TELEGRAM"],
         )
 
         with patch("app.system.services.notification_service.NotificationService.flush_kick"):
@@ -218,21 +243,21 @@ class TestCronDispatchDueApi(BaseApiTestCase):
         assert self.assert_success(res)["notifications_queued"] == 3
 
         rem_notif = Notification.objects.get(recipient=user, event_code="workspace.reminder.due")
-        assert rem_notif.expires_at is not None  # Không chọn WEBSITE → không giữ trên chuông web
+        assert rem_notif.expires_at is not None  # Tắt IN_APP trong Hồ sơ → không giữ trên chuông web
         rem_channels = set(
             NotificationDelivery.objects.filter(notification=rem_notif).values_list("channel", flat=True)
         )
         assert rem_channels == {NotificationChannel.TELEGRAM, NotificationChannel.EMAIL}
 
         war_notif = Notification.objects.get(recipient=user, event_code="workspace.warranty.expiring")
-        assert war_notif.expires_at is None  # Có chọn WEBSITE
+        assert war_notif.expires_at is None  # Bật IN_APP trong Hồ sơ
         war_channels = set(
             NotificationDelivery.objects.filter(notification=war_notif).values_list("channel", flat=True)
         )
         assert war_channels == {NotificationChannel.EMAIL}
 
         sub_notif = Notification.objects.get(recipient=user, event_code="workspace.subscription.renewing")
-        assert sub_notif.expires_at is not None  # Không chọn WEBSITE
+        assert sub_notif.expires_at is not None  # Tắt IN_APP trong Hồ sơ
         sub_channels = set(
             NotificationDelivery.objects.filter(notification=sub_notif).values_list("channel", flat=True)
         )

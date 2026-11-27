@@ -2,16 +2,15 @@
 
 import { useTranslations } from "next-intl";
 
-import { Link } from "@/i18n/navigation";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { PasswordInput } from "@/shares/components/common/password-input";
 import { SelectField } from "@/shares/components/common/select-field";
 import { TagsInput } from "@/shares/components/common/tags-input";
-import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
 
@@ -108,11 +107,7 @@ export function VaultItemForm({
       </FormSection>
 
       <FormActions>
-        <Button asChild type="button" variant="outline">
-          <Link href={WORKSPACE_ROUTES.vault}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
-          </Link>
-        </Button>
+        <FormBackButton href={WORKSPACE_ROUTES.vault} />
         {disabled ? null : (
           <FormSubmitButton isSubmitting={state.isSubmitting}>{tCommon("save")}</FormSubmitButton>
         )}

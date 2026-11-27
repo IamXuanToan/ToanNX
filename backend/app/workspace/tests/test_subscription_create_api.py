@@ -55,34 +55,17 @@ class TestSubscriptionCreateApi(BaseApiTestCase):
         data = self.assert_success(created, 201)
         assert data["anchor_day"] == 31
         assert data["amount_vnd"] == "500000"
-        assert data["notification_channels"] == ["WEBSITE"]
+        assert "notification_channels" not in data
 
-        with_channels = api.post(
-            URL,
-            {
-                "name": "Hetzner Cloud",
-                "amount": "200000",
-                "currency_id": str(vnd.pk),
-                "renew_date": "2026-12-20",
-                "notification_channels": ["WEBSITE", "TELEGRAM", "EMAIL"],
-            },
-            format="json",
-        )
-        assert self.assert_success(with_channels, 201)["notification_channels"] == [
-            "WEBSITE",
-            "TELEGRAM",
-            "EMAIL",
-        ]
-
-        bad_ch = api.post(
+        unknown_ch = api.post(
             URL,
             {
                 "name": "Bad sub",
                 "amount": "100000",
                 "currency_id": str(vnd.pk),
                 "renew_date": "2026-12-21",
-                "notification_channels": [],
+                "notification_channels": ["WEBSITE"],
             },
             format="json",
         )
-        self.assert_error(bad_ch, 400, "VALIDATION_ERROR")
+        self.assert_error(unknown_ch, 400, "VALIDATION_ERROR")

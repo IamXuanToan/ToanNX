@@ -11,18 +11,24 @@ from app.core.exceptions.app_exception import AppException
 from app.finance.services.finance_report_service import FinanceReportService
 from app.novel.services.novel_service import NovelService
 from app.utilities.services.page_service import PageService
-from app.workspace.constants.workspace_defaults import AI_TOOL_ITEM_LIMIT, STALE_PROJECT_DAYS
+from app.workspace.constants.workspace_defaults import (
+    AI_TOOL_ITEM_LIMIT,
+    ALLOWED_CALENDAR_TYPES,
+    STALE_PROJECT_DAYS,
+)
 from app.workspace.models.asset import Asset
 from app.workspace.models.reminder import Reminder
 from app.workspace.services.asset_service import AssetService
 from app.workspace.services.reminder_service import ReminderService
 from app.workspace.services.subscription_service import SubscriptionService
+from app.workspace.services.workspace_calendar_service import WorkspaceCalendarService
 from app.workspace.services.workspace_setting_service import WorkspaceSettingService
 from app.workspace.services.workspace_spending_service import WorkspaceSpendingService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 
 READ_TOOL_NAMES = frozenset(
     {
+        "get_upcoming_events",
         "get_spending_summary",
         "get_finance_income_summary",
         "get_upcoming_subscriptions",
@@ -36,7 +42,7 @@ ALL_TOOL_NAMES = READ_TOOL_NAMES | OWNER_MUTATION_TOOL_NAMES
 
 
 class AssistantToolsService:
-    """Thực thi 7 tool cá nhân an toàn; tuyệt đối không có tool đọc/giải mã Két sắt Bí mật."""
+    """Thực thi 8 tool cá nhân an toàn; tuyệt đối không có tool đọc/giải mã Két sắt Bí mật."""
 
     def __init__(
         self,
@@ -47,6 +53,7 @@ class AssistantToolsService:
         asset_service: AssetService | None = None,
         page_service: PageService | None = None,
         novel_service: NovelService | None = None,
+        calendar_service: WorkspaceCalendarService | None = None,
         setting_service: WorkspaceSettingService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
     ) -> None:
@@ -58,12 +65,28 @@ class AssistantToolsService:
         self.asset_service = asset_service or AssetService()
         self.page_service = page_service or PageService()
         self.novel_service = novel_service or NovelService()
+        self.calendar_service = calendar_service or WorkspaceCalendarService()
         self.setting_service = setting_service or WorkspaceSettingService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
 
     def tool_schemas(self, *, is_owner: bool = True) -> list[dict[str, Any]]:
         """Danh sách schema JSON OpenAI function calling (lược bớt tool ghi nếu không phải chính chủ)."""
         schemas: list[dict[str, Any]] = [
+            self._schema(
+                "get_upcoming_events",
+                (
+                    "Xem lịch tổng hợp các sự kiện SẮP TỚI trong N ngày tới "
+                    "(gồm nhắc việc, dịch vụ sắp gia hạn, thiết bị hết bảo hành và hẹn trả sửa chữa). "
+                    "Ưu tiên dùng tool này khi hỏi về lịch/sự kiện sắp tới, tuần tới."
+                ),
+                {
+                    "days_ahead": {"type": "integer", "minimum": 1, "maximum": 90},
+                    "types": {
+                        "type": "array",
+                        "items": {"type": "string", "enum": sorted(ALLOWED_CALENDAR_TYPES)},
+                    },
+                },
+            ),
             self._schema(
                 "get_spending_summary",
                 (
@@ -144,6 +167,8 @@ class AssistantToolsService:
 
         args = self._parse_args(raw_arguments)
         try:
+            if name == "get_upcoming_events":
+                return self._run_upcoming_events(actor, args, hide_amounts=hide_amounts)
             if name == "get_spending_summary":
                 return self._run_spending(actor, args, hide_amounts=hide_amounts)
             if name == "get_finance_income_summary":
@@ -159,6 +184,47 @@ class AssistantToolsService:
             return self._run_create_reminder(actor, args)
         except (AppException, ValueError, TypeError) as exc:
             return {"ok": False, "error": str(exc)}
+
+    def _run_upcoming_events(self, actor: Any, args: dict[str, Any], *, hide_amounts: bool) -> dict[str, Any]:
+        days = self._int_arg(args.get("days_ahead"), 1, 90) or 14
+        raw_types = args.get("types")
+        selected_types = (
+            [str(item).strip() for item in raw_types if str(item).strip() in ALLOWED_CALENDAR_TYPES]
+            if isinstance(raw_types, list)
+            else None
+        ) or None
+        setting = self.setting_service.get_or_create_for_owner(actor)
+        today_local = self.tz_service.local_today(setting.timezone)
+        calendar_data = self.calendar_service.events(
+            actor,
+            from_date=today_local,
+            to_date=today_local + timedelta(days=days - 1),
+            types=selected_types,
+        )
+        active = [item for item in (calendar_data.get("events") or []) if not item.get("is_completed")]
+        return {
+            "ok": True,
+            "from_date": calendar_data["from_date"].isoformat(),
+            "to_date": calendar_data["to_date"].isoformat(),
+            "days_ahead": days,
+            "total_count": len(active),
+            "items": [
+                {
+                    "type": item["type"],
+                    "date": item["date"].isoformat(),
+                    "time": item.get("time") or "",
+                    "title": item["title"],
+                    "subtitle": item.get("subtitle") or "",
+                    "status": item.get("status") or "",
+                    "amount_vnd": (
+                        self._money(item["amount_vnd"], hide_amounts)
+                        if item.get("amount_vnd") is not None
+                        else None
+                    ),
+                }
+                for item in active[:AI_TOOL_ITEM_LIMIT]
+            ],
+        }
 
     def _run_spending(self, actor: Any, args: dict[str, Any], *, hide_amounts: bool) -> dict[str, Any]:
         month = self._int_arg(args.get("month"), 1, 12) if args.get("month") is not None else None
@@ -291,21 +357,60 @@ class AssistantToolsService:
             ],
         }
 
+    def _normalize_due_date(self, raw: str) -> date:
+        cleaned = raw.strip()
+        if "T" in cleaned:
+            cleaned = cleaned.split("T", 1)[0].strip()
+        elif " " in cleaned and "-" in cleaned:
+            cleaned = cleaned.split(" ", 1)[0].strip()
+        if "/" in cleaned:
+            parts = cleaned.split("/")
+            if len(parts) == 3 and all(part.isdigit() for part in parts):
+                return date(int(parts[2]), int(parts[1]), int(parts[0]))
+        return date.fromisoformat(cleaned)
+
+    def _normalize_due_time(self, raw: str) -> time | None:
+        cleaned = raw.strip().lower()
+        if "h" in cleaned and ":" not in cleaned:
+            hh, _, mm = cleaned.partition("h")
+            if hh.isdigit() and (not mm or mm.isdigit()):
+                cleaned = f"{int(hh):02d}:{int(mm or '0'):02d}"
+        if len(cleaned.split(":")) == 3:
+            cleaned = ":".join(cleaned.split(":")[:2])
+        if ":" in cleaned:
+            hh, mm = cleaned.split(":", 1)
+            if hh.isdigit() and mm.isdigit():
+                cleaned = f"{int(hh):02d}:{int(mm):02d}"
+        return self.tz_service.parse_hhmm(cleaned)
+
+    def _normalize_priority(self, raw: Any) -> str:
+        text = str(raw or Reminder.Priority.MEDIUM).strip().upper()
+        alias_map = {
+            "THẤP": Reminder.Priority.LOW,
+            "THAP": Reminder.Priority.LOW,
+            "TRUNG BÌNH": Reminder.Priority.MEDIUM,
+            "TRUNG BINH": Reminder.Priority.MEDIUM,
+            "CAO": Reminder.Priority.HIGH,
+            "KHẨN CẤP": Reminder.Priority.URGENT,
+            "KHAN CAP": Reminder.Priority.URGENT,
+        }
+        candidate = alias_map.get(text, text)
+        if candidate in {c[0] for c in Reminder.Priority.choices}:
+            return str(candidate)
+        return str(Reminder.Priority.MEDIUM)
+
     def _run_create_reminder(self, actor: Any, args: dict[str, Any]) -> dict[str, Any]:
         title = str(args.get("title") or "").strip()
         if not title:
             return {"ok": False, "error": "Tiêu đề nhắc việc không được trống."}
-        due_date_raw = str(args.get("due_date") or "").strip()
-        due_date_val = date.fromisoformat(due_date_raw)
+        due_date_val = self._normalize_due_date(str(args.get("due_date") or ""))
         due_time_val: time | None = None
         if args.get("due_time"):
-            parsed = self.tz_service.parse_hhmm(str(args["due_time"]))
+            parsed = self._normalize_due_time(str(args["due_time"]))
             if parsed is None:
                 return {"ok": False, "error": "Giờ đến hạn phải đúng dạng HH:MM."}
             due_time_val = parsed
-        priority = str(args.get("priority") or Reminder.Priority.MEDIUM).strip()
-        if priority not in {c[0] for c in Reminder.Priority.choices}:
-            priority = Reminder.Priority.MEDIUM
+        priority = self._normalize_priority(args.get("priority"))
 
         created = self.reminder_service.create(
             actor,

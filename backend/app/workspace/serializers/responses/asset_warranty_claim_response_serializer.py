@@ -12,6 +12,16 @@ class AssetWarrantyClaimResponseSerializer(serializers.ModelSerializer[AssetWarr
     """Chi tiết/danh sách phiếu bảo hành & biên nhận riêng tư."""
 
     owner_email = serializers.CharField(source="owner.email", read_only=True, help_text="Email chủ sở hữu.")
+    owner_name = serializers.CharField(
+        source="owner.full_name", read_only=True, default="", help_text="Tên chủ sở hữu."
+    )
+    owner_username = serializers.CharField(
+        source="owner.username",
+        read_only=True,
+        allow_null=True,
+        default="",
+        help_text="Tên đăng nhập chủ sở hữu.",
+    )
     asset_name = serializers.CharField(source="asset.name", read_only=True, help_text="Tên thiết bị.")
     asset_brand = serializers.CharField(
         source="asset.brand", read_only=True, default="", help_text="Hãng thiết bị."
@@ -33,6 +43,8 @@ class AssetWarrantyClaimResponseSerializer(serializers.ModelSerializer[AssetWarr
             "id",
             "owner_id",
             "owner_email",
+            "owner_name",
+            "owner_username",
             "asset_id",
             "asset_name",
             "asset_brand",

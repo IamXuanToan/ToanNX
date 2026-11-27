@@ -27,6 +27,8 @@ const mockReveal = vi.fn().mockResolvedValue({
   url: "",
   revealedAt: "2026-11-26T10:00:00Z",
   revealedByEmail: "member@test.local",
+  revealedByName: "Member Test",
+  revealedByUsername: "member",
 });
 
 vi.mock("@/i18n/navigation", () => ({
@@ -58,6 +60,8 @@ vi.mock("@/modules/workspace/services/vault-item.service", () => ({
       id: "v-1",
       ownerId: "u1",
       ownerEmail: "u1@test.local",
+      ownerName: "U1",
+      ownerUsername: "u1",
       title: "Production DB",
       category: "SERVER",
       username: "postgres",
@@ -68,6 +72,8 @@ vi.mock("@/modules/workspace/services/vault-item.service", () => ({
       lastRevealedAt: null,
       lastRevealedById: null,
       lastRevealedByEmail: "",
+      lastRevealedByName: "",
+      lastRevealedByUsername: "",
       createdAt: "2026-11-26T00:00:00Z",
       updatedAt: "2026-11-26T00:00:00Z",
     }),

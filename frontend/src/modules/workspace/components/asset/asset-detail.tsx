@@ -4,9 +4,9 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui/tabs";
 
 import { WORKSPACE_ROUTES } from "../../constants/routes";
 import { AssetClaimsTab } from "./asset-claims-tab";
@@ -36,8 +36,7 @@ export function AssetDetail({
   history?: ReactNode;
 }) {
   const t = useTranslations("workspace.assets");
-  const tCommon = useTranslations("workspace.common");
-  const { query, activeTab, setActiveTab } = useAssetDetail(id);
+  const { query } = useAssetDetail(id);
 
   if (query.isPending) return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
   if (query.isError) {
@@ -51,33 +50,25 @@ export function AssetDetail({
   }
 
   return (
-    <FormPage title={query.data.name || t("editTitle")}>
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-        <TabsList>
-          <TabsTrigger value="general">{tCommon("tabGeneral")}</TabsTrigger>
-          <TabsTrigger value="claims">
-            {t("tabClaims", { count: query.data.totalClaimCount })}
-          </TabsTrigger>
-          {history ? <TabsTrigger value="history">{tCommon("tabHistory")}</TabsTrigger> : null}
-        </TabsList>
-
-        <TabsContent value="general" className="mt-4">
-          <AssetForm asset={query.data} disabled={!canUpdate} />
-        </TabsContent>
-        <TabsContent value="claims" className="mt-4">
-          <AssetClaimsTab
-            asset={query.data}
-            canCreateClaim={canCreateClaim}
-            canUpdateClaim={canUpdateClaim}
-            canDeleteClaim={canDeleteClaim}
-          />
-        </TabsContent>
-        {history ? (
-          <TabsContent value="history" className="mt-4">
-            {history}
-          </TabsContent>
-        ) : null}
-      </Tabs>
+    <FormPage title={query.data.name || t("editTitle")} backHref={WORKSPACE_ROUTES.assets}>
+      <RecordDetailTabs
+        general={<AssetForm asset={query.data} disabled={!canUpdate} />}
+        extraTabs={[
+          {
+            value: "claims",
+            label: t("tabClaims", { count: query.data.totalClaimCount }),
+            content: (
+              <AssetClaimsTab
+                asset={query.data}
+                canCreateClaim={canCreateClaim}
+                canUpdateClaim={canUpdateClaim}
+                canDeleteClaim={canDeleteClaim}
+              />
+            ),
+          },
+        ]}
+        history={history}
+      />
     </FormPage>
   );
 }

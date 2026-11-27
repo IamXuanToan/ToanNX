@@ -1,13 +1,16 @@
 "use client";
 
 import { Eye } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Badge } from "@/shares/components/ui/badge";
+import { formatOwnerDisplayName, formatOwnerDisplayTooltip } from "@/shares/lib/user-display";
 
 import { VAULT_CATEGORIES } from "../../constants/defaults";
 import { WORKSPACE_ROUTES } from "../../constants/routes";
@@ -32,7 +35,6 @@ export function VaultItemTable({
 }) {
   const t = useTranslations("workspace.vault");
   const tCommon = useTranslations("workspace.common");
-  const format = useFormatter();
   const state = useVaultItemTable();
   const { table, query } = state;
 
@@ -75,10 +77,7 @@ export function VaultItemTable({
       id: "lastRevealedAt",
       header: t("fields.lastRevealedAt"),
       hideBelow: "lg",
-      cell: (item) =>
-        item.lastRevealedAt
-          ? format.dateTime(new Date(item.lastRevealedAt), { dateStyle: "short" })
-          : "—",
+      cell: (item) => <TimestampText value={item.lastRevealedAt} />,
     },
     ...(state.canManageAll
       ? [
@@ -86,11 +85,16 @@ export function VaultItemTable({
             id: "owner",
             header: tCommon("owner"),
             hideBelow: "xl" as const,
-            cell: (item: VaultItem) => (
-              <span className="text-muted-foreground block max-w-44 truncate">
-                {item.ownerEmail}
-              </span>
-            ),
+            cell: (item: VaultItem) => {
+              const ownerLabel = formatOwnerDisplayName(item);
+              return (
+                <AppTooltip content={formatOwnerDisplayTooltip(item)}>
+                  <span className="text-muted-foreground block max-w-44 truncate">
+                    {ownerLabel || "—"}
+                  </span>
+                </AppTooltip>
+              );
+            },
           },
         ]
       : []),
