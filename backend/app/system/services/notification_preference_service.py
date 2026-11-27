@@ -17,6 +17,7 @@ from app.system.permissions.telegram_chat_permission import TelegramChatPermissi
 from app.system.repositories.notification_preference_repository import NotificationPreferenceRepository
 from app.system.repositories.telegram_chat_repository import TelegramChatRepository
 from app.system.services.push_device_service import PushDeviceService
+from app.system.services.telegram_bot_service import TelegramBotService
 from app.system.types.resolved_channels import ResolvedChannels
 
 Channel = NotificationChannel
@@ -32,12 +33,14 @@ class NotificationPreferenceService:
         telegram_chat_repository: TelegramChatRepository | None = None,
         push_device_service: PushDeviceService | None = None,
         registry: ModuleRegistry | None = None,
+        telegram_bot_service: TelegramBotService | None = None,
     ) -> None:
         """Khởi tạo phụ thuộc."""
         self.repository = repository or NotificationPreferenceRepository()
         self.telegram_chat_repository = telegram_chat_repository or TelegramChatRepository()
         self.push_device_service = push_device_service or PushDeviceService()
         self.registry = registry or module_registry
+        self.telegram_bot_service = telegram_bot_service or TelegramBotService()
 
     # ------------------------------------------------------------------ đọc
     def events_for(self, actor: Any) -> list[NotificationEventDefinition]:
@@ -53,7 +56,11 @@ class NotificationPreferenceService:
         channels = [Channel.IN_APP.value, Channel.EMAIL.value]
         if self.push_device_service.is_configured():
             channels.insert(1, Channel.PUSH.value)
-        if actor.has_perm(TelegramChatPermission.READ.code) and self._verified_chats(actor.pk):
+        if (
+            self.telegram_bot_service.is_configured()
+            and actor.has_perm(TelegramChatPermission.READ.code)
+            and self._verified_chats(actor.pk)
+        ):
             channels.append(Channel.TELEGRAM.value)
         return channels
 
@@ -148,12 +155,13 @@ class NotificationPreferenceService:
         rows: dict[Any, list[NotificationPreference]] = defaultdict(list)
         for row in self.repository.for_users(user_ids, event.code):
             rows[row.user_id].append(row)
-        # Chỉ chat đã xác minh của bot còn bật: bot hỏng token đã bị tắt thì không tạo bản gửi vô ích.
+        # Chỉ chat đã xác minh và còn bật khi Bot chung đã cấu hình.
         active_chats: dict[Any, list[Any]] = defaultdict(list)
-        for chat in self.telegram_chat_repository.filter(
-            owner_id__in=user_ids, status=TelegramChat.Status.ACTIVE, is_active=True, bot__is_active=True
-        ):
-            active_chats[chat.owner_id].append(chat.pk)
+        if self.telegram_bot_service.is_configured():
+            for chat in self.telegram_chat_repository.filter(
+                owner_id__in=user_ids, status=TelegramChat.Status.ACTIVE, is_active=True
+            ):
+                active_chats[chat.owner_id].append(chat.pk)
         result: dict[Any, ResolvedChannels] = {}
         for user in users:
             chats = active_chats.get(user.pk, [])
@@ -204,6 +212,6 @@ class NotificationPreferenceService:
     def _verified_chats(self, user_id: Any) -> list[TelegramChat]:
         return list(
             self.telegram_chat_repository.filter(
-                owner_id=user_id, status=TelegramChat.Status.ACTIVE, is_active=True, bot__is_active=True
+                owner_id=user_id, status=TelegramChat.Status.ACTIVE, is_active=True
             )
         )

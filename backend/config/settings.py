@@ -4,13 +4,20 @@ Một file cấu hình duy nhất; local và production chỉ khác nhau ở bi�
 (DJANGO_DEBUG, DATABASE_URL, DJANGO_SECRET_KEY...). Không hardcode secrets.
 """
 
+from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
 import environ
 from corsheaders.defaults import default_headers
 
+from app.core.constants.core_rate_limit_key import CoreRateLimitKey
+from app.finance.constants.finance_rate_limit_key import FinanceRateLimitKey
+from app.novel.constants.novel_rate_limit_key import NovelRateLimitKey
 from app.system.constants.media_types import ALLOWED_CONTENT_TYPES
+from app.system.constants.system_rate_limit_key import SystemRateLimitKey
+from app.utilities.constants.utilities_rate_limit_key import UtilitiesRateLimitKey
+from app.workspace.constants.workspace_rate_limit_key import WorkspaceRateLimitKey
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -40,6 +47,7 @@ INSTALLED_APPS = [
     "app.novel",
     "app.utilities",
     "app.finance",
+    "app.workspace",
 ]
 
 MIDDLEWARE = [
@@ -227,6 +235,22 @@ SPECTACULAR_SETTINGS = {
             ("COMPLETED", "Hoàn thành"),
             ("PAUSED", "Tạm dừng"),
         ],
+        "WorkspaceAssetCategoryEnum": "app.workspace.models.asset.Asset.Category",
+        "WorkspaceAssetStatusEnum": "app.workspace.models.asset.Asset.Status",
+        "WorkspaceAssetPurchaseChannelEnum": "app.workspace.models.asset.Asset.PurchaseChannel",
+        "WorkspaceAssetWarrantyTypeEnum": "app.workspace.models.asset.Asset.WarrantyType",
+        "WorkspaceClaimTypeEnum": "app.workspace.models.asset_warranty_claim.AssetWarrantyClaim.ClaimType",
+        "WorkspaceClaimStatusEnum": "app.workspace.models.asset_warranty_claim.AssetWarrantyClaim.Status",
+        "WorkspaceSubscriptionCategoryEnum": "app.workspace.models.subscription.Subscription.Category",
+        "WorkspaceBillingCycleEnum": "app.workspace.models.subscription.Subscription.BillingCycle",
+        "WorkspaceVaultCategoryEnum": "app.workspace.models.vault_item.VaultItem.Category",
+        "WorkspaceReminderPriorityEnum": "app.workspace.models.reminder.Reminder.Priority",
+        "WorkspaceReminderRecurrenceEnum": "app.workspace.models.reminder.Reminder.Recurrence",
+        "WorkspaceGroupToolPolicyEnum": "app.workspace.constants.group_tool_policy.GroupToolPolicy",
+        "WorkspaceAssistantChannelEnum": (
+            "app.workspace.models.assistant_conversation.AssistantConversation.Channel"
+        ),
+        "WorkspaceAssistantRoleEnum": "app.workspace.models.assistant_message.AssistantMessage.Role",
     },
 }
 
@@ -290,35 +314,67 @@ RATE_LIMIT_ENABLED = env.bool("RATE_LIMIT_ENABLED", default=True)
 SHORT_LINK_INTERNAL_HOSTS = env.list(
     "SHORT_LINK_INTERNAL_HOSTS", default=["toannx.com", "www.toannx.com", "localhost"]
 )
-# Bảng rate limit duy nhất: khóa → (số lần, cửa sổ giây, "user" | "ip").
-# ViewSet khai `action_rate_limits = {"create": "<khóa>"}`, APIView khai `@rate_limit("<khóa>")`.
-RATE_LIMITS: dict[str, tuple[int, int, str]] = {
-    "default.write": (env.int("RL_DEFAULT_WRITE", default=300), 60, "user"),
-    "public.read": (env.int("RL_PUBLIC_READ", default=120), 60, "ip"),
-    "system.password_reset.request": (env.int("RL_AUTH_PASSWORD_RESET_REQUEST", default=5), 900, "ip"),
-    "system.password_reset.validate": (env.int("RL_AUTH_PASSWORD_RESET_VALIDATE", default=30), 900, "ip"),
-    "system.password_reset.confirm": (env.int("RL_AUTH_PASSWORD_RESET_CONFIRM", default=10), 900, "ip"),
-    "system.email_verification.send": (env.int("RL_EMAIL_VERIFICATION_SEND", default=5), 300, "user"),
-    "system.email_verification.verify": (env.int("RL_EMAIL_VERIFICATION_VERIFY", default=30), 900, "ip"),
-    "system.invitation.validate": (env.int("RL_INVITATION_VALIDATE", default=30), 900, "ip"),
-    "system.invitation.accept": (env.int("RL_INVITATION_ACCEPT", default=10), 900, "ip"),
-    "system.social.auth": (env.int("RL_SOCIAL_AUTH", default=30), 900, "ip"),
-    "system.social.link": (env.int("RL_SOCIAL_LINK", default=10), 900, "user"),
-    "system.social.unlink": (env.int("RL_SOCIAL_UNLINK", default=10), 900, "user"),
-    "utilities.short_link.create": (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
-    "utilities.short_link.unlock": (env.int("RL_SHORT_LINK_UNLOCK", default=10), 60, "ip"),
-    "utilities.page.create": (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
-    "utilities.page_path.create": (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
-    "utilities.qr_code.create": (env.int("RL_QR_CREATE", default=60), 3600, "user"),
-    "utilities.qr_code.preview": (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
-    "utilities.donation.webhook": (env.int("RL_DONATION_WEBHOOK", default=120), 60, "ip"),
-    "system.client_error.create": (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
-    "system.attachment.content": (env.int("RL_ATTACHMENT_CONTENT", default=120), 60, "user"),
-    "finance.sepay.call": (env.int("RL_SEPAY_CALL", default=10), 60, "user"),
-    "finance.sepay.webhook": (env.int("RL_SEPAY_WEBHOOK", default=120), 60, "ip"),
-    "system.telegram.call": (env.int("RL_TELEGRAM_CALL", default=20), 60, "user"),
-    "novel.create": (env.int("RL_NOVEL_CREATE", default=60), 3600, "user"),
-    "novel.import": (env.int("RL_NOVEL_IMPORT", default=10), 3600, "user"),
+# Bảng rate limit duy nhất: khóa (`StrEnum`) → (số lần, cửa sổ giây, "user" | "ip").
+# ViewSet khai `action_rate_limits = {"create": <Module>RateLimitKey.X}`, APIView khai `@rate_limit(<Key>)`.
+RATE_LIMITS: dict[StrEnum, tuple[int, int, str]] = {
+    CoreRateLimitKey.DEFAULT_WRITE: (env.int("RL_DEFAULT_WRITE", default=300), 60, "user"),
+    CoreRateLimitKey.PUBLIC_READ: (env.int("RL_PUBLIC_READ", default=120), 60, "ip"),
+    SystemRateLimitKey.PASSWORD_RESET_REQUEST: (
+        env.int("RL_AUTH_PASSWORD_RESET_REQUEST", default=5),
+        900,
+        "ip",
+    ),
+    SystemRateLimitKey.PASSWORD_RESET_VALIDATE: (
+        env.int("RL_AUTH_PASSWORD_RESET_VALIDATE", default=30),
+        900,
+        "ip",
+    ),
+    SystemRateLimitKey.PASSWORD_RESET_CONFIRM: (
+        env.int("RL_AUTH_PASSWORD_RESET_CONFIRM", default=10),
+        900,
+        "ip",
+    ),
+    SystemRateLimitKey.EMAIL_VERIFICATION_SEND: (
+        env.int("RL_EMAIL_VERIFICATION_SEND", default=5),
+        300,
+        "user",
+    ),
+    SystemRateLimitKey.EMAIL_VERIFICATION_VERIFY: (
+        env.int("RL_EMAIL_VERIFICATION_VERIFY", default=30),
+        900,
+        "ip",
+    ),
+    SystemRateLimitKey.INVITATION_VALIDATE: (env.int("RL_INVITATION_VALIDATE", default=30), 900, "ip"),
+    SystemRateLimitKey.INVITATION_ACCEPT: (env.int("RL_INVITATION_ACCEPT", default=10), 900, "ip"),
+    SystemRateLimitKey.SOCIAL_AUTH: (env.int("RL_SOCIAL_AUTH", default=30), 900, "ip"),
+    SystemRateLimitKey.SOCIAL_LINK: (env.int("RL_SOCIAL_LINK", default=10), 900, "user"),
+    SystemRateLimitKey.SOCIAL_UNLINK: (env.int("RL_SOCIAL_UNLINK", default=10), 900, "user"),
+    UtilitiesRateLimitKey.SHORT_LINK_CREATE: (env.int("RL_SHORT_LINK_CREATE", default=30), 3600, "user"),
+    UtilitiesRateLimitKey.SHORT_LINK_UNLOCK: (env.int("RL_SHORT_LINK_UNLOCK", default=10), 60, "ip"),
+    UtilitiesRateLimitKey.PAGE_CREATE: (env.int("RL_PAGE_CREATE", default=20), 3600, "user"),
+    UtilitiesRateLimitKey.PAGE_PATH_CREATE: (env.int("RL_PAGE_PATH_CREATE", default=10), 3600, "user"),
+    UtilitiesRateLimitKey.QR_CODE_CREATE: (env.int("RL_QR_CREATE", default=60), 3600, "user"),
+    UtilitiesRateLimitKey.QR_CODE_PREVIEW: (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
+    UtilitiesRateLimitKey.DONATION_WEBHOOK: (env.int("RL_DONATION_WEBHOOK", default=120), 60, "ip"),
+    SystemRateLimitKey.CLIENT_ERROR_CREATE: (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
+    SystemRateLimitKey.ATTACHMENT_CONTENT: (env.int("RL_ATTACHMENT_CONTENT", default=120), 60, "user"),
+    FinanceRateLimitKey.SEPAY_CALL: (env.int("RL_SEPAY_CALL", default=10), 60, "user"),
+    FinanceRateLimitKey.SEPAY_WEBHOOK: (env.int("RL_SEPAY_WEBHOOK", default=120), 60, "ip"),
+    SystemRateLimitKey.TELEGRAM_CALL: (env.int("RL_TELEGRAM_CALL", default=20), 60, "user"),
+    SystemRateLimitKey.TELEGRAM_WEBHOOK: (env.int("RL_TELEGRAM_WEBHOOK", default=120), 60, "ip"),
+    NovelRateLimitKey.CREATE: (env.int("RL_NOVEL_CREATE", default=60), 3600, "user"),
+    NovelRateLimitKey.IMPORT: (env.int("RL_NOVEL_IMPORT", default=10), 3600, "user"),
+    WorkspaceRateLimitKey.ASSET_CREATE: (env.int("RL_WS_ASSET_CREATE", default=60), 3600, "user"),
+    WorkspaceRateLimitKey.WARRANTY_CLAIM_CREATE: (env.int("RL_WS_CLAIM_CREATE", default=60), 3600, "user"),
+    WorkspaceRateLimitKey.SUBSCRIPTION_CREATE: (env.int("RL_WS_SUB_CREATE", default=60), 3600, "user"),
+    WorkspaceRateLimitKey.SUBSCRIPTION_RENEW: (env.int("RL_WS_SUB_RENEW", default=60), 3600, "user"),
+    WorkspaceRateLimitKey.VAULT_CREATE: (env.int("RL_WS_VAULT_CREATE", default=60), 3600, "user"),
+    WorkspaceRateLimitKey.VAULT_REVEAL: (env.int("RL_WS_VAULT_REVEAL", default=30), 60, "user"),
+    WorkspaceRateLimitKey.REMINDER_CREATE: (env.int("RL_WS_REMINDER_CREATE", default=120), 3600, "user"),
+    WorkspaceRateLimitKey.ASSISTANT_CHAT: (env.int("RL_WS_ASSISTANT_CHAT", default=30), 60, "user"),
+    WorkspaceRateLimitKey.CRON_TICK: (env.int("RL_WS_CRON_TICK", default=60), 60, "ip"),
+    WorkspaceRateLimitKey.CRON_DISPATCH_DUE: (env.int("RL_WS_CRON_DISPATCH", default=60), 60, "ip"),
+    WorkspaceRateLimitKey.TELEGRAM_PROCESS: (env.int("RL_WS_TELEGRAM_PROCESS", default=120), 60, "ip"),
 }
 # Lịch sử thay đổi: model kế thừa JournalTracker tự ghi qua recorder này (rỗng = tắt).
 CORE_CHANGE_RECORDER = "app.system.recorders.journal_recorder.JournalRecorder"
@@ -332,7 +388,20 @@ CRON_SECRET = env.str("CRON_SECRET", default="")
 SEPAY_ENV = env.str("SEPAY_ENV", default="sandbox")
 if SEPAY_ENV not in ("sandbox", "production"):
     raise ValueError("SEPAY_ENV phải là 'sandbox' hoặc 'production'.")
-# Telegram bot cho thông báo dùng chung (module System).
+# Telegram Bot chung toàn hệ thống (dùng cho thông báo + Trợ lý AI Telegram hai chiều).
+TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN", default="").strip()
+TELEGRAM_BOT_USERNAME = env.str("TELEGRAM_BOT_USERNAME", default="").lstrip("@").strip()
+# Trợ lý AI OpenAI-compatible (xKiro Multi-Model Fallback; mọi lượt gọi <= 5 giây).
+XKIRO_API_BASE = env.str("XKIRO_API_BASE", default="").strip()
+XKIRO_API_KEY = env.str("XKIRO_API_KEY", default="").strip()
+XKIRO_MODEL = env.str("XKIRO_MODEL", default="").strip()
+XKIRO_FALLBACK_MODELS: list[str] = [
+    item.strip() for item in env.list("XKIRO_FALLBACK_MODELS", default=[]) if str(item).strip()
+]
+XKIRO_TIMEOUT_SECONDS = env.float("XKIRO_TIMEOUT_SECONDS", default=5.0)
+if not (1.0 <= XKIRO_TIMEOUT_SECONDS <= 5.0):
+    raise ValueError("XKIRO_TIMEOUT_SECONDS phải nằm trong khoảng [1, 5] giây.")
+XKIRO_COOLDOWN_SECONDS = env.int("XKIRO_COOLDOWN_SECONDS", default=120)
 # Firebase Cloud Messaging (thông báo trình duyệt); thiếu một trong hai thì kênh PUSH bị ẩn.
 FIREBASE_PROJECT_ID = env.str("FIREBASE_PROJECT_ID", default="")
 FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 = env.str("FIREBASE_SERVICE_ACCOUNT_JSON_BASE64", default="")

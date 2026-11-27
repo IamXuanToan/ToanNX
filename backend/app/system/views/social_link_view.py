@@ -11,6 +11,7 @@ from app.core.decorators.validate_request import validate_request
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.system_rate_limit_key import SystemRateLimitKey
 from app.system.serializers.responses.user_social_account_summary_response_serializer import (
     UserSocialAccountSummaryResponseSerializer,
 )
@@ -38,7 +39,7 @@ class SocialLinkView(CoreApiView):
         request=SocialAuthCodeValidateSerializer,
         responses=UserSocialAccountSummaryResponseSerializer,
     )
-    @rate_limit("system.social.link")
+    @rate_limit(SystemRateLimitKey.SOCIAL_LINK)
     @validate_request(SocialAuthCodeValidateSerializer)
     def post(self, request: Request, provider: str, validated_data: dict[str, Any]) -> CoreResponse:
         """Thực hiện liên kết OAuth.

@@ -1,4 +1,5 @@
 import { env } from "@/shares/config/env";
+import { AUTH_ERROR_CODES } from "@/shares/constants/auth-error-codes";
 import type { ApiMeta, ApiResult } from "@/shares/types/api.types";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -38,11 +39,11 @@ function cancelledError(): ApiError {
   });
 }
 /** Mã 401 có thể khắc phục bằng refresh. */
-const REFRESHABLE_CODES = new Set([
-  "AUTH_TOKEN_EXPIRED",
-  "AUTH_TOKEN_INVALID",
-  "AUTH_NOT_AUTHENTICATED",
-  "AUTH_SESSION_INVALID",
+const REFRESHABLE_CODES: ReadonlySet<string> = new Set([
+  AUTH_ERROR_CODES.tokenExpired,
+  AUTH_ERROR_CODES.tokenInvalid,
+  AUTH_ERROR_CODES.notAuthenticated,
+  AUTH_ERROR_CODES.sessionInvalid,
 ]);
 
 let refreshInFlight: Promise<boolean> | null = null;
@@ -180,7 +181,7 @@ export function refreshSession(): Promise<boolean> {
       const body = (await response.json().catch(() => null)) as {
         error?: { code?: string };
       } | null;
-      return response.status === 409 && body?.error?.code === "AUTH_REFRESH_CONFLICT";
+      return response.status === 409 && body?.error?.code === AUTH_ERROR_CODES.refreshConflict;
     } catch {
       return false;
     }
@@ -205,7 +206,7 @@ async function request<T>(
         .json()
         .catch(() => null)
     )?.error?.code;
-    if (code === "AUTH_CSRF_FAILED") {
+    if (code === AUTH_ERROR_CODES.csrfFailed) {
       await ensureCsrfToken(true);
       response = await send(method, path, options);
     }

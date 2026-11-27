@@ -4,6 +4,7 @@ import { cn } from "cn";
 import { type ComponentProps } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/shares/components/ui/avatar";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 /**
  * Nguồn dữ liệu người dùng tối thiểu để hiển thị ảnh đại diện, tên hiển thị và chữ cái đại diện.
@@ -22,27 +23,17 @@ export type UserAvatarSource =
   | undefined;
 
 /**
- * Lấy tên hiển thị chuẩn hóa của người dùng theo thứ tự ưu tiên:
- * 1. Tên đầy đủ (fullName)
- * 2. Ghép họ và tên (lastName + firstName)
- * 3. Tên người dùng (username)
- * 4. Email
+ * Lấy tên hiển thị chuẩn hóa của người dùng theo thứ tự:
+ * 1. Có cả họ tên (`fullName` hoặc `lastName + firstName`) và `username`: `fullname (username)`
+ * 2. Chỉ có họ tên: `fullname`
+ * 3. Không có họ tên: `username`
+ * 4. Thiếu cả hai: `email`
  *
  * @param user - Thông tin người dùng.
  * @returns Tên hiển thị chuẩn.
  */
 export function getUserDisplayName(user: UserAvatarSource): string {
-  if (!user) return "";
-  const fullName = user.fullName?.trim();
-  if (fullName) return fullName;
-
-  const combined = [user.lastName?.trim(), user.firstName?.trim()].filter(Boolean).join(" ");
-  if (combined) return combined;
-
-  const username = user.username?.trim();
-  if (username) return username;
-
-  return user.email?.trim() || "";
+  return formatUserDisplayName(user);
 }
 
 /**

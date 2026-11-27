@@ -65,6 +65,10 @@ class PageService(CoreCrudService[Page, PageRepository]):
         page.editor_content = self._resolve(page, public=False)  # type: ignore[attr-defined]  # thuộc tính tạm
         return page
 
+    def list_stale_for(self, actor: Any, cutoff: Any, *, limit: int = 15) -> list[Page]:
+        """Danh sách trang do chính `actor` sở hữu bị bỏ quên trước `cutoff` (cho AI tool cá nhân)."""
+        return self.repository.list_stale_for_owner(actor.pk, cutoff, limit=limit)
+
     def get_public(self, segment: str, slug: str, viewer: Any | None) -> dict[str, Any]:
         """Trang công khai; bản nháp chỉ trả cho người đọc được trang theo đúng luật API quản lý.
 

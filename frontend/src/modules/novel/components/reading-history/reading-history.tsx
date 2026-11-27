@@ -6,11 +6,13 @@
 
 "use client";
 
-import { ArrowLeft, BookOpen, Clock, Loader2, Trash2 } from "lucide-react";
+import { BookOpen, Clock, Loader2, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 
 import { Link } from "@/i18n/navigation";
+import { PageHeader } from "@/shares/components/common/page-header";
 import { Button } from "@/shares/components/ui/button";
 import { Card } from "@/shares/components/ui/card";
 import {
@@ -34,7 +36,7 @@ import { useReadingHistory } from "./hooks/use-reading-history";
  */
 export function ReadingHistory() {
   const t = useTranslations("novel.history");
-  const format = useFormatter();
+  const tActions = useTranslations("common.actions");
   const {
     historyList,
     isLoading,
@@ -48,51 +50,51 @@ export function ReadingHistory() {
 
   return (
     <div className="space-y-6">
-      {/* Thanh điều hướng quay lại & nút xóa tất cả */}
-      <div className="flex items-center justify-between border-b pb-4">
-        <Button asChild variant="ghost" size="sm" className="gap-1.5 text-xs">
-          <Link href={NOVEL_ROUTES.catalog}>
-            <ArrowLeft className="h-4 w-4" />
-            <span>{t("backToCatalog")}</span>
-          </Link>
-        </Button>
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        actions={
+          <>
+            <Button asChild variant="outline">
+              <Link href={NOVEL_ROUTES.catalog}>{tActions("back")}</Link>
+            </Button>
 
-        {historyList.length > 0 && (
-          <Dialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-destructive hover:bg-destructive/10 gap-1.5 text-xs"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                <span>{t("clearAllButton")}</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>{t("clearConfirmTitle")}</DialogTitle>
-                <DialogDescription>{t("clearConfirmDescription")}</DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="gap-2 sm:gap-0">
-                <Button variant="ghost" size="sm" onClick={() => setClearDialogOpen(false)}>
-                  {t("cancel")}
-                </Button>
-                <Button variant="destructive" size="sm" onClick={clearAll} disabled={isClearingAll}>
-                  {isClearingAll && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t("confirmClear")}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
-
-      {/* Tiêu đề trang */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("title")}</h1>
-        <p className="text-muted-foreground mt-1 text-sm">{t("description")}</p>
-      </div>
+            {historyList.length > 0 && (
+              <Dialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="text-destructive hover:bg-destructive/10 gap-1.5"
+                  >
+                    <Trash2 className="size-4" />
+                    <span>{t("clearAllButton")}</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>{t("clearConfirmTitle")}</DialogTitle>
+                    <DialogDescription>{t("clearConfirmDescription")}</DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="gap-2 sm:gap-0">
+                    <Button variant="ghost" size="sm" onClick={() => setClearDialogOpen(false)}>
+                      {t("cancel")}
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={clearAll}
+                      disabled={isClearingAll}
+                    >
+                      {isClearingAll && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {t("confirmClear")}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+          </>
+        }
+      />
 
       {/* Danh sách bản ghi */}
       {isLoading ? (
@@ -115,6 +117,8 @@ export function ReadingHistory() {
                       src={item.novelThumbnail.url}
                       alt={item.novelTitle}
                       fill
+                      sizes="48px"
+                      unoptimized
                       className="object-cover"
                     />
                   ) : (
@@ -138,15 +142,7 @@ export function ReadingHistory() {
 
                   <div className="text-muted-foreground/80 flex items-center gap-1 text-[11px]">
                     <Clock className="h-3 w-3" />
-                    <span>
-                      {format.dateTime(new Date(item.lastReadAt), {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
+                    <TimestampText value={item.lastReadAt} />
                   </div>
                 </div>
               </div>

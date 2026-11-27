@@ -1,0 +1,61 @@
+"""Response Dịch vụ & Gói đăng ký định kỳ."""
+
+from rest_framework import serializers
+
+from app.workspace.models.subscription import Subscription
+
+
+class SubscriptionResponseSerializer(serializers.ModelSerializer[Subscription]):
+    """Chi tiết/danh sách gói dịch vụ định kỳ."""
+
+    owner_email = serializers.CharField(source="owner.email", read_only=True, help_text="Email chủ sở hữu.")
+    owner_name = serializers.CharField(
+        source="owner.full_name", read_only=True, default="", help_text="Tên chủ sở hữu."
+    )
+    owner_username = serializers.CharField(
+        source="owner.username",
+        read_only=True,
+        allow_null=True,
+        default="",
+        help_text="Tên đăng nhập chủ sở hữu.",
+    )
+    currency_code = serializers.CharField(source="currency.code", read_only=True, help_text="Mã tiền tệ.")
+    currency_symbol = serializers.CharField(
+        source="currency.symbol", read_only=True, help_text="Ký hiệu tiền tệ."
+    )
+    currency_decimal_places = serializers.IntegerField(
+        source="currency.decimal_places", read_only=True, help_text="Số chữ số thập phân."
+    )
+
+    class Meta:
+        model = Subscription
+        fields = (
+            "id",
+            "owner_id",
+            "owner_email",
+            "owner_name",
+            "owner_username",
+            "name",
+            "provider",
+            "category",
+            "billing_cycle",
+            "custom_cycle_days",
+            "anchor_day",
+            "amount",
+            "currency_id",
+            "currency_code",
+            "currency_symbol",
+            "currency_decimal_places",
+            "exchange_rate",
+            "amount_vnd",
+            "renew_date",
+            "auto_renew",
+            "payment_method",
+            "manage_url",
+            "reminder_days_before",
+            "is_active",
+            "notes",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = fields

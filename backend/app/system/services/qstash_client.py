@@ -38,13 +38,21 @@ class QstashClient:
         """Đã có token để đăng tin."""
         return bool(settings.QSTASH_TOKEN)
 
-    def publish(self, destination_url: str, *, delay_seconds: int = 0, deduplication_id: str = "") -> bool:
-        """Đăng một tin POST `{}` tới `destination_url`.
+    def publish(
+        self,
+        destination_url: str,
+        *,
+        delay_seconds: int = 0,
+        deduplication_id: str = "",
+        body: bytes = b"{}",
+    ) -> bool:
+        """Đăng một tin POST tới `destination_url`.
 
         Args:
             destination_url: URL tuyệt đối của endpoint nhận.
             delay_seconds: Hẹn trễ (0 = ngay).
             deduplication_id: Cùng id trong khoảng ngắn thì QStash chỉ giữ một tin.
+            body: Payload bytes (mặc định `b"{}"`).
 
         Returns:
             True khi QStash nhận tin.
@@ -65,11 +73,12 @@ class QstashClient:
             headers["Upstash-Delay"] = f"{delay}s"
         if deduplication_id:
             headers["Upstash-Deduplication-Id"] = deduplication_id[:100]
+        raw_body = body or b"{}"
         try:
             response = self.session.post(
                 f"{settings.QSTASH_URL.rstrip('/')}/v2/publish/{destination_url}",
                 headers=headers,
-                data=b"{}",
+                data=raw_body,
                 timeout=PUBLISH_TIMEOUT_SECONDS,
             )
         except requests.RequestException as exc:

@@ -94,8 +94,9 @@ vi.mock("next-intl", () => ({
     };
     return map[key] ?? key;
   },
+  useLocale: () => "vi",
   useFormatter: () => ({
-    dateTime: () => "01/01/2026 12:00",
+    dateTime: () => "01/01/2026 12:00:00",
     relativeTime: () => "vừa xong",
   }),
   useNow: () => new Date(),

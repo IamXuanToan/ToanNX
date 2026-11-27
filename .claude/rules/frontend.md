@@ -45,9 +45,11 @@ về hiệu năng; kiến trúc Client-only và rule repo luôn được ưu ti�
 - Link dùng `<Link />` từ `@/i18n/navigation` (kể cả URL ngoài với `href={url as never}`; `next/link` chỉ dùng
   ngoài cây `[locale]` như `app/not-found.tsx`); ảnh dùng `<Image />` từ `next/image`. Không dùng `<a>`/`<img>` trần.
   UI primitive dùng `@/shares/components/ui/`.
-- Hằng số dùng chung (locale, timezone, tiền tệ, phân trang, ID toast) lấy từ `shares/constants/` và
-  `shares/lib/{number-format,localized-route}.ts`; không lặp `locale === "en" ? "en-US" : "vi-VN"`,
-  `.toLocaleString("vi-VN")` hay `export const UPPER_CASE` trong `.tsx` (`tests/unit/code-conventions.test.ts`).
+- Hằng số dùng chung (locale, timezone, tiền tệ, phân trang, ID toast, `AUTH_ERROR_CODES`, `PERMISSION_ACTION`) lấy từ
+  `shares/constants/` và `shares/lib/{number-format,localized-route}.ts`; không lặp `locale === "en" ? "en-US" : "vi-VN"`,
+  `.toLocaleString("vi-VN")`, `queryKey: ["chuỗi-thô", ...]`, mã lỗi thô (`"AUTH_CSRF_FAILED"`), chuỗi quyền thô hay
+  `export const UPPER_CASE` trong `.tsx` (`tests/unit/code-conventions.test.ts`). File `permissions/*-permission.ts`
+  bắt buộc dùng `createResourcePermissions(<M>_SCOPE, resource, { ... PERMISSION_ACTION.* })`.
 - Kiểu khớp OpenAPI (`ApiModel<"…Response">`, `tests/unit/api-contract.test.ts`); không sửa tay `api-schema.gen.ts`.
 - Mọi chuỗi hiển thị qua i18n (`vi`, `en`); namespace mới đăng ký ở `src/i18n/messages.ts` và `src/global.d.ts`.
 - Không `any`, không `console.log`, không đọc `process.env` ngoài `shares/config`.

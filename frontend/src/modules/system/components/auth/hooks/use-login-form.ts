@@ -46,7 +46,7 @@ export function useLoginForm(redirectTo: AppPathname) {
     if (socialLoading) return;
     setSocialLoading(provider);
     try {
-      const state = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      const state = crypto.randomUUID();
       sessionStorage.setItem(OAUTH_STORAGE_KEYS.state, state);
       sessionStorage.setItem(OAUTH_STORAGE_KEYS.mode, OAUTH_MODE.login);
       const next = searchParams.get("redirect") || searchParams.get("next");
@@ -90,8 +90,8 @@ export function useLoginForm(redirectTo: AppPathname) {
         window.location.assign(next);
       }
     } else {
-      // Người dùng có is_staff=True thì vào trang admin, không thì vào client portal
-      const destination = isStaffUser ? redirectTo : (AUTH_WORKSPACE_PATHS.portal as AppPathname);
+      // Mọi tài khoản (kể cả Admin) mặc định luôn vào Client Portal; Admin tự chuyển sang /admin sau khi đăng nhập
+      const destination = redirectTo || (AUTH_WORKSPACE_PATHS.portal as AppPathname);
       router.replace(destination as never);
     }
   });

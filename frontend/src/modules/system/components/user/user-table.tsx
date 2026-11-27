@@ -3,17 +3,20 @@
 import { cn } from "cn";
 import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useNow, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { TableStatusSwitch } from "@/shares/components/common/table-status-switch";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { ICON_PATHS } from "@/shares/lib/asset-paths";
 import { Badge } from "@/shares/components/ui/badge";
 import { isOnline } from "@/shares/lib/presence";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 import { SYSTEM_ROUTES } from "../../constants/routes";
 import type { User } from "../../types/user.types";
@@ -40,7 +43,6 @@ export function UserTable({
 }) {
   const t = useTranslations("system.account.users");
   const tStatus = useTranslations("common.status");
-  const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
   const { query, table, isSelf, view, edit, copy, setActive, remove, bulkSetActive, bulkDelete } =
     useUserTable();
@@ -55,6 +57,7 @@ export function UserTable({
       cell: (user) => {
         const google = user.socialAccounts?.find((s) => s.provider === "google");
         const github = user.socialAccounts?.find((s) => s.provider === "github");
+        const displayName = formatUserDisplayName(user);
 
         return (
           <div className="min-w-0">
@@ -62,41 +65,38 @@ export function UserTable({
               href={SYSTEM_ROUTES.userDetail(user.id)}
               className="hover:text-primary block truncate font-medium underline-offset-4 hover:underline"
             >
-              {user.fullName || user.email}
+              {displayName}
             </Link>
             <div className="flex items-center gap-1.5">
-              {user.fullName ? (
+              {user.email && user.email !== displayName ? (
                 <p className="text-muted-foreground truncate text-xs">{user.email}</p>
               ) : null}
               {user.isVerified ? (
-                <span
-                  title={t("fields.emailVerifiedTrue")}
-                  className="inline-flex text-emerald-600 dark:text-emerald-400"
-                >
-                  <CheckCircle2 className="size-3 shrink-0" />
-                </span>
+                <AppTooltip content={t("fields.emailVerifiedTrue")}>
+                  <span className="inline-flex text-emerald-600 dark:text-emerald-400">
+                    <CheckCircle2 className="size-3 shrink-0" />
+                  </span>
+                </AppTooltip>
               ) : null}
               {google ? (
-                <span
-                  title={`Google: ${google.email || google.displayName}`}
-                  className="inline-flex"
-                >
-                  <Image src={ICON_PATHS.google} alt="Google" width={12} height={12} />
-                </span>
+                <AppTooltip content={`Google: ${google.email || google.displayName}`}>
+                  <span className="inline-flex">
+                    <Image src={ICON_PATHS.google} alt="Google" width={12} height={12} />
+                  </span>
+                </AppTooltip>
               ) : null}
               {github ? (
-                <span
-                  title={`GitHub: ${github.email || github.displayName}`}
-                  className="inline-flex"
-                >
-                  <Image
-                    src={ICON_PATHS.github}
-                    alt="GitHub"
-                    width={12}
-                    height={12}
-                    className="dark:invert"
-                  />
-                </span>
+                <AppTooltip content={`GitHub: ${github.email || github.displayName}`}>
+                  <span className="inline-flex">
+                    <Image
+                      src={ICON_PATHS.github}
+                      alt="GitHub"
+                      width={12}
+                      height={12}
+                      className="dark:invert"
+                    />
+                  </span>
+                </AppTooltip>
               ) : null}
             </div>
           </div>
@@ -113,36 +113,35 @@ export function UserTable({
         return (
           <div className="flex flex-wrap items-center gap-1.5">
             {user.isVerified ? (
-              <Badge
-                variant="outline"
-                className="gap-1 border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0 text-[10px] text-emerald-700 dark:text-emerald-400"
-                title={t("fields.emailVerifiedTrue")}
-              >
-                <CheckCircle2 className="size-2.5" />
-                <span>Email</span>
-              </Badge>
+              <AppTooltip content={t("fields.emailVerifiedTrue")}>
+                <Badge
+                  variant="outline"
+                  className="gap-1 border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0 text-[10px] text-emerald-700 dark:text-emerald-400"
+                >
+                  <CheckCircle2 className="size-2.5" />
+                  <span>Email</span>
+                </Badge>
+              </AppTooltip>
             ) : null}
             {google ? (
-              <span
-                className="bg-muted/50 border-border/60 inline-flex size-5 items-center justify-center rounded-md border"
-                title={`Google: ${google.email || google.displayName}`}
-              >
-                <Image src={ICON_PATHS.google} alt="Google" width={14} height={14} />
-              </span>
+              <AppTooltip content={`Google: ${google.email || google.displayName}`}>
+                <span className="bg-muted/50 border-border/60 inline-flex size-5 items-center justify-center rounded-md border">
+                  <Image src={ICON_PATHS.google} alt="Google" width={14} height={14} />
+                </span>
+              </AppTooltip>
             ) : null}
             {github ? (
-              <span
-                className="bg-muted/50 border-border/60 inline-flex size-5 items-center justify-center rounded-md border"
-                title={`GitHub: ${github.email || github.displayName}`}
-              >
-                <Image
-                  src={ICON_PATHS.github}
-                  alt="GitHub"
-                  width={14}
-                  height={14}
-                  className="dark:invert"
-                />
-              </span>
+              <AppTooltip content={`GitHub: ${github.email || github.displayName}`}>
+                <span className="bg-muted/50 border-border/60 inline-flex size-5 items-center justify-center rounded-md border">
+                  <Image
+                    src={ICON_PATHS.github}
+                    alt="GitHub"
+                    width={14}
+                    height={14}
+                    className="dark:invert"
+                  />
+                </span>
+              </AppTooltip>
             ) : null}
             {!user.isVerified && !google && !github ? (
               <span className="text-muted-foreground text-xs">—</span>
@@ -199,13 +198,14 @@ export function UserTable({
                 isOnline(user.lastSeenAt, now) ? "bg-success" : "bg-muted-foreground/40",
               )}
             />
-            <span
+            <TimestampText
+              value={user.lastSeenAt}
+              statusLabel={isOnline(user.lastSeenAt, now) ? t("presence.online") : undefined}
               className={isOnline(user.lastSeenAt, now) ? "text-success" : "text-muted-foreground"}
-            >
-              {isOnline(user.lastSeenAt, now)
-                ? t("presence.online")
-                : format.relativeTime(new Date(user.lastSeenAt), now)}
-            </span>
+              relativeClassName={
+                isOnline(user.lastSeenAt, now) ? "text-success font-medium" : undefined
+              }
+            />
           </span>
         ) : (
           <span className="text-muted-foreground">—</span>
@@ -218,7 +218,7 @@ export function UserTable({
       hideBelow: "lg",
       cell: (user) => (
         <span className="text-muted-foreground">
-          {user.lastLogin ? format.relativeTime(new Date(user.lastLogin), now) : "—"}
+          <TimestampText value={user.lastLogin} />
         </span>
       ),
     },
@@ -230,7 +230,7 @@ export function UserTable({
       columns={columns}
       rows={query.data?.items}
       getRowId={(user) => user.id}
-      getRowLabel={(user) => user.fullName || user.email}
+      getRowLabel={(user) => formatUserDisplayName(user) || user.email}
       search={{ ...table.search, placeholder: t("searchPlaceholder") }}
       onClearFilters={table.hasFilters ? table.clearFilters : undefined}
       filters={

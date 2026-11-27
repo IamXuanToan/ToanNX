@@ -51,6 +51,10 @@ PUBLIC_VIEWS = frozenset(
         "DonationPublicFeedView",
         "DonationPublicLeaderboardView",
         "NotificationDispatchView",
+        "SystemTelegramWebhookView",
+        "WorkspaceCronTickView",
+        "WorkspaceCronDispatchDueView",
+        "TelegramAssistantProcessView",
     }
 )
 # View chỉ cần đăng nhập (dữ liệu của chính người dùng hoặc danh mục tĩnh).
@@ -65,6 +69,7 @@ LOGIN_ONLY_VIEWS = frozenset(
         "UserSocialAccountView",
         "SocialLinkView",
         "SocialUnlinkView",
+        "TelegramBotView",
         "QrBankView",
         "ReadingHistoryView",
         "ReadingHistoryObjectView",

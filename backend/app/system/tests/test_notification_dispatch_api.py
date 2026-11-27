@@ -68,3 +68,43 @@ def test_bad_qstash_signature_is_404(client: Any, settings: Any) -> None:
     )
     assert response.status_code == 404
     assert not NotificationDelivery.objects.exists()
+
+
+def test_qstash_failure_still_dispatches_via_cron_fallback_without_duplicates(
+    client: Any, settings: Any, superuser: Any, fake_redis: FakeRedis, django_capture_on_commit_callbacks: Any
+) -> None:
+    """Khi QStash lỗi lúc notify(), cron fallback vẫn thấy việc ngay và chỉ gửi đúng 1 lần."""
+    settings.CRON_SECRET = "cron"
+    settings.FIREBASE_PROJECT_ID = "p"
+    settings.FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 = "e30="
+    NotificationKickService().remember_next_due(None, None)
+    assert not NotificationKickService().has_due_work()
+
+    from app.system.models.push_device import PushDevice
+    from app.system.types.push_send_result import PushSendResult
+
+    PushDevice.objects.create(user=superuser, fcm_token="tok-fallback")
+
+    with (
+        patch("app.system.services.qstash_client.QstashClient.publish", return_value=False),
+        django_capture_on_commit_callbacks(execute=True),
+    ):
+        NotificationService().notify(
+            "system.announcement.published",
+            recipient=superuser,
+            dedup_key="fallback-once",
+            payload=NotificationPayload(title="Cảnh báo khẩn"),
+        )
+
+    assert NotificationKickService().has_due_work()
+    with patch(
+        "app.system.services.fcm_client.FcmClient.send",
+        return_value=PushSendResult(ok=True, message_id="msg-1"),
+    ) as mock_send:
+        r1 = client.post(URL, HTTP_AUTHORIZATION="Bearer cron")
+        r2 = client.post(URL, HTTP_AUTHORIZATION="Bearer cron")
+
+    assert r1.status_code == 200 and r1.json()["data"] == {"sent": 1}
+    assert r2.status_code == 200 and r2.json()["data"] == {"sent": 0}
+    assert mock_send.call_count == 1
+    assert NotificationDelivery.objects.get().status == "SENT"

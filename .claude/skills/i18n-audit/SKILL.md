@@ -9,8 +9,9 @@ Skill này dùng khi cần rà toàn bộ hoặc một module về đa ngôn ng�
 
 ## 1. Tài liệu & phạm vi cần nạp
 
-1. Đọc `docs/architecture/i18n.md`, `docs/rules/frontend.md`, `.agents/rules/20-frontend.md`.
-2. Kiểm tra danh sách namespace trong `frontend/src/i18n/messages.ts`, `frontend/src/global.d.ts`, `frontend/src/i18n/routing.ts`.
+1. **Lọc phạm vi từ sổ theo dõi**: chạy `uv run --no-project python scripts/audit_tracker.py list-pending --axis i18n --format paths` để xem các file mới sửa / `NEEDS_CHECK` ở trục `i18n` trong `docs/reports/code-audit-tracker.md`. Mặc định chỉ kiểm tra kỹ các file `NEEDS_CHECK` cùng cặp từ điển `{vi,en}.json` / file lỗi BE tương ứng; chỉ quét lại toàn repo khi người dùng yêu cầu kiểm toán toàn bộ.
+2. Đọc `docs/architecture/i18n.md`, `docs/rules/frontend.md`, `.agents/rules/20-frontend.md`.
+3. Kiểm tra danh sách namespace trong `frontend/src/i18n/messages.ts`, `frontend/src/global.d.ts`, `frontend/src/i18n/routing.ts`.
 
 ## 2. Quy trình quét 5 lớp
 
@@ -37,4 +38,5 @@ Skill này dùng khi cần rà toàn bộ hoặc một module về đa ngôn ng�
 ## 3. Sửa và kiểm lại
 
 - Format JSON và TS/TSX đã sửa bằng `prettier --write`, kiểm `eslint` trên các file sửa, `pnpm --dir frontend typecheck` và `pnpm --dir frontend test tests/unit/messages.test.ts` + các unit test component bị sửa (bọc `NextIntlClientProvider` nếu cần).
-- Kiểm lại bằng `.agents/rules/90-done-checklist.md` và trả commit `fix(<scope>, i18n): ...` theo `docs/rules/git.md`.
+- Sau khi sửa và kiểm tra lại đều đạt, đóng dấu các file vừa rà vào `docs/reports/code-audit-tracker.md` qua `uv run --no-project python scripts/audit_tracker.py mark-checked --axis i18n --files <files...> --status <PASS|FIXED> --note "<tóm tắt i18n>"`.
+- Kiểm lại bằng `.agents/rules/90-done-checklist.md`; nếu người dùng nêu quy chuẩn i18n mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy ước nếu kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt. Không tự thao tác Git và không tự gợi ý nội dung commit trừ khi người dùng yêu cầu.

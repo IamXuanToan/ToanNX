@@ -32,16 +32,22 @@ Rule AI là bản tóm tắt để làm đúng ngay từ đầu. Chi tiết và 
   model + enum của nó; shadcn `shares/components/ui/*`; export đặc biệt của Next. Class lồng (`Meta`) được phép.
 - **Cập nhật tài liệu cùng lần sửa** (model, quyền, route, sự kiện, webhook → `docs/modules/<m>/README.md`; cách
   chức năng chạy → `docs/features/`). Tài liệu lệch code = việc chưa xong.
+- **Tự động lưu rule mới khi người dùng đặt quy tắc**: khi người dùng trong chat nêu rule/ràng buộc chưa có trong
+  `docs/rules/` (hoặc yêu cầu ghi nhận cho các lần sau), AI tự động cập nhật ngay vào `docs/rules/`, `.agents/rules/`,
+  `AGENTS.md`, `CLAUDE.md`, `prompt.md`, kèm test quy ước nếu tự động kiểm được, và chạy `python scripts/sync-ai-rules.py`
+  trong cùng lần làm việc.
 - **Mở file nào thì kiểm rule file đó và sửa luôn**; sửa kéo theo đổi contract API/migration hoặc lan ≥ 10 file thì
   báo trước.
 - Báo rõ phần **chưa kiểm được trên giao diện thật**; không tuyên bố xong khi chưa chạy kiểm tra.
 
 ## Không bao giờ
 
-- **Không tự thao tác git** (branch, commit, push, merge, xóa nhánh) khi chưa được yêu cầu rõ. Sau mỗi task,
-  đọc trạng thái/diff Git và trả nội dung commit **gồm tiêu đề + body** theo `docs/rules/git.md` cho toàn bộ thay
-  đổi chưa commit; đặt trong khối `text` để dán vào VS Code, không đưa lệnh `git commit`. Phân biệt thay đổi có
-  sẵn với thay đổi của task.
+- **Không tự thao tác Git và không tự gợi ý commit** (branch, commit, push, merge, xóa nhánh, và không tự chèn nội
+  dung commit cuối các task `create-plan`, `review-plan`, `review-code`, `review-security`, `start-task`, `fix`...)
+  khi chưa được yêu cầu rõ. Chỉ soạn gợi ý commit trong khối `text` dán VS Code khi được yêu cầu (`commit-demo`), và
+  chỉ stage/commit/push khi người dùng gọi (`commit-push`).
+- Không bao giờ thêm nguồn hoặc chữ ký AI bên ngoài vào commit (như `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`
+  hay `Generated with ...`).
 - Không thêm dependency, module, tính năng ngoài phạm vi khi chưa được duyệt.
 - **Không chạy toàn bộ test** (`scripts/check-all.*`, `pnpm e2e` đầy đủ, `uv run pytest`/`pnpm test` không chỉ
   file) khi chưa được yêu cầu. Chỉ chạy kiểm tra của file đã sửa và test liên quan.

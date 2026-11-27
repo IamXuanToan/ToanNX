@@ -3,16 +3,15 @@
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
 
-import { Link } from "@/i18n/navigation";
 import { ChoiceList } from "@/shares/components/common/choice-list";
 import { Form } from "@/shares/components/common/form";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormLayout } from "@/shares/components/common/form-layout";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { NumberInput } from "@/shares/components/common/number-input";
-import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 
 import { SYSTEM_ROUTES } from "../../constants/routes";
@@ -105,11 +104,7 @@ export function CurrencyForm({
         </FormSection>
       </FormLayout>
       <FormActions>
-        <Button type="button" variant="outline" asChild>
-          <Link href={SYSTEM_ROUTES.currencies}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
-          </Link>
-        </Button>
+        <FormBackButton href={SYSTEM_ROUTES.currencies} />
         {disabled ? null : (
           <FormSubmitButton
             isSubmitting={isSubmitting}

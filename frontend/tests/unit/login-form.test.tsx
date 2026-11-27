@@ -1,9 +1,12 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoginForm } from "@/modules/system/components/auth/login-form";
+
+const mockReplace = vi.fn();
+const mockMutateAsync = vi.fn();
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({
@@ -15,7 +18,7 @@ vi.mock("@/i18n/navigation", () => ({
       {children}
     </a>
   ),
-  useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
+  useRouter: () => ({ replace: mockReplace, push: vi.fn() }),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -52,7 +55,7 @@ vi.mock("@/modules/system/hooks/use-public-settings", () => ({
 
 vi.mock("@/modules/system/hooks/use-login", () => ({
   useLogin: () => ({
-    mutateAsync: vi.fn(),
+    mutateAsync: mockMutateAsync,
     isPending: false,
   }),
 }));
@@ -63,6 +66,8 @@ beforeEach(() => {
   queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
+  mockReplace.mockReset();
+  mockMutateAsync.mockReset();
 });
 
 afterEach(cleanup);
@@ -71,28 +76,43 @@ describe("LoginForm", () => {
   it("hiển thị đầy đủ các nút mạng xã hội, các trường nhập liệu có icon và placeholder chuẩn", () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <LoginForm redirectTo="/admin" />
+        <LoginForm redirectTo="/portal" />
       </QueryClientProvider>,
     );
 
-    // 1. Nút Google & GitHub
     expect(screen.getByTestId("login-google-button")).toBeTruthy();
     expect(screen.getByTestId("login-github-button")).toBeTruthy();
+    expect(screen.getByPlaceholderText("Nhập email hoặc tên người dùng")).toBeTruthy();
+    expect(screen.getByPlaceholderText("Nhập mật khẩu")).toBeTruthy();
 
-    // 2. Ô email/tên người dùng và mật khẩu
-    const identifierInput = screen.getByPlaceholderText("Nhập email hoặc tên người dùng");
-    expect(identifierInput).toBeTruthy();
-
-    const passwordInput = screen.getByPlaceholderText("Nhập mật khẩu");
-    expect(passwordInput).toBeTruthy();
-
-    // 3. Link quên mật khẩu
     const forgotLink = screen.getByRole("link", { name: /Quên mật khẩu\?/i });
     expect(forgotLink).toBeTruthy();
     expect(forgotLink.getAttribute("href")).toBe("/forgot-password");
 
-    // 4. Nút đăng nhập
-    const submitBtn = screen.getByRole("button", { name: "Đăng nhập" });
-    expect(submitBtn).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Đăng nhập" })).toBeTruthy();
+  });
+
+  it("luôn điều hướng về Client Portal kể cả khi tài khoản là Admin/Superuser", async () => {
+    mockMutateAsync.mockResolvedValue({
+      user: { isStaff: true, isSuperuser: true },
+    });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <LoginForm redirectTo="/portal" />
+      </QueryClientProvider>,
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("Nhập email hoặc tên người dùng"), {
+      target: { value: "admin@toannx.local" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Nhập mật khẩu"), {
+      target: { value: "StrongPassword123!" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Đăng nhập" }));
+
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith("/portal");
+    });
   });
 });

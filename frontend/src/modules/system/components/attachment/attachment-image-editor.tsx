@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { ColorInput } from "@/shares/components/common/color-input";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
@@ -248,48 +249,58 @@ export function AttachmentImageEditor({ file, onSaved, onCancel }: AttachmentIma
             {cropAreaEl && selectedRatioId === "free"
               ? createPortal(
                   <div className="pointer-events-none absolute inset-0 z-40">
-                    {/* 4 góc */}
-                    <div
-                      onPointerDown={(e) => handleResizeStart(e, "nw")}
-                      className="border-primary pointer-events-auto absolute top-0 left-0 size-3.5 -translate-x-1/2 -translate-y-1/2 cursor-nwse-resize touch-none rounded-xs border-2 bg-white shadow-md hover:scale-125"
-                      title={t("cropHandleNw")}
-                    />
-                    <div
-                      onPointerDown={(e) => handleResizeStart(e, "ne")}
-                      className="border-primary pointer-events-auto absolute top-0 right-0 size-3.5 translate-x-1/2 -translate-y-1/2 cursor-nesw-resize touch-none rounded-xs border-2 bg-white shadow-md hover:scale-125"
-                      title={t("cropHandleNe")}
-                    />
-                    <div
-                      onPointerDown={(e) => handleResizeStart(e, "sw")}
-                      className="border-primary pointer-events-auto absolute bottom-0 left-0 size-3.5 -translate-x-1/2 translate-y-1/2 cursor-nesw-resize touch-none rounded-xs border-2 bg-white shadow-md hover:scale-125"
-                      title={t("cropHandleSw")}
-                    />
-                    <div
-                      onPointerDown={(e) => handleResizeStart(e, "se")}
-                      className="border-primary pointer-events-auto absolute right-0 bottom-0 size-3.5 translate-x-1/2 translate-y-1/2 cursor-nwse-resize touch-none rounded-xs border-2 bg-white shadow-md hover:scale-125"
-                      title={t("cropHandleSe")}
-                    />
-                    {/* 4 cạnh */}
-                    <div
-                      onPointerDown={(e) => handleResizeStart(e, "n")}
-                      className="border-primary pointer-events-auto absolute top-0 left-1/2 h-2.5 w-6 -translate-x-1/2 -translate-y-1/2 cursor-ns-resize touch-none rounded-xs border bg-white shadow-sm hover:scale-110"
-                      title={t("cropHandleN")}
-                    />
-                    <div
-                      onPointerDown={(e) => handleResizeStart(e, "s")}
-                      className="border-primary pointer-events-auto absolute bottom-0 left-1/2 h-2.5 w-6 -translate-x-1/2 translate-y-1/2 cursor-ns-resize touch-none rounded-xs border bg-white shadow-sm hover:scale-110"
-                      title={t("cropHandleS")}
-                    />
-                    <div
-                      onPointerDown={(e) => handleResizeStart(e, "w")}
-                      className="border-primary pointer-events-auto absolute top-1/2 left-0 h-6 w-2.5 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize touch-none rounded-xs border bg-white shadow-sm hover:scale-110"
-                      title={t("cropHandleW")}
-                    />
-                    <div
-                      onPointerDown={(e) => handleResizeStart(e, "e")}
-                      className="border-primary pointer-events-auto absolute top-1/2 right-0 h-6 w-2.5 translate-x-1/2 -translate-y-1/2 cursor-ew-resize touch-none rounded-xs border bg-white shadow-sm hover:scale-110"
-                      title={t("cropHandleE")}
-                    />
+                    {(
+                      [
+                        [
+                          "nw",
+                          "top-0 left-0 size-3.5 -translate-x-1/2 -translate-y-1/2 cursor-nwse-resize rounded-xs border-2 shadow-md hover:scale-125",
+                          "cropHandleNw",
+                        ],
+                        [
+                          "ne",
+                          "top-0 right-0 size-3.5 translate-x-1/2 -translate-y-1/2 cursor-nesw-resize rounded-xs border-2 shadow-md hover:scale-125",
+                          "cropHandleNe",
+                        ],
+                        [
+                          "sw",
+                          "bottom-0 left-0 size-3.5 -translate-x-1/2 translate-y-1/2 cursor-nesw-resize rounded-xs border-2 shadow-md hover:scale-125",
+                          "cropHandleSw",
+                        ],
+                        [
+                          "se",
+                          "right-0 bottom-0 size-3.5 translate-x-1/2 translate-y-1/2 cursor-nwse-resize rounded-xs border-2 shadow-md hover:scale-125",
+                          "cropHandleSe",
+                        ],
+                        [
+                          "n",
+                          "top-0 left-1/2 h-2.5 w-6 -translate-x-1/2 -translate-y-1/2 cursor-ns-resize rounded-xs border shadow-sm hover:scale-110",
+                          "cropHandleN",
+                        ],
+                        [
+                          "s",
+                          "bottom-0 left-1/2 h-2.5 w-6 -translate-x-1/2 translate-y-1/2 cursor-ns-resize rounded-xs border shadow-sm hover:scale-110",
+                          "cropHandleS",
+                        ],
+                        [
+                          "w",
+                          "top-1/2 left-0 h-6 w-2.5 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize rounded-xs border shadow-sm hover:scale-110",
+                          "cropHandleW",
+                        ],
+                        [
+                          "e",
+                          "top-1/2 right-0 h-6 w-2.5 translate-x-1/2 -translate-y-1/2 cursor-ew-resize rounded-xs border shadow-sm hover:scale-110",
+                          "cropHandleE",
+                        ],
+                      ] as const
+                    ).map(([dir, posClass, labelKey]) => (
+                      <AppTooltip key={dir} content={t(labelKey)}>
+                        <div
+                          onPointerDown={(e) => handleResizeStart(e, dir)}
+                          aria-label={t(labelKey)}
+                          className={`border-primary pointer-events-auto absolute touch-none bg-white ${posClass}`}
+                        />
+                      </AppTooltip>
+                    ))}
                   </div>,
                   cropAreaEl,
                 )
@@ -498,23 +509,23 @@ export function AttachmentImageEditor({ file, onSaved, onCancel }: AttachmentIma
                       <span className="text-xs text-white/80">{t("watermarkColor")}</span>
                       <div className="flex items-center gap-2">
                         {WATERMARK_COLOR_PRESETS.map((preset) => (
-                          <Button
-                            key={preset.value}
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() =>
-                              setWatermark((prev) => ({ ...prev, color: preset.value }))
-                            }
-                            style={{ backgroundColor: preset.value }}
-                            className={cn(
-                              "size-10 shrink-0 rounded-full border border-white/40 p-0 transition-transform",
-                              watermark.color.toUpperCase() === preset.value &&
-                                "ring-primary ring-2 ring-offset-2 ring-offset-zinc-900",
-                            )}
-                            title={t(preset.labelKey)}
-                            aria-label={t(preset.labelKey)}
-                          />
+                          <AppTooltip key={preset.value} content={t(preset.labelKey)}>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() =>
+                                setWatermark((prev) => ({ ...prev, color: preset.value }))
+                              }
+                              style={{ backgroundColor: preset.value }}
+                              className={cn(
+                                "size-10 shrink-0 rounded-full border border-white/40 p-0 transition-transform",
+                                watermark.color.toUpperCase() === preset.value &&
+                                  "ring-primary ring-2 ring-offset-2 ring-offset-zinc-900",
+                              )}
+                              aria-label={t(preset.labelKey)}
+                            />
+                          </AppTooltip>
                         ))}
                         <div className="min-w-0 flex-1">
                           <ColorInput

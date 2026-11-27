@@ -3,7 +3,14 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { CHART_COLORS, chartColor } from "@/modules/finance/constants/chart-colors";
+import {
+  CHART_COLORS,
+  chartColor,
+  contrastRatio,
+  hexLuminance,
+  platformChartConfigItem,
+  resolveLightDarkChartColor,
+} from "@/modules/finance/constants/chart-colors";
 
 const CSS = readFileSync(join(process.cwd(), "src", "app", "globals.css"), "utf8");
 
@@ -32,5 +39,24 @@ describe("Bảng màu biểu đồ đa sắc", () => {
       return Number(m?.[1]);
     });
     expect(new Set(lightHues).size).toBe(8);
+  });
+
+  it("resolveLightDarkChartColor giữ độ tương phản chuẩn cho mọi mã HEX ở cả Light và Dark", () => {
+    for (const hex of ["#000000", "#FEF08A", "#2563EB", "#DC2626", "#DB2777"]) {
+      const pair = resolveLightDarkChartColor(hex);
+      expect(contrastRatio(hexLuminance(pair.light), 1.0)).toBeGreaterThanOrEqual(3.4);
+      expect(contrastRatio(hexLuminance(pair.dark), 0.008)).toBeGreaterThanOrEqual(4.7);
+    }
+  });
+
+  it("platformChartConfigItem dùng theme light/dark nếu có HEX và fallback chartColor khi rỗng", () => {
+    const custom = platformChartConfigItem("Donate", "#DB2777", 0);
+    expect(custom).toEqual({
+      label: "Donate",
+      theme: resolveLightDarkChartColor("#DB2777"),
+    });
+
+    const fallback = platformChartConfigItem("Khác", "", 2);
+    expect(fallback).toEqual({ label: "Khác", color: chartColor(2) });
   });
 });

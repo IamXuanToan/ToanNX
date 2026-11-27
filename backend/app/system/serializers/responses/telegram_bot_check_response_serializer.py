@@ -1,4 +1,4 @@
-"""Response kiểm tra bot Telegram."""
+"""Response kiểm tra và đồng bộ webhook Bot Telegram chung."""
 
 from typing import Any
 
@@ -8,7 +8,9 @@ from app.system.serializers.responses.telegram_bot_response_serializer import Te
 
 
 class TelegramBotCheckResponseSerializer(serializers.Serializer[Any]):
-    """Bot + có đang đặt webhook (getUpdates không dùng được)."""
+    """Thông tin bot + trạng thái đồng bộ webhook hiện tại."""
 
-    bot = TelegramBotResponseSerializer(help_text="Bot.")
-    has_webhook = serializers.BooleanField(help_text="Bot đang đặt webhook ở nơi khác.")
+    bot = TelegramBotResponseSerializer(help_text="Thông tin bot dùng chung.")
+    webhook_active = serializers.BooleanField(help_text="Webhook Telegram đã được gắn URL hợp lệ chưa.")
+    webhook_url = serializers.CharField(allow_blank=True, help_text="URL webhook hiện tại trên Telegram.")
+    last_error_code = serializers.CharField(allow_blank=True, help_text="Thông báo/mã lỗi webhook gần nhất.")

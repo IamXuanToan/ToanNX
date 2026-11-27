@@ -239,7 +239,7 @@ class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
     bulk_update_serializer_class = ShortLinkBulkUpdateValidateSerializer   # POST …/bulk-update
     bulk_delete_enabled = True                                             # POST …/bulk-delete
     history_enabled = True                                                 # GET …/{id}/history
-    action_rate_limits = {"create": "utilities.short_link.create"}        # settings.RATE_LIMITS
+    action_rate_limits = {"create": UtilitiesRateLimitKey.SHORT_LINK_CREATE}  # settings.RATE_LIMITS
     action_permissions = {
         "list": permission_rule(P.READ), "retrieve": permission_rule(P.READ),
         "create": permission_rule(P.CREATE), "partial_update": permission_rule(P.UPDATE),
@@ -274,7 +274,15 @@ class UserRoleView(CoreApiView):
 ```
 
 - Method **bắt buộc** có `@require_permission` (thiếu là 403), trừ view ghi đè `permission_classes` theo bảng mục 3.
-- Rate limit riêng: `@rate_limit("<khóa>")`; method ghi không khai dùng `default.write`.
+- Rate limit riêng: `@rate_limit(<Module>RateLimitKey.<KHOA>)` (`StrEnum`), `action_rate_limits` và `settings.RATE_LIMITS`
+  **tuyệt đối không viết chuỗi thô** như `"system.telegram.webhook"` hay `"default.write"`. Method ghi không khai dùng
+  `CoreRateLimitKey.DEFAULT_WRITE`; endpoint đọc công khai dùng `CoreRateLimitKey.PUBLIC_READ`.
+- Trong các file `app/<m>/constants/<m>_rate_limit_key.py` (`app/core/constants/core_rate_limit_key.py`), **tách từng
+  phân đoạn dấu `.`** thành hằng rõ nghĩa: dùng `ModuleCode.<M>` (`app/core/constants/module_code.py`), hằng nhóm/tài
+  nguyên ở đầu file (ví dụ `_CRON = "cron"`, `_SEPAY = "sepay"`), và `RateLimitAction.*`
+  (`app/core/constants/rate_limit_action.py`) rồi ghép bằng f-string `f"{_MODULE}.{_CRON}.{RateLimitAction.TICK}"`;
+  cấm viết chuỗi gộp dấu chấm nguyên khối như `"workspace.cron.tick"`. `test_module_conventions.py` kiểm tự động cả
+  kiểu `StrEnum` lẫn việc tách phân đoạn và khớp `ModuleCode`.
 - **Mọi** service view dùng (kể cả service chỉ set/xóa cookie như `AuthCookieService`) tạo trong `__init__` của
   view, gọi qua `self.<tên>_service`. Trong method không có `XxxService().method()` hay `XxxService.method()`.
 
@@ -371,6 +379,20 @@ class UserRoleView(CoreApiView):
   `ADMIN` (vai trò hệ thống duy nhất, `auto_grant=all`) được tạo sau mỗi `migrate` (post_migrate); vai trò theo
   module tạo bằng `uv run python manage.py seed_roles`. **Không** seed vai trò bằng data migration.
 - Superuser bỏ qua kiểm tra quyền tầng ứng dụng (trừ `check`), không bỏ qua đăng nhập.
+- **`ADMIN` toàn quyền trên dữ liệu của mọi người**: `ADMIN` (`is_superuser` và vai trò được cấp đủ quyền + `manage_all`)
+  luôn có full quyền xem, tạo, sửa, xóa và thao tác trên mọi bản ghi trong hệ thống (kể cả dữ liệu không gian cá
+  nhân `workspace` của user khác). Tuyệt đối không đặt luật phân quyền nghiệp vụ chặn `ADMIN` sửa/xóa dữ liệu của
+  người khác (chỉ giữ chốt an toàn hệ thống như `is_not_self` hoặc bảo vệ superuser hoạt động cuối cùng).
+- **Khai báo mã quyền & sự kiện theo mẫu tách phân đoạn**: mã quyền mới trong `PermissionCatalog` (`permissions/<model>_permission.py`)
+  và sự kiện thông báo mới trong `constants/<m>_notification_event.py` nên dùng `ModuleCode.<M>` + hằng tài nguyên/nhóm
+  + hằng action/event để tách từng phân đoạn dấu `.` tương tự `*RateLimitKey` (không viết chuỗi gộp lặp lại nhiều lần).
+- **1 Bot Telegram chung qua ENV, nhóm nhận do từng người dùng cấu hình**: cả hệ thống dùng **duy nhất một Bot Telegram**
+  cấu hình qua `TELEGRAM_BOT_TOKEN` và `TELEGRAM_BOT_USERNAME` trong ENV (không cho phép user hay admin nhập token bot
+  riêng vào DB/`Setting`). Mọi UI cần kết nối Telegram hiển thị `@username` từ `TelegramBotService`; còn nhóm/kênh/`chat_id`
+  nhận tin thì từng người tự cấu hình theo phạm vi owner.
+- **Tích hợp AI theo danh sách Fallback**: API key AI (`XKIRO_API_KEY`...) chỉ đặt trong ENV; cấu hình chọn model hỗ trợ
+  **fallback tuần tự qua nhiều model** khi một model chạm quota/rate limit/lỗi tạm, giữ timeout từng lượt gọi `≤ 5s`
+  trong giới hạn serverless Vercel.
 - **Thông báo**: module chỉ phát qua `NotificationService.notify(event_code, recipient=..., dedup_key=...,
   payload=NotificationPayload(...))` (gọi qua service). Không tự gửi email/Telegram/push, không đọc model thông
   báo. Sự kiện khai trong `ModuleDescriptor.notification_events` với `scope` (`PERSONAL`/`SYSTEM`), `audience`
@@ -444,9 +466,11 @@ class UserRoleView(CoreApiView):
   (`AUTH_ACCESS_COOKIE_NAME = "access_token"`, không `"toannx_access"`; không `TOANNX_*` trong `.env`)
   ([common.md](common.md) mục 3).
 - Hằng số mặc định toàn backend (locale `DEFAULT_LOCALE`/`ENGLISH_LOCALE`, timezone `DEFAULT_TIMEZONE`, tiền tệ
-  `DEFAULT_CURRENCY_CODE`, header/MIME mặc định) đặt tại `app/core/constants/defaults.py`; hằng số module đặt tại
-  `app/<m>/constants/` (`auth_frontend_routes.py`, `finance_defaults.py`...), không lặp lại chuỗi cấu hình rải rác
-  trong service/view/seed.
+  `DEFAULT_CURRENCY_CODE`, header/MIME mặc định) đặt tại `app/core/constants/defaults.py`; mã module ở
+  `app/core/constants/module_code.py`, hậu tố rate limit ở `app/core/constants/rate_limit_action.py`, khóa rate limit
+  dùng chung ở `app/core/constants/core_rate_limit_key.py`; hằng số riêng module đặt tại `app/<m>/constants/`
+  (`<m>_rate_limit_key.py`, `auth_frontend_routes.py`, `finance_defaults.py`...), không lặp lại chuỗi cấu hình hoặc
+  khóa gộp dấu chấm rải rác trong view/service/seed.
 - Password chỉ qua `set_password`/validators của Django.
 
 ## 12. Test

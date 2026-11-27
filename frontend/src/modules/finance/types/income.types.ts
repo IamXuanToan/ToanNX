@@ -18,6 +18,7 @@ export type Income = {
   ownerId: string;
   ownerEmail: string;
   ownerName: string;
+  ownerUsername: string | null;
   source: IncomeSource;
   receivedAt: string;
   receivedDate: string;

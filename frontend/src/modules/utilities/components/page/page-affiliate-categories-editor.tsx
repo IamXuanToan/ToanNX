@@ -4,6 +4,7 @@ import { Check, Pencil, Plus, Tag, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { SortableList } from "@/shares/components/common/sortable-list";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
@@ -136,26 +137,28 @@ export function PageAffiliateCategoriesEditor({
                           autoFocus
                           className="h-7 text-xs font-medium"
                         />
-                        <Button
-                          type="button"
-                          size="icon-xs"
-                          variant="ghost"
-                          onClick={() => saveEdit(cat.id)}
-                          className="text-primary hover:bg-primary/10 size-7"
-                          title={t("saveCategory")}
-                        >
-                          <Check className="size-3.5" />
-                        </Button>
-                        <Button
-                          type="button"
-                          size="icon-xs"
-                          variant="ghost"
-                          onClick={cancelEdit}
-                          className="text-muted-foreground hover:bg-muted size-7"
-                          title={tCommon("cancel")}
-                        >
-                          <X className="size-3.5" />
-                        </Button>
+                        <AppTooltip content={t("saveCategory")}>
+                          <Button
+                            type="button"
+                            size="icon-xs"
+                            variant="ghost"
+                            onClick={() => saveEdit(cat.id)}
+                            className="text-primary hover:bg-primary/10 size-7"
+                          >
+                            <Check className="size-3.5" />
+                          </Button>
+                        </AppTooltip>
+                        <AppTooltip content={tCommon("cancel")}>
+                          <Button
+                            type="button"
+                            size="icon-xs"
+                            variant="ghost"
+                            onClick={cancelEdit}
+                            className="text-muted-foreground hover:bg-muted size-7"
+                          >
+                            <X className="size-3.5" />
+                          </Button>
+                        </AppTooltip>
                       </div>
                     ) : (
                       <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -171,31 +174,37 @@ export function PageAffiliateCategoriesEditor({
                   {!isEditing && (
                     <div className="flex shrink-0 items-center gap-1">
                       {onUpdateCategory && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => startEdit(cat)}
-                          disabled={disabled}
-                          className="text-muted-foreground hover:bg-muted hover:text-foreground size-7 rounded-md"
-                          title={t("editCategory")}
-                          aria-label={t("editCategory")}
-                        >
-                          <Pencil className="size-3" />
-                        </Button>
+                        <AppTooltip content={t("editCategory")}>
+                          <span className="inline-flex">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon-xs"
+                              onClick={() => startEdit(cat)}
+                              disabled={disabled}
+                              className="text-muted-foreground hover:bg-muted hover:text-foreground size-7 rounded-md"
+                              aria-label={t("editCategory")}
+                            >
+                              <Pencil className="size-3" />
+                            </Button>
+                          </span>
+                        </AppTooltip>
                       )}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        onClick={() => onRemoveCategory(cat.id)}
-                        disabled={disabled}
-                        className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive size-7 rounded-md"
-                        title={t("deleteCategory", { name: cat.name })}
-                        aria-label={t("deleteCategory", { name: cat.name })}
-                      >
-                        <Trash2 className="size-3.5" />
-                      </Button>
+                      <AppTooltip content={t("deleteCategory", { name: cat.name })}>
+                        <span className="inline-flex">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => onRemoveCategory(cat.id)}
+                            disabled={disabled}
+                            className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive size-7 rounded-md"
+                            aria-label={t("deleteCategory", { name: cat.name })}
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </span>
+                      </AppTooltip>
                     </div>
                   )}
                 </div>

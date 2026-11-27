@@ -27,8 +27,11 @@ Chi tiết: `docs/rules/backend.md` §9, `docs/features/web-push.md`, `docs/guid
   (QStash gọi lại `POST /system/notifications/dispatch` ở lượt function riêng). cron-job.org mỗi 10 phút là lưới an
   toàn và không chạm DB khi mốc Redis chưa tới. Ngoại lệ duy nhất: nút "Gửi lại".
 - Thiết bị nhận push được chốt **lúc tạo thông báo**: thiết bị đăng ký sau đó không nhận thông báo cũ.
-- Lỗi tạm → lùi dần 1/5/15/60/240 phút; token push hết hạn chỉ tắt thiết bị, không cảnh báo; token bot Telegram
-  hỏng → tắt bot, cảnh báo một lần.
+- Lỗi tạm → lùi dần 1/5/15/60/240 phút; token push hết hạn chỉ tắt thiết bị, không cảnh báo; lỗi bot Telegram chung
+  từ `TELEGRAM_BOT_TOKEN` hoặc chat bị chặn (401/403/404) → đánh dấu lỗi đích nhận / cảnh báo một lần.
+- **Một Bot Telegram chung toàn hệ thống**: chỉ dùng bot ENV (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`) và hiển
+  thị `@username` bot qua `TelegramBotService`; không lưu bot token riêng từng user vào DB/Setting; nhóm/chat đích
+  (`TelegramChat`) do từng người dùng tự cấu hình.
 - Khuôn tin Telegram/email do `NotificationMessageFormatter` dựng (icon + tiêu đề, `details`, giờ Việt Nam, link).
 - Popup trình duyệt do `public/notification-sw.js` hiện (tiêu đề `ToanNX · …`, icon `brand/notification-icon.png`);
   token FCM gắn với origin đã đăng ký.

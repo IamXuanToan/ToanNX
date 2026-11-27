@@ -547,7 +547,8 @@
           "modeReplaceTitle": "Thay thế toàn bộ danh sách hiện tại",
           "modeReplaceDesc": "Xóa các sản phẩm cũ trên trang và thay bằng danh sách mới trong tệp.",
           "confirm": "Xác nhận nhập ({count})",
-          "successToast": "Đã nhập thành công {count} sản phẩm!"
+          "successToast": "Đã nhập thành công {count} sản phẩm!",
+          "defaultCtaLabel": "Mua ngay"
         }
       },
       "pageTypes": {

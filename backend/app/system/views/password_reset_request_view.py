@@ -12,6 +12,7 @@ from app.core.decorators.validate_request import validate_request
 from app.core.permissions.csrf_protected import CsrfProtected
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.system_rate_limit_key import SystemRateLimitKey
 from app.system.serializers.responses.password_reset_detail_response_serializer import (
     PasswordResetDetailResponseSerializer,
 )
@@ -37,7 +38,7 @@ class PasswordResetRequestView(CoreApiView):
         self.password_reset_service = PasswordResetService()
 
     @extend_schema(responses=PasswordResetDetailResponseSerializer)
-    @rate_limit("system.password_reset.request")
+    @rate_limit(SystemRateLimitKey.PASSWORD_RESET_REQUEST)
     @validate_request(PasswordResetRequestValidateSerializer)
     def post(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse:
         """Nhận email và gửi đường dẫn đặt lại mật khẩu nếu tài khoản tồn tại.

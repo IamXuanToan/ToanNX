@@ -32,9 +32,8 @@ def test_valid_webhook_creates_income_and_notifies(
         and income.platform.code == "facebook"
         and income.tax_status == "NO_RATE"
     )
-    assert Notification.objects.filter(
-        recipient=connection.owner, event_code="finance.income.needs_review"
-    ).exists()
+    notif = Notification.objects.get(recipient=connection.owner, event_code="finance.income.needs_review")
+    assert notif.link == f"/portal/finance/incomes/{income.pk}"
 
 
 def test_wrong_secret_and_unknown_connection_are_401(client: Any, connection: Any) -> None:
@@ -42,7 +41,8 @@ def test_wrong_secret_and_unknown_connection_are_401(client: Any, connection: An
     assert signed_post(client, connection, body, secret="sai").status_code == 401
     assert signed_post(client, connection, body, public_id=uuid4()).status_code == 401
     assert not Income.objects.exists()
-    assert Notification.objects.filter(event_code="finance.sepay.webhook_auth_failed").count() == 1
+    auth_notif = Notification.objects.get(event_code="finance.sepay.webhook_auth_failed")
+    assert auth_notif.link == "/portal/finance/sepay"
 
 
 def test_inactive_connection_is_401(client: Any, connection: Any) -> None:

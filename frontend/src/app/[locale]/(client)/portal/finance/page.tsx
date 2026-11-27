@@ -1,9 +1,9 @@
-import { FinanceDashboardView } from "@/modules/finance/views/dashboard/finance-dashboard-view";
+import { PortalDashboardView } from "@/modules/portal/views/dashboard/portal-dashboard-view";
 import { createPageMetadata } from "@/shares/lib/seo";
 
-export const generateMetadata = createPageMetadata({ title: "finance.nav.dashboard" });
+export const generateMetadata = createPageMetadata({ title: "portal.navigation.dashboard" });
 
-/** Tổng quan tài chính cá nhân (Client Portal). */
+/** Tổng quan hợp nhất trong Client Portal. */
 export default function Page() {
-  return <FinanceDashboardView />;
+  return <PortalDashboardView />;
 }

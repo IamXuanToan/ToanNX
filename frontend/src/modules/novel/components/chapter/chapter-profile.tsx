@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
@@ -43,9 +44,11 @@ export function ChapterProfile({
     return <Skeleton className="mx-auto h-96 w-full max-w-6xl rounded-xl" />;
 
   return (
-    <FormPage title={query.data.title || t("editTitle")}>
-      <ChapterForm chapter={query.data} disabled={!canEdit} />
-      {history ? <div className="mt-6">{history}</div> : null}
+    <FormPage title={query.data.title || t("editTitle")} backHref={NOVEL_ROUTES.adminChapters}>
+      <RecordDetailTabs
+        general={<ChapterForm chapter={query.data} disabled={!canEdit} />}
+        history={history}
+      />
     </FormPage>
   );
 }

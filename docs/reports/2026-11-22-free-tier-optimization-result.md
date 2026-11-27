@@ -1,6 +1,6 @@
 # Kết quả: tối ưu hệ thống trên hạ tầng free
 
-Ngày: 2026-11-22 · Plan: [plans/2026-11-22-free-tier-optimization.md](../plans/2026-11-22-free-tier-optimization.md) ·
+Ngày: 2026-11-22 · Plan: [plans/2026/11/22/2026-11-22-free-tier-optimization.md](../plans/2026/11/22/2026-11-22-free-tier-optimization.md) ·
 Nguyên nhân gốc: [2026-11-22-login-performance.md](2026-11-22-login-performance.md)
 
 ## 1. Đã làm

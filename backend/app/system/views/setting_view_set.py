@@ -9,6 +9,7 @@ GET    /system/settings/{id}/history
 """
 
 from app.core.views.core_model_view_set import CoreModelViewSet
+from app.system.filters.setting_filter import SettingFilter
 from app.system.models.setting import Setting
 from app.system.permissions.setting_permission import SettingPermission
 from app.system.serializers.responses.setting_response_serializer import (
@@ -28,6 +29,7 @@ class SettingViewSet(CoreModelViewSet[Setting]):
     """CRUD cấu hình hệ thống dạng key-value."""
 
     service_class = SettingService
+    filterset_class = SettingFilter
     search_fields = ("key", "description", "category")
     ordering_fields = ("key", "category", "created_at", "updated_at", "is_public")
     ordering = ("category", "key")

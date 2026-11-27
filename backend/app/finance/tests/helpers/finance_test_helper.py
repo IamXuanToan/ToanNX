@@ -44,10 +44,11 @@ def make_platform(
     currency_code: str = "VND",
     rates: tuple[tuple[date, bool, str], ...] = (),
     pattern: str | None = None,
+    color: str = "",
 ) -> Platform:
     """Nền tảng + lịch sử khấu trừ + quy tắc (tùy chọn)."""
     platform = Platform.objects.create(
-        owner=owner, code=code, name=name, default_currency=currency(currency_code)
+        owner=owner, code=code, name=name, color=color, default_currency=currency(currency_code)
     )
     for effective_from, withheld, rate in rates:
         PlatformTaxRate.objects.create(

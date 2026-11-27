@@ -12,7 +12,7 @@
 Mục lục tài liệu: [docs/README.md](docs/README.md) — `docs/architecture/` (kiến trúc, xác thực, phân quyền, i18n,
 kiểm thử), `docs/guides/` (triển khai, R2, OAuth, thông báo, tài chính), `docs/modules/<module>/` (tài liệu từng
 module), `docs/features/` (mô tả từng chức năng: phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác, sidebar, file
-công khai/riêng tư, Web Push). Lý do của các chuẩn: [docs/plans/system-standardization-plan.md](docs/plans/system-standardization-plan.md).
+công khai/riêng tư, Web Push). Lý do của các chuẩn: [docs/plans/2026/11/15/system-standardization-plan.md](docs/plans/2026/11/15/system-standardization-plan.md).
 
 Ba skill workflow đã chứa quy trình giao việc: Claude Code gọi `/start-task`, `/fix`, `/review-code`; Codex gọi
 `$start-task`, `$fix`, `$review-code`, hoặc chỉ chat thường để AI tự chọn. [prompt.md](prompt.md) là bản tra cứu tùy chọn,
@@ -40,15 +40,19 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   cập nhật `CLAUDE.md`, `AGENTS.md`, `prompt.md` trong cùng lần; `--check` chạy trong `scripts/check-all.*`
   (rule chung mục 4).
 - **Skill project**: `start-task` cho việc mới, `fix` cho lỗi, `review-code` cho lượt rà cuối do người dùng yêu
-  cầu, cùng các skill hỗ trợ `test`, `refactor`, `review-security`, `i18n-audit`, `permission-audit`,
-  `db-migration`, `check-ci`; mỗi skill đọc source, `docs/` và rule liên quan trước khi sửa. Skill nội bộ ở `.agents/skills/`
+  cầu, cùng các skill hỗ trợ `create-plan`, `review-plan`, `test`, `refactor`, `review-security`, `i18n-audit`,
+  `permission-audit`, `db-migration`, `commit-demo`, `commit-push`; mỗi skill đọc source, `docs/` và rule
+  liên quan trước khi làm/sửa. Skill nội bộ ở `.agents/skills/`
   được liên kết sang `.claude/skills/`; skill ngoài cài qua CLI có nguồn/commit ở `skills-lock.json`. Chỉ
   `.claude/skills/rule-*/` do script rule sinh; chọn theo `.agents/rules/01-workflow.md`, ưu tiên `docs/rules/`.
   Đổi các skill project hoặc chuyên môn thì chạy `python scripts/check-workflow-skills.py` để kiểm trigger và bản Claude.
-- **Không tự thao tác git**: không tạo nhánh, commit, push, merge, xóa nhánh khi chưa được yêu cầu rõ; làm trên
-  nhánh hiện tại. Sau mỗi task, đọc Git status/diff và trả nội dung commit theo [docs/rules/git.md](docs/rules/git.md)
-  cho toàn bộ thay đổi chưa commit, kể cả thay đổi có sẵn: mỗi commit có tiêu đề + body trong khối `text` để dán
-  vào VS Code, không phải câu lệnh Git. Không tự stage hay commit.
+- **Không tự thao tác Git và không tự gợi ý commit**: không tạo nhánh, commit, push, merge, xóa nhánh **và không tự
+  gợi ý nội dung commit ở cuối task** (kể cả `create-plan`, `review-plan`, `review-code`, `review-security`,
+  `start-task`, `fix`...) khi chưa được người dùng yêu cầu rõ; làm trên nhánh hiện tại. Chỉ soạn nội dung commit
+  theo [docs/rules/git.md](docs/rules/git.md) trong khối `text` để dán vào VS Code khi được yêu cầu (skill
+  `commit-demo`), và chỉ thực hiện commit + push khi người dùng gọi (skill `commit-push`). Tuyệt đối không thêm dòng
+  ghi công nguồn bên ngoài như `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` hay `Generated with ...` vào
+  commit.
 - **Một file một đơn vị**: mỗi class, component, hook một file (kể cả phần không export). Ngoại lệ: file APIView
   chứa `XxxView` + `XxxObjectView`; file model chứa model + enum của chính model đó; `shares/components/ui/*` của
   shadcn; export đặc biệt của Next trong `page.tsx`/`layout.tsx`. Class lồng trong class cha (`Meta`, enum trong
@@ -82,7 +86,7 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
 - **Bí mật dùng `DJANGO_SECRET_KEY` khi hệ thống tự tạo và tự kiểm**: ký token, băm, mã xác minh nội bộ dẫn
   xuất từ `DJANGO_SECRET_KEY` (`django.core.signing` / `salted_hmac`, salt riêng từng mục đích), không thêm biến
   env bí mật mới. Bí mật bên thứ ba cấp cho cả hệ thống (OAuth secret, `CRON_SECRET`, khóa R2, service account
-  Firebase) dùng biến riêng; bí mật bên thứ ba của từng người dùng (token SePay, token bot Telegram) lưu DB mã hóa
+  Firebase, bot Telegram chung `TELEGRAM_BOT_TOKEN`, khóa AI `XKIRO_API_KEY`) dùng biến riêng; bí mật bên thứ ba của từng người dùng (token SePay) và bí mật Két sắt cá nhân (`VaultItem`) lưu DB mã hóa
   bằng `SecretCipher`, không qua env; không đưa `DJANGO_SECRET_KEY` ra ngoài; không ghi bí mật thật vào
   `.env.example` (rule chung mục 5).
 - **Quyền thành viên khai trong class quyền**: mỗi `XxxPermission` tự khai `MEMBER = (READ, CREATE, ...)`,
@@ -107,7 +111,14 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   `/attachments/{id}/content`) (rule chung mục 5.2).
 - **Tài liệu `docs/` cập nhật cùng lần sửa**: đổi model/quyền/route/sự kiện/webhook của module →
   `docs/modules/<module>/README.md`; đổi cách một chức năng chạy → `docs/features/<chức-năng>.md`; module mới thêm
-  thư mục `docs/modules/<module>/` (rule chung mục 4).
+  thư mục `docs/modules/<module>/`; kế hoạch triển khai lưu theo ngày lập ở `docs/plans/<YYYY>/<MM>/<DD>/`
+  (không đặt file ở gốc `docs/plans/`) (rule chung mục 4).
+- **Sổ theo dõi rà soát code (`docs/reports/code-audit-tracker.md`)**: các skill thêm/sửa file (`start-task`, `fix`,
+  `refactor`, `test`, `db-migration`, `create-plan`, `review-plan`) ghi nhận ngày thay đổi qua
+  `uv run --no-project python scripts/audit_tracker.py mark-changed --files ...`; 4 skill rà soát (`review-code`,
+  `review-security`, `i18n-audit`, `permission-audit`) mặc định gọi `list-pending --axis <trục>` để chỉ kiểm
+  các file mới đổi / `NEEDS_CHECK` (cùng caller/contract liên quan), rồi đóng dấu `mark-checked` sau khi đạt
+  (chỉ quét toàn repo khi người dùng yêu cầu) (rule chung mục 4).
 - **Thông báo chỉ qua `NotificationService.notify`**: sự kiện khai `scope`/`audience`/`permission` trong
   `ModuleDescriptor.notification_events`; sự kiện `OWNER` phải truyền `recipient`; không tự gửi email/Telegram/push.
   Request không bao giờ gọi FCM/SMTP/Telegram: `notify` chỉ ghi outbox rồi đá QStash sau commit (cron là lưới an
@@ -133,12 +144,12 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   `test_<resource>_<action>_api.py`, FE đúng file Vitest/spec E2E của luồng). Chạy toàn bộ (`scripts/check-all.*`,
   `pnpm e2e` đầy đủ, `uv run pytest`/`pnpm test` không chỉ định file) chỉ khi người dùng yêu cầu, kể cả khi sửa
   nhiều file (rule chung mục 7).
-- **Chọn workflow theo câu chat**: task/tính năng mới → `start-task`; sửa lỗi/regression/test fail → `fix`;
-  người dùng yêu cầu review code cuối → `review-code` (tự sửa lỗi xác nhận được và kiểm lại, rồi trả commit đúng
-  `docs/rules/git.md`). Yêu cầu tự tạo test/chụp ảnh Playwright/monkey test → `test`; tái cấu trúc code → `refactor`;
+- **Chọn workflow theo câu chat**: lên kế hoạch/viết plan vào `docs/plans/<YYYY>/<MM>/<DD>/` → `create-plan`;
+  review/thẩm định plan trong `docs/plans/<YYYY>/<MM>/<DD>/` → `review-plan`; task/tính năng mới → `start-task`; sửa lỗi/regression/test fail → `fix`;
+  người dùng yêu cầu review code cuối → `review-code` (tự sửa lỗi xác nhận được và kiểm lại). Yêu cầu tự tạo test/chụp ảnh Playwright/monkey test → `test`; tái cấu trúc code → `refactor`;
   audit bảo mật kèm giả lập tấn công và file xác nhận trong `docs/` → `review-security`; rà thiếu i18n → `i18n-audit`;
-  rà ma trận quyền BE–FE → `permission-audit`; thiết kế model/migration → `db-migration`; kiểm tra và sửa để bảo
-  đảm GitHub CI luôn pass → `check-ci`. Chỉ một workflow chính; thêm
+  rà ma trận quyền BE–FE → `permission-audit`; thiết kế model/migration → `db-migration`; soạn gợi ý nội dung
+  commit → `commit-demo`; kiểm tra/tái lập đầy đủ cổng GitHub CI, stage, commit và push khi được gọi → `commit-push`. Chỉ một workflow chính; thêm
   skill chuyên môn theo phần việc. Yêu cầu audit bảo mật/code an toàn → `security-best-practices`; rà hiệu năng Django
   → `django-perf-review`; đo tốc độ trang/Core Web Vitals → `web-perf`; viết/sửa unit test FE → `vitest`;
   viết/sửa E2E spec → `playwright-best-practices`;
@@ -160,9 +171,14 @@ khớp đường dẫn. Chọn skill project theo mô tả trong `.agents/skills
   (`tests/unit/theme-tokens.test.ts`); ưu tiên thang Tailwind thay giá trị tùy ý; `DialogContent p-0` thì
   `DialogFooter` thêm `mx-0 mb-0`; dialog có tab cao cố định, chỉ thân cuộn (rule frontend §3.1.1, §4.0). Form/trang có Tab chính (`PageForm`, `PortalProfile`...): đồng bộ URL query param `?tab=...` qua `useTabState` (`window.history.replaceState`). Bảng/danh sách/bộ lọc: bắt buộc lưu toàn bộ phân trang (`page`, `pageSize`), tìm kiếm (`search`), sắp xếp (`ordering`), bộ lọc (`filterKeys`) và khoảng ngày/năm vào URL query params qua `useTableState` hoặc `window.history.replaceState` (F5 không mất filter/trang). Slug công khai (`Page`, `ShortLink`) hỗ trợ giữ nguyên chữ hoa chữ thường kiểu `ToanToChill` (`preserveCase: true`).
 - **Hủy request**: truyền `signal` của React Query cho `apiClient`, không tự abort `fetch` (rule frontend mục 5).
+- **Không viết chuỗi định danh gộp dấu chấm / mã thô**: Backend `@rate_limit`, `action_rate_limits` và `settings.RATE_LIMITS` bắt buộc dùng `StrEnum` (`CoreRateLimitKey` hoặc `<Module>RateLimitKey` trong `constants/<m>_rate_limit_key.py`), bên trong tách từng phân đoạn `.` bằng `ModuleCode.<M>`, hằng nhóm (`_CRON = "cron"`…) và `RateLimitAction.*` (`test_module_conventions.py`). Frontend dùng `<M>_SCOPE` (từ `constants/query-keys.ts`) + `createResourcePermissions` + `PERMISSION_ACTION` trong `permissions/*-permission.ts`, không viết chuỗi quyền/queryKey/mã lỗi thô trong component/hook (`code-conventions.test.ts`).
+- **Tự động cập nhật rule khi người dùng đặt quy tắc mới**: khi người dùng trong chat yêu cầu một quy chuẩn, ràng buộc hoặc cách làm mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay trong cùng lần làm việc vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy ước nếu kiểm tự động được) và chạy `python scripts/sync-ai-rules.py` (`--check`) để các lần sau không phải nhắc lại.
+- **`ADMIN` toàn quyền & 1 Bot Telegram ENV chung**: `ADMIN` (`is_superuser` / `manage_all`) luôn full quyền xem/sửa/xóa mọi dữ liệu trong hệ thống kể cả bản ghi cá nhân của người khác (chỉ giữ chốt an toàn như `is_not_self` / `ACCOUNT_LAST_SUPERUSER`). Toàn hệ thống dùng **1 Bot Telegram chung** cấu hình qua ENV (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME` hiển thị ở UI qua `TelegramBotService`), không lưu bot token riêng theo user; nhóm/chat nhận tin do từng user tự cấu hình. Tích hợp AI qua ENV với danh sách model **fallback tuần tự** khi chạm hạn mức/lỗi. Trang công khai/custom page (`/p/[slug]`) chuẩn Light/Dark theo token hệ thống. `scripts/dev.bat` tự giải phóng cổng `8001`/`3001`, cài dependency (`uv sync`, `pnpm install`) và dừng đồng thời cả hai server.
 - **ViewSet chỉ đọc mở `post` cho bulk** thì khai `"create": DENY`; xoá model không có `deleted_at` bằng
   `hard_delete` có lý do; field unique ngắn dùng `UniqueConstraint` có điều kiện (rule backend mục 9).
-- **Chuẩn Next.js và primitive shadcn**: hiển thị ảnh bắt buộc dùng `<Image />` từ `next/image` (cấm `<img>` trần); thẻ liên kết bắt buộc dùng `<Link />` từ `@/i18n/navigation` (kể cả link ngoài với `href={url as never}`; `next/link` chỉ dùng ngoài `[locale]` như `app/not-found.tsx`; cấm `<a>` trần); hằng số dùng chung (locale, timezone, tiền tệ, phân trang, ID toast) lấy từ `shares/constants/` và `shares/lib/number-format.ts` (`tests/unit/code-conventions.test.ts`); mọi UI primitive (`Button`, `Checkbox`, `Input`, `Label`...) lấy từ `@/shares/components/ui/`; cấm toàn bộ thẻ HTML trần tương tác (`<button>`, `<input>`, `<select>`, `<textarea>`, `<a>`, `<img>`).
+- **Chuẩn Next.js và primitive shadcn**: hiển thị ảnh bắt buộc dùng `<Image />` từ `next/image` (cấm `<img>` trần); thẻ liên kết bắt buộc dùng `<Link />` từ `@/i18n/navigation` (kể cả link ngoài với `href={url as never}`; `next/link` chỉ dùng ngoài `[locale]` như `app/not-found.tsx`; cấm `<a>` trần); hằng số dùng chung (locale, timezone, tiền tệ, phân trang, ID toast) lấy từ `shares/constants/` và `shares/lib/number-format.ts` (`tests/unit/code-conventions.test.ts`); mọi UI primitive (`Button`, `Checkbox`, `Input`, `Label`...) lấy từ `@/shares/components/ui/`; cấm toàn bộ thẻ HTML trần tương tác (`<button>`, `<input>`, `<select>`, `<textarea>`, `<a>`, `<img>`); **mọi tooltip bắt buộc dùng `AppTooltip` / shadcn `Tooltip`, cấm thuộc tính HTML `title=` thô** trên thẻ DOM hoặc primitive (`code-conventions.test.ts`).
+- **Chuẩn hiển thị người dùng và thời gian**: người tạo/chủ sở hữu/người dùng trên toàn hệ thống (bảng, bộ lọc, nhật ký, tệp, menu, hồ sơ) hiển thị **`fullname (username)`** (ví dụ `Nguyễn Xuân Toàn (toannx)`), thiếu `fullname` thì chỉ **`username`** qua `formatUserDisplayName` / `formatOwnerDisplayName` (`shares/lib/user-display.ts`). Mốc thời gian (`Cập nhật`, `Tạo lúc`, nhật ký, hoạt động, tệp, phiên, chat…) hiển thị **`dd/MM/yyyy HH:mm:ss (<thời gian đếm>)`** qua `<TimestampText />` (`shares/components/common/timestamp-text.tsx`) hoặc `formatDateTimeWithRelative` (`shares/lib/date-time-format.ts`); cột chỉ có ngày hiển thị **`dd/MM/yyyy`** qua `formatExplicitDate` (`code-conventions.test.ts`, rule frontend §3.1).
+- **Tab lịch sử thay đổi (`JournalTracker`) & nút `Quay lại` cố định khi đổi tab**: mọi model BE kế thừa `JournalTracker` (`history_enabled = True`) khi có trang chi tiết/chỉnh sửa (`[id]/page.tsx`, cả Admin và Client Portal) **bắt buộc** hiển thị tab **`Lịch sử thay đổi`** (`?tab=history` qua `RecordDetailTabs` hoặc tab ngang hàng trong form đa tab như `PageForm`) sử dụng common `RecordHistoryView` → `RecordHistory` → `ActivityTimeline` (có lọc loại thao tác, `"Xem hoạt động cũ hơn"`, chip `+`/`-`, dịch tên trường và giá trị enum qua `journal-field-prefixes.ts` và `journal-value-prefixes.ts`). Mọi `<FormPage>` có tab bắt buộc truyền `backHref` và dùng `<FormBackButton />` trong `<FormActions>` (hoặc đặt `<FormActions>` ngoài `</Tabs>`) để nút `Quay lại` không bị mất khi chuyển tab (rule frontend §3.1, `form-page-header.test.tsx`).
 - **Tải dữ liệu 100% phía Client (cấm gọi API ngầm ở SSR)**: mọi trang (kể cả trang công khai như link rút gọn `/s/[slug]`, custom page `/p/[slug]`) bắt buộc gọi API lấy dữ liệu ở phía Client thông qua React Query (`useQuery`) + `service` + `apiClient`. Cấm dùng Server Component gọi API ngầm (`serverApiGet`/`backendFetch`/`fetch` ngầm ở server Next.js) để render trang; `page.tsx` chỉ nhận params và render View. Bắt buộc có API call hiển thị trực tiếp trên tab Network của DevTools trình duyệt để phục vụ việc debug lỗi, đồng thời tránh lỗi mạng/WAF/Cloudflare chặn giữa các serverless functions (rule frontend §1, §5).
 - **`graphify update .` chỉ chạy khi thay đổi lớn** (thêm/xóa/gộp module, đổi cấu trúc thư mục, di chuyển/đổi tên
   khoảng 10 file trở lên, refactor kiến trúc) **hoặc graph đã cũ** (`graphify-out/graph.json` quá 7 ngày, hay
@@ -220,7 +236,7 @@ Frontend:
    Chi tiết bản ghi: component `<model>-profile.tsx` tự tải dữ liệu, View chỉ kiểm quyền và ghép.
 3. Bảng `DataTable` + `useTableState`, cột Thao tác luôn Xem/Sửa/Xóa (`onView`/`onEdit`/`onDelete` + `can`);
    trang chi tiết chỉ xem mặc định (`useEditMode` + `EditModeProvider`); một form cho tạo/sửa/xem (`FormPage` + `FormLayout` + `FormSection` +
-   `FormActions`); tạo/sửa nhanh tài nguyên liên quan bằng `FormDialog` chứa đúng form đó. Soạn thảo dùng
+   `FormActions`, cụm phải header luôn đặt `[...phụ] [Quay lại] [Sửa/Lưu/Tạo]` thống nhất trên Admin và Client; `Hủy` chỉ dùng trong dialog); tạo/sửa nhanh tài nguyên liên quan bằng `FormDialog` chứa đúng form đó. Soạn thảo dùng
    `TiptapEditor` (JSON), hiển thị bằng `TiptapContent`. Chi tiết: rule frontend mục 3.1.
 4. Ghép vào `src/i18n/routing.ts`, `src/i18n/messages.ts`, `src/global.d.ts`, `ADMIN_MODULE_NAVIGATION`
    (`navigation.ts` khai `module`, `nameKey`/`descriptionKey`, `labelKey` là khóa đầy đủ trong namespace của module;
@@ -228,9 +244,9 @@ Frontend:
    `tests/unit/module-registry.test.ts` đỏ nếu quên chỗ nào.
    Chạy `pnpm api:types` khi đổi bất kỳ thứ gì đi vào OpenAPI (serializer, view, kể cả docstring của view/method); kiểu viết tay thêm một dòng vào `tests/unit/api-contract.test.ts`
    (hoặc dùng thẳng `ApiModel<"…Response">`). Model có `JournalTracker` thì thêm tiền tố nhãn field vào
-   `system/constants/journal-field-prefixes.ts`. Lỗi tải bản ghi dùng `QueryErrorState`.
+   `system/constants/journal-field-prefixes.ts` (và giá trị enum vào `journal-value-prefixes.ts` nếu có). Lỗi tải bản ghi dùng `QueryErrorState`.
 5. Module cùng cấp không import nhau: page ghép qua slot (`extensions`, `history`, `editorPlugins`).
-   Lịch sử thay đổi: page truyền `<RecordHistoryView path=".../{id}/history" fieldPrefix="links.fields" />`.
+   Lịch sử thay đổi: mọi model có `JournalTracker` trên trang `[id]` bắt buộc truyền `history={<RecordHistoryView path=".../{id}/history" fieldPrefix="links.fields" />}` vào tab `?tab=history` (`RecordDetailTabs`) và truyền `backHref` lên `<FormPage>` (`<FormBackButton />` trong `<FormActions>`).
 6. Quy chuẩn UI & Tối ưu:
    - Hiển thị ảnh bắt buộc dùng `<Image />` từ `next/image` (không dùng thẻ `<img>` trần).
    - Thẻ liên kết bắt buộc dùng component `<Link />` từ `@/i18n/navigation` (kể cả liên kết ngoài `target="_blank"` với `href={url as never}`), hoặc bọc bằng `<Button asChild><Link href="...">...</Link></Button>`; tuyệt đối không dùng thẻ `<a>` trần hay import `next/link` trong module.

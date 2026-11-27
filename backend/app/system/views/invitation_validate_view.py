@@ -10,6 +10,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.exceptions.validation_error import ValidationError
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.system_rate_limit_key import SystemRateLimitKey
 from app.system.serializers.responses.invitation_detail_response_serializer import (
     InvitationDetailResponseSerializer,
 )
@@ -36,7 +37,7 @@ class InvitationValidateView(CoreApiView):
         description="Xác thực token lời mời tham gia và lấy thông tin người dùng được mời.",
         responses=InvitationDetailResponseSerializer,
     )
-    @rate_limit("system.invitation.validate")
+    @rate_limit(SystemRateLimitKey.INVITATION_VALIDATE)
     def get(self, request: Request) -> CoreResponse:
         """Kiểm tra token lời mời.
 

@@ -12,6 +12,7 @@ from app.core.decorators.validate_request import validate_request
 from app.core.permissions.csrf_protected import CsrfProtected
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.system_rate_limit_key import SystemRateLimitKey
 from app.system.serializers.responses.current_user_response_serializer import (
     CurrentUserResponseSerializer,
 )
@@ -43,7 +44,7 @@ class AcceptInvitationView(CoreApiView):
         description="Thiết lập họ tên, tên người dùng, mật khẩu và tự động đăng nhập vào hệ thống.",
         responses=CurrentUserResponseSerializer,
     )
-    @rate_limit("system.invitation.accept")
+    @rate_limit(SystemRateLimitKey.INVITATION_ACCEPT)
     @validate_request(AcceptInvitationValidateSerializer)
     def post(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse:
         """Kích hoạt tài khoản qua lời mời.

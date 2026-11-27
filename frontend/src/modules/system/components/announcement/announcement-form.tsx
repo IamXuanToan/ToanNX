@@ -114,14 +114,14 @@ export function AnnouncementForm() {
               label={t("fields.link")}
               description={t("fields.linkHint")}
             >
-              {(field) => <Input {...field} placeholder="/quan-tri" />}
+              {(field) => <Input {...field} placeholder={t("fields.linkPlaceholder")} />}
             </FormField>
           </div>
         </FormSection>
       </FormLayout>
       <FormActions>
         <Button type="button" variant="outline" asChild>
-          <Link href={SYSTEM_ROUTES.announcements}>{tCommon("cancel")}</Link>
+          <Link href={SYSTEM_ROUTES.announcements}>{tCommon("back")}</Link>
         </Button>
         <FormSubmitButton isSubmitting={isSubmitting}>{t("send")}</FormSubmitButton>
       </FormActions>

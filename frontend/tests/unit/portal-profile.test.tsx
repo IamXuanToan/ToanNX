@@ -43,6 +43,7 @@ vi.mock("@/i18n/navigation", () => ({
 
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
+  useLocale: () => "vi",
   useFormatter: () => ({
     dateTime: () => "01/01/2026",
     relativeTime: () => "vừa xong",
@@ -67,7 +68,15 @@ vi.mock("@/modules/system/hooks/use-permission", () => ({
 }));
 
 vi.mock("@/modules/system/hooks/use-telegram-bot", () => ({
-  useTelegramBot: () => ({ data: null }),
+  useTelegramBot: () => ({
+    data: {
+      configured: false,
+      username: "",
+      displayName: "",
+      botUrl: "",
+    },
+    isPending: false,
+  }),
 }));
 
 vi.mock("@/modules/system/services/auth.service", () => ({

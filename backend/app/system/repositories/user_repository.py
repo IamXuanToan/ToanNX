@@ -137,3 +137,15 @@ class UserRepository(CoreRepository[User]):
             Danh sách superuser đang hoạt động.
         """
         return list(User.objects.alive().select_for_update().filter(is_superuser=True, is_active=True))
+
+    def find_email_by_id(self, user_id: Any) -> str:
+        """Lấy email của người dùng theo khóa chính (phục vụ ghi nhật ký).
+
+        Args:
+            user_id: Id người dùng.
+
+        Returns:
+            Email hoặc chuỗi rỗng nếu không tìm thấy.
+        """
+        email = self.model._default_manager.filter(pk=user_id).values_list("email", flat=True).first()
+        return str(email or "")

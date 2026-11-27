@@ -654,6 +654,7 @@
     "title": "Change journal",
     "history": "Change history",
     "empty": "No changes yet.",
+    "emptyHint": "Create, edit, and status updates will automatically appear here.",
     "searchPlaceholder": "Search by record or actor…",
     "system": "System",
     "masked": "(hidden)",
@@ -673,6 +674,12 @@
       "DELETE": "deleted",
       "EVENT": "event"
     },
+    "actionBadges": {
+      "CREATE": "Created",
+      "UPDATE": "Updated",
+      "DELETE": "Deleted",
+      "EVENT": "Event"
+    },
     "events": {
       "system_role_assigned": "assigned a role",
       "system_role_revoked": "removed a role",
@@ -686,7 +693,22 @@
       "permissions": "Permissions",
       "roles": "Roles",
       "permission": "Permission",
-      "role": "Role"
+      "role": "Role",
+      "owner": "Owner",
+      "notificationChannels": "Notification channels",
+      "autoGrant": "Auto-assign to new users",
+      "isSystem": "System role",
+      "emailVerifiedAt": "Email verified at",
+      "isVerified": "Email verified",
+      "thumbnail": "Thumbnail",
+      "favoritesCount": "Favorites",
+      "viewsCount": "Views",
+      "contentVersion": "Content version",
+      "responsiveConfig": "Responsive layout",
+      "styleConfig": "Style config",
+      "templateKey": "Template",
+      "templateVersion": "Template version",
+      "passwordHash": "Password protection"
     },
     "detail": {
       "title": "Change details",
@@ -776,22 +798,18 @@
       "browserFallback": "Browser"
     },
     "telegramBot": {
-      "title": "Your Telegram bot",
-      "placeholder": "Paste bot token...",
-      "save": "Save and verify",
-      "check": "Check",
-      "change": "Change token",
-      "remove": "Remove bot",
-      "checkOk": "The bot works.",
-      "hasWebhook": "The bot has a webhook elsewhere; remove it to use it here.",
-      "steps": {
-        "1": "Open Telegram, chat with @BotFather, send /newbot.",
-        "2": "Choose a name and a username ending in bot.",
-        "3": "Copy the token BotFather sends and paste it here."
-      },
+      "title": "System Telegram bot",
+      "configuredDescription": "The system uses a centralized Telegram bot for alerts and two-way AI Assistant.",
+      "unconfigured": "TELEGRAM_BOT_TOKEN is not configured on the server yet.",
+      "unconfiguredBadge": "Not configured",
+      "openBot": "Open Telegram bot",
+      "checkWebhook": "Check webhook",
+      "webhookActive": "Webhook active",
+      "webhookInactive": "Webhook missing or invalid",
+      "checkOk": "Bot and webhook are working properly.",
       "errors": {
-        "TELEGRAM_BOT_TOKEN_INVALID": "The token no longer works, enter it again.",
-        "TELEGRAM_BOT_HAS_WEBHOOK": "The bot has a webhook elsewhere."
+        "TELEGRAM_BOT_TOKEN_INVALID": "The system Telegram bot token is invalid.",
+        "TELEGRAM_BOT_MISSING": "Telegram bot is not configured on the server."
       }
     },
     "telegramChats": {
@@ -861,6 +879,7 @@
         "body": "Body",
         "level": "Level",
         "link": "Link",
+        "linkPlaceholder": "/admin",
         "linkHint": "An in-site path starting with /.",
         "target": "Send to",
         "roles": "Roles",
@@ -928,7 +947,8 @@
       "symbol": "Symbol",
       "decimalPlaces": "Decimal places",
       "position": "Order",
-      "isActive": "Active"
+      "isActive": "Active",
+      "isBase": "Base currency"
     },
     "validation": {
       "required": "Required.",

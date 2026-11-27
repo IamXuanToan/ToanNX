@@ -3,8 +3,10 @@
 import type { ReactNode } from "react";
 
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 import { SYSTEM_ROUTES } from "../../constants/routes";
 import { UserForm } from "./user-form";
@@ -53,14 +55,18 @@ export function UserProfile({
     );
 
   return (
-    <FormPage title={user.data.fullName || user.data.email}>
-      <UserForm
-        user={user.data}
-        canEdit={canEdit}
-        canUpdateInfo={canUpdateInfo}
-        extensions={extensions}
+    <FormPage title={formatUserDisplayName(user.data)} backHref={SYSTEM_ROUTES.users}>
+      <RecordDetailTabs
+        general={
+          <UserForm
+            user={user.data}
+            canEdit={canEdit}
+            canUpdateInfo={canUpdateInfo}
+            extensions={extensions}
+          />
+        }
+        history={history}
       />
-      {history ? <div className="mt-6">{history}</div> : null}
     </FormPage>
   );
 }

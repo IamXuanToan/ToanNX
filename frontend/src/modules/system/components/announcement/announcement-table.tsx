@@ -1,10 +1,11 @@
 "use client";
 
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { StatusBadge } from "@/shares/components/common/status-badge";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 
 import type { SystemAnnouncement } from "../../types/notification.types";
 import { useAnnouncementTable } from "./hooks/use-announcement-table";
@@ -14,7 +15,6 @@ const LEVEL_TONE = { INFO: "info", WARNING: "warning", ERROR: "danger" } as cons
 /** @param props - Quyền thu hồi. @returns Bảng thông báo hệ thống đã gửi. */
 export function AnnouncementTable({ canDelete }: { canDelete: boolean }) {
   const t = useTranslations("system.notifications.announcements");
-  const format = useFormatter();
   const state = useAnnouncementTable();
   const { table, query } = state;
   const columns: DataTableColumn<SystemAnnouncement>[] = [
@@ -43,10 +43,7 @@ export function AnnouncementTable({ canDelete }: { canDelete: boolean }) {
       id: "sentAt",
       header: t("fields.sentAt"),
       sortKey: "created_at",
-      cell: (row) =>
-        row.sentAt
-          ? format.dateTime(new Date(row.sentAt), { dateStyle: "short", timeStyle: "short" })
-          : "—",
+      cell: (row) => <TimestampText value={row.sentAt} />,
     },
   ];
   return (

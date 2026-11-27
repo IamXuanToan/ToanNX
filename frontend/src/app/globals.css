@@ -2,7 +2,14 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (
+  &:where(
+    [data-page-theme="dark"],
+    [data-page-theme="dark"] *,
+    .dark:not([data-page-theme="light"], [data-page-theme="light"] *),
+    :where(.dark *):not([data-page-theme="light"], [data-page-theme="light"] *)
+  )
+);
 
 @theme inline {
   --color-background: var(--background);
@@ -52,6 +59,8 @@
   --color-success-bg: var(--success-bg);
   --color-warning: var(--warning);
   --color-warning-bg: var(--warning-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -66,7 +75,9 @@
    #3D812E = --primary (nút, link, mục đang chọn; chữ trắng 4.8:1), #206A2D = --primary-hover,
    #569533 = --ring (focus, điểm nhấn trang trí; không dùng làm nền chữ trắng vì chỉ 3.7:1).
    Nền trung tính pha nhẹ sắc xanh (hue 140); --success dời sang xanh ngọc (175) để khác nút chính. */
-:root {
+:root,
+[data-page-theme="light"] {
+  color-scheme: light;
   --background: oklch(1 0 0);
   --canvas: oklch(0.975 0.004 140);
   --primary-light: oklch(0.98 0.018 138);
@@ -76,6 +87,8 @@
   --success-bg: oklch(0.96 0.035 175);
   --warning: oklch(0.55 0.13 70);
   --warning-bg: oklch(0.96 0.05 85);
+  --info: oklch(0.5 0.12 245);
+  --info-bg: oklch(0.96 0.03 245);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -115,7 +128,9 @@
   --sidebar-ring: oklch(0.606 0.147 136);
 }
 
-.dark {
+.dark,
+[data-page-theme="dark"] {
+  color-scheme: dark;
   --background: oklch(0.145 0 0);
   --canvas: oklch(0.145 0 0);
   --primary-light: oklch(0.72 0.15 135 / 16%);
@@ -125,6 +140,8 @@
   --success-bg: oklch(0.78 0.11 175 / 14%);
   --warning: oklch(0.82 0.13 85);
   --warning-bg: oklch(0.82 0.13 85 / 14%);
+  --info: oklch(0.76 0.12 245);
+  --info-bg: oklch(0.76 0.12 245 / 14%);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);

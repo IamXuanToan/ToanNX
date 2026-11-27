@@ -6,6 +6,7 @@ import { accountKeys } from "@/modules/system/constants/query-keys";
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { USER_PERMISSIONS } from "@/modules/system/permissions/user-permission";
 import { userService } from "@/modules/system/services/user.service";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 import { useFinancePersonalScope } from "./use-finance-personal-scope";
 
@@ -38,7 +39,7 @@ export function useOwnerFilterOptions(manageAllPermission: string) {
     canFilterOwner,
     ownerOptions: (query.data ?? []).map((user) => ({
       value: user.id,
-      label: user.fullName ? `${user.fullName} (${user.email})` : user.email,
+      label: formatUserDisplayName(user),
     })),
   };
 }

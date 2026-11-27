@@ -24,6 +24,7 @@ export type DatePickerProps = {
   disabled?: boolean;
   clearable?: boolean;
   invalid?: boolean;
+  inline?: boolean;
   className?: string;
   fromDate?: Date;
   toDate?: Date;
@@ -31,8 +32,8 @@ export type DatePickerProps = {
 
 /**
  * Chọn ngày chuẩn (theo CommonDatePicker của Medoly): nút cao 40px hiển thị ngày theo ngôn ngữ
- * (`dd/MM/yyyy` ở vi), lịch có dropdown tháng/năm, nút "Hôm nay" và "Xoá". Giá trị là chuỗi ISO
- * `yyyy-MM-dd` để gửi thẳng backend. Điều khiển (controlled).
+ * (`dd/MM/yyyy` ở vi), lịch có dropdown tháng/năm, nút "Hôm nay" và "Xoá". Hỗ trợ `inline`
+ * khi ghép chung bên trong `DateTimePicker` để tránh lặp khung viền.
  *
  * @param props - Xem `DatePickerProps`.
  * @returns Ô chọn ngày.
@@ -45,6 +46,7 @@ export function DatePicker({
   disabled,
   clearable = true,
   invalid,
+  inline = false,
   className,
   fromDate,
   toDate,
@@ -63,22 +65,32 @@ export function DatePicker({
         <Button
           id={id}
           type="button"
-          variant="outline"
+          variant={inline ? "ghost" : "outline"}
           role="combobox"
           aria-haspopup="dialog"
           aria-controls={calendarId}
           disabled={disabled}
           aria-expanded={open}
           aria-invalid={invalid || undefined}
-          className={cn(FORM_CONTROL_TRIGGER_CLASS, className)}
+          className={cn(
+            inline
+              ? "hover:bg-muted/50 h-full gap-2 rounded-none px-3 text-left text-sm font-normal focus-visible:ring-0"
+              : FORM_CONTROL_TRIGGER_CLASS,
+            className,
+          )}
         >
           <CalendarIcon className="text-muted-foreground size-4 shrink-0" aria-hidden />
-          <span className={cn("min-w-0 flex-1 truncate", !selected && "text-muted-foreground")}>
+          <span
+            className={cn(
+              inline ? "whitespace-nowrap" : "min-w-0 flex-1 truncate",
+              !selected && "text-muted-foreground",
+            )}
+          >
             {selected
               ? format(selected, getDateDisplayFormat(locale), { locale: dateFnsLocale })
               : (placeholder ?? t("placeholder"))}
           </span>
-          {clearable && value && !disabled ? (
+          {!inline && clearable && value && !disabled ? (
             <span
               role="button"
               tabIndex={0}

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { cn } from "cn";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { SortableList } from "@/shares/components/common/sortable-list";
 import { Button } from "@/shares/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shares/components/ui/card";
@@ -491,30 +492,36 @@ export function PageDonationEditor({
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-xs"
-                      onClick={() => openEditAmountDialog(index)}
-                      disabled={disabled}
-                      className="text-muted-foreground hover:bg-muted hover:text-foreground size-7.5 rounded-lg transition-colors"
-                      title={t("editAmount")}
-                      aria-label={t("editAmount")}
-                    >
-                      <Pencil className="size-3.5" />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-xs"
-                      onClick={() => handleRemoveAmount(opt.amount)}
-                      disabled={disabled}
-                      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive size-7.5 rounded-lg transition-colors"
-                      title={t("removeAmount")}
-                      aria-label={t("removeAmount")}
-                    >
-                      <Trash2 className="size-3.5" />
-                    </Button>
+                    <AppTooltip content={t("editAmount")}>
+                      <span className="inline-flex">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={() => openEditAmountDialog(index)}
+                          disabled={disabled}
+                          className="text-muted-foreground hover:bg-muted hover:text-foreground size-7.5 rounded-lg transition-colors"
+                          aria-label={t("editAmount")}
+                        >
+                          <Pencil className="size-3.5" />
+                        </Button>
+                      </span>
+                    </AppTooltip>
+                    <AppTooltip content={t("removeAmount")}>
+                      <span className="inline-flex">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={() => handleRemoveAmount(opt.amount)}
+                          disabled={disabled}
+                          className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive size-7.5 rounded-lg transition-colors"
+                          aria-label={t("removeAmount")}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </span>
+                    </AppTooltip>
                   </div>
                 </div>
               )}

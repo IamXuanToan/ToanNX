@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
@@ -34,9 +35,14 @@ export function InvoiceProfile({
       />
     );
   return (
-    <FormPage title={`${t(`docType.${query.data.docType}`)} ${query.data.number}`.trim()}>
-      <InvoiceForm invoice={query.data} disabled={!canUpdate} />
-      {history ? <div className="mt-6">{history}</div> : null}
+    <FormPage
+      title={`${t(`docType.${query.data.docType}`)} ${query.data.number}`.trim()}
+      backHref={routes.invoices}
+    >
+      <RecordDetailTabs
+        general={<InvoiceForm invoice={query.data} disabled={!canUpdate} />}
+        history={history}
+      />
     </FormPage>
   );
 }

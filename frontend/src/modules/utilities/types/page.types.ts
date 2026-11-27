@@ -261,7 +261,7 @@ export type Page = {
   templateKey: string;
   path: { id: string; segment: string; name: string };
   publicUrl: string;
-  owner: { id: string; email: string; fullName: string };
+  owner: { id: string; email: string; username: string | null; fullName: string };
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;

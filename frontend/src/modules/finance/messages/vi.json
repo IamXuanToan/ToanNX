@@ -15,6 +15,7 @@
   "validation": {
     "required": "Bắt buộc nhập.",
     "slug": "Chỉ chữ thường, số và dấu gạch ngang.",
+    "colorHex": "Mã màu HEX phải có dạng #RRGGBB.",
     "positive": "Nhập số hợp lệ.",
     "attachments": "Cần ít nhất một file."
   },
@@ -47,7 +48,9 @@
       "defaultCurrency": "Tiền tệ mặc định",
       "isActive": "Đang dùng",
       "pattern": "Regex",
-      "priority": "Ưu tiên"
+      "priority": "Ưu tiên",
+      "color": "Màu biểu đồ",
+      "owner": "Chủ sở hữu"
     }
   },
   "platforms": {
@@ -60,13 +63,22 @@
     "notWithheld": "Không khấu trừ",
     "noRate": "Chưa cấu hình thuế",
     "sections": {
-      "info": "Thông tin"
+      "info": "Thông tin",
+      "rulesShortcut": "Quy tắc phân loại tự động"
     },
+    "rulesShortcutTitle": "Quy tắc nhận diện giao dịch",
+    "rulesShortcutHint": "Quản lý danh sách regex tự động gán giao dịch SePay về nền tảng này.",
+    "manageRules": "Quy tắc phân loại",
+    "draftRulesCount": "{count} quy tắc chờ lưu khi tạo",
+    "rulesCountBadge": "{count} quy tắc",
     "fields": {
       "name": "Tên",
       "code": "Mã",
       "defaultCurrency": "Tiền tệ mặc định",
       "defaultCurrencyHint": "Điền sẵn khi nhập tay thu nhập.",
+      "color": "Màu biểu đồ",
+      "colorHint": "Mã #RRGGBB đồng bộ màu nền tảng trên biểu đồ sáng/tối.",
+      "colorPreset": "Chọn màu gợi ý {color}",
       "note": "Ghi chú",
       "isActive": "Đang dùng",
       "currentTax": "Khấu trừ hiện tại"
@@ -93,12 +105,27 @@
   },
   "rules": {
     "title": "Quy tắc nhận diện",
+    "dialogTitle": "Quy tắc phân loại — {platform}",
+    "dialogSubtitle": "Tạo nhanh, chỉnh sửa, bật/tắt, kiểm thử regex và xóa quy tắc gắn trực tiếp với nền tảng này.",
     "create": "Thêm quy tắc",
+    "newRuleButton": "Thêm quy tắc mới",
+    "cancelEdit": "Hủy sửa",
+    "ruleListTitle": "Danh sách quy tắc ({count})",
+    "deleteConfirm": "Bạn có chắc muốn xóa quy tắc “{name}”?",
+    "draftCreatedHint": "Đã thêm vào hàng chờ; sẽ tự động lưu sau khi tạo nền tảng.",
+    "savedNotice": "Đã lưu quy tắc nhận diện.",
+    "deletedNotice": "Đã xóa quy tắc.",
     "searchPlaceholder": "Tìm theo tên, regex...",
     "empty": "Chưa có quy tắc nào.",
     "sections": {
-      "info": "Thông tin"
+      "info": "Thông tin",
+      "rulesShortcut": "Quy tắc phân loại tự động"
     },
+    "rulesShortcutTitle": "Quy tắc nhận diện giao dịch",
+    "rulesShortcutHint": "Quản lý danh sách regex tự động gán giao dịch SePay về nền tảng này.",
+    "manageRules": "Quy tắc phân loại",
+    "draftRulesCount": "{count} quy tắc chờ lưu khi tạo",
+    "rulesCountBadge": "{count} quy tắc",
     "fields": {
       "name": "Tên",
       "platform": "Nền tảng",
@@ -268,7 +295,8 @@
       "platforms": "Thu nhập theo nền tảng",
       "growth": "% tăng/giảm so với tháng trước",
       "platformShare": "Tỷ trọng nền tảng",
-      "currencyShare": "Tỷ trọng tiền tệ (quy VNĐ)"
+      "currencyShare": "Tỷ trọng tiền tệ (quy VNĐ)",
+      "empty": "Chưa có dữ liệu thu nhập trong năm này."
     }
   },
   "report": {

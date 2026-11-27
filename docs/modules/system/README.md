@@ -13,7 +13,7 @@ lịch sử thay đổi, danh mục webhook/callback.
 | Tài khoản | `User`, `UserSocialAccount`, `AuthSession`, `RefreshToken` |
 | Phân quyền | `Role`, `Permission`, `RolePermission`, `UserRole`, `RoleAutoGrant` |
 | Thư viện | `Attachment`, `AttachmentFolder` |
-| Thông báo | `Notification`, `NotificationDelivery`, `NotificationPreference`, `PushDevice`, `TelegramBot`, `TelegramChat`, `SystemAnnouncement` |
+| Thông báo | `Notification`, `NotificationDelivery`, `NotificationPreference`, `PushDevice`, `TelegramChat`, `SystemAnnouncement` |
 | Danh mục | `Currency`, `ExchangeRate`, `Setting` |
 | Khác | `JournalEntry` (lịch sử thay đổi), `RateLimitBucket` |
 
@@ -33,7 +33,6 @@ Một class quyền mỗi tài nguyên ở `app/system/permissions/`, mỗi clas
 | `NotificationPermission` | `notification` | read |
 | `NotificationPreferencePermission` | `notification_preference` | read, update |
 | `PushDevicePermission` | `push_device` | read, create, delete |
-| `TelegramBotPermission` | `telegram_bot` | read, create, update, delete |
 | `TelegramChatPermission` | `telegram_chat` (+ `manage_all`) | read, create, update, delete |
 | `NotificationDeliveryPermission` | `notification_delivery` (read, update = gửi lại, delete, + `manage_all`) | read |
 | `AnnouncementPermission` | `announcement` | không |
@@ -54,8 +53,8 @@ Cơ chế "của mình / của mọi người": [../../features/permission-scope
 | Tích hợp | Webhook · Callback | `webhook`, `callback` |
 | Vận hành | Cài đặt · Nhật ký thay đổi | `cai-dat`, `nhat-ky` |
 
-Trang công khai/đăng nhập: đăng nhập, quên/đặt lại mật khẩu, xác thực email, lời mời, callback OAuth, trang mở
-file riêng tư `/tep/{id}`.
+Trang công khai/đăng nhập: đăng nhập (mọi tài khoản mặc định vào Client Portal `/portal`; Admin tự chuyển sang `/admin` qua `UserMenu`), quên/đặt lại mật khẩu, xác thực email, lời mời, callback OAuth, trang mở
+file riêng tư `/tep/{id}`. Chuông thông báo chuẩn hóa link cũ `/admin/finance/...` và `/admin/sessions` về `/portal/...`.
 
 ## Sự kiện thông báo
 
@@ -69,17 +68,19 @@ file riêng tư `/tep/{id}`.
   [../../guides/oauth.md](../../guides/oauth.md).
 - Webhook `system.notification_dispatch` — `POST /api/v1/system/notifications/dispatch`: Upstash QStash gọi sau
   khi có thông báo (chữ ký `Upstash-Signature`, luôn gửi) và cron-job.org gọi mỗi 10 phút (`Bearer CRON_SECRET`;
-  mốc trong Redis chưa tới thì trả `sent=0`, không chạm DB). Xem
+  mốc `notification:next_due` trong Redis chưa tới thì trả `sent=0`, không chạm DB; khi rảnh đặt `IDLE_RECHECK_SECONDS = 24 giờ`). Xem
   [../../guides/notification-setup.md](../../guides/notification-setup.md).
+- Cache Redis công khai (`SettingService`): `get_public_settings()` cache các cài đặt `is_public=True` trong `600 giây` (namespace `system:settings:public`), tự tăng version sau commit khi `set_setting_value()` cập nhật để giảm SQL khi mở trang đăng nhập/trang chủ.
+- Cache Redis dung lượng R2 (`AttachmentService`): `get_current_storage_usage_bytes()` cache `300 giây` (`system:storage:r2_usage_bytes`), ngoại trừ kiểm tra trần dung lượng khi upload `create()` luôn truyền `use_cache=False` để lấy số đo tươi và tự vô hiệu hóa cache sau commit khi thay đổi/purge tệp.
+- Polling FE (`useUnreadCount`): hỏi lại chuông ở tab foreground mỗi `15 phút` khi tắt Push / `30 phút` khi bật Push (`staleTime` `2 phút` / `5 phút`); `usePushRegistration` khử trùng đăng ký thiết bị trong `24 giờ` qua `localStorage` (`system_push_device_sync`).
 
 ## Gửi thông báo
 
 - `notify` chỉ ghi `Notification` + `NotificationDelivery(PENDING)`; **request không gọi FCM/SMTP/Telegram**. Sau
   commit đá `NotificationKickService` một lần cho cả request (mốc Redis `notification:next_due` + tin QStash).
 - Lỗi tạm → `next_attempt_at` theo lùi dần 1/5/15/60/240 phút và hẹn QStash gọi lại đúng lúc đó.
-- Token bot Telegram không giải mã được hoặc Telegram trả 401/404 → bot bị tắt (`is_active=False`,
-  `last_error_code=TELEGRAM_BOT_TOKEN_INVALID`), một bản `FAILED` + cảnh báo; thông báo sau không tạo bản gửi
-  Telegram nữa tới khi lưu lại token.
+- Token bot Telegram chung đọc từ ENV (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, webhook `POST /api/v1/system/telegram/webhook` xác thực bằng header `X-Telegram-Bot-Api-Secret-Token` dẫn xuất từ `DJANGO_SECRET_KEY`); module khác có thể đăng ký callback nhận tin nhắn qua `ModuleRegistry.register_telegram_update_handler`. Khi Telegram trả 401/403/404 cho đích nhận `TelegramChat` → đánh dấu lỗi `TELEGRAM_CHAT_UNREACHABLE`, một bản `FAILED` + cảnh báo.
+- `NotificationService.notify(..., kick=False)` hỗ trợ phát hàng loạt và dồn một lần gọi `NotificationService.flush_kick()`.
 - Tin Telegram/email dựng bằng `NotificationMessageFormatter`: `<icon> <b>Tiêu đề</b>`, các dòng `details`, `🕒 Thời gian`,
   `👉 Xem chi tiết`. Icon sự kiện: đăng nhập 🔐, thiết bị mới 🛡️, đổi mật khẩu 🔑, thông báo hệ thống 📢, gửi lỗi 🚨,
   dung lượng R2 💾, dung lượng DB 🗄️ (finance: tiền vào 💰, cần xử lý 🧾, webhook sai 🚫).

@@ -7,14 +7,14 @@ ra sao và cách vận hành nó.
 | --- | --- | --- |
 | [rules/](rules/) | Rule bắt buộc: `common`, `backend`, `frontend`, `git` | Trước khi viết bất kỳ dòng code nào |
 | [../.agents/rules/](../.agents/rules/) | Rule cho AI: bản tóm tắt của `rules/` có `trigger` (`always_on`/`model_decision`/`glob`/`manual`); `.claude/` sinh tự động bằng `scripts/sync-ai-rules.py` | Sửa rule trong `rules/` (sửa luôn bản AI) |
-| [../.agents/skills/](../.agents/skills/) | Skill project (`start-task`, `fix`, `review-code`, `test`, `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`, `check-ci`) và skill chuyên môn; Claude dùng bản liên kết trong `.claude/skills/` | Khi bắt đầu việc mới, sửa lỗi, kiểm thử, tái cấu trúc, rà bảo mật/i18n/quyền hoặc kiểm GitHub CI |
+| [../.agents/skills/](../.agents/skills/) | Skill project (`create-plan`, `review-plan`, `start-task`, `fix`, `review-code`, `test`, `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`, `commit-demo`, `commit-push`) và skill chuyên môn; Claude dùng bản liên kết trong `.claude/skills/` | Khi lên/review plan trong `docs/plans/<YYYY>/<MM>/<DD>/`, bắt đầu việc mới, sửa lỗi, kiểm thử, tái cấu trúc, rà bảo mật/i18n/quyền hoặc kiểm GitHub CI / soạn / đẩy commit |
 | [common-catalog.md](common-catalog.md) | Danh mục common BE + FE đang có | Trước khi viết code (tránh viết lại thứ đã có) |
 | [architecture/](architecture/) | Kiến trúc tổng, xác thực, phân quyền, i18n, kiểm thử, đối chiếu tham chiếu, [hạ tầng và hạn mức gói free](architecture/infrastructure.md) | Sửa phần nền, cần hiểu luồng chung; thêm việc tốn DB/Redis/R2/function |
 | [guides/](guides/) | Hướng dẫn cài đặt, vận hành: triển khai, Cloudflare R2, OAuth, thông báo, tài chính | Cài môi trường, cấu hình dịch vụ ngoài |
 | [modules/](modules/) | Mỗi module một thư mục: mục đích, model, quyền, route, sự kiện, webhook | Làm việc trong một module |
 | [features/](features/) | **Mô tả chức năng**: mỗi file một chức năng, đọc là hiểu luồng xử lý | Sửa hoặc dùng lại một chức năng |
-| [plans/](plans/) | Kế hoạch đã/đang làm | Tiếp tục một việc dở dang |
-| [reports/](reports/) | Báo cáo (kể cả `security-verification.md` do skill `review-security` tạo/cập nhật để tái xác nhận) | Khi cần tham khảo kết quả cũ hoặc tái xác nhận bảo mật |
+| [plans/](plans/) | Kế hoạch đã/đang làm (chia thư mục `YYYY/MM/DD/` theo ngày lập) | Tiếp tục một việc dở dang |
+| [reports/](reports/) | Báo cáo (`security-verification.md` tái xác nhận bảo mật và `code-audit-tracker.md` theo dõi kiểm toán Code/Security/i18n/Permission từng file) | Khi cần rà file vừa đổi, tham khảo kết quả cũ hoặc tái xác nhận bảo mật |
 
 ## Module
 
@@ -22,6 +22,7 @@ ra sao và cách vận hành nó.
 - [utilities](modules/utilities/README.md): link rút gọn, mã QR, trang tùy chỉnh.
 - [novel](modules/novel/README.md): truyện, chương, tác giả, thể loại, tag; trang đọc công khai.
 - [finance](modules/finance/README.md): khoản thu, hóa đơn/chứng từ, nền tảng, quy tắc phân loại, SePay.
+- [workspace](modules/workspace/README.md): thiết bị & bảo hành, dịch vụ định kỳ, két sắt, nhắc việc, trợ lý AI & lịch.
 - [manage-app](modules/manage-app/README.md) (chỉ FE): khung quản trị, màn chọn module, sidebar.
 - [home](modules/home/README.md) (chỉ FE): trang công khai, header, trang lỗi.
 

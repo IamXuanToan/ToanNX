@@ -1,8 +1,9 @@
 "use client";
 
 import { BellRing, MonitorSmartphone } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Button } from "@/shares/components/ui/button";
 
 import { usePushDevices } from "../../hooks/use-push-devices";
@@ -11,7 +12,6 @@ import { usePushRegistration } from "./hooks/use-push-registration";
 /** @param props - Có quyền đăng ký. @returns Trạng thái thông báo trình duyệt + thiết bị đã bật. */
 export function PushDeviceCard({ canCreate }: { canCreate: boolean }) {
   const t = useTranslations("system.notifications.push");
-  const format = useFormatter();
   const push = usePushRegistration(canCreate);
   const devices = usePushDevices();
   return (
@@ -48,9 +48,7 @@ export function PushDeviceCard({ canCreate }: { canCreate: boolean }) {
             <li key={device.id} className="flex justify-between gap-2">
               <span>{device.label || "—"}</span>
               <span className="text-muted-foreground">
-                {device.lastSeenAt
-                  ? format.dateTime(new Date(device.lastSeenAt), { dateStyle: "short" })
-                  : ""}
+                {device.lastSeenAt ? <TimestampText value={device.lastSeenAt} /> : ""}
               </span>
             </li>
           ))}

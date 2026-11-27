@@ -42,6 +42,7 @@ class PlatformResponseSerializer(serializers.ModelSerializer[Platform]):
             "code",
             "default_currency_id",
             "default_currency_code",
+            "color",
             "is_active",
             "note",
             "current_tax",

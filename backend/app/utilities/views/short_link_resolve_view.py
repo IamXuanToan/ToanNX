@@ -6,11 +6,13 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 
+from app.core.constants.core_rate_limit_key import CoreRateLimitKey
 from app.core.decorators.rate_limit import rate_limit
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
 from app.system.utils.client_ip import get_client_ip
+from app.utilities.constants.utilities_rate_limit_key import UtilitiesRateLimitKey
 from app.utilities.serializers.responses.short_link_destination_response_serializer import (
     ShortLinkDestinationResponseSerializer,
 )
@@ -35,7 +37,7 @@ class ShortLinkResolveView(CoreApiView):
         self.short_link_service = ShortLinkService()
 
     @extend_schema(responses=ShortLinkPublicResponseSerializer)
-    @rate_limit("public.read")
+    @rate_limit(CoreRateLimitKey.PUBLIC_READ)
     def get(self, request: Request, slug: str) -> CoreResponse:
         """Trả thông tin công khai cho trang trung gian, không chuyển HTTP.
 
@@ -56,7 +58,7 @@ class ShortLinkResolveView(CoreApiView):
         return response
 
     @extend_schema(responses=ShortLinkDestinationResponseSerializer)
-    @rate_limit("utilities.short_link.unlock")
+    @rate_limit(UtilitiesRateLimitKey.SHORT_LINK_UNLOCK)
     @validate_request(ShortLinkUnlockValidateSerializer)
     def post(self, request: Request, slug: str, validated_data: dict[str, Any]) -> CoreResponse:
         """Kiểm mật khẩu với giới hạn số lần thử rồi trả URL đích.

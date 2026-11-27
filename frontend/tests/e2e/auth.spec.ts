@@ -3,11 +3,17 @@ import { expect, test } from "@playwright/test";
 import { E2E_ADMIN, loginViaUi, openModule } from "./helpers";
 
 test.describe("Xác thực", () => {
-  test("đăng nhập thành công vào màn chọn module", async ({ page }) => {
+  test("đăng nhập thành công luôn vào Client Portal; Admin có thể chuyển sang trang quản trị qua UserMenu", async ({
+    page,
+  }) => {
     await loginViaUi(page);
+    await expect(page.getByTestId("portal-dashboard")).toBeVisible();
+    await page.getByTestId("user-menu").click();
+    await page.getByRole("menuitem", { name: "Trang quản trị (Admin)" }).click();
+    await expect(page).toHaveURL(/\/vi\/quan-tri$/);
     await expect(page.getByTestId("admin-content")).toContainText("Xin chào");
-    // Hai nhóm: Hệ thống và Tiện ích.
-    await expect(page.getByTestId("module-launcher").getByRole("link")).toHaveCount(2);
+    // Bốn nhóm: Hệ thống, Tiện ích, Tiểu thuyết và Tài chính.
+    await expect(page.getByTestId("module-launcher").getByRole("link")).toHaveCount(4);
   });
 
   test("sai mật khẩu hiển thị lỗi, không rời trang", async ({ page }) => {
@@ -26,21 +32,24 @@ test.describe("Xác thực", () => {
     browser,
     baseURL,
   }) => {
+    const apiBase = process.env.E2E_API_URL ?? "http://localhost:8002";
+    const origin = baseURL ?? "http://localhost:3002";
     const admin = await browser.newContext({ baseURL });
     const adminPage = await admin.newPage();
     await loginViaUi(adminPage);
-    const csrf = await adminPage.request.get("/api/v1/system/auth/csrf");
+    const csrf = await adminPage.request.get(`${apiBase}/api/v1/system/auth/csrf`);
     const token = (await csrf.json()).data.csrf_token as string;
     const username = `e2e_user_${Date.now()}`;
-    const created = await adminPage.request.post("/api/v1/system/users", {
+    const created = await adminPage.request.post(`${apiBase}/api/v1/system/users`, {
       data: {
         email: `${username}@toannx.local`,
         username,
+        full_name: "E2E Temp User",
         password: "E2e-Temp-Passw0rd!",
         is_active: true,
         is_staff: true,
       },
-      headers: { "X-CSRFToken": token },
+      headers: { "X-CSRFToken": token, Origin: origin },
     });
     expect(created.ok(), await created.text()).toBe(true);
     const userId = ((await created.json()) as { data: { id: string } }).data.id;
@@ -51,8 +60,8 @@ test.describe("Xác thực", () => {
       );
       await loginViaUi(page, { email: username, password: "E2e-Temp-Passw0rd!" });
     } finally {
-      await adminPage.request.delete(`/api/v1/system/users/${userId}`, {
-        headers: { "X-CSRFToken": token },
+      await adminPage.request.delete(`${apiBase}/api/v1/system/users/${userId}`, {
+        headers: { "X-CSRFToken": token, Origin: origin },
       });
       await admin.close();
     }
@@ -84,6 +93,7 @@ test.describe("Xác thực", () => {
     const refresh = page.waitForResponse((response) =>
       response.url().endsWith("/api/v1/system/auth/refresh"),
     );
+    await page.goto("/vi/quan-tri");
     await openModule(page, "Hệ thống");
     expect((await refresh).status()).toBe(200);
     await expect(page.getByRole("table")).toContainText(E2E_ADMIN.email);

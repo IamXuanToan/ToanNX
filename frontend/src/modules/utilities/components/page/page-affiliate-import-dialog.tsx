@@ -110,9 +110,7 @@ export function PageAffiliateImportDialog({
             const rawBadge = (itemObj.badge ?? {}) as Record<string, unknown>;
 
             validItems.push({
-              id: String(
-                itemObj.id ?? `item-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-              ),
+              id: String(itemObj.id ?? `item-${crypto.randomUUID().slice(0, 8)}`),
               displayMode: "product",
               title,
               rawTitle: itemObj.rawTitle ? String(itemObj.rawTitle) : undefined,
@@ -137,7 +135,7 @@ export function PageAffiliateImportDialog({
                 priceNote: rawPrice.priceNote ? String(rawPrice.priceNote) : undefined,
               },
               buttonConfig: {
-                label: "Mua ngay",
+                label: t("defaultCtaLabel"),
                 openInNewTab: true,
               },
               badge: rawBadge.text
@@ -168,9 +166,7 @@ export function PageAffiliateImportDialog({
           const name = String(catObj.name ?? "").trim();
           if (name) {
             validCategories.push({
-              id: String(
-                catObj.id ?? `cat-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-              ),
+              id: String(catObj.id ?? `cat-${crypto.randomUUID().slice(0, 8)}`),
               name,
               slug: String(catObj.slug ?? `cat-${Date.now()}`),
               sortOrder: Number(catObj.sortOrder ?? catObj.sort_order ?? validCategories.length),

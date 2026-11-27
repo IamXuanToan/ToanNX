@@ -16,10 +16,11 @@ import { INCOME_PERMISSIONS } from "../../../permissions/income-permission";
  *
  * @returns Truy vấn và dữ liệu đã dựng.
  */
-export function useFinanceDashboard() {
+export function useFinanceDashboard(options?: { enabled?: boolean }) {
   const t = useTranslations("finance.dashboard");
   const format = useFormatter();
   const searchParams = useSearchParams();
+  const enabled = options?.enabled ?? true;
   const urlYear = Number.parseInt(searchParams.get("year") ?? "", 10);
   const currentYear = new Date().getFullYear();
   const initialYear = Number.isFinite(urlYear) && urlYear > 2000 ? urlYear : currentYear;
@@ -63,14 +64,14 @@ export function useFinanceDashboard() {
     replaceUrl(year, nextOwner);
   };
   const ownerQuery = isPortal ? personalOwnerId : owner.length ? owner.join(",") : null;
-  const monthly = useReportMonthly(year, ownerQuery, { enabled: scopeReady });
-  const summary = useReportSummary(year, null, ownerQuery, { enabled: scopeReady });
+  const monthly = useReportMonthly(year, ownerQuery, { enabled: scopeReady && enabled });
+  const summary = useReportSummary(year, null, ownerQuery, { enabled: scopeReady && enabled });
   const monthLabel = (month: number) =>
     format.dateTime(new Date(year, month - 1, 1), { month: "short" });
   const points = monthly.data ? buildMonthSeries(monthly.data, monthLabel) : [];
   const platformSeries = monthly.data
     ? buildPlatformSeries(monthly.data, t("unclassified"))
-    : { platforms: [], rows: [] };
+    : { platforms: [], platformColors: {} as Record<string, string>, rows: [] };
   const sum = (key: "total" | "withheld" | "notWithheld" | "tax" | "count", previous = false) =>
     (previous ? monthly.data?.previousMonths : monthly.data?.months)?.reduce(
       (acc, row) => acc + Number(row[key]),
@@ -82,14 +83,17 @@ export function useFinanceDashboard() {
     change: changePercent(sum(key), sum(key, true)),
   }));
   const platformShare = Object.values(
-    (summary.data?.byPlatform ?? []).reduce<Record<string, { name: string; value: number }>>(
-      (acc, row) => {
-        const name = row.platform || t("unclassified");
-        acc[name] = { name, value: (acc[name]?.value ?? 0) + Number(row.total) };
-        return acc;
-      },
-      {},
-    ),
+    (summary.data?.byPlatform ?? []).reduce<
+      Record<string, { name: string; value: number; color?: string }>
+    >((acc, row) => {
+      const name = row.platform || t("unclassified");
+      acc[name] = {
+        name,
+        value: (acc[name]?.value ?? 0) + Number(row.total),
+        color: acc[name]?.color || row.color || undefined,
+      };
+      return acc;
+    }, {}),
   );
   const currencyShare = (summary.data?.byCurrency ?? []).map((row) => ({
     name: row.currency,

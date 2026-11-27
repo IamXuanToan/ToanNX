@@ -3,6 +3,7 @@
 import { Droplets, Gauge, RotateCw, Sunrise, Sunset, Wind, Zap } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 
@@ -126,22 +127,23 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
                 ? t("weather.daytime")
                 : t("weather.nighttime")}
           </Badge>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={handleReload}
-            disabled={isUpdating}
-            title={t("weather.reload")}
-            aria-label={t("weather.reload")}
-            className={`flex size-6 items-center justify-center rounded-full border p-0 transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 ${
-              isDay
-                ? "border-white/50 bg-white/40 text-slate-700 hover:bg-white/70 hover:text-slate-950"
-                : "border-white/10 bg-white/[0.05] text-slate-300 hover:bg-white/[0.12] hover:text-white"
-            }`}
-          >
-            <RotateCw className={`size-3 ${isUpdating ? "animate-spin" : ""}`} />
-          </Button>
+          <AppTooltip content={t("weather.reload")}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleReload}
+              disabled={isUpdating}
+              aria-label={t("weather.reload")}
+              className={`flex size-6 items-center justify-center rounded-full border p-0 transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 ${
+                isDay
+                  ? "border-white/50 bg-white/40 text-slate-700 hover:bg-white/70 hover:text-slate-950"
+                  : "border-white/10 bg-white/[0.05] text-slate-300 hover:bg-white/[0.12] hover:text-white"
+              }`}
+            >
+              <RotateCw className={`size-3 ${isUpdating ? "animate-spin" : ""}`} />
+            </Button>
+          </AppTooltip>
         </div>
       </div>
 
@@ -196,52 +198,51 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
         }`}
       >
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
-          <div
-            className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
-            title={t("weather.humidity")}
-          >
-            <Droplets className="size-3 text-sky-500 sm:size-3.5" />
-            <span>
-              {t("weather.humidity")}:{" "}
-              <strong className={isDay ? "text-slate-900" : "text-white"}>
-                {weatherData.humidity}%
-              </strong>
-            </span>
-          </div>
+          <AppTooltip content={t("weather.humidity")}>
+            <div className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5">
+              <Droplets className="size-3 text-sky-500 sm:size-3.5" />
+              <span>
+                {t("weather.humidity")}:{" "}
+                <strong className={isDay ? "text-slate-900" : "text-white"}>
+                  {weatherData.humidity}%
+                </strong>
+              </span>
+            </div>
+          </AppTooltip>
 
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={toggleWind}
-            title={t("weather.windBoostTooltip")}
-            className="flex h-auto shrink-0 items-center gap-1 p-0 text-[11px] font-normal whitespace-nowrap transition-colors hover:bg-transparent hover:opacity-80 sm:gap-1.5 sm:text-xs"
-          >
-            <Wind
-              className={`size-3 sm:size-3.5 ${
-                windMultiplier > 1 ? "animate-pulse text-amber-500" : "text-teal-500"
-              }`}
-            />
-            <span>
-              {t("weather.wind")}:{" "}
-              <strong className={isDay ? "text-slate-900" : "text-white"}>
-                {Math.round(weatherData.windSpeed * windMultiplier)} km/h
-              </strong>
-            </span>
-          </Button>
+          <AppTooltip content={t("weather.windBoostTooltip")}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={toggleWind}
+              className="flex h-auto shrink-0 items-center gap-1 p-0 text-[11px] font-normal whitespace-nowrap transition-colors hover:bg-transparent hover:opacity-80 sm:gap-1.5 sm:text-xs"
+            >
+              <Wind
+                className={`size-3 sm:size-3.5 ${
+                  windMultiplier > 1 ? "animate-pulse text-amber-500" : "text-teal-500"
+                }`}
+              />
+              <span>
+                {t("weather.wind")}:{" "}
+                <strong className={isDay ? "text-slate-900" : "text-white"}>
+                  {Math.round(weatherData.windSpeed * windMultiplier)} km/h
+                </strong>
+              </span>
+            </Button>
+          </AppTooltip>
 
-          <div
-            className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5"
-            title={t("weather.pressure")}
-          >
-            <Gauge className="size-3 text-indigo-400 sm:size-3.5" />
-            <span>
-              {t("weather.pressure")}:{" "}
-              <strong className={isDay ? "text-slate-900" : "text-white"}>
-                {weatherData.surfacePressure} hPa
-              </strong>
-            </span>
-          </div>
+          <AppTooltip content={t("weather.pressure")}>
+            <div className="flex shrink-0 items-center gap-1 whitespace-nowrap sm:gap-1.5">
+              <Gauge className="size-3 text-indigo-400 sm:size-3.5" />
+              <span>
+                {t("weather.pressure")}:{" "}
+                <strong className={isDay ? "text-slate-900" : "text-white"}>
+                  {weatherData.surfacePressure} hPa
+                </strong>
+              </span>
+            </div>
+          </AppTooltip>
         </div>
 
         <div
@@ -249,31 +250,29 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
             isDay ? "border-slate-900/10" : "border-white/10"
           }`}
         >
-          <div
-            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap"
-            title={t("weather.sunrise")}
-          >
-            <Sunrise className="size-3.5 text-amber-400" />
-            <span>
-              {t("weather.sunrise")}:{" "}
-              <strong className={`font-mono ${isDay ? "text-slate-900" : "text-white"}`}>
-                {weatherData.sunrise}
-              </strong>
-            </span>
-          </div>
+          <AppTooltip content={t("weather.sunrise")}>
+            <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
+              <Sunrise className="size-3.5 text-amber-400" />
+              <span>
+                {t("weather.sunrise")}:{" "}
+                <strong className={`font-mono ${isDay ? "text-slate-900" : "text-white"}`}>
+                  {weatherData.sunrise}
+                </strong>
+              </span>
+            </div>
+          </AppTooltip>
 
-          <div
-            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap"
-            title={t("weather.sunset")}
-          >
-            <Sunset className="size-3.5 text-orange-400" />
-            <span>
-              {t("weather.sunset")}:{" "}
-              <strong className={`font-mono ${isDay ? "text-slate-900" : "text-white"}`}>
-                {weatherData.sunset}
-              </strong>
-            </span>
-          </div>
+          <AppTooltip content={t("weather.sunset")}>
+            <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
+              <Sunset className="size-3.5 text-orange-400" />
+              <span>
+                {t("weather.sunset")}:{" "}
+                <strong className={`font-mono ${isDay ? "text-slate-900" : "text-white"}`}>
+                  {weatherData.sunset}
+                </strong>
+              </span>
+            </div>
+          </AppTooltip>
         </div>
       </div>
 
@@ -322,25 +321,25 @@ export function WeatherWidget({ onWeatherChange, isDay: parentIsDay = true }: We
         {(["auto", "rain", "storm", "sunny", "fog", "night"] as const).map((effectKey) => {
           const label = t(`weather.effects.${effectKey}` as Parameters<typeof t>[0]);
           return (
-            <Button
-              key={effectKey}
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setSelectedEffect(effectKey)}
-              title={label}
-              className={`flex h-auto w-full min-w-0 items-center justify-center rounded-lg px-1 py-1 text-[11px] font-medium transition-all sm:text-xs ${
-                selectedEffect === effectKey
-                  ? isDay
-                    ? "bg-slate-900 text-white shadow-sm hover:bg-slate-900 hover:text-white"
-                    : "bg-white/20 text-white shadow-sm hover:bg-white/20 hover:text-white"
-                  : isDay
-                    ? "text-slate-600 hover:bg-slate-900/5 hover:text-slate-900"
-                    : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              <span className="truncate">{label}</span>
-            </Button>
+            <AppTooltip key={effectKey} content={label}>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedEffect(effectKey)}
+                className={`flex h-auto w-full min-w-0 items-center justify-center rounded-lg px-1 py-1 text-[11px] font-medium transition-all sm:text-xs ${
+                  selectedEffect === effectKey
+                    ? isDay
+                      ? "bg-slate-900 text-white shadow-sm hover:bg-slate-900 hover:text-white"
+                      : "bg-white/20 text-white shadow-sm hover:bg-white/20 hover:text-white"
+                    : isDay
+                      ? "text-slate-600 hover:bg-slate-900/5 hover:text-slate-900"
+                      : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <span className="truncate">{label}</span>
+              </Button>
+            </AppTooltip>
           );
         })}
       </div>

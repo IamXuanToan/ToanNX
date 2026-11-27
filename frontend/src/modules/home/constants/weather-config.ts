@@ -4,8 +4,17 @@ import {
   type WeatherData,
 } from "../store/weather-store";
 
-/** Khóa lưu vị trí thời tiết đã chọn trong LocalStorage. */
+/** Khóa lưu vị trí và cache thời tiết trong LocalStorage. */
 export const WEATHER_LOCATION_STORAGE_KEY = "home_location";
+export const WEATHER_CACHE_STORAGE_KEY = "home_weather_cache";
+
+/** Thời gian sống cache thời tiết (15 phút). */
+export const WEATHER_CACHE_TTL_MS = 15 * 60_000;
+
+/** Danh sách trường truy vấn Open-Meteo dùng để gắn khóa phiên bản cache theo tham số. */
+export const WEATHER_QUERY_CURRENT_FIELDS =
+  "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_gusts_10m";
+export const WEATHER_QUERY_DAILY_FIELDS = "sunrise,sunset";
 
 /** Các khóa cache thời tiết cũ cần dọn khi khởi tạo widget. */
 export const LEGACY_WEATHER_CACHE_KEYS = [

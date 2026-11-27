@@ -48,12 +48,6 @@ export const PORTAL_ROUTES = {
     pathname: "/portal/finance/platforms/[id]" as const,
     params: { id },
   }),
-  financeRules: "/portal/finance/rules",
-  financeRuleCreate: "/portal/finance/rules/new",
-  financeRuleDetail: (id: string) => ({
-    pathname: "/portal/finance/rules/[id]" as const,
-    params: { id },
-  }),
   financeReports: "/portal/finance/reports",
   financeSepay: "/portal/finance/sepay",
 } as const;
@@ -157,18 +151,6 @@ export const PORTAL_PATHNAMES = {
   "/portal/finance/platforms/[id]": {
     vi: "/ca-nhan/tai-chinh/nen-tang/[id]",
     en: "/portal/finance/platforms/[id]",
-  },
-  "/portal/finance/rules": {
-    vi: "/ca-nhan/tai-chinh/quy-tac",
-    en: "/portal/finance/rules",
-  },
-  "/portal/finance/rules/new": {
-    vi: "/ca-nhan/tai-chinh/quy-tac/tao-moi",
-    en: "/portal/finance/rules/new",
-  },
-  "/portal/finance/rules/[id]": {
-    vi: "/ca-nhan/tai-chinh/quy-tac/[id]",
-    en: "/portal/finance/rules/[id]",
   },
   "/portal/finance/reports": {
     vi: "/ca-nhan/tai-chinh/bao-cao",

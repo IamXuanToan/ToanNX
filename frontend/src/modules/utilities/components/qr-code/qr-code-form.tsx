@@ -11,6 +11,7 @@ import { ColorInput } from "@/shares/components/common/color-input";
 import { Form } from "@/shares/components/common/form";
 import { FormField } from "@/shares/components/common/form-field";
 import { FormActions } from "@/shares/components/common/form-actions";
+import { FormBackButton } from "@/shares/components/common/form-back-button";
 import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { FormLayout } from "@/shares/components/common/form-layout";
@@ -432,11 +433,7 @@ export function QrCodeForm({
         </FormSection>
       </FormLayout>
       <FormActions start={form.formState.isDirty ? tCommon("unsaved") : undefined}>
-        <Button type="button" variant="outline" asChild>
-          <Link href={UTILITIES_ROUTES.qrCodes}>
-            {disabled ? tCommon("back") : tCommon("cancel")}
-          </Link>
-        </Button>
+        <FormBackButton href={UTILITIES_ROUTES.qrCodes} />
         {disabled ? null : (
           <FormSubmitButton
             isSubmitting={state.isSubmitting}

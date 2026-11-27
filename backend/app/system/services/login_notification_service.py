@@ -16,7 +16,7 @@ from app.system.services.notification_service import NotificationService
 from app.system.types.notification_payload import NotificationPayload
 from app.system.utils.user_agent import describe_user_agent
 
-SESSIONS_PATH = "/admin/sessions"
+SESSIONS_PATH = "/portal/profile?profileTab=security"
 USER_AGENT_MAX = 120
 
 

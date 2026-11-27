@@ -6,11 +6,12 @@
 
 "use client";
 
-import { ArrowLeft, BookOpen, Bookmark, Trash2 } from "lucide-react";
+import { BookOpen, Bookmark, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { PageHeader } from "@/shares/components/common/page-header";
 import { Button } from "@/shares/components/ui/button";
 import { Card } from "@/shares/components/ui/card";
 import { Skeleton } from "@/shares/components/ui/skeleton";
@@ -29,28 +30,25 @@ import { useNovelFavoritesComponent } from "./hooks/use-novel-favorites-componen
  */
 export function NovelFavorites() {
   const t = useTranslations("novel");
+  const tActions = useTranslations("common.actions");
   const { favoriteList, isLoading, toggleFavorite, isToggling } = useNovelFavoritesComponent();
 
   return (
     <div className="space-y-6">
-      {/* Nút quay lại danh mục */}
-      <div className="border-b pb-4">
-        <Button asChild variant="ghost" size="sm" className="gap-1.5 text-xs">
-          <Link href={NOVEL_ROUTES.catalog}>
-            <ArrowLeft className="h-4 w-4" />
-            <span>{t("favorites.backToCatalog")}</span>
-          </Link>
-        </Button>
-      </div>
-
-      {/* Tiêu đề trang */}
-      <div className="flex items-center gap-3">
-        <Bookmark className="text-primary h-6 w-6" />
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("favorites.title")}</h1>
-          <p className="text-muted-foreground mt-1 text-sm">{t("favorites.description")}</p>
-        </div>
-      </div>
+      <PageHeader
+        title={
+          <span className="inline-flex items-center gap-2.5">
+            <Bookmark className="text-primary size-6 shrink-0" aria-hidden />
+            <span>{t("favorites.title")}</span>
+          </span>
+        }
+        description={t("favorites.description")}
+        actions={
+          <Button asChild variant="outline">
+            <Link href={NOVEL_ROUTES.catalog}>{tActions("back")}</Link>
+          </Button>
+        }
+      />
 
       {/* Grid danh sách yêu thích */}
       {isLoading ? (
@@ -81,6 +79,7 @@ export function NovelFavorites() {
                       alt={item.novelTitle}
                       fill
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                      unoptimized
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (

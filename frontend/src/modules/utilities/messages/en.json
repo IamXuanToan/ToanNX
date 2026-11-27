@@ -547,7 +547,8 @@
           "modeReplaceTitle": "Replace current list completely",
           "modeReplaceDesc": "Remove old products on the page and replace with the imported list.",
           "confirm": "Confirm Import ({count})",
-          "successToast": "Successfully imported {count} products!"
+          "successToast": "Successfully imported {count} products!",
+          "defaultCtaLabel": "Buy now"
         }
       },
       "pageTypes": {

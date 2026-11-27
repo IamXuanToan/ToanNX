@@ -21,6 +21,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.utils.url import build_absolute_url
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.system_rate_limit_key import SystemRateLimitKey
 from app.system.services.attachment_service import AttachmentService
 from app.system.services.attachment_storage_service import AttachmentStorageService
 
@@ -49,7 +50,7 @@ class AttachmentContentView(CoreApiView):
             404: OpenApiResponse(description="Không tồn tại hoặc không có quyền."),
         }
     )
-    @rate_limit("system.attachment.content")
+    @rate_limit(SystemRateLimitKey.ATTACHMENT_CONTENT)
     def get(self, request: Request, pk: UUID) -> HttpResponseBase:
         """Mở nội dung file.
 

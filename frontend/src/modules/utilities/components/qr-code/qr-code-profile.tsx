@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Skeleton } from "@/shares/components/ui/skeleton";
 
@@ -36,9 +37,11 @@ export function QrCodeProfile({
       />
     );
   return (
-    <FormPage title={query.data.name}>
-      <QrCodeForm code={query.data} disabled={!canUpdate} />
-      {history ? <div className="mt-6">{history}</div> : null}
+    <FormPage title={query.data.name} backHref={UTILITIES_ROUTES.qrCodes}>
+      <RecordDetailTabs
+        general={<QrCodeForm code={query.data} disabled={!canUpdate} />}
+        history={history}
+      />
     </FormPage>
   );
 }

@@ -14,8 +14,11 @@ vi.mock("next-intl", () => ({
     };
     return map[key] ?? key;
   },
+  useLocale: () => "vi",
+  useNow: () => new Date("2026-11-20T14:30:06Z"),
   useFormatter: () => ({
     dateTime: () => "20/11/2026, 14:30",
+    relativeTime: () => "6 giây trước",
   }),
 }));
 
@@ -80,6 +83,9 @@ describe("UserSocialAccountsSection", () => {
     expect(screen.getByText("toannx.dev@gmail.com")).toBeDefined();
     expect(screen.getByText("Toàn Nguyễn")).toBeDefined();
     expect(screen.getByText("UID: google-uid-12345")).toBeDefined();
-    expect(screen.getByText("20/11/2026, 14:30")).toBeDefined();
+    const linkedTime = screen.getByText(/^\d{2}\/\d{2}\/2026 \d{2}:\d{2}:\d{2}$/).closest("time");
+    expect(linkedTime?.textContent).toMatch(
+      /^\d{2}\/\d{2}\/2026 \d{2}:\d{2}:\d{2} \(6 giây trước\)$/,
+    );
   });
 });

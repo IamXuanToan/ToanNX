@@ -1,9 +1,10 @@
 "use client";
 
 import { AlertCircle, CheckCircle2, Mail } from "lucide-react";
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useNow, useTranslations } from "next-intl";
 
 import { FormSection } from "@/shares/components/common/form-section";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Badge } from "@/shares/components/ui/badge";
 import { isOnline } from "@/shares/lib/presence";
 
@@ -18,7 +19,6 @@ import type { User } from "../../types/account.types";
  */
 export function UserActivitySection({ user }: { user: User }) {
   const t = useTranslations("system.account.users");
-  const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
   const online = isOnline(user.lastSeenAt, now);
   const rows = [
@@ -48,16 +48,7 @@ export function UserActivitySection({ user }: { user: User }) {
           <div key={row.label} className="flex items-start justify-between gap-3">
             <dt className="text-muted-foreground">{row.label}</dt>
             <dd className="text-right font-medium">
-              {row.at ? (
-                <>
-                  {format.relativeTime(new Date(row.at), now)}
-                  <span className="text-muted-foreground block text-xs font-normal">
-                    {format.dateTime(new Date(row.at), { dateStyle: "short", timeStyle: "short" })}
-                  </span>
-                </>
-              ) : (
-                "—"
-              )}
+              {row.at ? <TimestampText value={row.at} /> : "—"}
             </dd>
           </div>
         ))}

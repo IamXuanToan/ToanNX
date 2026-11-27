@@ -51,6 +51,7 @@ Không dùng SDK Firebase trong service worker (không `importScripts` từ CDN,
 
 - Thông báo chỉ phát qua `NotificationService.notify` (rule backend §9); FE không tự gọi `new Notification()`.
 - Payload là data-only; thêm field mới thì sửa cả `FcmClient`, service worker và `WorkerMessage`.
+- `usePushRegistration` khử trùng đăng ký thiết bị khi mount trong **24 giờ** qua `localStorage` (`system_push_device_sync`, lưu digest FNV-1a thay cho token thô) để tránh gọi lặp `POST /push-devices` khi tải lại trang; thao tác bấm bật thủ công (`enable()`) luôn đồng bộ ngay với backend.
 
 ## File chính
 

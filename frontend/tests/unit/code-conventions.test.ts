@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
+import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -93,6 +94,150 @@ describe("Quy ước tập trung hằng số và Link", () => {
       );
     });
 
+    expect(offenders.map(toRel)).toEqual([]);
+  });
+
+  it("khai báo quyền trong permissions/ dùng createResourcePermissions + PERMISSION_ACTION, không hardcode chuỗi quyền", () => {
+    const permissionFiles = tsFiles.filter((file) =>
+      /^modules\/[^/]+\/permissions\/[^/]+-permission\.ts$/.test(toRel(file)),
+    );
+    expect(permissionFiles.length).toBeGreaterThan(0);
+
+    const invalidPermissionFiles = permissionFiles.filter((file) => {
+      const content = readFileSync(file, "utf8");
+      const usesHelper =
+        content.includes("createResourcePermissions(") && content.includes("PERMISSION_ACTION.");
+      const hasRawLiteral = /["'][a-z_]+\.[a-z_]+\.[a-z_]+["']/.test(content);
+      return !usesHelper || hasRawLiteral;
+    });
+    expect(invalidPermissionFiles.map(toRel)).toEqual([]);
+
+    const rawPermissionUsages = tsFiles.filter((file) => {
+      const content = readFileSync(file, "utf8").replace(
+        /\b(?:useTranslations|createPageMetadata)\(\s*(?:\{[^}]*title:\s*)?["'][^"']+["']\s*(?:\})?\s*\)/g,
+        "",
+      );
+      return /["'](?:system|utilities|novel|finance|workspace)\.[a-z_]+\.(?:read|create|update|delete|manage_all|read_private|manage|assign|revoke|export|import|chat|reveal)["']/.test(
+        content,
+      );
+    });
+    expect(rawPermissionUsages.map(toRel)).toEqual([]);
+  });
+
+  it("không hardcode queryKey chuỗi thô ở hook/component hoặc mã lỗi xác thực ngoài constants", () => {
+    const rawQueryKeyFiles = tsFiles.filter((file) => {
+      const rel = toRel(file);
+      if (rel.includes("/constants/")) return false;
+      const content = readFileSync(file, "utf8");
+      return /queryKey\s*:\s*\[\s*["'][^"']+["']/.test(content);
+    });
+    expect(rawQueryKeyFiles.map(toRel)).toEqual([]);
+
+    const rawAuthErrorCodeFiles = tsFiles.filter((file) => {
+      const rel = toRel(file);
+      if (rel.includes("/constants/")) return false;
+      const content = readFileSync(file, "utf8");
+      return /["'](AUTH_REFRESH_CONFLICT|AUTH_CSRF_FAILED|ACCOUNT_SOCIAL_NOT_LINKED)["']/.test(
+        content,
+      );
+    });
+    expect(rawAuthErrorCodeFiles.map(toRel)).toEqual([]);
+  });
+
+  it("không gắn thuộc tính HTML title= lên thẻ DOM hay UI primitive (dùng AppTooltip / shadcn Tooltip)", () => {
+    const primitiveTooltipForwarders = new Set([
+      "Badge",
+      "Button",
+      "Card",
+      "Checkbox",
+      "DropdownMenuTrigger",
+      "Image",
+      "Input",
+      "Link",
+      "PopoverTrigger",
+      "Switch",
+      "TableCell",
+      "TableHead",
+      "TableRow",
+      "TabsTrigger",
+      "Textarea",
+      "TiptapToggle",
+      "Toggle",
+      "TooltipTrigger",
+    ]);
+
+    const violations: string[] = [];
+    const tsxFiles = tsFiles.filter((file) => file.endsWith(".tsx"));
+
+    for (const file of tsxFiles) {
+      const content = readFileSync(file, "utf8");
+      if (!content.includes("title")) continue;
+
+      const sf = ts.createSourceFile(
+        file,
+        content,
+        ts.ScriptTarget.Latest,
+        true,
+        ts.ScriptKind.TSX,
+      );
+      const visit = (node: ts.Node) => {
+        if (ts.isJsxAttribute(node) && node.name.getText(sf) === "title") {
+          const opening = node.parent?.parent;
+          if (opening && (ts.isJsxOpeningElement(opening) || ts.isJsxSelfClosingElement(opening))) {
+            const tagName = opening.tagName.getText(sf);
+            const isDomTag = /^[a-z]/.test(tagName) && tagName !== "iframe";
+            if (isDomTag || primitiveTooltipForwarders.has(tagName)) {
+              const line = sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1;
+              violations.push(`${toRel(file)}:${line} <${tagName} title=...>`);
+            }
+          }
+        }
+        ts.forEachChild(node, visit);
+      };
+      visit(sf);
+    }
+
+    expect(violations).toEqual([]);
+  });
+
+  it("không gọi format.relativeTime trực tiếp hoặc dateStyle/timeStyle ngoài helper thời gian chuẩn", () => {
+    const allowedRelativeTime = new Set([
+      "shares/components/common/timestamp-text.tsx",
+      "shares/lib/date-time-format.ts",
+    ]);
+    const relativeOffenders = tsFiles.filter((file) => {
+      const rel = toRel(file);
+      if (allowedRelativeTime.has(rel)) return false;
+      const content = readFileSync(file, "utf8");
+      if (content.includes("formatDateTimeWithRelative")) return false;
+      return /\bformat\.relativeTime\s*\(/.test(content);
+    });
+    expect(relativeOffenders.map(toRel)).toEqual([]);
+
+    const shorthandStyleOffenders = tsFiles.filter((file) => {
+      const content = readFileSync(file, "utf8");
+      return /\b(dateStyle|timeStyle)\s*:/.test(content);
+    });
+    expect(shorthandStyleOffenders.map(toRel)).toEqual([]);
+  });
+
+  it("không fallback trực tiếp ownerName || ownerEmail hoặc fullName || email trong component/hook", () => {
+    const offenders = tsFiles.filter((file) => {
+      const rel = toRel(file);
+      if (rel === "shares/lib/user-display.ts") return false;
+      const content = readFileSync(file, "utf8");
+      return /\b(ownerName|fullName)\s*\|\|[\s\S]{0,40}\b(ownerEmail|email)\b/.test(content);
+    });
+    expect(offenders.map(toRel)).toEqual([]);
+  });
+
+  it("tooltip của cột chủ sở hữu/người dùng không được ưu tiên email thô trước nhãn fullname (username)", () => {
+    const offenders = tsFiles.filter((file) => {
+      const content = readFileSync(file, "utf8");
+      return /<AppTooltip\s+content=\{[^}]*(ownerEmail|userEmail|owner\.email)\s*\|\|/.test(
+        content,
+      );
+    });
     expect(offenders.map(toRel)).toEqual([]);
   });
 });

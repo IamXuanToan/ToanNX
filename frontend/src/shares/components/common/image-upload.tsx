@@ -59,8 +59,8 @@ export function ImageUpload({
               alt={value.alt || value.name || ""}
               fill
               sizes="80px"
+              unoptimized
               className="object-cover"
-              unoptimized={value.url.startsWith("data:") || value.url.startsWith("blob:")}
             />
           ) : (
             (fallback ?? <ImageUp className="size-6" aria-hidden />)

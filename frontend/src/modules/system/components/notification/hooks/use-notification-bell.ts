@@ -12,6 +12,7 @@ import { usePermission } from "../../../hooks/use-permission";
 import { useUnreadCount } from "../../../hooks/use-unread-count";
 import { NOTIFICATION_PERMISSIONS } from "../../../permissions/notification-permission";
 import { PUSH_DEVICE_PERMISSIONS } from "../../../permissions/push-device-permission";
+import { resolveNotificationLink } from "../../../lib/notification-link";
 import type { AppNotification, NotificationScope } from "../../../types/notification.types";
 import { useNotificationRealtime } from "./use-notification-realtime";
 import { usePushRegistration } from "../../push-device/hooks/use-push-registration";
@@ -54,7 +55,8 @@ export function useNotificationBell() {
         realtime.broadcast();
       }
       setOpen(false);
-      if (item.link) router.push(item.link as never);
+      const target = item.link ? resolveNotificationLink(item.link) : "";
+      if (target) router.push(target as never);
     },
     markAllRead: async () => {
       await markAll.mutateAsync(scope);

@@ -4,6 +4,7 @@ import { cn } from "cn";
 import { FolderInput, Images, RotateCw, Trash2, Upload, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
 import { DataPagination } from "@/shares/components/common/data-pagination";
 import { EmptyState } from "@/shares/components/common/empty-state";
@@ -14,6 +15,7 @@ import { SelectField } from "@/shares/components/common/select-field";
 import { ErrorState } from "@/shares/components/errors/error-state";
 import { Button } from "@/shares/components/ui/button";
 import { Card } from "@/shares/components/ui/card";
+import { formatUserDisplayName } from "@/shares/lib/user-display";
 import {
   Dialog,
   DialogContent,
@@ -100,17 +102,20 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
               />
             </div>
             <AttachmentViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
-            <Button
-              variant="outline"
-              size="icon"
-              className="size-10 rounded-xl"
-              aria-label={t("reload")}
-              title={t("reload")}
-              disabled={query.isFetching}
-              onClick={() => query.refetch()}
-            >
-              <RotateCw className={cn("size-4", query.isFetching && "animate-spin")} />
-            </Button>
+            <AppTooltip content={t("reload")}>
+              <span className="inline-flex">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-10 rounded-xl"
+                  aria-label={t("reload")}
+                  disabled={query.isFetching}
+                  onClick={() => query.refetch()}
+                >
+                  <RotateCw className={cn("size-4", query.isFetching && "animate-spin")} />
+                </Button>
+              </span>
+            </AppTooltip>
           </div>
         </div>
 
@@ -139,11 +144,8 @@ export function AttachmentLibrary(capabilities: AttachmentCapabilities) {
               disabled={usersQuery.isPending}
               options={(usersQuery.data ?? []).map((user) => ({
                 value: user.id,
-                label:
-                  [user.lastName, user.firstName].filter(Boolean).join(" ") ||
-                  user.username ||
-                  user.email,
-                description: [user.email, user.username].filter(Boolean).join(" · "),
+                label: formatUserDisplayName(user),
+                description: user.email || undefined,
               }))}
             />
           ) : null}

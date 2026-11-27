@@ -7,13 +7,14 @@ description: "Kiểm toán và lập ma trận phân quyền BE-FE ba tầng cho
 
 Skill này chuyên kiểm tra toàn bộ hệ thống phân quyền theo mô hình IAM / 3 tầng UI đặc thù của ToanNX (Admin `/quan-tri` và Portal `/ca-nhan`), phát hiện lệch quyền từng model và kiểm chứng thực tế qua các vai trò mẫu.
 
-## 1. Nạp quy chuẩn bắt buộc
+## 1. Nạp quy chuẩn & lọc phạm vi bắt buộc
 
-Đọc `docs/architecture/authorization.md`, `docs/features/permission-scope.md`, `docs/features/permission-ui.md`, `docs/features/table-actions.md`, `docs/features/admin-navigation.md`, và `.agents/rules/51-permissions.md`.
+1. Chạy `uv run --no-project python scripts/audit_tracker.py list-pending --axis permission --format paths` để lấy danh sách file đang `NEEDS_CHECK` trên trục `permission` trong `docs/reports/code-audit-tracker.md`. Mặc định chỉ kiểm tra kỹ các file vừa đổi (cùng cặp quyền/view/service/menu/table BE ↔ FE liên quan), chỉ quét đủ toàn bộ các module khi người dùng yêu cầu kiểm toán toàn hệ thống.
+2. Đọc `docs/architecture/authorization.md`, `docs/features/permission-scope.md`, `docs/features/permission-ui.md`, `docs/features/table-actions.md`, `docs/features/admin-navigation.md`, và `.agents/rules/51-permissions.md`.
 
-## 2. Kiểm Backend từng module & từng model
+## 2. Kiểm Backend theo phạm vi & từng module/model
 
-Đối chiếu lần lượt mọi module (`system`, `utilities`, `novel`, `finance`):
+Đối chiếu các module nằm trong phạm vi (hoặc lần lượt `system`, `utilities`, `novel`, `finance`, `workspace` khi rà toàn hệ thống):
 1. **Catalog & `MEMBER`**:
    - Mỗi model một class `XxxPermission(PermissionCatalog)` riêng ở `permissions/<model>_permission.py`.
    - Khai rõ `MEMBER = (...)`; `MEMBER` **tuyệt đối không** chứa `manage_all` hoặc `read_private`.
@@ -50,4 +51,4 @@ Skill này chuyên kiểm tra toàn bộ hệ thống phân quyền theo mô hì
    ```
    Tài khoản kiểm chuẩn gồm: `ADMIN`, `*_MANAGER`, `*_VIEWER` (có `read`, không `update`/`create`/`delete`), `*_MEMBER` (`is_staff=False`, chỉ xem/sửa bản của mình qua Portal).
 3. Chạy `pytest --reuse-db` các endpoint bị chạm + `core/tests/test_endpoint_access.py`, và khi có UI thật dùng `playwright-cli` đăng nhập thử từng vai trò để chụp/kiểm trực tiếp menu, `ForbiddenView`, nút mờ + tooltip và `useEditMode`.
-4. Sửa mọi độ lệch phát hiện được (đúng `docs/rules/`), cập nhật `docs/modules/<m>/README.md` nếu đổi `MEMBER`/quyền, và trả báo cáo kèm commit block theo `docs/rules/git.md`.
+4. Sửa mọi độ lệch phát hiện được (đúng `docs/rules/`), cập nhật `docs/modules/<m>/README.md` nếu đổi `MEMBER`/quyền; đóng dấu các file vừa rà vào `docs/reports/code-audit-tracker.md` qua `uv run --no-project python scripts/audit_tracker.py mark-checked --axis permission --files <files...> --status <PASS|FIXED> --note "<tóm tắt phân quyền>"`. Nếu người dùng đặt ra rule mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy ước nếu kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`). Trả báo cáo đầy đủ (không tự thao tác Git hay tự gợi ý commit trừ khi người dùng yêu cầu).

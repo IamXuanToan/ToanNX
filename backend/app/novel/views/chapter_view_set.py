@@ -1,6 +1,7 @@
 """ViewSet quản lý chương truyện."""
 
 from app.core.views.core_model_view_set import CoreModelViewSet
+from app.novel.constants.novel_rate_limit_key import NovelRateLimitKey
 from app.novel.filters.chapter_filter import ChapterFilter
 from app.novel.models.chapter import Chapter
 from app.novel.permissions.chapter_permission import ChapterPermission as P
@@ -38,7 +39,7 @@ class ChapterViewSet(CoreModelViewSet[Chapter]):
     update_serializer_class = ChapterUpdateValidateSerializer
     bulk_update_serializer_class = ChapterBulkUpdateValidateSerializer
     bulk_delete_enabled = True
-    action_rate_limits = {"create": "novel.create"}
+    action_rate_limits = {"create": NovelRateLimitKey.CREATE}
     action_permissions = {
         "list": permission_rule(P.READ),
         "retrieve": permission_rule(P.READ),

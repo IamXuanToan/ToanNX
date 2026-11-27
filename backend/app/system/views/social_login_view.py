@@ -12,6 +12,7 @@ from app.core.decorators.validate_request import validate_request
 from app.core.permissions.csrf_protected import CsrfProtected
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.system_rate_limit_key import SystemRateLimitKey
 from app.system.serializers.responses.current_user_response_serializer import (
     CurrentUserResponseSerializer,
 )
@@ -42,7 +43,7 @@ class SocialLoginView(CoreApiView):
         request=SocialAuthCodeValidateSerializer,
         responses=CurrentUserResponseSerializer,
     )
-    @rate_limit("system.social.auth")
+    @rate_limit(SystemRateLimitKey.SOCIAL_AUTH)
     @validate_request(SocialAuthCodeValidateSerializer)
     def post(self, request: Request, provider: str, validated_data: dict[str, Any]) -> CoreResponse:
         """Đăng nhập qua OAuth.

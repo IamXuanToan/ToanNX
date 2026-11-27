@@ -6,6 +6,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.request import Request
 
+from app.core.constants.core_rate_limit_key import CoreRateLimitKey
 from app.core.decorators.rate_limit import rate_limit
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
@@ -32,7 +33,7 @@ class PublicSettingView(CoreApiView):
         self.setting_service = SettingService()
 
     @extend_schema(responses=PublicSettingResponseSerializer)
-    @rate_limit("public.read")
+    @rate_limit(CoreRateLimitKey.PUBLIC_READ)
     def get(self, request: Request) -> CoreResponse:
         """Lấy danh sách cấu hình công khai cho frontend client.
 

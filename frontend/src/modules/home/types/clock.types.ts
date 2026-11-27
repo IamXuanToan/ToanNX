@@ -3,6 +3,7 @@ export interface ClockSnapshot {
   hours24: string;
   seconds: string;
   period: string;
+  periodEn: string;
   dateString: string;
   dateStringVi: string;
   dateStringEn: string;

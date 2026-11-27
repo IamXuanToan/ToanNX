@@ -53,11 +53,12 @@ class FinanceSeedService:
         if not currency:
             raise ValueError(f"Không tìm thấy tiền tệ {DEFAULT_CURRENCY_CODE} trong hệ thống.")
 
-        # 1. Tạo các nền tảng mẫu kèm mốc thuế và quy tắc nhận diện
+        # 1. Tạo các nền tảng mẫu kèm màu biểu đồ, mốc thuế và quy tắc nhận diện
         platforms_def: list[dict[str, Any]] = [
             {
                 "code": "youtube",
                 "name": "YouTube Partner Program",
+                "color": "#DC2626",
                 "tax_withheld": False,
                 "tax_rate": Decimal("0.00"),
                 "pattern": r"YOUTUBE|ADSENSE",
@@ -65,6 +66,7 @@ class FinanceSeedService:
             {
                 "code": "shopee",
                 "name": "Shopee Affiliate",
+                "color": "#EA580C",
                 "tax_withheld": False,
                 "tax_rate": Decimal("0.00"),
                 "pattern": r"SHOPEE",
@@ -72,6 +74,7 @@ class FinanceSeedService:
             {
                 "code": "tiktok",
                 "name": "TikTok Shop / Creator",
+                "color": "#0891B2",
                 "tax_withheld": False,
                 "tax_rate": Decimal("0.00"),
                 "pattern": r"TIKTOK",
@@ -79,6 +82,7 @@ class FinanceSeedService:
             {
                 "code": "freelance",
                 "name": "Freelance Software Development",
+                "color": "#7C3AED",
                 "tax_withheld": True,
                 "tax_rate": Decimal("10.00"),
                 "pattern": r"FREELANCE|HOP DONG|THANH TOAN DU AN",
@@ -86,13 +90,15 @@ class FinanceSeedService:
             {
                 "code": "sponsorship",
                 "name": "GitHub Sponsors & Brand Sponsorship",
+                "color": "#16A34A",
                 "tax_withheld": False,
                 "tax_rate": Decimal("0.00"),
                 "pattern": r"SPONSOR|GITHUB",
             },
             {
-                "code": "sepay_donation",
-                "name": "Ủng hộ & Quyên góp SePay",
+                "code": "donate",
+                "name": "Donate",
+                "color": "#DB2777",
                 "tax_withheld": False,
                 "tax_rate": Decimal("0.00"),
                 "pattern": r"UNG HO|QUYEN GOP|DONATE",
@@ -107,9 +113,13 @@ class FinanceSeedService:
                 code=p_def["code"],
                 defaults={
                     "name": p_def["name"],
+                    "color": p_def["color"],
                     "default_currency": currency,
                 },
             )
+            if not plat.color and p_def.get("color"):
+                plat.color = p_def["color"]
+                plat.save(update_fields=["color", "updated_at"])
             platform_map[p_def["code"]] = plat
             tax_rate_entry, _ = PlatformTaxRate.objects.get_or_create(
                 platform=plat,

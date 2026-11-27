@@ -37,7 +37,7 @@ Chia 3 cụm chuẩn:
 - **Nội dung (`content`)**: Trang (`trang`) · Đường dẫn (`duong-dan`) · Quyên góp (`quyen-gop` - Lịch sử ủng hộ toàn sàn, lọc bảng vinh danh, trạng thái kiểm duyệt, xuất báo cáo CSV).
 - **Công cụ (`tools`)**: Link rút gọn (`link-rut-gon`) · Mã QR (`ma-qr`).
 
-Ngoài ra, Client Portal bổ sung màn hình **Quyên góp & Ủng hộ** (`/ca-nhan/quyen-gop`) dành riêng cho từng chủ trang: theo dõi thống kê cá nhân (1 người), quản lý ẩn/hiện comment và xuất báo cáo CSV.
+Ngoài ra, phần thống kê Quyên góp được gộp trực tiếp vào Dashboard hợp nhất (`/ca-nhan`), còn màn hình **Giao dịch ủng hộ** (`/ca-nhan/quyen-gop`) nằm trong cụm Tiện ích dành cho chủ trang lọc theo ngày, ẩn/hiện bình luận và xuất báo cáo CSV. Webhook mỗi mã QR (`DonationTransactionService._sync_to_finance_income`) tự động áp vào module `finance` dưới nền tảng `Donate` (`code="donate"`), ghi đủ thông tin ngân hàng/mã tham chiếu và phát thông báo `finance.income.received` trỏ về `/portal/finance/incomes/{id}`.
 
 ## Trang công khai
 
@@ -56,13 +56,13 @@ Ngoài ra, Client Portal bổ sung màn hình **Quyên góp & Ủng hộ** (`/ca
   - Tự động điều hướng hiển thị (`PageRendererDispatcher`): trang Affiliate Storefront, Bio Link, Donation VietQR hoặc Legacy Tiptap.
   - **Trang Donate SePay**:
     + Bảng Vinh danh phân hạng 4 cấp (Đồng ≥100k, Bạc ≥200k, Vàng ≥500k, Kim Cương ≥1M) với đồng hồ đếm ngược trực tiếp (Live Countdown) theo số ngày cấu hình.
-    + Danh sách Ủng hộ gần đây cập nhật tự động theo trang, bỏ thanh ticker chạy ngang.
+    + Danh sách Ủng hộ gần đây (`list_public_feed`) và Bảng Vinh danh (`list_public_leaderboard`) được cache Redis `600 giây` (Leaderboard tự cắt TTL không vượt quá thời điểm `tier_expires_at` gần nhất) trong namespace `utilities:public`, tự vô hiệu hóa cache khi webhook SePay tạo giao dịch hoặc quản trị viên sửa/duyệt/xóa giao dịch; FE chỉ polling tab đang xem khi trang hiển thị (`60 giây` cho Feed, `120 giây` cho Leaderboard, `refetchIntervalInBackground: false`), bỏ thanh ticker chạy ngang.
     + Quy đổi quà tặng hóm hỉnh (ly cà phê, gói mì tôm, bữa sáng, cuốn sách, nồi lẩu...).
     + Switch ẩn/hiện số tiền cho từng mã QR (giữ bí mật số tiền khi cần thiết).
     + Bộ lọc Regex tự động kiểm duyệt các từ ngữ bạo lực, khủng bố, chửi thề tục tĩu (cả teencode), tự động thay thế bằng lời cảm ơn an toàn trên trang public và cảnh báo đỏ trên dashboard.
     + Thống kê Dashboard quyên góp (`GET /api/v1/utilities/donations/stats`): tổng tiền, lượt ủng hộ, kiểm duyệt, bình luận ẩn, cơ cấu quà tặng `by_gift` và biến động theo ngày `daily_trend` phục vụ biểu đồ trực quan phía client/portal.
-  - Ảnh trong trang hiển thị tối ưu (với e-commerce CDN bên ngoài sử dụng `unoptimized` để không tốn quota Next.js Image optimization).
-- `POST /api/v1/utilities/pages/fetch-metadata`: trích xuất metadata sản phẩm/liên kết từ URL (OpenGraph, Twitter Card, JSON-LD, platform detector) phục vụ chức năng Quick Add trong quản trị. Được bảo vệ bởi bộ lọc an toàn 7 lớp chống SSRF (`SafeHttpClient`) và cache Redis 7 ngày.
+  - Ảnh động từ R2/CDN ngoài trong trang và bảng QR (`qr-code-table`, `qr-code-picker`, `DestinationFavicon`) dùng `<Image unoptimized />` để không tiêu tốn hạn mức Next.js Image Optimization.
+- `POST /api/v1/utilities/pages/fetch-metadata`: trích xuất metadata sản phẩm/liên kết từ URL (OpenGraph, Twitter Card, JSON-LD, platform detector) phục vụ chức năng Quick Add trong quản trị. Được bảo vệ bởi bộ lọc an toàn 7 lớp chống SSRF (`SafeHttpClient` từ `app/core/utils/safe_http_client.py`) và cache Redis 7 ngày.
 - Cache Redis (`constants/public_cache.py`, namespace `utilities:public`): link công khai và trang **đã xuất bản**
   được cache 10 phút (slug không tồn tại: 60 giây), nên lượt khách lặp lại không chạm Neon. `ShortLinkService`,
   `PageService`, `PagePathService`, `QrCodeService` khai `public_cache_namespace`: mọi ghi tăng version sau commit

@@ -18,13 +18,11 @@ export function useJournalEntryDetail(id: string) {
   const journal = useJournalFormat();
   const entry = query.data;
   const resource = resources.data?.find((item) => item.resource === entry?.resource);
+  const fieldPrefix = entry ? JOURNAL_FIELD_PREFIXES[entry.resource] : undefined;
   const changes = Object.entries(entry?.changes ?? {}).map(([field, [before, after]]) => ({
     field,
-    label: journal.fieldLabel(
-      field,
-      entry ? JOURNAL_FIELD_PREFIXES[entry.resource] : undefined,
-      resource?.fieldLabels[field],
-    ),
+    fieldPrefix,
+    label: journal.fieldLabel(field, fieldPrefix, resource?.fieldLabels[field]),
     before,
     after,
     diff: journal.listDiff(before, after),

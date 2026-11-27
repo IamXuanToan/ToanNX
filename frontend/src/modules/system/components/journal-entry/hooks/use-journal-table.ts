@@ -42,16 +42,16 @@ export function useJournalTable() {
   /** Tối đa `SUMMARY_FIELDS` dòng "Nhãn: cũ → mới" và số field còn lại. */
   const summarize = (entry: JournalEntry) => {
     const all = Object.entries(entry.changes);
-    const lines = all.slice(0, SUMMARY_FIELDS).map(([field, [before, after]]) => ({
-      field,
-      label: journal.fieldLabel(
+    const lines = all.slice(0, SUMMARY_FIELDS).map(([field, [before, after]]) => {
+      const fieldPrefix = JOURNAL_FIELD_PREFIXES[entry.resource];
+      const ctx = { field, fieldPrefix };
+      return {
         field,
-        JOURNAL_FIELD_PREFIXES[entry.resource],
-        fieldLabels.get(entry.resource)?.[field],
-      ),
-      before: journal.value(before, 40),
-      after: journal.value(after, 40),
-    }));
+        label: journal.fieldLabel(field, fieldPrefix, fieldLabels.get(entry.resource)?.[field]),
+        before: journal.value(before, 40, ctx),
+        after: journal.value(after, 40, ctx),
+      };
+    });
     return { lines, more: Math.max(all.length - SUMMARY_FIELDS, 0) };
   };
 

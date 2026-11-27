@@ -157,6 +157,23 @@
       "unsaved": "Có thay đổi chưa lưu",
       "toggleSidebar": "Đóng/mở thanh bên"
     },
+    "tabs": {
+      "general": "Thông tin chung",
+      "history": "Lịch sử thay đổi"
+    },
+    "timeline": {
+      "allActions": "Tất cả",
+      "changesCount": "{count} thay đổi",
+      "showAllFields": "Xem tất cả {count} trường",
+      "collapseFields": "Thu gọn",
+      "loadMore": "Xem hoạt động cũ hơn",
+      "emptyValue": "Trống",
+      "addedPrefix": "Thêm",
+      "removedPrefix": "Bỏ",
+      "totalEvents": "{count} mốc",
+      "filteredEmpty": "Không có hoạt động phù hợp bộ lọc.",
+      "resetFilter": "Xem tất cả"
+    },
     "status": {
       "active": "Hoạt động",
       "inactive": "Đã khóa"
@@ -224,6 +241,8 @@
     },
     "search": {
       "clear": "Xoá từ khoá",
+      "hint": "Gõ từ khóa rồi nhấn Enter để tìm kiếm.",
+      "hintLabel": "Hướng dẫn tìm kiếm",
       "limitExceeded": "Từ khóa tối đa {maxTerms} từ và {maxLength} ký tự."
     },
     "emptyState": {
@@ -250,7 +269,16 @@
     },
     "tagsInput": {
       "placeholder": "Gõ rồi nhấn Enter",
+      "hint": "Nhập giá trị rồi nhấn Enter hoặc dấu phẩy (,) để thêm thẻ.",
+      "hintLabel": "Hướng dẫn nhập thẻ",
       "remove": "Bỏ {tag}"
+    },
+    "chipListInput": {
+      "placeholder": "Nhập giá trị...",
+      "add": "Thêm",
+      "tooltip": "Nhập giá trị rồi nhấn Enter hoặc bấm Thêm.",
+      "tooltipLabel": "Hướng dẫn thêm mục",
+      "remove": "Xoá {item}"
     },
     "datePicker": {
       "placeholder": "Chọn ngày",
@@ -266,7 +294,9 @@
       "clear": "Xoá giờ"
     },
     "dateTimePicker": {
-      "clear": "Xoá ngày giờ"
+      "timePlaceholder": "Giờ",
+      "clear": "Xoá ngày giờ",
+      "clearTime": "Xoá giờ"
     },
     "monthSelect": {
       "placeholder": "Chọn tháng",
@@ -507,25 +537,15 @@
       "CHAPTER_NUMBER_EXISTS": "Số thứ tự chương của truyện đã tồn tại.",
       "ATTACHMENT_PRIVATE_STORAGE_NOT_CONFIGURED": "Chưa cấu hình kho lưu tệp riêng tư.",
       "ATTACHMENT_MUST_BE_PUBLIC": "Ảnh phải ở chế độ công khai.",
-      "FINANCE_SEPAY_UNAUTHORIZED": "SePay từ chối API token (sai, hết hạn hoặc khác môi trường).",
       "FINANCE_SEPAY_RATE_LIMITED": "SePay đang giới hạn tần suất, thử lại sau ít phút.",
       "FINANCE_SEPAY_UNAVAILABLE": "Không kết nối được SePay, thử lại sau.",
-      "FINANCE_SYNC_RANGE_INVALID": "Khoảng ngày tối đa 31 ngày.",
-      "FINANCE_TRANSACTION_DUPLICATE": "Giao dịch này đã có.",
-      "FINANCE_TRANSACTION_NOT_DELETABLE": "Không xóa giao dịch thật; hãy chuyển sang “Không phải thu nhập”.",
-      "FINANCE_TRANSACTION_NOT_DUPLICATE_CANDIDATE": "Giao dịch không ở trạng thái nghi trùng.",
-      "FINANCE_ALLOCATION_EXCEEDS_AMOUNT": "Tổng phân bổ vượt số tiền.",
       "FINANCE_RULE_PATTERN_INVALID": "Mẫu quy tắc không hợp lệ.",
-      "FINANCE_RULE_TARGET_REQUIRED": "Chọn đúng một đích: nền tảng hoặc loại dòng tiền.",
       "FINANCE_PLATFORM_IN_USE": "Nền tảng đã được dùng, hãy tắt thay vì xóa.",
-      "FINANCE_INCOME_VOIDED": "Khoản thu đã hủy.",
-      "FINANCE_DOCUMENT_LINK_TARGET_REQUIRED": "Chọn đúng một đích liên kết.",
       "NOTIFICATION_TELEGRAM_UNAVAILABLE": "Không kết nối được Telegram.",
       "NOTIFICATION_TELEGRAM_REGISTRATION_NOT_FOUND": "Chưa thấy bot được thêm vào nhóm với mã này.",
       "NOTIFICATION_TELEGRAM_REGISTRATION_EXPIRED": "Mã đăng ký đã hết hạn, hãy tạo mã mới.",
       "NOTIFICATION_TELEGRAM_CHAT_INACTIVE": "Nhóm Telegram chưa xác minh hoặc bot không có quyền gửi.",
       "NOTIFICATION_EVENT_UNKNOWN": "Sự kiện không tồn tại.",
-      "NOTIFICATION_ROUTE_TARGET_INVALID": "Nơi nhận không hợp lệ.",
       "FINANCE_TAX_RATE_INVALID": "Tỷ lệ khấu trừ phải lớn hơn 0 và nhỏ hơn 100.",
       "FINANCE_TAX_RATE_DUPLICATE_DATE": "Đã có mốc cùng ngày.",
       "FINANCE_EXCHANGE_RATE_UNAVAILABLE": "Không có tỷ giá cho ngày này, hãy nhập tay.",
@@ -546,8 +566,6 @@
       "SYSTEM_EXCHANGE_RATE_UNAVAILABLE": "Không lấy được tỷ giá, hãy nhập tay.",
       "SYSTEM_EXCHANGE_RATE_READ_ONLY": "Tỷ giá lấy từ API chỉ đọc.",
       "TELEGRAM_BOT_TOKEN_INVALID": "Token bot Telegram không hợp lệ.",
-      "TELEGRAM_BOT_HAS_WEBHOOK": "Bot đang đặt webhook ở nơi khác; hãy gỡ webhook để dùng.",
-      "TELEGRAM_BOT_REQUIRED": "Hãy cấu hình bot Telegram trước.",
       "NOTIFICATION_EVENT_FORBIDDEN": "Bạn không được nhận sự kiện này.",
       "NOTIFICATION_CHANNEL_UNAVAILABLE": "Kênh chưa dùng được.",
       "NOTIFICATION_IN_APP_REQUIRED": "Sự kiện lỗi luôn hiện trong ứng dụng.",
@@ -559,7 +577,16 @@
       "NOTIFICATION_SEND_FAILED": "Gửi thông báo thất bại.",
       "PUSH_TOKEN_INVALID": "Trình duyệt đã hủy đăng ký nhận thông báo.",
       "PUSH_UNAVAILABLE": "Không gửi được thông báo trình duyệt lúc này.",
-      "TELEGRAM_BOT_MISSING": "Chưa cấu hình bot Telegram."
+      "TELEGRAM_BOT_MISSING": "Chưa cấu hình bot Telegram.",
+      "WORKSPACE_CURRENCY_RATE_REQUIRED": "Ngoại tệ chưa có tỷ giá tại ngày chứng từ, vui lòng nhập tỷ giá > 0.",
+      "WORKSPACE_EXCHANGE_RATE_INVALID": "Tỷ giá quy đổi phải lớn hơn 0.",
+      "WORKSPACE_ASSET_FORBIDDEN": "Thiết bị được chọn không tồn tại hoặc không thuộc quyền sở hữu của bạn.",
+      "WORKSPACE_CLAIM_CODE_CONFLICT": "Mã phiếu bảo hành đã tồn tại.",
+      "WORKSPACE_CUSTOM_CYCLE_DAYS_REQUIRED": "Vui lòng nhập số ngày chu kỳ (> 0).",
+      "WORKSPACE_DIGEST_SLOT_INVALID": "Khung giờ gửi bản tin phải theo định dạng HH:MM (00:00–23:59).",
+      "WORKSPACE_CALENDAR_RANGE_TOO_LONG": "Khoảng ngày xem lịch tối đa là 93 ngày.",
+      "WORKSPACE_AI_NOT_CONFIGURED": "Trợ lý AI chưa được cấu hình endpoint, đang dùng chế độ lệnh Slash.",
+      "WORKSPACE_AI_DAILY_LIMIT_EXCEEDED": "Bạn đã dùng hết hạn mức token AI trong ngày hôm nay."
     },
     "generic": {
       "title": "Không tải được dữ liệu",
@@ -600,6 +627,7 @@
       "technicalDetails": "Chi tiết kỹ thuật",
       "devOnly": "Chỉ môi trường phát triển",
       "errorDigest": "Mã sự cố (Digest)",
+      "stackTrace": "Stack Trace",
       "copyDigest": "Sao chép mã lỗi",
       "copiedDigest": "Đã sao chép",
       "copyDetails": "Sao chép toàn bộ lỗi",

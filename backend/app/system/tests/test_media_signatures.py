@@ -6,6 +6,7 @@ import pytest
 from django.core.files import File
 
 from app.system.utils.file_signature import detect_content_type
+from app.system.utils.svg_inspector import find_svg_problem, looks_like_svg
 
 
 @pytest.mark.parametrize(
@@ -25,3 +26,28 @@ def test_media_signatures(content: bytes, expected: str | None) -> None:
     stream = File(BytesIO(content))
     assert detect_content_type(stream) == expected
     assert stream.tell() == 0
+
+
+def test_svg_rejects_xml_stylesheet_processing_instruction() -> None:
+    """Từ chối SVG chứa <?xml-stylesheet?> hoặc processing instruction không phải XML declaration."""
+    evil_svg = (
+        b'<?xml-stylesheet type="text/xsl" href="https://evil.example/x.xsl"?>'
+        b'<svg xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="4"/></svg>'
+    )
+    assert looks_like_svg(evil_svg) is False
+    stream = BytesIO(evil_svg)
+    assert find_svg_problem(stream) is not None
+
+    nested_pi = (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b'<svg xmlns="http://www.w3.org/2000/svg">'
+        b'<?xml-stylesheet href="x.xsl"?><rect width="1" height="1"/></svg>'
+    )
+    assert find_svg_problem(BytesIO(nested_pi)) is not None
+
+    valid_svg = (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b'<svg xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="4"/></svg>'
+    )
+    assert looks_like_svg(valid_svg) is True
+    assert find_svg_problem(BytesIO(valid_svg)) is None

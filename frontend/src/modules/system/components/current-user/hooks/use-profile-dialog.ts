@@ -56,7 +56,10 @@ export function useProfileDialog({
   const isProfileOpenInUrl =
     urlMode === "page" ||
     searchParams?.get(PROFILE_DIALOG_QUERY.openParam) === PROFILE_DIALOG_QUERY.openValue;
-  const rawTabParam = isProfileOpenInUrl ? searchParams?.get(PROFILE_DIALOG_QUERY.tabParam) : null;
+  const rawTabParam = isProfileOpenInUrl
+    ? (searchParams?.get(PROFILE_DIALOG_QUERY.tabParam) ??
+      (urlMode === "page" ? searchParams?.get("tab") : null))
+    : null;
   const tabParam = rawTabParam === "password" ? "security" : rawTabParam;
   const validTab =
     tabParam === "security" ||
@@ -137,7 +140,7 @@ export function useProfileDialog({
     if (connectingProvider) return;
     setConnectingProvider(provider);
     try {
-      const state = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      const state = crypto.randomUUID();
       sessionStorage.setItem(OAUTH_STORAGE_KEYS.state, state);
       sessionStorage.setItem(OAUTH_STORAGE_KEYS.mode, OAUTH_MODE.link);
       const redirectUri = `${window.location.origin}/auth/callback/${provider}`;

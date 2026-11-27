@@ -18,11 +18,11 @@ Chi tiết: `docs/rules/backend.md` §9, `docs/features/permission-scope.md`, `d
 - Vai trò dựng sẵn: `ADMIN` và `<MODULE>_MANAGER` / `_VIEWER` / `_MEMBER`; không tự đặt thêm role.
 - "Chỉ bản ghi của mình" đến từ việc thiếu `manage_all` (`CoreCrudService.owner_field` + `manage_all_permission`);
   bản ghi người khác trả 404.
-- Superuser bỏ qua kiểm quyền; `is_staff` chỉ mở khung quản trị FE, API không kiểm.
+- Superuser bỏ qua kiểm quyền; `is_staff` chỉ mở khung quản trị FE, API không kiểm. **`ADMIN` (`is_superuser` / `manage_all`) luôn có toàn quyền xem/tạo/sửa/xóa trên dữ liệu của mọi người dùng (kể cả `workspace`), không chặn ở tầng nghiệp vụ (chỉ giữ chốt an toàn như `is_not_self` / superuser cuối).**
 
 ## Frontend
 
-- Mỗi class quyền BE đúng một file `permissions/<resource>-permission.ts`.
+- Mỗi class quyền BE đúng một file `permissions/<resource>-permission.ts`, dựng từ `createResourcePermissions(<M>_SCOPE, resource, { ... })` + `PERMISSION_ACTION` (không viết chuỗi gộp `"<module>.<resource>.<action>"`).
 - Ba tầng: menu ẩn mục thiếu `read`; View trả `ForbiddenView` khi thiếu quyền trang; trang chi tiết chỉ xem mặc định
   (`useEditMode` + `EditModeProvider`).
 - Nút thiếu quyền **mờ + tooltip**, không ẩn (`can={{ update, delete }}`).

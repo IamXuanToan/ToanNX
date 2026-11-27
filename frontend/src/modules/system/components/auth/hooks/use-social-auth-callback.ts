@@ -14,6 +14,7 @@ import {
   OAUTH_STORAGE_KEYS,
   PROFILE_DIALOG_QUERY,
 } from "../../../constants/auth-storage";
+import { ACCOUNT_ERROR_CODES } from "../../../constants/error-codes";
 import { useSocialAuthExchange } from "../../../hooks/use-social-auth-exchange";
 import type { CurrentUser } from "../../../types/auth.types";
 
@@ -52,7 +53,6 @@ export function useSocialAuthCallback(provider: string) {
   const [isNotLinked, setIsNotLinked] = useState(false);
   const [redirectTarget, setRedirectTarget] = useState<string | null>(null);
   const [authMode, setAuthMode] = useState<string>("login");
-  const [isStaffTarget, setIsStaffTarget] = useState(false);
   const executedRef = useRef(false);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -120,7 +120,6 @@ export function useSocialAuthCallback(provider: string) {
             targetUrl = null;
           }
         }
-        setIsStaffTarget(isStaffUser);
         setRedirectTarget(targetUrl);
         setStatus("success");
 
@@ -131,16 +130,14 @@ export function useSocialAuthCallback(provider: string) {
           } else {
             if (mode === OAUTH_MODE.link) {
               router.replace({
-                pathname: AUTH_WORKSPACE_PATHS.admin,
+                pathname: AUTH_WORKSPACE_PATHS.portal,
                 query: {
                   [PROFILE_DIALOG_QUERY.openParam]: PROFILE_DIALOG_QUERY.openValue,
                   [PROFILE_DIALOG_QUERY.tabParam]: PROFILE_DIALOG_QUERY.socialTab,
                 },
               });
             } else {
-              router.replace(
-                isStaffUser ? AUTH_WORKSPACE_PATHS.admin : (AUTH_WORKSPACE_PATHS.portal as never),
-              );
+              router.replace(AUTH_WORKSPACE_PATHS.portal as never);
             }
           }
         }, 1000);
@@ -152,7 +149,7 @@ export function useSocialAuthCallback(provider: string) {
         setStatus("error");
         const msg = errorMessage(err);
         const errObj = err as { code?: string };
-        if (errObj?.code === "ACCOUNT_SOCIAL_NOT_LINKED") {
+        if (errObj?.code === ACCOUNT_ERROR_CODES.socialNotLinked) {
           setIsNotLinked(true);
         }
         setErrorText(msg);
@@ -174,16 +171,14 @@ export function useSocialAuthCallback(provider: string) {
     } else {
       if (authMode === OAUTH_MODE.link) {
         router.replace({
-          pathname: AUTH_WORKSPACE_PATHS.admin,
+          pathname: AUTH_WORKSPACE_PATHS.portal,
           query: {
             [PROFILE_DIALOG_QUERY.openParam]: PROFILE_DIALOG_QUERY.openValue,
             [PROFILE_DIALOG_QUERY.tabParam]: PROFILE_DIALOG_QUERY.socialTab,
           },
         });
       } else {
-        router.replace(
-          isStaffTarget ? AUTH_WORKSPACE_PATHS.admin : (AUTH_WORKSPACE_PATHS.portal as never),
-        );
+        router.replace(AUTH_WORKSPACE_PATHS.portal as never);
       }
     }
   };

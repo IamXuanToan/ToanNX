@@ -53,6 +53,10 @@ src/modules/<m>/
 - **Mỗi model một file quyền trong `permissions/`**, đặt tên `permissions/<model>-permission.ts` (khớp với
   phân quyền backend), ví dụ: `author-permission.ts`, `chapter-permission.ts`, `novel-permission.ts`. Không
   gộp chung quyền của nhiều model vào một file constants.
+  - **Không viết chuỗi gộp `"<module>.<resource>.<action>"` trong `permissions/*-permission.ts` hay component/hook**: bắt buộc
+    dùng `createResourcePermissions(<M>_SCOPE, "<resource>", { read: PERMISSION_ACTION.read, ... })` từ
+    `@/shares/lib/permissions/resource-permissions` và `PERMISSION_ACTION` (`@/shares/constants/permission-actions`) kết hợp
+    `<M>_SCOPE` xuất từ `constants/query-keys.ts` (`tests/unit/code-conventions.test.ts` kiểm tự động).
 - **Mỗi hook một file trong `hooks/`**, đặt tên `hooks/use-<tên-hành-động>.ts` (ví dụ `use-client-novel.ts`,
   `use-toggle-favorite.ts`, `use-import-novel.ts`). Tuyệt đối không gom nhiều hook vào một file `use-<m>.ts`
   (`use-iam-queries.ts`, `use-iam-mutations.ts`, `use-admin-sessions.ts` là sai). Áp dụng cho **mọi** thư mục hook,
@@ -84,8 +88,10 @@ delete/bulkUpdate/bulkDelete/history`, cùng tên với action BE), service ch�
   - Sidebar đánh dấu mục có href khớp **dài nhất** (`findActiveNavHref`), nên mục gốc của module (Tổng quan) không
     sáng cùng mục con.
   - `api-endpoints.ts`: `<M>_API_ENDPOINTS`, path tương đối với `env.apiBasePath`.
-  - `query-keys.ts`: `<m>Keys` dựng bằng `createResourceKeys` (`all`, `lists`, `list(params)`, `detail(id)`,
-    `history(id)`), thêm key riêng nếu cần.
+  - `query-keys.ts`: xuất hằng phạm vi `<M>_SCOPE` (như `WORKSPACE_SCOPE = "workspace"`), `<m>Keys` dựng từ `<M>_SCOPE` và
+    `createResourceKeys` (`all`, `lists`, `list(params)`, `detail(id)`, `history(id)`), thêm key riêng nếu cần. Module tổng hợp
+    như `portal` tái dùng key chuẩn của tài nguyên gốc trong `portal/constants/query-keys.ts`; cấm truyền `queryKey: ["chuỗi-thô", ...]`
+    trực tiếp trong component/hook ngoài `constants/`.
   - Module khác cần route/key thì import từ `@/modules/<khác>/constants/...` (ví dụ invalidate `authKeys.me()`).
 - Ngoại lệ duy nhất ở `shares/`: `shares/lib/api/session-paths.ts` (CSRF, login, refresh, logout) vì chính
   `apiClient` cần để lấy CSRF và silent refresh; module `system` dùng lại trong `SYSTEM_API_ENDPOINTS`.
@@ -392,6 +398,7 @@ export function useUserTable() {
 - Mọi thành phần tương tác và cấu trúc giao diện cơ bản (`Button`, `Checkbox`, `RadioGroup`, `Label`, `Input`, `Textarea`, `Dialog`, `Card`, `Tooltip`, `Badge`, `Avatar`, `Switch`, `Sheet`, `Popover`, `Select`, `Table`, `Tabs`, `Separator`...) **bắt buộc dùng component trong `@/shares/components/ui/*`**.
 - Khi cần một component primitive mà thư mục `@/shares/components/ui/` chưa có: **bắt buộc chạy lệnh `pnpm dlx shadcn@latest add <tên-component>`** để cài đặt chuẩn từ thư viện shadcn, không tự viết component thủ công để thay thế.
 - **Nghiêm cấm lồng lộn thẻ HTML sai ngữ nghĩa**: Tuyệt đối không bọc `<Checkbox />` hay `<Button />` (vốn là thẻ `<button>` của Radix) bên trong thẻ `<label>` để tự vẽ giả lập checkbox/nút bấm (vi phạm chuẩn HTML, gây lặp sự kiện click và phá vỡ trợ năng).
+- **Mọi tooltip bắt buộc dùng `AppTooltip` / shadcn `Tooltip` (cấm thuộc tính `title=` HTML thô)**: tuyệt đối không gắn thuộc tính `title=` lên thẻ HTML/DOM (`button`, `div`, `span`, `p`, `td`, `a`...) hay UI primitive (`Button`, `Badge`, `Link`, `Input`, `Image`, `TableCell`, `TiptapToggle`, `PopoverTrigger`...). Nút chỉ có icon, nút đang bị khóa cần giải thích lý do (bọc `<span className="inline-flex" tabIndex={...}>` để hover vẫn kích hoạt), chữ bị cắt `truncate` cần xem đầy đủ hay phần tử cần gợi ý khi hover phải bọc bằng `AppTooltip` (`@/shares/components/common/app-tooltip`) hoặc `Tooltip` của `@/shares/components/ui/tooltip`. Ngoại lệ duy nhất là `<iframe title=...>` (thuộc tính accessibility bắt buộc của iframe) hoặc prop `title` của component cấu trúc không render ra HTML tooltip (`PageHeader`, `FormPage`, `FormSection`, `EmptyState`, `ConfirmDialog`, `FormDialog`, `AuthShell`, `LogoMark`...). Tự động kiểm bằng `tests/unit/code-conventions.test.ts`.
 - **Nghiêm cấm viết thẻ `<button>` trần** kèm class CSS tự chế khi đã có component `Button` chuẩn của shadcn.
 - Các item dạng card trong lưới (như media file, thẻ danh sách) phải sử dụng component `Card` của shadcn để đồng nhất border, background và shadow theo design system.
 
@@ -415,7 +422,7 @@ diện; trang tạo chỉ là lớp mỏng lo điền sẵn (sao chép) rồi re
 **Khung trang form (không để form dạt một bên):**
 
 ```
-FormPage (mx-auto max-w-6xl; CARD ĐẦU TRANG dính dưới header: tiêu đề · [Hủy] [Tạo/Lưu], không có ←)
+FormPage (mx-auto max-w-6xl; CARD ĐẦU TRANG dính dưới header: tiêu đề · [Quay lại] [Tạo/Sửa/Lưu], không có ←)
 └─ Form
    ├─ FormLayout  ── cột chính: ít card nhất có thể (thường MỘT card "Thông tin …" gồm ảnh + mọi ô nhập)
    │              └─ cột phụ 22rem: card Truy cập/Trạng thái (cờ dạng ChoiceList switch), card chỉ đọc (Hoạt động)
@@ -441,10 +448,49 @@ FormPage (mx-auto max-w-6xl; CARD ĐẦU TRANG dính dưới header: tiêu đề
   nút Lưu; form bọc slot bằng `FormExtensionContext.Provider` và gọi `registry.run(record)`.
 - Dưới `lg` hai cột xếp chồng, cột phụ xuống dưới; khối quan hệ luôn ở cuối, đầu card có nhãn "Đã chọn n/tổng".
 
-**Nút quay lại.** Header của workspace module có nút ← về màn chọn module (`AdminShell`). Trang form (tạo,
-chi tiết, sửa) **không** có nút ← vì nút **Hủy** đã là lối về danh sách; người chỉ có quyền xem thì nút đó ghi
-**Quay lại** (form luôn render `FormActions`). Trang con không phải form mà cần lối về thì dùng
-`PageHeader backHref`.
+**Nút quay lại.** Header của workspace module có nút ← về màn chọn module (`AdminShell`). Mọi trang con (tạo,
+chi tiết, sửa ở cả Admin và Client) **không** có nút ← và **thống nhất dùng nút `Quay lại`** (`tCommon("back")`)
+ở cụm hành động bên phải header, **luôn đứng bên trái nút hành động chính** (`[...nút phụ] [Quay lại] [Sửa]`
+khi chỉ xem, `[...nút phụ] [Quay lại] [Lưu]` khi sửa, `[Quay lại] [Tạo]` khi tạo — bấm Sửa không nhảy vị trí,
+không đặt `disabled` lên link `Quay lại`; `FormPage` luôn render `slot` của `FormActions` trước `EditModeButton`).
+Trang chi tiết có nhiều tab (`RecordDetailTabs`, `PageForm`…) **bắt buộc** truyền prop `backHref` lên `<FormPage>`
+(hoặc đặt `<FormActions>` bên ngoài `</Tabs>`) và dùng `<FormBackButton />` bên trong `<FormActions>` để nút
+`Quay lại` luôn cố định trên header kể cả khi người dùng chuyển sang tab khác (tránh đặt nút `Quay lại` chỉ
+trong `<TabsContent value="general">` bị unmount khi đổi tab).
+Từ **`Hủy`** chỉ dùng để hủy thao tác trong dialog/modal (`ConfirmDialog`, `FormDialog`, `onCancel` khi mở form
+trong popup). Trang con không dùng `FormPage` (Nhật ký, Truyện yêu thích, Lịch sử đọc…) cũng dùng `PageHeader`
+đặt `[Quay lại]` đứng bên trái hành động chính ở cụm phải.
+
+**Lịch sử thay đổi trên trang chi tiết (`JournalTracker`).**
+
+- Mọi model Backend có mixin `JournalTracker` (`history_enabled = True`) khi có trang chi tiết/chỉnh sửa
+  (`[id]/page.tsx` ở cả Admin và Client Portal) **bắt buộc** hiển thị tab **`Lịch sử thay đổi`** (`?tab=history`
+  đồng bộ qua `useTabState` bằng component chung `RecordDetailTabs`, hoặc tab `history` ngang hàng trong form
+  đa tab như `PageForm`).
+- Tab lịch sử dùng thống nhất `RecordHistoryView` (`modules/system/views/journal-entry/record-history-view.tsx`)
+  → `RecordHistory` → `ActivityTimeline` (`shares/components/common/activity-timeline.tsx`) với bộ lọc loại thao
+  tác, tổng số sự kiện, nút `"Xem hoạt động cũ hơn"` (phân trang từ API), hiển thị người thao tác (`fullname
+  (username)` hoặc `Hệ thống`), `<TimestampText />` (`dd/MM/yyyy HH:mm:ss (...)`), chip `+`/`-` cho thay đổi mảng,
+  hiển thị lưới 2–3 cột gọn khi nhiều trường và thu gọn khi > 9 trường, ánh xạ đầy đủ tên trường/giá trị enum qua
+  `journal-field-prefixes.ts` và `journal-value-prefixes.ts`. Không dựng UI timeline/diff riêng lẻ trong module.
+
+**Hiển thị người tạo / chủ sở hữu / người dùng và mốc thời gian.**
+
+- **Tên người dùng / người tạo / chủ sở hữu / người thao tác** (trong bảng, bộ lọc chủ sở hữu, lịch sử/nhật ký, chi
+  tiết tệp, menu tài khoản, hồ sơ): luôn hiển thị theo mẫu **`fullname (username)`** (ví dụ
+  `Nguyễn Xuân Toàn (toannx)`); nếu chưa có `fullname` thì chỉ hiển thị **`username`** (chỉ fallback về `email` khi
+  thiếu cả `fullname` lẫn `username`). Luôn dùng helper chung `formatUserDisplayName` / `formatOwnerDisplayName`
+  (`shares/lib/user-display.ts`) hoặc `getUserDisplayName` (`user-avatar.tsx`); email phụ nếu cần hiển thị giữ ở dòng
+  phụ hoặc `AppTooltip`. Backend serializer phải trả đủ `username` / `owner_username` / `actor_display_name` /
+  `user_username` tương ứng.
+- **Mốc thời gian bản ghi** (`Cập nhật`, `Tạo lúc`, `Nhật ký`, `Hoạt động`, `Thông báo`, `Giao dịch`, `Tệp`, `Phiên`,
+  `Đăng nhập cuối`, `Truy cập`, `Chat`…): bắt buộc hiển thị đầy đủ **`dd/MM/yyyy HH:mm:ss (<thời gian đếm>)`**, ví
+  dụ `27/11/2026 13:24:05 (6 giây trước)`, qua `<TimestampText />` (`shares/components/common/timestamp-text.tsx`) hoặc
+  `formatDateTimeWithRelative` (`shares/lib/date-time-format.ts`).
+- **Cột chỉ có ngày** (ngày phát hành, đến hạn, gia hạn, thanh toán, ngày bảo hành, ngày tỷ giá, hiệu lực…): bắt
+  buộc hiển thị **`dd/MM/yyyy`** qua `formatExplicitDate` (`shares/lib/date-time-format.ts`). Không gọi
+  `format.relativeTime()` rời rạc và không dùng `dateStyle`/`timeStyle` rút gọn làm mất giây
+  (`tests/unit/code-conventions.test.ts`).
 
 **Hiển thị/chọn danh sách mục (vai trò, quyền, cờ…) — chuẩn hoá, KHÔNG mỗi màn một kiểu.**
 
@@ -486,7 +532,10 @@ là dữ liệu của bản ghi (mã vai trò). Câu phụ chỉ được đặt
 ## 4. Quy ước
 
 - Đa ngôn ngữ: Next.js 16 tự nhận diện locale qua `next/root-params` trong `src/i18n/request.ts`; **không** gọi `setRequestLocale` (deprecated) trong `page.tsx` hay `layout.tsx`.
-- Không hardcode path API, route, query key: lấy từ `constants/` của module.
+- Không hardcode path API, route, query key, chuỗi quyền hay mã lỗi API kiểm điều kiện trong logic:
+  - Route/endpoint/query key lấy từ `constants/` của module (`<M>_ROUTES`, `<M>_API_ENDPOINTS`, `<m>Keys`, `portalKeys`);
+  - Quyền lấy từ `modules/<m>/permissions/*-permission.ts` (dựng bằng `createResourcePermissions` + `<M>_SCOPE` + `PERMISSION_ACTION`);
+  - Mã lỗi xác thực/CSRF dùng chung của `apiClient` đặt tại `shares/constants/auth-error-codes.ts` (`AUTH_ERROR_CODES`), mã lỗi riêng module cần so sánh trong hook/logic đặt tại `modules/<m>/constants/error-codes.ts`.
 - Hằng số dùng chung toàn FE (locale, timezone, tiền tệ, tùy chọn phân trang, ID toast phiên) lấy từ
   `shares/constants/` và helper `shares/lib/number-format.ts` (`getNumberLocale`, `formatVndText`,
   `formatDisplayNumber`), `shares/lib/localized-route.ts` (`isLocalizedRouteExact`, `startsWithLocalizedRoute`);
@@ -547,6 +596,10 @@ component. Vai trò từng màu (đã đo tương phản WCAG AA):
   `[...]` khi thang không có (ví dụ `h-[min(85vh,760px)]`). Đổi `globals.css` mà trang chưa đổi màu: dev server
   (Turbopack) còn giữ CSS cũ, khởi động lại `pnpm dev`.
 - Ở dark mode màu nhấn chỉ làm nền; đường mảnh (viền focus, gạch chân) dùng `--ring` hoặc giảm độ đục.
+- **Màn hình công khai & Custom Page chuẩn Light/Dark hệ thống**: trang công khai (`/p/[slug]`, `/s/[slug]`, trang
+  chủ, sản phẩm, quyên góp/donate) bắt buộc tôn trọng và thừa hưởng đầy đủ token Light/Dark hệ thống (`bg-canvas`,
+  `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`...); không ép cứng màu nền/chữ sáng hoặc
+  tối tĩnh làm sai lệch chế độ giao diện của người dùng.
 - Email HTML (backend `templates/system/email`) không đọc được CSS biến: dùng đúng mã hex của bảng trên
   (nút `#3D812E`, link `#206A2D`).
 

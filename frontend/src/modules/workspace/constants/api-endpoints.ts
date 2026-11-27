@@ -1,0 +1,19 @@
+/** Endpoint API của module Workspace (tương đối với `env.apiBasePath`, khớp `/api/v1/workspace/...`). */
+export const WORKSPACE_API_ENDPOINTS = {
+  assets: "/workspace/assets",
+  warrantyClaims: "/workspace/warranty-claims",
+  subscriptions: "/workspace/subscriptions",
+  subscriptionRenew: (id: string) => `/workspace/subscriptions/${id}/renew`,
+  subscriptionPayments: "/workspace/subscription-payments",
+  vaultItems: "/workspace/vault-items",
+  vaultItemReveal: (id: string) => `/workspace/vault-items/${id}/reveal`,
+  reminders: "/workspace/reminders",
+  settings: "/workspace/settings",
+  settingsByOwner: (ownerId: string) => `/workspace/settings/${ownerId}`,
+  dashboardSummary: "/workspace/dashboard/summary",
+  calendar: "/workspace/calendar",
+  assistantChat: "/workspace/assistant/chat",
+  assistantConfig: "/workspace/assistant/config",
+  assistantBotProfile: "/workspace/assistant/bot-profile",
+  assistantThread: "/workspace/assistant/thread",
+} as const;

@@ -1,33 +1,24 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { CalendarRange, Coins, Heart, HeartHandshake, Trophy } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { CalendarRange } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { useCurrentUser } from "@/modules/system/hooks/use-current-user";
 import { usePermission } from "@/modules/system/hooks/use-permission";
 import { DonationTable } from "@/modules/utilities/components/donation/donation-table";
-import { donationKeys } from "@/modules/utilities/constants/query-keys";
 import { DONATION_PERMISSIONS } from "@/modules/utilities/permissions/donation-permission";
-import { donationService } from "@/modules/utilities/services/donation.service";
 import { DatePicker } from "@/shares/components/common/date-picker";
+import { PageHeader } from "@/shares/components/common/page-header";
 import { Button } from "@/shares/components/ui/button";
-import { Card, CardContent } from "@/shares/components/ui/card";
-import { Skeleton } from "@/shares/components/ui/skeleton";
-import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
-
-import { PortalDonationTrendChart } from "../dashboard/portal-donation-trend-chart";
-import { PortalDonationGiftChart } from "./portal-donation-gift-chart";
 
 /**
- * Màn hình Thống kê Quyên góp cá nhân trong Client Portal:
- * Chỉ hiển thị số liệu và giao dịch của riêng 1 người dùng (owner = current user).
+ * Màn hình Lịch sử & Quản lý giao dịch Ủng hộ (Client Portal):
+ * Bộ lọc khoảng ngày + bảng danh sách giao dịch cá nhân (hỗ trợ ẩn/hiện bình luận & xuất CSV).
  */
 export function PortalDonationDashboard() {
   const t = useTranslations("portal.donations");
-  const format = useFormatter();
   const searchParams = useSearchParams();
   const { data: currentUser } = useCurrentUser();
   const canUpdate = usePermission(DONATION_PERMISSIONS.update);
@@ -111,102 +102,10 @@ export function PortalDonationDashboard() {
 
   const dateFilter = getDateFilter();
 
-  const statsQuery = useQuery({
-    queryKey: donationKeys.stats({ ...dateFilter, owner: userId }),
-    queryFn: ({ signal }) => donationService.stats({ ...dateFilter, owner: userId }, signal),
-    enabled: Boolean(userId),
-  });
-
-  const stats = statsQuery.data;
-
   return (
     <div className="space-y-6">
-      {/* Banner chào mừng */}
-      <div className="border-border from-primary/10 via-card to-card relative overflow-hidden rounded-2xl border bg-gradient-to-r p-6 shadow-2xs sm:p-8">
-        <div className="relative z-10 max-w-2xl space-y-2">
-          <div className="border-primary/20 bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold">
-            <Heart className="size-3.5 fill-current" />
-            <span>{t("badge")}</span>
-          </div>
-          <h1 className="text-foreground text-2xl font-extrabold tracking-tight sm:text-3xl">
-            {t("title")}
-          </h1>
-          <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
-        </div>
-      </div>
+      <PageHeader title={t("title")} description={t("subtitle")} />
 
-      {/* KPI Cards cá nhân */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        {/* 1. Tổng tiền cá nhân */}
-        <Card className="border-border bg-card shadow-2xs">
-          <CardContent className="flex items-center gap-4 p-5">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500">
-              <Coins className="size-6" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-muted-foreground truncate text-xs font-medium">
-                {t("totalReceivedLabel")}
-              </p>
-              <h3 className="text-foreground text-xl font-extrabold sm:text-2xl">
-                {stats ? (
-                  `${format.number(stats.totalAmount)} ${CURRENCY_SYMBOLS.VND}`
-                ) : (
-                  <Skeleton className="h-7 w-24" />
-                )}
-              </h3>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
-                {t("totalReceivedHint", { count: stats?.totalCount ?? 0 })}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 2. Lượt ủng hộ */}
-        <Card className="border-border bg-card shadow-2xs">
-          <CardContent className="flex items-center gap-4 p-5">
-            <div className="bg-primary/10 text-primary flex size-12 shrink-0 items-center justify-center rounded-2xl">
-              <HeartHandshake className="size-6" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-muted-foreground truncate text-xs font-medium">
-                {t("successCountLabel")}
-              </p>
-              <h3 className="text-foreground text-xl font-extrabold sm:text-2xl">
-                {stats ? stats.totalCount : <Skeleton className="h-7 w-16" />}
-              </h3>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
-                {t("hiddenCommentsHint", { count: stats?.hiddenCount ?? 0 })}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 3. Bảng vinh danh đang hoạt động */}
-        <Card className="border-border bg-card shadow-2xs">
-          <CardContent className="flex items-center gap-4 p-5">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">
-              <Trophy className="size-6" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-muted-foreground truncate text-xs font-medium">
-                {t("activeLeaderboardLabel")}
-              </p>
-              <h3 className="text-foreground text-xl font-extrabold sm:text-2xl">
-                {stats ? (
-                  Object.values(stats.activeTierCounts ?? {}).reduce((a, b) => a + b, 0)
-                ) : (
-                  <Skeleton className="h-7 w-16" />
-                )}
-              </h3>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
-                {t("activeLeaderboardHint")}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Bộ lọc khoảng ngày nhanh & tùy chọn */}
       <div className="space-y-3 border-b pb-3">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-muted-foreground mr-1 text-xs font-medium">
@@ -260,7 +159,6 @@ export function PortalDonationDashboard() {
           </Button>
         </div>
 
-        {/* Khối chọn ngày tùy biến */}
         {dateRange === "custom" && (
           <div className="animate-in fade-in-50 flex flex-wrap items-center gap-2 pt-1">
             <div className="flex items-center gap-1.5">
@@ -301,13 +199,6 @@ export function PortalDonationDashboard() {
         )}
       </div>
 
-      {/* Biểu đồ phân tích Quyên góp */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <PortalDonationTrendChart data={stats?.dailyTrend} isLoading={statsQuery.isLoading} />
-        <PortalDonationGiftChart byGift={stats?.byGift} isLoading={statsQuery.isLoading} />
-      </div>
-
-      {/* Bảng danh sách ủng hộ của cá nhân (hỗ trợ toggle ẩn/hiện comment và đồng bộ khoảng thời gian) */}
       <DonationTable
         ownerId={userId}
         canUpdate={canUpdate}

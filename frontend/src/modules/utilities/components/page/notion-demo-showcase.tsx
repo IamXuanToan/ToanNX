@@ -20,6 +20,7 @@ import {
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { TiptapBasicEditor } from "@/shares/components/common/tiptap-basic-editor";
 import { TiptapCommentEditor } from "@/shares/components/common/tiptap-comment-editor";
 import { TiptapContent } from "@/shares/components/common/tiptap-content";
@@ -238,18 +239,19 @@ export function NotionDemoShowcase() {
                 <span>{t("viewJson")}</span>
               </Button>
 
-              <Button
-                type="button"
-                size="xs"
-                variant="ghost"
-                onClick={state.handleResetSample}
-                aria-label={t("resetSample")}
-                title={t("resetSample")}
-                className="h-7 gap-1.5 rounded-lg px-2 text-xs"
-              >
-                <RotateCcw className="size-3.5" />
-                <span className="hidden sm:inline">{t("resetSample")}</span>
-              </Button>
+              <AppTooltip content={t("resetSample")}>
+                <Button
+                  type="button"
+                  size="xs"
+                  variant="ghost"
+                  onClick={state.handleResetSample}
+                  aria-label={t("resetSample")}
+                  className="h-7 gap-1.5 rounded-lg px-2 text-xs"
+                >
+                  <RotateCcw className="size-3.5" />
+                  <span className="hidden sm:inline">{t("resetSample")}</span>
+                </Button>
+              </AppTooltip>
             </div>
           </div>
         </div>

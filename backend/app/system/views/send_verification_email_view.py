@@ -10,6 +10,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.permissions.is_active_authenticated import IsActiveAuthenticated
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.system_rate_limit_key import SystemRateLimitKey
 from app.system.serializers.responses.password_reset_detail_response_serializer import (
     PasswordResetDetailResponseSerializer,
 )
@@ -36,7 +37,7 @@ class SendVerificationEmailView(CoreApiView):
         description="Gửi email chứa liên kết xác minh tài khoản cho người dùng hiện tại.",
         responses=PasswordResetDetailResponseSerializer,
     )
-    @rate_limit("system.email_verification.send")
+    @rate_limit(SystemRateLimitKey.EMAIL_VERIFICATION_SEND)
     def post(self, request: Request) -> CoreResponse:
         """Thực hiện gửi email xác minh.
 

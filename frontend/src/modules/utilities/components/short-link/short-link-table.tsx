@@ -2,16 +2,19 @@
 
 import type { ComponentProps } from "react";
 import { Copy } from "lucide-react";
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { TableStatusSwitch } from "@/shares/components/common/table-status-switch";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
+import { formatUserDisplayName, formatUserDisplayTooltip } from "@/shares/lib/user-display";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import type { ShortLink } from "../../types/short-link.types";
@@ -44,8 +47,6 @@ export function ShortLinkTable({
 }) {
   const t = useTranslations("utilities.shortLinks");
   const tStatus = useTranslations("common.status");
-  const format = useFormatter();
-  const now = useNow({ updateInterval: 60_000 });
   const state = useShortLinkTable({ ownerOnly, ownerId, detailRoute });
   const { table, query } = state;
 
@@ -91,9 +92,11 @@ export function ShortLinkTable({
       header: t("columns.destination"),
       hideBelow: "lg",
       cell: (link) => (
-        <span className="text-muted-foreground block max-w-64 truncate" title={link.destinationUrl}>
-          {link.destinationUrl}
-        </span>
+        <AppTooltip content={link.destinationUrl}>
+          <span className="text-muted-foreground block max-w-64 truncate">
+            {link.destinationUrl}
+          </span>
+        </AppTooltip>
       ),
     },
     {
@@ -119,7 +122,7 @@ export function ShortLinkTable({
           <Badge variant="destructive">{t("expired")}</Badge>
         ) : link.expiresAt ? (
           <span className="text-muted-foreground">
-            {format.relativeTime(new Date(link.expiresAt), now)}
+            <TimestampText value={link.expiresAt} />
           </span>
         ) : (
           <span className="text-muted-foreground">—</span>
@@ -131,11 +134,16 @@ export function ShortLinkTable({
             id: "owner",
             header: t("columns.owner"),
             hideBelow: "xl" as const,
-            cell: (link: ShortLink) => (
-              <span className="text-muted-foreground truncate">
-                {link.owner.fullName || link.owner.email}
-              </span>
-            ),
+            cell: (link: ShortLink) => {
+              const ownerLabel = formatUserDisplayName(link.owner);
+              return (
+                <AppTooltip content={formatUserDisplayTooltip(link.owner)}>
+                  <span className="text-muted-foreground block max-w-44 truncate">
+                    {ownerLabel || "—"}
+                  </span>
+                </AppTooltip>
+              );
+            },
           },
         ]
       : []),

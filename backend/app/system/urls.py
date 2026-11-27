@@ -55,6 +55,7 @@ from app.system.views.social_link_view import SocialLinkView
 from app.system.views.social_login_view import SocialLoginView
 from app.system.views.social_unlink_view import SocialUnlinkView
 from app.system.views.system_announcement_view_set import SystemAnnouncementViewSet
+from app.system.views.system_telegram_webhook_view import SystemTelegramWebhookView
 from app.system.views.telegram_bot_check_view import TelegramBotCheckView
 from app.system.views.telegram_bot_view import TelegramBotView
 from app.system.views.telegram_chat_action_view import TelegramChatActionObjectView, TelegramChatActionView
@@ -157,6 +158,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("exchange-rates/fetch", ExchangeRateFetchView.as_view(), name="exchange-rate-fetch"),
     path("telegram/bot", TelegramBotView.as_view(), name="telegram-bot"),
     path("telegram/bot/check", TelegramBotCheckView.as_view(), name="telegram-bot-check"),
+    path("telegram/webhook", SystemTelegramWebhookView.as_view(), name="telegram-webhook"),
     path("webhooks", WebhookView.as_view(), name="webhooks"),
     path("callbacks", CallbackView.as_view(), name="callbacks"),
     path("telegram-chats/register", TelegramChatActionView.as_view(), name="telegram-register"),

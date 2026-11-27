@@ -8,6 +8,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Button } from "@/shares/components/ui/button";
 
 import { NOVEL_ROUTES } from "../../constants/routes";
@@ -30,17 +31,20 @@ export type ReaderHeaderProps = {
  */
 export function ReaderHeader({ chapter, settings, onUpdateSettings }: ReaderHeaderProps) {
   const t = useTranslations("novel.reader");
+  const tActions = useTranslations("common.actions");
 
   return (
     <header className="bg-background/80 sticky top-0 z-40 w-full border-b backdrop-blur-md transition-colors">
       <div className="container flex h-14 max-w-5xl items-center justify-between gap-4 px-4">
-        {/* Nút quay về trang chi tiết truyện */}
+        {/* Nút quay lại trang chi tiết truyện */}
         <div className="flex min-w-0 items-center gap-2">
-          <Button asChild variant="ghost" size="icon" aria-label={t("backToNovel")}>
-            <Link href={NOVEL_ROUTES.detail(chapter.novelSlug)}>
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
+          <AppTooltip content={tActions("back")} side="bottom">
+            <Button asChild variant="ghost" size="icon" aria-label={tActions("back")}>
+              <Link href={NOVEL_ROUTES.detail(chapter.novelSlug)}>
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
+            </Button>
+          </AppTooltip>
 
           <div className="min-w-0">
             <Link

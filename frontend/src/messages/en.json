@@ -157,6 +157,23 @@
       "unsaved": "Unsaved changes",
       "toggleSidebar": "Toggle sidebar"
     },
+    "tabs": {
+      "general": "Overview",
+      "history": "Change History"
+    },
+    "timeline": {
+      "allActions": "All",
+      "changesCount": "{count, plural, one {# change} other {# changes}}",
+      "showAllFields": "Show all {count} fields",
+      "collapseFields": "Collapse",
+      "loadMore": "Show older activity",
+      "emptyValue": "Empty",
+      "addedPrefix": "Added",
+      "removedPrefix": "Removed",
+      "totalEvents": "{count, plural, one {# event} other {# events}}",
+      "filteredEmpty": "No activity matches the selected filter.",
+      "resetFilter": "Show all"
+    },
     "status": {
       "active": "Active",
       "inactive": "Locked"
@@ -224,6 +241,8 @@
     },
     "search": {
       "clear": "Clear search",
+      "hint": "Type keywords and press Enter to search.",
+      "hintLabel": "Search tips",
       "limitExceeded": "Search keywords allow up to {maxTerms} words and {maxLength} characters."
     },
     "emptyState": {
@@ -250,7 +269,16 @@
     },
     "tagsInput": {
       "placeholder": "Type and press Enter",
+      "hint": "Type a value and press Enter or comma (,) to add a tag.",
+      "hintLabel": "Tag input tips",
       "remove": "Remove {tag}"
+    },
+    "chipListInput": {
+      "placeholder": "Enter a value...",
+      "add": "Add",
+      "tooltip": "Type a value and press Enter or click Add.",
+      "tooltipLabel": "Input instructions",
+      "remove": "Remove {item}"
     },
     "datePicker": {
       "placeholder": "Pick a date",
@@ -266,7 +294,9 @@
       "clear": "Clear time"
     },
     "dateTimePicker": {
-      "clear": "Clear date and time"
+      "timePlaceholder": "Time",
+      "clear": "Clear date and time",
+      "clearTime": "Clear time"
     },
     "monthSelect": {
       "placeholder": "Pick a month",
@@ -507,25 +537,15 @@
       "CHAPTER_NUMBER_EXISTS": "Chapter number already exists in this novel.",
       "ATTACHMENT_PRIVATE_STORAGE_NOT_CONFIGURED": "Private file storage is not configured.",
       "ATTACHMENT_MUST_BE_PUBLIC": "The image must be public.",
-      "FINANCE_SEPAY_UNAUTHORIZED": "SePay rejected the API token (wrong, expired or other environment).",
       "FINANCE_SEPAY_RATE_LIMITED": "SePay is rate limiting, try again in a few minutes.",
       "FINANCE_SEPAY_UNAVAILABLE": "Could not reach SePay, try again later.",
-      "FINANCE_SYNC_RANGE_INVALID": "Date range is at most 31 days.",
-      "FINANCE_TRANSACTION_DUPLICATE": "This transaction already exists.",
-      "FINANCE_TRANSACTION_NOT_DELETABLE": "Real transactions cannot be deleted; mark them as not income.",
-      "FINANCE_TRANSACTION_NOT_DUPLICATE_CANDIDATE": "Transaction is not a possible duplicate.",
-      "FINANCE_ALLOCATION_EXCEEDS_AMOUNT": "Allocations exceed the amount.",
       "FINANCE_RULE_PATTERN_INVALID": "Invalid rule pattern.",
-      "FINANCE_RULE_TARGET_REQUIRED": "Choose exactly one target: platform or flow category.",
       "FINANCE_PLATFORM_IN_USE": "Platform is in use; deactivate it instead.",
-      "FINANCE_INCOME_VOIDED": "Income is voided.",
-      "FINANCE_DOCUMENT_LINK_TARGET_REQUIRED": "Choose exactly one link target.",
       "NOTIFICATION_TELEGRAM_UNAVAILABLE": "Could not reach Telegram.",
       "NOTIFICATION_TELEGRAM_REGISTRATION_NOT_FOUND": "The bot has not been added to a group with this code.",
       "NOTIFICATION_TELEGRAM_REGISTRATION_EXPIRED": "Registration code expired; create a new one.",
       "NOTIFICATION_TELEGRAM_CHAT_INACTIVE": "Telegram group not verified or bot cannot send.",
       "NOTIFICATION_EVENT_UNKNOWN": "Unknown event.",
-      "NOTIFICATION_ROUTE_TARGET_INVALID": "Invalid recipient.",
       "FINANCE_TAX_RATE_INVALID": "Rate must be between 0 and 100.",
       "FINANCE_TAX_RATE_DUPLICATE_DATE": "An entry already exists for this date.",
       "FINANCE_EXCHANGE_RATE_UNAVAILABLE": "No exchange rate for this date, enter it manually.",
@@ -546,8 +566,6 @@
       "SYSTEM_EXCHANGE_RATE_UNAVAILABLE": "No exchange rate available, enter it manually.",
       "SYSTEM_EXCHANGE_RATE_READ_ONLY": "API rates are read-only.",
       "TELEGRAM_BOT_TOKEN_INVALID": "Invalid Telegram bot token.",
-      "TELEGRAM_BOT_HAS_WEBHOOK": "The bot has a webhook elsewhere; remove it first.",
-      "TELEGRAM_BOT_REQUIRED": "Set up your Telegram bot first.",
       "NOTIFICATION_EVENT_FORBIDDEN": "You cannot receive this event.",
       "NOTIFICATION_CHANNEL_UNAVAILABLE": "Channel unavailable.",
       "NOTIFICATION_IN_APP_REQUIRED": "Error events always show in the app.",
@@ -559,7 +577,16 @@
       "NOTIFICATION_SEND_FAILED": "Failed to send the notification.",
       "PUSH_TOKEN_INVALID": "The browser unregistered from notifications.",
       "PUSH_UNAVAILABLE": "Browser notifications are unavailable right now.",
-      "TELEGRAM_BOT_MISSING": "No Telegram bot is configured."
+      "TELEGRAM_BOT_MISSING": "No Telegram bot is configured.",
+      "WORKSPACE_CURRENCY_RATE_REQUIRED": "No exchange rate found for this foreign currency; please enter rate > 0.",
+      "WORKSPACE_EXCHANGE_RATE_INVALID": "Exchange rate must be greater than 0.",
+      "WORKSPACE_ASSET_FORBIDDEN": "Selected asset does not exist or belongs to another owner.",
+      "WORKSPACE_CLAIM_CODE_CONFLICT": "Warranty claim code already exists.",
+      "WORKSPACE_CUSTOM_CYCLE_DAYS_REQUIRED": "Custom billing cycle days must be greater than 0.",
+      "WORKSPACE_DIGEST_SLOT_INVALID": "Digest time slot must follow HH:MM (00:00–23:59).",
+      "WORKSPACE_CALENDAR_RANGE_TOO_LONG": "Calendar range cannot exceed 93 days.",
+      "WORKSPACE_AI_NOT_CONFIGURED": "AI assistant endpoint is not configured; using Slash commands.",
+      "WORKSPACE_AI_DAILY_LIMIT_EXCEEDED": "Daily AI token quota exceeded."
     },
     "generic": {
       "title": "Could not load data",
@@ -600,6 +627,7 @@
       "technicalDetails": "Technical details",
       "devOnly": "Development only",
       "errorDigest": "Issue code (Digest)",
+      "stackTrace": "Stack Trace",
       "copyDigest": "Copy code",
       "copiedDigest": "Copied",
       "copyDetails": "Copy full error",

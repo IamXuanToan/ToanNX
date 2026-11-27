@@ -1,8 +1,9 @@
 "use client";
 
 import { CircleX, Info, TriangleAlert, X } from "lucide-react";
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Button } from "@/shares/components/ui/button";
 
 import type { AppNotification } from "../../types/notification.types";
@@ -33,8 +34,6 @@ export function NotificationItem({
 }) {
   const t = useTranslations("system.notifications.bell");
   const tAll = useTranslations();
-  const format = useFormatter();
-  const now = useNow({ updateInterval: 60_000 });
   const Icon = ICONS[item.level];
   // Có bản dịch theo `messageKey` thì dùng, không thì dùng tiêu đề BE dựng sẵn.
   const title =
@@ -55,7 +54,7 @@ export function NotificationItem({
           <p className="text-muted-foreground line-clamp-2 text-xs">{item.body}</p>
         ) : null}
         <p className="text-muted-foreground mt-1 text-xs">
-          {format.relativeTime(new Date(item.createdAt), now)}
+          <TimestampText value={item.createdAt} />
         </p>
       </Button>
       {item.readAt ? null : (

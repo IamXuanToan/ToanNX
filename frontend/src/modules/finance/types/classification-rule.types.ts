@@ -35,3 +35,12 @@ export type RuleTestResult = {
   platformName: string | null;
   matchedText: string | null;
 };
+
+/** Quy tắc tạo tạm cục bộ khi đang soạn nền tảng mới chưa bấm Lưu. */
+export type DraftClassificationRule = {
+  localId: string;
+  name: string;
+  pattern: string;
+  priority: number;
+  isActive: boolean;
+};

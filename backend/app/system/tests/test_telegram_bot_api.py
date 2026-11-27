@@ -1,72 +1,88 @@
-"""Bot Telegram riêng: lưu mã hóa, token sai, bot đặt webhook, đăng ký chat, gửi bằng bot của chủ."""
+"""Bot Telegram chung ENV: GET metadata cho member, POST check chỉ Setting.UPDATE, đăng ký & gửi Telegram."""
 
 from typing import Any
 from unittest.mock import patch
 
 import pytest
 
-from app.core.exceptions.business_rule_error import BusinessRuleError
-from app.system.constants.notification_error_code import NotificationErrorCode
 from app.system.models.notification_delivery import NotificationDelivery
 from app.system.models.notification_preference import NotificationPreference
-from app.system.models.telegram_bot import TelegramBot
 from app.system.models.telegram_chat import TelegramChat
 from app.system.services.notification_service import NotificationService
+from app.system.tests.factories.user_factory import UserFactory
+from app.system.tests.helpers.permission_helper import grant
 from app.system.types.notification_payload import NotificationPayload
 from app.system.types.telegram_send_result import TelegramSendResult
 
 pytestmark = pytest.mark.django_db
 CLIENT = "app.system.services.telegram_client.TelegramClient"
-ME = {"id": 42, "username": "toannx_bot", "first_name": "Bot"}
+ME = {"id": 42, "username": "system_helper_bot", "first_name": "HelperBot"}
 
 
-def _save_bot(api: Any) -> Any:
-    with patch(f"{CLIENT}.get_me", return_value=ME):
-        return api.put("/api/v1/system/telegram/bot", {"token": "123:SECRET-TOKEN"}, format="json")
+def test_get_bot_info_unconfigured_then_configured_for_regular_user(
+    user: Any, login: Any, settings: Any, fake_redis: Any
+) -> None:
+    api = login(user)
+    unconfigured = api.get("/api/v1/system/telegram/bot").json()["data"]
+    assert unconfigured == {"configured": False, "username": "", "display_name": "", "bot_url": ""}
+
+    settings.TELEGRAM_BOT_TOKEN = "123:SECRET-TOKEN"
+    settings.TELEGRAM_BOT_USERNAME = "@system_helper_bot"
+    data = api.get("/api/v1/system/telegram/bot").json()["data"]
+    assert data["configured"] is True
+    assert data["username"] == "system_helper_bot"
+    assert data["bot_url"] == "https://t.me/system_helper_bot"
 
 
-def test_save_bot_encrypts_token(superuser: Any, login: Any) -> None:
-    response = _save_bot(login(superuser))
-    data = response.json()["data"]
-    assert data["username"] == "toannx_bot" and data["token_last4"] == "OKEN" and "token" not in data
-    assert "SECRET" not in TelegramBot.objects.get().token_encrypted
+def test_check_webhook_requires_setting_update_and_syncs_webhook(
+    user: Any, login: Any, settings: Any
+) -> None:
+    settings.TELEGRAM_BOT_TOKEN = "123:SECRET-TOKEN"
+    api = login(user)
+    assert api.post("/api/v1/system/telegram/bot/check").status_code == 403
 
-
-def test_invalid_token(superuser: Any, login: Any) -> None:
-    error = BusinessRuleError("x", code=NotificationErrorCode.TELEGRAM_BOT_TOKEN_INVALID)
-    with patch(f"{CLIENT}.get_me", side_effect=error):
-        response = login(superuser).put("/api/v1/system/telegram/bot", {"token": "bad"}, format="json")
-    assert (
-        response.json()["error"]["code"] == "TELEGRAM_BOT_TOKEN_INVALID" and not TelegramBot.objects.exists()
-    )
-
-
-def test_bot_with_webhook(superuser: Any, login: Any) -> None:
-    api = login(superuser)
-    _save_bot(api)
+    grant(user, "system.setting.update")
+    user = type(user).objects.get(pk=user.pk)
+    api = login(user)
     with (
         patch(f"{CLIENT}.get_me", return_value=ME),
-        patch(f"{CLIENT}.get_webhook_info", return_value={"url": "https://x"}),
+        patch(f"{CLIENT}.set_webhook", return_value=True) as set_wh,
+        patch(
+            f"{CLIENT}.get_webhook_info",
+            return_value={"url": "https://api.example.com/api/v1/system/telegram/webhook"},
+        ),
     ):
-        assert api.post("/api/v1/system/telegram/bot/check").json()["data"]["has_webhook"] is True
+        res = api.post("/api/v1/system/telegram/bot/check")
+    assert res.status_code == 200
+    data = res.json()["data"]
+    assert data["webhook_active"] is True
+    assert data["bot"]["username"] == "system_helper_bot"
+    assert "secret_token" in set_wh.call_args.kwargs
 
 
-def test_register_requires_bot_then_verifies(superuser: Any, login: Any) -> None:
-    api = login(superuser)
-    assert (
-        api.post("/api/v1/system/telegram-chats/register", {}, format="json").json()["error"]["code"]
-        == "TELEGRAM_BOT_REQUIRED"
-    )
-    _save_bot(api)
-    registration = api.post(
+def test_register_verify_admin_manage_all_and_delivery_uses_env_bot(
+    superuser: Any, login: Any, settings: Any
+) -> None:
+    member = UserFactory()
+    grant(member, "system.telegram_chat.read", "system.telegram_chat.create", "system.telegram_chat.update")
+    member_api = login(member)
+
+    missing_res = member_api.post("/api/v1/system/telegram-chats/register", {}, format="json")
+    assert missing_res.status_code == 422
+    assert missing_res.json()["error"]["code"] == "TELEGRAM_BOT_MISSING"
+
+    settings.TELEGRAM_BOT_TOKEN = "123:SECRET-TOKEN"
+    settings.TELEGRAM_BOT_USERNAME = "system_helper_bot"
+    registration = member_api.post(
         "/api/v1/system/telegram-chats/register", {"kind": "private"}, format="json"
     ).json()["data"]
-    assert "?start=" in registration["link"]
+    assert registration["link"] == f"https://t.me/system_helper_bot?start={registration['code']}"
+
     updates = [
         {
             "message": {
                 "text": f"/start {registration['code']}",
-                "chat": {"id": 99, "type": "private", "first_name": "A"},
+                "chat": {"id": 99, "type": "private", "first_name": "Member"},
             }
         }
     ]
@@ -74,55 +90,25 @@ def test_register_requires_bot_then_verifies(superuser: Any, login: Any) -> None
         patch(f"{CLIENT}.get_updates", return_value=updates),
         patch(f"{CLIENT}.send_message", return_value=TelegramSendResult(ok=True)),
     ):
-        chat = api.post(f"/api/v1/system/telegram-chats/{registration['chat']['id']}/verify").json()["data"]
-    assert chat["status"] == "active" and chat["chat_id"] == "99"
+        verified = login(superuser).post(f"/api/v1/system/telegram-chats/{registration['chat']['id']}/verify")
+    assert verified.status_code == 200
+    assert verified.json()["data"]["status"] == "active"
 
-
-def test_delivery_uses_owner_bot_and_skips_when_bot_deleted(superuser: Any, login: Any) -> None:
-    api = login(superuser)
-    _save_bot(api)
-    bot = TelegramBot.objects.get()
-    chat = TelegramChat.objects.create(owner=superuser, bot=bot, chat_id="99", status="active")
+    chat = TelegramChat.objects.get(pk=registration["chat"]["id"])
     NotificationPreference.objects.create(
-        user=superuser, event_code="system.auth.login", channel="TELEGRAM", telegram_chat=chat
+        user=member, event_code="system.auth.login", channel="TELEGRAM", telegram_chat=chat
     )
     with patch(f"{CLIENT}.send_message", return_value=TelegramSendResult(ok=True, message_id="1")) as send:
         NotificationService().notify(
-            "system.auth.login", recipient=superuser, dedup_key="a", payload=NotificationPayload(title="t")
+            "system.auth.login", recipient=member, dedup_key="k1", payload=NotificationPayload(title="Hello")
         )
         NotificationService().dispatch_pending()
-    assert (
-        send.call_args.args[0] == "123:SECRET-TOKEN" and NotificationDelivery.objects.get().status == "SENT"
-    )
-    NotificationService().notify(
-        "system.auth.login", recipient=superuser, dedup_key="b", payload=NotificationPayload(title="t")
-    )
-    api.delete("/api/v1/system/telegram/bot")
-    NotificationService().dispatch_pending()
-    assert not NotificationDelivery.objects.filter(status="PENDING").exists()
+    assert send.call_args.args[0] == "123:SECRET-TOKEN"
+    assert NotificationDelivery.objects.get().status == "SENT"
 
-
-def test_undecryptable_token_disables_bot_once(superuser: Any, login: Any) -> None:
-    """Token mã hóa bằng khóa cũ (đổi DJANGO_SECRET_KEY): bot bị tắt, thông báo sau không thử Telegram nữa."""
-    api = login(superuser)
-    _save_bot(api)
-    bot = TelegramBot.objects.get()
-    chat = TelegramChat.objects.create(owner=superuser, bot=bot, chat_id="99", status="active")
-    NotificationPreference.objects.create(
-        user=superuser, event_code="system.auth.login", channel="TELEGRAM", telegram_chat=chat
-    )
-    TelegramBot.objects.filter(pk=bot.pk).update(token_encrypted="gAAAA-khoa-cu")
-    with patch(f"{CLIENT}.send_message") as send:
-        NotificationService().notify(
-            "system.auth.login", recipient=superuser, dedup_key="a", payload=NotificationPayload(title="t")
-        )
-        NotificationService().dispatch_pending()
-        assert not send.called
-    bot.refresh_from_db()
-    assert not bot.is_active and bot.last_error_code == NotificationErrorCode.TELEGRAM_BOT_TOKEN_INVALID
-    assert NotificationDelivery.objects.get(channel="TELEGRAM").status == "FAILED"
-    # Lần sau: không tạo bản gửi Telegram cho bot đã tắt (không lỗi lặp, không cảnh báo lặp).
+    # Tắt bot ENV -> dispatch bỏ qua sạch
+    settings.TELEGRAM_BOT_TOKEN = ""
     NotificationService().notify(
-        "system.auth.login", recipient=superuser, dedup_key="b", payload=NotificationPayload(title="t")
+        "system.auth.login", recipient=member, dedup_key="k2", payload=NotificationPayload(title="Hello2")
     )
-    assert NotificationDelivery.objects.filter(channel="TELEGRAM").count() == 1
+    assert NotificationDelivery.objects.filter(status="PENDING").count() == 0

@@ -17,10 +17,12 @@ import {
   User,
   X,
 } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { ConfirmDialog } from "@/shares/components/common/confirm-dialog";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 import { Button } from "@/shares/components/ui/button";
 import {
@@ -71,7 +73,6 @@ export function AttachmentDetailContent({
   selectLabel: string;
 }) {
   const t = useTranslations("system.attachment");
-  const format = useFormatter();
   const {
     currentFile,
     setCurrentFile,
@@ -145,17 +146,18 @@ export function AttachmentDetailContent({
 
             {/* Nút chỉnh sửa ảnh nhanh nổi ở góc trên phải preview */}
             {canEdit && isImage && (
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => setIsImageEditing(true)}
-                className="bg-background/90 hover:bg-background border-border/80 absolute top-3 right-3 z-20 h-8 gap-1.5 rounded-lg border px-2.5 text-xs font-medium shadow-md backdrop-blur-sm"
-                title={t("editImage")}
-              >
-                <Crop className="text-primary size-3.5" />
-                <span>{t("editImage")}</span>
-              </Button>
+              <AppTooltip content={t("editImage")}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setIsImageEditing(true)}
+                  className="bg-background/90 hover:bg-background border-border/80 absolute top-3 right-3 z-20 h-8 gap-1.5 rounded-lg border px-2.5 text-xs font-medium shadow-md backdrop-blur-sm"
+                >
+                  <Crop className="text-primary size-3.5" />
+                  <span>{t("editImage")}</span>
+                </Button>
+              </AppTooltip>
             )}
           </div>
         </div>
@@ -264,24 +266,24 @@ export function AttachmentDetailContent({
                       <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
                         {t("name")}
                       </span>
-                      <p
-                        className="text-foreground mt-0.5 truncate text-sm leading-tight font-semibold sm:text-base"
-                        title={currentFile.originalName}
-                      >
-                        {currentFile.originalName}
-                      </p>
+                      <AppTooltip content={currentFile.originalName}>
+                        <p className="text-foreground mt-0.5 truncate text-sm leading-tight font-semibold sm:text-base">
+                          {currentFile.originalName}
+                        </p>
+                      </AppTooltip>
                     </div>
                     {canEdit && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleStartEdit}
-                        className="text-muted-foreground hover:text-foreground size-8 shrink-0 rounded-lg"
-                        title={t("editFile")}
-                      >
-                        <Pencil className="size-3.5" />
-                      </Button>
+                      <AppTooltip content={t("editFile")}>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleStartEdit}
+                          className="text-muted-foreground hover:text-foreground size-8 shrink-0 rounded-lg"
+                        >
+                          <Pencil className="size-3.5" />
+                        </Button>
+                      </AppTooltip>
                     )}
                   </div>
 
@@ -307,65 +309,69 @@ export function AttachmentDetailContent({
                 {/* Thanh công cụ hành động gọn gàng */}
                 <div className="border-border/50 flex flex-wrap items-center gap-1.5 border-y py-2">
                   {canEdit && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleStartEdit}
-                      className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
-                      title={t("editFile")}
-                    >
-                      <Pencil className="size-3.5" />
-                      <span>{t("edit")}</span>
-                    </Button>
+                    <AppTooltip content={t("editFile")}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleStartEdit}
+                        className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
+                      >
+                        <Pencil className="size-3.5" />
+                        <span>{t("edit")}</span>
+                      </Button>
+                    </AppTooltip>
                   )}
 
                   {canEdit && isImage && (
+                    <AppTooltip content={t("editImage")}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsImageEditing(true)}
+                        className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
+                      >
+                        <Crop className="text-primary size-3.5" />
+                        <span>{t("crop")}</span>
+                      </Button>
+                    </AppTooltip>
+                  )}
+
+                  <AppTooltip content={t("copyUrl")}>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => setIsImageEditing(true)}
+                      onClick={handleCopyUrl}
                       className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
-                      title={t("editImage")}
                     >
-                      <Crop className="text-primary size-3.5" />
-                      <span>{t("crop")}</span>
+                      {copiedUrl ? (
+                        <Check className="size-3.5 text-emerald-500" />
+                      ) : (
+                        <Copy className="size-3.5" />
+                      )}
+                      <span>{copiedUrl ? t("copied") : t("copyUrl")}</span>
                     </Button>
-                  )}
+                  </AppTooltip>
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCopyUrl}
-                    className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
-                    title={t("copyUrl")}
-                  >
-                    {copiedUrl ? (
-                      <Check className="size-3.5 text-emerald-500" />
-                    ) : (
-                      <Copy className="size-3.5" />
-                    )}
-                    <span>{copiedUrl ? t("copied") : t("copyUrl")}</span>
-                  </Button>
-
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
-                    title={t("openFile")}
-                  >
-                    <Link
-                      href={(toSafeHttpUrl(shareUrl) ?? "#") as never}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  <AppTooltip content={t("openFile")}>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
                     >
-                      <ExternalLink className="size-3.5" />
-                      <span>{t("openFile")}</span>
-                    </Link>
-                  </Button>
+                      <Link
+                        href={(toSafeHttpUrl(shareUrl) ?? "#") as never}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="size-3.5" />
+                        <span>{t("openFile")}</span>
+                      </Link>
+                    </Button>
+                  </AppTooltip>
 
                   {canEdit && (
                     <Button
@@ -382,20 +388,21 @@ export function AttachmentDetailContent({
                   )}
 
                   {onMove && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        onClose();
-                        onMove(currentFile);
-                      }}
-                      className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
-                      title={t("moveFiles")}
-                    >
-                      <FolderInput className="size-3.5" />
-                      <span>{t("moveFiles")}</span>
-                    </Button>
+                    <AppTooltip content={t("moveFiles")}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          onClose();
+                          onMove(currentFile);
+                        }}
+                        className="h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium"
+                      >
+                        <FolderInput className="size-3.5" />
+                        <span>{t("moveFiles")}</span>
+                      </Button>
+                    </AppTooltip>
                   )}
                 </div>
 
@@ -429,10 +436,7 @@ export function AttachmentDetailContent({
                       {t("uploadedAt")}
                     </span>
                     <p className="text-foreground mt-0.5 font-medium tabular-nums">
-                      {format.dateTime(new Date(currentFile.createdAt), {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })}
+                      <TimestampText value={currentFile.createdAt} />
                     </p>
                   </div>
 

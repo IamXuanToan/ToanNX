@@ -3,10 +3,10 @@ import { createResourceKeys } from "@/shares/lib/api/resource-keys";
 import type { AttachmentFilters } from "../types/attachment.types";
 
 /** Phạm vi chung của query key module System (invalidate cả module bằng `["system"]`). */
-const SCOPE = "system";
+export const SYSTEM_SCOPE = "system";
 
-const users = createResourceKeys(SCOPE, "users");
-const journalEntries = createResourceKeys(SCOPE, "journal");
+const users = createResourceKeys(SYSTEM_SCOPE, "users");
+const journalEntries = createResourceKeys(SYSTEM_SCOPE, "journal");
 
 /** Query key của người dùng. */
 export const accountKeys = {
@@ -18,7 +18,7 @@ export const accountKeys = {
 
 /** Query key của đăng nhập và phiên (người dùng hiện tại, quản trị phiên). */
 export const authKeys = {
-  all: [SCOPE, "auth"] as const,
+  all: [SYSTEM_SCOPE, "auth"] as const,
   me: () => [...authKeys.all, "me"] as const,
   socialAccounts: () => [...authKeys.all, "social-accounts"] as const,
   adminSessions: (filters?: object) =>
@@ -28,7 +28,7 @@ export const authKeys = {
 
 /** Query key của vai trò, quyền và vai trò của người dùng. */
 export const iamKeys = {
-  all: [SCOPE, "iam"] as const,
+  all: [SYSTEM_SCOPE, "iam"] as const,
   userRoles: (userId: string) => [...iamKeys.all, "user-roles", userId] as const,
   roles: (filters: object) => [...iamKeys.all, "roles", filters] as const,
   roleOptions: () => [...iamKeys.all, "role-options"] as const,
@@ -38,7 +38,7 @@ export const iamKeys = {
 
 /** Query key của thư viện file, dùng lại ở bộ chọn ảnh. */
 export const attachmentKeys = {
-  all: [SCOPE, "attachments"] as const,
+  all: [SYSTEM_SCOPE, "attachments"] as const,
   folders: (scope?: readonly string[]) => [...attachmentKeys.all, "folders", scope ?? []] as const,
   lists: () => [...attachmentKeys.all, "list"] as const,
   list: (filters: AttachmentFilters) => [...attachmentKeys.lists(), filters] as const,
@@ -54,43 +54,43 @@ export const journalKeys = {
   record: (path: string) => [...journalEntries.all, "record", path] as const,
 };
 
-const settings = createResourceKeys(SCOPE, "settings");
+const settings = createResourceKeys(SYSTEM_SCOPE, "settings");
 
 /** Query key của cấu hình hệ thống. */
 export const settingKeys = {
   all: settings.all,
   settings: (filters: object) => settings.list(filters),
   setting: (id: string) => settings.detail(id),
-  public: () => [SCOPE, "settings", "public"] as const,
+  public: () => [SYSTEM_SCOPE, "settings", "public"] as const,
 };
 
 /** Query key phần Thông báo (chuông, tùy chọn, thiết bị, Telegram, nhật ký gửi, thông báo hệ thống). */
 export const notificationKeys = {
-  all: [SCOPE, "notifications"] as const,
-  bell: (scope: string) => [SCOPE, "notifications", "bell", scope] as const,
-  unreadCount: () => [SCOPE, "notifications", "unread-count"] as const,
-  preferences: () => [SCOPE, "notifications", "preferences"] as const,
-  devices: () => [SCOPE, "notifications", "devices"] as const,
-  telegramBot: () => [SCOPE, "notifications", "telegram-bot"] as const,
-  chats: () => [SCOPE, "notifications", "chats"] as const,
-  deliveries: createResourceKeys(SCOPE, "notification-deliveries"),
-  announcements: createResourceKeys(SCOPE, "announcements"),
+  all: [SYSTEM_SCOPE, "notifications"] as const,
+  bell: (scope: string) => [SYSTEM_SCOPE, "notifications", "bell", scope] as const,
+  unreadCount: () => [SYSTEM_SCOPE, "notifications", "unread-count"] as const,
+  preferences: () => [SYSTEM_SCOPE, "notifications", "preferences"] as const,
+  devices: () => [SYSTEM_SCOPE, "notifications", "devices"] as const,
+  telegramBot: () => [SYSTEM_SCOPE, "notifications", "telegram-bot"] as const,
+  chats: () => [SYSTEM_SCOPE, "notifications", "chats"] as const,
+  deliveries: createResourceKeys(SYSTEM_SCOPE, "notification-deliveries"),
+  announcements: createResourceKeys(SYSTEM_SCOPE, "announcements"),
 };
 
 /** Query key tiền tệ và tỷ giá. */
 export const currencyKeys = {
-  currencies: createResourceKeys(SCOPE, "currencies"),
-  rates: createResourceKeys(SCOPE, "exchange-rates"),
+  currencies: createResourceKeys(SYSTEM_SCOPE, "currencies"),
+  rates: createResourceKeys(SYSTEM_SCOPE, "exchange-rates"),
   resolve: (currencyId: string, date: string) =>
-    [SCOPE, "exchange-rates", "resolve", currencyId, date] as const,
+    [SYSTEM_SCOPE, "exchange-rates", "resolve", currencyId, date] as const,
 };
 
 /** Query key danh mục webhook. */
 export const webhookKeys = {
-  all: [SCOPE, "webhooks"] as const,
+  all: [SYSTEM_SCOPE, "webhooks"] as const,
 };
 
 /** Query key danh mục callback. */
 export const callbackKeys = {
-  all: [SCOPE, "callbacks"] as const,
+  all: [SYSTEM_SCOPE, "callbacks"] as const,
 };

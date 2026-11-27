@@ -9,15 +9,17 @@ import type { AppLocale } from "./routing";
  * @returns Message đã gộp theo namespace.
  */
 export async function loadMessages(locale: AppLocale) {
-  const [common, system, manageApp, novel, utilities, finance, portal] = await Promise.all([
-    import(`../messages/${locale}.json`),
-    import(`../modules/system/messages/${locale}.json`),
-    import(`../modules/manage-app/messages/${locale}.json`),
-    import(`../modules/novel/messages/${locale}.json`),
-    import(`../modules/utilities/messages/${locale}.json`),
-    import(`../modules/finance/messages/${locale}.json`),
-    import(`../modules/portal/messages/${locale}.json`),
-  ]);
+  const [common, system, manageApp, novel, utilities, finance, portal, workspace] =
+    await Promise.all([
+      import(`../messages/${locale}.json`),
+      import(`../modules/system/messages/${locale}.json`),
+      import(`../modules/manage-app/messages/${locale}.json`),
+      import(`../modules/novel/messages/${locale}.json`),
+      import(`../modules/utilities/messages/${locale}.json`),
+      import(`../modules/finance/messages/${locale}.json`),
+      import(`../modules/portal/messages/${locale}.json`),
+      import(`../modules/workspace/messages/${locale}.json`),
+    ]);
   return {
     ...common.default,
     system: system.default,
@@ -26,6 +28,7 @@ export async function loadMessages(locale: AppLocale) {
     utilities: utilities.default,
     finance: finance.default,
     portal: portal.default,
+    workspace: workspace.default,
   };
 }
 

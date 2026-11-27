@@ -4,7 +4,11 @@ import { cn } from "cn";
 
 import { Badge } from "@/shares/components/ui/badge";
 
-import { JOURNAL_MASK, useJournalFormat } from "../../hooks/use-journal-format";
+import {
+  JOURNAL_MASK,
+  useJournalFormat,
+  type JournalValueContext,
+} from "../../hooks/use-journal-format";
 
 /**
  * Giá trị đầy đủ của một field ở trang chi tiết: danh sách thành chip, JSON dàn trang, văn bản dài xuống dòng.
@@ -16,10 +20,12 @@ export function JournalValue({
   value,
   marked = [],
   tone,
+  fieldContext,
 }: {
   value: unknown;
   marked?: unknown[];
   tone?: "added" | "removed";
+  fieldContext?: JournalValueContext;
 }) {
   const markedKeys = new Set(marked.map((item) => JSON.stringify(item)));
   const journal = useJournalFormat();
@@ -29,19 +35,24 @@ export function JournalValue({
       <div className="flex flex-wrap gap-1.5">
         {value.map((item) => {
           const highlighted = markedKeys.has(JSON.stringify(item));
+          const displayLabel =
+            typeof item === "object"
+              ? JSON.stringify(item)
+              : journal.formatSingleItem(item, fieldContext);
           return (
             <Badge
               key={JSON.stringify(item)}
               variant="outline"
               className={cn(
-                "font-mono text-xs font-normal break-all",
+                "text-xs font-normal break-all",
+                typeof item === "object" ? "font-mono" : "",
                 highlighted && tone === "added" && "border-success/40 bg-success/10 text-success",
                 highlighted &&
                   tone === "removed" &&
                   "border-destructive/40 bg-destructive/10 text-destructive line-through",
               )}
             >
-              {typeof item === "object" ? JSON.stringify(item) : String(item)}
+              {displayLabel}
             </Badge>
           );
         })}
@@ -56,6 +67,10 @@ export function JournalValue({
     );
   }
   if (value === JOURNAL_MASK)
-    return <span className="text-muted-foreground">{journal.value(value)}</span>;
-  return <span className="break-words whitespace-pre-wrap">{journal.value(value, Infinity)}</span>;
+    return <span className="text-muted-foreground">{journal.value(value, 120, fieldContext)}</span>;
+  return (
+    <span className="break-words whitespace-pre-wrap">
+      {journal.value(value, Infinity, fieldContext)}
+    </span>
+  );
 }

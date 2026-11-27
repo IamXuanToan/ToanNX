@@ -42,7 +42,7 @@ describe("SearchInput", () => {
     fireEvent.change(input, { target: { value: "mới" } });
     fireEvent.keyDown(input, { key: "Enter", isComposing: true });
     expect(changed).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByRole("button", { name: "Xoá từ khoá" }));
     expect(changed).toHaveBeenCalledExactlyOnceWith("");
     expect((input as HTMLInputElement).value).toBe("");
   });

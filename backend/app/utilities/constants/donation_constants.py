@@ -33,3 +33,8 @@ DEFAULT_TIER_EXPIRY_DAYS: Final[int] = 7
 # Độ dài tối thiểu và tối đa số ngày vinh danh
 MIN_TIER_EXPIRY_DAYS: Final[int] = 1
 MAX_TIER_EXPIRY_DAYS: Final[int] = 30
+
+# Giới hạn số bản ghi mặc định & TTL cache cho endpoint Donate công khai (giây)
+DONATION_DEFAULT_FEED_LIMIT: Final[int] = 20
+DONATION_DEFAULT_LEADERBOARD_LIMIT: Final[int] = 30
+DONATION_MISSING_PAGE_CACHE_TTL_SECONDS: Final[int] = 60

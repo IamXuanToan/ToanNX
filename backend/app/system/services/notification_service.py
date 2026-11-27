@@ -77,6 +77,7 @@ class NotificationService:
         self.push_device_service = PushDeviceService(self.push_device_repository)
         self.kick_service = kick_service or NotificationKickService()
         self._kick_scheduled = False
+        self._pending_kick = False
 
     # ================================================================== phát
     def notify(
@@ -87,6 +88,7 @@ class NotificationService:
         payload: NotificationPayload,
         recipient: Any | None = None,
         recipients: list[Any] | None = None,
+        kick: bool = True,
     ) -> int:
         """Tạo thông báo cho người nhận của sự kiện; sau commit đá việc gửi (không gửi trong request).
 
@@ -96,6 +98,7 @@ class NotificationService:
             payload: Nội dung.
             recipient: Người nhận (bắt buộc với sự kiện `OWNER` nếu không truyền `recipients`).
             recipients: Danh sách người nhận do nơi gọi chọn (thông báo hệ thống theo vai trò).
+            kick: True để tự đá `NotificationKickService` sau commit; False để gom chờ gọi `flush_kick()`.
 
         Returns:
             Số thông báo mới tạo (0 khi lỗi: lỗi không bao giờ ném ra nơi gọi).
@@ -116,8 +119,23 @@ class NotificationService:
             logger.exception("notification.notify_failed %s", event_code)
             return 0
         if delivery_ids:
-            self._schedule_kick()
+            if kick:
+                self._schedule_kick()
+            else:
+                self._pending_kick = True
         return created
+
+    def flush_kick(self) -> bool:
+        """Đá hàng đợi gửi thông báo một lần cho các lượt `notify(..., kick=False)` trước đó."""
+        if not self._pending_kick:
+            return False
+        self._pending_kick = False
+        if transaction.get_connection().in_atomic_block:
+            self._schedule_kick()
+        else:
+            self._kick_scheduled = False
+            self.kick_service.kick()
+        return True
 
     def revoke(self, event_code: str, dedup_key: str) -> int:
         """Thu hồi thông báo đã phát (xóa khỏi chuông mọi người)."""
@@ -256,11 +274,11 @@ class NotificationService:
         existing = self.repository.existing_recipient_ids(event.code, dedup_key, [user.pk for user in users])
         users = [user for user in users if user.pk not in existing]
         level = payload.level or event.default_level
-        channels = self.preference_service.resolve(users, event, level)
+        resolved_map = self.preference_service.resolve(users, event, level)
         now = timezone.now()
         notifications: list[Notification] = []
         for user in users:
-            resolved = channels[user.pk]
+            resolved = resolved_map[user.pk]
             if not resolved.any:
                 continue
             notifications.append(
@@ -288,7 +306,7 @@ class NotificationService:
             created.extend(
                 self.repository.bulk_create(notifications[start : start + NOTIFICATION_BULK_BATCH])
             )
-        deliveries = self._deliveries(created, channels)
+        deliveries = self._deliveries(created, resolved_map)
         self.delivery_repository.bulk_create(deliveries)
         return len(created), [delivery.pk for delivery in deliveries]
 

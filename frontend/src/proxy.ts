@@ -67,7 +67,7 @@ export default function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
     if (pathname === loginPath && hasSession) {
-      return NextResponse.redirect(new URL(adminPath, request.url));
+      return NextResponse.redirect(new URL(portalPath, request.url));
     }
   }
   const publicPage = matchPublicPage(pathname);

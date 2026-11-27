@@ -8,7 +8,7 @@ from app.core.tracking.journal_tracker import JournalTracker
 
 
 class TelegramChat(JournalTracker, CoreModel):
-    """Đăng ký: tạo mã 10 phút → thêm bot vào nhóm qua link `startgroup` → Kiểm tra → lưu chat id thật."""
+    """Đăng ký: tạo mã 10 phút → thêm bot chung qua `startgroup` → Webhook/Kiểm tra → lưu chat id."""
 
     journal_fields = ("title", "status", "is_active")
 
@@ -27,14 +27,6 @@ class TelegramChat(JournalTracker, CoreModel):
         verbose_name="Chủ",
         help_text="Người dùng sở hữu nơi nhận.",
         db_comment="Chủ nơi nhận",
-    )
-    bot = models.ForeignKey(
-        "system.TelegramBot",
-        on_delete=models.CASCADE,
-        related_name="chats",
-        verbose_name="Bot",
-        help_text="Bot dùng để gửi vào chat này.",
-        db_comment="Bot gửi",
     )
     chat_id = models.CharField(
         max_length=64,
@@ -107,9 +99,9 @@ class TelegramChat(JournalTracker, CoreModel):
         db_table = "system_telegram_chat"
         constraints = (
             models.UniqueConstraint(
-                fields=("bot", "chat_id"),
+                fields=("owner", "chat_id"),
                 condition=models.Q(chat_id__isnull=False, deleted_at__isnull=True),
-                name="uq_telegram_chat_bot_chat",
+                name="uq_telegram_chat_owner_chat",
             ),
         )
         verbose_name = "Nhóm Telegram"

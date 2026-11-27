@@ -29,6 +29,10 @@ TELEGRAM_API_BASE = "https://api.telegram.org"
 TELEGRAM_REGISTRATION_MINUTES = 10
 TELEGRAM_MESSAGE_MAX_LENGTH = 4000
 TELEGRAM_TOKEN_PURPOSE = "system.telegram.bot_token"  # noqa: S105 - mã/nhãn, không phải bí mật
+TELEGRAM_BOT_INFO_CACHE_KEY = "system:telegram:bot_info:v1"
+TELEGRAM_BOT_INFO_TTL_SECONDS = 86400
+TELEGRAM_UPDATE_DEDUP_TTL_SECONDS = 300
+TELEGRAM_WEBHOOK_SECRET_SALT = "system.telegram.webhook"  # noqa: S105 - salt dẫn xuất HMAC, không phải bí mật
 
 FCM_SCOPE = "https://www.googleapis.com/auth/firebase.messaging"
 FCM_SEND_URL = "https://fcm.googleapis.com/v1/projects/{project_id}/messages:send"

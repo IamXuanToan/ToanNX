@@ -5,37 +5,28 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { useCheckTelegramBot } from "../../../hooks/use-check-telegram-bot";
-import { useDeleteTelegramBot } from "../../../hooks/use-delete-telegram-bot";
-import { useSaveTelegramBot } from "../../../hooks/use-save-telegram-bot";
 import { useTelegramBot } from "../../../hooks/use-telegram-bot";
+import type { TelegramBotCheck } from "../../../types/notification.types";
 
-/** @returns Bot của mình, token đang nhập, lưu/kiểm tra/xóa. */
+/** @returns Metadata Bot Telegram chung của hệ thống và thao tác kiểm tra webhook cho quản trị viên. */
 export function useTelegramBotCard() {
   const t = useTranslations("system.notifications.telegramBot");
   const bot = useTelegramBot();
-  const save = useSaveTelegramBot();
   const check = useCheckTelegramBot();
-  const remove = useDeleteTelegramBot();
-  const [token, setToken] = useState("");
-  const [editing, setEditing] = useState(false);
+  const [checkResult, setCheckResult] = useState<TelegramBotCheck | null>(null);
+
   return {
     bot,
-    token,
-    setToken,
-    editing: editing || !bot.data,
-    startEdit: () => setEditing(true),
-    cancelEdit: () => setEditing(false),
-    save: async () => {
-      await save.mutateAsync(token);
-      setToken("");
-      setEditing(false);
-    },
+    checkResult,
+    isChecking: check.isPending,
     check: async () => {
       const result = await check.mutateAsync();
-      if (result.hasWebhook) toast.warning(t("hasWebhook"));
-      else toast.success(t("checkOk"));
+      setCheckResult(result);
+      if (result.webhookActive) {
+        toast.success(t("checkOk"));
+      } else {
+        toast.warning(t("webhookInactive"));
+      }
     },
-    remove: () => remove.mutate(),
-    isSaving: save.isPending,
   };
 }

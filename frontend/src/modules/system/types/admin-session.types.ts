@@ -7,6 +7,7 @@ export type AdminSession = {
   userId: string;
   userEmail: string;
   userName: string;
+  userUsername: string | null;
   userIsSuperuser: boolean;
   userAgent: string;
   ipAddress: string | null;
@@ -34,6 +35,5 @@ export type AdminSessionUser = {
   id: string;
   email: string;
   username: string | null;
-  firstName: string;
-  lastName: string;
+  fullName: string;
 };

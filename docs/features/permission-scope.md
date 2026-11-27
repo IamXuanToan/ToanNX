@@ -13,6 +13,10 @@ Một người dùng thao tác được tài nguyên nào do hai thứ quyết �
    - Tài nguyên dùng chung (không có owner, ví dụ tiền tệ, thể loại truyện) không có khái niệm phạm vi.
 
 Superuser bỏ qua mọi kiểm tra. `is_staff` chỉ mở khung quản trị ở FE, API không xét.
+**Nguyên tắc tối cao của `ADMIN` (`is_superuser` / vai trò có `manage_all`)**: Admin luôn có toàn quyền xem, tạo,
+sửa, xóa và thực thi mọi thao tác nghiệp vụ trên dữ liệu của bất kỳ người dùng nào trong toàn hệ thống (bao gồm cả
+dữ liệu cá nhân ở module `workspace`); tuyệt đối không chặn `ADMIN` chỉnh sửa bản ghi của người khác ở tầng phân quyền
+nghiệp vụ (chỉ giữ chốt an toàn tự bảo vệ hệ thống như `is_not_self`, `ACCOUNT_LAST_SUPERUSER`).
 
 ## Ba vai trò dựng sẵn mỗi module
 

@@ -6,11 +6,16 @@ Phân biệt:
 2. Quyền người dùng: do IAM quyết định (registry cung cấp danh mục quyền để `sync_iam` đồng bộ).
 """
 
+from collections.abc import Callable
+from typing import Any
+
 from app.core.registry.callback_definition import CallbackDefinition
 from app.core.registry.module_descriptor import ModuleDescriptor
 from app.core.registry.notification_event_definition import NotificationEventDefinition
 from app.core.registry.permission_definition import PermissionDefinition
 from app.core.registry.webhook_definition import WebhookDefinition
+
+TelegramUpdateHandler = Callable[[dict[str, Any]], Any]
 
 
 class ModuleRegistry:
@@ -19,6 +24,7 @@ class ModuleRegistry:
     def __init__(self) -> None:
         """Khởi tạo registry rỗng."""
         self._modules: dict[str, ModuleDescriptor] = {}
+        self._telegram_update_handlers: list[TelegramUpdateHandler] = []
 
     def register(self, descriptor: ModuleDescriptor, *, app_label: str | None = None) -> None:
         """Đăng ký module.
@@ -115,6 +121,15 @@ class ModuleRegistry:
             Danh sách callback theo thứ tự module.
         """
         return [callback for module in self.all() for callback in module.callbacks]
+
+    def register_telegram_update_handler(self, handler: TelegramUpdateHandler) -> None:
+        """Đăng ký hàm xử lý webhook Telegram từ module khác (tránh `system` import vòng)."""
+        if handler not in self._telegram_update_handlers:
+            self._telegram_update_handlers.append(handler)
+
+    def telegram_update_handlers(self) -> list[TelegramUpdateHandler]:
+        """Danh sách handler xử lý update Telegram đã đăng ký."""
+        return list(self._telegram_update_handlers)
 
 
 module_registry = ModuleRegistry()

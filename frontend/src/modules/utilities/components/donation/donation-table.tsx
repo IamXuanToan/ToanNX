@@ -6,10 +6,12 @@ import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { usePermission } from "@/modules/system/hooks/use-permission";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
 import { TableStatusSwitch } from "@/shares/components/common/table-status-switch";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
@@ -130,10 +132,7 @@ export function DonationTable({
       header: t("columns.time"),
       cell: (item) => (
         <span className="text-muted-foreground font-mono text-xs whitespace-nowrap">
-          {format.dateTime(new Date(item.receivedAt), {
-            dateStyle: "short",
-            timeStyle: "short",
-          })}
+          <TimestampText value={item.receivedAt} />
         </span>
       ),
     },
@@ -142,9 +141,9 @@ export function DonationTable({
       header: t("columns.page"),
       cell: (item) => (
         <div className="max-w-[120px] truncate">
-          <span className="text-xs font-medium" title={item.pageTitle}>
-            {item.pageTitle}
-          </span>
+          <AppTooltip content={item.pageTitle}>
+            <span className="text-xs font-medium">{item.pageTitle}</span>
+          </AppTooltip>
         </div>
       ),
     },
@@ -193,12 +192,11 @@ export function DonationTable({
               <span>{t("censoredHidden")}</span>
             </div>
           ) : (
-            <p
-              className="line-clamp-2 text-xs leading-relaxed break-words"
-              title={item.message || undefined}
-            >
-              {item.message || "—"}
-            </p>
+            <AppTooltip content={item.message || undefined} className="max-w-sm text-xs">
+              <p className="line-clamp-2 text-xs leading-relaxed break-words">
+                {item.message || "—"}
+              </p>
+            </AppTooltip>
           )}
           <Tooltip>
             <TooltipTrigger asChild>

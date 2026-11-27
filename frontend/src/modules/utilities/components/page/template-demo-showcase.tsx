@@ -15,6 +15,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/shares/components/ui/dialog";
@@ -434,48 +435,52 @@ export function TemplateDemoShowcase({
         {/* Thiết bị & CTA */}
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <div className="border-border bg-background hidden items-center rounded-lg border p-0.5 shadow-2xs sm:flex">
-            <Button
-              type="button"
-              size="sm"
-              variant={device === "mobile" ? "secondary" : "ghost"}
-              className="h-7 px-2 text-xs"
-              onClick={() => setDevice("mobile")}
-              title={t("mobile")}
-            >
-              <Smartphone className="size-3.5" />
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant={device === "tablet" ? "secondary" : "ghost"}
-              className="h-7 px-2 text-xs"
-              onClick={() => setDevice("tablet")}
-              title={t("tablet")}
-            >
-              <Tablet className="size-3.5" />
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant={device === "desktop" ? "secondary" : "ghost"}
-              className="h-7 px-2 text-xs"
-              onClick={() => setDevice("desktop")}
-              title={t("desktop")}
-            >
-              <Laptop className="size-3.5" />
-            </Button>
+            <AppTooltip content={t("mobile")}>
+              <Button
+                type="button"
+                size="sm"
+                variant={device === "mobile" ? "secondary" : "ghost"}
+                className="h-7 px-2 text-xs"
+                onClick={() => setDevice("mobile")}
+              >
+                <Smartphone className="size-3.5" />
+              </Button>
+            </AppTooltip>
+            <AppTooltip content={t("tablet")}>
+              <Button
+                type="button"
+                size="sm"
+                variant={device === "tablet" ? "secondary" : "ghost"}
+                className="h-7 px-2 text-xs"
+                onClick={() => setDevice("tablet")}
+              >
+                <Tablet className="size-3.5" />
+              </Button>
+            </AppTooltip>
+            <AppTooltip content={t("desktop")}>
+              <Button
+                type="button"
+                size="sm"
+                variant={device === "desktop" ? "secondary" : "ghost"}
+                className="h-7 px-2 text-xs"
+                onClick={() => setDevice("desktop")}
+              >
+                <Laptop className="size-3.5" />
+              </Button>
+            </AppTooltip>
           </div>
 
-          <Button
-            type="button"
-            size="icon-xs"
-            variant="outline"
-            onClick={() => setFullModalOpen(true)}
-            className="size-8 rounded-lg"
-            title={t("fullscreen")}
-          >
-            <Maximize2 className="size-3.5" />
-          </Button>
+          <AppTooltip content={t("fullscreen")}>
+            <Button
+              type="button"
+              size="icon-xs"
+              variant="outline"
+              onClick={() => setFullModalOpen(true)}
+              className="size-8 rounded-lg"
+            >
+              <Maximize2 className="size-3.5" />
+            </Button>
+          </AppTooltip>
 
           <Button asChild size="sm" className="h-8 gap-1.5 text-xs font-semibold shadow-xs">
             <Link href={UTILITIES_ROUTES.pageCreate}>

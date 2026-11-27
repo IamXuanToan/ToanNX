@@ -11,6 +11,6 @@ class NovelChapterImportItemSerializer(CoreValidateSerializer):
     chapter_number = serializers.IntegerField(required=False, help_text="Số chương.")
     title = serializers.CharField(max_length=255, help_text="Tiêu đề chương.")
     slug = serializers.CharField(required=False, max_length=255, help_text="Slug của chương.")
-    content = serializers.CharField(help_text="Nội dung chương.")
+    content = serializers.CharField(max_length=200_000, help_text="Nội dung chương.")
     word_count = serializers.IntegerField(required=False, help_text="Số từ (tùy chọn).")
     is_published = serializers.BooleanField(required=False, default=True, help_text="Xuất bản.")

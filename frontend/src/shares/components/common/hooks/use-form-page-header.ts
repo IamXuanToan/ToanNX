@@ -5,6 +5,9 @@ import { createContext, useEffect, useState } from "react";
 /** Ô chứa thanh nút của form trên đầu `FormPage` (`null` khi chưa gắn hoặc không có `FormPage`). */
 export const FormPageActionsContext = createContext<HTMLElement | null>(null);
 
+/** Cờ cho biết `FormPage` đã gắn sẵn nút `Quay lại` cố định trên header (tránh lặp hoặc mất nút khi đổi tab). */
+export const FormPageBackContext = createContext<boolean>(false);
+
 const WORKSPACE_HEADER_HEIGHT = 64;
 const STICKY_CLEARANCE_GAP = 4;
 

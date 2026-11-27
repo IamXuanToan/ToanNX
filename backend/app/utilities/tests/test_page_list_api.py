@@ -30,6 +30,7 @@ class TestPageListApi(BaseApiTestCase):
         items, pagination = self.assert_paginated(res)
 
         assert len(items) == 2
+        assert items[0]["owner"]["username"] == (user.username or "")
         assert pagination["total"] == 3
         assert pagination["page"] == 1
         assert pagination["page_size"] == 2

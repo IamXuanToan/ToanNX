@@ -20,10 +20,8 @@ export function PortalShortLinkCreate() {
   return (
     <FormPage title={t("createTitle")}>
       <ShortLinkForm
+        backHref={PORTAL_ROUTES.shortLinks}
         onSaved={() => {
-          router.push(PORTAL_ROUTES.shortLinks);
-        }}
-        onCancel={() => {
           router.push(PORTAL_ROUTES.shortLinks);
         }}
       />

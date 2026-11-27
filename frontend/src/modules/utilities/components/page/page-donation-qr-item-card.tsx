@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Check, Edit2, QrCode, Star, Trash2, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shares/components/ui/tooltip";
@@ -128,18 +129,21 @@ export function PageDonationQrItemCard({
       {/* Hành động */}
       <div className="flex shrink-0 items-center justify-end gap-1.5">
         {!item.isDefault && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onSetDefault}
-            disabled={disabled}
-            className="text-muted-foreground hover:text-foreground h-8 gap-1 px-2 text-[11px]"
-            title={t("setDefaultTooltip")}
-          >
-            <Star className="size-3" />
-            <span className="hidden sm:inline">{t("setDefaultAction")}</span>
-          </Button>
+          <AppTooltip content={t("setDefaultTooltip")}>
+            <span className="inline-flex">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={onSetDefault}
+                disabled={disabled}
+                className="text-muted-foreground hover:text-foreground h-8 gap-1 px-2 text-[11px]"
+              >
+                <Star className="size-3" />
+                <span className="hidden sm:inline">{t("setDefaultAction")}</span>
+              </Button>
+            </span>
+          </AppTooltip>
         )}
 
         <Button
@@ -154,17 +158,20 @@ export function PageDonationQrItemCard({
           <span>{t("editAction")}</span>
         </Button>
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          onClick={onDelete}
-          disabled={disabled}
-          className="text-muted-foreground hover:text-destructive h-8 w-8"
-          title={t("deleteMethodTooltip")}
-        >
-          <Trash2 className="size-3.5" />
-        </Button>
+        <AppTooltip content={t("deleteMethodTooltip")}>
+          <span className="inline-flex">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              onClick={onDelete}
+              disabled={disabled}
+              className="text-muted-foreground hover:text-destructive h-8 w-8"
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </span>
+        </AppTooltip>
       </div>
     </div>
   );

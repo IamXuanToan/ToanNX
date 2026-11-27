@@ -1,16 +1,18 @@
 """Throttle mặc định toàn hệ thống, đếm bằng bucket PostgreSQL (`RateLimitService`)."""
 
+from enum import StrEnum
 from typing import Any
 
 from django.conf import settings
 from rest_framework.request import Request
 from rest_framework.throttling import BaseThrottle
 
+from app.core.constants.core_rate_limit_key import CoreRateLimitKey
 from app.core.decorators.rate_limit import RATE_LIMIT_ATTR
 from app.system.services.rate_limit_service import RateLimitService
 from app.system.utils.client_ip import get_client_ip
 
-DEFAULT_WRITE_KEY = "default.write"
+DEFAULT_WRITE_KEY = CoreRateLimitKey.DEFAULT_WRITE
 _SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
 
 
@@ -18,8 +20,8 @@ class BucketThrottle(BaseThrottle):
     """Đọc khóa rate limit của request rồi đếm.
 
     - ViewSet: `view.action_rate_limits[view.action]`.
-    - APIView: `@rate_limit("…")` trên method.
-    - Không khai: method ghi dùng `default.write`; method đọc không giới hạn.
+    - APIView: `@rate_limit(<Key>)` trên method.
+    - Không khai: method ghi dùng `CoreRateLimitKey.DEFAULT_WRITE`; method đọc không giới hạn.
 
     `settings.RATE_LIMITS[key] = (số lần, cửa sổ giây, "user" | "ip")`.
     Vượt → 429 `RATE_LIMITED` + `Retry-After`.
@@ -52,11 +54,11 @@ class BucketThrottle(BaseThrottle):
         return True
 
     @staticmethod
-    def _get_key(request: Request, view: Any) -> str | None:
+    def _get_key(request: Request, view: Any) -> StrEnum | None:
         """Khóa rate limit của request (None = không giới hạn)."""
         action = getattr(view, "action", None)
         if action is not None:
-            key = getattr(view, "action_rate_limits", {}).get(action)
+            key: StrEnum | None = getattr(view, "action_rate_limits", {}).get(action)
         else:
             handler = getattr(view, (request.method or "").lower(), None)
             key = getattr(handler, RATE_LIMIT_ATTR, None)

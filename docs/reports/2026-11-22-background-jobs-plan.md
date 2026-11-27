@@ -1,7 +1,7 @@
 # Plan: đưa email và thông báo ra khỏi request (xử lý ngầm)
 
 Ngày: 2026-11-22 · Liên quan: [2026-11-22-login-performance.md](2026-11-22-login-performance.md) · Trạng thái:
-**đã thay bằng [plans/2026-11-22-free-tier-optimization.md](../plans/2026-11-22-free-tier-optimization.md)** (mục 1–2 vẫn đúng)
+**đã thay bằng [plans/2026/11/22/2026-11-22-free-tier-optimization.md](../plans/2026/11/22/2026-11-22-free-tier-optimization.md)** (mục 1–2 vẫn đúng)
 
 ## 1. Mọi chỗ gửi email hiện tại
 

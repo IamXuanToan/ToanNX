@@ -16,17 +16,18 @@ thông tin tối thiểu cần thiết và tiếp tục khảo sát phần độ
 3. Triển khai đúng lớp và convention hiện có, không tạo pattern mới khi đã có quy chuẩn.
 4. Tự kiểm từng file đã mở theo `.agents/rules/90-done-checklist.md`, sửa vi phạm thấy được.
 5. Chạy kiểm tra **chỉ cho phần đã sửa** (bên dưới).
-6. Cập nhật tài liệu theo bảng "đổi gì thì cập nhật gì".
+6. Cập nhật tài liệu theo bảng "đổi gì thì cập nhật gì" và sổ theo dõi `docs/reports/code-audit-tracker.md`: skill sửa/thêm code hoặc doc chạy `uv run --no-project python scripts/audit_tracker.py mark-changed --files ...`, còn 4 skill audit (`review-code`, `review-security`, `i18n-audit`, `permission-audit`) gọi `list-pending --axis <trục>` ở bước đầu để mặc định chỉ kiểm phần mới đổi rồi đóng dấu `mark-checked` sau khi đạt (nếu trong hội thoại người dùng nêu rule/quy chuẩn mới chưa có trong `docs/rules/`, tự động cập nhật luôn rule/test quy ước/bản sync trong cùng lượt).
 7. Báo cáo: đã đổi gì (BE/FE/tài liệu), common dùng lại/thêm, vi phạm đã sửa, lệnh kiểm tra + kết quả, phần chưa
-   kiểm và lý do, việc còn tồn. Đọc `git status`/`git diff` ở chế độ chỉ đọc và đưa nội dung commit theo
-   `docs/rules/git.md` cho **toàn bộ thay đổi chưa commit trong project**: mỗi commit có tiêu đề, dòng trống,
-   body mô tả cụ thể trong khối `text` để dán vào VS Code, không phải lệnh Git. Nhiều mục đích độc lập thì
-   tách nhiều khối; phân biệt thay đổi có sẵn. Không tự stage/commit/push.
+   kiểm và lý do, việc còn tồn. **Không tự thao tác Git và không tự gợi ý nội dung commit** khi chưa được yêu cầu;
+   chỉ soạn khối `text` commit khi người dùng yêu cầu (`commit-demo`) hoặc thực hiện commit và push khi người dùng gọi
+   (`commit-push`), và tuyệt đối không thêm `Co-Authored-By:` hay nguồn AI bên ngoài.
 
 ## Chọn skill đúng việc
 
 | Việc | Skill |
 | --- | --- |
+| Lên kế hoạch, viết đặc tả kỹ thuật và lưu vào `docs/plans/<YYYY>/<MM>/<DD>/` | `create-plan`; đọc rule, `docs/` và source trước khi thiết kế |
+| Review, thẩm định kỹ thuật file plan trong `docs/plans/<YYYY>/<MM>/<DD>/` | `review-plan`; đọc đầy đủ rule, `docs/` và đối chiếu code thật |
 | Bắt đầu và triển khai task/tính năng mới | `start-task`; đọc source, rule và `docs/` liên quan trước khi viết |
 | Sửa bug, regression, test fail hoặc hành vi sai | `fix`; tái hiện, tìm nguyên nhân gốc, sửa và kiểm hồi quy |
 | Người dùng yêu cầu review code cuối task | `review-code`; rà toàn diện phần việc, tự sửa lỗi xác nhận được và kiểm lại |
@@ -36,7 +37,8 @@ thông tin tối thiểu cần thiết và tiếp tục khảo sát phần độ
 | Rà soát và sửa thiếu i18n `vi`/`en` toàn FE | `i18n-audit`; quét chuỗi cứng, đối chiếu JSON, BE error code và kiểm `/vi`/`/en` |
 | Kiểm toán và lập ma trận phân quyền BE–FE ba tầng | `permission-audit`; đối chiếu `MEMBER`, owner, Admin/Portal và `seed_test_accounts` |
 | Thiết kế model và Django migration an toàn cho PostgreSQL/Neon | `db-migration`; kiểm `UniqueConstraint` xóa mềm, index, `sqlmigrate` và migrate local |
-| Kiểm tra, tái lập đầy đủ và sửa lỗi các cổng GitHub CI | `check-ci`; chạy parity backend, frontend, `api-types` và rules/skills check đến khi pass |
+| Soạn gợi ý nội dung commit chuẩn để dán vào VS Code | `commit-demo`; chỉ chạy khi được yêu cầu, không stage/commit/push và không thêm `Co-Authored-By:` |
+| Kiểm tra, tái lập đủ cổng GitHub CI (BE/FE/api-types/rule-skill), stage, commit chuẩn và push lên remote | `commit-push`; chỉ chạy khi người dùng gọi rõ ràng (hoặc yêu cầu đảm bảo CI pass rồi push), tôn trọng git hook, không thêm `Co-Authored-By:` |
 | Hỏi về cấu trúc, quan hệ file/symbol hoặc nội dung codebase | `graphify`; query graph hiện có trước khi đọc rộng, chỉ update theo điều kiện của `AGENTS.md` |
 | Tích hợp/tra dữ liệu SePay, chuyển khoản, VietQR, webhook thanh toán, hóa đơn | `sepay`; đọc trước khi gọi công cụ SePay |
 | Người dùng yêu cầu audit bảo mật / code an toàn | `security-best-practices`; xem rule `security-review` |

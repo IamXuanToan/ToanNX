@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Button } from "@/shares/components/ui/button";
 import {
   DropdownMenu,
@@ -132,21 +133,22 @@ export function TiptapToolbar({
 
       {/* Nhóm 2: Chọn kiểu đoạn nhỏ gọn */}
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={off}
-            aria-label={t("blockType")}
-            title={t("blockType")}
-            className="bg-background/80 border-border/70 h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium shadow-none"
-          >
-            <BlockIcon className="size-3.5 shrink-0 opacity-80" />
-            <span className="max-w-24 truncate">{currentBlock.label}</span>
-            <ChevronDown className="size-3 shrink-0 opacity-60" />
-          </Button>
-        </DropdownMenuTrigger>
+        <AppTooltip content={t("blockType")}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={off}
+              aria-label={t("blockType")}
+              className="bg-background/80 border-border/70 h-8 gap-1.5 rounded-lg px-2.5 text-xs font-medium shadow-none"
+            >
+              <BlockIcon className="size-3.5 shrink-0 opacity-80" />
+              <span className="max-w-24 truncate">{currentBlock.label}</span>
+              <ChevronDown className="size-3 shrink-0 opacity-60" />
+            </Button>
+          </DropdownMenuTrigger>
+        </AppTooltip>
         <DropdownMenuContent align="start" className="w-48 rounded-xl p-1">
           {blockOptions.map((option) => {
             const Icon = option.icon;
@@ -224,20 +226,21 @@ export function TiptapToolbar({
 
       {/* Nhóm 4: Căn lề & Danh sách */}
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={off}
-            aria-label={t("align")}
-            title={t("align")}
-            className="h-8 gap-0.5 rounded-lg px-1.5"
-          >
-            <AlignIcon className="size-4" />
-            <ChevronDown className="size-3 opacity-60" />
-          </Button>
-        </DropdownMenuTrigger>
+        <AppTooltip content={t("align")}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={off}
+              aria-label={t("align")}
+              className="h-8 gap-0.5 rounded-lg px-1.5"
+            >
+              <AlignIcon className="size-4" />
+              <ChevronDown className="size-3 opacity-60" />
+            </Button>
+          </DropdownMenuTrigger>
+        </AppTooltip>
         <DropdownMenuContent align="start" className="w-40 rounded-xl p-1">
           {alignOptions.map((option) => {
             const Icon = option.icon;

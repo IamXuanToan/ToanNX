@@ -4,13 +4,18 @@ from typing import Any
 
 import pytest
 
-from app.system.models.telegram_bot import TelegramBot
 from app.system.models.telegram_chat import TelegramChat
 from app.system.tests.factories.user_factory import UserFactory
 from app.system.tests.helpers.permission_helper import grant
 
 pytestmark = pytest.mark.django_db
 URL = "/api/v1/system/notifications/preferences"
+
+
+@pytest.fixture(autouse=True)
+def _telegram_env(settings: Any) -> None:
+    settings.TELEGRAM_BOT_TOKEN = "123:TEST-BOT"
+    settings.TELEGRAM_BOT_USERNAME = "toannx_bot"
 
 
 def test_matrix_only_allowed_events(login: Any) -> None:
@@ -34,8 +39,7 @@ def test_update_rules(superuser: Any, login: Any) -> None:
     )
     assert locked.json()["error"]["code"] == "NOTIFICATION_IN_APP_REQUIRED"
     other = UserFactory()
-    bot = TelegramBot.objects.create(owner=other, token_encrypted="x", token_last4="1234")
-    chat = TelegramChat.objects.create(owner=other, bot=bot, chat_id="1", status="active")
+    chat = TelegramChat.objects.create(owner=other, chat_id="1", status="active")
     foreign = api.put(
         URL,
         {"items": [{"event_code": "system.auth.login", "in_app": True, "telegram_chat_ids": [str(chat.pk)]}]},

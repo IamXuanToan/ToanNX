@@ -29,6 +29,7 @@ class TestAdminSessionListApi(BaseApiTestCase):
         )
         assert meta["total"] == 1
         assert items[0]["user_email"] == user.email
+        assert items[0]["user_username"] == (user.username or "")
         assert items[0]["user_id"] == str(user.pk)
         assert items[0]["status"] == "ACTIVE"
         assert items[0]["is_current"] is False

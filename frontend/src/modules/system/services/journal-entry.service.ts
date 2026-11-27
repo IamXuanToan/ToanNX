@@ -64,4 +64,26 @@ export const journalEntryService = {
   async forRecord(path: string, signal?: AbortSignal): Promise<HistoryEntry[]> {
     return (await apiClient.get<HistoryEntry[]>(path, { signal, opaqueKeys: ["changes"] })).data;
   },
+
+  /**
+   * Lịch sử phân trang của một bản ghi phục vụ tải thêm ("Xem hoạt động cũ hơn").
+   *
+   * @param path - `…/{id}/history` của tài nguyên.
+   * @param params - Số trang và kích thước trang.
+   * @param signal - Tín hiệu hủy.
+   * @returns Kết quả phân trang lịch sử thay đổi.
+   */
+  async forRecordPage(
+    path: string,
+    params: { page?: number; pageSize?: number },
+    signal?: AbortSignal,
+  ): Promise<Paginated<HistoryEntry>> {
+    return toPaginated(
+      await apiClient.get<HistoryEntry[]>(path, {
+        query: params,
+        signal,
+        opaqueKeys: ["changes"],
+      }),
+    );
+  },
 };

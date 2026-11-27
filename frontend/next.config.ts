@@ -41,10 +41,6 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "api.qrserver.com",
-      },
-      {
-        protocol: "https",
         hostname: "img.vietqr.io",
       },
       {
@@ -65,15 +61,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "www.google.com",
-      },
-      {
-        protocol: "https",
         hostname: "**.gstatic.com",
-      },
-      {
-        protocol: "https",
-        hostname: "icons.duckduckgo.com",
       },
       ...(isDev
         ? [

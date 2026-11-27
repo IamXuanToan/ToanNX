@@ -25,8 +25,7 @@ Phạm vi hiện tại: **foundation** (IAM, xác thực, module registry, i18n 
 scripts\dev.bat
 ```
 
-Script migrate database rồi mở backend (http://localhost:8001) và frontend (http://localhost:3001)
-ở 2 cửa sổ riêng. Nếu cổng 8000/3000 đang bị chương trình khác chiếm, script dừng và báo PID để tắt.
+Script tự động giải phóng cổng `8001`/`3001` nếu đang bận, cài/đồng bộ dependency (`uv sync` và `pnpm install`), migrate database rồi khởi chạy cả backend (`http://localhost:8001`) và frontend (`http://localhost:3001`) trong cùng một cửa sổ; dừng (`Ctrl+C` hoặc đóng cửa sổ) sẽ tắt cả hai server.
 
 ### 0. Git
 

@@ -6,7 +6,12 @@ export const SHORT_LINK_FILTER_STATUSES = ["ACTIVE", "INACTIVE", "EXPIRED"] as c
 export type ShortLinkStatus = (typeof SHORT_LINK_STATUSES)[number];
 
 /** Owner rút gọn (hiện khi có `manage_all`). */
-export type ShortLinkOwner = { id: string; email: string; fullName: string };
+export type ShortLinkOwner = {
+  id: string;
+  email: string;
+  username: string | null;
+  fullName: string;
+};
 
 /** Một dòng danh sách (BE `ShortLinkListResponseSerializer`). */
 export type ShortLink = {

@@ -13,6 +13,7 @@ export type ReportMonth = ReportTotals & { month: number };
 export type ReportPlatformRow = ReportTotals & {
   platformId: string | null;
   platform: string;
+  color?: string;
   taxWithheld: boolean;
   taxRate: string;
 };
@@ -41,5 +42,5 @@ export type ReportMonthly = {
   year: number;
   months: ReportMonth[];
   previousMonths: ReportMonth[];
-  byPlatform: { month: number; platform: string; total: string }[];
+  byPlatform: { month: number; platform: string; color?: string; total: string }[];
 };

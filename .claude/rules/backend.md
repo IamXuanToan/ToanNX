@@ -30,6 +30,10 @@ Chi tiết: `docs/rules/backend.md`, `docs/architecture/`, `docs/common-catalog.
 - Hằng số, kiểu, tiện ích ở `constants/`, `types/`, `utils/` (hằng mặc định toàn BE ở
   `app/core/constants/defaults.py`). Không magic number/string (locale, timezone, tiền tệ, Content-Type, mẫu
   email, chuỗi thông báo lặp), không `print`, không nuốt lỗi.
+- **Rate limit dùng `StrEnum` + tách hằng số từng phân đoạn dấu `.`**: `@rate_limit(...)`, `action_rate_limits` và
+  `settings.RATE_LIMITS` bắt buộc dùng `CoreRateLimitKey` hoặc `<Module>RateLimitKey` (`constants/<m>_rate_limit_key.py`),
+  tuyệt đối không truyền chuỗi thô như `"system.telegram.webhook"` hay `"default.write"`. Bên trong `*RateLimitKey`, tách rõ
+  `ModuleCode.<M>`, hằng nhóm (`_CRON = "cron"`...) và `RateLimitAction.*` rồi ghép bằng f-string (`test_module_conventions.py`).
 
 ## Module
 

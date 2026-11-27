@@ -3,6 +3,7 @@
 import { Pencil, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { FormDialog } from "@/shares/components/common/form-dialog";
 import { SelectField } from "@/shares/components/common/select-field";
 import { Button } from "@/shares/components/ui/button";
@@ -58,30 +59,36 @@ export function PagePathSelect({
         }))}
       />
       {canUpdate && selected ? (
-        <Button
-          type="button"
-          size="icon"
-          variant="outline"
-          aria-label={t("editPath")}
-          title={t("editPath")}
-          disabled={disabled}
-          onClick={openEdit}
-        >
-          <Pencil />
-        </Button>
+        <AppTooltip content={t("editPath")}>
+          <span className="inline-flex">
+            <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              aria-label={t("editPath")}
+              disabled={disabled}
+              onClick={openEdit}
+            >
+              <Pencil />
+            </Button>
+          </span>
+        </AppTooltip>
       ) : null}
       {canCreate ? (
-        <Button
-          type="button"
-          size="icon"
-          variant="outline"
-          aria-label={t("createPath")}
-          title={t("createPath")}
-          disabled={disabled}
-          onClick={openCreate}
-        >
-          <Plus />
-        </Button>
+        <AppTooltip content={t("createPath")}>
+          <span className="inline-flex">
+            <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              aria-label={t("createPath")}
+              disabled={disabled}
+              onClick={openCreate}
+            >
+              <Plus />
+            </Button>
+          </span>
+        </AppTooltip>
       ) : null}
       <FormDialog
         open={dialog !== null}

@@ -48,6 +48,7 @@ export function AuthorTable({
                 alt={author.name}
                 fill
                 sizes="40px"
+                unoptimized
                 className="object-cover"
               />
             </div>

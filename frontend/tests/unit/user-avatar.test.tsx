@@ -9,14 +9,14 @@ import {
 } from "@/shares/components/common/user-avatar";
 
 describe("user-avatar helpers", () => {
-  it("lấy displayName theo thứ tự: fullName > lastName + firstName > username > email", () => {
+  it("lấy displayName theo chuẩn fullname (username) > fullname > username > email", () => {
     expect(
       getUserDisplayName({
         fullName: "Nguyễn Xuân Toàn",
         username: "toannx",
         email: "toan@example.com",
       }),
-    ).toBe("Nguyễn Xuân Toàn");
+    ).toBe("Nguyễn Xuân Toàn (toannx)");
 
     expect(
       getUserDisplayName({
@@ -25,7 +25,14 @@ describe("user-avatar helpers", () => {
         username: "toannx",
         email: "toan@example.com",
       }),
-    ).toBe("Nguyễn Toàn");
+    ).toBe("Nguyễn Toàn (toannx)");
+
+    expect(
+      getUserDisplayName({
+        fullName: "Nguyễn Xuân Toàn",
+        email: "toan@example.com",
+      }),
+    ).toBe("Nguyễn Xuân Toàn");
 
     expect(
       getUserDisplayName({

@@ -10,6 +10,7 @@ import { Input } from "@/shares/components/ui/input";
 import { SEARCH_MAX_LENGTH, SEARCH_MAX_TERMS } from "@/shares/lib/search-text";
 
 import { useSearchInput } from "./hooks/use-search-input";
+import { InlineHelpTooltip } from "./inline-help-tooltip";
 
 /**
  * Ô tìm chuẩn: Enter áp dụng từ khóa, gõ không gọi tìm kiếm; nút xóa áp dụng từ khóa rỗng.
@@ -54,20 +55,26 @@ export function SearchInput({
           aria-label={placeholder}
           aria-invalid={search.hasError || undefined}
           aria-describedby={search.hasError ? errorId : undefined}
-          className="pr-11 pl-9 [&::-webkit-search-cancel-button]:hidden"
+          className={cn(
+            "pl-9 [&::-webkit-search-cancel-button]:hidden",
+            search.draft ? "pr-16" : "pr-10",
+          )}
         />
-        {search.draft ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={search.clear}
-            aria-label={t("clear")}
-            className="text-muted-foreground absolute top-1/2 right-0.5 size-9 -translate-y-1/2 rounded-lg"
-          >
-            <X />
-          </Button>
-        ) : null}
+        <div className="absolute top-1/2 right-2 flex -translate-y-1/2 items-center gap-0.5">
+          {search.draft ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={search.clear}
+              aria-label={t("clear")}
+              className="text-muted-foreground size-7 rounded-lg"
+            >
+              <X className="size-3.5" aria-hidden />
+            </Button>
+          ) : null}
+          <InlineHelpTooltip content={t("hint")} label={t("hintLabel")} />
+        </div>
       </div>
       {search.hasError ? (
         <p id={errorId} role="alert" className="text-destructive mt-1 text-xs">

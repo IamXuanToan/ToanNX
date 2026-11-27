@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { FormPage } from "@/shares/components/common/form-page";
+import { RecordDetailTabs } from "@/shares/components/common/record-detail-tabs";
 import { QueryErrorState } from "@/shares/components/errors/query-error-state";
 import { Button } from "@/shares/components/ui/button";
 import { Skeleton } from "@/shares/components/ui/skeleton";
@@ -48,6 +49,7 @@ export function IncomeProfile({
   return (
     <FormPage
       title={t("detailTitle", { date: income.receivedDate })}
+      backHref={routes.incomes}
       actions={
         canUpdate ? (
           <div className="flex gap-2">
@@ -74,8 +76,10 @@ export function IncomeProfile({
         ) : null
       }
     >
-      <IncomeForm income={income} disabled={!canUpdate} />
-      {history ? <div className="mt-6">{history}</div> : null}
+      <RecordDetailTabs
+        general={<IncomeForm income={income} disabled={!canUpdate} />}
+        history={history}
+      />
     </FormPage>
   );
 }

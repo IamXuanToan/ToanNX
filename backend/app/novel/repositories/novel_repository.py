@@ -44,6 +44,14 @@ class NovelRepository(CoreRepository[Novel]):
         """
         return self.find_one(slug=slug)
 
+    def list_stale_for_owner(self, owner_id: Any, cutoff: Any, *, limit: int = 15) -> list[Novel]:
+        """Truyện cá nhân chưa cập nhật trước `cutoff`."""
+        return list(
+            self.get_queryset()
+            .filter(owner_id=owner_id, updated_at__lt=cutoff)
+            .order_by("updated_at")[:limit]
+        )
+
     def increment_views(self, novel_id: Any) -> None:
         """Tăng số lượt xem của tiểu thuyết bằng F() expression.
 

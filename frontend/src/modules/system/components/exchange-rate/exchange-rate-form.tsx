@@ -74,7 +74,7 @@ export function ExchangeRateForm() {
       </FormLayout>
       <FormActions>
         <Button type="button" variant="outline" asChild>
-          <Link href={SYSTEM_ROUTES.exchangeRates}>{tCommon("cancel")}</Link>
+          <Link href={SYSTEM_ROUTES.exchangeRates}>{tCommon("back")}</Link>
         </Button>
         <FormSubmitButton isSubmitting={isSubmitting}>{tCommon("create")}</FormSubmitButton>
       </FormActions>

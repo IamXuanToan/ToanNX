@@ -20,6 +20,7 @@ from rest_framework.request import Request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_model_view_set import CoreModelViewSet
 from app.system.types.permission_rule import permission_rule
+from app.utilities.constants.utilities_rate_limit_key import UtilitiesRateLimitKey
 from app.utilities.filters.page_filter import PageFilter
 from app.utilities.models.page import Page
 from app.utilities.permissions.page_permission import PagePermission as P
@@ -72,9 +73,9 @@ class PageViewSet(CoreModelViewSet[Page]):
     bulk_delete_enabled = True
     history_enabled = True
     action_rate_limits = {
-        "create": "utilities.page.create",
-        "duplicate": "utilities.page.create",
-        "fetch_metadata": "utilities.page.create",
+        "create": UtilitiesRateLimitKey.PAGE_CREATE,
+        "duplicate": UtilitiesRateLimitKey.PAGE_CREATE,
+        "fetch_metadata": UtilitiesRateLimitKey.PAGE_CREATE,
     }
     action_permissions = {
         "list": permission_rule(P.READ),

@@ -1,12 +1,13 @@
 "use client";
 
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Badge } from "@/shares/components/ui/badge";
 
 import { SYSTEM_ROUTES } from "../../constants/routes";
@@ -21,8 +22,6 @@ import { useJournalTable } from "./hooks/use-journal-table";
  */
 export function JournalTable({ canDelete }: { canDelete: boolean }) {
   const t = useTranslations("system.journal");
-  const format = useFormatter();
-  const now = useNow({ updateInterval: 60_000 });
   const state = useJournalTable();
   const { table, query, resources, resourceName, summarize } = state;
 
@@ -83,6 +82,7 @@ export function JournalTable({ canDelete }: { canDelete: boolean }) {
       id: "actor",
       header: t("columns.actor"),
       cell: (entry) =>
+        entry.actorDisplayName ||
         entry.actorLabel || <span className="text-muted-foreground">{t("system")}</span>,
     },
     {
@@ -90,9 +90,9 @@ export function JournalTable({ canDelete }: { canDelete: boolean }) {
       header: t("columns.createdAt"),
       sortKey: "created_at",
       cell: (entry) => (
-        <time dateTime={entry.createdAt} className="text-muted-foreground whitespace-nowrap">
-          {format.relativeTime(new Date(entry.createdAt), now)}
-        </time>
+        <span className="text-muted-foreground">
+          <TimestampText value={entry.createdAt} />
+        </span>
       ),
     },
   ];

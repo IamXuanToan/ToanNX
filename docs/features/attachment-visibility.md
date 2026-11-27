@@ -38,8 +38,7 @@ Trình sửa ảnh (`lib/crop-image-canvas.ts`) giữ nguyên chất lượng g�
 
 ## Dung lượng (giới hạn `ATTACHMENT_MAX_TOTAL_STORAGE_BYTES`)
 
-`AttachmentService.get_current_storage_usage_bytes` tính **cả hai kho**, chạy mỗi lần upload (chặn khi vượt, báo
-`system.storage.quota_warning` khi qua ngưỡng):
+`AttachmentService.get_current_storage_usage_bytes` tính **cả hai kho** (`system:storage:r2_usage_bytes` được cache Redis **300 giây** để giảm gọi Cloudflare R2 Usage API khi xem thống kê; riêng luồng upload `create()` truyền `use_cache=False` để kiểm trần `ATTACHMENT_MAX_TOTAL_STORAGE_BYTES` bằng dữ liệu tươi và tự vô hiệu hóa cache sau commit khi thêm, đổi chế độ, thay nội dung, xóa hoặc purge):
 
 | Tình huống | Cách tính |
 | --- | --- |

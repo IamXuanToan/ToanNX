@@ -63,6 +63,11 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
   - Tuyệt đối không lặp rải rác `locale === "en" ? "en-US" : "vi-VN"`, `"Asia/Ho_Chi_Minh"`, `"VND"`/`"₫"`, tên key
     `localStorage`/`sessionStorage`/toast hoặc lời gọi `.toLocaleString("vi-VN")` trong component/hook/service; dùng
     helper chuẩn (`getNumberLocale`, `formatVndText`, `formatDisplayNumber` ở `shares/lib/number-format.ts`).
+  - **Không viết chuỗi định danh gộp dấu chấm kiểu magic string** (như `"system.telegram.webhook"`, `"workspace.cron.tick"`,
+    `"workspace.assistant_conversation.read"`, `queryKey: ["portal-...", ...]` hay mã lỗi kiểm logic dạng `"AUTH_CSRF_FAILED"`):
+    phải dùng hằng số có tên trong `constants/` / `permissions/`, **tách từng phân đoạn** theo module (`ModuleCode` / `<M>_SCOPE`),
+    nhóm/tài nguyên (`_CRON = "cron"` / `"assistant_conversation"`) và hành động (`RateLimitAction` / `PERMISSION_ACTION`) rồi ghép
+    bằng helper/f-string để đổi tên module hay nhóm chỉ cần sửa một chỗ.
 - **Không có tiền tố `toannx` trong tên kỹ thuật** (cả BE và FE), ở mọi dạng viết (`toannx_`, `toannx-`,
   `toannx:`, `toannx.`, `TOANNX_`, `toannxAuth`):
   - **Tên cookie**: `access_token`, `refresh_token`, `session_hint`, `csrftoken`; không `toannx_access`, `toannx-auth`.
@@ -129,11 +134,19 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
   `python scripts/sync-ai-rules.py`, không sửa tay; `--check` chạy trong `scripts/check-all.*`. Đổi một rule trong
   `docs/rules/` (hoặc quy trình/bảng kiểm) thì sửa rule AI tương ứng, `CLAUDE.md`, `AGENTS.md`, `prompt.md` trong cùng
   lần. Cách viết rule AI: `.agents/rules/40-docs-and-rules.md`.
+- **Tự động cập nhật rule khi người dùng đặt quy tắc mới**: Bất kỳ khi nào người dùng trong chat nêu một **quy chuẩn,
+  ràng buộc, kiến trúc hoặc cách làm mới chưa có trong `docs/rules/`** (hoặc yêu cầu ghi nhận để lần sau không phải
+  nhắc lại), AI **bắt buộc tự động cập nhật đồng bộ trong cùng lần làm việc** vào: `docs/rules/` (nguồn chuẩn),
+  `.agents/rules/` rồi chạy `python scripts/sync-ai-rules.py` (`--check`), `AGENTS.md`, `CLAUDE.md`, `prompt.md` và
+  bổ sung test quy ước (`test_module_conventions.py` / `code-conventions.test.ts`…) nếu kiểm tự động được. Không chờ
+  người dùng nhắc riêng việc cập nhật tài liệu rule.
 - **Skill quy trình và hỗ trợ của project**: `start-task` cho việc mới, `fix` cho lỗi đã có, `review-code` cho lượt
-  rà cuối có tự sửa lỗi xác nhận được; cùng các skill hỗ trợ chuyên biệt `test`, `refactor`, `review-security`,
-  `i18n-audit`, `permission-audit`, `db-migration`, `check-ci`. Chọn bằng ngữ nghĩa câu chat theo `.agents/rules/01-workflow.md`;
-  `review-code` không tự chạy sau mọi lần sửa. Các skill phải đọc source thực, mục lục `docs/`, rule và tài liệu
-  liên quan trước khi sửa; kiểm đúng phạm vi rồi báo nội dung commit theo [git.md](git.md).
+  rà cuối có tự sửa lỗi xác nhận được; cùng các skill hỗ trợ chuyên biệt `create-plan`, `review-plan`, `test`,
+  `refactor`, `review-security`, `i18n-audit`, `permission-audit`, `db-migration`, `commit-demo`,
+  `commit-push` (kiểm tra/bảo đảm CI pass rồi commit và push). Chọn bằng ngữ nghĩa câu chat theo `.agents/rules/01-workflow.md`; `review-code` không tự chạy sau
+  mọi lần sửa. Các skill phải đọc source thực, mục lục `docs/`, rule và tài liệu liên quan trước khi sửa; kiểm đúng
+  phạm vi và **chỉ gợi ý commit (`commit-demo`) hoặc thực hiện commit/push (`commit-push`) khi người dùng yêu cầu**
+  theo [git.md](git.md).
 - Nguồn skill project ở `.agents/skills/<tên>/`; skill viết riêng cho repo được liên kết sang
   `.claude/skills/<tên>/`. Skill cài từ bên ngoài có nguồn/commit trong `skills-lock.json` và có thể được liên kết
   bằng CLI. Các thư mục này khác `.claude/skills/rule-*/` sinh từ rule; không sửa tay bản sinh, không để skill
@@ -144,7 +157,15 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
   - đổi cách một chức năng chạy (phạm vi quyền, ẩn/khóa theo quyền, cột Thao tác, sidebar, file công khai/riêng
     tư, Web Push…) → file tương ứng trong `docs/features/`; chức năng dùng chung mới → thêm file + dòng mục lục;
   - đổi cách cài đặt/vận hành → `docs/guides/`; đổi kiến trúc nền → `docs/architecture/`;
-  - thêm module → thêm `docs/modules/<module>/README.md`.
+  - thêm module → thêm `docs/modules/<module>/README.md`;
+  - viết hoặc cập nhật kế hoạch triển khai → lưu vào `docs/plans/<YYYY>/<MM>/<DD>/<ten-kebab-case>-plan.md`
+    theo ngày lập để dễ tra cứu theo ngày; không đặt file plan trực tiếp ở gốc `docs/plans/`;
+  - cập nhật sổ theo dõi rà soát (`docs/reports/code-audit-tracker.md`): mọi lượt thêm/sửa file qua các skill
+    triển khai (`start-task`, `fix`, `refactor`, `test`, `db-migration`, `create-plan`, `review-plan`) ghi nhận
+    ngày thay đổi qua `uv run --no-project python scripts/audit_tracker.py mark-changed --files <...>`; các lượt
+    `review-code`, `review-security`, `i18n-audit`, `permission-audit` gọi `list-pending --axis <trục>` để mặc định
+    chỉ rà các file vừa đổi / `NEEDS_CHECK` (cùng caller/contract liên quan) và đóng dấu `mark-checked` sau khi đạt
+    (chỉ rà toàn bộ repo khi người dùng yêu cầu).
   Tài liệu lệch với code coi như việc chưa xong.
 
 ## 5. Bảo mật
@@ -153,8 +174,8 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
 - **Bí mật**: bí mật hệ thống tự tạo và tự kiểm (ký token, băm, mã xác minh nội bộ, link ký) luôn dẫn xuất
   từ `DJANGO_SECRET_KEY` qua `django.core.signing` / `salted_hmac`, mỗi mục đích một `salt` riêng; không tạo biến
   env bí mật mới cho các việc này. Bí mật bên thứ ba cấp cho **cả hệ thống** (OAuth client secret, `CRON_SECRET`,
-  khóa R2, service account Firebase) dùng biến env riêng. Bí mật bên thứ ba của **từng người dùng** (token API
-  SePay, token bot Telegram) lưu DB đã mã hóa bằng `SecretCipher` (khóa dẫn xuất từ `DJANGO_SECRET_KEY` theo mục
+  khóa R2, service account Firebase, bot Telegram chung `TELEGRAM_BOT_TOKEN`, khóa API `XKIRO_API_KEY`) dùng biến env riêng. Bí mật bên thứ ba của **từng người dùng** (token API
+  SePay) và bí mật trong Két sắt cá nhân (`VaultItem`) lưu DB đã mã hóa bằng `SecretCipher` (khóa dẫn xuất từ `DJANGO_SECRET_KEY` theo mục
   đích), API chỉ trả 4 ký tự cuối, không qua env. Secret webhook riêng từng người do hệ thống tự tạo thì dẫn xuất
   bằng `salted_hmac` (không lưu DB). Không bao giờ đưa `DJANGO_SECRET_KEY` ra ngoài hệ thống. Đổi
   `DJANGO_SECRET_KEY` làm mất hiệu lực các bí mật dẫn xuất/mã hóa đó (ghi trong `docs/guides/deployment.md`). Không ghi
@@ -237,7 +258,10 @@ Chi tiết luồng: [docs/features/attachment-visibility.md](../features/attachm
     docstring của view và method HTTP**) thì chạy `pnpm api:types` và commit `api-schema.gen.ts` cùng lần
     (rule backend §6; CI đỏ nếu file lệch dù chỉ một dòng mô tả).
   - FE: `eslint`/`prettier --check` trên file đã sửa, `pnpm typecheck` (kiểu liên đới cả project), Vitest đúng
-    file test liên quan; `pnpm build` khi đổi route/page/layout/config; E2E chỉ spec của luồng bị đổi
+    file test liên quan; `pnpm build` khi đổi route/page/layout/config; E2E chỉ spec của luồng bị đổi.
+- **Khởi chạy local Windows (`scripts/dev.bat`)**: khi chạy phải tự động giải phóng 2 cổng `8001` và `3001`, tự đồng bộ
+  dependency (`uv sync` + `pnpm install`), kiểm tra migrate và chạy cả hai qua supervisor để khi stop thì dừng đồng
+  thời cả Backend lẫn Frontend.
     (`pnpm e2e tests/e2e/<luồng>.spec.ts`).
   - Toàn bộ (`scripts/check-all.ps1`/`.sh`, `pnpm e2e` đầy đủ, `uv run pytest` / `pnpm test` / `pnpm lint`
     **không chỉ định file**) **chỉ chạy khi người dùng yêu cầu**, kể cả khi đã sửa nhiều file: chạy toàn bộ quá lâu
@@ -273,7 +297,8 @@ Chi tiết luồng: [docs/features/attachment-visibility.md](../features/attachm
 
 - Theo [quy tắc nhánh và commit](git.md). Commit nhỏ theo một thay đổi logic; không commit `.env`,
   `media/`, build output hoặc dữ liệu công cụ cục bộ.
-- **AI agent không tự thao tác git** (tạo nhánh, commit, push, merge, xóa nhánh) khi chưa được yêu cầu rõ;
-  làm trên nhánh hiện tại. Sau mỗi task, đọc trạng thái và diff Git (cả file chưa theo dõi) rồi gợi ý nội dung
-  commit gồm tiêu đề và body theo [git.md](git.md), ở dạng văn bản để dán vào VS Code, cho toàn bộ thay đổi chưa
-  commit; không trả lệnh Git thay nội dung commit, không tự stage/commit/push.
+- **AI agent không tự thao tác Git và không tự gợi ý nội dung commit sau các task** (kể cả khi lên/review plan,
+  review code, rà bảo mật hay sửa lỗi) khi chưa được người dùng yêu cầu rõ; làm trên nhánh hiện tại. Chỉ soạn nội dung
+  commit trong khối `text` để dán vào VS Code khi được yêu cầu (`commit-demo`), và chỉ stage/commit/push khi được gọi rõ
+  (`commit-push`). Tuyệt đối không thêm nguồn hay chữ ký bên ngoài (như `Co-Authored-By: Claude ...`) vào thông điệp
+  commit; không trả lệnh Git thay nội dung commit khi soạn bản demo.

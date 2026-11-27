@@ -15,6 +15,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.decorators.validate_request import validate_request
 from app.core.permissions.csrf_protected import CsrfProtected
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.system_rate_limit_key import SystemRateLimitKey
 from app.system.serializers.validates.client_error_report_validate_serializer import (
     ClientErrorReportValidateSerializer,
 )
@@ -29,7 +30,7 @@ class ClientErrorView(CoreApiView):
     permission_classes: list[type[BasePermission]] = [AllowAny, CsrfProtected]
 
     @extend_schema(responses={204: None})
-    @rate_limit("system.client_error.create")
+    @rate_limit(SystemRateLimitKey.CLIENT_ERROR_CREATE)
     @validate_request(ClientErrorReportValidateSerializer)
     def post(self, request: Request, validated_data: dict[str, Any]) -> Response:
         """Ghi lỗi vào log.
@@ -42,9 +43,9 @@ class ClientErrorView(CoreApiView):
             204 không body.
         """
         stack = str(validated_data.get("stack") or "").strip()
-        digest = str(validated_data.get("digest") or "").strip()
-        url = validated_data["url"]
-        message = validated_data["message"]
+        digest = str(validated_data.get("digest") or "").replace("\r", " ").replace("\n", " ").strip()
+        url = str(validated_data["url"]).replace("\r", " ").replace("\n", " ").strip()
+        message = str(validated_data["message"]).replace("\r", " ").replace("\n", " ").strip()
 
         if stack:
             log_message = (

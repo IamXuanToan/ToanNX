@@ -11,7 +11,8 @@ pytestmark = pytest.mark.django_db
 
 def test_login_and_new_device(user: Any, login: Any) -> None:
     login(user)
-    assert Notification.objects.filter(recipient=user, event_code="system.auth.login").count() == 1
+    login_notif = Notification.objects.get(recipient=user, event_code="system.auth.login")
+    assert login_notif.link == "/portal/profile?profileTab=security"
     assert not Notification.objects.filter(
         event_code="system.auth.new_device"
     ).exists()  # lần đầu không cảnh báo
@@ -21,4 +22,5 @@ def test_login_and_new_device(user: Any, login: Any) -> None:
 
     other_device = APIClient(HTTP_USER_AGENT="Firefox lạ")
     login(user, client=other_device)
-    assert Notification.objects.filter(recipient=user, event_code="system.auth.new_device").count() == 1
+    new_dev_notif = Notification.objects.get(recipient=user, event_code="system.auth.new_device")
+    assert new_dev_notif.link == "/portal/profile?profileTab=security"

@@ -2,16 +2,24 @@
   "navigation": {
     "sections": {
       "overview": "Overview",
+      "workspace": "Workspace",
       "utilities": "Utilities",
       "finance": "Finance",
       "media": "Media"
     },
     "dashboard": "Dashboard",
+    "reminders": "Reminders",
+    "subscriptions": "Subscriptions",
+    "subscriptionPayments": "Renewal History",
+    "assets": "Assets",
+    "warrantyClaims": "Warranty Claims",
+    "vault": "Secret Vault",
+    "workspaceSettings": "Digest & Alerts",
+    "mobileMenu": "More",
     "financeDashboard": "Finance Dashboard",
     "financeIncomes": "Incomes",
     "financeInvoices": "Invoices",
     "financePlatforms": "Platforms",
-    "financeRules": "Classification Rules",
     "financeReports": "Reports",
     "financeSepay": "SePay Connection",
     "pages": "My Pages",
@@ -21,12 +29,19 @@
     "profile": "Profile",
     "goToAdmin": "Admin Console",
     "logout": "Log Out",
-    "donations": "Donations & Support"
+    "donations": "Support Receipts"
   },
   "dashboard": {
     "title": "Creator Studio",
     "welcome": "Welcome back, {name}!",
-    "subtitle": "Manage your custom pages, short links and track engagement.",
+    "subtitle": "Track workspace tasks, finance cashflow, VietQR donations, pages and links in one unified dashboard.",
+    "unified": {
+      "title": "Finance, Donations & Analytics",
+      "subtitle": "Combined income by platform, currency share, gift breakdown and short-link engagement.",
+      "viewIncomes": "Incomes",
+      "viewDonations": "Support Receipts",
+      "viewReports": "Detailed Reports"
+    },
     "stats": {
       "totalPages": "Total Pages",
       "totalPagesHint": "Bio, Affiliate, Donation",
@@ -74,7 +89,15 @@
     "studioBadge": "Personal Studio",
     "start": "Get started",
     "emptyPages": "No pages yet. Create your first page!",
-    "emptyLinks": "No short links yet. Create your first link!"
+    "emptyLinks": "No short links yet. Create your first link!",
+    "workspace": {
+      "monthlySpending": "Monthly Spending",
+      "monthlySpendingHint": "Upcoming 14d renewals: {amount}",
+      "remindersToday": "Reminders Today",
+      "remindersOverdue": "{count} overdue",
+      "expiringWarranty": "Expiring Warranties",
+      "expiringWarrantyHint": "Within next 30 days"
+    }
   },
   "pages": {
     "title": "My Pages",

@@ -1,11 +1,14 @@
 "use client";
 
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
+import { formatExplicitDate } from "@/shares/lib/date-time-format";
+import { formatOwnerDisplayName, formatOwnerDisplayTooltip } from "@/shares/lib/user-display";
 
 import { DOC_TYPES } from "../../constants/finance-enums";
 import { useFinanceRoutes } from "../../hooks/use-finance-routes";
@@ -16,7 +19,6 @@ import { MoneyText } from "../income/money-text";
 /** @param props - Quyền sửa/xóa. @returns Bảng hóa đơn / chứng từ. */
 export function InvoiceTable({ canUpdate, canDelete }: { canUpdate: boolean; canDelete: boolean }) {
   const t = useTranslations("finance.invoices");
-  const format = useFormatter();
   const routes = useFinanceRoutes();
   const state = useInvoiceTable();
   const { table, query } = state;
@@ -47,7 +49,11 @@ export function InvoiceTable({ canUpdate, canDelete }: { canUpdate: boolean; can
       id: "issuedOn",
       header: t("fields.issuedOn"),
       sortKey: "issued_on",
-      cell: (invoice) => format.dateTime(new Date(invoice.issuedOn), { dateStyle: "short" }),
+      cell: (invoice) => (
+        <span className="whitespace-nowrap tabular-nums">
+          {formatExplicitDate(invoice.issuedOn)}
+        </span>
+      ),
     },
     {
       id: "platform",
@@ -61,14 +67,16 @@ export function InvoiceTable({ canUpdate, canDelete }: { canUpdate: boolean; can
             id: "owner",
             header: t("fields.owner"),
             hideBelow: "xl" as const,
-            cell: (invoice: Invoice) => (
-              <span
-                className="text-muted-foreground block max-w-44 truncate"
-                title={invoice.ownerEmail}
-              >
-                {invoice.ownerName || invoice.ownerEmail}
-              </span>
-            ),
+            cell: (invoice: Invoice) => {
+              const ownerLabel = formatOwnerDisplayName(invoice);
+              return (
+                <AppTooltip content={formatOwnerDisplayTooltip(invoice)}>
+                  <span className="text-muted-foreground block max-w-44 truncate">
+                    {ownerLabel || "—"}
+                  </span>
+                </AppTooltip>
+              );
+            },
           },
         ]
       : []),

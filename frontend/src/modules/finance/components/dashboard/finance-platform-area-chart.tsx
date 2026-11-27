@@ -14,15 +14,17 @@ import {
 } from "@/shares/components/ui/chart";
 import { formatCompactDisplayNumber, getNumberLocale } from "@/shares/lib/number-format";
 
-import { chartColor } from "../../constants/chart-colors";
+import { platformChartConfigItem } from "../../constants/chart-colors";
 
-/** @param props - Nền tảng + 12 dòng VNĐ theo nền tảng; nhãn tháng. @returns Vùng chồng theo nền tảng. */
+/** @param props - Nền tảng + 12 dòng VNĐ theo nền tảng; màu theo nền tảng; nhãn tháng. @returns Vùng chồng theo nền tảng. */
 export function FinancePlatformAreaChart({
   platforms,
+  colors,
   rows,
   monthLabel,
 }: {
   platforms: string[];
+  colors?: Record<string, string>;
   rows: Record<string, number>[];
   monthLabel: (month: number) => string;
 }) {
@@ -31,7 +33,10 @@ export function FinancePlatformAreaChart({
   const numberLocale = getNumberLocale(locale);
   const keys = platforms.map((_, index) => `p${index}`);
   const config = Object.fromEntries(
-    platforms.map((name, index) => [keys[index], { label: name, color: chartColor(index) }]),
+    platforms.map((name, index) => [
+      keys[index],
+      platformChartConfigItem(name, colors?.[name], index),
+    ]),
   ) satisfies ChartConfig;
   const data = rows.map((row) => ({
     label: monthLabel(row.month),
@@ -43,31 +48,37 @@ export function FinancePlatformAreaChart({
         <CardTitle className="text-base">{t("charts.platforms")}</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={config} className="aspect-auto h-64 w-full">
-          <AreaChart data={data} margin={{ left: 8, right: 8 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="label" tickLine={false} axisLine={false} />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              width={56}
-              tickFormatter={(value: number) => formatCompactDisplayNumber(value, numberLocale)}
-            />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <ChartLegend content={<ChartLegendContent />} />
-            {keys.map((key) => (
-              <Area
-                key={key}
-                dataKey={key}
-                stackId="platforms"
-                type="monotone"
-                stroke={`var(--color-${key})`}
-                fill={`var(--color-${key})`}
-                fillOpacity={0.35}
+        {platforms.length === 0 ? (
+          <div className="text-muted-foreground flex h-64 items-center justify-center text-center text-xs">
+            {t("charts.empty")}
+          </div>
+        ) : (
+          <ChartContainer config={config} className="aspect-auto h-64 w-full">
+            <AreaChart data={data} margin={{ left: 8, right: 8 }}>
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey="label" tickLine={false} axisLine={false} />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                width={56}
+                tickFormatter={(value: number) => formatCompactDisplayNumber(value, numberLocale)}
               />
-            ))}
-          </AreaChart>
-        </ChartContainer>
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              {keys.map((key) => (
+                <Area
+                  key={key}
+                  dataKey={key}
+                  stackId="platforms"
+                  type="monotone"
+                  stroke={`var(--color-${key})`}
+                  fill={`var(--color-${key})`}
+                  fillOpacity={0.35}
+                />
+              ))}
+            </AreaChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   );

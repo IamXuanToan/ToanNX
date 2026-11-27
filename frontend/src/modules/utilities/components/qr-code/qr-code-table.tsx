@@ -2,13 +2,16 @@
 
 import type { ComponentProps } from "react";
 import Image from "next/image";
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { DataTable } from "@/shares/components/common/data-table";
 import type { DataTableColumn } from "@/shares/components/common/data-table.types";
 import { FilterSelect } from "@/shares/components/common/filter-select";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { Badge } from "@/shares/components/ui/badge";
+import { formatUserDisplayName, formatUserDisplayTooltip } from "@/shares/lib/user-display";
 
 import { UTILITIES_ROUTES } from "../../constants/routes";
 import { QR_TYPES, type QrCode } from "../../types/qr-code.types";
@@ -39,8 +42,6 @@ export function QrCodeTable({
   detailRoute?: DetailRouteFn;
 }) {
   const t = useTranslations("utilities.qrCodes");
-  const format = useFormatter();
-  const now = useNow({ updateInterval: 60_000 });
   const state = useQrCodeTable({ ownerOnly, ownerId, detailRoute });
   const { table, query } = state;
 
@@ -64,6 +65,7 @@ export function QrCodeTable({
               alt={code.name}
               fill
               sizes="40px"
+              unoptimized
               className="object-contain p-0.5"
             />
           </div>
@@ -88,11 +90,16 @@ export function QrCodeTable({
             id: "owner",
             header: t("columns.owner"),
             hideBelow: "lg" as const,
-            cell: (code: QrCode) => (
-              <span className="text-muted-foreground truncate">
-                {code.owner.fullName || code.owner.email}
-              </span>
-            ),
+            cell: (code: QrCode) => {
+              const ownerLabel = formatUserDisplayName(code.owner);
+              return (
+                <AppTooltip content={formatUserDisplayTooltip(code.owner)}>
+                  <span className="text-muted-foreground block max-w-44 truncate">
+                    {ownerLabel || "—"}
+                  </span>
+                </AppTooltip>
+              );
+            },
           },
         ]
       : []),
@@ -102,7 +109,7 @@ export function QrCodeTable({
       sortKey: "updated_at",
       cell: (code) => (
         <span className="text-muted-foreground">
-          {format.relativeTime(new Date(code.updatedAt), now)}
+          <TimestampText value={code.updatedAt} />
         </span>
       ),
     },

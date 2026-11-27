@@ -12,13 +12,13 @@ Skill này thực hiện kiểm toán bảo mật **chủ động có kiểm ch�
 > - Không in secret thật (`.env`, token, `DJANGO_SECRET_KEY`, signed URL thật) ra màn hình, log hay báo cáo.
 > - `docs/rules/` luôn thắng skill ngoài; mọi bản vá phải đúng lớp `view → service → repository` và chuẩn quyền/API của repo.
 
-## Bước 0 — Tái xác nhận tự động các case cũ (nếu đã có)
+## Bước 0 — Tái xác nhận tự động & Chốt phạm vi theo Sổ theo dõi
 
-1. Kiểm tra xem file **`docs/reports/security-verification.md`** đã tồn tại chưa.
-2. Nếu **đã có**:
+1. Chạy `uv run --no-project python scripts/audit_tracker.py list-pending --axis security --format paths` để kiểm tra danh sách file mới sửa / `NEEDS_CHECK` trên trục `security` trong **`docs/reports/code-audit-tracker.md`**. Mặc định tập trung soi sâu & giả lập tấn công vào **các file đang `NEEDS_CHECK`** và các luồng nhạy cảm liên quan (trừ khi người dùng yêu cầu rà lại toàn bộ hệ thống).
+2. Kiểm tra xem file **`docs/reports/security-verification.md`** đã tồn tại chưa. Nếu **đã có**:
    - Đọc bảng case `SEC-*` và mục **"Lệnh tái xác nhận tự động"** trong file đó.
    - Chạy lại toàn bộ các lệnh test/exploit đã ghi nhận để xác minh **không có lỗ hổng cũ nào bị tái phát (regression)**.
-   - Đánh dấu case nào vừa Fail hoặc cần mở rộng do code trong `git status`/diff vừa thay đổi.
+   - Đánh dấu case nào vừa Fail hoặc cần mở rộng do code trong `NEEDS_CHECK` / `git status` vừa thay đổi.
 3. Đọc tài liệu nền & nạp skill tham chiếu:
    - `docs/rules/common.md` (mục 5 & 5.2), `docs/architecture/authentication.md`, `docs/architecture/authorization.md`, `docs/features/attachment-visibility.md`, `docs/features/permission-scope.md`, `.agents/rules/54-security-review.md`.
    - Đọc `.agents/skills/security-best-practices/SKILL.md` cùng 3 tài liệu tham chiếu đúng stack: `python-django-web-server-security.md`, `javascript-typescript-nextjs-web-server-security.md`, `javascript-typescript-react-web-frontend-security.md`.
@@ -60,5 +60,6 @@ Khi hoàn thành kiểm tra và xử lý:
    - **Mục `Lệnh tái xác nhận tự động`**: khối lệnh hoàn chỉnh (BE dùng PostgreSQL local `--reuse-db` + FE Vitest/kiểm tĩnh) để bất kỳ lần chạy `/review-security` sau chỉ cần chạy lại là tự động xác minh toàn bộ hệ thống bảo mật không bị hồi quy.
    - **Mục `Giới hạn & Mục chưa kiểm runtime`** (nếu có case chưa bắn trực tiếp lên browser/server thật).
 3. Nếu phát sinh đợt audit lớn cần lưu snapshot riêng theo ngày, có thể ghi thêm `docs/reports/<yyyy-mm-dd>-security-review.md` nhưng **vẫn giữ `docs/reports/security-verification.md` làm nguồn baseline sống để lần sau tự động xác nhận lại**.
+4. Sau khi mọi test âm & kiểm tra bảo mật đạt, đóng dấu các file vừa rà/vá ở trục `security` vào `docs/reports/code-audit-tracker.md` qua `uv run --no-project python scripts/audit_tracker.py mark-checked --axis security --files <files...> --status <PASS|FIXED> --note "<tóm tắt SEC-*>"`.
 
-Kiểm lại theo `.agents/rules/90-done-checklist.md` và trả nội dung commit chuẩn `docs/rules/git.md`.
+Kiểm lại theo `.agents/rules/90-done-checklist.md`. Nếu người dùng nêu quy chuẩn bảo mật mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy ước nếu kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt. Không tự thao tác Git và không tự gợi ý nội dung commit trừ khi người dùng yêu cầu riêng (`commit-demo` / `commit-push`).

@@ -26,6 +26,14 @@ class PageRepository(CoreRepository[Page]):
         """Trang đang công khai theo UUID."""
         return self.find_one(id=page_id, status=Page.Status.PUBLISHED)
 
+    def list_stale_for_owner(self, owner_id: Any, cutoff: Any, *, limit: int = 15) -> list[Page]:
+        """Trang cá nhân chưa cập nhật trước mốc `cutoff`."""
+        return list(
+            self.get_queryset()
+            .filter(owner_id=owner_id, updated_at__lt=cutoff)
+            .order_by("updated_at")[:limit]
+        )
+
     def find_by_url(self, segment: str, slug: str) -> Page | None:
         """Trang theo URL công khai `/<segment>/<slug>` (không phân biệt hoa thường).
 

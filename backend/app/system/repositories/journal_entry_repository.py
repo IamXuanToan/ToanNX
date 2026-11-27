@@ -15,8 +15,8 @@ class JournalEntryRepository(CoreRepository[JournalEntry]):
     model = JournalEntry
 
     def get_queryset(self) -> QuerySet[JournalEntry]:
-        """Mới nhất trước."""
-        return JournalEntry.objects.order_by("-created_at", "-pk")
+        """Mới nhất trước, kèm actor để tránh N+1 khi serialize tên hiển thị."""
+        return JournalEntry.objects.select_related("actor").order_by("-created_at", "-pk")
 
     def for_object(self, resource: str, object_id: Any) -> QuerySet[JournalEntry]:
         """Lịch sử của một bản ghi (dùng index `journal_object_idx`).

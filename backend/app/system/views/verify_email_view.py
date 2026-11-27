@@ -10,6 +10,7 @@ from app.core.decorators.rate_limit import rate_limit
 from app.core.decorators.validate_request import validate_request
 from app.core.responses.core_response import CoreResponse
 from app.core.views.core_api_view import CoreApiView
+from app.system.constants.system_rate_limit_key import SystemRateLimitKey
 from app.system.serializers.responses.password_reset_detail_response_serializer import (
     PasswordResetDetailResponseSerializer,
 )
@@ -39,7 +40,7 @@ class VerifyEmailView(CoreApiView):
         description="Kiểm tra token xác minh và đánh dấu email người dùng đã được xác minh.",
         responses=PasswordResetDetailResponseSerializer,
     )
-    @rate_limit("system.email_verification.verify")
+    @rate_limit(SystemRateLimitKey.EMAIL_VERIFICATION_VERIFY)
     @validate_request(EmailVerificationValidateSerializer)
     def post(self, request: Request, validated_data: dict[str, Any]) -> CoreResponse:
         """Xử lý xác minh email.

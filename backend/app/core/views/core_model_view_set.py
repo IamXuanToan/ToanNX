@@ -20,7 +20,7 @@ class ShortLinkViewSet(CoreModelViewSet[ShortLink]):
         "destroy": permission_rule(P.DELETE), "bulk_update": permission_rule(P.UPDATE),
         "bulk_delete": permission_rule(P.DELETE), "history": permission_rule(P.READ),
     }
-    action_rate_limits = {"create": "utilities.short_link.create"}   # khóa trong settings.RATE_LIMITS
+    action_rate_limits = {"create": UtilitiesRateLimitKey.SHORT_LINK_CREATE}   # khóa StrEnum (RATE_LIMITS)
 ```
 
 Luồng: view → `self.service` (CoreCrudService, luôn gọi bản `*_for(actor)` nên owner tự áp) → repository.
@@ -28,6 +28,8 @@ Phân trang chỉ khi request có `page`/`page_size`; không có thì trả hế
 từ settings; view cần khác (công khai…) ghi đè `permission_classes` — xem bảng trong `core_api_view.py`.
 """
 
+from collections.abc import Mapping
+from enum import StrEnum
 from typing import Any, ClassVar
 
 from django.db.models import Model, QuerySet
@@ -82,7 +84,7 @@ class CoreModelViewSet[M: Model](GenericViewSet[M]):
     bulk_delete_enabled: bool = False
     history_enabled: bool = False
     action_permissions: ClassVar[dict[str, Any]] = {}
-    action_rate_limits: ClassVar[dict[str, str]] = {}
+    action_rate_limits: ClassVar[Mapping[str, StrEnum]] = {}
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
     lookup_value_regex = "[0-9a-fA-F-]{36}"
     ordering: tuple[str, ...] = ("-created_at", "-pk")

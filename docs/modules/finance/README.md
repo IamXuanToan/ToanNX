@@ -5,12 +5,12 @@ SePay nhận biến động số dư. Phụ thuộc `system` (tiền tệ, file 
 
 - BE: `backend/app/finance/` · FE: `frontend/src/modules/finance/`
 - URL quản trị: `/quan-tri/tai-chinh/...` · nhóm `finance` (Tổng quan, Báo cáo, Thu nhập, Hóa đơn toàn sàn)
-- URL cá nhân (Portal): `/ca-nhan/tai-chinh/...` (Dashboard, Báo cáo, Thu nhập, Hóa đơn, Nền tảng, Quy tắc phân loại, Kết nối SePay riêng của tài khoản)
+- URL cá nhân (Portal): `/ca-nhan` (Dashboard hợp nhất cùng Workspace & Ủng hộ) và `/ca-nhan/tai-chinh/...` (Báo cáo, Thu nhập, Hóa đơn, Nền tảng kèm dialog phím tắt `+` / `Alt+R` quản lý Quy tắc phân loại, Kết nối SePay riêng của tài khoản)
 - Cài đặt SePay: [../../guides/finance-setup.md](../../guides/finance-setup.md)
 
 ## Model
 
-`Income`, `Invoice` (file chứng từ riêng tư, gắn nhiều khoản thu), `Platform`, `PlatformTaxRate`,
+`Income`, `Invoice` (file chứng từ riêng tư, gắn nhiều khoản thu), `Platform` (có `color` HEX `#RRGGBB` tự cân chỉnh độ tương phản Light/Dark trên biểu đồ; seed mặc định gồm Facebook, YouTube, TikTok, Shopee và `Donate` 0% không khấu trừ), `PlatformTaxRate`,
 `ClassificationRule`, `SepayConnection` (API token lưu mã hóa bằng `SecretCipher`).
 
 ## Quyền
@@ -35,18 +35,18 @@ Quản trị viên có quyền `manage_all` và `system.user.read` có thể l�
 
 ## Màn cá nhân (Client Portal)
 
-Tất cả người dùng cá nhân tự quản lý tài chính và cấu hình phân loại riêng tại `/ca-nhan/tai-chinh/...` (luôn khóa dữ liệu theo tài khoản đang đăng nhập và ẩn bộ lọc/cột người dùng, kể cả khi người dùng có `manage_all`):
+Tất cả người dùng cá nhân tự quản lý tài chính và cấu hình phân loại riêng tại Dashboard hợp nhất `/ca-nhan` và `/ca-nhan/tai-chinh/...` (luôn khóa dữ liệu theo tài khoản đang đăng nhập và ẩn bộ lọc/cột người dùng, kể cả khi người dùng có `manage_all`):
 
 | Cụm              | Màn                                          | Route                                  |
 | ---------------- | -------------------------------------------- | -------------------------------------- |
-| Tổng quan        | Dashboard · Báo cáo                          | `tai-chinh`, `bao-cao`                 |
+| Tổng quan        | Dashboard hợp nhất · Báo cáo                 | `/ca-nhan`, `bao-cao`                  |
 | Giao dịch        | Khoản thu · Hóa đơn                          | `thu-nhap`, `hoa-don`                  |
-| Cấu hình cá nhân | Nền tảng · Quy tắc phân loại · Kết nối SePay | `nen-tang`, `quy-tac`, `ket-noi-sepay` |
+| Cấu hình cá nhân | Nền tảng (kèm phím tắt `+` Quy tắc) · Kết nối SePay | `nen-tang`, `ket-noi-sepay` |
 
 ## Sự kiện thông báo
 
 `finance.income.received`, `finance.income.needs_review`, `finance.sepay.webhook_auth_failed` (hằng ở
-`constants/finance_notification_event.py`).
+`constants/finance_notification_event.py`; mọi link thông báo trỏ về Client Portal `/portal/finance/...`).
 
 ## Webhook
 

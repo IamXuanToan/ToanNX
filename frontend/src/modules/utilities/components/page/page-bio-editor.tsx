@@ -21,6 +21,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { SortableList } from "@/shares/components/common/sortable-list";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
@@ -811,17 +812,20 @@ export function PageBioEditor({
                         </span>
                       ) : null}
                       <div className="border-border/60 flex items-center gap-1 border-l pl-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => startEditSkill(skill)}
-                          disabled={disabled}
-                          className="text-muted-foreground hover:text-foreground size-5 p-0"
-                          title={t("editSkill")}
-                        >
-                          <Pencil className="size-3" />
-                        </Button>
+                        <AppTooltip content={t("editSkill")}>
+                          <span className="inline-flex">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon-xs"
+                              onClick={() => startEditSkill(skill)}
+                              disabled={disabled}
+                              className="text-muted-foreground hover:text-foreground size-5 p-0"
+                            >
+                              <Pencil className="size-3" />
+                            </Button>
+                          </span>
+                        </AppTooltip>
                         <Button
                           type="button"
                           variant="ghost"
@@ -1407,21 +1411,24 @@ export function PageBioEditor({
                       </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-1.5">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        onClick={() => handleToggleLinkVisibility(link.id)}
-                        disabled={disabled}
-                        className="text-muted-foreground hover:text-foreground size-7"
-                        title={link.isVisible ? t("visible") : t("hidden")}
-                      >
-                        {link.isVisible ? (
-                          <Eye className="size-3.5" />
-                        ) : (
-                          <EyeOff className="text-muted-foreground/50 size-3.5" />
-                        )}
-                      </Button>
+                      <AppTooltip content={link.isVisible ? t("visible") : t("hidden")}>
+                        <span className="inline-flex">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => handleToggleLinkVisibility(link.id)}
+                            disabled={disabled}
+                            className="text-muted-foreground hover:text-foreground size-7"
+                          >
+                            {link.isVisible ? (
+                              <Eye className="size-3.5" />
+                            ) : (
+                              <EyeOff className="text-muted-foreground/50 size-3.5" />
+                            )}
+                          </Button>
+                        </span>
+                      </AppTooltip>
                       <Button
                         type="button"
                         variant="outline"

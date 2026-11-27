@@ -164,20 +164,20 @@ class NotificationDispatcher:
         chat = self.telegram_chat_repository.find_by_id(delivery.target)
         if chat is None or chat.owner_id != notification.recipient_id:
             return Status.SKIPPED, NotificationErrorCode.TELEGRAM_BOT_MISSING, "", True
-        if not chat.bot.is_active:
+        if not self.telegram_bot_service.is_configured():
             return Status.SKIPPED, NotificationErrorCode.TELEGRAM_BOT_MISSING, "", True
         if not chat.chat_id or not chat.is_active or chat.status != TelegramChat.Status.ACTIVE:
             return Status.SKIPPED, NotificationErrorCode.TELEGRAM_CHAT_INACTIVE, "", True
         try:
-            token = self.telegram_bot_service.token_of(chat.bot)
+            token = self.telegram_bot_service.token()
         except BusinessRuleError:
-            return Status.FAILED, NotificationErrorCode.TELEGRAM_BOT_TOKEN_INVALID, "", True
+            return Status.SKIPPED, NotificationErrorCode.TELEGRAM_BOT_MISSING, "", True
         result = self.telegram_client.send_message(token, chat.chat_id, self._telegram_html(notification))
         if result.ok:
             self.telegram_chat_service.apply_send_result(chat, result)
             return Status.SENT, "", result.message_id, False
         if result.error_code == NotificationErrorCode.TELEGRAM_BOT_TOKEN_INVALID:
-            self.telegram_bot_service.mark_token_invalid(chat.bot)
+            logger.warning("Token Bot Telegram chung bị từ chối khi gửi delivery=%s", delivery.pk)
             return Status.FAILED, result.error_code, "", True
         self.telegram_chat_service.apply_send_result(chat, result)
         temporary = result.error_code in TEMPORARY_TELEGRAM_ERRORS or bool(result.migrate_to_chat_id)

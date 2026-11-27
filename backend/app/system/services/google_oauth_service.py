@@ -55,7 +55,7 @@ class GoogleOAuthService(OAuthProviderService):
         }
 
         try:
-            token_resp = requests.post(self.TOKEN_URL, data=token_data, timeout=10)
+            token_resp = requests.post(self.TOKEN_URL, data=token_data, timeout=5)
         except requests.RequestException as exc:
             raise BusinessRuleError(
                 "Không thể kết nối tới máy chủ Google để xác thực.",
@@ -80,7 +80,7 @@ class GoogleOAuthService(OAuthProviderService):
             user_resp = requests.get(
                 self.USERINFO_URL,
                 headers={"Authorization": f"Bearer {access_token}"},
-                timeout=10,
+                timeout=5,
             )
         except requests.RequestException as exc:
             raise BusinessRuleError(

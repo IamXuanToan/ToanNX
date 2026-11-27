@@ -59,14 +59,17 @@ Usage của từng dịch vụ (checklist mục 6).
 
 | Nguồn | Lượt gọi/tháng | Ghi chú |
 | --- | --- | --- |
-| Trang quản trị (SSR FE + API BE) | ~60.000 | 2.000 request/ngày |
-| Khách (trang FE + API BE) | ~30.000 | 500 lượt × 2 function |
-| Bộ hẹn giờ gửi thông báo | ~4.300–43.000 | Mỗi 10 phút, hoặc mỗi phút |
-| **Tổng** | **~100.000–135.000** | Hạn mức 1.000.000, còn dư nhiều |
+| Health check ngoài (`GET /api/v1/system/health`) | ~4.464 | Mỗi 10 phút (`0` DB, `0` Redis; không dùng `/health/ready`) |
+| Cron gửi thông báo (`POST /system/notifications/dispatch`) | ~4.464 + QStash | cron-job.org mỗi 10 phút (`24h` idle recheck trên Redis) |
+| Workspace Cron Tick (`POST /workspace/cron/tick`) | ~2.976 | cron-job.org mỗi 15 phút (`0` DB khi rảnh) |
+| Dọn dẹp hằng ngày (`GET /system/health/cleanup`) | 31 | Vercel Cron `0 3 * * *` |
+| Trang quản trị & Khách (FE + API BE) | ~13.000–73.000 | Phụ thuộc mức dùng; polling chuông `15p`/`30p` & Donate `60s`/`120s` |
+| **Tổng ước lượng** | **~25.000–85.000** | Idle sạch `~12.140` (`1,2%` hạn mức `1.000.000`) |
 
 **Active CPU 4 giờ/tháng (khoảng 480 giây/ngày) mới là giới hạn sát nhất.** Mỗi lần Django khởi động nguội tốn
-khoảng 1–2 giây CPU; Argon2 khi login khoảng 0,1 giây; một request thường 30–100ms. Vì vậy:
-- không gọi function theo kiểu thăm dò dày đặc nếu không cần (bộ hẹn giờ phải trả về ngay khi không có việc);
+khoảng 1–2 giây CPU; Argon2 khi login khoảng 0,1 giây; một request thường 30–100ms. Ảnh động R2 và CDN ngoài
+gắn `<Image unoptimized />` để không tiêu tốn giới hạn 1.000 source images/tháng của Vercel Image Optimization. Vì vậy:
+- không gọi function theo kiểu thăm dò dày đặc nếu không cần (bộ hẹn giờ trả về ngay khi không có việc; tab ẩn dừng polling);
 - không làm việc nặng trong request (gửi thông báo, xử lý ảnh lớn).
 
 ### 3.2 Neon: giữ compute được ngủ
@@ -75,15 +78,15 @@ Neon chỉ tốn CU-giờ khi đang thức. **Mỗi truy vấn đánh thức nó
 
 | Nguồn đánh thức | Ước lượng CU-giờ/tháng (0,25 CU) |
 | --- | --- |
-| Chủ site dùng trang quản trị ~3,5 giờ/ngày | ~26 |
-| Khách vào link/trang **có** cache Redis (chỉ cache miss mới chạm DB) | ~5–15 |
-| Khách vào link/trang **không có** cache (mỗi lượt đều query và ghi bucket rate limit) | có thể **>100**, hết hạn mức |
-| Bộ hẹn giờ thông báo **chạm DB mỗi lần** (mỗi 1–5 phút) | **~180**, Neon không bao giờ ngủ |
-| Bộ hẹn giờ chỉ chạm DB khi cờ Redis báo có việc | ~1–3 |
+| Rảnh hoàn toàn (`cleanup` `03:00` + `backup` 1/ngày + `W4` kiểm lại `1/ngày` qua TTL `24h`) | ~1,6–2,0 |
+| Chủ site dùng trang quản trị ~2,5 giờ/ngày + tab nền poll `15–30p` | ~20–25 |
+| Khách vào `/p/[slug]`, `/s/[slug]`, Donate, Cài đặt công khai (cache Redis `600s`) | ~8–14 (chủ yếu từ `ShortLink` ghi click + miss cache) |
+| Bộ hẹn giờ thông báo **chạm DB mỗi lần** (nếu không có Redis / `IDLE_RECHECK` ngắn) | **>100**, Neon không bao giờ ngủ |
+| Bộ hẹn giờ thông báo/W4 chỉ chạm DB khi Redis báo đến hạn hoặc hết TTL `24h` | ~0–2 |
 
 Hai quy tắc rút ra:
-1. **Lượt khách không được chạm DB khi cache còn hiệu lực**, kể cả việc ghi bộ đếm rate limit.
-2. **Bộ hẹn giờ không được query DB khi không có việc.** Kiểm cờ trong Redis trước.
+1. **Lượt khách đọc public settings / page / donation không chạm DB khi cache còn hiệu lực**, và rate limit đếm trên Redis.
+2. **Bộ hẹn giờ không được query DB khi không có việc.** Kiểm cờ trong Redis trước (`notification:next_due` TTL `24h`, `workspace:cron:alerts_next_due` TTL `24h` với horizon QStash `7 ngày` và task `refresh_cron_schedules` đồng bộ mỗi ngày tại `03:00 UTC`).
 
 Cố định compute ở **0,25 CU** (không cho tự tăng) để ngân sách đoán trước được.
 
@@ -95,11 +98,12 @@ cảnh báo (chuông + email) khi dùng từ 80% của `DATABASE_MAX_BYTES`.
 
 | Việc | Lệnh mỗi lần | Lượng/tháng |
 | --- | --- | --- |
-| Rate limit (`INCR`, chỉ `EXPIRE` ở lần đầu của cửa sổ) | ~1 | Ghi của quản trị ~6.000 + lượt khách ~15.000 |
-| Cache link/trang công khai (`GET` version + `GET` dữ liệu; miss thì thêm `SET`) | 2–3 | ~30.000–45.000 |
-| Cờ "có thông báo chờ" (`SET` khi tạo, `GET` mỗi lần bộ hẹn giờ chạy) | 1 | 4.300 (mỗi 10 phút) – 43.200 (mỗi phút) |
-| Làm mới cache khi quản trị viên sửa link/trang/QR (`INCR` + `EXPIRE`) | 2 | vài trăm |
-| **Tổng** | | **~55.000–110.000**, khoảng 11–22% hạn mức |
+| Rate limit (`INCR`, chỉ `EXPIRE` ở lần đầu của cửa sổ) | ~1–2 | ~15.000–60.000 |
+| Cache công khai (`utilities:public`, `system:settings:public` TTL `600s`) | 2–3 | ~5.000–35.000 |
+| Cờ thông báo (`GET notification:next_due` mỗi 10p; `IDLE_RECHECK=24h`) | 1–2 | ~9.000 |
+| Workspace Tick W4 mỗi 15p (`lock` + `alerts_next_due`) | 1–3 | ~3.000–9.000 |
+| Cache dung lượng R2 (`system:storage:r2_usage_bytes` TTL `300s`) & làm mới cache (`INCR` + `EXPIRE`) | 1–2 | vài trăm |
+| **Tổng** | | **~21.000 (Idle) – ~60.000 (Normal)**, khoảng 4–12% hạn mức |
 
 Quy tắc:
 - **Redis không phải nguồn dữ liệu gốc.** Dữ liệu thật, outbox thông báo và phiên đăng nhập nằm ở PostgreSQL.
@@ -112,6 +116,7 @@ Quy tắc:
 ### 3.4 Cloudflare R2: 10 GB
 
 - Đã có cảnh báo dung lượng ở 90%, cộng cả hai bucket (`STORAGE_WARNING_PERCENT`, `AttachmentService`).
+- `AttachmentService.get_current_storage_usage_bytes()` cache tổng dung lượng vào Redis `300 giây` (`system:storage:r2_usage_bytes`) để giảm gọi Cloudflare R2 Usage API lặp lại; riêng kiểm tra hạn mức upload (`create()`) truyền `use_cache=False` để đảm bảo chốt 9 GB bằng số đo tươi và tự vô hiệu hóa cache sau commit khi thêm/đổi chế độ/thay nội dung/xóa/purge.
 - Ảnh công khai phục vụ qua tên miền riêng `media.toannx.com`. Cloudflare cache phía trước nên lượt xem lặp lại
   không tốn thao tác loại B. File public mang `Cache-Control: public, max-age=31536000, immutable` (khóa file là
   UUID mới mỗi lần tải lên/thay nội dung, `R2Storage`); file riêng tư mang `private, no-store`.
@@ -141,6 +146,10 @@ Quy tắc:
 | `CRON_SECRET` | BE | Bộ hẹn giờ gửi `Authorization: Bearer <CRON_SECRET>` |
 | `FIREBASE_*`, `NEXT_PUBLIC_FIREBASE_*` | BE / FE | FCM |
 | `CLOUDFLARE_*` | BE | R2 và tên miền media |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME` | BE | Bot Telegram chung toàn hệ thống (thông báo + trợ lý 2 chiều); trống thì tắt Telegram |
+| `XKIRO_API_BASE`, `XKIRO_API_KEY`, `XKIRO_MODEL`, `XKIRO_FALLBACK_MODELS` | BE | API AI OpenAI-compatible + chuỗi fallback multi-model; trống thì chỉ chạy slash command 0 token |
+
+> Workspace Cron (W4 `/api/v1/workspace/cron/tick` kiểm mốc Redis `workspace:cron:alerts_next_due` 0 SQL khi chưa đến hạn; `/api/v1/workspace/cron/dispatch-due` chạy qua QStash theo sự kiện để kiểm Digest/Nhắc việc/Bảo hành/Gia hạn — đặt mốc `+7 ngày` khi rảnh và đồng bộ lại lúc `03:00 UTC`) tuân thủ ngân sách Neon tối ưu Scale-to-Zero.
 
 Danh sách đầy đủ và cách điền: [`backend/.env.example`](../../backend/.env.example),
 [`frontend/.env.example`](../../frontend/.env.example), [deployment.md](../guides/deployment.md).

@@ -28,7 +28,7 @@ class RolePermissionRepository(CoreRepository[RolePermission]):
         return self.hard_delete_where(role_id=role_id, permission_id=permission_id)
 
     def permission_codes(self, role_id: Any) -> dict[str, str]:
-        """Quyền đang gán cho vai trò (một query).
+        """Quyền hiệu lực đang gán cho vai trò (một query).
 
         Args:
             role_id: Id vai trò.
@@ -36,10 +36,27 @@ class RolePermissionRepository(CoreRepository[RolePermission]):
         Returns:
             `{id quyền dạng chuỗi: mã quyền}`.
         """
-        rows = self.model._default_manager.filter(role_id=role_id).values_list(
+        rows = self.model._default_manager.filter(role_id=role_id, permission__is_active=True).values_list(
             "permission_id", "permission__code"
         )
         return {str(pk): code for pk, code in rows}
+
+    def remove_except(self, role_id: Any, permission_ids: Iterable[Any]) -> int:
+        """Gỡ các quyền không nằm trong danh sách giữ lại (làm sạch quyền cũ/vô hiệu ở vai trò tự cấp).
+
+        Args:
+            role_id: Id vai trò.
+            permission_ids: Tập id quyền hợp lệ được giữ lại.
+
+        Returns:
+            Số bản ghi đã xóa.
+        """
+        kept = list(permission_ids)
+        # Xóa cứng có chủ đích: bảng nối RolePermission không dùng xóa mềm.
+        deleted, _ = (
+            self.model._default_manager.filter(role_id=role_id).exclude(permission_id__in=kept).delete()
+        )
+        return deleted
 
     def remove_many(self, role_id: Any, permission_ids: Iterable[Any]) -> int:
         """Gỡ nhiều quyền khỏi vai trò bằng một lệnh.

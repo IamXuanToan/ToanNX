@@ -1,9 +1,15 @@
 """Integration test cho Webhook SePay quyên góp (DonationWebhookView)."""
 
+from typing import Any
+
 import pytest
 from rest_framework.test import APIClient
 
+from app.finance.models.income import Income
+from app.finance.permissions.income_permission import IncomePermission
+from app.system.models.notification import Notification
 from app.system.models.user import User
+from app.system.tests.helpers.permission_helper import grant
 from app.utilities.models.donation_transaction import DonationTransaction
 from app.utilities.models.page import Page
 from app.utilities.models.page_path import PagePath
@@ -15,6 +21,7 @@ pytestmark = pytest.mark.django_db
 def donate_page(django_user_model: type[User]) -> tuple[Page, str]:
     """Tạo một trang Donate có cấu hình webhook cho mã QR."""
     user = django_user_model.objects.create(email="creator@example.com", is_active=True)
+    grant(user, IncomePermission.READ)
     path, _ = PagePath.objects.get_or_create(
         segment="p", defaults={"name": "Trang cá nhân", "is_active": True}
     )
@@ -44,8 +51,10 @@ def donate_page(django_user_model: type[User]) -> tuple[Page, str]:
     return page, token
 
 
-def test_webhook_ingest_creates_donation(donate_page: tuple[Page, str]) -> None:
-    """Webhook SePay gửi đến tạo thành công DonationTransaction."""
+def test_webhook_ingest_creates_donation(
+    donate_page: tuple[Page, str], django_capture_on_commit_callbacks: Any
+) -> None:
+    """Webhook SePay gửi đến tạo DonationTransaction, đồng bộ Thu nhập (Donate) và phát thông báo Client."""
     page, token = donate_page
     client = APIClient()
 
@@ -54,16 +63,18 @@ def test_webhook_ingest_creates_donation(donate_page: tuple[Page, str]) -> None:
         "gateway": "MBBank",
         "transactionDate": "2026-11-24 14:30:00",
         "accountNumber": "0987654321",
+        "referenceCode": "FT-DON-1",
         "transferType": "in",
         "transferAmount": 100000,
         "content": "donate chuc ban vui ve",
     }
 
-    response = client.post(
-        f"/api/v1/utilities/donations/webhook/{token}",
-        data=payload,
-        format="json",
-    )
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client.post(
+            f"/api/v1/utilities/donations/webhook/{token}",
+            data=payload,
+            format="json",
+        )
 
     assert response.status_code == 200
     assert response.json() == {"success": True}
@@ -77,6 +88,20 @@ def test_webhook_ingest_creates_donation(donate_page: tuple[Page, str]) -> None:
     assert donation.tier_expires_at is not None
     assert not donation.is_censored
     assert donation.message == "chuc ban vui ve"
+
+    # Kiểm tra tự động đồng bộ sang Thu nhập Tài chính (nền tảng Donate) & thông báo Client
+    income = Income.objects.get(owner=page.owner, sepay_id="998877")
+    assert income.platform is not None
+    assert income.platform.code == "donate"
+    assert income.platform.name == "Donate"
+    assert income.platform.color == "#DB2777"
+    assert income.amount == 100000
+    assert income.tax_status == Income.TaxStatus.NOT_WITHHELD
+    assert income.bank_name == "MBBank"
+    assert income.account_last4 == "4321"
+    assert income.reference_code == "FT-DON-1"
+    notif = Notification.objects.get(recipient=page.owner, event_code="finance.income.received")
+    assert notif.link == f"/portal/finance/incomes/{income.pk}"
 
 
 def test_webhook_censors_bad_words(donate_page: tuple[Page, str]) -> None:

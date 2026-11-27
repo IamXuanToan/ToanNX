@@ -17,5 +17,17 @@ class CoreJournalEntryResponseSerializer(serializers.Serializer[Any]):
     object_label = serializers.CharField(help_text="Tên bản ghi lúc thay đổi.")
     actor_id = serializers.UUIDField(allow_null=True, help_text="Người thực hiện (null = hệ thống).")
     actor_label = serializers.CharField(help_text="Email người thực hiện lúc thay đổi.")
+    actor_display_name = serializers.SerializerMethodField(
+        help_text="Tên hiển thị người thực hiện theo chuẩn `fullname (username)` hoặc `username`."
+    )
     changes = serializers.JSONField(help_text="`{field: [cũ, mới]}`; field ẩn là `***`.")
     request_id = serializers.CharField(help_text="Request id của thao tác (đối chiếu log).")
+
+    def get_actor_display_name(self, obj: Any) -> str:
+        """Lấy `actor.display_name` nếu tài khoản còn tồn tại, ngược lại fallback về `actor_label`."""
+        actor = getattr(obj, "actor", None)
+        if actor is not None:
+            display = getattr(actor, "display_name", "")
+            if isinstance(display, str) and display.strip():
+                return display.strip()
+        return str(getattr(obj, "actor_label", "") or "")

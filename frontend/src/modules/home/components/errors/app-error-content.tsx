@@ -4,6 +4,7 @@ import { AlertTriangle, Check, Copy, Home, RotateCw, ServerCrash } from "lucide-
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { AppTooltip } from "@/shares/components/common/app-tooltip";
 import { Badge } from "@/shares/components/ui/badge";
 import { Button } from "@/shares/components/ui/button";
 import { Card, CardContent } from "@/shares/components/ui/card";
@@ -61,8 +62,8 @@ export function AppErrorContent({ error, retry }: { error: unknown; retry: () =>
           </Button>
         </div>
 
-        {/* Khối cảnh báo lỗi nổi bật dành cho dev hoặc khi có chi tiết lỗi */}
-        {isDev || errorMessage ? (
+        {/* Chỉ hiển thị khối chi tiết lỗi kỹ thuật ở môi trường phát triển */}
+        {isDev ? (
           <Card className="border-destructive/60 bg-destructive/10 text-destructive mt-8 w-full text-left shadow-md">
             <CardContent className="p-4 sm:p-5">
               <div className="border-destructive/20 flex items-center justify-between gap-2 border-b pb-3">
@@ -72,21 +73,22 @@ export function AppErrorContent({ error, retry }: { error: unknown; retry: () =>
                     {t("technicalDetails")} ({t("devOnly")})
                   </span>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="xs"
-                  onClick={handleCopy}
-                  className="border-destructive/30 bg-background/80 hover:bg-destructive/20 hover:text-destructive h-7 gap-1.5 text-xs font-medium"
-                  title={t("copyDetailsTitle")}
-                >
-                  {copied ? (
-                    <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
-                  ) : (
-                    <Copy className="size-3" />
-                  )}
-                  <span>{copied ? t("copiedDetails") : t("copyDetails")}</span>
-                </Button>
+                <AppTooltip content={t("copyDetailsTitle")}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="xs"
+                    onClick={handleCopy}
+                    className="border-destructive/30 bg-background/80 hover:bg-destructive/20 hover:text-destructive h-7 gap-1.5 text-xs font-medium"
+                  >
+                    {copied ? (
+                      <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <Copy className="size-3" />
+                    )}
+                    <span>{copied ? t("copiedDetails") : t("copyDetails")}</span>
+                  </Button>
+                </AppTooltip>
               </div>
 
               <div className="mt-3 space-y-2.5">
@@ -96,7 +98,7 @@ export function AppErrorContent({ error, retry }: { error: unknown; retry: () =>
 
                 {digest ? (
                   <div className="text-muted-foreground text-xs">
-                    <span className="text-foreground font-semibold">Digest:</span>{" "}
+                    <span className="text-foreground font-semibold">{t("errorDigest")}:</span>{" "}
                     <code className="bg-muted/60 rounded px-1.5 py-0.5 font-mono select-all">
                       {digest}
                     </code>
@@ -106,7 +108,7 @@ export function AppErrorContent({ error, retry }: { error: unknown; retry: () =>
                 {errorStack ? (
                   <div className="mt-2.5">
                     <span className="text-muted-foreground mb-1.5 block text-xs font-semibold">
-                      Stack Trace:
+                      {t("stackTrace")}:
                     </span>
                     <pre className="max-h-64 overflow-x-auto rounded-xl bg-zinc-950 p-3.5 font-mono text-[11px] leading-relaxed text-red-300 select-all dark:bg-black dark:text-red-400">
                       {errorStack}
@@ -121,21 +123,22 @@ export function AppErrorContent({ error, retry }: { error: unknown; retry: () =>
             <CardContent className="p-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground font-medium">{t("errorDigest")}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCopy}
-                  className="text-muted-foreground hover:text-foreground h-6 gap-1 px-1.5 text-[11px]"
-                  title={t("copyDigest")}
-                >
-                  {copied ? (
-                    <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
-                  ) : (
-                    <Copy className="size-3" />
-                  )}
-                  <span>{copied ? t("copiedDigest") : t("copyDigest")}</span>
-                </Button>
+                <AppTooltip content={t("copyDigest")}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopy}
+                    className="text-muted-foreground hover:text-foreground h-6 gap-1 px-1.5 text-[11px]"
+                  >
+                    {copied ? (
+                      <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <Copy className="size-3" />
+                    )}
+                    <span>{copied ? t("copiedDigest") : t("copyDigest")}</span>
+                  </Button>
+                </AppTooltip>
               </div>
               <code className="text-foreground mt-1.5 block font-mono text-xs break-all select-all">
                 {digest}

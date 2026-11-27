@@ -2,7 +2,9 @@ import { financeNavigation } from "@/modules/finance/navigation";
 import { novelNavigation } from "@/modules/novel/navigation";
 import { systemNavigation } from "@/modules/system/navigation";
 import { utilitiesNavigation } from "@/modules/utilities/navigation";
-import { BookOpen, LayoutTemplate, type LucideIcon, Settings, Wallet } from "lucide-react";
+import { WORKSPACE_ROUTES } from "@/modules/workspace/constants/routes";
+import { ASSISTANT_CONFIG_PERMISSIONS } from "@/modules/workspace/permissions/assistant-config-permission";
+import { BookOpen, Bot, LayoutTemplate, type LucideIcon, Settings, Wallet } from "lucide-react";
 
 import type {
   AdminGroupCode,
@@ -28,8 +30,22 @@ export const ADMIN_GROUPS: { code: AdminGroupCode; icon: LucideIcon }[] = [
  * Module FE mới: thêm `navigation.ts` của nó vào đây (nhãn/tên khai trong namespace của module).
  * `tests/unit/module-registry.test.ts` báo lỗi nếu module có `navigation.ts` mà quên đăng ký.
  */
+const systemWithAssistantNavigation: AdminModuleNavigation = {
+  ...systemNavigation,
+  items: [
+    ...systemNavigation.items,
+    {
+      labelKey: "workspace.nav.assistantConfig",
+      href: WORKSPACE_ROUTES.adminAssistant,
+      icon: Bot,
+      permission: ASSISTANT_CONFIG_PERMISSIONS.read,
+      section: "system.navSections.operations",
+    },
+  ],
+};
+
 export const ADMIN_MODULE_NAVIGATION: AdminModuleNavigation[] = [
-  systemNavigation,
+  systemWithAssistantNavigation,
   utilitiesNavigation,
   novelNavigation,
   financeNavigation,

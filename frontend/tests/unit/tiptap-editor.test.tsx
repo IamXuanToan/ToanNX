@@ -253,7 +253,7 @@ describe("TiptapContent & Image helpers", () => {
     expect(box?.style.width).toBe("50%");
   });
 
-  it("callout/button trong TiptapContent dùng cùng token màu hệ thống với Editor và LegacyTiptapPageRenderer không bị ghi đè theme cũ", () => {
+  it("callout/button trong TiptapContent dùng cùng token màu hệ thống với Editor và LegacyTiptapPageRenderer cô lập scope theme", () => {
     const doc = {
       type: "doc",
       content: [
@@ -268,6 +268,45 @@ describe("TiptapContent & Image helpers", () => {
         },
       ],
     };
+
+    const { container: systemContainer } = render(
+      <LegacyTiptapPageRenderer
+        page={{
+          id: "legacy-sys",
+          segment: "p",
+          status: "PUBLISHED",
+          preview: false,
+          canonicalUrl: "https://toannx.com/p/trang-he-thong",
+          avatarUrl: null,
+          coverUrl: null,
+          title: "Trang theo hệ thống",
+          slug: "trang-he-thong",
+          description: "",
+          seoTitle: "",
+          seoDescription: "",
+          pageType: "LEGACY_PAGE",
+          templateKey: "blank",
+          templateVersion: 1,
+          contentConfig: {},
+          styleConfig: {},
+          responsiveConfig: {},
+          theme: {
+            mode: "system",
+            primaryColor: "#3D812E",
+            backgroundColor: "#ffffff",
+            textColor: "#0f172a",
+            buttonStyle: "pill",
+          },
+          content: doc,
+        }}
+      />,
+    );
+
+    const sysMain = systemContainer.querySelector("main") as HTMLElement;
+    expect(sysMain.getAttribute("data-page-theme")).toBeNull();
+    expect(sysMain.style.getPropertyValue("--page-primary")).toBe("");
+    expect(sysMain.style.backgroundColor).toBe("");
+    expect(sysMain.className).toContain("bg-background");
 
     const { container } = render(
       <LegacyTiptapPageRenderer
@@ -303,8 +342,8 @@ describe("TiptapContent & Image helpers", () => {
     );
 
     const main = container.querySelector("main") as HTMLElement;
-    expect(main.style.getPropertyValue("--page-primary")).toBe("");
-    expect(main.style.backgroundColor).toBe("");
+    expect(main.getAttribute("data-page-theme")).toBe("dark");
+    expect(main.style.getPropertyValue("--page-primary")).toBe("#0284c7");
     expect(main.className).toContain("bg-background");
 
     const callout = container.querySelector('[data-type="callout"]') as HTMLElement;

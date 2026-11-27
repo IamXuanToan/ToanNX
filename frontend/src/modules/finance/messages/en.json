@@ -15,6 +15,7 @@
   "validation": {
     "required": "Required.",
     "slug": "Lowercase letters, numbers and hyphens only.",
+    "colorHex": "HEX color must follow #RRGGBB format.",
     "positive": "Enter a valid number.",
     "attachments": "At least one file is required."
   },
@@ -47,7 +48,9 @@
       "defaultCurrency": "Default currency",
       "isActive": "Active",
       "pattern": "Regex",
-      "priority": "Priority"
+      "priority": "Priority",
+      "color": "Chart color",
+      "owner": "Owner"
     }
   },
   "platforms": {
@@ -60,13 +63,22 @@
     "notWithheld": "Not withheld",
     "noRate": "No tax setting",
     "sections": {
-      "info": "Details"
+      "info": "Details",
+      "rulesShortcut": "Auto Classification Rules"
     },
+    "rulesShortcutTitle": "Transaction Matching Rules",
+    "rulesShortcutHint": "Configure regex patterns that auto-assign SePay income entries to this platform.",
+    "manageRules": "Classification rules",
+    "draftRulesCount": "{count} queued rule(s) on create",
+    "rulesCountBadge": "{count} rules",
     "fields": {
       "name": "Name",
       "code": "Code",
       "defaultCurrency": "Default currency",
       "defaultCurrencyHint": "Prefilled when adding income manually.",
+      "color": "Chart color",
+      "colorHint": "#RRGGBB hex color mapped to Light & Dark charts.",
+      "colorPreset": "Select preset color {color}",
       "note": "Note",
       "isActive": "Active",
       "currentTax": "Current withholding"
@@ -93,12 +105,27 @@
   },
   "rules": {
     "title": "Matching rules",
+    "dialogTitle": "Classification Rules — {platform}",
+    "dialogSubtitle": "Add, edit, toggle, test regex patterns, and remove rules linked to this platform.",
     "create": "Add rule",
+    "newRuleButton": "New rule",
+    "cancelEdit": "Cancel edit",
+    "ruleListTitle": "Platform rules ({count})",
+    "deleteConfirm": "Are you sure you want to delete rule “{name}”?",
+    "draftCreatedHint": "Queued locally and created automatically once the platform is saved.",
+    "savedNotice": "Classification rule saved.",
+    "deletedNotice": "Classification rule deleted.",
     "searchPlaceholder": "Search by name, regex...",
     "empty": "No rules yet.",
     "sections": {
-      "info": "Details"
+      "info": "Details",
+      "rulesShortcut": "Auto Classification Rules"
     },
+    "rulesShortcutTitle": "Transaction Matching Rules",
+    "rulesShortcutHint": "Configure regex patterns that auto-assign SePay income entries to this platform.",
+    "manageRules": "Classification rules",
+    "draftRulesCount": "{count} queued rule(s) on create",
+    "rulesCountBadge": "{count} rules",
     "fields": {
       "name": "Name",
       "platform": "Platform",
@@ -268,7 +295,8 @@
       "platforms": "Income by platform",
       "growth": "Month-over-month change",
       "platformShare": "Platform share",
-      "currencyShare": "Currency share (in VND)"
+      "currencyShare": "Currency share (in VND)",
+      "empty": "No income data for this year."
     }
   },
   "report": {

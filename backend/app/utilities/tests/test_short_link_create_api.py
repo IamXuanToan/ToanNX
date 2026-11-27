@@ -130,7 +130,12 @@ class TestShortLinkCreateApi(BaseApiTestCase):
 
     def test_create_rate_limit(self, user: Any, login: Any, settings: Any) -> None:
         """Áp dụng rate limit tạo short link."""
-        settings.RATE_LIMITS = {**settings.RATE_LIMITS, "utilities.short_link.create": (1, 3600, "user")}
+        from app.utilities.constants.utilities_rate_limit_key import UtilitiesRateLimitKey
+
+        settings.RATE_LIMITS = {
+            **settings.RATE_LIMITS,
+            UtilitiesRateLimitKey.SHORT_LINK_CREATE: (1, 3600, "user"),
+        }
         grant(user, P.CREATE)
         api = login(user)
 

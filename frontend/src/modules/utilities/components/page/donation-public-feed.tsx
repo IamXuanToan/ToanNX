@@ -3,12 +3,15 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Clock, Loader2, Sparkles, Trophy } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/shares/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui/tabs";
+import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
+import { usePageVisibility } from "@/shares/hooks/use-page-visibility";
 
+import { DONATION_PUBLIC_STALE_MS, UTILITIES_POLLING_MS } from "../../constants/polling";
 import { donationKeys } from "@/modules/utilities/constants/query-keys";
 import { donationService } from "../../services/donation.service";
 import type {
@@ -135,12 +138,17 @@ export function DonationPublicFeed({
   };
 
   const hasPageId = Boolean(pageId && pageId.trim() !== "");
+  const isPageVisible = usePageVisibility();
+  const [activeTab, setActiveTab] = useState<"leaderboard" | "recent">("leaderboard");
+  const handleTabChange = (nextTab: string) => {
+    setActiveTab(nextTab === "recent" ? "recent" : "leaderboard");
+  };
 
-  // Truy vấn Feed các lượt ủng hộ với cơ chế Infinite Scroll (tự động load khi cuộn)
+  // Tải danh sách ban đầu khi có pageId; chỉ polling Feed (60s) khi đang mở tab Ủng hộ gần đây + tab trình duyệt hiện
+  const feedPollingActive = hasPageId && activeTab === "recent" && isPageVisible;
+
   const feedInfiniteQuery = useInfiniteQuery({
-    queryKey: donationKeys?.feed
-      ? donationKeys.feed(pageId)
-      : (["utilities", "donations", "feed", pageId] as const),
+    queryKey: donationKeys.feed(pageId),
     queryFn: ({ pageParam = 1, signal }) =>
       donationService.getPublicFeed(pageId, 20, pageParam, signal),
     initialPageParam: 1,
@@ -148,7 +156,9 @@ export function DonationPublicFeed({
       return lastPage.length >= 20 ? allPages.length + 1 : undefined;
     },
     enabled: hasPageId,
-    refetchInterval: hasPageId ? 20000 : false,
+    staleTime: DONATION_PUBLIC_STALE_MS,
+    refetchInterval: feedPollingActive ? UTILITIES_POLLING_MS.donationFeed : false,
+    refetchIntervalInBackground: false,
   });
 
   const feedItems = useMemo(() => {
@@ -176,14 +186,15 @@ export function DonationPublicFeed({
     return () => observer.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Truy vấn Bảng Vinh danh
+  // Truy vấn Bảng Vinh danh (chỉ polling 120s khi tab Bảng Vinh danh và tab trình duyệt đang mở)
+  const leaderboardPollingActive = hasPageId && activeTab === "leaderboard" && isPageVisible;
   const leaderboardQuery = useQuery({
-    queryKey: donationKeys?.leaderboard
-      ? donationKeys.leaderboard(pageId)
-      : (["utilities", "donations", "leaderboard", pageId] as const),
+    queryKey: donationKeys.leaderboard(pageId),
     queryFn: ({ signal }) => donationService.getPublicLeaderboard(pageId, signal),
     enabled: hasPageId,
-    refetchInterval: hasPageId ? 30000 : false,
+    staleTime: DONATION_PUBLIC_STALE_MS,
+    refetchInterval: leaderboardPollingActive ? UTILITIES_POLLING_MS.donationLeaderboard : false,
+    refetchIntervalInBackground: false,
   });
 
   if (!hasPageId && !preview) {
@@ -215,7 +226,7 @@ export function DonationPublicFeed({
     <div className="w-full space-y-4 pt-6">
       {/* Bảng Vinh danh & Lịch sử ủng hộ */}
       <div className="border-border/80 bg-card/80 rounded-2xl border p-3.5 shadow-sm backdrop-blur-xs sm:p-6">
-        <Tabs defaultValue="leaderboard" className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="leaderboard" className="min-w-0">
               <Trophy className="text-amber-500" aria-hidden />
@@ -407,7 +418,7 @@ export function DonationPublicFeed({
                         </p>
                       )}
                       <p className="text-muted-foreground text-[11px]">
-                        {format.relativeTime(new Date(item.receivedAt), { now: new Date(now) })}
+                        <TimestampText value={item.receivedAt} />
                       </p>
                     </div>
                   </div>
