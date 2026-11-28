@@ -20,7 +20,7 @@ Correctness > Security > Maintainability > Performance > Developer Experience > 
   không tuyên bố đã chạy đúng.
 - Scaffold bằng CLI chính thức: `uv init`, `uv add`, `django-admin startproject`, `manage.py startapp`,
   `create-next-app`, `pnpm add`, `shadcn add`. Không viết tay lockfile hay khai báo dependency giả.
-- Không sửa source tham khảo (PMS, Medoly); không copy credentials hay cấu hình production.
+- Không sửa source tham khảo bên ngoài; không copy credentials hay cấu hình production.
 
 ## 3. Code sạch
 

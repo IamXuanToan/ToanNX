@@ -479,26 +479,22 @@ Trình duyệt ──► toannx.com (Next.js)
       </div>
 
       <h2 id="audit">4. Audit source tham khảo</h2>
-      <p>
-        Đã đọc trực tiếp <code>D:\projects\PMS\PMS-AZ-BE</code> và
-        <code>D:\Medoly\frontend\src\shares\components</code> (chỉ đọc). Chi
-        tiết: <code>docs/architecture/reference-audit.md</code>.
-      </p>
+      <p>Đã đọc trực tiếp source tham khảo backend và frontend (chỉ đọc).</p>
       <ul>
         <li>
-          <b>PMS kế thừa ý tưởng:</b> ContextVar cho user, assertion test dùng
-          chung, factory_boy, tách serializer request/response.
+          <b>Backend kế thừa ý tưởng:</b> ContextVar cho user, assertion test
+          dùng chung, factory_boy, tách serializer request/response.
         </li>
         <li>
-          <b>PMS sửa lại:</b> audit ngầm trong <code>save()</code> kèm 3 truy
-          vấn mỗi lần lưu; ContextVar không bao giờ reset;
+          <b>Backend sửa lại:</b> audit ngầm trong <code>save()</code> kèm 3
+          truy vấn mỗi lần lưu; ContextVar không bao giờ reset;
           <code>except Exception: pass</code> trong middleware; 10 lớp response
           trùng nhau; ErrorCode có khóa trùng và giá trị tuple; quyền dựa
           <code>user_permissions</code>; <code>MasterViewBase</code> với danh
           sách quyền rỗng = cho phép.
         </li>
         <li>
-          <b>Medoly kế thừa:</b> PasswordInput, EmptyState, ErrorState,
+          <b>Frontend kế thừa:</b> PasswordInput, EmptyState, ErrorState,
           Pagination, LanguageSwitcher (đều chuẩn hóa về token theme;
           LanguageSwitcher sửa lỗi mất query/params). Primitive UI sinh lại bằng
           <code>shadcn add</code>.

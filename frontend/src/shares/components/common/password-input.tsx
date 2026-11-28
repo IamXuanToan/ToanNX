@@ -10,7 +10,7 @@ import { Input } from "@/shares/components/ui/input";
 import { usePasswordInput } from "./hooks/use-password-input";
 
 /**
- * Ô nhập mật khẩu chuẩn (theo CommonPasswordInput của Medoly): icon khoá bên trái, nút hiện/ẩn bên phải.
+ * Ô nhập mật khẩu chuẩn: icon khoá bên trái, nút hiện/ẩn bên phải.
  * Dùng được với `form.register(...)`; truyền `autoComplete="new-password"` ở form tạo/đổi mật khẩu.
  *
  * @param props - Thuộc tính input HTML (trừ `type`).

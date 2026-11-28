@@ -19,7 +19,7 @@ Trình duyệt chỉ nói chuyện với **một origin** (`toannx.com`). Cookie
 | --- | --- |
 | Settings Django | Một file `backend/config/settings.py`; khác biệt môi trường chỉ qua biến môi trường (`DJANGO_DEBUG`...). |
 | Scaffold | Tạo bằng CLI chính thức: `uv init`, `django-admin startproject config .`, `manage.py startapp`, `create-next-app`, `shadcn init/add`. |
-| Bố cục backend | Mỗi class một file: `models/`, `repositories/` (lớp DB duy nhất), `services/` theo model; `serializers/validates` + `serializers/responses` theo endpoint; `views/` theo resource (`XxxView` + `XxxObjectView` chung một file, ngoại lệ duy nhất của luật một class một file, kiểu PMS). Frontend: mỗi component một file, mỗi hook một file (xem `docs/rules/frontend.md` §2.1). |
+| Bố cục backend | Mỗi class một file: `models/`, `repositories/` (lớp DB duy nhất), `services/` theo model; `serializers/validates` + `serializers/responses` theo endpoint; `views/` theo resource (`XxxView` + `XxxObjectView` chung một file, ngoại lệ duy nhất của luật một class một file). Frontend: mỗi component một file, mỗi hook một file (xem `docs/rules/frontend.md` §2.1). |
 | Nguồn sự thật về quyền | Bảng IAM (`system_role`, `system_permission`, `system_user_role`, `system_role_permission`). User **không** dùng `PermissionsMixin`/groups của Django. |
 | Token | Access JWT HS256 10 phút gắn `sid` (phiên); refresh token ngẫu nhiên 384-bit, chỉ lưu HMAC-SHA256, xoay vòng mỗi lần dùng, phát hiện tái sử dụng. |
 | Thu hồi | Mỗi request kiểm tra phiên còn hiệu lực → logout/logout-all/khóa tài khoản/đổi mật khẩu có hiệu lực ngay. |

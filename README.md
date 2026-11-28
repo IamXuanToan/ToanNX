@@ -101,5 +101,4 @@ Chi tiết: [docs/architecture/testing.md](docs/architecture/testing.md).
 - [AGENTS.md](AGENTS.md) — quy tắc phát triển (người và AI agent)
 - [docs/architecture/architecture.md](docs/architecture/architecture.md) · [docs/architecture/authentication.md](docs/architecture/authentication.md) · [docs/architecture/authorization.md](docs/architecture/authorization.md)
 - [docs/architecture/i18n.md](docs/architecture/i18n.md) · [docs/guides/deployment.md](docs/guides/deployment.md) · [docs/architecture/testing.md](docs/architecture/testing.md)
-- [docs/architecture/reference-audit.md](docs/architecture/reference-audit.md) — đánh giá source tham khảo PMS/Medoly
 - [docs/reports/foundation-report.html](docs/reports/foundation-report.html) — báo cáo foundation

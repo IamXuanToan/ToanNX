@@ -40,7 +40,7 @@ uv run pytest --reuse-db -q
   7. `response_envelope`: Response bọc chuẩn `{success, data, meta: {request_id}}`, status code chuẩn.
   8. `list_features` (với endpoint list): Lọc nhiều giá trị, tìm kiếm (`search`), sắp xếp (`ordering`), phân trang (`page`, `page_size`).
 
-Base class CRUD (`base_create_api_test_case`...) theo kiểu PMS **không** được tạo: các endpoint hiện tại có quy
+Base class CRUD (`base_create_api_test_case`...) **không** được tạo: các endpoint hiện tại có quy
 tắc riêng, test tường minh dễ đọc hơn. Có thể bổ sung khi có module CRUD lặp lại nhiều.
 
 ## Frontend

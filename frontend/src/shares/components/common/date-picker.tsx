@@ -31,7 +31,7 @@ export type DatePickerProps = {
 };
 
 /**
- * Chọn ngày chuẩn (theo CommonDatePicker của Medoly): nút cao 40px hiển thị ngày theo ngôn ngữ
+ * Chọn ngày chuẩn: nút cao 40px hiển thị ngày theo ngôn ngữ
  * (`dd/MM/yyyy` ở vi), lịch có dropdown tháng/năm, nút "Hôm nay" và "Xoá". Hỗ trợ `inline`
  * khi ghép chung bên trong `DateTimePicker` để tránh lặp khung viền.
  *

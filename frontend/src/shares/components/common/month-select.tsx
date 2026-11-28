@@ -18,7 +18,7 @@ export function normalizeMonthValue(value: unknown): string | undefined {
 }
 
 /**
- * Chọn tháng chuẩn (theo CommonMonthSelect của Medoly): lớp mỏng trên `SelectField`, nhãn tháng
+ * Chọn tháng chuẩn: lớp mỏng trên `SelectField`, nhãn tháng
  * theo ngôn ngữ. Giá trị là số 1–12. Điều khiển (controlled).
  *
  * @param props - Giá trị, callback và trạng thái.
