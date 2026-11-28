@@ -50,11 +50,13 @@ export function SubscriptionForm({
         </p>
       ) : null}
 
-      <FormSection title={t("editTitle")}>
+      <FormSection title={t("sections.general")}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField control={form.control} name="name" label={t("fields.name")} required>
-            {(field) => <Input {...field} disabled={locked} className="h-10" />}
-          </FormField>
+          <div className="sm:col-span-2">
+            <FormField control={form.control} name="name" label={t("fields.name")} required>
+              {(field) => <Input {...field} disabled={locked} className="h-10" />}
+            </FormField>
+          </div>
           <FormField control={form.control} name="provider" label={t("fields.provider")}>
             {(field) => <Input {...field} disabled={locked} className="h-10" />}
           </FormField>
@@ -65,6 +67,7 @@ export function SubscriptionForm({
                 value={field.value}
                 onValueChange={field.onChange}
                 disabled={locked}
+                searchable
                 invalid={field["aria-invalid"]}
                 options={SUBSCRIPTION_CATEGORIES.map((c) => ({
                   value: c,
@@ -73,6 +76,21 @@ export function SubscriptionForm({
               />
             )}
           </FormField>
+          <div className="sm:col-span-2">
+            <FormField control={form.control} name="manageUrl" label={t("fields.manageUrl")}>
+              {(field) => <Input {...field} disabled={locked} className="h-10" />}
+            </FormField>
+          </div>
+          <div className="sm:col-span-2">
+            <FormField control={form.control} name="notes" label={t("fields.notes")}>
+              {(field) => <Textarea {...field} disabled={locked} rows={3} />}
+            </FormField>
+          </div>
+        </div>
+      </FormSection>
+
+      <FormSection title={t("sections.billing")}>
+        <div className="grid gap-4 sm:grid-cols-2">
           <FormField control={form.control} name="billingCycle" label={t("fields.billingCycle")}>
             {(field) => (
               <SelectField
@@ -114,6 +132,17 @@ export function SubscriptionForm({
               />
             )}
           </FormField>
+          <FormField control={form.control} name="renewDate" label={t("fields.renewDate")} required>
+            {(field) => (
+              <DatePicker
+                id={field.id}
+                value={field.value}
+                onChange={field.onChange}
+                disabled={locked}
+                invalid={field["aria-invalid"]}
+              />
+            )}
+          </FormField>
           <FormField control={form.control} name="amount" label={t("fields.amount")} required>
             {(field) => (
               <NumberInput
@@ -136,6 +165,7 @@ export function SubscriptionForm({
                 value={field.value}
                 onValueChange={field.onChange}
                 disabled={locked}
+                searchable
                 invalid={field["aria-invalid"]}
                 options={state.currencyOptions}
               />
@@ -153,59 +183,40 @@ export function SubscriptionForm({
               )}
             </FormField>
           ) : null}
-          <FormField control={form.control} name="renewDate" label={t("fields.renewDate")} required>
-            {(field) => (
-              <DatePicker
-                id={field.id}
-                value={field.value}
-                onChange={field.onChange}
-                disabled={locked}
-                invalid={field["aria-invalid"]}
-              />
-            )}
-          </FormField>
           <FormField control={form.control} name="paymentMethod" label={t("fields.paymentMethod")}>
             {(field) => <Input {...field} disabled={locked} className="h-10" />}
           </FormField>
-          <div className="sm:col-span-2">
-            <FormField control={form.control} name="manageUrl" label={t("fields.manageUrl")}>
-              {(field) => <Input {...field} disabled={locked} className="h-10" />}
-            </FormField>
-          </div>
-          <div className="flex items-center gap-2 pt-2">
-            <Controller
-              control={form.control}
-              name="autoRenew"
-              render={({ field }) => (
-                <Checkbox
-                  id="sub-auto-renew"
-                  checked={field.value}
-                  onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                  disabled={locked}
-                />
-              )}
-            />
-            <Label htmlFor="sub-auto-renew">{t("fields.autoRenew")}</Label>
-          </div>
-          <div className="flex items-center gap-2 pt-2">
-            <Controller
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <Checkbox
-                  id="sub-is-active"
-                  checked={field.value}
-                  onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                  disabled={locked}
-                />
-              )}
-            />
-            <Label htmlFor="sub-is-active">{t("fields.isActive")}</Label>
-          </div>
-          <div className="sm:col-span-2">
-            <FormField control={form.control} name="notes" label={t("fields.notes")}>
-              {(field) => <Textarea {...field} disabled={locked} rows={3} />}
-            </FormField>
+          <div className="flex flex-wrap items-center gap-6 pt-2 sm:col-span-2">
+            <div className="flex items-center gap-2">
+              <Controller
+                control={form.control}
+                name="autoRenew"
+                render={({ field }) => (
+                  <Checkbox
+                    id="sub-auto-renew"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                    disabled={locked}
+                  />
+                )}
+              />
+              <Label htmlFor="sub-auto-renew">{t("fields.autoRenew")}</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Controller
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <Checkbox
+                    id="sub-is-active"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                    disabled={locked}
+                  />
+                )}
+              />
+              <Label htmlFor="sub-is-active">{t("fields.isActive")}</Label>
+            </div>
           </div>
         </div>
       </FormSection>

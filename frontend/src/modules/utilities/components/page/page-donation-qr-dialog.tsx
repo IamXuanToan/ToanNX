@@ -1,13 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Check, Copy, CreditCard, Palette, QrCode, Zap } from "lucide-react";
+import { Check, Copy, QrCode, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { cn } from "cn";
 
 import { AttachmentImageUploadView } from "@/modules/system/views/attachment/attachment-image-upload-view";
-import { ColorInput } from "@/shares/components/common/color-input";
 import { SelectField } from "@/shares/components/common/select-field";
 import { Button } from "@/shares/components/ui/button";
 import { Checkbox } from "@/shares/components/ui/checkbox";
@@ -21,7 +20,6 @@ import {
 import { Input } from "@/shares/components/ui/input";
 import { Label } from "@/shares/components/ui/label";
 import { Skeleton } from "@/shares/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shares/components/ui/tabs";
 import { normalizeMediaUrl } from "@/shares/lib/asset-paths";
 
 import type { DonationQrItem, QrAccountType } from "../../types/page.types";
@@ -111,164 +109,95 @@ export function PageDonationQrDialog({
 
             {/* 2. Cấu hình chi tiết */}
             {state.type === "BANK_TRANSFER" ? (
-              <Tabs defaultValue="account" className="w-full min-w-0">
-                <TabsList className="mb-3 grid w-full grid-cols-2 p-1">
-                  <TabsTrigger
-                    value="account"
-                    className="flex items-center justify-center gap-1.5 truncate px-2.5 py-1.5 text-xs"
-                  >
-                    <CreditCard className="size-3.5 shrink-0" />
-                    <span className="truncate">{t("tabAccount")}</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="design"
-                    className="flex items-center justify-center gap-1.5 truncate px-2.5 py-1.5 text-xs"
-                  >
-                    <Palette className="size-3.5 shrink-0" />
-                    <span className="truncate">{t("tabDesign")}</span>
-                  </TabsTrigger>
-                </TabsList>
+              <div className="space-y-3.5">
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium">{t("methodTitle")}</Label>
+                  <Input
+                    value={state.title}
+                    onChange={(e) => state.setTitle(e.target.value)}
+                    placeholder={t("methodTitlePlaceholder")}
+                    className="h-9 text-xs"
+                  />
+                </div>
 
-                {/* Tab 1: Thông tin tài khoản VietQR */}
-                <TabsContent value="account" className="mt-0 space-y-3.5">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">{t("bankSelect")}</Label>
+                  <div className="flex flex-wrap gap-1 pb-1">
+                    {POPULAR_BANKS.map((b) => (
+                      <Button
+                        key={b.bin}
+                        type="button"
+                        variant={state.bankBin === b.bin ? "secondary" : "outline"}
+                        size="sm"
+                        onClick={() => state.handleBankChange(b.bin)}
+                        className="h-6 px-2 text-[11px] font-normal"
+                      >
+                        {b.shortName}
+                      </Button>
+                    ))}
+                  </div>
+                  <SelectField
+                    value={state.bankBin}
+                    onValueChange={state.handleBankChange}
+                    searchable
+                    disabled={state.isBanksLoading}
+                    options={state.banks.map((b) => ({
+                      value: b.bin,
+                      label: b.shortName,
+                      description: b.name,
+                    }))}
+                  />
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-1">
-                    <Label className="text-xs font-medium">{t("methodTitle")}</Label>
+                    <Label className="flex items-center gap-1 text-xs font-medium">
+                      <span>{t("accountNumber")}</span>
+                      <span
+                        aria-hidden
+                        className="text-destructive text-sm leading-none font-medium"
+                      >
+                        *
+                      </span>
+                    </Label>
                     <Input
-                      value={state.title}
-                      onChange={(e) => state.setTitle(e.target.value)}
-                      placeholder={t("methodTitlePlaceholder")}
-                      className="h-9 text-xs"
+                      inputMode="numeric"
+                      value={state.accountNumber}
+                      onChange={(e) => state.setAccountNumber(e.target.value)}
+                      placeholder={t("accountNumberPlaceholder")}
+                      className="h-9 font-mono text-xs"
                     />
                   </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">{t("bankSelect")}</Label>
-                    <div className="flex flex-wrap gap-1 pb-1">
-                      {POPULAR_BANKS.map((b) => (
-                        <Button
-                          key={b.bin}
-                          type="button"
-                          variant={state.bankBin === b.bin ? "secondary" : "outline"}
-                          size="sm"
-                          onClick={() => state.handleBankChange(b.bin)}
-                          className="h-6 px-2 text-[11px] font-normal"
-                        >
-                          {b.shortName}
-                        </Button>
-                      ))}
-                    </div>
-                    <SelectField
-                      value={state.bankBin}
-                      onValueChange={state.handleBankChange}
-                      searchable
-                      disabled={state.isBanksLoading}
-                      options={state.banks.map((b) => ({
-                        value: b.bin,
-                        label: b.shortName,
-                        description: b.name,
-                      }))}
-                    />
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="space-y-1">
-                      <Label className="flex items-center gap-1 text-xs font-medium">
-                        <span>{t("accountNumber")}</span>
-                        <span
-                          aria-hidden
-                          className="text-destructive text-sm leading-none font-medium"
-                        >
-                          *
-                        </span>
-                      </Label>
-                      <Input
-                        inputMode="numeric"
-                        value={state.accountNumber}
-                        onChange={(e) => state.setAccountNumber(e.target.value)}
-                        placeholder={t("accountNumberPlaceholder")}
-                        className="h-9 font-mono text-xs"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="flex items-center gap-1 text-xs font-medium">
-                        <span>{t("accountHolder")}</span>
-                        <span
-                          aria-hidden
-                          className="text-destructive text-sm leading-none font-medium"
-                        >
-                          *
-                        </span>
-                      </Label>
-                      <Input
-                        value={state.accountHolder}
-                        onChange={(e) => state.setAccountHolder(e.target.value.toUpperCase())}
-                        placeholder={t("accountHolderPlaceholder")}
-                        className="h-9 text-xs uppercase"
-                      />
-                    </div>
-                  </div>
-
                   <div className="space-y-1">
-                    <Label className="text-xs font-medium">{t("qrNote")}</Label>
+                    <Label className="flex items-center gap-1 text-xs font-medium">
+                      <span>{t("accountHolder")}</span>
+                      <span
+                        aria-hidden
+                        className="text-destructive text-sm leading-none font-medium"
+                      >
+                        *
+                      </span>
+                    </Label>
                     <Input
-                      value={state.note}
-                      onChange={(e) => state.setNote(e.target.value)}
-                      placeholder={t("qrNotePlaceholder")}
-                      maxLength={50}
-                      className="h-9 text-xs"
+                      value={state.accountHolder}
+                      onChange={(e) => state.setAccountHolder(e.target.value.toUpperCase())}
+                      placeholder={t("accountHolderPlaceholder")}
+                      className="h-9 text-xs uppercase"
                     />
                   </div>
-                </TabsContent>
+                </div>
 
-                {/* Tab 2: Tùy biến kiểu dáng mã VietQR */}
-                <TabsContent value="design" className="mt-0 space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-medium">{t("qrColor")}</Label>
-                      <ColorInput
-                        value={state.foreground}
-                        onChange={state.setForeground}
-                        pickerLabel={t("qrColor")}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-medium">{t("bgColor")}</Label>
-                      <ColorInput
-                        value={state.background}
-                        onChange={state.setBackground}
-                        pickerLabel={t("bgColor")}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">{t("qrLogo")}</Label>
-                    <AttachmentImageUploadView
-                      value={
-                        state.logoId
-                          ? {
-                              id: state.logoId,
-                              url: state.logoUrl ?? "",
-                              name: "Logo",
-                              contentType: "image/png",
-                            }
-                          : null
-                      }
-                      onChange={(file) => {
-                        state.setLogoId(file?.id ?? null);
-                        state.setLogoUrl(file?.url);
-                        if (file) {
-                          state.setErrorCorrection("H");
-                          state.setMargin(Math.max(4, state.margin));
-                        }
-                      }}
-                      shape="square"
-                      hint={t("qrLogoHint")}
-                      aria-label={t("qrLogo")}
-                    />
-                  </div>
-                </TabsContent>
-              </Tabs>
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium">{t("qrNote")}</Label>
+                  <Input
+                    value={state.note}
+                    onChange={(e) => state.setNote(e.target.value)}
+                    placeholder={t("qrNotePlaceholder")}
+                    maxLength={50}
+                    className="h-9 text-xs"
+                  />
+                </div>
+              </div>
             ) : (
               /* Cấu hình cho phương thức tùy chỉnh tải ảnh (MoMo, ZaloPay, PayPal, v.v.) */
               <div className="space-y-3.5">

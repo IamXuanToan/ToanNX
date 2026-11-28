@@ -1,14 +1,17 @@
 "use client";
 
+import { useEffect } from "react";
 import { EditorContent } from "@tiptap/react";
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 
+import { TiptapAiDialog } from "./tiptap-ai-dialog";
 import { TiptapBlockHandle } from "./tiptap-block-handle";
 import { TiptapBubbleToolbar } from "./tiptap-bubble-toolbar";
 import { TiptapNotionUrlDialog } from "./tiptap-notion-url-dialog";
 import { TiptapSlashMenu } from "./tiptap-slash-menu";
 import { TiptapToolbar } from "./tiptap-toolbar";
+import { useTiptapAi } from "./hooks/use-tiptap-ai";
 import { useTiptapBlockHandle } from "./hooks/use-tiptap-block-handle";
 import { useTiptapEditor } from "./hooks/use-tiptap-editor";
 import { useTiptapPluginItems } from "./hooks/use-tiptap-plugins";
@@ -42,6 +45,15 @@ export function TiptapEditor(props: TiptapEditorProps) {
     submitUrlModal,
   } = useTiptapEditor(props);
 
+  const ai = useTiptapAi(editor, props.aiContextHint);
+  const { onEditorReady } = props;
+
+  useEffect(() => {
+    onEditorReady?.(editor);
+    return () => {
+      onEditorReady?.(null);
+    };
+  }, [editor, onEditorReady]);
   const pluginItems = useTiptapPluginItems();
   const mergedInsertItems = [...(props.insertItems ?? []), ...pluginItems];
 
@@ -51,6 +63,7 @@ export function TiptapEditor(props: TiptapEditorProps) {
     insertItems: mergedInsertItems,
     onSelectImage: props.onSelectImage,
     onRequestUrlModal: openUrlModal,
+    onOpenAi: () => ai.openDialog("generate"),
   });
 
   const blockHandle = useTiptapBlockHandle(editor, notionEnabled);
@@ -72,6 +85,7 @@ export function TiptapEditor(props: TiptapEditorProps) {
           label={props.label}
           insertItems={mergedInsertItems}
           onSelectImage={props.onSelectImage}
+          onOpenAi={() => ai.openDialog()}
         />
       ) : null}
 
@@ -102,8 +116,11 @@ export function TiptapEditor(props: TiptapEditorProps) {
               onDelete={blockHandle.deleteBlock}
               onTurnInto={blockHandle.turnBlockInto}
             />
-            {editor ? <TiptapBubbleToolbar editor={editor} /> : null}
+            {editor ? (
+              <TiptapBubbleToolbar editor={editor} onOpenAi={() => ai.openDialog("rewrite")} />
+            ) : null}
             <TiptapSlashMenu slash={slash} />
+            {!props.disabled ? <TiptapAiDialog ai={ai} /> : null}
             <TiptapNotionUrlDialog
               kind={urlModalKind}
               value={urlValue}

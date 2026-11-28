@@ -34,6 +34,7 @@ ra sao và cách vận hành nó.
 - [Điều hướng quản trị: nhóm, module, cụm, thu gọn](features/admin-navigation.md)
 - [File công khai và riêng tư](features/attachment-visibility.md)
 - [Thông báo đẩy trên trình duyệt (Web Push)](features/web-push.md)
+- [Trợ lý AI & Chatbot đa kênh (Web + Telegram)](features/assistant-ai.md)
 
 ## Quy định cập nhật
 

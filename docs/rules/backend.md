@@ -393,6 +393,37 @@ class UserRoleView(CoreApiView):
 - **Tích hợp AI theo danh sách Fallback**: API key AI (`XKIRO_API_KEY`...) chỉ đặt trong ENV; cấu hình chọn model hỗ trợ
   **fallback tuần tự qua nhiều model** khi một model chạm quota/rate limit/lỗi tạm, giữ timeout từng lượt gọi `≤ 5s`
   trong giới hạn serverless Vercel.
+- **Tool Trợ lý AI lấy hiểu biết từ model, luật ép bằng code**: mô tả/enum/giới hạn tham số tool sinh từ metadata
+  model (`verbose_name`, `help_text`, `choices`, validator) qua `AssistantToolSpecBuilder` + `ASSISTANT_TOOL_MODELS`;
+  không gõ tay enum/mô tả lệch model (`test_assistant_tool_specs.py`). Tùy chọn người dùng phải tự quyết khi tạo mới
+  (nhắc trước, lặp lại, kiểu mở link, mật khẩu, chu kỳ, bảo hành...) chỉ khai **tên field** (và mốc gợi ý cho field số)
+  trong `ASSISTANT_ASK_FIELDS`; engine nháp chung (`AssistantDraftService`) tự hỏi bằng nút chọn khi người dùng chưa
+  nêu, không viết hàm/spec riêng cho từng tool và không dựa vào lời dặn trong prompt. URL/số liệu trong câu trả lời
+  lấy từ dữ liệu server (`AssistantResultCardBuilder`, `AssistantReplyGuard`), không để model tự viết lại.
+- **Client Portal không hiển thị tài nguyên/mẫu vận hành chỉ dành cho Admin (kể cả khi user có quyền Admin)**: mọi
+  bản ghi hệ thống phục vụ vận hành nội bộ/xác thực (như `EmailTemplate` nhóm `AUTH` — xác minh email, đặt lại mật
+  khẩu, lời mời — hoặc `NOTIFICATION` hệ thống) tuyệt đối không hiển thị ở Client Portal, kể cả khi người dùng đăng
+  nhập là Admin/`manage_all`. API danh sách phục vụ Portal (`?portal_only=true`) và `accessible_queryset` phải lọc
+  chỉ trả về dữ liệu `PERSONAL` của chính người dùng đó cùng các mẫu dùng chung cho Portal (như `FEEDBACK_THANKS`,
+  `CUSTOM`).
+- **Trợ lý AI chỉ thao tác dữ liệu cá nhân Client Portal, kể cả superuser/`manage_all`**: yêu cầu quản trị (danh sách/
+  đếm/tạo/xóa tài khoản người dùng, vai trò, phân quyền, cấu hình, nhật ký, webhook, token/key, dữ liệu người khác hoặc
+  toàn hệ thống) bị `AssistantScopeGuard` từ chối **bằng code trước LLM/tool**; mọi tool lọc `owner_id = người chat`.
+  Thêm tool mới phải giữ owner isolation và thêm case vào `test_assistant_superuser_personal_scope.py` /
+  `test_assistant_scope_guard.py`; không thêm tool quản trị vào Trợ lý.
+- **Trợ lý: tạo/sửa xong luôn có link xem lại, nhớ bản ghi để sửa tiếp**: tool tạo/sửa mới phải khai trang chi tiết
+  Portal + tool sửa/ID trong `constants/assistant_record_links.py` (thẻ `view_url`, khối `BẢN GHI VỪA THAO TÁC`); sửa
+  bản ghi dùng `update_*` với ID đã nhớ, không xóa rồi tạo lại; đổi tên hồ sơ chỉ khi câu nói rõ hồ sơ của mình.
+- **Tri thức RAG Trợ lý**: chức năng Client Portal mới/đổi phải cập nhật file trong
+  `backend/app/workspace/knowledge/client_portal/` (heading `##` theo ý định người dùng, tool, mẫu câu, lưu ý). Tri
+  thức tự nạp lại sau mỗi `migrate` (hook `post_migrate` của app workspace, môi trường mới cũng có ngay; DB test không
+  gọi Gemini); sửa riêng file `.md` không có migration thì chạy `sync_assistant_knowledge`. Đoạn trường dữ liệu và đoạn
+  thao tác của tool chung sinh tự động từ model/registry, không viết tay.
+- **Trợ lý thao tác CRUD đủ mọi dữ liệu Client Portal**: dữ liệu không có tool riêng khai **một dòng** trong
+  `constants/assistant_record_resources.py` (model, service, quyền đọc/sửa, serializer validate của API, trang Portal)
+  để dùng tool chung `list_my_records` / `update_my_record` (owner isolation + validate như API), xóa thì thêm vào
+  `DELETE_RESOURCE_PERMISSION_MAP`; không viết tool riêng cho từng model. Danh mục dùng chung (đường dẫn giữa) chỉ
+  tạo khi người dùng yêu cầu và có quyền RBAC tạo (`PagePathPermission.PATH_CREATE`), không sửa/xóa qua Trợ lý.
 - **Thông báo**: module chỉ phát qua `NotificationService.notify(event_code, recipient=..., dedup_key=...,
   payload=NotificationPayload(...))` (gọi qua service). Không tự gửi email/Telegram/push, không đọc model thông
   báo. Sự kiện khai trong `ModuleDescriptor.notification_events` với `scope` (`PERSONAL`/`SYSTEM`), `audience`

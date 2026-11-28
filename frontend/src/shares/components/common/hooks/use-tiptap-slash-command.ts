@@ -1,6 +1,7 @@
 "use client";
 
 import type { Editor } from "@tiptap/react";
+import { Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -32,12 +33,14 @@ export function useTiptapSlashCommand({
   insertItems,
   onSelectImage,
   onRequestUrlModal,
+  onOpenAi,
 }: {
   editor: Editor | null;
   enabled: boolean;
   insertItems?: TiptapInsertItem[];
   onSelectImage?: TiptapEditorProps["onSelectImage"];
   onRequestUrlModal: (kind: "image" | "youtube") => void;
+  onOpenAi?: () => void;
 }): TiptapSlashState {
   const t = useTranslations("common.editor");
   const [openRange, setOpenRange] = useState<{ from: number; to: number } | null>(null);
@@ -99,8 +102,26 @@ export function useTiptapSlashCommand({
       customItem: item,
     }));
 
-    return [...coreEntries, ...selectImageItem, ...moduleEntries];
-  }, [t, insertItems, onSelectImage]);
+    const aiEntry: TiptapSlashEntry[] = onOpenAi
+      ? [
+          {
+            key: "ai-compose",
+            group: "basic",
+            label: t("ai.slashLabel"),
+            desc: t("ai.slashDesc"),
+            keywords: ["ai", "viet", "compose", "rag", "tao noi dung"],
+            customItem: {
+              key: "ai-compose",
+              label: t("ai.slashLabel"),
+              icon: Sparkles,
+              run: () => onOpenAi(),
+            },
+          },
+        ]
+      : [];
+
+    return [...aiEntry, ...coreEntries, ...selectImageItem, ...moduleEntries];
+  }, [t, insertItems, onSelectImage, onOpenAi]);
 
   const items = useMemo(() => {
     const q = normalizeSearchText(query);

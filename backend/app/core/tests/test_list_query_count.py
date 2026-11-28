@@ -242,7 +242,9 @@ def _system(model: str) -> Callable[[Any, int], None]:
         from decimal import Decimal
 
         from app.system.models.currency import Currency
+        from app.system.models.email_template import EmailTemplate
         from app.system.models.exchange_rate import ExchangeRate
+        from app.system.models.language import Language
         from app.system.models.notification import Notification
         from app.system.models.notification_delivery import NotificationDelivery
         from app.system.models.system_announcement import SystemAnnouncement
@@ -274,6 +276,17 @@ def _system(model: str) -> Callable[[Any, int], None]:
                 )
             elif model == "announcements":
                 SystemAnnouncement.objects.create(title=uid)
+            elif model == "email_templates":
+                EmailTemplate.objects.create(
+                    owner=owner,
+                    scope="PERSONAL",
+                    category="CUSTOM",
+                    code=f"qc_{uid[:10]}",
+                    name=f"Tpl {uid[:8]}",
+                    subject="Subject",
+                )
+            elif model == "languages":
+                Language.objects.create(code=f"l{uid[:7]}", name=f"Lang {uid[:8]}")
 
     return make
 
@@ -285,6 +298,7 @@ def _workspace(model: str) -> Callable[[Any, int], None]:
         from app.workspace.models.asset import Asset
         from app.workspace.models.asset_warranty_claim import AssetWarrantyClaim
         from app.workspace.models.reminder import Reminder
+        from app.workspace.models.reminder_topic import ReminderTopic
         from app.workspace.models.subscription import Subscription
         from app.workspace.models.subscription_payment import SubscriptionPayment
         from app.workspace.models.vault_item import VaultItem
@@ -332,6 +346,10 @@ def _workspace(model: str) -> Callable[[Any, int], None]:
                 )
             elif model == "reminders":
                 Reminder.objects.create(owner=owner, title=f"Rem {uid}", due_date=today)
+            elif model == "reminder_topics":
+                ReminderTopic.objects.create(
+                    owner=owner, name=f"Topic {uid}", code=f"qc_{uid}", color="#2563EB"
+                )
 
     return make
 
@@ -353,6 +371,10 @@ CASES: list[tuple[str, Callable[[Any, int], None]]] = [
     ("/api/v1/system/currencies", _system("currencies")),
     ("/api/v1/system/exchange-rates", _system("rates")),
     ("/api/v1/system/announcements", _system("announcements")),
+    ("/api/v1/system/email-templates", _system("email_templates")),
+    ("/api/v1/system/languages", _system("languages")),
+    ("/api/v1/utilities/page-feedbacks", lambda owner, n: None),
+    ("/api/v1/workspace/reminder-topics", _workspace("reminder_topics")),
     ("/api/v1/system/users", lambda owner, n: UserFactory.create_batch(n)),
     ("/api/v1/system/roles", lambda owner, n: RoleFactory.create_batch(n)),
     ("/api/v1/utilities/short-links", _short_links),

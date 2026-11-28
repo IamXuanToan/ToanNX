@@ -11,6 +11,8 @@ import {
   LayoutDashboard,
   Link2,
   type LucideIcon,
+  Mail,
+  MessageSquareWarning,
   QrCode,
   Receipt,
   Store,
@@ -22,7 +24,9 @@ import { PLATFORM_PERMISSIONS } from "@/modules/finance/permissions/platform-per
 import { REPORT_PERMISSIONS } from "@/modules/finance/permissions/report-permission";
 import { SEPAY_PERMISSIONS } from "@/modules/finance/permissions/sepay-permission";
 import { ATTACHMENT_PERMISSIONS } from "@/modules/system/permissions/attachment-permission";
+import { EMAIL_TEMPLATE_PERMISSIONS } from "@/modules/system/permissions/email-template-permission";
 import { DONATION_PERMISSIONS } from "@/modules/utilities/permissions/donation-permission";
+import { PAGE_FEEDBACK_PERMISSIONS } from "@/modules/utilities/permissions/page-feedback-permission";
 import { PAGE_PERMISSIONS } from "@/modules/utilities/permissions/page-permission";
 import { QR_CODE_PERMISSIONS } from "@/modules/utilities/permissions/qr-code-permission";
 import { SHORT_LINK_PERMISSIONS } from "@/modules/utilities/permissions/short-link-permission";
@@ -159,6 +163,20 @@ export const PORTAL_NAV_SECTIONS: readonly PortalNavSectionConfig[] = [
         href: PORTAL_ROUTES.donations,
         icon: HeartHandshake,
         permission: DONATION_PERMISSIONS.read,
+      },
+      {
+        key: "feedbacks",
+        labelKey: "feedbacks",
+        href: PORTAL_ROUTES.feedbacks,
+        icon: MessageSquareWarning,
+        permission: PAGE_FEEDBACK_PERMISSIONS.read,
+      },
+      {
+        key: "emailTemplates",
+        labelKey: "emailTemplates",
+        href: PORTAL_ROUTES.emailTemplates,
+        icon: Mail,
+        permission: EMAIL_TEMPLATE_PERMISSIONS.read,
       },
       {
         key: "files",

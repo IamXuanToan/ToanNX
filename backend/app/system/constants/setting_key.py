@@ -9,6 +9,7 @@ class SettingKey(StrEnum):
     AUTH_GOOGLE_ENABLED = "auth_google_enabled"
     AUTH_GITHUB_ENABLED = "auth_github_enabled"
     WORKSPACE_ASSISTANT_CONFIG = "workspace_assistant_config"
+    SUPPORTED_LANGUAGES = "supported_languages"
 
     @classmethod
     def social_login(cls, provider: str) -> str:

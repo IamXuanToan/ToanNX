@@ -60,4 +60,9 @@ export const SYSTEM_API_ENDPOINTS = {
   journalResources: "/system/journal-resources",
   settings: "/system/settings",
   publicSettings: "/system/settings/public",
+  emailTemplates: "/system/email-templates",
+  emailTemplateDuplicate: (id: string) => `/system/email-templates/${id}/duplicate`,
+  emailTemplatePreview: (id: string) => `/system/email-templates/${id}/preview`,
+  languages: "/system/languages",
+  languagesActive: "/system/languages/active",
 } as const;

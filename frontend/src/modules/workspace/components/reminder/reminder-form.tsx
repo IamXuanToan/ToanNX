@@ -13,7 +13,6 @@ import { FormSection } from "@/shares/components/common/form-section";
 import { FormSubmitButton } from "@/shares/components/common/form-submit-button";
 import { NumberInput } from "@/shares/components/common/number-input";
 import { SelectField } from "@/shares/components/common/select-field";
-import { TagsInput } from "@/shares/components/common/tags-input";
 import { Button } from "@/shares/components/ui/button";
 import { Input } from "@/shares/components/ui/input";
 import { Textarea } from "@/shares/components/ui/textarea";
@@ -22,6 +21,7 @@ import { REMINDER_PRIORITIES, REMINDER_RECURRENCES } from "../../constants/defau
 import { WORKSPACE_ROUTES } from "../../constants/routes";
 import type { Reminder } from "../../types/reminder.types";
 import { REMINDER_DAY_PRESETS, useReminderForm } from "./hooks/use-reminder-form";
+import { ReminderTopicSelect } from "./reminder-topic-select";
 
 /**
  * Form Tạo / Sửa Nhắc việc cá nhân (tái sử dụng cả trang riêng lẫn trong `FormDialog` trên Lịch).
@@ -64,38 +64,14 @@ export function ReminderForm({
               {(field) => <Input {...field} disabled={locked} className="h-10" />}
             </FormField>
           </div>
-          <FormField control={form.control} name="dueDate" label={t("fields.dueDateTime")} required>
+          <FormField control={form.control} name="topicId" label={t("fields.topic")}>
             {(field) => (
-              <Controller
-                control={form.control}
-                name="dueTime"
-                render={({ field: timeField }) => (
-                  <DateTimePicker
-                    id={field.id}
-                    dateValue={field.value}
-                    timeValue={timeField.value}
-                    onDateChange={field.onChange}
-                    onTimeChange={timeField.onChange}
-                    dateRequired
-                    disabled={locked}
-                    invalid={field["aria-invalid"]}
-                  />
-                )}
-              />
-            )}
-          </FormField>
-          <FormField
-            control={form.control}
-            name="notifyMinutesBefore"
-            label={t("fields.notifyMinutesBefore")}
-          >
-            {(field) => (
-              <NumberInput
-                {...field}
-                integer
-                onChange={(val) => field.onChange(val === "" ? "" : String(val))}
+              <ReminderTopicSelect
+                id={field.id}
+                value={field.value}
+                onChange={field.onChange}
                 disabled={locked}
-                className="h-10"
+                invalid={field["aria-invalid"]}
               />
             )}
           </FormField>
@@ -114,33 +90,78 @@ export function ReminderForm({
               />
             )}
           </FormField>
-          <FormField control={form.control} name="recurrence" label={t("fields.recurrence")}>
-            {(field) => (
-              <SelectField
-                id={field.id}
-                value={field.value}
-                onValueChange={field.onChange}
-                disabled={locked}
-                invalid={field["aria-invalid"]}
-                options={REMINDER_RECURRENCES.map((r) => ({
-                  value: r,
-                  label: t(`recurrences.${r}`),
-                }))}
-              />
-            )}
-          </FormField>
-          <FormField control={form.control} name="anchorDay" label={t("fields.anchorDay")}>
-            {(field) => (
-              <NumberInput
-                {...field}
-                integer
-                onChange={(val) => field.onChange(val === "" ? "" : String(val))}
-                disabled={locked}
-                className="h-10"
-              />
-            )}
-          </FormField>
           <div className="sm:col-span-2">
+            <FormField control={form.control} name="description" label={t("fields.description")}>
+              {(field) => <Textarea {...field} disabled={locked} rows={3} />}
+            </FormField>
+          </div>
+        </div>
+      </FormSection>
+
+      <FormSection title={t("scheduleSectionTitle")}>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="sm:col-span-2 lg:col-span-6">
+            <FormField
+              control={form.control}
+              name="dueDate"
+              label={t("fields.dueDateTime")}
+              required
+            >
+              {(field) => (
+                <Controller
+                  control={form.control}
+                  name="dueTime"
+                  render={({ field: timeField }) => (
+                    <DateTimePicker
+                      id={field.id}
+                      dateValue={field.value}
+                      timeValue={timeField.value}
+                      onDateChange={field.onChange}
+                      onTimeChange={timeField.onChange}
+                      dateRequired
+                      disabled={locked}
+                      invalid={field["aria-invalid"]}
+                    />
+                  )}
+                />
+              )}
+            </FormField>
+          </div>
+          <div className="lg:col-span-3">
+            <FormField
+              control={form.control}
+              name="notifyMinutesBefore"
+              label={t("fields.notifyMinutesBefore")}
+            >
+              {(field) => (
+                <NumberInput
+                  {...field}
+                  integer
+                  onChange={(val) => field.onChange(val === "" ? "" : String(val))}
+                  disabled={locked}
+                  className="h-10"
+                />
+              )}
+            </FormField>
+          </div>
+          <div className="lg:col-span-3">
+            <FormField control={form.control} name="recurrence" label={t("fields.recurrence")}>
+              {(field) => (
+                <SelectField
+                  id={field.id}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={locked}
+                  invalid={field["aria-invalid"]}
+                  options={REMINDER_RECURRENCES.map((r) => ({
+                    value: r,
+                    label: t(`recurrences.${r}`),
+                  }))}
+                />
+              )}
+            </FormField>
+          </div>
+          <div className="sm:col-span-2 lg:col-span-12">
             <FormField
               control={form.control}
               name="reminderDaysBefore"
@@ -167,18 +188,6 @@ export function ReminderForm({
                   maxLength={3}
                 />
               )}
-            </FormField>
-          </div>
-          <div className="sm:col-span-2">
-            <FormField control={form.control} name="tags" label={t("fields.tags")}>
-              {(field) => (
-                <TagsInput value={field.value} onChange={field.onChange} disabled={locked} />
-              )}
-            </FormField>
-          </div>
-          <div className="sm:col-span-2">
-            <FormField control={form.control} name="description" label={t("fields.description")}>
-              {(field) => <Textarea {...field} disabled={locked} rows={3} />}
             </FormField>
           </div>
         </div>

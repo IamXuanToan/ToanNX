@@ -3,10 +3,17 @@
 from rest_framework import serializers
 
 from app.workspace.models.reminder import Reminder
+from app.workspace.serializers.responses.reminder_topic_summary_response_serializer import (
+    ReminderTopicSummaryResponseSerializer,
+)
 
 
 class ReminderResponseSerializer(serializers.ModelSerializer[Reminder]):
     """Chi tiết/danh sách nhắc việc cá nhân."""
+
+    topic = ReminderTopicSummaryResponseSerializer(
+        read_only=True, allow_null=True, help_text="Chủ đề nhắc việc."
+    )
 
     owner_email = serializers.CharField(source="owner.email", read_only=True, help_text="Email chủ sở hữu.")
     owner_name = serializers.CharField(
@@ -38,8 +45,7 @@ class ReminderResponseSerializer(serializers.ModelSerializer[Reminder]):
             "is_completed",
             "completed_at",
             "recurrence",
-            "anchor_day",
-            "tags",
+            "topic",
             "created_at",
             "updated_at",
         )

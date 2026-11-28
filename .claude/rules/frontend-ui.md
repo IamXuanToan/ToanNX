@@ -20,6 +20,7 @@ accessibility/UX trên file đã sửa, rồi `playwright-cli` để kiểm UI t
   `<input>`, `<select>`, `<a>`, `<img>` trần. Link dùng `Link` (`@/i18n/navigation`), ảnh dùng `<Image />`.
 - **Tooltip bắt buộc dùng `AppTooltip` / shadcn `Tooltip`, cấm `title=` HTML thô** trên thẻ DOM (`div`/`span`/`p`/`button`...) hay primitive (`Button`, `Badge`, `Link`, `Image`...; nút disabled cần lý do thì bọc `<span className="inline-flex">`); ngoại lệ chỉ cho `<iframe title=...>` và prop `title` của component cấu trúc (`PageHeader`, `FormPage`, `FormSection`, `ConfirmDialog`...; kiểm bởi `tests/unit/code-conventions.test.ts`).
 - Mọi control cao 40px (`h-10`, `rounded-xl`); ô chọn là `SelectField`; bộ lọc bảng là `FilterSelect` nhiều lựa chọn.
+  Ngoại lệ duy nhất: chip/ô nhập trả lời nhanh và nút thẻ kết quả trong khung chat Trợ lý AI (`h-7`/`h-8`, bo tròn).
 - Chỉ Tailwind utility + `cn()`; không `style={{}}` tĩnh; mobile-first, 375px không cuộn ngang; dark mode qua token.
   Mọi trang công khai/custom page (`/p/[slug]`, `/s/[slug]`, donate, sản phẩm) cũng phải chuẩn Light/Dark theo token hệ thống.
 - **Màu**: class màu ngữ nghĩa phải có token `--color-<tên>` trong `globals.css` (`theme-tokens.test.ts`); ưu tiên thang
@@ -49,6 +50,7 @@ accessibility/UX trên file đã sửa, rồi `playwright-cli` để kiểm UI t
 1. Menu: mục khai `permission`; thiếu quyền thì ẩn, module/nhóm hết mục thì ẩn. Module > 5 mục: mọi mục có `section`.
 2. Trang: View trả `ForbiddenView` khi thiếu quyền trang.
 3. Thao tác: trang chi tiết chỉ xem mặc định (`useEditMode` + `EditModeProvider`, nút Sửa thêm `?mode=edit`).
+4. Phạm vi Portal: màn hình Client Portal không hiển thị dữ liệu/mẫu hệ thống chỉ phục vụ Admin (như mẫu email xác minh địa chỉ email, đặt lại mật khẩu, lời mời — nhóm `AUTH`/`NOTIFICATION`), kể cả khi user có quyền Admin (truyền `portalOnly: true` và ẩn các nhóm Admin khỏi bộ lọc/form Portal).
 
 Sidebar: nhóm chỉ một module thì không hiện nhãn module IN HOA.
 

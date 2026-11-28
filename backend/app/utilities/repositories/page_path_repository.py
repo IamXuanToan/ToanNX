@@ -21,6 +21,10 @@ class PagePathRepository(CoreRepository[PagePath]):
             .annotate(page_count=Count("pages", filter=Q(pages__deleted_at__isnull=True)))
         )
 
+    def find_by_segment(self, segment: str) -> PagePath | None:
+        """Đường dẫn giữa chưa xóa theo segment (không phân biệt hoa thường)."""
+        return self.get_queryset().filter(segment__iexact=segment).first()
+
     def has_pages(self, path_id: Any) -> bool:
         """Đường dẫn còn trang (kể cả trang đã xóa mềm, vì FK PROTECT và URL không dùng lại).
 

@@ -43,6 +43,18 @@ export const SYSTEM_ROUTES = {
     pathname: "/admin/journal/[id]" as const,
     params: { id },
   }),
+  emailTemplates: "/admin/email-templates",
+  emailTemplateCreate: "/admin/email-templates/new",
+  emailTemplateDetail: (id: string) => ({
+    pathname: "/admin/email-templates/[id]" as const,
+    params: { id },
+  }),
+  languages: "/admin/languages",
+  languageCreate: "/admin/languages/new",
+  languageDetail: (id: string) => ({
+    pathname: "/admin/languages/[id]" as const,
+    params: { id },
+  }),
 } as const;
 
 /** Pathname theo ngôn ngữ của module System (gộp vào `routing.pathnames`). */
@@ -98,6 +110,30 @@ export const SYSTEM_PATHNAMES = {
   },
   "/admin/webhooks": { vi: "/quan-tri/he-thong/webhook", en: "/admin/system/webhooks" },
   "/admin/callbacks": { vi: "/quan-tri/he-thong/callback", en: "/admin/system/callbacks" },
+  "/admin/email-templates": {
+    vi: "/quan-tri/he-thong/mau-email",
+    en: "/admin/system/email-templates",
+  },
+  "/admin/email-templates/new": {
+    vi: "/quan-tri/he-thong/mau-email/tao-moi",
+    en: "/admin/system/email-templates/new",
+  },
+  "/admin/email-templates/[id]": {
+    vi: "/quan-tri/he-thong/mau-email/[id]",
+    en: "/admin/system/email-templates/[id]",
+  },
+  "/admin/languages": {
+    vi: "/quan-tri/he-thong/ngon-ngu",
+    en: "/admin/system/languages",
+  },
+  "/admin/languages/new": {
+    vi: "/quan-tri/he-thong/ngon-ngu/tao-moi",
+    en: "/admin/system/languages/new",
+  },
+  "/admin/languages/[id]": {
+    vi: "/quan-tri/he-thong/ngon-ngu/[id]",
+    en: "/admin/system/languages/[id]",
+  },
   "/admin/journal": { vi: "/quan-tri/he-thong/nhat-ky", en: "/admin/system/journal" },
   "/admin/journal/[id]": {
     vi: "/quan-tri/he-thong/nhat-ky/[id]",

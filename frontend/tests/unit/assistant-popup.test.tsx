@@ -8,7 +8,11 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import commonVi from "@/messages/vi.json";
 import systemVi from "@/modules/system/messages/vi.json";
 import { AssistantFloatingWidget } from "@/modules/workspace/components/assistant/assistant-floating-widget";
-import { ASSISTANT_WIDGET_POSITION_KEY } from "@/modules/workspace/constants/defaults";
+import {
+  ASSISTANT_POPUP_DIMENSIONS,
+  ASSISTANT_POPUP_SIZE_KEY,
+  ASSISTANT_WIDGET_POSITION_KEY,
+} from "@/modules/workspace/constants/defaults";
 import workspaceVi from "@/modules/workspace/messages/vi.json";
 
 vi.mock("@/i18n/navigation", () => ({
@@ -225,5 +229,36 @@ describe("AssistantFloatingWidget (Nút tròn kéo-thả & Popup bung thông min
 
     const panel = await screen.findByTestId("assistant-popup-panel");
     expect(panel.getAttribute("data-placement")).toBe("bottom-right");
+  });
+
+  it("kéo resize popup chatbot giữ nguyên kích thước mới, lưu localStorage và khôi phục về mặc định", async () => {
+    wrap(<AssistantFloatingWidget />);
+    const trigger = await screen.findByTestId("assistant-floating-trigger");
+
+    // Mở popup ở vị trí mặc định (góc phải-dưới -> bung top-left)
+    fireEvent.pointerDown(trigger, { pointerId: 10, button: 0, clientX: 1220, clientY: 740 });
+    fireEvent.pointerUp(trigger, { pointerId: 10, button: 0, clientX: 1220, clientY: 740 });
+
+    const panel = await screen.findByTestId("assistant-popup-panel");
+    expect(panel.style.width).toBe(`${ASSISTANT_POPUP_DIMENSIONS.width}px`);
+    expect(screen.queryByTestId("assistant-reset-size-btn")).toBeNull();
+
+    // Kéo cạnh trái sang trái thêm 160px -> width tăng từ 420 lên 580px
+    const hHandle = screen.getByTestId("assistant-resize-horizontal");
+    fireEvent.pointerDown(hHandle, { pointerId: 11, button: 0, clientX: 800, clientY: 400 });
+    fireEvent.pointerMove(hHandle, { pointerId: 11, clientX: 640, clientY: 400 });
+    fireEvent.pointerUp(hHandle, { pointerId: 11, button: 0, clientX: 640, clientY: 400 });
+
+    // Sau khi thả chuột vẫn giữ nguyên 580px và đã lưu vào localStorage
+    expect(panel.style.width).toBe("580px");
+    const savedSizeRaw = window.localStorage.getItem(ASSISTANT_POPUP_SIZE_KEY);
+    expect(savedSizeRaw).toBeTruthy();
+    expect(JSON.parse(savedSizeRaw as string)).toMatchObject({ width: 580 });
+
+    // Nút đặt lại kích thước mặc định hiển thị -> bấm vào thì khôi phục về 420px
+    const resetBtn = await screen.findByTestId("assistant-reset-size-btn");
+    fireEvent.click(resetBtn);
+    expect(panel.style.width).toBe(`${ASSISTANT_POPUP_DIMENSIONS.width}px`);
+    expect(screen.queryByTestId("assistant-reset-size-btn")).toBeNull();
   });
 });

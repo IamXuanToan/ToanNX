@@ -43,17 +43,9 @@ class ReminderCreateValidateSerializer(CoreValidateSerializer):
         default=Reminder.Recurrence.NONE,
         help_text="Chu kỳ lặp lại.",
     )
-    anchor_day = serializers.IntegerField(
-        min_value=1,
-        max_value=31,
+    topic_id = serializers.UUIDField(
         required=False,
         allow_null=True,
         default=None,
-        help_text="Ngày chốt định kỳ (1–31).",
-    )
-    tags = serializers.ListField(
-        child=serializers.CharField(max_length=50),
-        required=False,
-        default=list,
-        help_text="Danh sách nhãn.",
+        help_text="ID chủ đề nhắc việc (mặc định hệ thống hoặc của chủ sở hữu).",
     )

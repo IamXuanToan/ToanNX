@@ -90,6 +90,21 @@ file riêng tư `/tep/{id}`. Chuông thông báo chuẩn hóa link cũ `/admin/f
   total=..` kèm `request_id`; dispatcher ghi `notification.send delivery=.. channel=.. status=.. elapsed=..`.
 - Rate limit đếm bằng Redis khi có `REDIS_URL` (không ghi bảng `system_rate_limit_bucket`), lỗi thì về PostgreSQL.
 
+## Ngôn ngữ (`Language`) & Bảng mapping đa ngôn ngữ
+
+- Model `Language(JournalTracker, CoreModel)` lưu danh mục ngôn ngữ dùng chung toàn hệ thống (`code`, `name`, `native_name`, `flag_emoji`, `is_default`, `is_active`, `sort_order`), mặc định seed `vi` và `en` qua `LanguageSeedService`.
+- Quyền `LanguagePermission`: `read`, `create`, `update`, `delete`, `manage_all`; `MEMBER` có quyền `read`.
+- Endpoint: `/api/v1/system/languages` (CRUD + `bulk-update` + `bulk-delete` + `history`) và `GET /api/v1/system/languages/active` (`AllowAny`, cache Redis `system:languages`).
+- Giao diện quản trị tại `/quan-tri/he-thong/ngon-ngu` (cụm Danh mục).
+
+## Mẫu email (`EmailTemplate`)
+
+- Model `EmailTemplate(JournalTracker, CoreModel)` lưu 1 bản ghi/mẫu kèm `translations` và bảng mapping quan hệ `EmailTemplateTranslation` (khóa ngoại tới `EmailTemplate` và `Language`), tự động đồng bộ qua `EmailTemplateService`.
+- Quyền `EmailTemplatePermission`: `read`, `create`, `update`, `delete`, `manage_all`; `MEMBER` gồm `(read, create, update, delete)`.
+- Endpoint: `/api/v1/system/email-templates` (CRUD + `POST /{id}/duplicate` nhân bản mẫu hệ thống/cá nhân thành bản `PERSONAL` + `POST /{id}/preview` trộn biến mẫu + `bulk-delete`).
+- `EmailTemplateSeedService` tự động nạp 4 mẫu mặc định (`feedback_thank_you`, `email_verification`, `password_reset`, `invitation`) qua `post_migrate`. `EmailService.send_template` ưu tiên đọc bản `SYSTEM` đang `ACTIVE` trong DB, dự phòng về file tĩnh `templates/system/email/`.
+- Giao diện quản trị `/quan-tri/he-thong/mau-email` và Client Portal `/ca-nhan/mau-email` tích hợp `TiptapEditor` kèm trường trộn `{{...}}`.
+
 ## Chức năng liên quan
 
 - [File công khai và riêng tư](../../features/attachment-visibility.md)

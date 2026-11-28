@@ -8,9 +8,12 @@ import type { MessageKey } from "@/shares/types/navigation.types";
  */
 export const JOURNAL_FIELD_PREFIXES: Readonly<Record<string, MessageKey>> = {
   "system.currency": "system.currencies.fields",
+  "system.emailtemplate": "system.emailTemplates.fields",
+  "system.language": "system.languages.fields",
   "system.role": "system.iam.roles.fields",
   "system.user": "system.account.users.fields",
   "utilities.page": "utilities.customPages.pages.fields",
+  "utilities.pagefeedback": "utilities.feedbacks.fields",
   "utilities.pagepath": "utilities.customPages.paths.fields",
   "utilities.qrcode": "utilities.qrCodes.fields",
   "utilities.shortlink": "utilities.shortLinks.fields",

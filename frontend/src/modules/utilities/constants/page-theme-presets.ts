@@ -1,3 +1,5 @@
+import type { PageStyleConfig } from "../types/page.types";
+
 export interface ThemePreset {
   name: string;
   primary: string;
@@ -5,6 +7,8 @@ export interface ThemePreset {
   text: string;
   buttonStyle: "rounded" | "pill" | "square";
   mode?: "system" | "light" | "dark";
+  /** Cấu hình giao diện mở rộng (gradient, glass, hover, font...). */
+  styleConfig?: Partial<PageStyleConfig>;
 }
 
 export const THEME_PRESETS: ThemePreset[] = [
@@ -302,5 +306,116 @@ export const THEME_PRESETS: ThemePreset[] = [
     text: "#F3E8FF",
     buttonStyle: "pill",
     mode: "dark",
+  },
+
+  // --- Phong cách Beacons / Bento / Neo-Brutalism nâng cao ---
+  {
+    name: "Aurora Glass",
+    primary: "#818CF8",
+    bg: "#0F172A",
+    text: "#F8FAFC",
+    buttonStyle: "rounded",
+    mode: "dark",
+    styleConfig: {
+      backgroundType: "gradient",
+      gradientType: "linear",
+      gradientAngle: 135,
+      gradientColors: ["#0F172A", "#1E1B4B", "#312E81"],
+      ambientMotion: "floating_orbs",
+      surfaceStyle: "glass",
+      hoverEffect: "shine",
+      entranceAnimation: "fade_up",
+      fontFamily: "plus_jakarta",
+      linkLayout: "thumbnail_card",
+    },
+  },
+  {
+    name: "Sunset Creator",
+    primary: "#F43F5E",
+    bg: "#FFF1F2",
+    text: "#4C0519",
+    buttonStyle: "pill",
+    mode: "light",
+    styleConfig: {
+      backgroundType: "gradient",
+      gradientType: "linear",
+      gradientAngle: 150,
+      gradientColors: ["#FFF1F2", "#FFE4E6", "#FECDD3"],
+      ambientMotion: "gradient_flow",
+      surfaceStyle: "elevated",
+      hoverEffect: "lift",
+      entranceAnimation: "fade_up",
+      fontFamily: "be_vietnam",
+      linkLayout: "featured_hero",
+    },
+  },
+  {
+    name: "Neo Brutalism",
+    primary: "#EAB308",
+    bg: "#FEFCE8",
+    text: "#18181B",
+    buttonStyle: "square",
+    mode: "light",
+    styleConfig: {
+      backgroundType: "pattern",
+      patternKey: "dots",
+      ambientMotion: "none",
+      surfaceStyle: "hard_shadow",
+      hoverEffect: "hard_push",
+      cardRadius: "4px",
+      fontFamily: "jetbrains_mono",
+      linkLayout: "classic_bar",
+    },
+  },
+  {
+    name: "Minimal Editorial",
+    primary: "#18181B",
+    bg: "#FAF9F6",
+    text: "#18181B",
+    buttonStyle: "rounded",
+    mode: "light",
+    styleConfig: {
+      backgroundType: "solid",
+      headerLayout: "editorial_left",
+      surfaceStyle: "outline",
+      hoverEffect: "scale",
+      fontFamily: "playfair",
+      linkLayout: "bento_grid",
+    },
+  },
+  {
+    name: "Matcha Mist",
+    primary: "#15803D",
+    bg: "#ECFDF5",
+    text: "#14532D",
+    buttonStyle: "rounded",
+    mode: "light",
+    styleConfig: {
+      backgroundType: "pattern",
+      patternKey: "aura",
+      ambientMotion: "floating_orbs",
+      surfaceStyle: "glass",
+      hoverEffect: "lift",
+      fontFamily: "plus_jakarta",
+      linkLayout: "grid_2col",
+    },
+  },
+  {
+    name: "Cyber Glow",
+    primary: "#22D3EE",
+    bg: "#09090B",
+    text: "#ECFEFF",
+    buttonStyle: "rounded",
+    mode: "dark",
+    styleConfig: {
+      backgroundType: "pattern",
+      patternKey: "grid",
+      ambientMotion: "none",
+      surfaceStyle: "glass",
+      hoverEffect: "glow",
+      highlightEffect: "pulse_ring",
+      fontFamily: "jetbrains_mono",
+      linkLayout: "bento_grid",
+    },
   },
 ];

@@ -1,8 +1,21 @@
 """Đăng ký module Tiện ích."""
 
 from app.core.registry.module_descriptor import ModuleDescriptor
+from app.core.registry.notification_event_definition import (
+    NOTIFICATION_AUDIENCE_OWNER,
+    NOTIFICATION_CHANNEL_IN_APP,
+    NOTIFICATION_CHANNEL_PUSH,
+    NOTIFICATION_CHANNEL_TELEGRAM,
+    NOTIFICATION_LEVEL_INFO,
+    NOTIFICATION_SCOPE_PERSONAL,
+    NotificationEventDefinition,
+)
 from app.core.registry.webhook_definition import WebhookDefinition
+from app.utilities.constants.utilities_notification_event import (
+    UtilitiesNotificationEvent as E,
+)
 from app.utilities.permissions.donation_permission import DonationPermission
+from app.utilities.permissions.page_feedback_permission import PageFeedbackPermission
 from app.utilities.permissions.page_path_permission import PagePathPermission
 from app.utilities.permissions.page_permission import PagePermission
 from app.utilities.permissions.qr_code_permission import QrCodePermission
@@ -23,6 +36,7 @@ MODULE = ModuleDescriptor(
         *PagePermission.member(),
         *PagePathPermission.member(),
         *DonationPermission.member(),
+        *PageFeedbackPermission.member(),
     ),
     permissions=(
         *ShortLinkPermission.all(),
@@ -30,6 +44,25 @@ MODULE = ModuleDescriptor(
         *PagePermission.all(),
         *PagePathPermission.all(),
         *DonationPermission.all(),
+        *PageFeedbackPermission.all(),
+    ),
+    notification_events=(
+        NotificationEventDefinition(
+            E.FEEDBACK_RECEIVED,
+            "Có góp ý / báo lỗi mới",
+            "Khách vãng lai vừa gửi góp ý hoặc báo lỗi trên Custom Page / ShortLink của bạn.",
+            scope=NOTIFICATION_SCOPE_PERSONAL,
+            audience=NOTIFICATION_AUDIENCE_OWNER,
+            permission=PageFeedbackPermission.READ.code,
+            default_level=NOTIFICATION_LEVEL_INFO,
+            default_channels=(
+                NOTIFICATION_CHANNEL_IN_APP,
+                NOTIFICATION_CHANNEL_PUSH,
+                NOTIFICATION_CHANNEL_TELEGRAM,
+            ),
+            kind="business",
+            icon="🐞",
+        ),
     ),
     webhooks=(
         WebhookDefinition(

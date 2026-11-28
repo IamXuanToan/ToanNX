@@ -170,6 +170,16 @@ class Page(JournalTracker, CoreModel):
         help_text="Attachment ảnh bìa.",
         db_comment="Ảnh bìa trang",
     )
+    background_image = models.ForeignKey(
+        "system.Attachment",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name="Ảnh nền trang",
+        help_text="Attachment ảnh nền toàn trang (bắt buộc công khai).",
+        db_comment="Ảnh nền toàn trang",
+    )
 
     class Meta:
         db_table = "utilities_page"

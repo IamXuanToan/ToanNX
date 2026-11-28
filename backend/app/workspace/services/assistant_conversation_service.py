@@ -124,6 +124,7 @@ class AssistantConversationService(CoreCrudService[AssistantConversation, Assist
         tokens_used: int = 0,
         contains_private_data: bool = False,
         is_error: bool = False,
+        metadata: dict[str, Any] | None = None,
     ) -> AssistantMessage:
         """Thêm tin nhắn vào hội thoại và cập nhật mốc `last_message_at`."""
         now = timezone.now()
@@ -139,6 +140,7 @@ class AssistantConversationService(CoreCrudService[AssistantConversation, Assist
             tokens_used=max(0, int(tokens_used)),
             contains_private_data=contains_private_data,
             is_error=is_error,
+            metadata=metadata or {},
         )
         updates: dict[str, Any] = {"last_message_at": now}
         if not conversation.title and role == AssistantMessage.Role.USER and content:

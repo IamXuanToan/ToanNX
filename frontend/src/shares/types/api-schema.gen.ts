@@ -2142,6 +2142,128 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/system/email-templates": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_email_templates_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_email_templates_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/email-templates/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_email_templates_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_email_templates_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["system_email_templates_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/email-templates/{id}/duplicate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Nhân bản mẫu hệ thống hoặc cá nhân thành mẫu cá nhân riêng. */
+    post: operations["system_email_templates_duplicate_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/email-templates/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["system_email_templates_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/email-templates/{id}/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xem trước nội dung email sau khi trộn biến dữ liệu mẫu. */
+    post: operations["system_email_templates_preview_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/email-templates/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_email_templates_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/email-templates/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_email_templates_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/system/exchange-rates": {
     parameters: {
       query?: never;
@@ -2423,6 +2545,111 @@ export interface paths {
     get: operations["system_journal_resources_list"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/languages": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["system_languages_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["system_languages_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/languages/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["system_languages_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["system_languages_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["system_languages_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/system/languages/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["system_languages_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/languages/active": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Trả danh sách ngôn ngữ đang kích hoạt theo thứ tự `sort_order`. */
+    get: operations["system_languages_active_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/languages/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_languages_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/system/languages/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["system_languages_bulk_update_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -3394,6 +3621,111 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/utilities/page-feedbacks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["utilities_page_feedbacks_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["utilities_page_feedbacks_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/page-feedbacks/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["utilities_page_feedbacks_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["utilities_page_feedbacks_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["utilities_page_feedbacks_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/utilities/page-feedbacks/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Lịch sử thay đổi của bản ghi (mới nhất trước); quyền owner áp như `retrieve`. */
+    get: operations["utilities_page_feedbacks_history_list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/page-feedbacks/{id}/thank": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Gửi email cảm ơn tới người đã góp ý theo mẫu hệ thống/cá nhân. */
+    post: operations["utilities_page_feedbacks_thank_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/page-feedbacks/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["utilities_page_feedbacks_bulk_delete_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/page-feedbacks/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Cập nhật nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["utilities_page_feedbacks_bulk_update_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/utilities/page-paths": {
     parameters: {
       query?: never;
@@ -3665,6 +3997,23 @@ export interface paths {
     get: operations["utilities_pages_public_retrieve"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/utilities/public/feedbacks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Lưu góp ý và gửi thông báo tới chủ sở hữu trang/link. */
+    post: operations["utilities_public_feedbacks_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -4023,6 +4372,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/workspace/assistant/compose": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Nhận yêu cầu viết/sửa nội dung Tiptap, trả HTML sạch + model + nguồn RAG. */
+    post: operations["workspace_assistant_compose_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/workspace/assistant/config": {
     parameters: {
       query?: never;
@@ -4139,6 +4505,60 @@ export interface paths {
     get: operations["workspace_dashboard_summary_retrieve"];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/reminder-topics": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Danh sách có lọc, tìm kiếm, sắp xếp; phân trang khi có `page`/`page_size`. */
+    get: operations["workspace_reminder_topics_list"];
+    put?: never;
+    /** @description Tạo bản ghi (201). */
+    post: operations["workspace_reminder_topics_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/workspace/reminder-topics/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Chi tiết bản ghi. */
+    get: operations["workspace_reminder_topics_retrieve"];
+    put?: never;
+    post?: never;
+    /** @description Xóa bản ghi (204 không body). */
+    delete: operations["workspace_reminder_topics_destroy"];
+    options?: never;
+    head?: never;
+    /** @description Cập nhật một phần (PATCH). */
+    patch: operations["workspace_reminder_topics_partial_update"];
+    trace?: never;
+  };
+  "/api/v1/workspace/reminder-topics/bulk-delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Xóa nhiều bản ghi trong một transaction (tất cả hoặc không gì cả). */
+    post: operations["workspace_reminder_topics_bulk_delete_create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -5430,6 +5850,48 @@ export interface components {
       /** @description Chỉ dùng trực tiếp trên Telegram Bot. */
       telegram_only: boolean;
     };
+    /** @description Kết quả HTML chuẩn Tiptap do AI sinh ra. */
+    AssistantComposeResponse: {
+      /** @description Nội dung HTML sạch tương thích trực tiếp với Tiptap. */
+      html: string;
+      /** @description Model AI đã xử lý. */
+      model_used: string;
+      /** @description Số token đã tiêu thụ. */
+      tokens_used: number;
+      /** @description Danh sách nguồn dữ liệu cá nhân đã tham khảo (nếu bật RAG). */
+      rag_sources: string[];
+    };
+    /** @description Kiểm tra đầu vào sinh/biên tập nội dung Tiptap bằng AI. */
+    AssistantComposeValidateRequest: {
+      /** @description Yêu cầu viết hoặc chỉnh sửa nội dung. */
+      prompt: string;
+      /**
+       * @description Chế độ xử lý: generate, rewrite, expand, summarize, fix_grammar.
+       *
+       *     * `generate` - Tạo nội dung mới
+       *     * `rewrite` - Viết lại văn phong
+       *     * `expand` - Mở rộng chi tiết
+       *     * `summarize` - Tóm tắt ngắn gọn
+       *     * `fix_grammar` - Sửa chính tả & ngữ pháp
+       * @default generate
+       */
+      mode: components["schemas"]["ModeEnum"];
+      /**
+       * @description Đoạn văn bản đang được bôi đen trong Tiptap (tùy chọn).
+       * @default
+       */
+      selected_text: string;
+      /**
+       * @description Ngữ cảnh xung quanh của tài liệu đang soạn (tùy chọn).
+       * @default
+       */
+      document_context: string;
+      /**
+       * @description Bật truy xuất dữ liệu cá nhân (RAG) theo quyền tài khoản.
+       * @default true
+       */
+      use_personal_rag: boolean;
+    };
     /** @description Trọn bộ cấu hình Avatar, Tên, Kích thước nút tròn, Policy, Model, Token Limit và Telegram AI. */
     AssistantConfigResponse: {
       /** @description Tên Chatbot AI. */
@@ -5529,7 +5991,7 @@ export interface components {
       /** @description Số ngày nhắc trước mặc định khi dịch vụ định kỳ sắp gia hạn. */
       subscription_default_alert_days?: number[];
     };
-    /** @description Chi tiết từng tin nhắn kèm `model_used`, `tokens_used` và `contains_private_data`. */
+    /** @description Chi tiết tin nhắn kèm model/token/cờ riêng tư, nút trả lời nhanh và thẻ kết quả. */
     AssistantMessageResponse: {
       /**
        * Mã định danh
@@ -5595,12 +6057,74 @@ export interface components {
        * @description True nếu lượt này gặp lỗi LLM hoặc rơi về Slash fallback.
        */
       readonly is_error: boolean;
+      /** @description Nút trả lời nhanh cho lựa chọn đang hỏi. */
+      readonly quick_replies: components["schemas"]["AssistantQuickReplyResponse"][];
+      /** @description Ô nhập trực tiếp cho câu hỏi đang chờ (số kèm đơn vị, chữ, mật khẩu); null nếu không có. */
+      readonly quick_input: components["schemas"]["AssistantQuickInputResponse"] | null;
+      /** @description Thẻ kết quả do server dựng từ dữ liệu thật. */
+      readonly cards: components["schemas"]["AssistantResultCardResponse"][];
       /**
        * Thời điểm tạo
        * Format: date-time
        * @description Thời điểm bản ghi được tạo (tự động).
        */
       readonly created_at: string;
+    };
+    /** @description Kiểu ô nhập (`number` / `text` / `secret`), đơn vị hiển thị và gợi ý. */
+    AssistantQuickInputResponse: {
+      /**
+       * @description Kiểu ô nhập.
+       *
+       *     * `number` - number
+       *     * `text` - text
+       *     * `secret` - secret
+       */
+      kind: components["schemas"]["AssistantQuickInputResponseKindEnum"];
+      /** @description Đơn vị gắn sau số (VD `phút`), rỗng nếu không có. */
+      unit: string;
+      /** @description Gợi ý hiển thị trong ô nhập. */
+      placeholder: string;
+    };
+    /**
+     * @description * `number` - number
+     *     * `text` - text
+     *     * `secret` - secret
+     * @enum {string}
+     */
+    AssistantQuickInputResponseKindEnum: "number" | "text" | "secret";
+    /** @description Nhãn hiển thị và nội dung sẽ gửi khi bấm. */
+    AssistantQuickReplyResponse: {
+      /** @description Nhãn hiển thị trên nút. */
+      caption: string;
+      /** @description Nội dung tin nhắn gửi đi khi bấm nút. */
+      text: string;
+    };
+    /** @description Thẻ kết quả tạo/sửa: tiêu đề, link xem chi tiết Portal; link rút gọn có thêm thông tin riêng. */
+    AssistantResultCardResponse: {
+      /** @description Loại thẻ (`reminder`, `short_link`, `asset`...). */
+      type: string;
+      /** @description Nhãn loại bản ghi tiếng Việt (VD `nhắc việc`). */
+      kind_label: string;
+      /** @description `created` hoặc `updated`. */
+      action: string;
+      /** @description ID bản ghi. */
+      id: string;
+      /** @description Tên hiển thị. */
+      title: string;
+      /** @description URL chính: link rút gọn đầy đủ, hoặc trang xem chi tiết. */
+      url: string;
+      /** @description Trang xem chi tiết bản ghi trong Client Portal. */
+      view_url: string;
+      /** @description URL đích. */
+      destination_url: string;
+      /** @description Mô tả kiểu chuyển hướng. */
+      redirect_mode: string;
+      /** @description Có mật khẩu bảo vệ. */
+      has_password: boolean;
+      /** @description Thời điểm hết hạn ISO hoặc null. */
+      expires_at: string | null;
+      /** @description Trạng thái bản ghi. */
+      status: string;
     };
     /** @description Số tin nhắn đã dọn khỏi luồng chat Web. */
     AssistantThreadClearResponse: {
@@ -6541,6 +7065,296 @@ export interface components {
       /** @description Tiêu đề trang. */
       page_title: string;
     };
+    /** @description Danh sách ID và trạng thái mới cho thao tác hàng loạt. */
+    EmailTemplateBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      status: components["schemas"]["EmailTemplateStatusEnum"];
+    };
+    /**
+     * @description * `AUTH` - Xác thực hệ thống
+     *     * `FEEDBACK_THANKS` - Cảm ơn góp ý
+     *     * `NOTIFICATION` - Thông báo
+     *     * `CUSTOM` - Tùy chỉnh
+     * @enum {string}
+     */
+    EmailTemplateCategoryEnum: "AUTH" | "FEEDBACK_THANKS" | "NOTIFICATION" | "CUSTOM";
+    /** @description Input tạo mới mẫu email đa ngôn ngữ Tiptap. */
+    EmailTemplateCreateValidateRequest: {
+      code: string;
+      /** @default  */
+      name: string;
+      /** @default  */
+      description: string;
+      /** @default vi */
+      locale: string;
+      /** @default PERSONAL */
+      scope: components["schemas"]["EmailTemplateScopeEnum"];
+      /** @default CUSTOM */
+      category: components["schemas"]["EmailTemplateCategoryEnum"];
+      /** @default ACTIVE */
+      status: components["schemas"]["EmailTemplateStatusEnum"];
+      /** @default  */
+      subject: string;
+      content?: unknown;
+      /** @default  */
+      html_body: string;
+      translations?: {
+        [key: string]: unknown;
+      };
+      variables?: {
+        [key: string]: unknown;
+      }[];
+    };
+    /** @description Chi tiết đầy đủ mẫu email gồm Tiptap JSON, HTML sạch và danh sách trường trộn. */
+    EmailTemplateDetailResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Mã mẫu
+       * @description Mã định danh mẫu email (vd: feedback_thank_you, email_verification).
+       */
+      code: string;
+      /**
+       * Tên mẫu
+       * @description Tên hiển thị của mẫu email.
+       */
+      name: string;
+      /**
+       * Mô tả
+       * @description Ghi chú ngắn về ngữ cảnh dùng mẫu email.
+       */
+      description?: string;
+      /**
+       * Ngôn ngữ
+       * @description Ngôn ngữ mẫu email (vi hoặc en).
+       */
+      locale?: string;
+      /**
+       * Phạm vi
+       * @description SYSTEM dùng chung toàn hệ thống; PERSONAL chỉ thuộc người tạo.
+       *
+       *     * `SYSTEM` - Toàn hệ thống
+       *     * `PERSONAL` - Cá nhân
+       */
+      scope?: components["schemas"]["EmailTemplateScopeEnum"];
+      /**
+       * Nhóm mẫu
+       * @description Nhóm mục đích gửi email.
+       *
+       *     * `AUTH` - Xác thực hệ thống
+       *     * `FEEDBACK_THANKS` - Cảm ơn góp ý
+       *     * `NOTIFICATION` - Thông báo
+       *     * `CUSTOM` - Tùy chỉnh
+       */
+      category?: components["schemas"]["EmailTemplateCategoryEnum"];
+      /**
+       * Trạng thái
+       * @description ACTIVE mới được dùng để gửi; DRAFT là nháp; ARCHIVED đã lưu trữ.
+       *
+       *     * `ACTIVE` - Đang dùng
+       *     * `DRAFT` - Nháp
+       *     * `ARCHIVED` - Lưu trữ
+       */
+      status?: components["schemas"]["EmailTemplateStatusEnum"];
+      /**
+       * Tiêu đề email
+       * @description Tiêu đề thư, có thể chứa trường trộn {{variable}}.
+       */
+      subject: string;
+      /**
+       * Nội dung Tiptap JSON
+       * @description Cấu trúc tài liệu Tiptap JSON để chỉnh sửa trên trình soạn thảo.
+       */
+      content?: unknown;
+      /**
+       * Nội dung HTML sạch
+       * @description HTML đã làm sạch sinh từ Tiptap để trộn biến và gửi email.
+       */
+      html_body?: string;
+      /**
+       * Bản dịch theo ngôn ngữ
+       * @description Từ điển {locale: {name, subject, content, html_body}} cho đa ngôn ngữ trên cùng 1 mẫu.
+       */
+      translations?: unknown;
+      /**
+       * Danh sách trường trộn
+       * @description Danh sách metadata biến trộn gợi ý [{key, label, example}].
+       */
+      variables?: unknown;
+      /**
+       * Mẫu mặc định hệ thống
+       * @description Đánh dấu mẫu mặc định được seed tự động.
+       */
+      is_system_default?: boolean;
+      readonly owner: components["schemas"]["EmailTemplateOwnerResponse"] | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Dữ liệu tóm tắt một mẫu email trong bảng danh sách. */
+    EmailTemplateListResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Mã mẫu
+       * @description Mã định danh mẫu email (vd: feedback_thank_you, email_verification).
+       */
+      code: string;
+      /**
+       * Tên mẫu
+       * @description Tên hiển thị của mẫu email.
+       */
+      name: string;
+      /**
+       * Mô tả
+       * @description Ghi chú ngắn về ngữ cảnh dùng mẫu email.
+       */
+      description?: string;
+      /**
+       * Ngôn ngữ
+       * @description Ngôn ngữ mẫu email (vi hoặc en).
+       */
+      locale?: string;
+      /** @description Trả danh sách mã ngôn ngữ đã có nội dung trong mẫu. */
+      readonly available_locales: string[];
+      /**
+       * Phạm vi
+       * @description SYSTEM dùng chung toàn hệ thống; PERSONAL chỉ thuộc người tạo.
+       *
+       *     * `SYSTEM` - Toàn hệ thống
+       *     * `PERSONAL` - Cá nhân
+       */
+      scope?: components["schemas"]["EmailTemplateScopeEnum"];
+      /**
+       * Nhóm mẫu
+       * @description Nhóm mục đích gửi email.
+       *
+       *     * `AUTH` - Xác thực hệ thống
+       *     * `FEEDBACK_THANKS` - Cảm ơn góp ý
+       *     * `NOTIFICATION` - Thông báo
+       *     * `CUSTOM` - Tùy chỉnh
+       */
+      category?: components["schemas"]["EmailTemplateCategoryEnum"];
+      /**
+       * Trạng thái
+       * @description ACTIVE mới được dùng để gửi; DRAFT là nháp; ARCHIVED đã lưu trữ.
+       *
+       *     * `ACTIVE` - Đang dùng
+       *     * `DRAFT` - Nháp
+       *     * `ARCHIVED` - Lưu trữ
+       */
+      status?: components["schemas"]["EmailTemplateStatusEnum"];
+      /**
+       * Tiêu đề email
+       * @description Tiêu đề thư, có thể chứa trường trộn {{variable}}.
+       */
+      subject: string;
+      /**
+       * Mẫu mặc định hệ thống
+       * @description Đánh dấu mẫu mặc định được seed tự động.
+       */
+      is_system_default?: boolean;
+      readonly owner: components["schemas"]["EmailTemplateOwnerResponse"] | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Thông tin định danh ngắn của chủ sở hữu mẫu email. */
+    EmailTemplateOwnerResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tên người dùng
+       * @description Tên người dùng tùy chọn, duy nhất nếu có.
+       */
+      username?: string | null;
+      /**
+       * Họ và tên
+       * @description Họ và tên đầy đủ.
+       */
+      full_name?: string;
+      /**
+       * Format: email
+       * @description Email đăng nhập, luôn lưu dạng chữ thường.
+       */
+      email: string;
+    };
+    /** @description Thông tin định danh ngắn của chủ sở hữu mẫu email. */
+    EmailTemplateOwnerResponseRequest: {
+      /**
+       * Tên người dùng
+       * @description Tên người dùng tùy chọn, duy nhất nếu có.
+       */
+      username?: string | null;
+      /**
+       * Họ và tên
+       * @description Họ và tên đầy đủ.
+       */
+      full_name?: string;
+      /**
+       * Format: email
+       * @description Email đăng nhập, luôn lưu dạng chữ thường.
+       */
+      email: string;
+    };
+    /** @description Tiêu đề, HTML và text thuần sau khi trộn biến an toàn. */
+    EmailTemplatePreviewResponse: {
+      subject: string;
+      html_body: string;
+      text_body: string;
+    };
+    /** @description Cặp khóa-giá trị để trộn thử vào tiêu đề và nội dung email theo ngôn ngữ. */
+    EmailTemplatePreviewValidateRequest: {
+      /** @default vi */
+      locale: string;
+      sample_data?: {
+        [key: string]: string;
+      };
+    };
+    /**
+     * @description * `SYSTEM` - Toàn hệ thống
+     *     * `PERSONAL` - Cá nhân
+     * @enum {string}
+     */
+    EmailTemplateScopeEnum: "SYSTEM" | "PERSONAL";
+    /**
+     * @description * `ACTIVE` - Đang dùng
+     *     * `DRAFT` - Nháp
+     *     * `ARCHIVED` - Lưu trữ
+     * @enum {string}
+     */
+    EmailTemplateStatusEnum: "ACTIVE" | "DRAFT" | "ARCHIVED";
     /** @description Body xác minh email chứa token. */
     EmailVerificationValidateRequest: {
       /** @description Token xác minh nhận được qua email. */
@@ -6709,6 +7523,15 @@ export interface components {
       novel_id: string;
     };
     /**
+     * @description * `BROKEN_LINK` - Sai link / Link hỏng
+     *     * `WRONG_INFO` - Sai thông tin
+     *     * `BUG` - Lỗi hiển thị
+     *     * `SUGGESTION` - Góp ý cải thiện
+     *     * `OTHER` - Khác
+     * @enum {string}
+     */
+    FeedbackTypeEnum: "BROKEN_LINK" | "WRONG_INFO" | "BUG" | "SUGGESTION" | "OTHER";
+    /**
      * @description * `API` - Tự động (Vietcombank)
      *     * `MANUAL` - Nhập tay
      * @enum {string}
@@ -6766,6 +7589,12 @@ export interface components {
      * @enum {string}
      */
     GiftTypeEnum: "NOODLE" | "COFFEE" | "BREAKFAST" | "BOOK" | "HOTPOT" | "SPECIAL" | "CUSTOM";
+    /**
+     * @description * `mention_only` - Chỉ trả lời khi @mention / reply / lệnh
+     *     * `all_messages` - Đọc và trả lời mọi tin nhắn
+     * @enum {string}
+     */
+    GroupReplyModeEnum: "mention_only" | "all_messages";
     /** @description Trạng thái tiến trình. */
     HealthResponse: {
       /** @description Luôn là `ok` khi tiến trình phản hồi. */
@@ -7339,12 +8168,81 @@ export interface components {
         [key: string]: string;
       };
     };
-    /**
-     * @description * `group` - Nhóm
-     *     * `private` - Chat riêng với bot
-     * @enum {string}
-     */
-    KindEnum: "group" | "private";
+    /** @description Cập nhật trạng thái bật/tắt hàng loạt ngôn ngữ. */
+    LanguageBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      is_active: boolean;
+    };
+    /** @description Input tạo ngôn ngữ mới. */
+    LanguageCreateValidateRequest: {
+      code: string;
+      name: string;
+      /** @default  */
+      native_name: string;
+      /** @default  */
+      flag_emoji: string;
+      /** @default true */
+      is_active: boolean;
+      /** @default 10 */
+      sort_order: number;
+    };
+    /** @description Dữ liệu chi tiết/danh sách một ngôn ngữ. */
+    LanguageResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Mã ngôn ngữ
+       * @description Mã chuẩn IETF/ISO (vi, en, ja, ko, zh-hans...).
+       */
+      code: string;
+      /**
+       * Tên ngôn ngữ
+       * @description Tên bản địa hiển thị trên tab/bộ chọn (vd: Tiếng Việt, English, 日本語).
+       */
+      name: string;
+      /**
+       * Tên phụ
+       * @description Tên tiếng Việt hoặc tên quốc tế bổ sung.
+       */
+      native_name?: string;
+      /**
+       * Biểu tượng cờ
+       * @description Emoji quốc kỳ hiển thị cạnh mã ngôn ngữ (vd: 🇻🇳, 🇺🇸, 🇯🇵).
+       */
+      flag_emoji?: string;
+      /**
+       * Ngôn ngữ mặc định
+       * @description Đánh dấu ngôn ngữ lõi của hệ thống (không thể xóa).
+       */
+      is_default?: boolean;
+      /**
+       * Đang bật
+       * @description Chỉ ngôn ngữ đang bật mới hiện thành tab trong các biểu mẫu đa ngôn ngữ.
+       */
+      is_active?: boolean;
+      /**
+       * Thứ tự hiển thị
+       * @description Số nhỏ hiển thị trước.
+       */
+      sort_order?: number;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
     /**
      * @description * `sm` - sm
      *     * `md` - md
@@ -7371,6 +8269,15 @@ export interface components {
       /** @description Số phiên đã bị thu hồi. */
       revoked_sessions: number;
     };
+    /**
+     * @description * `generate` - Tạo nội dung mới
+     *     * `rewrite` - Viết lại văn phong
+     *     * `expand` - Mở rộng chi tiết
+     *     * `summarize` - Tóm tắt ngắn gọn
+     *     * `fix_grammar` - Sửa chính tả & ngữ pháp
+     * @enum {string}
+     */
+    ModeEnum: "generate" | "rewrite" | "expand" | "summarize" | "fix_grammar";
     /** @description Lần gửi + tóm tắt thông báo; đích email/Telegram/thiết bị được rút gọn. */
     NotificationDeliveryResponse: {
       /**
@@ -7532,7 +8439,7 @@ export interface components {
        *     * `PERSONAL` - Cá nhân
        *     * `SYSTEM` - Hệ thống
        */
-      scope?: components["schemas"]["ScopeEnum"];
+      scope?: components["schemas"]["NotificationScopeEnum"];
     };
     /** @description Một thông báo; FE dịch `message_key` + `params`, thiếu khóa thì dùng `title`/`body`. */
     NotificationResponse: {
@@ -7549,7 +8456,7 @@ export interface components {
        *     * `PERSONAL` - Cá nhân
        *     * `SYSTEM` - Hệ thống
        */
-      readonly scope: components["schemas"]["ScopeEnum"];
+      readonly scope: components["schemas"]["NotificationScopeEnum"];
       /**
        * Mức
        * @description INFO / WARNING / ERROR.
@@ -7609,6 +8516,12 @@ export interface components {
        */
       readonly created_at: string;
     };
+    /**
+     * @description * `PERSONAL` - Cá nhân
+     *     * `SYSTEM` - Hệ thống
+     * @enum {string}
+     */
+    NotificationScopeEnum: "PERSONAL" | "SYSTEM";
     /** @description Số chưa đọc tab Cá nhân và Hệ thống. */
     NotificationUnreadCountResponse: {
       /** @description Chưa đọc tab Cá nhân. */
@@ -8058,6 +8971,11 @@ export interface components {
        * @description Ảnh bìa (Thư viện).
        */
       cover_id?: string | null;
+      /**
+       * Format: uuid
+       * @description Ảnh nền toàn trang (Thư viện công khai).
+       */
+      background_image_id?: string | null;
       /** @description Tài liệu Tiptap JSON. */
       content?: unknown;
       /**
@@ -8174,6 +9092,8 @@ export interface components {
       avatar: components["schemas"]["AttachmentSummaryResponse"] | null;
       /** @description Ảnh bìa. */
       cover: components["schemas"]["AttachmentSummaryResponse"] | null;
+      /** @description Ảnh nền trang. */
+      background_image: components["schemas"]["AttachmentSummaryResponse"] | null;
       /** @description Tài liệu Tiptap JSON cho editor. */
       readonly content: {
         [key: string]: unknown;
@@ -8184,6 +9104,323 @@ export interface components {
        */
       readonly content_version: number;
     };
+    /** @description Danh sách ID và trạng thái mới cho thao tác hàng loạt. */
+    PageFeedbackBulkUpdateValidateRequest: {
+      /** @description Id các bản ghi cần thao tác (tối đa 100). */
+      ids: string[];
+      status: components["schemas"]["PageFeedbackStatusEnum"];
+    };
+    /** @description Chi tiết đầy đủ góp ý, trạng thái xử lý và thông tin đã cảm ơn. */
+    PageFeedbackDetailResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Loại đối tượng
+       * @description Trang tùy chỉnh hoặc Liên kết rút gọn.
+       *
+       *     * `PAGE` - Trang tùy chỉnh
+       *     * `SHORT_LINK` - Liên kết rút gọn
+       */
+      target_type: components["schemas"]["TargetTypeEnum"];
+      /**
+       * Trang tùy chỉnh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly page_id: string | null;
+      /**
+       * Liên kết rút gọn
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly short_link_id: string | null;
+      readonly target_owner: components["schemas"]["EmailTemplateOwnerResponse"];
+      /**
+       * URL mục tiêu
+       * Format: uri
+       * @description Đường dẫn công khai nơi khách gửi góp ý.
+       */
+      target_url: string;
+      /**
+       * Tên đối tượng
+       * @description Tên trang, liên kết hoặc sản phẩm bị báo lỗi.
+       */
+      target_title?: string;
+      /**
+       * Mã sản phẩm
+       * @description ID sản phẩm trên trang Affiliate (nếu khách chọn mục cụ thể).
+       */
+      target_item_id?: string;
+      /** Loại góp ý */
+      feedback_type?: components["schemas"]["FeedbackTypeEnum"];
+      /** Nội dung góp ý */
+      message: string;
+      /**
+       * Tên người gửi
+       * @description Tùy chọn; để trống hiển thị Ẩn danh.
+       */
+      sender_name?: string;
+      /**
+       * Email người gửi
+       * @description Tùy chọn; dùng để gửi email cảm ơn sau khi xử lý xong.
+       */
+      sender_email?: string;
+      /** Trạng thái */
+      status?: components["schemas"]["PageFeedbackStatusEnum"];
+      /** Ghi chú xử lý */
+      resolution_note?: string;
+      /**
+       * Thời điểm xử lý xong
+       * Format: date-time
+       */
+      resolved_at?: string | null;
+      readonly resolved_by: components["schemas"]["EmailTemplateOwnerResponse"] | null;
+      /**
+       * Thời điểm đã cảm ơn
+       * Format: date-time
+       */
+      thanked_at?: string | null;
+      readonly thanked_by: components["schemas"]["EmailTemplateOwnerResponse"] | null;
+      /**
+       * Mẫu email cảm ơn
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly thank_template_id: string | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Chi tiết đầy đủ góp ý, trạng thái xử lý và thông tin đã cảm ơn. */
+    PageFeedbackDetailResponseRequest: {
+      /**
+       * Loại đối tượng
+       * @description Trang tùy chỉnh hoặc Liên kết rút gọn.
+       *
+       *     * `PAGE` - Trang tùy chỉnh
+       *     * `SHORT_LINK` - Liên kết rút gọn
+       */
+      target_type: components["schemas"]["TargetTypeEnum"];
+      /**
+       * URL mục tiêu
+       * Format: uri
+       * @description Đường dẫn công khai nơi khách gửi góp ý.
+       */
+      target_url: string;
+      /**
+       * Tên đối tượng
+       * @description Tên trang, liên kết hoặc sản phẩm bị báo lỗi.
+       */
+      target_title?: string;
+      /**
+       * Mã sản phẩm
+       * @description ID sản phẩm trên trang Affiliate (nếu khách chọn mục cụ thể).
+       */
+      target_item_id?: string;
+      /** Loại góp ý */
+      feedback_type?: components["schemas"]["FeedbackTypeEnum"];
+      /** Nội dung góp ý */
+      message: string;
+      /**
+       * Tên người gửi
+       * @description Tùy chọn; để trống hiển thị Ẩn danh.
+       */
+      sender_name?: string;
+      /**
+       * Email người gửi
+       * @description Tùy chọn; dùng để gửi email cảm ơn sau khi xử lý xong.
+       */
+      sender_email?: string;
+      /** Trạng thái */
+      status?: components["schemas"]["PageFeedbackStatusEnum"];
+      /** Ghi chú xử lý */
+      resolution_note?: string;
+      /**
+       * Thời điểm xử lý xong
+       * Format: date-time
+       */
+      resolved_at?: string | null;
+      /**
+       * Thời điểm đã cảm ơn
+       * Format: date-time
+       */
+      thanked_at?: string | null;
+    };
+    /** @description Một dòng trong bảng quản lý góp ý/báo lỗi (Portal & Admin). */
+    PageFeedbackListResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Loại đối tượng
+       * @description Trang tùy chỉnh hoặc Liên kết rút gọn.
+       *
+       *     * `PAGE` - Trang tùy chỉnh
+       *     * `SHORT_LINK` - Liên kết rút gọn
+       */
+      target_type: components["schemas"]["TargetTypeEnum"];
+      /**
+       * Trang tùy chỉnh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly page_id: string | null;
+      /**
+       * Liên kết rút gọn
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly short_link_id: string | null;
+      readonly target_owner: components["schemas"]["EmailTemplateOwnerResponse"];
+      /**
+       * URL mục tiêu
+       * Format: uri
+       * @description Đường dẫn công khai nơi khách gửi góp ý.
+       */
+      target_url: string;
+      /**
+       * Tên đối tượng
+       * @description Tên trang, liên kết hoặc sản phẩm bị báo lỗi.
+       */
+      target_title?: string;
+      /**
+       * Mã sản phẩm
+       * @description ID sản phẩm trên trang Affiliate (nếu khách chọn mục cụ thể).
+       */
+      target_item_id?: string;
+      /** Loại góp ý */
+      feedback_type?: components["schemas"]["FeedbackTypeEnum"];
+      /** Nội dung góp ý */
+      message: string;
+      /**
+       * Tên người gửi
+       * @description Tùy chọn; để trống hiển thị Ẩn danh.
+       */
+      sender_name?: string;
+      /**
+       * Email người gửi
+       * @description Tùy chọn; dùng để gửi email cảm ơn sau khi xử lý xong.
+       */
+      sender_email?: string;
+      /** Trạng thái */
+      status?: components["schemas"]["PageFeedbackStatusEnum"];
+      /**
+       * Thời điểm xử lý xong
+       * Format: date-time
+       */
+      resolved_at?: string | null;
+      /**
+       * Thời điểm đã cảm ơn
+       * Format: date-time
+       */
+      thanked_at?: string | null;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Dữ liệu khách vãng lai gửi góp ý/báo lỗi cho Page hoặc ShortLink. */
+    PageFeedbackPublicCreateValidateRequest: {
+      target_type: components["schemas"]["TargetTypeEnum"];
+      /** Format: uuid */
+      target_id?: string | null;
+      /** @default  */
+      slug: string;
+      /** Format: uri */
+      target_url: string;
+      /** @default  */
+      target_title: string;
+      /** @default  */
+      target_item_id: string;
+      /** @default BROKEN_LINK */
+      feedback_type: components["schemas"]["FeedbackTypeEnum"];
+      message: string;
+      /** @default  */
+      sender_name: string;
+      sender_email?: string;
+      /** @default  */
+      website: string;
+    };
+    /** @description Chỉ trả ID và thời điểm tạo, tuyệt đối không lộ chủ trang hay email. */
+    PageFeedbackPublicResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+    };
+    /**
+     * @description * `OPEN` - Mới gửi
+     *     * `IN_PROGRESS` - Đang kiểm tra
+     *     * `RESOLVED` - Đã xử lý
+     *     * `IGNORED` - Bỏ qua
+     * @enum {string}
+     */
+    PageFeedbackStatusEnum: "OPEN" | "IN_PROGRESS" | "RESOLVED" | "IGNORED";
+    /** @description Trạng thái gửi email cảm ơn và mốc thời gian cập nhật. */
+    PageFeedbackThankResponse: {
+      sent: boolean;
+      /** Format: date-time */
+      thanked_at: string;
+      /** Format: email */
+      recipient: string;
+    };
+    /** @description Chọn mẫu email hoặc tùy chỉnh tiêu đề/nội dung gửi lời cảm ơn. */
+    PageFeedbackThankValidateRequest: {
+      /** Format: uuid */
+      template_id?: string | null;
+      /** @default  */
+      subject: string;
+      /** @default  */
+      html_body: string;
+      resolution_note?: string;
+    };
+    /** @description Một cấu hình nơi bán riêng của trang dùng để nhận diện URL khi lấy link nhanh. */
+    PageFetchMetadataPlatformRequest: {
+      /** @description Mã shortcode nơi bán (ví dụ: shopee, tiktok_shop, my_store). */
+      code: string;
+      /**
+       * @description Tên hiển thị của nơi bán.
+       * @default
+       */
+      name: string;
+      /**
+       * @description Biểu thức Regex hoặc domain để nhận diện URL thuộc nơi bán này.
+       * @default
+       */
+      url_pattern: string;
+    };
     /** @description Input URL cần trích xuất metadata. */
     PageFetchMetadataValidateRequest: {
       /**
@@ -8191,6 +9428,8 @@ export interface components {
        * @description URL sản phẩm hoặc liên kết cần đọc metadata.
        */
       url: string;
+      /** @description Danh sách nơi bán và regex URL riêng của trang Affiliate. */
+      platforms?: components["schemas"]["PageFetchMetadataPlatformRequest"][];
     };
     /** @description Tiêu đề, URL công khai, đường dẫn giữa, trạng thái, owner. */
     PageListResponse: {
@@ -8434,6 +9673,11 @@ export interface components {
        * @description Ảnh bìa hoặc null.
        */
       cover_url: string | null;
+      /**
+       * Format: uri
+       * @description Ảnh nền toàn trang hoặc null.
+       */
+      background_image_url: string | null;
       /** @description Theme đã validate. */
       theme: unknown;
       /** @description Loại trang (AFFILIATE, BIO, DONATION, LEGACY_PAGE...). */
@@ -8769,6 +10013,31 @@ export interface components {
         };
       };
     };
+    PaginatedEmailTemplateListResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["EmailTemplateListResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedExchangeRateResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -8869,6 +10138,31 @@ export interface components {
         };
       };
     };
+    PaginatedLanguageResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["LanguageResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
     PaginatedNotificationDeliveryResponseList: {
       /** @description Luôn true với response thành công. */
       success: boolean;
@@ -8898,6 +10192,31 @@ export interface components {
       /** @description Luôn true với response thành công. */
       success: boolean;
       data: components["schemas"]["NovelListResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedPageFeedbackListResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["PageFeedbackListResponse"][];
       meta: {
         /** @description Id request (khớp header X-Request-ID). */
         request_id: string;
@@ -9048,6 +10367,31 @@ export interface components {
       /** @description Luôn true với response thành công. */
       success: boolean;
       data: components["schemas"]["ReminderResponse"][];
+      meta: {
+        /** @description Id request (khớp header X-Request-ID). */
+        request_id: string;
+        /**
+         * Format: date-time
+         * @description Thời điểm phản hồi.
+         */
+        timestamp: string;
+        /** @description Thông tin phân trang. */
+        pagination: {
+          /** @description Trang hiện tại (bắt đầu từ 1). */
+          page: number;
+          /** @description Số phần tử mỗi trang. */
+          page_size: number;
+          /** @description Tổng số phần tử. */
+          total: number;
+          /** @description Tổng số trang. */
+          total_pages: number;
+        };
+      };
+    };
+    PaginatedReminderTopicResponseList: {
+      /** @description Luôn true với response thành công. */
+      success: boolean;
+      data: components["schemas"]["ReminderTopicResponse"][];
       meta: {
         /** @description Id request (khớp header X-Request-ID). */
         request_id: string;
@@ -9695,6 +11039,25 @@ export interface components {
       /** @description Tiêu đề trang. */
       page_title?: string;
     };
+    /** @description Input cập nhật từng phần mẫu email đa ngôn ngữ. */
+    PatchedEmailTemplateUpdateValidateRequest: {
+      code?: string;
+      name?: string;
+      description?: string;
+      locale?: string;
+      scope?: components["schemas"]["EmailTemplateScopeEnum"];
+      category?: components["schemas"]["EmailTemplateCategoryEnum"];
+      status?: components["schemas"]["EmailTemplateStatusEnum"];
+      subject?: string;
+      content?: unknown;
+      html_body?: string;
+      translations?: {
+        [key: string]: unknown;
+      };
+      variables?: {
+        [key: string]: unknown;
+      }[];
+    };
     /** @description Chỉ đổi số và ghi chú. */
     PatchedExchangeRateUpdateValidateRequest: {
       /**
@@ -9839,6 +11202,15 @@ export interface components {
       /** @description Ghi chú. */
       note?: string;
     };
+    /** @description Input cập nhật từng phần ngôn ngữ. */
+    PatchedLanguageUpdateValidateRequest: {
+      code?: string;
+      name?: string;
+      native_name?: string;
+      flag_emoji?: string;
+      is_active?: boolean;
+      sort_order?: number;
+    };
     /** @description Dữ liệu cập nhật hồ sơ cá nhân của người dùng hiện tại. */
     PatchedMeUpdateValidateRequest: {
       /**
@@ -9892,6 +11264,11 @@ export interface components {
       tag_ids?: string[];
       /** @description Cho phép xuất bản truyện. */
       is_published?: boolean;
+    };
+    /** @description Cập nhật trạng thái hoặc ghi chú xử lý góp ý. */
+    PatchedPageFeedbackUpdateValidateRequest: {
+      status?: components["schemas"]["PageFeedbackStatusEnum"];
+      resolution_note?: string;
     };
     /** @description Mọi trường tùy chọn; đổi segment làm URL cũ 404. */
     PatchedPagePathUpdateValidateRequest: {
@@ -9965,6 +11342,11 @@ export interface components {
        * @description Ảnh bìa; null để gỡ.
        */
       cover_id?: string | null;
+      /**
+       * Format: uuid
+       * @description Ảnh nền toàn trang (công khai); null để gỡ.
+       */
+      background_image_id?: string | null;
       /** @description Tài liệu Tiptap JSON. */
       content?: unknown;
       /** @description Phiên bản nội dung đang sửa; lệch → 409. */
@@ -10027,6 +11409,15 @@ export interface components {
        */
       logo_id?: string | null;
     };
+    /** @description Đầu vào PATCH chủ đề nhắc việc. */
+    PatchedReminderTopicUpdateValidateRequest: {
+      /** @description Tên chủ đề mới. */
+      name?: string;
+      /** @description Mã màu #RRGGBB. */
+      color?: string;
+      /** @description Thứ tự sắp xếp. */
+      sort_order?: number;
+    };
     /** @description Đầu vào PATCH nhắc việc. */
     PatchedReminderUpdateValidateRequest: {
       /** @description Tiêu đề nhắc việc. */
@@ -10068,10 +11459,11 @@ export interface components {
        *     * `YEARLY` - Hàng năm
        */
       recurrence?: components["schemas"]["WorkspaceReminderRecurrenceEnum"];
-      /** @description Ngày chốt định kỳ. */
-      anchor_day?: number | null;
-      /** @description Danh sách nhãn. */
-      tags?: string[];
+      /**
+       * Format: uuid
+       * @description ID chủ đề nhắc việc; null để gỡ.
+       */
+      topic_id?: string | null;
     };
     /** @description Dữ liệu cập nhật vai trò (mã vai trò không đổi được). */
     PatchedRoleUpdateValidateRequest: {
@@ -10195,10 +11587,17 @@ export interface components {
       /** @description Slug định danh. */
       slug?: string;
     };
-    /** @description Bật/tắt. */
+    /** @description Bật/tắt và cấu hình chế độ phản hồi nhóm Telegram. */
     PatchedTelegramChatUpdateValidateRequest: {
       /** @description Đang bật. */
       is_active?: boolean;
+      /**
+       * @description Chế độ phản hồi AI trong nhóm (`mention_only` hoặc `all_messages`).
+       *
+       *     * `mention_only` - Chỉ trả lời khi @mention / reply / lệnh
+       *     * `all_messages` - Đọc và trả lời mọi tin nhắn
+       */
+      group_reply_mode?: components["schemas"]["GroupReplyModeEnum"];
     };
     /** @description Dữ liệu cập nhật người dùng (mọi field tùy chọn). `avatar_id: null` để gỡ ảnh. */
     PatchedUserUpdateValidateRequest: {
@@ -10819,10 +12218,11 @@ export interface components {
        * @default NONE
        */
       recurrence: components["schemas"]["WorkspaceReminderRecurrenceEnum"];
-      /** @description Ngày chốt định kỳ (1–31). */
-      anchor_day?: number | null;
-      /** @description Danh sách nhãn. */
-      tags?: string[];
+      /**
+       * Format: uuid
+       * @description ID chủ đề nhắc việc (mặc định hệ thống hoặc của chủ sở hữu).
+       */
+      topic_id?: string | null;
     };
     /** @description Chi tiết/danh sách nhắc việc cá nhân. */
     ReminderResponse: {
@@ -10914,16 +12314,8 @@ export interface components {
        *     * `YEARLY` - Hàng năm
        */
       readonly recurrence: components["schemas"]["WorkspaceReminderRecurrenceEnum"];
-      /**
-       * Ngày chốt định kỳ
-       * @description Ngày gốc (1–31) giữ mốc lặp khi cộng tháng.
-       */
-      readonly anchor_day: number | null;
-      /**
-       * Thẻ gắn
-       * @description Nhãn phân loại công việc.
-       */
-      readonly tags: unknown;
+      /** @description Chủ đề nhắc việc. */
+      readonly topic: components["schemas"]["ReminderTopicSummaryResponse"] | null;
       /**
        * Thời điểm tạo
        * Format: date-time
@@ -10936,6 +12328,97 @@ export interface components {
        * @description Thời điểm bản ghi được sửa gần nhất (tự động).
        */
       readonly updated_at: string;
+    };
+    /** @description Đầu vào tạo chủ đề nhắc việc cá nhân. */
+    ReminderTopicCreateValidateRequest: {
+      /** @description Tên chủ đề nhắc việc. */
+      name: string;
+      /**
+       * @description Mã màu #RRGGBB.
+       * @default #3D812E
+       */
+      color: string;
+      /**
+       * @description Thứ tự sắp xếp.
+       * @default 50
+       */
+      sort_order: number;
+    };
+    /** @description Chi tiết chủ đề nhắc việc (hệ thống và cá nhân). */
+    ReminderTopicResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Chủ sở hữu
+       * Format: uuid
+       * @description Trống = chủ đề mặc định của hệ thống; có giá trị = chủ đề riêng của người dùng.
+       */
+      readonly owner_id: string | null;
+      /**
+       * Mã chủ đề
+       * @description Mã định danh ngắn (dùng cho seed mặc định).
+       */
+      readonly code: string;
+      /**
+       * Tên chủ đề
+       * @description Tên chủ đề nhắc việc (ví dụ: Công việc, Ngày kỷ niệm, Ngày giỗ).
+       */
+      readonly name: string;
+      /**
+       * Màu nhãn
+       * @description Mã màu #RRGGBB hiển thị cho chủ đề.
+       */
+      readonly color: string;
+      /**
+       * Thứ tự
+       * @description Thứ tự sắp xếp (nhỏ hơn hiển thị trước).
+       */
+      readonly sort_order: number;
+      /**
+       * Chủ đề mặc định
+       * @description True nếu là chủ đề mặc định hệ thống.
+       */
+      readonly is_system: boolean;
+      /**
+       * Thời điểm tạo
+       * Format: date-time
+       * @description Thời điểm bản ghi được tạo (tự động).
+       */
+      readonly created_at: string;
+      /**
+       * Thời điểm cập nhật
+       * Format: date-time
+       * @description Thời điểm bản ghi được sửa gần nhất (tự động).
+       */
+      readonly updated_at: string;
+    };
+    /** @description Thông tin rút gọn của chủ đề nhắc việc. */
+    ReminderTopicSummaryResponse: {
+      /**
+       * Mã định danh
+       * Format: uuid
+       * @description Định danh UUID do hệ thống sinh, không đổi.
+       */
+      readonly id: string;
+      /**
+       * Tên chủ đề
+       * @description Tên chủ đề nhắc việc (ví dụ: Công việc, Ngày kỷ niệm, Ngày giỗ).
+       */
+      readonly name: string;
+      /**
+       * Màu nhãn
+       * @description Mã màu #RRGGBB hiển thị cho chủ đề.
+       */
+      readonly color: string;
+      /**
+       * Chủ đề mặc định
+       * @description True nếu là chủ đề mặc định hệ thống.
+       */
+      readonly is_system: boolean;
     };
     /** @description Tổng số gốc và tổng VNĐ của một tiền tệ. */
     ReportCurrencyResponse: {
@@ -11319,12 +12802,6 @@ export interface components {
       /** @description Regex muốn thử. */
       pattern?: string;
     };
-    /**
-     * @description * `PERSONAL` - Cá nhân
-     *     * `SYSTEM` - Hệ thống
-     * @enum {string}
-     */
-    ScopeEnum: "PERSONAL" | "SYSTEM";
     /** @description Token chỉ ghi (kiểm bằng `/v2/bank-accounts` trước khi lưu); bật/tắt. */
     SepayConnectionValidateRequest: {
       /** @description Token API SePay. */
@@ -12381,6 +13858,12 @@ export interface components {
      */
     TargetEnum: "ALL" | "ROLES";
     /**
+     * @description * `PAGE` - Trang tùy chỉnh
+     *     * `SHORT_LINK` - Liên kết rút gọn
+     * @enum {string}
+     */
+    TargetTypeEnum: "PAGE" | "SHORT_LINK";
+    /**
      * @description * `WITHHELD` - Đã khấu trừ
      *     * `NOT_WITHHELD` - Không khấu trừ
      *     * `NO_RATE` - Chưa cấu hình thuế
@@ -12467,6 +13950,14 @@ export interface components {
        */
       readonly is_active: boolean;
       /**
+       * Chế độ trả lời nhóm
+       * @description Chế độ phản hồi AI trong nhóm: chỉ @mention hoặc đọc mọi tin nhắn.
+       *
+       *     * `mention_only` - Chỉ trả lời khi @mention / reply / lệnh
+       *     * `all_messages` - Đọc và trả lời mọi tin nhắn
+       */
+      readonly group_reply_mode: components["schemas"]["GroupReplyModeEnum"];
+      /**
        * Mã hết hạn
        * Format: date-time
        * @description Hạn mã đăng ký.
@@ -12513,6 +14004,12 @@ export interface components {
       /** @description Link https://t.me/<bot>?startgroup=<mã>. */
       link: string;
     };
+    /**
+     * @description * `group` - Nhóm
+     *     * `private` - Chat riêng với bot
+     * @enum {string}
+     */
+    TelegramRegistrationValidateKindEnum: "group" | "private";
     /** @description Loại nơi nhận. */
     TelegramRegistrationValidateRequest: {
       /**
@@ -12522,7 +14019,7 @@ export interface components {
        *     * `private` - Chat riêng với bot
        * @default group
        */
-      kind: components["schemas"]["KindEnum"];
+      kind: components["schemas"]["TelegramRegistrationValidateKindEnum"];
     };
     /**
      * @description * `blank` - blank
@@ -18714,6 +20211,358 @@ export interface operations {
       };
     };
   };
+  system_email_templates_list: {
+    parameters: {
+      query?: {
+        /** @description Multiple values may be separated by commas. */
+        category?: string[];
+        /** @description Multiple values may be separated by commas. */
+        locale?: string[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description Multiple values may be separated by commas. */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        portal_only?: boolean;
+        /** @description Multiple values may be separated by commas. */
+        scope?: string[];
+        /** @description A search term. */
+        search?: string;
+        /** @description Multiple values may be separated by commas. */
+        status?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedEmailTemplateListResponseList"];
+        };
+      };
+    };
+  };
+  system_email_templates_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmailTemplateCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["EmailTemplateDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_email_templates_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["EmailTemplateDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_email_templates_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_email_templates_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedEmailTemplateUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["EmailTemplateDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_email_templates_duplicate_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["EmailTemplateDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_email_templates_history_list: {
+    parameters: {
+      query?: {
+        /** @description Multiple values may be separated by commas. */
+        category?: string[];
+        /** @description Multiple values may be separated by commas. */
+        locale?: string[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description Multiple values may be separated by commas. */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        portal_only?: boolean;
+        /** @description Multiple values may be separated by commas. */
+        scope?: string[];
+        /** @description A search term. */
+        search?: string;
+        /** @description Multiple values may be separated by commas. */
+        status?: string[];
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  system_email_templates_preview_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["EmailTemplatePreviewValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["EmailTemplatePreviewResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_email_templates_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_email_templates_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmailTemplateBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   system_exchange_rates_list: {
     parameters: {
       query?: {
@@ -19350,6 +21199,300 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["JournalResourceResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_languages_list: {
+    parameters: {
+      query?: {
+        is_active?: boolean;
+        is_default?: boolean;
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedLanguageResponseList"];
+        };
+      };
+    };
+  };
+  system_languages_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LanguageCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["LanguageResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_languages_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["LanguageResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_languages_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  system_languages_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedLanguageUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["LanguageResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_languages_history_list: {
+    parameters: {
+      query?: {
+        is_active?: boolean;
+        is_default?: boolean;
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  system_languages_active_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["LanguageResponse"][];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_languages_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  system_languages_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LanguageBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;
@@ -21819,6 +23962,320 @@ export interface operations {
       };
     };
   };
+  utilities_page_feedbacks_list: {
+    parameters: {
+      query?: {
+        /** @description Multiple values may be separated by commas. */
+        feedback_type?: string[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description Multiple values may be separated by commas. */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /** @description Multiple values may be separated by commas. */
+        status?: string[];
+        /** @description Multiple values may be separated by commas. */
+        target_type?: string[];
+        thanked?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedPageFeedbackListResponseList"];
+        };
+      };
+    };
+  };
+  utilities_page_feedbacks_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PageFeedbackDetailResponseRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PageFeedbackDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_page_feedbacks_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PageFeedbackDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_page_feedbacks_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  utilities_page_feedbacks_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedPageFeedbackUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PageFeedbackDetailResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_page_feedbacks_history_list: {
+    parameters: {
+      query?: {
+        /** @description Multiple values may be separated by commas. */
+        feedback_type?: string[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description Multiple values may be separated by commas. */
+        owner?: string[];
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+        /** @description Multiple values may be separated by commas. */
+        status?: string[];
+        /** @description Multiple values may be separated by commas. */
+        target_type?: string[];
+        thanked?: boolean;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedCoreJournalEntryResponseList"];
+        };
+      };
+    };
+  };
+  utilities_page_feedbacks_thank_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PageFeedbackThankValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PageFeedbackThankResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_page_feedbacks_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_page_feedbacks_bulk_update_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PageFeedbackBulkUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   utilities_page_paths_list: {
     parameters: {
       query?: {
@@ -22572,6 +25029,42 @@ export interface operations {
             /** @description Luôn true với response thành công. */
             success: boolean;
             data: components["schemas"]["PagePublicResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  utilities_public_feedbacks_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PageFeedbackPublicCreateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["PageFeedbackPublicResponse"];
             meta: {
               /** @description Id request (khớp header X-Request-ID). */
               request_id: string;
@@ -23654,6 +26147,42 @@ export interface operations {
       };
     };
   };
+  workspace_assistant_compose_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssistantComposeValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["AssistantComposeResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   workspace_assistant_config_retrieve: {
     parameters: {
       query?: never;
@@ -23999,6 +26528,205 @@ export interface operations {
       };
     };
   };
+  workspace_reminder_topics_list: {
+    parameters: {
+      query?: {
+        /**
+         * @description Chủ đề mặc định hệ thống (`true`/`false`).
+         *
+         *     * `true` - true
+         *     * `false` - false
+         */
+        is_system?: ("false" | "true")[];
+        /** @description Which field to use when ordering the results. */
+        ordering?: string;
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaginatedReminderTopicResponseList"];
+        };
+      };
+    };
+  };
+  workspace_reminder_topics_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReminderTopicCreateValidateRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReminderTopicResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_reminder_topics_retrieve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReminderTopicResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_reminder_topics_destroy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  workspace_reminder_topics_partial_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedReminderTopicUpdateValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["ReminderTopicResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  workspace_reminder_topics_bulk_delete_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CoreBulkIdsValidateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Luôn true với response thành công. */
+            success: boolean;
+            data: components["schemas"]["CoreBulkResultResponse"];
+            meta: {
+              /** @description Id request (khớp header X-Request-ID). */
+              request_id: string;
+              /**
+               * Format: date-time
+               * @description Thời điểm phản hồi.
+               */
+              timestamp: string;
+            };
+          };
+        };
+      };
+    };
+  };
   workspace_reminders_list: {
     parameters: {
       query?: {
@@ -24042,6 +26770,8 @@ export interface operations {
         recurrence?: ("DAILY" | "MONTHLY" | "NONE" | "WEEKLY" | "YEARLY")[];
         /** @description A search term. */
         search?: string;
+        /** @description Lọc theo ID chủ đề nhắc việc. */
+        topic?: string[];
       };
       header?: never;
       path?: never;
@@ -24230,6 +26960,8 @@ export interface operations {
         recurrence?: ("DAILY" | "MONTHLY" | "NONE" | "WEEKLY" | "YEARLY")[];
         /** @description A search term. */
         search?: string;
+        /** @description Lọc theo ID chủ đề nhắc việc. */
+        topic?: string[];
       };
       header?: never;
       path: {

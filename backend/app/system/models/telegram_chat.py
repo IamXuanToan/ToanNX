@@ -10,7 +10,7 @@ from app.core.tracking.journal_tracker import JournalTracker
 class TelegramChat(JournalTracker, CoreModel):
     """Đăng ký: tạo mã 10 phút → thêm bot chung qua `startgroup` → Webhook/Kiểm tra → lưu chat id."""
 
-    journal_fields = ("title", "status", "is_active")
+    journal_fields = ("title", "status", "is_active", "group_reply_mode")
 
     class Status(models.TextChoices):
         """Trạng thái."""
@@ -19,6 +19,12 @@ class TelegramChat(JournalTracker, CoreModel):
         ACTIVE = "active", "Hoạt động"
         UNREACHABLE = "unreachable", "Không gửi được"
         REMOVED = "removed", "Bot đã bị xóa"
+
+    class GroupReplyMode(models.TextChoices):
+        """Chế độ phản hồi AI trong nhóm Telegram."""
+
+        MENTION_ONLY = "mention_only", "Chỉ trả lời khi @mention / reply / lệnh"
+        ALL_MESSAGES = "all_messages", "Đọc và trả lời mọi tin nhắn"
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -62,6 +68,14 @@ class TelegramChat(JournalTracker, CoreModel):
     )
     is_active = models.BooleanField(
         default=True, verbose_name="Đang bật", help_text="Tắt để ngừng gửi.", db_comment="Đang bật"
+    )
+    group_reply_mode = models.CharField(
+        max_length=20,
+        choices=GroupReplyMode.choices,
+        default=GroupReplyMode.MENTION_ONLY,
+        verbose_name="Chế độ trả lời nhóm",
+        help_text="Chế độ phản hồi AI trong nhóm: chỉ @mention hoặc đọc mọi tin nhắn.",
+        db_comment="mention_only | all_messages",
     )
     registration_code = models.CharField(
         max_length=32,

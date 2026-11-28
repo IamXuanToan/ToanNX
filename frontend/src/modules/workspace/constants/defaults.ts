@@ -248,6 +248,7 @@ export const ASSISTANT_POLICY_PRESETS = [
 
 /** Khóa `localStorage` ghi nhớ tọa độ nút tròn Chatbot AI nổi trên màn hình. */
 export const ASSISTANT_WIDGET_POSITION_KEY = "assistant_launcher_position";
+export const ASSISTANT_POPUP_SIZE_KEY = "assistant_popup_size";
 
 export const ASSISTANT_LAUNCHER_SIZE_OPTIONS = ["sm", "md", "lg"] as const;
 
@@ -264,6 +265,11 @@ export const ASSISTANT_LAUNCHER_SIZES: Record<AssistantLauncherSize, number> = {
 export const ASSISTANT_POPUP_DIMENSIONS = {
   width: 420,
   height: 560,
+} as const;
+
+export const ASSISTANT_POPUP_MIN_DIMENSIONS = {
+  width: 340,
+  height: 380,
 } as const;
 
 /** Class badge theo token Light/Dark hệ thống cho từng câu lệnh nhanh. */
@@ -303,3 +309,9 @@ export function matchSlashBadgeInMessage(content: string): {
   );
   return matched ? { key: matched.key, rest } : null;
 }
+
+/** Chuỗi che giá trị bí mật (mật khẩu) người dùng gõ khi trả lời Trợ lý — khớp `ASSISTANT_MASKED_SECRET_TEXT` BE. */
+export const MASKED_SECRET_TEXT = "••••••";
+
+/** Loại thẻ kết quả link rút gọn (có thêm nút sao chép/mở link ngắn) — khớp `CARD_TYPE_SHORT_LINK` BE. */
+export const SHORT_LINK_CARD_TYPE = "short_link";

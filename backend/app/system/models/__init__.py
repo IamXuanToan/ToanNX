@@ -4,8 +4,11 @@ from app.system.models.attachment import Attachment
 from app.system.models.attachment_folder import AttachmentFolder
 from app.system.models.auth_session import AuthSession
 from app.system.models.currency import Currency
+from app.system.models.email_template import EmailTemplate
+from app.system.models.email_template_translation import EmailTemplateTranslation
 from app.system.models.exchange_rate import ExchangeRate
 from app.system.models.journal_entry import JournalEntry
+from app.system.models.language import Language
 from app.system.models.notification import Notification
 from app.system.models.notification_delivery import NotificationDelivery
 from app.system.models.notification_preference import NotificationPreference
@@ -27,8 +30,11 @@ __all__ = [
     "AttachmentFolder",
     "AuthSession",
     "Currency",
+    "EmailTemplate",
+    "EmailTemplateTranslation",
     "ExchangeRate",
     "JournalEntry",
+    "Language",
     "Notification",
     "NotificationDelivery",
     "NotificationPreference",

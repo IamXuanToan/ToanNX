@@ -42,6 +42,10 @@ class PagePathService(CoreCrudService[PagePath, PagePathRepository]):
     repository_class = PagePathRepository
     public_cache_namespace = PUBLIC_CACHE_NAMESPACE
 
+    def find_by_segment(self, segment: str) -> PagePath | None:
+        """Đường dẫn giữa theo segment đã chuẩn hóa; segment sai định dạng → `ValidationError`."""
+        return self.repository.find_by_segment(normalize_segment(segment))
+
     @transaction.atomic
     def create(self, actor: Any, data: dict[str, Any]) -> PagePath:
         """Tạo đường dẫn giữa.

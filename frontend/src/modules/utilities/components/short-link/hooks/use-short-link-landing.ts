@@ -50,6 +50,7 @@ export function useShortLinkLanding(
   const destination = toSafeHttpUrl(rawDestination, { allowRelative: false });
 
   const [customRemaining, setCustomRemaining] = useState<number | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
   const remaining = customRemaining ?? link?.autoRedirectSeconds ?? null;
 
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -57,17 +58,18 @@ export function useShortLinkLanding(
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (!destination || preview || remaining === null || remaining <= 0) return;
+    if (!destination || preview || isPaused || remaining === null || remaining <= 0) return;
     const timer = window.setTimeout(
       () => setCustomRemaining((value) => (value ?? link?.autoRedirectSeconds ?? 1) - 1),
       1000,
     );
     return () => window.clearTimeout(timer);
-  }, [destination, preview, remaining, link?.autoRedirectSeconds]);
+  }, [destination, preview, isPaused, remaining, link?.autoRedirectSeconds]);
 
   useEffect(() => {
-    if (destination && !preview && remaining === 0) window.location.assign(destination);
-  }, [destination, preview, remaining]);
+    if (destination && !preview && !isPaused && remaining === 0)
+      window.location.assign(destination);
+  }, [destination, preview, isPaused, remaining]);
 
   async function unlock() {
     if (!link) return;
@@ -77,6 +79,7 @@ export function useShortLinkLanding(
       const url = preview ? link.destinationUrl : await shortLinkService.unlock(slug, password);
       setUnlockedDestination(url);
       setCustomRemaining(link.autoRedirectSeconds);
+      setIsPaused(false);
       setPassword("");
     } catch (error) {
       setErrorCode(isApiError(error) ? error.code : "UNKNOWN");
@@ -138,6 +141,8 @@ export function useShortLinkLanding(
     destination,
     totalSeconds,
     remaining,
+    isPaused,
+    togglePause: () => setIsPaused((prev) => !prev),
     isUnlocking,
     errorCode,
     copied,

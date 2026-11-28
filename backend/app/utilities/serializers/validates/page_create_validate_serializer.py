@@ -34,6 +34,9 @@ class PageCreateValidateSerializer(CoreValidateSerializer):
     responsive_config = serializers.JSONField(required=False, help_text="Cấu hình responsive theo thiết bị.")
     avatar_id = serializers.UUIDField(required=False, allow_null=True, help_text="Ảnh đại diện (Thư viện).")
     cover_id = serializers.UUIDField(required=False, allow_null=True, help_text="Ảnh bìa (Thư viện).")
+    background_image_id = serializers.UUIDField(
+        required=False, allow_null=True, help_text="Ảnh nền toàn trang (Thư viện công khai)."
+    )
     content = serializers.JSONField(required=False, help_text="Tài liệu Tiptap JSON.")
     template = serializers.ChoiceField(
         required=False, choices=TEMPLATE_CHOICES, help_text="Mẫu bắt đầu: blank, link_in_bio, about, donate."

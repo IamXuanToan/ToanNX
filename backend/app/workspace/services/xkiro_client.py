@@ -1,5 +1,6 @@
-"""Client AI OpenAI-compatible với Multi-Model Fallback + Redis cooldown (mọi lượt <= 5 giây)."""
+"""Client AI OpenAI-compatible với Multi-Model Fallback + Redis cooldown + hỗ trợ stream tác vụ dài."""
 
+import json
 import logging
 import time
 from typing import Any
@@ -13,6 +14,7 @@ from app.workspace.constants.workspace_defaults import (
     AI_MAX_TOKENS,
     AI_MIN_REMAINING_FOR_FALLBACK_SECONDS,
     AI_REQUEST_DEADLINE_SECONDS,
+    AI_STREAM_CONNECT_TIMEOUT_SECONDS,
     REDIS_AI_COOLDOWN_KEY,
 )
 
@@ -70,12 +72,16 @@ class XkiroClient:
         tools: list[dict[str, Any]] | None = None,
         preferred_model: str = "",
         deadline_monotonic: float | None = None,
+        timeout_seconds: float | None = None,
+        stream: bool = False,
+        max_tokens: int | None = None,
     ) -> dict[str, Any]:
-        """Thực hiện 1 lượt gọi Chat Completions có Multi-Model Fallback trong giới hạn `<= 5s`/lượt."""
+        """Thực hiện 1 lượt gọi Chat Completions có Multi-Model Fallback và tùy chọn timeout/stream riêng."""
         if not self.is_configured():
             return {"ok": False, "error_type": "not_configured", "fallback_attempts": 0}
 
         deadline = deadline_monotonic or (time.monotonic() + AI_REQUEST_DEADLINE_SECONDS)
+        effective_timeout = float(timeout_seconds or settings.XKIRO_TIMEOUT_SECONDS)
         candidates = self.candidate_models(preferred_model=preferred_model)[:AI_MAX_MODEL_ATTEMPTS]
         if not candidates:
             return {"ok": False, "error_type": "no_models", "fallback_attempts": 0}
@@ -88,8 +94,16 @@ class XkiroClient:
                 break
 
             attempts += 1
-            call_timeout = min(float(settings.XKIRO_TIMEOUT_SECONDS), max(1.0, remaining))
-            result = self._post_once(endpoint, model, messages, tools=tools, timeout=call_timeout)
+            call_timeout = min(effective_timeout, max(1.0, remaining))
+            result = self._post_once(
+                endpoint,
+                model,
+                messages,
+                tools=tools,
+                timeout=call_timeout,
+                stream=stream,
+                max_tokens=max_tokens,
+            )
 
             if result["ok"]:
                 result["fallback_attempts"] = attempts - 1
@@ -104,9 +118,15 @@ class XkiroClient:
             if status_code == 400 and tools and idx == len(candidates) - 1:
                 rem_after = deadline - time.monotonic()
                 if rem_after >= AI_MIN_REMAINING_FOR_FALLBACK_SECONDS:
-                    no_tool_timeout = min(float(settings.XKIRO_TIMEOUT_SECONDS), rem_after)
+                    no_tool_timeout = min(effective_timeout, rem_after)
                     retry_plain = self._post_once(
-                        endpoint, model, messages, tools=None, timeout=no_tool_timeout
+                        endpoint,
+                        model,
+                        messages,
+                        tools=None,
+                        timeout=no_tool_timeout,
+                        stream=stream,
+                        max_tokens=max_tokens,
                     )
                     if retry_plain["ok"]:
                         retry_plain["fallback_attempts"] = attempts - 1
@@ -130,26 +150,35 @@ class XkiroClient:
         *,
         tools: list[dict[str, Any]] | None,
         timeout: float,
+        stream: bool = False,
+        max_tokens: int | None = None,
     ) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
-            "max_tokens": AI_MAX_TOKENS,
+            "max_tokens": int(max_tokens or AI_MAX_TOKENS),
         }
         if tools:
             payload["tools"] = tools
+        if stream:
+            payload["stream"] = True
 
         headers = {
             "Authorization": f"Bearer {settings.XKIRO_API_KEY}",
             "Content-Type": "application/json",
         }
+        req_timeout: float | tuple[float, float] = (
+            (min(AI_STREAM_CONNECT_TIMEOUT_SECONDS, timeout), timeout) if stream else timeout
+        )
+        post_kwargs: dict[str, Any] = {
+            "json": payload,
+            "headers": headers,
+            "timeout": req_timeout,
+        }
+        if stream:
+            post_kwargs["stream"] = True
         try:
-            response = self.session.post(
-                endpoint,
-                json=payload,
-                headers=headers,
-                timeout=timeout,
-            )
+            response = self.session.post(endpoint, **post_kwargs)
         except requests.RequestException as exc:
             logger.warning("xkiro.request_failed model=%s error=%s", model, type(exc).__name__)
             return {"ok": False, "error_type": type(exc).__name__, "status_code": None}
@@ -162,6 +191,15 @@ class XkiroClient:
                 "status_code": response.status_code,
             }
 
+        if stream:
+            resp_headers = getattr(response, "headers", None)
+            content_type = str(resp_headers.get("content-type") or "").lower() if resp_headers else ""
+            if "text/event-stream" in content_type or not content_type:
+                return self._parse_stream_response(response, model)
+
+        return self._parse_json_response(response, model)
+
+    def _parse_json_response(self, response: Any, model: str) -> dict[str, Any]:
         try:
             body = response.json()
         except ValueError:
@@ -182,6 +220,58 @@ class XkiroClient:
             "ok": True,
             "model": str(body.get("model") or model),
             "message": message,
+            "tokens": max(0, tokens),
+        }
+
+    def _parse_stream_response(self, response: Any, model: str) -> dict[str, Any]:
+        """Đọc SSE từng chunk (ép UTF-8): miễn AI còn sinh token thì không cắt ngang."""
+        parts: list[str] = []
+        resolved_model = model
+        tokens = 0
+        try:
+            for raw_line in response.iter_lines(decode_unicode=False):
+                if not raw_line:
+                    continue
+                line = (
+                    raw_line.decode("utf-8", errors="replace").strip()
+                    if isinstance(raw_line, (bytes, bytearray))
+                    else str(raw_line).strip()
+                )
+                if not line.startswith("data:"):
+                    continue
+                data_str = line[5:].strip()
+                if data_str == "[DONE]":
+                    break
+                try:
+                    chunk = json.loads(data_str)
+                except ValueError:
+                    continue
+                if isinstance(chunk, dict):
+                    if chunk.get("model"):
+                        resolved_model = str(chunk["model"])
+                    usage = chunk.get("usage")
+                    if isinstance(usage, dict) and usage.get("total_tokens"):
+                        tokens = int(usage["total_tokens"])
+                    choices = chunk.get("choices") or []
+                    if choices and isinstance(choices[0], dict):
+                        delta = choices[0].get("delta") or {}
+                        if isinstance(delta, dict):
+                            delta_text = self._extract_message_content(delta.get("content"))
+                            if delta_text:
+                                parts.append(delta_text)
+        except requests.RequestException as exc:
+            logger.warning("xkiro.stream_failed model=%s error=%s", model, type(exc).__name__)
+            if not parts:
+                return {"ok": False, "error_type": type(exc).__name__, "status_code": None}
+
+        full_text = "".join(parts)
+        if not full_text.strip():
+            return {"ok": False, "error_type": "empty_stream", "status_code": 200}
+
+        return {
+            "ok": True,
+            "model": resolved_model,
+            "message": {"role": "assistant", "content": full_text},
             "tokens": max(0, tokens),
         }
 

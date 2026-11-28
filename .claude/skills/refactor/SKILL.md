@@ -37,6 +37,7 @@ Skill này hướng dẫn tái cấu trúc (refactor) gọn, an toàn và tuân 
 - Nếu đổi file/docstring/serializer đi vào OpenAPI: chạy `pnpm --dir frontend api:types` và cập nhật `frontend/src/shares/types/api-schema.gen.ts`.
 - Nếu di chuyển hoặc đổi tên khoảng 10 file trở lên hay tái cấu trúc module lớn: chạy `graphify update .` theo `AGENTS.md`.
 - Chỉ cập nhật `docs/modules/<m>/README.md` / `docs/features/` nếu đường đi/chức năng mô tả có thay đổi thực tế.
+- Nếu tái cấu trúc làm đổi trường dữ liệu, tên hành vi Client Portal hoặc tham số AI tool, cập nhật luôn `backend/app/workspace/knowledge/client_portal/*.md` + `sync_assistant_knowledge` để RAG của AI chatbot luôn khớp code.
 - Nếu người dùng nêu quy chuẩn hoặc rule mới chưa có trong `docs/rules/`, tự động cập nhật đồng bộ ngay vào `docs/rules/`, `.agents/rules/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md` (kèm test quy ước nếu kiểm được) và chạy `python scripts/sync-ai-rules.py` (`--check`) trong cùng lượt.
 
 ## 4. Kiểm chứng sau refactor

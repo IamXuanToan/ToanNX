@@ -19,6 +19,7 @@ from app.system.views.cleanup_view import CleanupView
 from app.system.views.client_error_view import ClientErrorView
 from app.system.views.csrf_view import CsrfView
 from app.system.views.currency_view_set import CurrencyViewSet
+from app.system.views.email_template_view_set import EmailTemplateViewSet
 from app.system.views.exchange_rate_fetch_view import ExchangeRateFetchView
 from app.system.views.exchange_rate_resolve_view import ExchangeRateResolveView
 from app.system.views.exchange_rate_view_set import ExchangeRateViewSet
@@ -26,6 +27,8 @@ from app.system.views.health_view import HealthView
 from app.system.views.invitation_validate_view import InvitationValidateView
 from app.system.views.journal_entry_view_set import JournalEntryViewSet
 from app.system.views.journal_resource_view import JournalResourceView
+from app.system.views.language_active_view import LanguageActiveView
+from app.system.views.language_view_set import LanguageViewSet
 from app.system.views.login_view import LoginView
 from app.system.views.logout_all_view import LogoutAllView
 from app.system.views.logout_view import LogoutView
@@ -78,7 +81,9 @@ router.register("attachments", AttachmentViewSet, basename="attachments")
 router.register("telegram-chats", TelegramChatViewSet, basename="telegram-chats")
 router.register("announcements", SystemAnnouncementViewSet, basename="announcements")
 router.register("currencies", CurrencyViewSet, basename="currencies")
+router.register("email-templates", EmailTemplateViewSet, basename="email-templates")
 router.register("exchange-rates", ExchangeRateViewSet, basename="exchange-rates")
+router.register("languages", LanguageViewSet, basename="languages")
 router.register("notification-deliveries", NotificationDeliveryViewSet, basename="notification-deliveries")
 router.register("journal-entries", JournalEntryViewSet, basename="journal-entries")
 router.register("settings", SettingViewSet, basename="settings")
@@ -133,6 +138,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     *auth_urlpatterns,
     *iam_urlpatterns,
     *health_urlpatterns,
+    path("languages/active", LanguageActiveView.as_view(), name="languages-active"),
     path(
         "attachments/folders/<uuid:pk>/delete",
         AttachmentFolderDeleteView.as_view(),

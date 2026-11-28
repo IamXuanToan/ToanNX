@@ -6,8 +6,16 @@ import { toast } from "sonner";
 
 import type { UploadedFile } from "@/shares/components/common/image-upload.types";
 
+import {
+  DEFAULT_AFFILIATE_PLATFORMS,
+  matchAffiliatePlatformByUrl,
+} from "../../../constants/affiliate-platforms";
 import { pageService } from "../../../services/page.service";
-import type { AffiliateItem, PageMetadataResult } from "../../../types/page.types";
+import type {
+  AffiliateItem,
+  AffiliatePlatformConfig,
+  PageMetadataResult,
+} from "../../../types/page.types";
 
 /**
  * Làm sạch chuỗi URL đầu vào, loại bỏ ký tự thừa do gõ phím tiếng Việt ở đầu (như 'đhttps://...').
@@ -64,11 +72,13 @@ export function useQuickAddModal({
   onSave,
   onClose,
   editingItem,
+  platforms = DEFAULT_AFFILIATE_PLATFORMS,
 }: {
   onAdd?: (item: AffiliateItem) => void;
   onSave?: (item: AffiliateItem) => void;
   onClose: () => void;
   editingItem?: AffiliateItem | null;
+  platforms?: AffiliatePlatformConfig[];
 }) {
   const t = useTranslations("utilities.customPages.quickAdd");
 
@@ -164,18 +174,15 @@ export function useQuickAddModal({
     }
     setLoading(true);
     const fallbackTitle = extractSlugTitle(cleanedUrl);
-    const detectedPlatform = cleanedUrl.includes("shopee")
-      ? "shopee"
-      : cleanedUrl.includes("lazada")
-        ? "lazada"
-        : cleanedUrl.includes("tiki")
-          ? "tiki"
-          : cleanedUrl.includes("tiktok")
-            ? "tiktok"
-            : "custom";
+    const detectedPlatform = matchAffiliatePlatformByUrl(cleanedUrl, platforms);
 
     try {
-      const data = await pageService.fetchMetadata(cleanedUrl);
+      const data = await pageService.fetchMetadata(
+        cleanedUrl,
+        platforms
+          .filter((p) => p.isVisible !== false && p.code && p.urlPattern.trim())
+          .map((p) => ({ code: p.code, name: p.name, urlPattern: p.urlPattern })),
+      );
       setMetadata(data);
       const resolvedTitle = data.title || fallbackTitle;
       if (resolvedTitle) {
@@ -188,9 +195,9 @@ export function useQuickAddModal({
         setPrice(String(data.price));
       }
       if (data.platform && data.platform !== "custom") {
-        setPlatform(data.platform as AffiliateItem["platform"]);
+        setPlatform(data.platform);
       } else {
-        setPlatform(detectedPlatform as AffiliateItem["platform"]);
+        setPlatform(detectedPlatform);
       }
       toast.success(t("fetchSuccess"));
     } catch {
@@ -198,7 +205,7 @@ export function useQuickAddModal({
       if (fallbackTitle) {
         setTitle(fallbackTitle);
       }
-      setPlatform(detectedPlatform as AffiliateItem["platform"]);
+      setPlatform(detectedPlatform);
       setMetadata({
         title: fallbackTitle,
         description: "",

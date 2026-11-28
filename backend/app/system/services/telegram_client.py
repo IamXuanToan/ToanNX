@@ -14,6 +14,8 @@ from app.system.types.telegram_send_result import TelegramSendResult
 logger = logging.getLogger(__name__)
 HTTP_UNAUTHORIZED = 401
 HTTP_NOT_FOUND = 404
+# `callback_query`: người dùng bấm nút inline (lựa chọn nhanh của Trợ lý AI).
+TELEGRAM_ALLOWED_UPDATES = ("message", "my_chat_member", "callback_query")
 
 
 class TelegramClient:
@@ -36,7 +38,7 @@ class TelegramClient:
         """Đăng ký webhook nhận sự kiện Telegram cho bot chung."""
         payload: dict[str, Any] = {
             "url": url,
-            "allowed_updates": ["message", "my_chat_member"],
+            "allowed_updates": list(TELEGRAM_ALLOWED_UPDATES),
         }
         if secret_token:
             payload["secret_token"] = secret_token
@@ -44,7 +46,7 @@ class TelegramClient:
 
     def get_updates(self, token: str, *, offset: int | None = None, timeout: int = 0) -> list[dict[str, Any]]:
         """Cập nhật gần đây của bot (dùng cho nút Kiểm tra hoặc polling local)."""
-        payload: dict[str, Any] = {"allowed_updates": ["message", "my_chat_member"]}
+        payload: dict[str, Any] = {"allowed_updates": list(TELEGRAM_ALLOWED_UPDATES)}
         if offset is not None:
             payload["offset"] = int(offset)
         long_poll_timeout = max(0, min(int(timeout), 30)) if timeout > 0 else 0
@@ -69,8 +71,9 @@ class TelegramClient:
         html: str,
         *,
         reply_to_message_id: int | None = None,
+        reply_markup: dict[str, Any] | None = None,
     ) -> TelegramSendResult:
-        """Gửi tin HTML; đổi lỗi Telegram thành mã ổn định (403 bị xóa, 429 retry_after, nâng supergroup)."""
+        """Gửi tin HTML (kèm bàn phím inline / force_reply nếu có); đổi lỗi Telegram thành mã ổn định."""
         payload: dict[str, Any] = {
             "chat_id": chat_id,
             "text": html,
@@ -79,6 +82,8 @@ class TelegramClient:
         }
         if reply_to_message_id is not None:
             payload["reply_to_message_id"] = int(reply_to_message_id)
+        if reply_markup:
+            payload["reply_markup"] = reply_markup
         try:
             response = self.session.post(
                 self._url(token, "sendMessage"),
@@ -102,6 +107,29 @@ class TelegramClient:
             if parameters.get("migrate_to_chat_id")
             else None,
         )
+
+    def answer_callback_query(self, token: str, callback_query_id: str, text: str = "") -> bool:
+        """Tắt vòng xoay chờ trên nút vừa bấm (kèm thông báo ngắn); lỗi chỉ log, không chặn luồng."""
+        payload: dict[str, Any] = {"callback_query_id": callback_query_id}
+        if text:
+            payload["text"] = text[:200]
+        return self._call_quietly(token, "answerCallbackQuery", payload)
+
+    def clear_inline_keyboard(self, token: str, chat_id: str, message_id: int) -> bool:
+        """Gỡ bàn phím inline khỏi tin đã chọn xong để không bấm lại lựa chọn cũ."""
+        payload = {"chat_id": chat_id, "message_id": int(message_id), "reply_markup": {"inline_keyboard": []}}
+        return self._call_quietly(token, "editMessageReplyMarkup", payload)
+
+    def delete_message(self, token: str, chat_id: str, message_id: int) -> bool:
+        """Xóa tin (VD tin người dùng vừa gõ mật khẩu); bot thiếu quyền thì bỏ qua."""
+        return self._call_quietly(token, "deleteMessage", {"chat_id": chat_id, "message_id": int(message_id)})
+
+    def _call_quietly(self, token: str, method: str, payload: dict[str, Any]) -> bool:
+        try:
+            self._call(token, method, payload)
+        except BusinessRuleError:
+            return False
+        return True
 
     def _call(
         self,

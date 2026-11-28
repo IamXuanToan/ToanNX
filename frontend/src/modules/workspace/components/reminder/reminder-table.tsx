@@ -60,6 +60,23 @@ export function ReminderTable({
       ),
     },
     {
+      id: "topic",
+      header: t("fields.topic"),
+      hideBelow: "lg",
+      cell: (item) =>
+        item.topic ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium">
+            <span
+              className="size-2 shrink-0 rounded-full"
+              style={{ backgroundColor: item.topic.color }}
+            />
+            <span className="max-w-32 truncate">{item.topic.name}</span>
+          </span>
+        ) : (
+          <span className="text-muted-foreground text-xs">—</span>
+        ),
+    },
+    {
       id: "dueDate",
       header: t("fields.dueDate"),
       sortKey: "due_date",
@@ -132,6 +149,12 @@ export function ReminderTable({
       onClearFilters={table.hasFilters ? table.clearFilters : undefined}
       filters={
         <>
+          <FilterSelect
+            label={t("fields.topic")}
+            value={table.getFilterValues("topic")}
+            onValueChange={(values) => table.setFilterValues("topic", values)}
+            options={state.topicOptions}
+          />
           <FilterSelect
             label={t("fields.priority")}
             value={table.getFilterValues("priority")}

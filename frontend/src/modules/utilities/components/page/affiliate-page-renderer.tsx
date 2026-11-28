@@ -16,6 +16,8 @@ import { toSafeHttpUrl, toSafeImageSrc } from "@/shares/lib/safe-url";
 import { useResolvedPageTheme } from "../../hooks/use-resolved-page-theme";
 import type { AffiliateCategory, PublicPage } from "../../types/page.types";
 import { useAffiliatePageRenderer } from "./hooks/use-affiliate-page-renderer";
+import { PageBackgroundLayer } from "./page-background-layer";
+import { PageShareButton } from "./page-share-button";
 
 const PLATFORM_STYLES: Record<string, string> = {
   shopee:
@@ -59,8 +61,9 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
     });
   }, [categories]);
 
-  const { pageThemeScope, buttonStyle, customStyle } = useResolvedPageTheme(page);
-  const layout = (styleConfig.layout as string) ?? "grid";
+  const { pageThemeScope, buttonStyle, appearance, surfaceClass, hoverClass, customStyle } =
+    useResolvedPageTheme(page);
+  const layout = (styleConfig.layout as string) ?? appearance.layout ?? "grid";
   const showPrice = styleConfig.showPrice !== false && styleConfig.show_price !== false;
   const showImage = styleConfig.showImage !== false && styleConfig.show_image !== false;
   const showSearch = styleConfig.showSearch !== false && styleConfig.show_search !== false;
@@ -101,11 +104,32 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
     <main
       style={customStyle}
       data-page-theme={pageThemeScope}
-      className="bg-background text-foreground min-h-svh pb-20 transition-colors duration-200"
+      className="bg-background text-foreground relative min-h-full overflow-x-hidden pb-20 transition-colors duration-200"
     >
+      <PageBackgroundLayer
+        appearance={appearance}
+        backgroundImageUrl={page.backgroundImageUrl}
+        alt={page.title}
+      />
+
+      {appearance.showShareButton ? (
+        <div className="absolute top-4 right-4 z-30">
+          <PageShareButton title={page.title} url={page.canonicalUrl} />
+        </div>
+      ) : null}
+
       {/* 1. Header ảnh bìa */}
       {coverUrl ? (
-        <div className="relative h-44 w-full overflow-hidden sm:h-60">
+        <div
+          className={cn(
+            "relative z-10 w-full overflow-hidden",
+            appearance.coverHeight === "sm"
+              ? "h-32 sm:h-44"
+              : appearance.coverHeight === "lg"
+                ? "h-52 sm:h-72"
+                : "h-44 sm:h-60",
+          )}
+        >
           <Image
             src={coverUrl}
             alt={page.title}
@@ -115,12 +139,19 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
             unoptimized
             className="object-cover"
           />
-          <div className="from-background/60 absolute inset-0 bg-gradient-to-t to-transparent" />
+          {appearance.coverFade ? (
+            <div className="from-background/70 absolute inset-0 bg-gradient-to-t to-transparent" />
+          ) : null}
         </div>
       ) : null}
 
       {/* 2. Header thông tin shop / thương hiệu */}
-      <header className="mx-auto max-w-5xl px-4 pt-6 pb-4 text-center">
+      <header
+        className={cn(
+          "relative z-20 mx-auto max-w-5xl px-4 pt-6 pb-4",
+          appearance.headerLayout === "editorial_left" ? "text-left" : "text-center",
+        )}
+      >
         {avatarUrl ? (
           <div
             className={cn(
@@ -147,7 +178,12 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
       </header>
 
       {/* 3. Thanh điều khiển: Tìm kiếm & Lọc danh mục */}
-      <div className="border-border/80 bg-background/90 sticky top-0 z-20 border-y shadow-2xs backdrop-blur-md">
+      <div
+        className={cn(
+          "border-border/80 bg-background/90 relative z-20 border-y shadow-2xs backdrop-blur-md",
+          appearance.stickyFilterBar && "sticky top-0",
+        )}
+      >
         <div className="mx-auto max-w-5xl px-4 py-2.5 sm:py-3">
           {showSearch ? (
             <div className="relative mb-2.5 sm:mb-3">
@@ -202,7 +238,7 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
       </div>
 
       {/* 4. Danh sách sản phẩm */}
-      <section className="@container mx-auto max-w-5xl px-3 pt-6 sm:px-4">
+      <section className="@container relative z-10 mx-auto max-w-5xl px-3 pt-6 sm:px-4">
         {filteredItems.length === 0 ? (
           <div className="border-border bg-card text-muted-foreground rounded-2xl border border-dashed p-12 text-center text-sm">
             {t("emptyFiltered")}
@@ -252,7 +288,9 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                   asChild
                   variant="outline"
                   className={cn(
-                    "hover:border-primary/50 group h-auto w-full items-center justify-between p-3 text-left font-normal whitespace-normal shadow-2xs transition-all hover:shadow-xs sm:p-3.5",
+                    "group h-auto w-full items-center justify-between p-3 text-left font-normal whitespace-normal sm:p-3.5",
+                    surfaceClass,
+                    hoverClass,
                     cardRadiusClass,
                   )}
                 >
@@ -298,7 +336,9 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                 <div
                   key={item.id}
                   className={cn(
-                    "border-border/80 bg-card group hover:border-primary/40 flex flex-col gap-3.5 border p-3.5 shadow-2xs transition-all hover:shadow-md sm:flex-row sm:gap-4 sm:p-4",
+                    "group flex flex-col gap-3.5 p-3.5 sm:flex-row sm:gap-4 sm:p-4",
+                    surfaceClass,
+                    hoverClass,
                     cardRadiusClass,
                   )}
                 >
@@ -438,7 +478,9 @@ export function AffiliatePageRenderer({ page }: { page: PublicPage }) {
                 <div
                   key={item.id}
                   className={cn(
-                    "border-border/80 bg-card group hover:border-primary/40 relative flex flex-col overflow-hidden border shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-md",
+                    "group relative flex flex-col overflow-hidden",
+                    surfaceClass,
+                    hoverClass,
                     cardRadiusClass,
                   )}
                 >

@@ -4,6 +4,7 @@ Không tính thuế phải nộp. Chỉ cộng giao dịch đã có số tiền 
 chưa nhận diện (tách riêng một dòng). Kiểm luôn đúng: đã khấu trừ + chưa khấu trừ = tổng thu nhập.
 """
 
+from datetime import date
 from decimal import Decimal
 from typing import Any
 
@@ -80,6 +81,66 @@ class FinanceReportService:
                     "total": row["total"],
                 }
                 for row in by_currency
+            ],
+        }
+
+    def range_summary(
+        self,
+        actor: Any,
+        from_date: date,
+        to_date: date,
+        *,
+        owner_ids: list[Any] | None = None,
+        platform_filter: str = "",
+        item_limit: int = 15,
+    ) -> dict[str, Any]:
+        """Tổng hợp dòng tiền theo khoảng ngày (VNĐ), kèm theo ngày, nền tảng và giao dịch gần nhất."""
+        queryset = self.income_service.get_queryset_for(actor).filter(
+            received_date__gte=from_date,
+            received_date__lte=to_date,
+        )
+        if owner_ids:
+            queryset = queryset.filter(owner_id__in=owner_ids)
+        if platform_filter:
+            queryset = queryset.filter(platform__name__icontains=platform_filter)
+        ok = queryset.filter(amount_status=Income.AmountStatus.OK)
+        totals = ok.aggregate(**_totals())
+        by_platform = list(
+            ok.values("platform_id", "platform__name", "platform__color", "tax_withheld", "tax_rate")
+            .annotate(**_totals())
+            .order_by("platform__name", "tax_rate")
+        )
+        by_day = list(
+            ok.values("received_date")
+            .annotate(count=Count("id"), total=Coalesce(Sum("amount"), ZERO))
+            .order_by("-received_date")
+        )
+        items = list(
+            ok.select_related("platform", "currency").order_by("-received_date", "-received_at")[:item_limit]
+        )
+        return {
+            "from_date": from_date,
+            "to_date": to_date,
+            "totals": totals,
+            "by_platform": [self._platform_row(dict(row)) for row in by_platform],
+            "by_day": [
+                {
+                    "date": row["received_date"],
+                    "count": int(row["count"] or 0),
+                    "total": row["total"],
+                }
+                for row in by_day
+            ],
+            "items": [
+                {
+                    "id": str(item.pk),
+                    "date": item.received_date,
+                    "platform": item.platform.name if item.platform else "",
+                    "content": item.content,
+                    "amount": item.amount,
+                    "currency": item.currency.code if item.currency else "VND",
+                }
+                for item in items
             ],
         }
 

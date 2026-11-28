@@ -15,7 +15,7 @@ Phạm vi hiện tại: **foundation** (IAM, xác thực, module registry, i18n 
 
 - Python 3.13 + [uv](https://docs.astral.sh/uv/)
 - Node.js 22+ + pnpm
-- PostgreSQL 16+ (local hoặc Docker; production dùng Neon)
+- PostgreSQL 16+ có extension **pgvector ≥ 0.8.1** (local hoặc Docker; production dùng Neon — có sẵn `vector`)
 
 ## Chạy local
 
@@ -38,9 +38,27 @@ git config core.hooksPath .githooks   # bật kiểm tra tên commit/nhánh (doc
 ```bash
 # PostgreSQL local (ví dụ user postgres):
 psql -U postgres -c "CREATE DATABASE toannx ENCODING 'UTF8';"
-# Hoặc Docker:
-docker run -d --name toannx-db -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:18
+# Hoặc Docker (đã kèm pgvector):
+docker run -d --name toannx-db -e POSTGRES_PASSWORD=postgres -p 5432:5432 pgvector/pgvector:pg18
 ```
+
+**Cài pgvector native trên Windows (không Docker, làm 1 lần)** — migration `workspace` cần `CREATE EXTENSION vector`:
+
+1. Cài Visual Studio 2022 Build Tools với workload *Desktop development with C++*
+   (`winget install Microsoft.VisualStudio.2022.BuildTools --override "--passive --wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"`).
+2. Mở **x64 Native Tools Command Prompt for VS 2022** (cmd thường), build:
+
+   ```bat
+   set "PGROOT=C:\Program Files\PostgreSQL\18"
+   cd %TEMP%
+   git clone --branch v0.8.1 https://github.com/pgvector/pgvector.git
+   cd pgvector
+   nmake /F Makefile.win
+   ```
+
+3. Mở cmd **Run as administrator**, cùng thư mục và `PGROOT`, chạy `nmake /F Makefile.win install`.
+4. Kiểm: `select name, default_version from pg_available_extensions where name = 'vector';`. Nâng PostgreSQL bản lớn
+   (VD 19) thì build lại. Gỡ Build Tools sau khi cài cũng được.
 
 ### 2. Backend
 

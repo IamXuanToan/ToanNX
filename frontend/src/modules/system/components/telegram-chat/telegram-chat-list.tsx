@@ -4,10 +4,12 @@ import { ExternalLink, MessageCircle, Send, Trash2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { SelectField } from "@/shares/components/common/select-field";
 import { StatusBadge } from "@/shares/components/common/status-badge";
 import { Button } from "@/shares/components/ui/button";
 import { toSafeHttpUrl } from "@/shares/lib/safe-url";
 
+import type { TelegramGroupReplyMode } from "../../types/notification.types";
 import { useTelegramChatList } from "./hooks/use-telegram-chat-list";
 
 /**
@@ -35,36 +37,54 @@ export function TelegramChatList({
       <p className="font-medium">{t("title")}</p>
       {chats.length ? (
         <ul className="divide-y">
-          {chats.map((chat) => (
-            <li key={chat.id} className="flex items-center gap-2 py-2 text-sm">
-              <span className="min-w-0 flex-1 truncate">{chat.title || chat.chatId}</span>
-              <StatusBadge tone={chat.status === "active" ? "success" : "warning"}>
-                {t(`status.${chat.status}`)}
-              </StatusBadge>
-              {canUpdate ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label={t("test")}
-                  onClick={() => state.test(chat.id)}
-                >
-                  <Send />
-                </Button>
-              ) : null}
-              {canDelete ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label={t("remove")}
-                  onClick={() => state.remove(chat.id)}
-                >
-                  <Trash2 />
-                </Button>
-              ) : null}
-            </li>
-          ))}
+          {chats.map((chat) => {
+            const isGroup = chat.chatType === "group" || chat.chatType === "supergroup";
+            return (
+              <li key={chat.id} className="flex flex-wrap items-center gap-2 py-2 text-sm">
+                <span className="min-w-0 flex-1 truncate">{chat.title || chat.chatId}</span>
+                {isGroup && canUpdate ? (
+                  <div className="w-56">
+                    <SelectField
+                      aria-label={t("groupReplyModeLabel")}
+                      value={chat.groupReplyMode || "mention_only"}
+                      onValueChange={(value) =>
+                        state.setGroupReplyMode(chat.id, value as TelegramGroupReplyMode)
+                      }
+                      options={[
+                        { value: "mention_only", label: t("groupReplyModes.mention_only") },
+                        { value: "all_messages", label: t("groupReplyModes.all_messages") },
+                      ]}
+                    />
+                  </div>
+                ) : null}
+                <StatusBadge tone={chat.status === "active" ? "success" : "warning"}>
+                  {t(`status.${chat.status}`)}
+                </StatusBadge>
+                {canUpdate ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t("test")}
+                    onClick={() => state.test(chat.id)}
+                  >
+                    <Send />
+                  </Button>
+                ) : null}
+                {canDelete ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t("remove")}
+                    onClick={() => state.remove(chat.id)}
+                  >
+                    <Trash2 />
+                  </Button>
+                ) : null}
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <p className="text-muted-foreground text-sm">{t("empty")}</p>

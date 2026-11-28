@@ -10,6 +10,8 @@ import { useStoredPreference } from "@/shares/hooks/use-stored-preference";
 import {
   ASSISTANT_LAUNCHER_SIZES,
   ASSISTANT_POPUP_DIMENSIONS,
+  ASSISTANT_POPUP_MIN_DIMENSIONS,
+  ASSISTANT_POPUP_SIZE_KEY,
   ASSISTANT_WIDGET_POSITION_KEY,
   type AssistantLauncherSize,
 } from "../../../constants/defaults";
@@ -18,6 +20,26 @@ import { ASSISTANT_PERMISSIONS } from "../../../permissions/assistant-permission
 
 type StoredRatio = { xRatio: number; yRatio: number };
 type Point = { x: number; y: number };
+type PopupSize = { width: number; height: number };
+export type PopupResizeAxis = "x" | "y" | "xy";
+
+const DEFAULT_POPUP_SIZE: PopupSize = {
+  width: ASSISTANT_POPUP_DIMENSIONS.width,
+  height: ASSISTANT_POPUP_DIMENSIONS.height,
+};
+
+function isStoredPopupSize(value: unknown): value is PopupSize {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Record<string, unknown>;
+  return (
+    typeof candidate.width === "number" &&
+    Number.isFinite(candidate.width) &&
+    candidate.width >= ASSISTANT_POPUP_MIN_DIMENSIONS.width &&
+    typeof candidate.height === "number" &&
+    Number.isFinite(candidate.height) &&
+    candidate.height >= ASSISTANT_POPUP_MIN_DIMENSIONS.height
+  );
+}
 
 const EDGE_MARGIN = 16;
 const TOP_NAV_CLEARANCE = 76;
@@ -125,10 +147,16 @@ function pointToRatio(point: Point, vw: number, vh: number, buttonSize: number):
 export function useAssistantFloatingWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [dragPoint, setDragPoint] = useState<Point | null>(null);
+  const [resizeSize, setResizeSize] = useState<PopupSize | null>(null);
   const [storedRatio, setStoredRatio] = useStoredPreference<StoredRatio>(
     ASSISTANT_WIDGET_POSITION_KEY,
     DEFAULT_RATIO,
     isStoredRatio,
+  );
+  const [storedPopupSize, setStoredPopupSize] = useStoredPreference<PopupSize>(
+    ASSISTANT_POPUP_SIZE_KEY,
+    DEFAULT_POPUP_SIZE,
+    isStoredPopupSize,
   );
 
   const dragMetaRef = useRef<{
@@ -138,6 +166,17 @@ export function useAssistantFloatingWidget() {
     originX: number;
     originY: number;
     moved: boolean;
+  } | null>(null);
+
+  const resizeMetaRef = useRef<{
+    pointerId: number;
+    axis: PopupResizeAxis;
+    startX: number;
+    startY: number;
+    originWidth: number;
+    originHeight: number;
+    openLeft: boolean;
+    openAbove: boolean;
   } | null>(null);
 
   const viewportRaw = useSyncExternalStore(
@@ -177,7 +216,12 @@ export function useAssistantFloatingWidget() {
   const activePoint = dragPoint ?? basePoint;
 
   const bottomPad = isMobile ? MOBILE_BOTTOM_NAV_CLEARANCE : EDGE_MARGIN;
-  const popupWidth = Math.min(ASSISTANT_POPUP_DIMENSIONS.width, vw - EDGE_MARGIN * 2);
+  const maxPopupWidth = Math.max(ASSISTANT_POPUP_MIN_DIMENSIONS.width, vw - EDGE_MARGIN * 2);
+  const activeDesiredWidth = resizeSize?.width ?? storedPopupSize.width;
+  const popupWidth = Math.min(
+    maxPopupWidth,
+    Math.max(Math.min(ASSISTANT_POPUP_MIN_DIMENSIONS.width, maxPopupWidth), activeDesiredWidth),
+  );
   const spaceAbove = activePoint.y - TOP_NAV_CLEARANCE - POPUP_GAP;
   const spaceBelow = vh - (activePoint.y + buttonSize) - POPUP_GAP - bottomPad;
   const openAbove = spaceAbove >= spaceBelow;
@@ -203,7 +247,9 @@ export function useAssistantFloatingWidget() {
   const availableVertical = canOpenSideways
     ? maxViewportHeight
     : Math.max(260, openAbove ? spaceAbove : spaceBelow);
-  const popupHeight = Math.min(ASSISTANT_POPUP_DIMENSIONS.height, availableVertical);
+  const activeDesiredHeight = resizeSize?.height ?? storedPopupSize.height;
+  const minPopupHeight = Math.min(ASSISTANT_POPUP_MIN_DIMENSIONS.height, availableVertical);
+  const popupHeight = Math.min(availableVertical, Math.max(minPopupHeight, activeDesiredHeight));
   const rawPopupTop = canOpenSideways
     ? Math.round(activePoint.y + buttonSize / 2 - popupHeight / 2)
     : openAbove
@@ -273,11 +319,100 @@ export function useAssistantFloatingWidget() {
     }
   }
 
+  function onResizePointerDown(axis: PopupResizeAxis, event: ReactPointerEvent<HTMLElement>) {
+    if (event.button !== 0 && event.pointerType === "mouse") return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.currentTarget.setPointerCapture === "function") {
+      try {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      } catch {
+        /* jsdom hoặc trình duyệt không hỗ trợ capture */
+      }
+    }
+    resizeMetaRef.current = {
+      pointerId: event.pointerId,
+      axis,
+      startX: event.clientX,
+      startY: event.clientY,
+      originWidth: popupWidth,
+      originHeight: popupHeight,
+      openLeft,
+      openAbove,
+    };
+    setResizeSize({ width: popupWidth, height: popupHeight });
+  }
+
+  function computeResizedSize(clientX: number, clientY: number): PopupSize | null {
+    const meta = resizeMetaRef.current;
+    if (!meta) return null;
+    const dx = clientX - meta.startX;
+    const dy = clientY - meta.startY;
+    const deltaW = meta.axis === "y" ? 0 : meta.openLeft ? -dx : dx;
+    const deltaH = meta.axis === "x" ? 0 : meta.openAbove ? -dy : dy;
+    const nextWidth = Math.round(
+      Math.min(
+        maxPopupWidth,
+        Math.max(ASSISTANT_POPUP_MIN_DIMENSIONS.width, meta.originWidth + deltaW),
+      ),
+    );
+    const nextHeight = Math.round(
+      Math.min(
+        availableVertical,
+        Math.max(
+          Math.min(ASSISTANT_POPUP_MIN_DIMENSIONS.height, availableVertical),
+          meta.originHeight + deltaH,
+        ),
+      ),
+    );
+    return { width: nextWidth, height: nextHeight };
+  }
+
+  function onResizePointerMove(event: ReactPointerEvent<HTMLElement>) {
+    const meta = resizeMetaRef.current;
+    if (!meta || meta.pointerId !== event.pointerId) return;
+    const next = computeResizedSize(event.clientX, event.clientY);
+    if (next) setResizeSize(next);
+  }
+
+  function finishResizePointer(event: ReactPointerEvent<HTMLElement>, cancelled = false) {
+    const meta = resizeMetaRef.current;
+    if (!meta || meta.pointerId !== event.pointerId) return;
+    const finalSize = !cancelled ? computeResizedSize(event.clientX, event.clientY) : null;
+    resizeMetaRef.current = null;
+    if (typeof event.currentTarget.releasePointerCapture === "function") {
+      try {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      } catch {
+        /* Bỏ qua nếu chưa capture */
+      }
+    }
+    if (finalSize) {
+      setStoredPopupSize(finalSize);
+    }
+    setResizeSize(null);
+  }
+
+  function resetPopupSize() {
+    setResizeSize(null);
+    setStoredPopupSize(DEFAULT_POPUP_SIZE);
+  }
+
+  const activeSize = resizeSize ?? storedPopupSize;
+  const isCustomSize =
+    activeSize.width !== DEFAULT_POPUP_SIZE.width ||
+    activeSize.height !== DEFAULT_POPUP_SIZE.height;
+
   return {
     isVisible,
     isOpen,
     setIsOpen,
     isDragging: Boolean(dragPoint),
+    isResizing: Boolean(resizeSize),
+    isCustomSize,
+    resetPopupSize,
+    horizontalResizeEdge: (openLeft ? "left" : "right") as "left" | "right",
+    verticalResizeEdge: (openAbove ? "top" : "bottom") as "top" | "bottom",
     canChat,
     launcherSize,
     assistantName: profile?.name?.trim() || "",
@@ -300,5 +435,10 @@ export function useAssistantFloatingWidget() {
     onPointerMove,
     onPointerUp: (event: ReactPointerEvent<HTMLButtonElement>) => finishPointer(event, false),
     onPointerCancel: (event: ReactPointerEvent<HTMLButtonElement>) => finishPointer(event, true),
+    onResizePointerDown,
+    onResizePointerMove,
+    onResizePointerUp: (event: ReactPointerEvent<HTMLElement>) => finishResizePointer(event, false),
+    onResizePointerCancel: (event: ReactPointerEvent<HTMLElement>) =>
+      finishResizePointer(event, true),
   };
 }

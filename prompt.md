@@ -147,6 +147,14 @@ Chi tiết: `docs/features/permission-scope.md`, `docs/features/permission-ui.md
   hiển thị `@username` cho người dùng; nhóm/kênh/`chat_id` nhận tin do từng user tự cấu hình. Tích hợp AI dùng
   **danh sách model fallback tuần tự** trong ngân sách serverless. Màn hình công khai/custom page chuẩn Light/Dark
   theo token hệ thống.
+- **Tool Trợ lý AI hiểu model, luật ép bằng code**: mô tả/enum tham số tool sinh từ metadata model
+  (`AssistantToolSpecBuilder`); tùy chọn người dùng phải tự quyết khi tạo mới chỉ khai tên field trong
+  `ASSISTANT_ASK_FIELDS` để engine nháp chung tự hỏi bằng nút — không viết hàm riêng từng tool, không dựa lời dặn prompt.
+- **Trợ lý chỉ dữ liệu cá nhân + tri thức RAG**: kể cả superuser, yêu cầu quản trị bị `AssistantScopeGuard` từ chối bằng
+  code, tool luôn lọc owner; chức năng Client Portal mới cập nhật `workspace/knowledge/client_portal/*.md` (tự nạp lại
+  sau `migrate`; chỉ sửa `.md` thì chạy `sync_assistant_knowledge`). Dữ liệu Portal không có tool riêng khai một dòng
+  trong `assistant_record_resources.py` để dùng tool chung `list_my_records` / `update_my_record`. Chip trả lời nhanh trong chat Trợ lý là ngoại lệ của `h-10`. Tool tạo/sửa luôn trả link
+  xem lại Portal và nhớ bản ghi vừa thao tác (`assistant_record_links.py`) để sửa tiếp bằng `update_*`.
 - **Quyền thành viên khai trong class quyền**: `MEMBER = (READ, CREATE, UPDATE, DELETE)`; `module.py` gom
   `member_permissions=(*XxxPermission.member(), ...)`. Không khai bằng chuỗi hay mẫu `*`. `MEMBER` không chứa
   `manage_all`/`read_private`. Phạm vi "bản ghi của mình" đến từ việc thiếu `manage_all`, không phải quyền riêng.

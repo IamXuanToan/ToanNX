@@ -14,7 +14,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestReminderUpdateApi(BaseApiTestCase):
-    """Hoàn thành nhắc việc lặp `MONTHLY` (anchor_day=31) tự sinh kỳ kế tiếp kẹp 28/02."""
+    """Hoàn thành nhắc việc lặp `MONTHLY` (ngày 31) tự sinh kỳ kế tiếp kẹp 28/02."""
 
     def test_complete_recurring_reminder_spawns_clamped_next_occurrence(self, user: Any, login: Any) -> None:
         rem = Reminder.objects.create(
@@ -22,7 +22,6 @@ class TestReminderUpdateApi(BaseApiTestCase):
             title="Đóng tiền server",
             due_date=date(2026, 1, 31),
             recurrence=Reminder.Recurrence.MONTHLY,
-            anchor_day=31,
             priority=Reminder.Priority.HIGH,
         )
         grant(user, P.UPDATE)
@@ -36,4 +35,3 @@ class TestReminderUpdateApi(BaseApiTestCase):
         next_rem = Reminder.objects.filter(owner=user, is_completed=False).first()
         assert next_rem is not None
         assert next_rem.due_date == date(2026, 2, 28)
-        assert next_rem.anchor_day == 31

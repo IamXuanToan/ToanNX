@@ -36,8 +36,7 @@ function toFormValues(item: Reminder): ReminderFormValues {
     reminderDaysBefore: (item.reminderDaysBefore ?? []).map(String),
     priority: item.priority,
     recurrence: item.recurrence,
-    anchorDay: item.anchorDay !== null ? String(item.anchorDay) : "",
-    tags: item.tags ?? [],
+    topicId: item.topic?.id ?? "",
   };
 }
 
@@ -70,8 +69,7 @@ export function useReminderForm(
       reminderDaysBefore: [],
       priority: "MEDIUM",
       recurrence: "NONE",
-      anchorDay: "",
-      tags: [],
+      topicId: "",
     },
     values: reminder ? toFormValues(reminder) : undefined,
   });
@@ -88,8 +86,7 @@ export function useReminderForm(
         .filter((d) => Number.isInteger(d) && d >= 1 && d <= 365),
       priority: values.priority,
       recurrence: values.recurrence,
-      anchorDay: values.anchorDay ? Number(values.anchorDay) : null,
-      tags: values.tags,
+      topicId: values.topicId || null,
     };
     try {
       const saved = await save.mutateAsync(input);

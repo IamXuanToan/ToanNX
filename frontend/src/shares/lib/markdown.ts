@@ -592,3 +592,33 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
   const lines = normalized.split("\n").slice(0, MAX_PARSE_LINES);
   return parseLinesToBlocks(lines);
 }
+
+/** Chuyển danh sách node inline Markdown thành văn bản thuần để sao chép bảng/ô. */
+export function markdownInlinesToText(nodes: MarkdownInline[]): string {
+  return nodes
+    .map((node) => {
+      switch (node.type) {
+        case "text":
+        case "code":
+          return node.value;
+        case "bold":
+        case "italic":
+        case "boldItalic":
+        case "strike":
+        case "link":
+          return markdownInlinesToText(node.children);
+      }
+    })
+    .join("");
+}
+
+/** Xuất khối bảng Markdown sang dạng TSV (tab-separated) dễ dán vào Excel, Google Sheets hoặc văn bản. */
+export function markdownTableToText(block: Extract<MarkdownBlock, { type: "table" }>): string {
+  const cleanCell = (nodes: MarkdownInline[]) =>
+    markdownInlinesToText(nodes)
+      .replace(/[\r\n\t]+/g, " ")
+      .trim();
+  const headerLine = block.headers.map(cleanCell).join("\t");
+  const rowLines = block.rows.map((row) => row.map(cleanCell).join("\t"));
+  return [headerLine, ...rowLines].join("\n");
+}

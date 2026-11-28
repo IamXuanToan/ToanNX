@@ -36,7 +36,11 @@ class ReminderFilter(django_filters.FilterSet):
         field_name="owner_id",
         help_text="ID chủ sở hữu (chỉ áp dụng khi có quyền manage_all).",
     )
+    topic = CoreUUIDInFilter(
+        field_name="topic_id",
+        help_text="Lọc theo ID chủ đề nhắc việc.",
+    )
 
     class Meta:
         model = Reminder
-        fields = ("priority", "is_completed", "recurrence", "due_from", "due_to", "owner")
+        fields = ("priority", "is_completed", "recurrence", "due_from", "due_to", "owner", "topic")

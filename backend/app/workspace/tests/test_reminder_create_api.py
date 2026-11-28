@@ -6,6 +6,7 @@ import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.system.tests.helpers.permission_helper import grant
+from app.workspace.models.reminder_topic import ReminderTopic
 from app.workspace.permissions.reminder_permission import ReminderPermission as P
 
 pytestmark = pytest.mark.django_db
@@ -23,6 +24,9 @@ class TestReminderCreateApi(BaseApiTestCase):
         api = login(user)
         self.assert_error(api.post(URL, {}, format="json"), 400, "VALIDATION_ERROR")
 
+        work_topic = ReminderTopic.objects.filter(code="work", is_system=True).first()
+        assert work_topic is not None
+
         res = api.post(
             URL,
             {
@@ -33,12 +37,13 @@ class TestReminderCreateApi(BaseApiTestCase):
                 "reminder_days_before": [3, 8, 6, 3],
                 "priority": "URGENT",
                 "recurrence": "MONTHLY",
-                "tags": ["ssl", "ops"],
+                "topic_id": str(work_topic.pk),
             },
             format="json",
         )
         data = self.assert_success(res, 201)
-        assert data["anchor_day"] == 31
+        assert data["topic"]["id"] == str(work_topic.pk)
+        assert data["topic"]["name"] == "Công việc"
         assert data["due_time"] == "09:30:00"
         assert data["reminder_days_before"] == [8, 6, 3]
         assert data["is_completed"] is False

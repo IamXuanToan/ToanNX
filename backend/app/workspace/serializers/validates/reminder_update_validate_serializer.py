@@ -29,9 +29,6 @@ class ReminderUpdateValidateSerializer(CoreValidateSerializer):
     recurrence = serializers.ChoiceField(
         choices=Reminder.Recurrence.choices, required=False, help_text="Chu kỳ lặp lại."
     )
-    anchor_day = serializers.IntegerField(
-        min_value=1, max_value=31, required=False, allow_null=True, help_text="Ngày chốt định kỳ."
-    )
-    tags = serializers.ListField(
-        child=serializers.CharField(max_length=50), required=False, help_text="Danh sách nhãn."
+    topic_id = serializers.UUIDField(
+        required=False, allow_null=True, help_text="ID chủ đề nhắc việc; null để gỡ."
     )

@@ -7,8 +7,10 @@ from app.workspace.views.asset_view_set import AssetViewSet
 from app.workspace.views.asset_warranty_claim_view_set import AssetWarrantyClaimViewSet
 from app.workspace.views.assistant_bot_profile_view import AssistantBotProfileView
 from app.workspace.views.assistant_chat_view import AssistantChatView
+from app.workspace.views.assistant_compose_view import AssistantComposeView
 from app.workspace.views.assistant_config_view import AssistantConfigView
 from app.workspace.views.assistant_thread_view import AssistantThreadView
+from app.workspace.views.reminder_topic_view_set import ReminderTopicViewSet
 from app.workspace.views.reminder_view_set import ReminderViewSet
 from app.workspace.views.subscription_payment_view_set import SubscriptionPaymentViewSet
 from app.workspace.views.subscription_view_set import SubscriptionViewSet
@@ -28,6 +30,7 @@ router.register("subscriptions", SubscriptionViewSet, basename="subscriptions")
 router.register("subscription-payments", SubscriptionPaymentViewSet, basename="subscription-payments")
 router.register("vault-items", VaultItemViewSet, basename="vault-items")
 router.register("reminders", ReminderViewSet, basename="reminders")
+router.register("reminder-topics", ReminderTopicViewSet, basename="reminder-topics")
 
 urlpatterns: list[URLPattern | URLResolver] = [
     path(
@@ -40,6 +43,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("assistant/bot-profile", AssistantBotProfileView.as_view(), name="assistant-bot-profile"),
     path("assistant/thread", AssistantThreadView.as_view(), name="assistant-thread"),
     path("assistant/chat", AssistantChatView.as_view(), name="assistant-chat"),
+    path("assistant/compose", AssistantComposeView.as_view(), name="assistant-compose"),
     path(
         "assistant/telegram-process",
         TelegramAssistantProcessView.as_view(),

@@ -109,6 +109,13 @@ class SettingService(CoreCrudService[Setting, SettingRepository]):
         # Đảm bảo các cờ auth luôn có giá trị boolean mặc định
         for key in (SettingKey.AUTH_GOOGLE_ENABLED, SettingKey.AUTH_GITHUB_ENABLED):
             result.setdefault(key.value, True)
+        result.setdefault(
+            SettingKey.SUPPORTED_LANGUAGES.value,
+            [
+                {"code": "vi", "name": "Tiếng Việt"},
+                {"code": "en", "name": "English"},
+            ],
+        )
         if cache_key:
             self.cache_service.set_json(cache_key, result, PUBLIC_SETTING_CACHE_TTL_SECONDS)
         return result

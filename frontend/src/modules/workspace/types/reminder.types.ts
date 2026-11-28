@@ -1,12 +1,13 @@
-import type { ListParams } from "@/shares/types/api.types";
+import type { ReminderTopicSummary } from "./reminder-topic.types";
 
-import type { REMINDER_PRIORITIES, REMINDER_RECURRENCES } from "../constants/defaults";
+/** Mức độ ưu tiên của Nhắc việc. */
+export type ReminderPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 
-export type ReminderPriority = (typeof REMINDER_PRIORITIES)[number];
-export type ReminderRecurrence = (typeof REMINDER_RECURRENCES)[number];
+/** Chu kỳ lặp lại của Nhắc việc. */
+export type ReminderRecurrence = "NONE" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 
-/** Nhắc việc cá nhân (khớp `ReminderResponse`). */
-export type Reminder = {
+/** Nhắc việc cá nhân. */
+export interface Reminder {
   id: string;
   ownerId: string;
   ownerEmail: string;
@@ -22,14 +23,28 @@ export type Reminder = {
   isCompleted: boolean;
   completedAt: string | null;
   recurrence: ReminderRecurrence;
-  anchorDay: number | null;
-  tags: string[];
+  topic: ReminderTopicSummary | null;
   createdAt: string;
   updatedAt: string;
-};
+}
 
-/** Đầu vào tạo/cập nhật Nhắc việc. */
-export type ReminderInput = {
+/** Bộ lọc danh sách Nhắc việc. */
+export interface ReminderFilters {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  ordering?: string;
+  priority?: ReminderPriority[];
+  isCompleted?: boolean;
+  recurrence?: ReminderRecurrence[];
+  topic?: string[];
+  dueDateFrom?: string;
+  dueDateTo?: string;
+  owner?: string;
+}
+
+/** Payload tạo/cập nhật Nhắc việc. */
+export interface ReminderInput {
   title: string;
   description?: string;
   dueDate: string;
@@ -38,14 +53,5 @@ export type ReminderInput = {
   reminderDaysBefore?: number[];
   priority?: ReminderPriority;
   recurrence?: ReminderRecurrence;
-  anchorDay?: number | null;
-  tags?: string[];
-};
-
-/** Bộ lọc danh sách Nhắc việc. */
-export type ReminderFilters = ListParams & {
-  priority?: readonly string[];
-  isCompleted?: boolean;
-  recurrence?: readonly string[];
-  owner?: string;
-};
+  topicId?: string | null;
+}

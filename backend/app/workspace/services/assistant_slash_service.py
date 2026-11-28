@@ -89,6 +89,12 @@ class AssistantSlashService:
 
         if canonical == "today":
             res = self.tools_service.execute_tool(actor, "get_pending_reminders", {"scope": "today"})
+            if not res.get("ok"):
+                return {
+                    "reply": str(res.get("error") or "Không thể xem nhắc việc."),
+                    "contains_private_data": False,
+                    "is_new_chat": False,
+                }
             items = res.get("items") or []
             if not items:
                 reply = "Hôm nay bạn không có nhắc việc nào đang chờ."
@@ -109,6 +115,12 @@ class AssistantSlashService:
                 {"days_ahead": days},
                 hide_amounts=hide_amounts,
             )
+            if not res.get("ok"):
+                return {
+                    "reply": str(res.get("error") or "Không thể xem dịch vụ sắp gia hạn."),
+                    "contains_private_data": False,
+                    "is_new_chat": False,
+                }
             items = res.get("items") or []
             if not items:
                 reply = f"Không có dịch vụ định kỳ nào cần gia hạn trong {days} ngày tới."
@@ -152,6 +164,12 @@ class AssistantSlashService:
                 {"query": rest},
                 hide_amounts=hide_amounts,
             )
+            if not res.get("ok"):
+                return {
+                    "reply": str(res.get("error") or "Không thể tra cứu thiết bị."),
+                    "contains_private_data": False,
+                    "is_new_chat": False,
+                }
             items = res.get("items") or []
             if not items:
                 reply = "Không tìm thấy thiết bị nào phù hợp."

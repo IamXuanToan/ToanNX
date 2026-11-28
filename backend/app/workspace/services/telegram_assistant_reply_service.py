@@ -2,10 +2,15 @@
 
 import html
 import re
+from typing import Any
 
 from app.system.services.telegram_bot_service import TelegramBotService
 from app.system.services.telegram_client import TelegramClient
 from app.system.types.telegram_send_result import TelegramSendResult
+from app.workspace.constants.workspace_defaults import (
+    QUICK_REPLY_BUTTONS_PER_ROW,
+    QUICK_REPLY_CALLBACK_PREFIX,
+)
 
 MAX_TELEGRAM_CHARS = 3800
 
@@ -29,8 +34,14 @@ class TelegramAssistantReplyService:
         *,
         reply_to_message_id: int | None = None,
         model_used: str = "",
+        quick_replies: list[dict[str, Any]] | None = None,
+        quick_input: dict[str, Any] | None = None,
     ) -> TelegramSendResult:
-        """Escape HTML an toàn, gắn nhãn model nhỏ nếu cần và gửi qua Telegram Bot API."""
+        """Escape HTML an toàn, gắn nhãn model nhỏ nếu cần và gửi qua Telegram Bot API.
+
+        Có lựa chọn → bàn phím inline (bấm là chọn); chỉ cần gõ tự do → `force_reply` mở sẵn ô trả lời.
+        Bàn phím gắn vào đoạn cuối khi tin bị chia nhỏ.
+        """
         if not self.bot_service.is_configured():
             return TelegramSendResult(ok=False, error_code="TELEGRAM_BOT_MISSING")
 
@@ -40,18 +51,69 @@ class TelegramAssistantReplyService:
             body = f"{body}\n\n<i>🤖 {html.escape(model_used)}</i>"
 
         chunks = self._split_chunks(body)
+        markup = self.build_reply_markup(quick_replies, quick_input)
         last_result = TelegramSendResult(ok=True)
         for idx, chunk in enumerate(chunks):
             reply_id = reply_to_message_id if idx == 0 else None
+            extra = {"reply_markup": markup} if markup and idx == len(chunks) - 1 else {}
             last_result = self.client.send_message(
                 token,
                 str(chat_id),
                 chunk,
                 reply_to_message_id=reply_id,
+                **extra,
             )
             if not last_result.ok:
                 return last_result
         return last_result
+
+    def build_reply_markup(
+        self, quick_replies: list[dict[str, Any]] | None, quick_input: dict[str, Any] | None
+    ) -> dict[str, Any] | None:
+        """Bàn phím inline 2 nút/hàng (`callback_data` = `aqr:<số thứ tự>`) hoặc `force_reply` có gợi ý."""
+        buttons = [
+            {
+                "text": str(item.get("caption") or "")[:64],
+                "callback_data": f"{QUICK_REPLY_CALLBACK_PREFIX}{idx}",
+            }
+            for idx, item in enumerate(quick_replies or [], start=1)
+            if item.get("caption")
+        ]
+        if buttons:
+            rows = [
+                buttons[start : start + QUICK_REPLY_BUTTONS_PER_ROW]
+                for start in range(0, len(buttons), QUICK_REPLY_BUTTONS_PER_ROW)
+            ]
+            return {"inline_keyboard": rows}
+        if quick_input:
+            return {
+                "force_reply": True,
+                "selective": True,
+                "input_field_placeholder": str(quick_input.get("placeholder") or "")[:64],
+            }
+        return None
+
+    def acknowledge_choice(
+        self, callback_query_id: str, chat_id: str, message_id: int | None, label: str
+    ) -> None:
+        """Tắt vòng xoay trên nút, báo "Đã chọn …" và gỡ bàn phím khỏi câu hỏi đã trả lời."""
+        if not self.bot_service.is_configured():
+            return
+        token = self.bot_service.token()
+        self.client.answer_callback_query(token, callback_query_id, f"Đã chọn: {label}")
+        if message_id is not None:
+            self.client.clear_inline_keyboard(token, chat_id, message_id)
+
+    def reject_choice(self, callback_query_id: str, text: str) -> None:
+        """Báo người bấm không có quyền chọn (VD thành viên khác trong nhóm)."""
+        if self.bot_service.is_configured():
+            self.client.answer_callback_query(self.bot_service.token(), callback_query_id, text)
+
+    def delete_user_message(self, chat_id: str, message_id: int) -> bool:
+        """Xóa tin người dùng vừa gõ giá trị bí mật (mật khẩu) khỏi khung chat Telegram nếu bot có quyền."""
+        if not self.bot_service.is_configured():
+            return False
+        return self.client.delete_message(self.bot_service.token(), chat_id, message_id)
 
     def send_private_dm_with_fallback(
         self,

@@ -9,7 +9,8 @@
     "pages": "Pages",
     "pagePaths": "Page paths",
     "dashboard": "Dashboard",
-    "donations": "Donations"
+    "donations": "Donations",
+    "feedbacks": "Feedback & Reports"
   },
   "shortLinks": {
     "title": "Short links",
@@ -92,6 +93,9 @@
       "manual": "Ready to safely redirect to the destination.",
       "autoSeconds": "Automatically redirecting in {seconds}s",
       "countdown": "Redirecting in {seconds} seconds. You can also click below.",
+      "paused": "Paused at {seconds} seconds.",
+      "pauseCountdown": "Pause",
+      "resumeCountdown": "Resume",
       "protected": "Password Protected Link",
       "previewNotice": "Preview mode — destination button will not navigate.",
       "invalidPassword": "Incorrect password. Please try again.",
@@ -252,6 +256,7 @@
       "tabs": {
         "products": "Products & Links",
         "categories": "Categories",
+        "platforms": "Stores / Platforms",
         "bio": "Profile & Experience",
         "donation": "Donation Details",
         "preview": "Live Preview",
@@ -287,6 +292,218 @@
       "presetsEmpty": "No matching presets found",
       "maximizePreview": "Fullscreen preview",
       "livePreviewTitle": "Live Preview: {title}",
+      "sharePage": "Share page",
+      "appearance": {
+        "tabs": {
+          "presets": "Presets",
+          "background": "Background",
+          "header": "Header",
+          "blocks": "Cards & Motion",
+          "typography": "Fonts & Layout"
+        },
+        "background": {
+          "title": "Page Background & Ambient Motion",
+          "type": "Background type",
+          "types": {
+            "solid": "Solid color",
+            "gradient": "Gradient",
+            "image": "Full-page image",
+            "pattern": "CSS Pattern"
+          },
+          "ambientMotion": "Ambient motion",
+          "ambientMotions": {
+            "none": "Static",
+            "gradient_flow": "Flowing gradient",
+            "floating_orbs": "Floating glow orbs"
+          },
+          "gradientType": "Gradient style",
+          "gradientTypes": {
+            "linear": "Linear",
+            "radial": "Radial"
+          },
+          "gradientAngle": "Angle ({angle}°)",
+          "gradientColor": "Color stop {index}",
+          "addColorStop": "Add 3rd color",
+          "removeColorStop": "Remove 3rd color",
+          "pattern": "Pattern style (adapts to theme colors)",
+          "coloredBackdropsTitle": "Colored Backdrops (PatternCraft)",
+          "coloredBackdrops": {
+            "emerald_dark_glow": "Emerald Dark Glow",
+            "violet_cosmic_mesh": "Violet Cosmic Mesh",
+            "crimson_aura_dark": "Crimson Aura Dark",
+            "midnight_blueprint": "Midnight Blueprint",
+            "cyber_amber_dots": "Cyber Amber Dots",
+            "indigo_cyber_horizon": "Indigo Cyber Horizon",
+            "warm_paper_cream": "Warm Paper Cream",
+            "sunset_peach_glow": "Sunset Peach Glow",
+            "mint_pastel_aura": "Mint Pastel Aura",
+            "soft_lavender_grid": "Soft Lavender Grid",
+            "rose_duotone_light": "Rose Duotone Light",
+            "sky_isometric_clean": "Sky Isometric Clean"
+          },
+          "patterns": {
+            "dots": "Minimal dots",
+            "grid": "Tech grid",
+            "mesh": "Mesh gradient",
+            "diagonal": "Diagonal lines",
+            "aura": "Soft aura",
+            "top_spotlight": "Top spotlight",
+            "bottom_glow": "Bottom glow",
+            "grid_fade": "Faded grid",
+            "dot_fade": "Faded dots",
+            "dashed_grid": "Blueprint grid",
+            "isometric": "Isometric diamond",
+            "checker_soft": "Soft checker",
+            "crosshatch": "Crosshatch",
+            "concentric": "Concentric rings",
+            "sunset_horizon": "Sunset horizon",
+            "cyber_horizon": "Cyber horizon",
+            "aurora_beams": "Aurora beams",
+            "blueprint": "Dual blueprint",
+            "paper_grain": "Ruled paper",
+            "duotone_corner": "Duotone corners"
+          },
+          "image": "Background image (Public library)",
+          "fit": "Image fit",
+          "fits": {
+            "cover": "Cover screen",
+            "contain": "Contain",
+            "tile": "Tiled repeat"
+          },
+          "blur": "Background blur ({value}px)",
+          "overlayColor": "Overlay color",
+          "overlayOpacity": "Overlay opacity ({value}%)"
+        },
+        "header": {
+          "title": "Header & Branding",
+          "layout": "Header layout",
+          "layouts": {
+            "centered": "Centered",
+            "banner_overlap": "Cover & Overlap avatar",
+            "hero_card": "Floating hero card",
+            "editorial_left": "Editorial left-aligned"
+          },
+          "statusPill": "Short status pill",
+          "statusPillPlaceholder": "e.g. Open for work",
+          "avatarShape": "Avatar shape",
+          "avatarShapes": {
+            "circle": "Circle",
+            "squircle": "Squircle",
+            "square": "Rounded square"
+          },
+          "avatarSize": "Avatar size",
+          "avatarRing": "Avatar ring",
+          "avatarRings": {
+            "none": "None",
+            "solid": "Subtle ring",
+            "gradient_glow": "Glowing ring"
+          },
+          "sizes": {
+            "sm": "Small",
+            "md": "Medium",
+            "lg": "Large"
+          },
+          "coverHeight": "Cover height",
+          "socialPosition": "Contact / Social bar",
+          "socialPositions": {
+            "top": "Top header",
+            "bottom": "Bottom footer",
+            "hidden": "Hidden"
+          },
+          "showVerifiedBadge": "Show verified badge",
+          "coverFade": "Fade bottom edge of cover",
+          "showShareButton": "Show floating Share button"
+        },
+        "blocks": {
+          "title": "Card Surface, Animations & Layout",
+          "surfaceStyle": "Surface style",
+          "surfaces": {
+            "solid": "Solid card",
+            "outline": "Outline",
+            "soft": "Soft tint",
+            "glass": "Glassmorphism",
+            "elevated": "Elevated shadow",
+            "hard_shadow": "Neo-Brutalism hard shadow"
+          },
+          "cardRadius": "Corner radius",
+          "radii": {
+            "0px": "Sharp (0px)",
+            "4px": "Subtle (4px)",
+            "8px": "Medium (8px)",
+            "12px": "Rounded (12px)",
+            "20px": "Extra rounded (20px)"
+          },
+          "hoverEffect": "Hover animation",
+          "hovers": {
+            "none": "None",
+            "lift": "Lift & shadow",
+            "scale": "Subtle scale",
+            "glow": "Primary glow",
+            "shine": "Diagonal shine sweep",
+            "hard_push": "Hard mechanical push"
+          },
+          "entranceAnimation": "Entrance animation",
+          "entrances": {
+            "none": "Instant",
+            "fade_up": "Staggered fade up",
+            "scale_in": "Scale in",
+            "blur_in": "Blur in"
+          },
+          "highlightEffect": "Highlighted item motion",
+          "highlights": {
+            "none": "Border highlight only",
+            "pulse_ring": "Pulse ring",
+            "wiggle": "Attention wiggle",
+            "shimmer": "Continuous shimmer"
+          },
+          "linkLayout": "Link layout",
+          "linkLayouts": {
+            "classic_bar": "Classic bars",
+            "thumbnail_card": "Thumbnail cards",
+            "featured_hero": "Featured hero cards",
+            "grid_2col": "2-column grid",
+            "bento_grid": "Bento grid",
+            "compact_pills": "Compact pills"
+          },
+          "affiliateLayout": "Product layout",
+          "affiliateLayouts": {
+            "grid": "Product grid",
+            "list": "Detailed list",
+            "links": "Minimal links",
+            "carousel_featured": "Featured carousel + grid"
+          },
+          "stickyFilterBar": "Sticky search & category bar"
+        },
+        "typography": {
+          "title": "Typography & Container",
+          "fontFamily": "Font family",
+          "fonts": {
+            "inter": "Inter (Clean modern)",
+            "plus_jakarta": "Plus Jakarta Sans (Geometric)",
+            "be_vietnam": "Be Vietnam Pro (Editorial)",
+            "playfair": "Playfair Display (Serif)",
+            "jetbrains_mono": "JetBrains Mono (Tech)"
+          },
+          "containerWidth": "Container width",
+          "widths": {
+            "compact": "Compact (448px · Mobile-first)",
+            "standard": "Standard (576px)",
+            "wide": "Wide (896px)"
+          },
+          "blockSpacing": "Block spacing",
+          "spacings": {
+            "compact": "Compact",
+            "normal": "Balanced",
+            "relaxed": "Relaxed"
+          },
+          "footerStyle": "Footer style",
+          "footers": {
+            "minimal": "Minimal",
+            "pill": "Floating pill",
+            "hidden": "Hidden"
+          }
+        }
+      },
       "bioEditor": {
         "personalInfoTitle": "Personal Info & Headline",
         "displayName": "Display Name",
@@ -507,6 +724,24 @@
         "editCategory": "Edit category",
         "saveCategory": "Save",
         "order": "Order: #{order}"
+      },
+      "platformsEditor": {
+        "title": "Page Stores & Platforms",
+        "description": "Customize store names, shortcodes, and URL Regex patterns for auto-detection when quick-adding links (scoped only to this page).",
+        "nameLabel": "Store name",
+        "namePlaceholder": "e.g. TikTok Shop",
+        "codeLabel": "Shortcode",
+        "codePlaceholder": "e.g. tiktok",
+        "regexLabel": "URL Regex / Pattern",
+        "regexPlaceholder": "e.g. (tiktok\\.com|vt\\.tiktok\\.com)",
+        "add": "Add",
+        "empty": "No custom stores configured. You can still choose Other / Direct.",
+        "noRegex": "No auto-detect regex",
+        "requiredError": "Please enter both store name and shortcode.",
+        "duplicateCodeError": "This shortcode already exists on this page or is reserved ('custom').",
+        "invalidRegexError": "Invalid URL Regex expression.",
+        "testUrlLabel": "Test URL auto-detection for this page",
+        "testUrlPlaceholder": "Paste a product URL here to test..."
       },
       "itemsEditor": {
         "total": "Total {count} items / links",
@@ -1153,6 +1388,109 @@
     "bulk": {
       "show": "Show comments",
       "hide": "Hide comments"
+    }
+  },
+  "publicFeedback": {
+    "tooltip": "Report an issue / Feedback",
+    "title": "Feedback & Issue Report",
+    "subtitle": "Sent anonymously to the owner",
+    "close": "Close",
+    "typeLabel": "Feedback type",
+    "messageLabel": "Message",
+    "messagePlaceholder": "e.g. Product link #2 returns 404 or price is outdated...",
+    "nameLabel": "Name (optional)",
+    "namePlaceholder": "Anonymous visitor",
+    "emailLabel": "Email for thank-you",
+    "emailPlaceholder": "name@example.com",
+    "submit": "Submit feedback",
+    "thankTitle": "Thank you for your feedback!",
+    "thankDesc": "The page owner has been notified and will review it soon.",
+    "sendAnother": "Send another",
+    "submittedToast": "Feedback submitted successfully!",
+    "validation": {
+      "messageMin": "Please enter at least 5 characters.",
+      "messageMax": "Message cannot exceed 2000 characters.",
+      "emailInvalid": "Please enter a valid email address."
+    },
+    "types": {
+      "BROKEN_LINK": "Broken / Wrong link",
+      "WRONG_INFO": "Incorrect information",
+      "BUG": "Bug / Display issue",
+      "SUGGESTION": "Suggestion",
+      "OTHER": "Other"
+    }
+  },
+  "feedbacks": {
+    "title": "Feedback & Reports",
+    "description": "Review and resolve anonymous feedback from your custom pages and short links.",
+    "detailTitle": "Feedback detail",
+    "searchPlaceholder": "Search by title, URL, message, sender...",
+    "empty": "No feedback or issue reports yet.",
+    "untitledTarget": "Untitled page / link",
+    "anonymousSender": "Anonymous visitor",
+    "notThanked": "Not thanked yet",
+    "thankedBadge": "Thanked",
+    "thankDisabledNoEmail": "Sender did not provide an email address.",
+    "thankDisabledNoPermission": "You do not have permission to send thank-you emails.",
+    "updated": "Feedback resolution updated.",
+    "deleted": "Feedback deleted.",
+    "bulkDeleted": "Deleted {count} feedback items.",
+    "bulkUpdated": "Updated status for {count} feedback items.",
+    "fields": {
+      "targetTitle": "Page / Link",
+      "targetType": "Target type",
+      "targetUrl": "URL",
+      "feedbackType": "Type",
+      "message": "Message",
+      "sender": "Sender",
+      "status": "Status",
+      "resolutionNote": "Resolution note",
+      "thankedAt": "Thanked at",
+      "resolvedAt": "Resolved at",
+      "owner": "Owner",
+      "createdAt": "Submitted"
+    },
+    "types": {
+      "BROKEN_LINK": "Broken / Wrong link",
+      "WRONG_INFO": "Incorrect info",
+      "BUG": "Technical bug",
+      "SUGGESTION": "Suggestion",
+      "OTHER": "Other"
+    },
+    "targetTypes": {
+      "PAGE": "Custom Page",
+      "SHORT_LINK": "Short Link"
+    },
+    "statuses": {
+      "OPEN": "Open",
+      "IN_PROGRESS": "In progress",
+      "RESOLVED": "Resolved",
+      "IGNORED": "Ignored"
+    },
+    "actions": {
+      "thank": "Send thank-you",
+      "thankAgain": "Resend thank-you",
+      "saveResolution": "Save resolution"
+    },
+    "placeholders": {
+      "resolutionNote": "Describe how you fixed it (used for '{{resolution_note}}' when thanking)..."
+    },
+    "thankDialog": {
+      "title": "Send thank-you email",
+      "description": "Choose an email template or customize the message sent to the reporter.",
+      "descriptionWithEmail": "Send a thank-you email to {email}.",
+      "templateLabel": "Thank-you email template",
+      "autoTemplate": "Auto (Personal template first → System default)",
+      "personalTag": "Personal",
+      "systemTag": "System",
+      "customSubjectLabel": "Email subject (editable)",
+      "customSubjectPlaceholder": "Thank you for your feedback!",
+      "customBodyLabel": "Email body (editable before sending)",
+      "customBodyPlaceholder": "Enter thank-you email content...",
+      "loadingPreview": "Loading template preview...",
+      "defaultResolutionNote": "We have reviewed and updated the information.",
+      "sendAction": "Send thank-you",
+      "sentToast": "Thank-you email sent!"
     }
   }
 }

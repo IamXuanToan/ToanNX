@@ -57,6 +57,7 @@ def _no_external_services(settings: Any) -> None:
     settings.TELEGRAM_BOT_USERNAME = ""
     settings.XKIRO_API_BASE = ""
     settings.XKIRO_API_KEY = ""
+    settings.GEMINI_API_KEY = ""
     CacheService.use_client(None)
 
 

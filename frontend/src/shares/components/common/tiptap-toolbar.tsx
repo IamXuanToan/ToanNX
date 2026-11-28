@@ -29,6 +29,7 @@ import {
   Plus,
   Quote,
   Redo2,
+  Sparkles,
   Strikethrough,
   Table,
   Underline,
@@ -67,12 +68,14 @@ export function TiptapToolbar({
   label,
   insertItems,
   onSelectImage,
+  onOpenAi,
 }: {
   editor: Editor | null;
   disabled?: boolean;
   label: string;
   insertItems?: TiptapEditorProps["insertItems"];
   onSelectImage?: TiptapEditorProps["onSelectImage"];
+  onOpenAi?: () => void;
 }) {
   const t = useTranslations("common.editor");
   const toolbar = useTiptapToolbar(editor, onSelectImage);
@@ -390,6 +393,26 @@ export function TiptapToolbar({
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+      {onOpenAi ? (
+        <>
+          <Separator orientation="vertical" className="mx-0.5 h-5" />
+          <AppTooltip content={t("ai.button")}>
+            <span className="inline-flex">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={off}
+                onClick={onOpenAi}
+                className="text-primary hover:text-primary h-7 gap-1 rounded-md px-2 text-xs font-medium"
+              >
+                <Sparkles className="size-3.5" />
+                <span>{t("ai.button")}</span>
+              </Button>
+            </span>
+          </AppTooltip>
+        </>
+      ) : null}
     </div>
   );
 }

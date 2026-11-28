@@ -1,7 +1,11 @@
 import { apiClient } from "@/shares/lib/api/api-client";
 
 import { SYSTEM_API_ENDPOINTS } from "../constants/api-endpoints";
-import type { TelegramChat, TelegramRegistration } from "../types/notification.types";
+import type {
+  TelegramChat,
+  TelegramGroupReplyMode,
+  TelegramRegistration,
+} from "../types/notification.types";
 
 /** Service nơi nhận Telegram của chính mình (BE `telegram_chat_service.py`). */
 export const telegramChatService = {
@@ -21,12 +25,17 @@ export const telegramChatService = {
       .data;
   },
 
-  async setActive(id: string, isActive: boolean): Promise<TelegramChat> {
+  async update(
+    id: string,
+    payload: { isActive?: boolean; groupReplyMode?: TelegramGroupReplyMode },
+  ): Promise<TelegramChat> {
     return (
-      await apiClient.patch<TelegramChat>(`${SYSTEM_API_ENDPOINTS.telegramChats}/${id}`, {
-        isActive,
-      })
+      await apiClient.patch<TelegramChat>(`${SYSTEM_API_ENDPOINTS.telegramChats}/${id}`, payload)
     ).data;
+  },
+
+  async setActive(id: string, isActive: boolean): Promise<TelegramChat> {
+    return telegramChatService.update(id, { isActive });
   },
 
   async remove(id: string): Promise<void> {

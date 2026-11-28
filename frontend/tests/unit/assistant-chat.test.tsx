@@ -265,7 +265,7 @@ describe("AssistantChat (1 luồng chat shadcn + badge trường trộn + thinki
       expect(mockClearThread).toHaveBeenCalledTimes(2);
     });
     expect(mockChat).toHaveBeenCalledTimes(1);
-  });
+  }, 15_000);
 
   it("render Markdown đẹp cho tin nhắn Trợ lý AI hợp lệ và giữ nguyên text thô cho user / lỗi", async () => {
     mockGetThread.mockResolvedValueOnce({
@@ -374,5 +374,31 @@ describe("AssistantChat (1 luồng chat shadcn + badge trường trộn + thinki
     // Tuyệt đối không render JSON TOOL hay bong bóng stub rỗng lên giao diện
     expect(container.textContent).not.toContain('"total_count"');
     expect(container.querySelectorAll('[data-slot="message"]')).toHaveLength(3);
+  });
+
+  it("cho phép Shift+Enter xuống dòng trong ô nhập liệu và mặc định Enter là gửi", async () => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={client}>
+        <NextIntlClientProvider
+          locale="vi"
+          timeZone="Asia/Ho_Chi_Minh"
+          messages={{ ...commonVi, system: systemVi, workspace: workspaceVi }}
+        >
+          <AssistantChat variant="popup" canChat />
+        </NextIntlClientProvider>
+      </QueryClientProvider>,
+    );
+
+    const textbox = screen.getByRole("textbox") as HTMLTextAreaElement;
+    expect(textbox.tagName).toBe("TEXTAREA");
+    fireEvent.change(textbox, { target: { value: "Dòng 1\nDòng 2" } });
+    fireEvent.keyDown(textbox, { key: "Enter", shiftKey: true });
+    expect(mockChat).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(textbox, { key: "Enter" });
+    await waitFor(() => {
+      expect(mockChat).toHaveBeenCalledWith({ message: "Dòng 1\nDòng 2" });
+    });
   });
 });

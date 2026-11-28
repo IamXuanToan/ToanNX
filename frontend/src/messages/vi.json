@@ -1,5 +1,11 @@
 {
   "common": {
+    "markdownTable": {
+      "dimensions": "{rows} dòng · {cols} cột",
+      "copyTooltip": "Sao chép bảng",
+      "copiedToast": "Đã sao chép bảng vào bộ nhớ tạm.",
+      "copyFailedToast": "Không thể sao chép bảng."
+    },
     "seo": {
       "title": "ToanNX",
       "description": "Website cá nhân của ToanNX."
@@ -377,6 +383,38 @@
       "charCount": "{count} / {max} ký tự",
       "commentPlaceholder": "Viết bình luận của bạn...",
       "commentSubmit": "Gửi bình luận",
+      "ai": {
+        "button": "AI Viết bài",
+        "slashLabel": "AI Viết nội dung",
+        "slashDesc": "Nhờ AI soạn thảo hoặc biên tập nội dung (kèm RAG cá nhân)",
+        "title": "Trợ lý AI soạn thảo nội dung",
+        "modeLabel": "Chế độ xử lý",
+        "modes": {
+          "generate": "Tạo nội dung mới",
+          "rewrite": "Viết lại chuyên nghiệp hơn",
+          "expand": "Mở rộng chi tiết",
+          "summarize": "Tóm tắt ngắn gọn",
+          "fix_grammar": "Sửa chính tả & ngữ pháp"
+        },
+        "defaultPrompts": {
+          "generate": "Viết nội dung hoàn chỉnh, rõ ràng và có cấu trúc.",
+          "rewrite": "Viết lại đoạn văn bản này cho mạch lạc và tự nhiên hơn.",
+          "expand": "Mở rộng chi tiết và thêm ví dụ minh họa cho đoạn này.",
+          "summarize": "Tóm tắt ngắn gọn các ý chính của đoạn văn bản này.",
+          "fix_grammar": "Sửa lỗi chính tả, dấu câu và ngữ pháp."
+        },
+        "selectedLabel": "Đoạn đang chọn",
+        "promptLabel": "Yêu cầu cho AI",
+        "promptPlaceholder": "VD: Viết báo cáo tổng kết nhắc việc và thu nhập tuần này...",
+        "useRagLabel": "Tham khảo dữ liệu cá nhân (RAG theo quyền tài khoản)",
+        "previewLabel": "Xem trước nội dung chuẩn Tiptap",
+        "generate": "Tạo nội dung",
+        "regenerate": "Tạo lại",
+        "generating": "Đang tạo...",
+        "insertContent": "Chèn vào tài liệu",
+        "replaceSelection": "Thay thế đoạn chọn",
+        "errorFallback": "Không thể tạo nội dung AI lúc này."
+      },
       "commentSubmitting": "Đang gửi...",
       "commentCancel": "Hủy",
       "commentShortcutHint": "Ctrl + Enter để gửi",
@@ -529,6 +567,14 @@
       "UTILITIES_PAGE_PATH_IN_USE": "Đường dẫn giữa còn trang, không xóa được.",
       "UTILITIES_PAGE_PATH_INACTIVE": "Đường dẫn giữa đang tắt, không tạo trang mới vào đây được.",
       "UTILITIES_PAGE_VERSION_CONFLICT": "Trang đã được sửa ở nơi khác. Tải lại để xem bản mới nhất.",
+      "UTILITIES_FEEDBACK_TARGET_NOT_FOUND": "Trang hoặc liên kết cần góp ý không tồn tại hoặc đang tắt.",
+      "UTILITIES_FEEDBACK_NO_EMAIL": "Góp ý này không có email người gửi nên không thể gửi thư cảm ơn.",
+      "SYSTEM_EMAIL_TEMPLATE_CODE_CONFLICT": "Mã mẫu email đã tồn tại trong phạm vi và ngôn ngữ này.",
+      "SYSTEM_EMAIL_TEMPLATE_DEFAULT_PROTECTED": "Không thể xóa mẫu email mặc định của hệ thống; hãy chuyển sang Lưu trữ.",
+      "SYSTEM_EMAIL_TEMPLATE_SYSTEM_DEFAULT_PROTECTED": "Không thể xóa mẫu email mặc định của hệ thống; hãy chuyển sang Lưu trữ.",
+      "SYSTEM_LANGUAGE_CODE_CONFLICT": "Mã ngôn ngữ này đã tồn tại trong hệ thống.",
+      "SYSTEM_LANGUAGE_DEFAULT_PROTECTED": "Không thể tắt hoặc xóa ngôn ngữ mặc định của hệ thống.",
+      "SYSTEM_LANGUAGE_IN_USE": "Ngôn ngữ đang được sử dụng bởi bản dịch khác, không thể xóa.",
       "NOVEL_NOT_FOUND": "Không tìm thấy truyện.",
       "NOVEL_SLUG_EXISTS": "Đường dẫn định danh (slug) truyện đã tồn tại.",
       "NOVEL_FORBIDDEN": "Bạn không có quyền thao tác trên truyện này.",
@@ -587,7 +633,9 @@
       "WORKSPACE_DIGEST_SLOT_INVALID": "Khung giờ gửi bản tin phải theo định dạng HH:MM (00:00–23:59).",
       "WORKSPACE_CALENDAR_RANGE_TOO_LONG": "Khoảng ngày xem lịch tối đa là 93 ngày.",
       "WORKSPACE_AI_NOT_CONFIGURED": "Trợ lý AI chưa được cấu hình endpoint, đang dùng chế độ lệnh Slash.",
-      "WORKSPACE_AI_DAILY_LIMIT_EXCEEDED": "Bạn đã dùng hết hạn mức token AI trong ngày hôm nay."
+      "WORKSPACE_AI_UNAVAILABLE": "Hệ thống AI tạm thời quá tải hoặc không phản hồi, vui lòng thử lại.",
+      "WORKSPACE_AI_DAILY_LIMIT_EXCEEDED": "Bạn đã dùng hết hạn mức token AI trong ngày hôm nay.",
+      "WORKSPACE_REMINDER_TOPIC_SYSTEM_PROTECTED": "Chủ đề mặc định của hệ thống không thể chỉnh sửa hoặc xóa."
     },
     "generic": {
       "title": "Không tải được dữ liệu",

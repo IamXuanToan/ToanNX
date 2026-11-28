@@ -79,6 +79,8 @@ export type TelegramBotCheck = {
   lastErrorCode: string;
 };
 
+export type TelegramGroupReplyMode = "mention_only" | "all_messages";
+
 export type TelegramChat = {
   id: string;
   chatId: string | null;
@@ -86,6 +88,7 @@ export type TelegramChat = {
   chatType: string;
   status: "pending" | "active" | "unreachable" | "removed";
   isActive: boolean;
+  groupReplyMode: TelegramGroupReplyMode;
   registrationExpiresAt: string | null;
   lastVerifiedAt: string | null;
   lastErrorCode: string;

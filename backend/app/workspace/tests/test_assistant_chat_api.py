@@ -17,6 +17,7 @@ from app.system.tests.helpers.permission_helper import grant
 from app.workspace.models.assistant_conversation import AssistantConversation
 from app.workspace.models.reminder import Reminder
 from app.workspace.permissions.assistant_permission import AssistantPermission as P
+from app.workspace.permissions.reminder_permission import ReminderPermission
 from app.workspace.services.assistant_config_service import AssistantConfigService
 from app.workspace.services.assistant_tools_service import AssistantToolsService
 
@@ -31,7 +32,7 @@ class TestAssistantChatApi(BaseApiTestCase):
         self.assert_unauthorized(client.post(URL, {"message": "/help"}, format="json"))
         self.assert_forbidden(login(user).post(URL, {"message": "/help"}, format="json"), "PERMISSION_DENIED")
 
-        grant(user, P.CHAT)
+        grant(user, P.CHAT, ReminderPermission.READ, ReminderPermission.CREATE)
         api = login(user)
 
         help_res = self.assert_success(api.post(URL, {"message": "/help"}, format="json"))
@@ -83,7 +84,7 @@ class TestAssistantChatApi(BaseApiTestCase):
         settings.XKIRO_TIMEOUT_SECONDS = 5.0
         settings.XKIRO_COOLDOWN_SECONDS = 120
 
-        grant(user, P.CHAT)
+        grant(user, P.CHAT, ReminderPermission.READ, ReminderPermission.CREATE)
         api = login(user)
 
         called_models: list[str] = []
@@ -158,9 +159,15 @@ class TestAssistantChatApi(BaseApiTestCase):
         for idx in range(20):
             Reminder.objects.create(owner=superuser, title=f"Việc {idx}", due_date=today)
 
-        # Kiểm tra 0 có bất kỳ tool nào truy cập Két sắt (VaultItem)
-        schema_names = {s["function"]["name"] for s in AssistantToolsService().tool_schemas(is_owner=True)}
-        assert not any("vault" in name.lower() for name in schema_names)
+        # Kiểm tra không có tool quản trị Admin; tool nhạy cảm (Két sắt/Hồ sơ) bị ẩn khi is_owner=False
+        owner_schemas = {s["function"]["name"] for s in AssistantToolsService().tool_schemas(is_owner=True)}
+        guest_schemas = {s["function"]["name"] for s in AssistantToolsService().tool_schemas(is_owner=False)}
+        assert not any(
+            kw in name.lower() for name in owner_schemas for kw in ("admin", "setting", "role", "webhook")
+        )
+        assert "reveal_vault_secret" in owner_schemas
+        assert "reveal_vault_secret" not in guest_schemas
+        assert "get_my_profile" not in guest_schemas
 
         # Khi superuser (ADMIN) hỏi thu nhập qua tool → FinanceReportService vẫn chỉ tính 100k của chính mình.
         settings.XKIRO_API_BASE = "https://xkiro.example.com/v1"
@@ -226,7 +233,7 @@ class TestAssistantChatApi(BaseApiTestCase):
 
     def test_daily_token_limit_triggers_slash_fallback(self, user: Any, login: Any) -> None:
         AssistantConfigService().update_config(user, {"ai_daily_token_limit": 100})
-        grant(user, P.CHAT)
+        grant(user, P.CHAT, ReminderPermission.READ, ReminderPermission.CREATE)
         api = login(user)
         # Seed trực tiếp tin nhắn tiêu 100 token hôm nay qua /help trước hay AssistantMessage
         r0 = self.assert_success(api.post(URL, {"message": "/help"}, format="json"))
@@ -252,7 +259,7 @@ class TestAssistantChatApi(BaseApiTestCase):
             user,
             {"assistant_system_prompt": "Xưng hô bằng Anh/Em và trả lời tối đa 3 gạch đầu dòng."},
         )
-        grant(user, P.CHAT)
+        grant(user, P.CHAT, ReminderPermission.READ, ReminderPermission.CREATE)
 
         captured_system: list[str] = []
 
@@ -352,7 +359,11 @@ class TestAssistantChatApi(BaseApiTestCase):
 
         with patch("requests.Session.post", side_effect=fake_post):
             chat_res = self.assert_success(
-                api.post(URL, {"message": "Công việc test, 12h ưu tiên trung bình"}, format="json")
+                api.post(
+                    URL,
+                    {"message": "Công việc test, 12h ưu tiên trung bình, nhắc trước 15 phút, không lặp"},
+                    format="json",
+                )
             )
 
         assert Reminder.objects.filter(owner=superuser, title="Công việc test").exists() is True
@@ -385,3 +396,163 @@ class TestAssistantChatApi(BaseApiTestCase):
         sent_roles = [(m["role"], m["content"]) for m in captured_messages[0]]
         assert all(role in ("system", "user", "assistant") for role, _ in sent_roles)
         assert all(bool(str(content or "").strip()) for _, content in sent_roles)
+
+    def test_finance_income_creation_clarification_5day_cashflow_and_2step_delete(
+        self, user: Any, login: Any, settings: Any, vnd: Any
+    ) -> None:
+        """Kiểm tra 'tiền afff 30k', dòng tiền 5 ngày, phân quyền & xác nhận 2 bước khi xóa."""
+        from app.finance.models.income import Income
+        from app.finance.models.platform import Platform
+        from app.finance.permissions.income_permission import IncomePermission
+        from app.workspace.permissions.reminder_permission import ReminderPermission
+
+        settings.XKIRO_API_BASE = "https://xkiro.example.com/v1"
+        settings.XKIRO_API_KEY = "test-secret"
+        settings.XKIRO_MODEL = "model-a"
+        grant(user, P.CHAT, IncomePermission.CREATE, IncomePermission.READ, ReminderPermission.READ)
+        api = login(user)
+
+        # 1. Chưa có nền tảng khớp 'afff' -> trả needs_clarification để hỏi lại
+        clarify = AssistantToolsService().execute_tool(
+            user,
+            "create_finance_income",
+            {"amount": "30k", "platform_name": "afff"},
+        )
+        assert clarify["ok"] is False
+        assert clarify["needs_clarification"] is True
+
+        # 2. Có nền tảng Affiliate -> 'tiền afff 30k' khớp tiền tố 'aff' và tạo 30.000đ
+        Platform.objects.create(
+            owner=user,
+            name="Affiliate",
+            code="AFFILIATE",
+            default_currency=vnd,
+            is_active=True,
+        )
+        created_inc = AssistantToolsService().execute_tool(
+            user,
+            "create_finance_income",
+            {"amount": "30k", "platform_name": "afff", "content": "tiền afff 30k"},
+        )
+        assert created_inc["ok"] is True
+        assert created_inc["created"]["amount_vnd"] == 30000
+        assert created_inc["created"]["platform"] == "Affiliate"
+        assert Income.objects.filter(owner=user, amount=30000).count() == 1
+
+        # 3. Hỏi dòng tiền nhập vào trong 5 ngày
+        cashflow = AssistantToolsService().execute_tool(
+            user,
+            "get_finance_income_summary",
+            {"days": 5},
+        )
+        assert cashflow["ok"] is True
+        assert cashflow["days"] == 5
+        assert cashflow["total_vnd"] == 30000
+        assert cashflow["count"] == 1
+        assert len(cashflow["items"]) == 1
+
+        # 4. Xóa nhắc việc: thiếu quyền -> bị chặn
+        rem = Reminder.objects.create(
+            owner=user,
+            title="Việc hôm nay không cần nữa",
+            due_date=timezone.localdate(),
+        )
+        denied = AssistantToolsService().execute_tool(
+            user,
+            "delete_personal_record",
+            {"resource_type": "reminder", "record_id": str(rem.pk), "confirmed": True},
+        )
+        assert denied["ok"] is False
+        assert ReminderPermission.DELETE.code in denied["error"]
+
+        # 5. Có quyền xóa -> Lượt 1 AI cố truyền confirmed=True vẫn bị chặn ở backend và yêu cầu hỏi lại!
+        grant(user, ReminderPermission.DELETE)
+        turn_step = {"idx": 0}
+
+        def fake_delete_turn_1(url: str, *, json: Any, headers: Any, timeout: float) -> MagicMock:
+            resp = MagicMock()
+            resp.status_code = 200
+            if turn_step["idx"] == 0:
+                turn_step["idx"] += 1
+                resp.json.return_value = {
+                    "model": "model-a",
+                    "choices": [
+                        {
+                            "message": {
+                                "content": "",
+                                "tool_calls": [
+                                    {
+                                        "id": "call_del_1",
+                                        "function": {
+                                            "name": "delete_personal_record",
+                                            "arguments": (
+                                                f'{{"resource_type": "reminder", '
+                                                f'"record_id": "{rem.pk}", "confirmed": true}}'
+                                            ),
+                                        },
+                                    }
+                                ],
+                            }
+                        }
+                    ],
+                    "usage": {"total_tokens": 20},
+                }
+                return resp
+            resp.json.return_value = {
+                "model": "model-a",
+                "choices": [
+                    {"message": {"content": "Bạn có chắc muốn xóa **Việc hôm nay không cần nữa** không?"}}
+                ],
+                "usage": {"total_tokens": 15},
+            }
+            return resp
+
+        with patch("requests.Session.post", side_effect=fake_delete_turn_1):
+            r1 = self.assert_success(
+                api.post(URL, {"message": "Việc hôm nay không cần nữa xóa đi"}, format="json")
+            )
+        assert "xóa" in r1["reply"].lower()
+        assert Reminder.objects.filter(pk=rem.pk, deleted_at__isnull=True).exists() is True
+
+        # 6. Lượt 2: Người dùng xác nhận đồng ý -> xóa mềm thành công!
+        turn_step["idx"] = 0
+
+        def fake_delete_turn_2(url: str, *, json: Any, headers: Any, timeout: float) -> MagicMock:
+            resp = MagicMock()
+            resp.status_code = 200
+            if turn_step["idx"] == 0:
+                turn_step["idx"] += 1
+                resp.json.return_value = {
+                    "model": "model-a",
+                    "choices": [
+                        {
+                            "message": {
+                                "content": "",
+                                "tool_calls": [
+                                    {
+                                        "id": "call_del_2",
+                                        "function": {
+                                            "name": "delete_personal_record",
+                                            "arguments": (
+                                                f'{{"resource_type": "reminder", '
+                                                f'"record_id": "{rem.pk}", "confirmed": true}}'
+                                            ),
+                                        },
+                                    }
+                                ],
+                            }
+                        }
+                    ],
+                    "usage": {"total_tokens": 20},
+                }
+                return resp
+            resp.json.return_value = {
+                "model": "model-a",
+                "choices": [{"message": {"content": "Đã xóa nhắc việc theo xác nhận của bạn."}}],
+                "usage": {"total_tokens": 12},
+            }
+            return resp
+
+        with patch("requests.Session.post", side_effect=fake_delete_turn_2):
+            self.assert_success(api.post(URL, {"message": "Đồng ý xóa"}, format="json"))
+        assert Reminder.objects.filter(pk=rem.pk, deleted_at__isnull=True).exists() is False

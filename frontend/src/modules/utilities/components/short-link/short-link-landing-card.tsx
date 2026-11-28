@@ -11,6 +11,8 @@ import {
   KeyRound,
   Loader2,
   LockKeyhole,
+  Pause,
+  Play,
   RefreshCw,
   ShieldCheck,
   Sparkles,
@@ -26,6 +28,7 @@ import { Button } from "@/shares/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shares/components/ui/field";
 
 import type { PublicShortLink } from "../../types/short-link.types";
+import { PublicFeedbackWidget } from "../feedback/public-feedback-widget";
 import { DestinationFavicon } from "./destination-favicon";
 import { useShortLinkLanding } from "./hooks/use-short-link-landing";
 
@@ -273,14 +276,36 @@ export function ShortLinkLandingCard({
                     />
                   </div>
 
-                  {/* Text đếm ngược */}
-                  <div className="flex items-center justify-center gap-2 pt-0.5">
+                  {/* Text đếm ngược + nút Tạm dừng / Tiếp tục */}
+                  <div className="flex flex-wrap items-center justify-center gap-2 pt-0.5">
                     <div className="bg-primary/15 text-primary flex size-5.5 items-center justify-center rounded-full text-xs font-bold">
                       {state.remaining}
                     </div>
                     <p aria-live="polite" className="text-muted-foreground text-xs font-medium">
-                      {t("countdown", { seconds: state.remaining })}
+                      {state.isPaused
+                        ? t("paused", { seconds: state.remaining })
+                        : t("countdown", { seconds: state.remaining })}
                     </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      data-testid="short-link-pause-btn"
+                      onClick={state.togglePause}
+                      className="h-7 gap-1 rounded-full px-2.5 text-[11px] font-medium"
+                    >
+                      {state.isPaused ? (
+                        <>
+                          <Play aria-hidden="true" className="size-3" />
+                          <span>{t("resumeCountdown")}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Pause aria-hidden="true" className="size-3" />
+                          <span>{t("pauseCountdown")}</span>
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
               ) : (
@@ -403,6 +428,9 @@ export function ShortLinkLandingCard({
           </div>
         </div>
       </section>
+      {!preview ? (
+        <PublicFeedbackWidget targetType="SHORT_LINK" slug={slug} targetTitle={linkTitle} />
+      ) : null}
     </div>
   );
 }

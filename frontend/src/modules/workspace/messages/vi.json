@@ -170,6 +170,12 @@
     "editTitle": "Chi tiết phiếu bảo hành",
     "backToAsset": "Về thiết bị",
     "attachmentsSection": "Biên nhận & Chứng từ (riêng tư)",
+    "sections": {
+      "basic": "Thông tin phiếu & Thiết bị",
+      "serviceCenter": "Trung tâm bảo hành & Lịch hẹn",
+      "costAndParts": "Chi phí & Bảo hành linh kiện",
+      "description": "Mô tả lỗi & Kết quả xử lý"
+    },
     "coveredYes": "Miễn phí BH",
     "coveredNo": "Tính phí",
     "fields": {
@@ -220,6 +226,10 @@
     "renewTitle": "Gia hạn dịch vụ \"{name}\"",
     "renewSuccess": "Đã ghi nhận kỳ thanh toán và cập nhật ngày gia hạn.",
     "tabPayments": "Lịch sử gia hạn ({count})",
+    "sections": {
+      "general": "Thông tin dịch vụ",
+      "billing": "Chu kỳ & Thanh toán"
+    },
     "advanceFromCycle": "Cộng nối từ ngày hết hạn cũ",
     "advanceFromToday": "Tính chu kỳ mới từ ngày thanh toán",
     "fields": {
@@ -317,10 +327,11 @@
   "reminders": {
     "title": "Nhắc việc cá nhân",
     "subtitle": "Quản lý công việc cần làm, lịch lặp định kỳ và nhắc nhở trước giờ hẹn.",
-    "searchPlaceholder": "Tìm theo tiêu đề, mô tả, nhãn...",
+    "searchPlaceholder": "Tìm theo tiêu đề, mô tả...",
     "create": "Thêm nhắc việc",
     "createTitle": "Tạo nhắc việc mới",
     "editTitle": "Chi tiết nhắc việc",
+    "scheduleSectionTitle": "Lịch hẹn & Nhắc trước",
     "completed": "Hoàn thành",
     "pending": "Chờ làm",
     "toggleDone": "Đánh dấu hoàn thành",
@@ -337,9 +348,33 @@
       "isCompleted": "Đã hoàn thành",
       "completedAt": "Hoàn thành lúc",
       "recurrence": "Lặp lại",
-      "anchorDay": "Ngày cố định",
-      "reminderDaysBefore": "Thông báo trước (ngày)",
-      "tags": "Nhãn"
+      "topic": "Chủ đề"
+    },
+    "topicPlaceholder": "Chọn chủ đề...",
+    "topicNone": "Không chọn chủ đề",
+    "topicManager": {
+      "manageButton": "Chủ đề",
+      "shortcutTooltip": "Mở hộp thoại thêm, sửa hoặc xóa nhanh chủ đề nhắc việc",
+      "dialogTitle": "Quản lý chủ đề nhắc việc",
+      "dialogDescription": "Chọn nhanh chủ đề có sẵn hoặc tạo, chỉnh sửa và xóa chủ đề cá nhân ngay tại đây.",
+      "createHeading": "Thêm chủ đề mới",
+      "editHeading": "Chỉnh sửa chủ đề: {name}",
+      "cancelEdit": "Hủy sửa",
+      "nameLabel": "Tên chủ đề",
+      "namePlaceholder": "VD: Học tập, Gia đình, Dự án...",
+      "nameRequired": "Vui lòng nhập tên chủ đề.",
+      "colorLabel": "Màu nhận diện",
+      "addButton": "Thêm chủ đề",
+      "saveButton": "Lưu thay đổi",
+      "listHeading": "Danh sách chủ đề ({count})",
+      "systemBadge": "Mặc định",
+      "selectedBadge": "Đang chọn",
+      "selectButton": "Chọn",
+      "selectedButton": "Đã chọn",
+      "systemLockedTooltip": "Chủ đề mặc định của hệ thống được bảo vệ, không thể sửa hoặc xóa.",
+      "editTooltip": "Chỉnh sửa chủ đề",
+      "deleteTooltip": "Xóa chủ đề",
+      "closeButton": "Đóng"
     },
     "reminderDaysDesc": "Chọn nhanh các mốc mẫu hoặc gõ số ngày bất kỳ (VD: 3, 6, 8) rồi nhấn Enter.",
     "addReminderDayPlaceholder": "VD: 3, 6, 8",
@@ -367,6 +402,7 @@
     "defaultName": "Trợ lý AI",
     "openPopup": "Mở trợ lý nổi",
     "closePopup": "Thu gọn trợ lý",
+    "resetPopupSize": "Khôi phục kích thước mặc định",
     "scrollToBottom": "Xuống tin mới nhất",
     "dragHint": "Kéo để di chuyển nút AI về cạnh màn hình",
     "readySubtitle": "Sẵn sàng hỗ trợ",
@@ -403,6 +439,18 @@
       "remind": "Tạo nhắc việc nhanh theo ngày giờ",
       "clear": "Xóa lịch sử trò chuyện hiện tại để bắt đầu mới",
       "help": "Xem danh sách & hướng dẫn câu lệnh nhanh"
+    },
+    "quickRepliesLabel": "Lựa chọn trả lời nhanh",
+    "resultCard": {
+      "copyLink": "Sao chép link",
+      "openLink": "Mở link",
+      "copied": "Đã sao chép link",
+      "viewDetail": "Xem chi tiết"
+    },
+    "quickInput": {
+      "send": "Gửi",
+      "showSecret": "Hiện mật khẩu",
+      "hideSecret": "Ẩn mật khẩu"
     }
   },
   "assistantAdmin": {
@@ -474,7 +522,8 @@
       "assistantSystemPrompt": "Policy / Chỉ dẫn trả lời của Chatbot AI",
       "assistantSystemPromptPlaceholder": "VD: Luôn xưng hô lịch sự, tóm tắt thành gạch đầu dòng ngắn gọn và ưu tiên nêu số tiền bằng VNĐ...",
       "preferredAiModel": "Model AI ưu tiên",
-      "aiDailyTokenLimit": "Giới hạn token AI mỗi ngày/user (trống = không giới hạn)",
+      "aiDailyTokenLimit": "Giới hạn token AI / ngày",
+      "aiDailyTokenLimitHint": "Để trống nếu không giới hạn mỗi ngày/user.",
       "telegramAiEnabled": "Cho phép Chatbot AI hoạt động trên Telegram",
       "telegramGroupRequireMention": "Trong nhóm phải @tag bot hoặc reply tin nhắn bot",
       "telegramGroupToolPolicy": "Quyền đọc dữ liệu cá nhân trong nhóm",

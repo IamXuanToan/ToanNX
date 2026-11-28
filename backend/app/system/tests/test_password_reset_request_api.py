@@ -15,6 +15,14 @@ pytestmark = pytest.mark.django_db
 URL = "/api/v1/system/auth/password-reset/request"
 
 
+def _email_content(sent: Any) -> str:
+    """Gộp nội dung text thuần và các bản alternative HTML của email để kiểm tra liên kết."""
+    parts = [str(sent.body)]
+    for content, _mimetype in getattr(sent, "alternatives", []):
+        parts.append(str(content))
+    return "\n".join(parts)
+
+
 class TestPasswordResetRequestApi(BaseApiTestCase):
     """Kiểm thử chi tiết endpoint POST /api/v1/system/auth/password-reset/request."""
 
@@ -27,10 +35,11 @@ class TestPasswordResetRequestApi(BaseApiTestCase):
 
         assert len(mail.outbox) == 1
         sent = mail.outbox[0]
+        content = _email_content(sent)
         assert sent.to == [user.email]
-        assert "Đặt lại mật khẩu" in sent.subject
-        assert "uid=" in sent.body
-        assert "token=" in sent.body
+        assert "đặt lại mật khẩu" in sent.subject.lower()
+        assert "uid=" in content
+        assert "token=" in content
 
     def test_request_reset_dynamic_origin(self, client: APIClient, user: Any, settings: Any) -> None:
         """Link đặt lại mật khẩu chấp nhận Origin khi nằm trong danh sách origin tin cậy."""
@@ -45,7 +54,7 @@ class TestPasswordResetRequestApi(BaseApiTestCase):
         )
         self.assert_success(res)
         assert len(mail.outbox) == 1
-        assert custom_origin in mail.outbox[0].body
+        assert custom_origin in _email_content(mail.outbox[0])
 
     def test_request_reset_ignores_untrusted_origin_and_referer_poisoning(
         self, client: APIClient, user: Any, settings: Any
@@ -64,9 +73,10 @@ class TestPasswordResetRequestApi(BaseApiTestCase):
         )
         self.assert_success(res)
         assert len(mail.outbox) == 1
-        assert "evil-attacker.test" not in mail.outbox[0].body
-        assert "evil-phish.test" not in mail.outbox[0].body
-        assert "https://toannx.com/" in mail.outbox[0].body
+        content = _email_content(mail.outbox[0])
+        assert "evil-attacker.test" not in content
+        assert "evil-phish.test" not in content
+        assert "https://toannx.com/" in content
 
     def test_frontend_origin_resolution(self, settings: Any) -> None:
         """Hàm get_frontend_origin chỉ tin Origin/Referer thuộc allowlist; không thì fallback an toàn."""

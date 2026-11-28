@@ -29,4 +29,7 @@ export const UTILITIES_API_ENDPOINTS = {
    */
   pagePublic: (segment: string, slug: string) =>
     `/utilities/pages/public/${encodeURIComponent(segment)}/${encodeURIComponent(slug)}`,
+  publicFeedbacks: "/utilities/public/feedbacks",
+  pageFeedbacks: "/utilities/page-feedbacks",
+  pageFeedbackThank: (id: string) => `/utilities/page-feedbacks/${id}/thank`,
 } as const;

@@ -18,6 +18,7 @@ from app.workspace.permissions.asset_warranty_claim_permission import AssetWarra
 from app.workspace.permissions.assistant_config_permission import AssistantConfigPermission
 from app.workspace.permissions.assistant_permission import AssistantPermission
 from app.workspace.permissions.reminder_permission import ReminderPermission
+from app.workspace.permissions.reminder_topic_permission import ReminderTopicPermission
 from app.workspace.permissions.subscription_payment_permission import SubscriptionPaymentPermission
 from app.workspace.permissions.subscription_permission import SubscriptionPermission
 from app.workspace.permissions.vault_item_permission import VaultItemPermission
@@ -40,6 +41,7 @@ MODULE = ModuleDescriptor(
         *SubscriptionPaymentPermission.all(),
         *VaultItemPermission.all(),
         *ReminderPermission.all(),
+        *ReminderTopicPermission.all(),
         *AssistantPermission.all(),
         *AssistantConfigPermission.all(),
         *WorkspaceDashboardPermission.all(),
@@ -52,6 +54,7 @@ MODULE = ModuleDescriptor(
         *SubscriptionPaymentPermission.member(),
         *VaultItemPermission.member(),
         *ReminderPermission.member(),
+        *ReminderTopicPermission.member(),
         *AssistantPermission.member(),
         *WorkspaceDashboardPermission.member(),
         *WorkspaceCalendarPermission.member(),
@@ -143,5 +146,6 @@ MODULE = ModuleDescriptor(
     cleanup_tasks=(
         "app.workspace.tasks.purge_old_assistant_history.purge_old_assistant_history",
         "app.workspace.tasks.refresh_cron_schedules.refresh_cron_schedules",
+        "app.workspace.tasks.sync_assistant_knowledge.sync_assistant_knowledge",
     ),
 )

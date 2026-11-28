@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { REMINDER_PRIORITIES, REMINDER_RECURRENCES } from "../constants/defaults";
 
-type Translate = (key: "required" | "notifyMinutes" | "anchorDay") => string;
+type Translate = (key: "required" | "notifyMinutes") => string;
 
 /** Tên trường form Nhắc việc cá nhân. */
 export const REMINDER_FORM_FIELDS = [
@@ -14,8 +14,7 @@ export const REMINDER_FORM_FIELDS = [
   "reminderDaysBefore",
   "priority",
   "recurrence",
-  "anchorDay",
-  "tags",
+  "topicId",
 ] as const;
 
 /**
@@ -35,8 +34,7 @@ export function reminderSchema(t: Translate) {
       reminderDaysBefore: z.array(z.string()),
       priority: z.enum(REMINDER_PRIORITIES),
       recurrence: z.enum(REMINDER_RECURRENCES),
-      anchorDay: z.string().trim(),
-      tags: z.array(z.string()),
+      topicId: z.string(),
     })
     .superRefine((value, ctx) => {
       if (
@@ -48,14 +46,6 @@ export function reminderSchema(t: Translate) {
           path: ["notifyMinutesBefore"],
           message: t("notifyMinutes"),
         });
-      }
-      if (
-        value.anchorDay &&
-        (!/^\d+$/.test(value.anchorDay) ||
-          Number(value.anchorDay) < 1 ||
-          Number(value.anchorDay) > 31)
-      ) {
-        ctx.addIssue({ code: "custom", path: ["anchorDay"], message: t("anchorDay") });
       }
     });
 }

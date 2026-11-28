@@ -6,13 +6,15 @@ import re
 from typing import Any
 
 from app.core.utils.url import build_backend_url
+from app.system.models.telegram_chat import TelegramChat
 from app.system.services.qstash_client import QstashClient
 from app.system.services.telegram_bot_service import TelegramBotService
 from app.system.services.telegram_chat_service import TelegramChatService
 from app.workspace.constants.group_tool_policy import GroupToolPolicy
-from app.workspace.constants.workspace_defaults import SLASH_COMMAND_ALIASES
+from app.workspace.constants.workspace_defaults import QUICK_REPLY_CALLBACK_PREFIX, SLASH_COMMAND_ALIASES
 from app.workspace.models.assistant_conversation import AssistantConversation
 from app.workspace.services.assistant_config_service import AssistantConfigService
+from app.workspace.services.assistant_result_card_builder import AssistantResultCardBuilder
 from app.workspace.services.assistant_service import AssistantService
 from app.workspace.services.assistant_slash_service import AssistantSlashService
 from app.workspace.services.telegram_assistant_reply_service import TelegramAssistantReplyService
@@ -33,6 +35,7 @@ class TelegramAssistantRouterService:
         config_service: AssistantConfigService | None = None,
         slash_service: AssistantSlashService | None = None,
         reply_service: TelegramAssistantReplyService | None = None,
+        result_card_builder: AssistantResultCardBuilder | None = None,
     ) -> None:
         """Khởi tạo toàn bộ phụ thuộc định tuyến Telegram & xử lý AI."""
         self.config_service = config_service or AssistantConfigService()
@@ -46,6 +49,7 @@ class TelegramAssistantRouterService:
         self.reply_service = reply_service or TelegramAssistantReplyService(
             bot_service=self.telegram_bot_service
         )
+        self.result_card_builder = result_card_builder or AssistantResultCardBuilder()
 
     def handle_webhook_update(self, update: dict[str, Any]) -> dict[str, Any]:
         """Điểm vào đăng ký trên `module_registry`: xử lý sync Slash/DM hoặc đẩy 1-hop QStash."""
@@ -56,13 +60,22 @@ class TelegramAssistantRouterService:
         return self._route_update(update, allow_qstash_offload=False)
 
     def _route_update(self, update: dict[str, Any], *, allow_qstash_offload: bool) -> dict[str, Any]:
-        message = update.get("message")
+        callback = update.get("callback_query")
+        choice: dict[str, Any] | None = None
+        if isinstance(callback, dict):
+            message, choice = self._message_from_callback(callback)
+            if message is None:
+                return {"handled": False, "reason": "invalid_callback"}
+        else:
+            message = update.get("message")
         if not isinstance(message, dict):
             return {"handled": False, "reason": "no_message"}
 
         text = str(message.get("text") or "").strip()
         chat_obj = message.get("chat") or {}
         from_obj = message.get("from") or {}
+        if bool(from_obj.get("is_bot")):
+            return {"handled": False, "reason": "ignore_bot_sender"}
         chat_id_raw = chat_obj.get("id")
         if chat_id_raw is None or not text:
             return {"handled": False, "reason": "empty_text_or_chat"}
@@ -104,11 +117,18 @@ class TelegramAssistantRouterService:
         if telegram_chat is None:
             return {"handled": False, "reason": "assistant_disabled_or_chat_not_allowed"}
 
-        if (
-            is_group
-            and bool(admin_cfg.get("telegram_group_require_mention", True))
-            and not self._is_bot_mentioned(message, text)
-        ):
+        if choice is not None:
+            if not is_owner:
+                # Chỉ chủ sở hữu mới trả lời được câu hỏi lựa chọn trên dữ liệu của mình.
+                self.reply_service.reject_choice(choice["id"], "Chỉ chủ sở hữu mới chọn được mục này.")
+                return {"handled": True, "reason": "choice_not_owner"}
+            self.reply_service.acknowledge_choice(choice["id"], chat_id, choice["message_id"], text)
+
+        require_mention = (
+            bool(admin_cfg.get("telegram_group_require_mention", True))
+            and telegram_chat.group_reply_mode != TelegramChat.GroupReplyMode.ALL_MESSAGES
+        )
+        if is_group and require_mention and choice is None and not self._is_bot_mentioned(message, text):
             return {"handled": False, "reason": "mention_required"}
 
         allow_personal_tools = True
@@ -125,7 +145,8 @@ class TelegramAssistantRouterService:
         cleaned_text = self._strip_bot_mention(text)
         cmd, _ = self.slash_service.parse_command(cleaned_text)
         is_slash = bool(cmd)
-        if not is_slash and allow_qstash_offload and self.qstash_client.is_configured():
+        # Bấm nút lựa chọn: xử lý ngay (0 token, không cần đẩy QStash).
+        if not is_slash and choice is None and allow_qstash_offload and self.qstash_client.is_configured():
             update_id = update.get("update_id") or f"{chat_id}-{reply_to_id}"
             dest = build_backend_url("/api/v1/workspace/assistant/telegram-process")
             if self.qstash_client.publish(
@@ -153,9 +174,40 @@ class TelegramAssistantRouterService:
             hide_amounts=hide_amounts,
         )
 
+        saved_message = res.get("message")
+        raw_metadata = getattr(saved_message, "metadata", None)
+        metadata: dict[str, Any] = raw_metadata if isinstance(raw_metadata, dict) else {}
+        quick_replies = metadata.get("quick_replies") or None
+        quick_input = metadata.get("quick_input") if isinstance(metadata.get("quick_input"), dict) else None
+        is_question = bool(quick_replies or quick_input)
+        # Telegram không vẽ thẻ: gắn đúng một dòng link xem lại mỗi bản ghi (nội dung lưu không chứa link).
+        reply_text = str(res["reply"])
+        raw_cards = metadata.get("cards")
+        cards: list[dict[str, Any]] = raw_cards if isinstance(raw_cards, list) else []
+        links = self.result_card_builder.link_lines(cards)
+        if links:
+            reply_text = f"{reply_text.rstrip()}\n\n{links}"
+
+        if res.get("user_input_masked") and reply_to_id is not None:
+            # Tin người dùng vừa gõ mật khẩu: xóa khỏi khung chat (bot có quyền thì xóa được).
+            self.reply_service.delete_user_message(chat_id, reply_to_id)
+
+        if is_group and quick_input and quick_input.get("kind") == "secret":
+            # Không thu mật khẩu trong nhóm: người khác cùng đọc được.
+            self.assistant_service.cancel_pending(str(res.get("conversation_id") or ""))
+            self.reply_service.send_reply(
+                chat_id,
+                "🔒 Vì an toàn, mục có mật khẩu hãy tạo trong tin nhắn riêng với Bot hoặc trên Web. "
+                "Mình đã hủy thao tác đang làm dở.",
+                reply_to_message_id=reply_to_id,
+            )
+            return {"handled": True, "queued": False, "replied_in_dm": False}
+
         # Nếu Admin cấu hình reply_in_dm=True và turn có dữ liệu riêng tư → gửi DM cho chính chủ.
+        # Câu hỏi lựa chọn giữ trong chat hiện tại (nháp gắn với hội thoại này).
         if (
-            is_group
+            not is_question
+            and is_group
             and bool(admin_cfg.get("telegram_group_reply_in_dm", False))
             and is_owner
             and res.get("contains_private_data")
@@ -165,18 +217,51 @@ class TelegramAssistantRouterService:
                 dm_chat_id=owner_dm_chat_id,
                 group_chat_id=chat_id,
                 group_reply_to_message_id=reply_to_id,
-                private_text=str(res["reply"]),
+                private_text=reply_text,
                 model_used=str(res.get("model_used") or ""),
             )
             return {"handled": True, "queued": False, "replied_in_dm": True}
 
         self.reply_service.send_reply(
             chat_id,
-            str(res["reply"]),
+            reply_text,
             reply_to_message_id=reply_to_id,
             model_used=str(res.get("model_used") or ""),
+            quick_replies=quick_replies,
+            quick_input=quick_input,
         )
         return {"handled": True, "queued": False, "replied_in_dm": False}
+
+    def _message_from_callback(
+        self, callback: dict[str, Any]
+    ) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+        """Đổi lần bấm nút inline (`aqr:<n>`) thành tin nhắn văn bản bằng nhãn nút, chạy luồng chat chung."""
+        data = str(callback.get("data") or "")
+        origin = callback.get("message") or {}
+        if not data.startswith(QUICK_REPLY_CALLBACK_PREFIX) or not isinstance(origin, dict):
+            return None, None
+        keyboard = ((origin.get("reply_markup") or {}).get("inline_keyboard")) or []
+        label = next(
+            (
+                str(button.get("text") or "")
+                for row in keyboard
+                if isinstance(row, list)
+                for button in row
+                if isinstance(button, dict) and button.get("callback_data") == data
+            ),
+            "",
+        )
+        if not label:
+            return None, None
+        message_id = origin.get("message_id")
+        synthetic = {
+            "message_id": message_id,
+            "text": label,
+            "chat": origin.get("chat") or {},
+            "from": callback.get("from") or {},
+        }
+        choice = {"id": str(callback.get("id") or ""), "message_id": int(message_id) if message_id else None}
+        return synthetic, choice
 
     def _resolve_chat_owner(
         self,

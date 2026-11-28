@@ -62,6 +62,7 @@ Usage của từng dịch vụ (checklist mục 6).
 | Health check ngoài (`GET /api/v1/system/health`) | ~4.464 | Mỗi 10 phút (`0` DB, `0` Redis; không dùng `/health/ready`) |
 | Cron gửi thông báo (`POST /system/notifications/dispatch`) | ~4.464 + QStash | cron-job.org mỗi 10 phút (`24h` idle recheck trên Redis) |
 | Workspace Cron Tick (`POST /workspace/cron/tick`) | ~2.976 | cron-job.org mỗi 15 phút (`0` DB khi rảnh) |
+| Trợ lý AI — embedding Gemini (RAG) | 1 lượt `embedContent`/lượt chat có LLM (không gọi ở nhóm Telegram) + nhúng bù đoạn tri thức mới/đổi trong cleanup 03:00 UTC | Gói free Gemini; lỗi/429 → cooldown Redis 120s, chỉ dùng tìm từ khóa; pgvector `halfvec(768)` ~1,5 KB/đoạn (vài chục đoạn) |
 | Dọn dẹp hằng ngày (`GET /system/health/cleanup`) | 31 | Vercel Cron `0 3 * * *` |
 | Trang quản trị & Khách (FE + API BE) | ~13.000–73.000 | Phụ thuộc mức dùng; polling chuông `15p`/`30p` & Donate `60s`/`120s` |
 | **Tổng ước lượng** | **~25.000–85.000** | Idle sạch `~12.140` (`1,2%` hạn mức `1.000.000`) |

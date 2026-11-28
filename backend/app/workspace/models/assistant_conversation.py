@@ -60,6 +60,20 @@ class AssistantConversation(JournalTracker, CoreModel):
         help_text="Thời điểm có tin nhắn mới nhất.",
         db_comment="Thời điểm tin nhắn cuối",
     )
+    pending_action = models.JSONField(
+        null=True,
+        blank=True,
+        verbose_name="Hành động đang chờ",
+        help_text="Nháp tạo mới hoặc yêu cầu xóa chờ người dùng chọn ở lượt sau (không chứa mật khẩu).",
+        db_comment="Hành động Trợ lý AI đang chờ xác nhận",
+    )
+    pending_expires_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Hạn hành động chờ",
+        help_text="Quá thời điểm này thì hành động đang chờ bị bỏ.",
+        db_comment="Thời điểm hết hạn hành động đang chờ",
+    )
 
     class Meta:
         db_table = "workspace_assistant_conversation"

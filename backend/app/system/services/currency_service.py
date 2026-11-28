@@ -36,6 +36,19 @@ class CurrencyService(CoreCrudService[Currency, CurrencyRepository]):
             raise BusinessRuleError("Chưa có tiền tệ gốc.", code=CurrencyErrorCode.BASE_LOCKED)
         return currency
 
+    def get_active_by_code(self, code: str) -> Currency:
+        """Tìm tiền tệ đang bật theo mã ISO (VD: VND, USD); không thấy thì báo lỗi nghiệp vụ."""
+        cleaned = str(code or "").strip().upper()
+        if not cleaned:
+            return self.base()
+        currency = self.repository.find_one(code=cleaned)
+        if currency is None or not currency.is_active:
+            raise BusinessRuleError(
+                f"Tiền tệ '{cleaned}' không tồn tại hoặc đang tắt.",
+                code=CurrencyErrorCode.INACTIVE,
+            )
+        return currency
+
     @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> Currency:
         """Tiền tệ gốc chỉ đổi tên/ký hiệu/thứ tự."""

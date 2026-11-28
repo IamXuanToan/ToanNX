@@ -67,3 +67,83 @@ class TestPageFetchMetadataApi(BaseApiTestCase):
 
         res = api.post(URL, {"url": "http://127.0.0.1:8000/api"}, format="json")
         self.assert_error(res, 400)
+
+    def test_fetch_metadata_shopee_image_ids_and_ai_enrichment(
+        self, user: Any, login: Any, settings: Any
+    ) -> None:
+        """Link Shopee không có OpenGraph vẫn lấy được ảnh từ `image_ids` và làm đẹp tên/mô tả bằng AI."""
+        grant(user, P.CREATE)
+        api = login(user)
+
+        settings.XKIRO_API_BASE = "https://xkiro.example.com/v1"
+        settings.XKIRO_API_KEY = "test-secret"
+        settings.XKIRO_MODEL = "model-a"
+
+        shopee_url = (
+            "https://shopee.vn/-H%C3%A0ng-s%E1%BA%B5n-M%C3%B4-H%C3%ACnh-L%E1%BA%AFp-r%C3%A1p-"
+            "MNP-XH16A-%C4%90i%E1%BB%83n-Vi-Motornuclear-i.1387896381.46018292342"
+            "?image_ids=vn-11134201-81ztc-mtf3gai8dts51d"
+        )
+        ai_resp = {
+            "ok": True,
+            "model": "model-a",
+            "message": {
+                "content": (
+                    '{"title": "Mô Hình Lắp Ráp MNP-XH16A Điển Vi Motornuclear (Hàng Sẵn)", '
+                    '"description": "Mô hình lắp ráp MNP-XH16A Điển Vi chính hãng Motornuclear."}'
+                )
+            },
+            "tokens": 60,
+        }
+
+        with (
+            patch(
+                "app.core.utils.safe_http_client.SafeHttpClient.fetch_html",
+                return_value=("<html><head><title>Shopee</title></head><body></body></html>", shopee_url),
+            ),
+            patch(
+                "app.workspace.services.xkiro_client.XkiroClient.chat_completion",
+                return_value=ai_resp,
+            ),
+        ):
+            res = api.post(URL, {"url": shopee_url}, format="json")
+            data = self.assert_success(res, 200)
+
+        assert data["platform"] == "shopee"
+        assert (
+            data["image_url"] == "https://down-vn.img.susercontent.com/file/vn-11134201-81ztc-mtf3gai8dts51d"
+        )
+        assert data["title"] == "Mô Hình Lắp Ráp MNP-XH16A Điển Vi Motornuclear (Hàng Sẵn)"
+        assert "Motornuclear" in data["description"]
+
+    def test_fetch_metadata_uses_page_custom_platforms_regex(self, user: Any, login: Any) -> None:
+        """Nhận diện đúng shortcode nơi bán riêng của từng trang theo biểu thức Regex URL."""
+        grant(user, P.CREATE)
+        api = login(user)
+
+        custom_url = "https://shop.mybrand.vn/san-pham/ban-phim-co"
+        with patch(
+            "app.core.utils.safe_http_client.SafeHttpClient.fetch_html",
+            return_value=(
+                "<html><head><meta property='og:title' content='Bàn phím MyBrand' /></head></html>",
+                custom_url,
+            ),
+        ):
+            res = api.post(
+                URL,
+                {
+                    "url": custom_url,
+                    "platforms": [
+                        {
+                            "code": "my_brand_store",
+                            "name": "Cửa hàng MyBrand",
+                            "url_pattern": r"(mybrand\.vn|mybrand\.shop)",
+                        }
+                    ],
+                },
+                format="json",
+            )
+            data = self.assert_success(res, 200)
+
+        assert data["platform"] == "my_brand_store"
+        assert data["title"] == "Bàn phím MyBrand"

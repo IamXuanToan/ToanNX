@@ -12,6 +12,7 @@ export const workspaceKeys = {
   subscriptionPayments: createResourceKeys(WORKSPACE_SCOPE, "subscription-payments"),
   vaultItems: createResourceKeys(WORKSPACE_SCOPE, "vault-items"),
   reminders: createResourceKeys(WORKSPACE_SCOPE, "reminders"),
+  reminderTopics: createResourceKeys(WORKSPACE_SCOPE, "reminder-topics"),
   assistantConfig: () => [WORKSPACE_SCOPE, "assistant-config"] as const,
   assistantBotProfile: () => [WORKSPACE_SCOPE, "assistant-bot-profile"] as const,
   assistantThreadRoot: () => [WORKSPACE_SCOPE, "assistant-thread"] as const,

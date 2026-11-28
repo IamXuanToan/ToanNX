@@ -264,3 +264,247 @@
 .scrollbar-clean::-webkit-scrollbar {
   display: none;
 }
+
+/* ===== Custom Page: Hiệu ứng Hover, Entrance, Highlight & Ambient Motion ===== */
+@keyframes pageFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pageScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pageBlurIn {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes pageWiggle {
+  0%,
+  82%,
+  100% {
+    transform: rotate(0deg);
+  }
+  85% {
+    transform: rotate(-1.2deg);
+  }
+  89% {
+    transform: rotate(1.2deg);
+  }
+  93% {
+    transform: rotate(-0.8deg);
+  }
+  97% {
+    transform: rotate(0.6deg);
+  }
+}
+
+@keyframes pagePulseRing {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 35%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--primary) 0%, transparent);
+  }
+}
+
+@keyframes pageGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pageFloatOrb {
+  0%,
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(24px, -18px) scale(1.06);
+  }
+  66% {
+    transform: translate(-18px, 14px) scale(0.96);
+  }
+}
+
+.page-hover-lift {
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+.page-hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px -10px color-mix(in srgb, var(--foreground) 22%, transparent);
+}
+
+.page-hover-scale {
+  transition:
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 200ms ease;
+}
+.page-hover-scale:hover {
+  transform: scale(1.02);
+}
+.page-hover-scale:active {
+  transform: scale(0.99);
+}
+
+.page-hover-glow {
+  transition:
+    box-shadow 240ms ease,
+    border-color 240ms ease,
+    transform 220ms ease;
+}
+.page-hover-glow:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--primary) 65%, transparent);
+  box-shadow: 0 0 24px -4px color-mix(in srgb, var(--primary) 45%, transparent);
+}
+
+.page-hover-shine {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease;
+}
+.page-hover-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 55%;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    color-mix(in srgb, #ffffff 30%, transparent) 50%,
+    transparent 100%
+  );
+  transform: translateX(-160%) skewX(-18deg);
+  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.page-hover-shine:hover::after {
+  transform: translateX(260%) skewX(-18deg);
+}
+.page-hover-shine:hover {
+  transform: translateY(-1px);
+}
+
+.page-hover-hard_push {
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease;
+}
+.page-hover-hard_push:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 0 var(--foreground);
+}
+.page-hover-hard_push:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.page-surface-hard_shadow {
+  border-width: 2px;
+  border-color: var(--foreground);
+  box-shadow: 4px 4px 0 0 var(--foreground);
+}
+
+.page-enter-fade_up {
+  animation: pageFadeUp 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+.page-enter-scale_in {
+  animation: pageScaleIn 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+.page-enter-blur_in {
+  animation: pageBlurIn 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+.page-highlight-wiggle {
+  animation: pageWiggle 4.2s ease-in-out infinite;
+}
+.page-highlight-pulse_ring {
+  animation: pagePulseRing 2.6s ease-in-out infinite;
+}
+.page-highlight-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.page-highlight-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    color-mix(in srgb, var(--primary) 16%, transparent) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: pageGradientFlow 3.5s ease-in-out infinite;
+  background-size: 200% 100%;
+  pointer-events: none;
+}
+
+.page-ambient-gradient_flow {
+  background-size: 200% 200%;
+  animation: pageGradientFlow 14s ease infinite;
+}
+
+.page-ambient-orb {
+  animation: pageFloatOrb 16s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-fade_up,
+  .page-enter-scale_in,
+  .page-enter-blur_in,
+  .page-highlight-wiggle,
+  .page-highlight-pulse_ring,
+  .page-highlight-shimmer::before,
+  .page-ambient-gradient_flow,
+  .page-ambient-orb {
+    animation: none !important;
+  }
+  .page-hover-lift,
+  .page-hover-scale,
+  .page-hover-glow,
+  .page-hover-shine,
+  .page-hover-shine::after,
+  .page-hover-hard_push {
+    transition: none !important;
+  }
+}
