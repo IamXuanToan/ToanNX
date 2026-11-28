@@ -71,6 +71,10 @@ export type TiptapEditorProps = {
   placeholder?: string;
   /** Hiển thị thanh đếm từ/ký tự gọn phía đáy editor. */
   showStats?: boolean;
+  /** Ngữ cảnh bổ sung truyền cho tính năng Viết bằng AI (vd danh sách biến trộn). */
+  aiContextHint?: string;
+  /** Callback nhận instance Editor sau khi khởi tạo (dùng cho nút chèn nhanh bên ngoài). */
+  onEditorReady?: (editor: Editor | null) => void;
 };
 
 /** Props của `TiptapBasicEditor` — bộ cơ bản gọn nhẹ dành riêng cho mô tả (chỉ in đậm, in nghiêng). */

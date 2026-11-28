@@ -17,6 +17,7 @@ class PageDetailResponseSerializer(PageListResponseSerializer):
 
     avatar = AttachmentSummaryResponseSerializer(allow_null=True, help_text="Ảnh đại diện.")
     cover = AttachmentSummaryResponseSerializer(allow_null=True, help_text="Ảnh bìa.")
+    background_image = AttachmentSummaryResponseSerializer(allow_null=True, help_text="Ảnh nền trang.")
     content = serializers.SerializerMethodField(help_text="Tài liệu Tiptap JSON cho editor.")
 
     class Meta(PageListResponseSerializer.Meta):
@@ -34,6 +35,7 @@ class PageDetailResponseSerializer(PageListResponseSerializer):
             "responsive_config",
             "avatar",
             "cover",
+            "background_image",
             "content",
             "content_version",
         )

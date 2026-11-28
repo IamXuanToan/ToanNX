@@ -61,7 +61,7 @@ export type AffiliateItem = {
   description?: string;
   categoryId: string;
   destinationUrl: string;
-  platform: "shopee" | "lazada" | "tiktok" | "tiki" | "amazon" | "custom";
+  platform: string;
   imageUrl?: string;
   priceConfig: AffiliatePriceConfig;
   buttonConfig: AffiliateButtonConfig;
@@ -85,6 +85,16 @@ export type AffiliateCategory = {
   isVisible: boolean;
 };
 
+/** Cấu hình một nơi bán (platform) riêng của từng trang Affiliate. */
+export type AffiliatePlatformConfig = {
+  id: string;
+  code: string;
+  name: string;
+  urlPattern: string;
+  sortOrder: number;
+  isVisible: boolean;
+};
+
 /** Toàn bộ cấu hình nội dung trang Affiliate. */
 export type AffiliateContentConfig = {
   profile?: {
@@ -92,6 +102,7 @@ export type AffiliateContentConfig = {
     bio?: string;
   };
   categories: AffiliateCategory[];
+  platforms?: AffiliatePlatformConfig[];
   items: AffiliateItem[];
 };
 
@@ -143,6 +154,10 @@ export type BioContentConfig = {
     url: string;
     description?: string;
     iconUrl?: string;
+    thumbnailUrl?: string;
+    displayStyle?: "default" | "featured" | "grid";
+    blockSize?: "sm" | "md" | "lg";
+    badgeText?: string;
     highlight?: boolean;
     sortOrder: number;
     isVisible: boolean;
@@ -217,17 +232,66 @@ export type PageTheme = {
   buttonStyle?: "rounded" | "square" | "pill";
 };
 
+import type { PagePatternKey } from "../lib/page-patterns";
+
 /** Cấu hình style và giao diện theo template. */
 export type PageStyleConfig = {
   themePreset?: string;
   primaryColor?: string;
   backgroundColor?: string;
   textColor?: string;
-  cardRadius?: "4px" | "8px" | "12px" | "20px" | "0px";
-  layout?: "grid" | "list" | "links";
+  cardRadius?: "0px" | "4px" | "8px" | "12px" | "20px";
+  cardShadow?: "none" | "sm" | "md" | "lg";
+  backgroundType?: "solid" | "gradient" | "image" | "pattern";
+  gradientType?: "linear" | "radial";
+  gradientAngle?: number;
+  gradientColors?: string[];
+  patternKey?: PagePatternKey;
+  backgroundFit?: "cover" | "contain" | "tile";
+  backgroundBlur?: number;
+  overlayColor?: string;
+  overlayOpacity?: number;
+  ambientMotion?: "none" | "gradient_flow" | "floating_orbs";
+  headerLayout?: "centered" | "banner_overlap" | "hero_card" | "editorial_left";
+  avatarShape?: "circle" | "squircle" | "square";
+  avatarSize?: "sm" | "md" | "lg";
+  avatarRing?: "none" | "solid" | "gradient_glow";
+  showVerifiedBadge?: boolean;
+  statusPill?: string;
+  coverHeight?: "sm" | "md" | "lg";
+  coverFade?: boolean;
+  socialPosition?: "top" | "bottom" | "hidden";
+  socialStyle?: "pill" | "circle_outline" | "minimal";
+  showShareButton?: boolean;
+  surfaceStyle?: "solid" | "outline" | "soft" | "glass" | "elevated" | "hard_shadow";
+  hoverEffect?: "none" | "lift" | "scale" | "glow" | "shine" | "hard_push";
+  entranceAnimation?: "none" | "fade_up" | "scale_in" | "blur_in";
+  highlightEffect?: "none" | "pulse_ring" | "wiggle" | "shimmer";
+  linkLayout?:
+    | "classic_bar"
+    | "thumbnail_card"
+    | "featured_hero"
+    | "grid_2col"
+    | "bento_grid"
+    | "compact_pills";
+  buttonTextAlign?: "left" | "center";
+  layout?: "grid" | "list" | "links" | "carousel_featured";
+  cardDensity?: "compact" | "standard" | "detailed";
+  imageAspectRatio?: "1:1" | "4:3" | "16:9" | "4:5";
+  ctaStyle?: "full_button" | "icon_circle" | "inline_arrow";
   showSearch?: boolean;
   showPrice?: boolean;
   showImage?: boolean;
+  showDiscountBadge?: boolean;
+  showPlatformBadge?: boolean;
+  stickyFilterBar?: boolean;
+  qrCardStyle?: "fintech_glass" | "split_modern" | "minimal_card";
+  presetButtonStyle?: "gift_cards" | "pill_tags" | "compact_grid";
+  leaderboardStyle?: "podium" | "list" | "hidden";
+  fontFamily?: "inter" | "plus_jakarta" | "be_vietnam" | "playfair" | "jetbrains_mono";
+  containerWidth?: "compact" | "standard" | "wide";
+  blockSpacing?: "compact" | "normal" | "relaxed";
+  footerStyle?: "minimal" | "pill" | "hidden";
 };
 
 /** Cấu hình responsive theo thiết bị. */
@@ -279,6 +343,7 @@ export type PageDetail = Page & {
   responsiveConfig: PageResponsiveConfig;
   avatar: AttachmentSummary | null;
   cover: AttachmentSummary | null;
+  backgroundImage: AttachmentSummary | null;
   content: TiptapDocument;
   contentVersion: number;
 };
@@ -307,6 +372,7 @@ export type PageInput = {
   theme?: PageTheme;
   avatarId?: string | null;
   coverId?: string | null;
+  backgroundImageId?: string | null;
   content?: TiptapDocument;
   contentVersion?: number;
   template?: PageTemplate;
@@ -326,6 +392,7 @@ export type PublicPage = {
   seoDescription: string;
   avatarUrl: string | null;
   coverUrl: string | null;
+  backgroundImageUrl?: string | null;
   theme: PageTheme;
   pageType: PageType;
   templateKey: string;

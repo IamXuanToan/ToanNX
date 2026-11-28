@@ -10,6 +10,7 @@ import { formatUserDisplayName } from "@/shares/lib/user-display";
 
 import {
   isClearSlashCommand,
+  MASKED_SECRET_TEXT,
   resolveLocaleSlashCommands,
   type ResolvedAssistantSlashCommand,
 } from "../../../constants/defaults";
@@ -86,6 +87,11 @@ export function useAssistantChatPanel(canChat: boolean, enabled = true) {
   );
 
   const hasMoreOlder = Boolean(threadQuery.data?.hasMoreMessages && !exhaustedOlder);
+  // Chip trả lời nhanh chỉ hiện cho tin cuối cùng của Trợ lý (câu hỏi lựa chọn đang chờ).
+  const lastMessage = messages.at(-1);
+  const isAwaitingChoice = lastMessage?.role === "ASSISTANT" && !pendingUserMsg;
+  const quickReplies = isAwaitingChoice ? (lastMessage?.quickReplies ?? []) : [];
+  const quickInput = isAwaitingChoice ? (lastMessage?.quickInput ?? null) : null;
 
   function setDraft(value: string) {
     setDraftState(value);
@@ -93,7 +99,7 @@ export function useAssistantChatPanel(canChat: boolean, enabled = true) {
     setActiveSuggestionIndex(0);
   }
 
-  async function sendMessage(rawText?: string) {
+  async function sendMessage(rawText?: string, options: { secret?: boolean } = {}) {
     const text = (rawText ?? draft).trim();
     if (!text || !canChat || chatMutation.isPending || clearMutation.isPending) return;
     if (!rawText) {
@@ -112,13 +118,17 @@ export function useAssistantChatPanel(canChat: boolean, enabled = true) {
       role: "USER",
       senderTelegramId: null,
       senderName: formatUserDisplayName(currentUser.data?.user, { includeUsername: false }),
-      content: text,
+      // Giá trị bí mật (mật khẩu) không hiện nguyên văn trong bong bóng chờ; server cũng lưu dạng che.
+      content: options.secret ? MASKED_SECRET_TEXT : text,
       toolCalls: [],
       toolCallId: "",
       modelUsed: "",
       tokensUsed: 0,
       containsPrivateData: false,
       isError: false,
+      quickReplies: [],
+      quickInput: null,
+      cards: [],
       createdAt: new Date().toISOString(),
     });
 
@@ -146,7 +156,19 @@ export function useAssistantChatPanel(canChat: boolean, enabled = true) {
     return true;
   }
 
-  function onInputKeyDown(event: KeyboardEvent<HTMLInputElement>): boolean {
+  function onInputKeyDown(event: KeyboardEvent<HTMLTextAreaElement>): boolean {
+    if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+      if (slashSuggestions.length > 0) {
+        const target = slashSuggestions[safeSuggestionIndex];
+        if (target) {
+          event.preventDefault();
+          return selectSlashCommand(target, { runImmediately: !target.insertOnly });
+        }
+      }
+      event.preventDefault();
+      void sendMessage();
+      return false;
+    }
     if (slashSuggestions.length === 0) return false;
 
     if (event.key === "ArrowDown") {
@@ -226,6 +248,8 @@ export function useAssistantChatPanel(canChat: boolean, enabled = true) {
     draft,
     setDraft,
     sendMessage,
+    quickReplies,
+    quickInput,
     isSending: chatMutation.isPending,
     chatError: chatMutation.error,
     clearConfirmOpen,

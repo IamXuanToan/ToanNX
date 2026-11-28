@@ -15,7 +15,7 @@ Tiện ích: link rút gọn `/s/{slug}`, mã QR (VietQR, liên kết, văn bả
 - `template_key`: mã template giao diện (ví dụ `product_grid`, `product_list`, `minimal_links`, `vietqr_donate`).
 - `template_version`: phiên bản template (mặc định 1).
 - `content_config`: JSON dữ liệu chuyên biệt theo từng loại trang (sản phẩm, danh mục, liên kết, tài khoản ngân hàng, cấu hình webhook donate cho từng mã QR, ẩn hiện số tiền, số ngày vinh danh leaderboard).
-- `style_config`: cấu hình giao diện (theme preset, màu sắc, bo góc, ẩn/hiện giá/ảnh).
+- `style_config`: cấu hình giao diện 5 lớp (`validate_style_config` trong `validators/style_config_validator.py`): nền trang (`solid`, `gradient` 2–3 màu, `image` toàn trang qua FK `background_image` `public` kèm `blur`/`overlay`, `pattern` CSS, `ambient_motion`), đầu trang (`header_layout`, avatar shape/size/ring, `status_pill`, `cover_height`/`cover_fade`, `show_share_button`), chất liệu thẻ (`solid`, `outline`, `soft`, `glass`, `elevated`, `hard_shadow`) + hiệu ứng `hover_effect`/`entrance_animation`/`highlight_effect` + `link_layout` (`classic_bar`, `thumbnail_card`, `featured_hero`, `grid_2col`, `bento_grid`, `compact_pills`), và typography/khung (`font_family`, `container_width`, `block_spacing`, `footer_style`).
 - `responsive_config`: cấu hình hiển thị theo thiết bị (số cột trên desktop, tablet, mobile).
 - `content`: Tiptap JSON giữ lại cho các trang kiểu tự do (`LEGACY_PAGE`, ẩn tab **Giao diện** trong form để chỉ nhập nội dung văn bản và đồng bộ 100% bảng màu với Editor ở Preview/trang công khai); node `image` hỗ trợ kích thước (`width` % / px) và căn lề (`align`: `left`, `center`, `right`, `full`) cho cả ảnh Thư viện và URL ngoài (`page_content_validator.py`).
 - Demo công khai `/demo/[type]` (`affiliate`, `bio`, `donation`) và trình diễn trọn bộ 3 Preset Editor dùng chung tại `/demo/editor` (`NotionDemoView` gồm `TiptapEditor` bản Full hợp nhất Simple Sticky Toolbar + Notion-like kéo thả dòng `⠿` / `/` / Bubble Toolbar, `TiptapBasicEditor` cho mô tả và `TiptapCommentEditor` cho bình luận).
@@ -69,7 +69,16 @@ Ngoài ra, phần thống kê Quyên góp được gộp trực tiếp vào Dash
   nên cache cũ hết hiệu lực ngay. Link có mật khẩu chỉ cache cờ "có khóa" (không mã băm, không URL đích); mở khóa
   luôn kiểm ở DB. Bản nháp không bao giờ cache. Không có `REDIS_URL` thì đọc DB như cũ.
 
+## Góp ý / Báo lỗi ẩn danh (`PageFeedback`)
+
+- Model `PageFeedback(JournalTracker, CoreModel)` lưu phản hồi ẩn danh từ khách vãng lai trên Custom Page (`PAGE`) và ShortLink (`SHORT_LINK`), gắn `target_owner` tới chủ trang/link và băm IP (`salted_hmac`).
+- Endpoint công khai `POST /api/v1/utilities/public/feedbacks`: không cần đăng nhập, chống spam bằng Redis rate limit (`RL_FEEDBACK_SUBMIT`, mặc định `5/60s` theo IP) và trường bẫy honeypot `website`, tự động bắn thông báo `utilities.feedback.received` tới hồ sơ chủ trang qua `NotificationService.notify`.
+- Endpoint quản lý `/api/v1/utilities/page-feedbacks` (quyền `PageFeedbackPermission`: `read`, `update`, `delete`, `thank`, `manage_all`): Client chỉ xem/xử lý góp ý của mình; Admin (`manage_all`) xem toàn bộ và lọc theo `?owner=`. Hỗ trợ `POST /{id}/thank` chọn mẫu `EmailTemplate` (`FEEDBACK_THANKS`) để gửi email cảm ơn tới người đã góp ý.
+- Giao diện nổi `PublicFeedbackWidget` chỉ hiển thị trên `PublicPage` và `ShortLinkLandingCard`; màn quản lý tại `/quan-tri/tien-ich/gop-y` và `/ca-nhan/gop-y`.
+
 ## Sự kiện, webhook, callback
+
+- Sự kiện thông báo: `utilities.feedback.received` (`scope=PERSONAL`, `audience=OWNER`, quyền `utilities.page_feedback.read`).
 
 - Webhook SePay theo mã QR: `POST /api/v1/utilities/donations/webhook/{webhook_token}` (khai báo `WebhookDefinition` trong `ModuleDescriptor`). Bất kỳ người dùng nào (kể cả không có quyền `is_staff`) đều cấu hình được trực tiếp khi tạo mã QR donate.
 

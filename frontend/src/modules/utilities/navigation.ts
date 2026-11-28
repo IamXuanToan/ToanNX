@@ -3,6 +3,7 @@ import {
   HeartHandshake,
   LayoutDashboard,
   Link2,
+  MessageSquareWarning,
   QrCode,
   Route,
   Wrench,
@@ -12,6 +13,7 @@ import type { AdminModuleNavigation } from "@/shares/types/navigation.types";
 
 import { UTILITIES_ROUTES } from "./constants/routes";
 import { DONATION_PERMISSIONS } from "./permissions/donation-permission";
+import { PAGE_FEEDBACK_PERMISSIONS } from "./permissions/page-feedback-permission";
 import { PAGE_PATH_PERMISSIONS } from "./permissions/page-path-permission";
 import { PAGE_PERMISSIONS } from "./permissions/page-permission";
 import { QR_CODE_PERMISSIONS } from "./permissions/qr-code-permission";
@@ -60,6 +62,13 @@ export const utilitiesNavigation: AdminModuleNavigation = {
       href: UTILITIES_ROUTES.pagePaths,
       icon: Route,
       permission: PAGE_PATH_PERMISSIONS.read,
+      section: "utilities.navSections.content",
+    },
+    {
+      labelKey: "utilities.nav.feedbacks",
+      href: UTILITIES_ROUTES.pageFeedbacks,
+      icon: MessageSquareWarning,
+      permission: PAGE_FEEDBACK_PERMISSIONS.read,
       section: "utilities.navSections.content",
     },
     {

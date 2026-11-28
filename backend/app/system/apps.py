@@ -13,10 +13,16 @@ PASSWORD_REASONS = ("password_changed", "password_reset")
 
 
 def _seed_after_migrate(sender: AppConfig, **kwargs: Any) -> None:
-    """Tạo/chuẩn hóa vai trò hệ thống rồi đồng bộ quyền sau khi migrate (cả sau `flush`)."""
+    """Tạo/chuẩn hóa vai trò hệ thống rồi đồng bộ quyền + mẫu email mặc định sau khi migrate."""
+    from app.system.services.email_template_seed_service import (  # noqa: PLC0415
+        EmailTemplateSeedService,
+    )
+    from app.system.services.language_seed_service import LanguageSeedService  # noqa: PLC0415
     from app.system.services.role_seed_service import RoleSeedService  # noqa: PLC0415
 
     RoleSeedService().seed(system_only=True)
+    LanguageSeedService().seed_defaults()
+    EmailTemplateSeedService().seed_defaults()
 
 
 def _revoke_sessions_on_credentials_change(sender: Any, user: Any, reason: str, **kwargs: Any) -> None:

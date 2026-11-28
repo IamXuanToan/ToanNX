@@ -17,6 +17,7 @@ class TelegramChatResponseSerializer(serializers.ModelSerializer[TelegramChat]):
             "chat_type",
             "status",
             "is_active",
+            "group_reply_mode",
             "registration_expires_at",
             "last_verified_at",
             "last_error_code",

@@ -6,6 +6,7 @@ from typing import Any
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from django.db import DatabaseError
 from django.template.loader import render_to_string
 from django.utils import timezone
 
@@ -76,19 +77,42 @@ class EmailService:
         """
         lang = resolve_auth_locale(locale)
         full_context = {"current_year": timezone.now().year, **context}
+        message: EmailMultiAlternatives | None = None
         try:
-            text_body = render_to_string(f"system/email/{template}_{lang}.txt", full_context)
-            html_body = render_to_string(f"system/email/{template}_{lang}.html", full_context)
-            message = EmailMultiAlternatives(
-                subject=subject,
-                body=text_body,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[recipient],
+            from app.system.services.email_template_service import (  # noqa: PLC0415
+                EmailTemplateService,
             )
-            message.attach_alternative(html_body, "text/html")
-        except Exception:
-            logger.exception("Lỗi khi dựng email %s cho %s", template, recipient)
-            return False
+
+            tpl_service = EmailTemplateService()
+            db_tpl = tpl_service.find_active_system_template(template, lang)
+            if db_tpl is not None:
+                rendered = tpl_service.render_template(db_tpl, full_context)
+                if rendered["html_body"] or rendered["text_body"]:
+                    message = EmailMultiAlternatives(
+                        subject=rendered["subject"] or subject,
+                        body=rendered["text_body"] or rendered["html_body"],
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[recipient],
+                    )
+                    if rendered["html_body"]:
+                        message.attach_alternative(rendered["html_body"], "text/html")
+        except (DatabaseError, LookupError, ValueError, TypeError, AttributeError):
+            logger.debug("Fallback về file template tĩnh cho %s (%s)", template, lang)
+
+        if message is None:
+            try:
+                text_body = render_to_string(f"system/email/{template}_{lang}.txt", full_context)
+                html_body = render_to_string(f"system/email/{template}_{lang}.html", full_context)
+                message = EmailMultiAlternatives(
+                    subject=subject,
+                    body=text_body,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[recipient],
+                )
+                message.attach_alternative(html_body, "text/html")
+            except Exception:
+                logger.exception("Lỗi khi dựng email %s cho %s", template, recipient)
+                return False
 
         should_async = async_send if async_send is not None else settings.EMAIL_ASYNC
         if should_async:
@@ -124,6 +148,7 @@ class EmailService:
             context={
                 **self._user_context(user),
                 "reset_url": reset_url,
+                "action_url": reset_url,
                 "timeout_minutes": max(1, settings.PASSWORD_RESET_TIMEOUT // 60),
             },
             locale=lang,
@@ -159,6 +184,7 @@ class EmailService:
             context={
                 **self._user_context(user),
                 "verification_url": verification_url,
+                "action_url": verification_url,
                 "timeout_hours": timeout_hours,
             },
             locale=lang,
@@ -194,6 +220,7 @@ class EmailService:
             context={
                 **self._user_context(user),
                 "invitation_url": invitation_url,
+                "action_url": invitation_url,
                 "timeout_days": timeout_days,
             },
             locale=lang,
@@ -203,7 +230,7 @@ class EmailService:
     def _user_context(self, user: User) -> dict[str, Any]:
         """Dữ liệu người nhận dùng chung cho các template."""
         display_name = getattr(user, "full_name", None) or user.username or user.email
-        return {"user": user, "user_display_name": display_name}
+        return {"user": user, "user_display_name": display_name, "full_name": display_name}
 
     def _deliver(self, message: EmailMultiAlternatives, recipient: str) -> bool:
         """Gửi thư qua Django mail backend, nuốt lỗi và ghi log."""

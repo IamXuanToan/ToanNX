@@ -9,7 +9,8 @@
     "pages": "Trang",
     "pagePaths": "Đường dẫn giữa",
     "dashboard": "Thống kê",
-    "donations": "Quyên góp"
+    "donations": "Quyên góp",
+    "feedbacks": "Góp ý & Báo lỗi"
   },
   "shortLinks": {
     "title": "Link rút gọn",
@@ -92,6 +93,9 @@
       "manual": "Sẵn sàng chuyển tiếp đến trang đích an toàn.",
       "autoSeconds": "Tự động chuyển tiếp sau {seconds} giây",
       "countdown": "Tự động chuyển tiếp sau {seconds} giây. Bạn có thể nhấn mở ngay.",
+      "paused": "Đã tạm dừng ở {seconds} giây.",
+      "pauseCountdown": "Tạm dừng",
+      "resumeCountdown": "Tiếp tục",
       "protected": "Liên kết bảo mật riêng tư",
       "previewNotice": "Chế độ xem trước — nút mở liên kết không chuyển trang.",
       "invalidPassword": "Mật khẩu không đúng. Vui lòng thử lại.",
@@ -252,6 +256,7 @@
       "tabs": {
         "products": "Sản phẩm & Link",
         "categories": "Danh mục",
+        "platforms": "Nơi bán",
         "bio": "Hồ sơ & Kinh nghiệm",
         "donation": "Thông tin quyên góp",
         "preview": "Xem trước trực tiếp",
@@ -287,6 +292,218 @@
       "presetsEmpty": "Không tìm thấy bộ màu phù hợp",
       "maximizePreview": "Phóng to xem trước",
       "livePreviewTitle": "Xem trước giao diện: {title}",
+      "sharePage": "Chia sẻ trang",
+      "appearance": {
+        "tabs": {
+          "presets": "Bộ màu",
+          "background": "Nền trang",
+          "header": "Đầu trang",
+          "blocks": "Thẻ & Hiệu ứng",
+          "typography": "Chữ & Khung"
+        },
+        "background": {
+          "title": "Nền trang & Hiệu ứng môi trường",
+          "type": "Loại nền",
+          "types": {
+            "solid": "Màu đơn sắc",
+            "gradient": "Dải chuyển sắc (Gradient)",
+            "image": "Ảnh nền toàn trang",
+            "pattern": "Họa tiết (Pattern)"
+          },
+          "ambientMotion": "Chuyển động nền",
+          "ambientMotions": {
+            "none": "Tĩnh (Không chuyển động)",
+            "gradient_flow": "Dải màu trôi chậm",
+            "floating_orbs": "Quầng sáng nổi lơ lửng"
+          },
+          "gradientType": "Kiểu Gradient",
+          "gradientTypes": {
+            "linear": "Tuyến tính (Linear)",
+            "radial": "Tỏa tròn (Radial)"
+          },
+          "gradientAngle": "Góc nghiêng ({angle}°)",
+          "gradientColor": "Màu điểm {index}",
+          "addColorStop": "Thêm màu thứ 3",
+          "removeColorStop": "Bỏ màu thứ 3",
+          "pattern": "Kiểu họa tiết (tự ăn theo màu theme)",
+          "coloredBackdropsTitle": "Nền có màu sẵn (PatternCraft)",
+          "coloredBackdrops": {
+            "emerald_dark_glow": "Ngọc lục bảo đêm",
+            "violet_cosmic_mesh": "Tím vũ trụ Mesh",
+            "crimson_aura_dark": "Đỏ thẫm Aura",
+            "midnight_blueprint": "Bản vẽ xanh đêm",
+            "cyber_amber_dots": "Hổ phách tối giản",
+            "indigo_cyber_horizon": "Chân trời Indigo",
+            "warm_paper_cream": "Giấy kem ấm",
+            "sunset_peach_glow": "Hoàng hôn đào",
+            "mint_pastel_aura": "Bạc hà pastel",
+            "soft_lavender_grid": "Oải hương dịu nhẹ",
+            "rose_duotone_light": "Hồng hai góc sáng",
+            "sky_isometric_clean": "Xanh trời 3D"
+          },
+          "patterns": {
+            "dots": "Chấm bi tối giản",
+            "grid": "Lưới kỹ thuật",
+            "mesh": "Mesh đa sắc",
+            "diagonal": "Sọc chéo mảnh",
+            "aura": "Quầng sáng Aura",
+            "top_spotlight": "Đèn chiếu đỉnh",
+            "bottom_glow": "Hắt sáng đáy",
+            "grid_fade": "Lưới mờ viền",
+            "dot_fade": "Chấm bi mờ viền",
+            "dashed_grid": "Lưới kiến trúc",
+            "isometric": "Kim cương 3D",
+            "checker_soft": "Ô bàn cờ dịu",
+            "crosshatch": "Đan chéo cổ điển",
+            "concentric": "Vòng đồng tâm",
+            "sunset_horizon": "Chân trời hoàng hôn",
+            "cyber_horizon": "Lưới không gian",
+            "aurora_beams": "Tia cực quang",
+            "blueprint": "Bản vẽ kỹ thuật",
+            "paper_grain": "Giấy kẻ ngang",
+            "duotone_corner": "Hai góc phát sáng"
+          },
+          "image": "Ảnh nền (Thư viện công khai)",
+          "fit": "Cách phủ ảnh",
+          "fits": {
+            "cover": "Phủ kín toàn màn hình",
+            "contain": "Vừa khung",
+            "tile": "Lặp ô (Pattern)"
+          },
+          "blur": "Độ làm mờ nền ({value}px)",
+          "overlayColor": "Màu lớp phủ",
+          "overlayOpacity": "Độ đậm lớp phủ ({value}%)"
+        },
+        "header": {
+          "title": "Đầu trang & Thương hiệu",
+          "layout": "Bố cục đầu trang",
+          "layouts": {
+            "centered": "Căn giữa chuẩn",
+            "banner_overlap": "Ảnh bìa & Avatar nổi",
+            "hero_card": "Thẻ hồ sơ nổi bật",
+            "editorial_left": "Căn trái tối giản"
+          },
+          "statusPill": "Nhãn trạng thái ngắn",
+          "statusPillPlaceholder": "VD: Đang nhận booking",
+          "avatarShape": "Hình dạng Avatar",
+          "avatarShapes": {
+            "circle": "Hình tròn",
+            "squircle": "Bo góc mềm",
+            "square": "Vuông bo góc"
+          },
+          "avatarSize": "Kích thước Avatar",
+          "avatarRing": "Viền Avatar",
+          "avatarRings": {
+            "none": "Không viền",
+            "solid": "Viền mảnh",
+            "gradient_glow": "Viền phát sáng"
+          },
+          "sizes": {
+            "sm": "Nhỏ",
+            "md": "Vừa",
+            "lg": "Lớn"
+          },
+          "coverHeight": "Chiều cao ảnh bìa",
+          "socialPosition": "Thông tin liên hệ / MXH",
+          "socialPositions": {
+            "top": "Hiển thị ở đầu trang",
+            "bottom": "Hiển thị cuối trang",
+            "hidden": "Ẩn"
+          },
+          "showVerifiedBadge": "Hiện huy hiệu xác thực",
+          "coverFade": "Làm mờ đáy ảnh bìa hòa vào nền",
+          "showShareButton": "Hiện nút Chia sẻ góc trên"
+        },
+        "blocks": {
+          "title": "Chất liệu thẻ, Hiệu ứng & Bố cục",
+          "surfaceStyle": "Chất liệu bề mặt",
+          "surfaces": {
+            "solid": "Nền đặc chuẩn",
+            "outline": "Viền thanh lịch",
+            "soft": "Nền dịu theo màu nhấn",
+            "glass": "Kính mờ (Glassmorphism)",
+            "elevated": "Nổi khối đổ bóng",
+            "hard_shadow": "Viền đậm Neo-Brutalism"
+          },
+          "cardRadius": "Bo góc thẻ",
+          "radii": {
+            "0px": "Vuông sắc (0px)",
+            "4px": "Bo nhẹ (4px)",
+            "8px": "Vừa (8px)",
+            "12px": "Mềm mại (12px)",
+            "20px": "Bo tròn lớn (20px)"
+          },
+          "hoverEffect": "Hiệu ứng khi rê chuột (Hover)",
+          "hovers": {
+            "none": "Không hiệu ứng",
+            "lift": "Nâng nhẹ & đổ bóng",
+            "scale": "Phóng nhẹ",
+            "glow": "Phát sáng viền màu nhấn",
+            "shine": "Ánh sáng lướt chéo",
+            "hard_push": "Nhấn lún cơ học"
+          },
+          "entranceAnimation": "Hiệu ứng khi mở trang",
+          "entrances": {
+            "none": "Hiển thị ngay",
+            "fade_up": "Trượt lên tuần tự",
+            "scale_in": "Phóng to mượt",
+            "blur_in": "Hiện rõ từ mờ"
+          },
+          "highlightEffect": "Hiệu ứng mục nổi bật",
+          "highlights": {
+            "none": "Chỉ viền nhấn",
+            "pulse_ring": "Vòng sáng nhịp thở",
+            "wiggle": "Rung nhẹ thu hút",
+            "shimmer": "Ánh sáng lướt liên tục"
+          },
+          "linkLayout": "Kiểu hiển thị liên kết",
+          "linkLayouts": {
+            "classic_bar": "Thanh ngang chuẩn",
+            "thumbnail_card": "Thẻ kèm ảnh nhỏ",
+            "featured_hero": "Thẻ lớn nổi bật",
+            "grid_2col": "Lưới 2 cột",
+            "bento_grid": "Bento Grid linh hoạt",
+            "compact_pills": "Nút viên thuốc gọn"
+          },
+          "affiliateLayout": "Bố cục sản phẩm",
+          "affiliateLayouts": {
+            "grid": "Lưới sản phẩm",
+            "list": "Danh sách chi tiết",
+            "links": "Liên kết tối giản",
+            "carousel_featured": "Cuộn ngang nổi bật + Lưới"
+          },
+          "stickyFilterBar": "Ghim thanh tìm kiếm & danh mục khi cuộn"
+        },
+        "typography": {
+          "title": "Phông chữ & Khung hiển thị",
+          "fontFamily": "Bộ phông chữ",
+          "fonts": {
+            "inter": "Inter (Chuẩn hiện đại)",
+            "plus_jakarta": "Plus Jakarta Sans (Trẻ trung)",
+            "be_vietnam": "Be Vietnam Pro (Thanh lịch)",
+            "playfair": "Playfair Display (Tạp chí Serif)",
+            "jetbrains_mono": "JetBrains Mono (Công nghệ)"
+          },
+          "containerWidth": "Độ rộng khung nội dung",
+          "widths": {
+            "compact": "Nhỏ gọn (448px · Mobile-first)",
+            "standard": "Tiêu chuẩn (576px)",
+            "wide": "Rộng (896px)"
+          },
+          "blockSpacing": "Khoảng cách giữa các khối",
+          "spacings": {
+            "compact": "Gọn gàng",
+            "normal": "Cân đối",
+            "relaxed": "Thoáng rộng"
+          },
+          "footerStyle": "Chân trang",
+          "footers": {
+            "minimal": "Tối giản",
+            "pill": "Nhãn nổi",
+            "hidden": "Ẩn"
+          }
+        }
+      },
       "bioEditor": {
         "personalInfoTitle": "Thông tin cá nhân & Chức danh",
         "displayName": "Tên hiển thị",
@@ -507,6 +724,24 @@
         "editCategory": "Sửa danh mục",
         "saveCategory": "Lưu",
         "order": "Thứ tự: #{order}"
+      },
+      "platformsEditor": {
+        "title": "Nơi bán riêng của trang",
+        "description": "Tùy chỉnh danh sách nơi bán, shortcode và biểu thức Regex URL để nhận diện tự động khi lấy link nhanh (chỉ áp dụng riêng cho trang này).",
+        "nameLabel": "Tên nơi bán",
+        "namePlaceholder": "VD: TikTok Shop",
+        "codeLabel": "Shortcode",
+        "codePlaceholder": "VD: tiktok",
+        "regexLabel": "Regex / URL khớp",
+        "regexPlaceholder": "VD: (tiktok\\.com|vt\\.tiktok\\.com)",
+        "add": "Thêm",
+        "empty": "Chưa có nơi bán riêng. Bạn vẫn có thể chọn Khác / Trực tiếp khi thêm sản phẩm.",
+        "noRegex": "Chưa đặt regex tự nhận diện",
+        "requiredError": "Vui lòng nhập đầy đủ Tên nơi bán và Shortcode.",
+        "duplicateCodeError": "Shortcode này đã tồn tại trong trang hoặc trùng với 'custom'.",
+        "invalidRegexError": "Biểu thức Regex URL không hợp lệ.",
+        "testUrlLabel": "Kiểm thử nhận diện URL theo cấu hình của trang",
+        "testUrlPlaceholder": "Dán thử URL sản phẩm vào đây để kiểm tra..."
       },
       "itemsEditor": {
         "total": "Tổng cộng {count} sản phẩm / liên kết",
@@ -1153,6 +1388,109 @@
     "bulk": {
       "show": "Hiển thị bình luận",
       "hide": "Ẩn bình luận"
+    }
+  },
+  "publicFeedback": {
+    "tooltip": "Góp ý / Báo lỗi trang này",
+    "title": "Góp ý & Báo lỗi",
+    "subtitle": "Gửi ẩn danh tới chủ trang",
+    "close": "Đóng",
+    "typeLabel": "Loại phản hồi",
+    "messageLabel": "Nội dung",
+    "messagePlaceholder": "Ví dụ: Link sản phẩm số 2 bị lỗi hoặc sai giá...",
+    "nameLabel": "Tên (tùy chọn)",
+    "namePlaceholder": "Khách ẩn danh",
+    "emailLabel": "Email nhận cảm ơn",
+    "emailPlaceholder": "name@example.com",
+    "submit": "Gửi góp ý",
+    "thankTitle": "Cảm ơn bạn đã góp ý!",
+    "thankDesc": "Chủ trang đã nhận được thông báo và sẽ kiểm tra sớm nhất.",
+    "sendAnother": "Gửi góp ý khác",
+    "submittedToast": "Đã gửi góp ý thành công!",
+    "validation": {
+      "messageMin": "Vui lòng nhập nội dung ít nhất 5 ký tự.",
+      "messageMax": "Nội dung không được vượt quá 2000 ký tự.",
+      "emailInvalid": "Email không đúng định dạng."
+    },
+    "types": {
+      "BROKEN_LINK": "Link hỏng / Sai link",
+      "WRONG_INFO": "Thông tin chưa đúng",
+      "BUG": "Lỗi hiển thị / kỹ thuật",
+      "SUGGESTION": "Đề xuất cải thiện",
+      "OTHER": "Khác"
+    }
+  },
+  "feedbacks": {
+    "title": "Góp ý & Báo lỗi",
+    "description": "Theo dõi và xử lý phản hồi ẩn danh từ người xem trang tùy chỉnh và link rút gọn.",
+    "detailTitle": "Chi tiết góp ý",
+    "searchPlaceholder": "Tìm theo tiêu đề, URL, nội dung, người gửi...",
+    "empty": "Chưa có góp ý hoặc báo lỗi nào.",
+    "untitledTarget": "Trang / Link chưa đặt tên",
+    "anonymousSender": "Khách ẩn danh",
+    "notThanked": "Chưa gửi cảm ơn",
+    "thankedBadge": "Đã cảm ơn",
+    "thankDisabledNoEmail": "Người gửi không để lại email nên không thể gửi thư cảm ơn.",
+    "thankDisabledNoPermission": "Bạn không có quyền gửi email cảm ơn.",
+    "updated": "Đã cập nhật trạng thái xử lý.",
+    "deleted": "Đã xóa góp ý.",
+    "bulkDeleted": "Đã xóa {count} góp ý.",
+    "bulkUpdated": "Đã cập nhật trạng thái cho {count} góp ý.",
+    "fields": {
+      "targetTitle": "Trang / Liên kết",
+      "targetType": "Loại đối tượng",
+      "targetUrl": "Đường dẫn",
+      "feedbackType": "Phân loại",
+      "message": "Nội dung góp ý",
+      "sender": "Người gửi",
+      "status": "Trạng thái",
+      "resolutionNote": "Ghi chú xử lý",
+      "thankedAt": "Thời điểm cảm ơn",
+      "resolvedAt": "Thời điểm xử lý xong",
+      "owner": "Chủ sở hữu",
+      "createdAt": "Thời gian gửi"
+    },
+    "types": {
+      "BROKEN_LINK": "Link hỏng / Sai link",
+      "WRONG_INFO": "Sai thông tin",
+      "BUG": "Lỗi kỹ thuật",
+      "SUGGESTION": "Đề xuất",
+      "OTHER": "Khác"
+    },
+    "targetTypes": {
+      "PAGE": "Trang tùy chỉnh",
+      "SHORT_LINK": "Link rút gọn"
+    },
+    "statuses": {
+      "OPEN": "Mới tiếp nhận",
+      "IN_PROGRESS": "Đang xử lý",
+      "RESOLVED": "Đã xử lý",
+      "IGNORED": "Bỏ qua"
+    },
+    "actions": {
+      "thank": "Cảm ơn người góp ý",
+      "thankAgain": "Gửi lại lời cảm ơn",
+      "saveResolution": "Lưu kết quả xử lý"
+    },
+    "placeholders": {
+      "resolutionNote": "Nhập nội dung đã khắc phục (sẽ dùng cho biến '{{resolution_note}}' khi cảm ơn)..."
+    },
+    "thankDialog": {
+      "title": "Gửi email cảm ơn",
+      "description": "Chọn mẫu email cảm ơn hoặc tùy biến nội dung gửi tới người góp ý.",
+      "descriptionWithEmail": "Gửi email cảm ơn tới {email}.",
+      "templateLabel": "Mẫu email cảm ơn",
+      "autoTemplate": "Tự động (Ưu tiên mẫu cá nhân → Mặc định hệ thống)",
+      "personalTag": "Cá nhân",
+      "systemTag": "Hệ thống",
+      "customSubjectLabel": "Tiêu đề email (có thể sửa trực tiếp)",
+      "customSubjectPlaceholder": "Cảm ơn bạn đã góp ý!",
+      "customBodyLabel": "Nội dung email (có thể chỉnh sửa trực tiếp trước khi gửi)",
+      "customBodyPlaceholder": "Nhập nội dung email cảm ơn...",
+      "loadingPreview": "Đang nạp nội dung mẫu...",
+      "defaultResolutionNote": "Chúng tôi đã kiểm tra và cập nhật lại nội dung chính xác.",
+      "sendAction": "Gửi cảm ơn",
+      "sentToast": "Đã gửi email cảm ơn tới người góp ý!"
     }
   }
 }

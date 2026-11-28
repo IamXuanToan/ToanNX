@@ -1,6 +1,6 @@
 "use client";
 
-import { Send, Sparkles, Trash2, X } from "lucide-react";
+import { RotateCcw, Send, Sparkles, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
 
@@ -16,13 +16,15 @@ import { MessageScroller } from "@/shares/components/common/message-scroller";
 import { TimestampText } from "@/shares/components/common/timestamp-text";
 import { UserAvatar } from "@/shares/components/common/user-avatar";
 import { Button } from "@/shares/components/ui/button";
-import { Input } from "@/shares/components/ui/input";
 import { Skeleton } from "@/shares/components/ui/skeleton";
+import { Textarea } from "@/shares/components/ui/textarea";
 import { cn } from "cn";
 
 import { matchSlashBadgeInMessage } from "../../constants/defaults";
 import { AssistantAvatar } from "./assistant-avatar";
 import { AssistantCommandBadge } from "./assistant-command-badge";
+import { AssistantQuickReplies } from "./assistant-quick-replies";
+import { AssistantResultCard } from "./assistant-result-card";
 import { AssistantSlashSuggestions } from "./assistant-slash-suggestions";
 import { AssistantThinkingIndicator } from "./assistant-thinking-indicator";
 import { useAssistantChatPanel } from "./hooks/use-assistant-chat-panel";
@@ -38,17 +40,21 @@ export function AssistantChat({
   variant = "popup",
   canChat,
   enabled = true,
+  isCustomSize = false,
+  onResetSize,
   onClose,
 }: {
   variant?: "popup" | "page";
   canChat: boolean;
   enabled?: boolean;
+  isCustomSize?: boolean;
+  onResetSize?: () => void;
   onClose?: () => void;
 }) {
   const t = useTranslations("workspace.assistant");
   const tTable = useTranslations("common.table");
   const state = useAssistantChatPanel(canChat, enabled);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const assistantTitle = state.botProfile?.name || t("defaultName");
   const isPopup = variant === "popup";
   const footerCommands = state.commands.filter((cmd) => cmd.key !== "clear");
@@ -74,6 +80,22 @@ export function AssistantChat({
           </div>
 
           <div className="flex shrink-0 items-center gap-1">
+            {isCustomSize && onResetSize ? (
+              <AppTooltip content={t("resetPopupSize")}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t("resetPopupSize")}
+                  onClick={onResetSize}
+                  data-testid="assistant-reset-size-btn"
+                  className="text-muted-foreground hover:bg-muted hover:text-foreground size-8 shrink-0 rounded-lg"
+                >
+                  <RotateCcw className="size-4" />
+                </Button>
+              </AppTooltip>
+            ) : null}
+
             {canClear ? (
               <AppTooltip content={t("clearThreadShort")}>
                 <span className="inline-flex">
@@ -232,6 +254,13 @@ export function AssistantChat({
                     ) : (
                       msg.content
                     )}
+                    {role === "assistant" && msg.cards?.length ? (
+                      <div className="mt-2 space-y-2">
+                        {msg.cards.map((card) => (
+                          <AssistantResultCard key={`${card.type}-${card.id}`} card={card} />
+                        ))}
+                      </div>
+                    ) : null}
                   </MessageContent>
                 </Message>
               );
@@ -248,6 +277,13 @@ export function AssistantChat({
         </MessageScroller>
 
         <div className="border-border/60 relative mt-2 space-y-2 border-t pt-2.5">
+          <AssistantQuickReplies
+            replies={state.quickReplies}
+            input={state.quickInput}
+            disabled={!canChat || state.isSending}
+            label={t("quickRepliesLabel")}
+            onSelect={(text, options) => void state.sendMessage(text, options)}
+          />
           <AssistantSlashSuggestions
             suggestions={state.slashSuggestions}
             activeIndex={state.activeSuggestionIndex}
@@ -287,10 +323,11 @@ export function AssistantChat({
               event.preventDefault();
               void state.sendMessage();
             }}
-            className="flex gap-2"
+            className="flex items-end gap-2"
           >
-            <Input
+            <Textarea
               ref={inputRef}
+              rows={1}
               value={state.draft}
               onChange={(event) => state.setDraft(event.target.value)}
               onKeyDown={(event) => {
@@ -300,7 +337,10 @@ export function AssistantChat({
               disabled={!canChat || state.isSending}
               aria-autocomplete="list"
               aria-expanded={state.slashSuggestions.length > 0}
-              className={cn(isPopup ? "h-9 text-sm" : "h-10")}
+              className={cn(
+                "field-sizing-content max-h-28 min-h-9 resize-none rounded-2xl py-2",
+                isPopup ? "text-sm" : "min-h-10",
+              )}
               maxLength={2000}
             />
             <Button
@@ -308,7 +348,7 @@ export function AssistantChat({
               size={isPopup ? "sm" : "default"}
               disabled={!canChat || !state.draft.trim() || state.isSending}
               aria-label={t("send")}
-              className={cn(isPopup ? "h-9 px-3" : "h-10")}
+              className={cn("shrink-0", isPopup ? "h-9 px-3" : "h-10")}
             >
               <Send className="size-4" />
               {isPopup ? null : <span>{t("send")}</span>}

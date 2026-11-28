@@ -5,6 +5,7 @@ from typing import Any
 import pytest
 
 from app.core.tests.base.base_api_test_case import BaseApiTestCase
+from app.system.models.attachment import Attachment
 from app.system.tests.helpers.permission_helper import grant
 from app.utilities.models.page_path import PagePath
 from app.utilities.permissions.page_permission import PagePermission as P
@@ -126,3 +127,44 @@ class TestPageCreateApi(BaseApiTestCase):
         api = login(user)
         res = api.post(URL, {"title": "X"}, format="json")
         self.assert_forbidden(res)
+
+    def test_private_background_image_rejected(self, user: Any, login: Any) -> None:
+        """Ảnh nền trang công khai bắt buộc visibility=PUBLIC; ảnh private bị 400."""
+        grant(user, P.CREATE)
+        p_path = get_seeded_path("p")
+        private_img = Attachment.objects.create(
+            created_by=user,
+            original_name="secret.png",
+            content_type="image/png",
+            size=1024,
+            visibility=Attachment.Visibility.PRIVATE,
+        )
+        api = login(user)
+        res = api.post(
+            URL,
+            {
+                "path_id": str(p_path.pk),
+                "title": "Trang nền private",
+                "background_image_id": str(private_img.pk),
+            },
+            format="json",
+        )
+        err = self.assert_error(res, 400, "VALIDATION_ERROR")
+        assert "background_image_id" in err["details"]
+
+    def test_style_config_css_injection_rejected(self, user: Any, login: Any) -> None:
+        """Từ chối khóa lạ / CSS injection trong `style_config`."""
+        grant(user, P.CREATE)
+        p_path = get_seeded_path("p")
+        api = login(user)
+        res = api.post(
+            URL,
+            {
+                "path_id": str(p_path.pk),
+                "title": "Trang XSS",
+                "style_config": {"customCss": "body { background: url(javascript:alert(1)) }"},
+            },
+            format="json",
+        )
+        err = self.assert_error(res, 400, "VALIDATION_ERROR")
+        assert "style_config" in err["details"]

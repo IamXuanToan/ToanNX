@@ -28,13 +28,43 @@ CRON_BATCH_BUDGET_SECONDS = 20.0
 # AI Assistant (xKiro Multi-Model Fallback)
 AI_HISTORY_CONTEXT_LIMIT = 10
 AI_TOOL_ITEM_LIMIT = 15
-AI_MAX_TOOL_ROUNDS = 3
+AI_MAX_TOOL_ROUNDS = 4
 AI_MAX_MODEL_ATTEMPTS = 3
 AI_MAX_TOKENS = 1200
-AI_REQUEST_DEADLINE_SECONDS = 20.0
+AI_COMPOSE_MAX_TOKENS = 3000
+AI_REQUEST_DEADLINE_SECONDS = 45.0
+AI_COMPOSE_DEADLINE_SECONDS = 60.0
+AI_STREAM_CONNECT_TIMEOUT_SECONDS = 5.0
 AI_MIN_REMAINING_FOR_FALLBACK_SECONDS = 2.5
 AI_INITIAL_MESSAGES_LIMIT = 50
 AI_MESSAGE_MAX_LENGTH = 2000
+# Hành động chờ (xóa 2 bước / nháp tạo mới) lưu trên AssistantConversation, quá hạn thì bỏ
+ASSISTANT_PENDING_ACTION_TTL_SECONDS = 600
+# Số slug gợi ý còn trống trả về khi tạo link rút gọn
+ASSISTANT_SLUG_SUGGESTION_LIMIT = 3
+# Chuỗi che nội dung tin nhắn chứa mật khẩu người dùng gõ khi trả lời nháp
+ASSISTANT_MASKED_SECRET_TEXT = "••••••"  # noqa: S105 - chuỗi che hiển thị, không phải bí mật
+# Router tool: số tool tối đa gửi cho model mỗi lượt khi đã nhận diện được nhóm
+AI_ROUTED_TOOL_LIMIT = 14
+# Định dạng ngày hiển thị trong câu trả lời của Trợ lý (chuẩn dd/MM/yyyy của hệ thống)
+DISPLAY_DATE_FORMAT = "%d/%m/%Y"
+# Số bản ghi vừa thao tác nhắc lại cho model mỗi lượt (để hiểu "đổi tên cái đó")
+RECENT_RECORDS_LIMIT = 5
+# Telegram: nút lựa chọn nhanh (bàn phím inline) của Trợ lý AI
+QUICK_REPLY_CALLBACK_PREFIX = "aqr:"
+QUICK_REPLY_BUTTONS_PER_ROW = 2
+# RAG tri thức Client Portal + embedding Gemini (gói free)
+GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
+ASSISTANT_EMBEDDING_DIMENSIONS = 768
+ASSISTANT_EMBEDDING_QUERY_TIMEOUT_SECONDS = 2.0
+ASSISTANT_EMBEDDING_BATCH_TIMEOUT_SECONDS = 5.0
+ASSISTANT_EMBEDDING_BATCH_SIZE = 100
+ASSISTANT_EMBEDDING_COOLDOWN_SECONDS = 120
+REDIS_AI_EMBEDDING_COOLDOWN_KEY = "workspace:ai:embedding_cooldown"
+ASSISTANT_KNOWLEDGE_TOP_K = 3
+ASSISTANT_KNOWLEDGE_PROMPT_MAX_CHARS = 2400
+ASSISTANT_KNOWLEDGE_CACHE_TTL_SECONDS = 300
+ASSISTANT_KNOWLEDGE_RRF_K = 60
 
 # Policy mặc định được seed sẵn qua migration và luôn kèm chốt an toàn lõi ở AssistantService
 DEFAULT_ASSISTANT_SYSTEM_PROMPT = (

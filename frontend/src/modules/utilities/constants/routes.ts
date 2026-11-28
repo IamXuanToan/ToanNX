@@ -27,6 +27,11 @@ export const UTILITIES_ROUTES = {
     pathname: "/admin/page-paths/[id]" as const,
     params: { id },
   }),
+  pageFeedbacks: "/admin/feedbacks",
+  pageFeedbackDetail: (id: string) => ({
+    pathname: "/admin/feedbacks/[id]" as const,
+    params: { id },
+  }),
   /** Trang xem trước trực tiếp các mẫu template công khai. */
   demo: "/demo",
   /** Trang demo trình soạn thảo Notion-like mới. */
@@ -86,6 +91,14 @@ export const UTILITIES_PATHNAMES = {
   "/admin/page-paths/[id]": {
     vi: "/quan-tri/tien-ich/duong-dan/[id]",
     en: "/admin/utilities/page-paths/[id]",
+  },
+  "/admin/feedbacks": {
+    vi: "/quan-tri/tien-ich/gop-y",
+    en: "/admin/utilities/feedbacks",
+  },
+  "/admin/feedbacks/[id]": {
+    vi: "/quan-tri/tien-ich/gop-y/[id]",
+    en: "/admin/utilities/feedbacks/[id]",
   },
   "/demo": { vi: "/demo", en: "/demo" },
   "/demo/editor": { vi: "/demo/editor", en: "/demo/editor" },

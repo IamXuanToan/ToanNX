@@ -96,6 +96,13 @@ class AssistantMessage(CoreModel):
         help_text="True nếu lượt này gặp lỗi LLM hoặc rơi về Slash fallback.",
         db_comment="Cờ lỗi fallback",
     )
+    metadata = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="Dữ liệu hiển thị kèm",
+        help_text="Nút trả lời nhanh (`quick_replies`) và thẻ kết quả (`cards`) server dựng từ kết quả tool.",
+        db_comment="Quick replies và thẻ kết quả của tin nhắn",
+    )
 
     class Meta:
         db_table = "workspace_assistant_message"

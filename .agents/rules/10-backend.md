@@ -55,6 +55,23 @@ Chi tiết: `docs/rules/backend.md`, `docs/architecture/`, `docs/common-catalog.
 - Bí mật hệ thống tự tạo/kiểm dẫn xuất từ `DJANGO_SECRET_KEY` (`salted_hmac`, `signing`); token bên thứ ba của
   từng người lưu DB qua `SecretCipher`.
 
+## Trợ lý AI
+
+- Tool lấy mô tả/enum/giới hạn từ metadata model (`AssistantToolSpecBuilder` + `ASSISTANT_TOOL_MODELS`), không gõ
+  tay lệch model (`test_assistant_tool_specs.py`). Tùy chọn người dùng phải tự quyết khi tạo mới chỉ khai **tên field**
+  (+ mốc gợi ý cho số) trong `ASSISTANT_ASK_FIELDS`; engine nháp chung tự hỏi bằng nút, không viết hàm riêng từng tool,
+  không dựa lời dặn prompt. URL/số liệu trả lời lấy từ dữ liệu server (thẻ kết quả, `AssistantReplyGuard`).
+- **Client Portal ẩn tài nguyên vận hành Admin (kể cả user có quyền Admin)**: mẫu/cấu hình chỉ phục vụ quản trị (như `EmailTemplate` nhóm `AUTH`, `NOTIFICATION`) không hiển thị ở Client Portal; API Portal (`?portal_only=true`) và `accessible_queryset` chỉ trả dữ liệu `PERSONAL` của chính user và mẫu công khai được phép (`FEEDBACK_THANKS`, `CUSTOM`).
+- Trợ lý chỉ thao tác dữ liệu cá nhân Client Portal kể cả superuser: yêu cầu quản trị bị `AssistantScopeGuard` từ chối
+  bằng code; tool mới giữ owner isolation + thêm case test phạm vi. Chức năng Client Portal mới cập nhật tri thức RAG
+  `workspace/knowledge/client_portal/*.md` (tự nạp lại sau `migrate` qua `post_migrate`; chỉ sửa `.md` thì chạy
+  `sync_assistant_knowledge`).
+- Dữ liệu Portal không có tool riêng khai một dòng trong `assistant_record_resources.py` để dùng tool chung
+  `list_my_records` / `update_my_record` (validate bằng serializer API, owner isolation); xóa thêm vào
+  `DELETE_RESOURCE_PERMISSION_MAP`. Danh mục dùng chung (đường dẫn giữa) chỉ tạo khi có quyền RBAC.
+- Tool tạo/sửa mới khai trang chi tiết Portal + tool sửa/ID trong `assistant_record_links.py` để luôn trả link xem lại và
+  nhớ bản ghi (sửa bằng `update_*` với ID đã nhớ, không xóa rồi tạo lại).
+
 ## Kiểm tra
 
 `uv run ruff format <file>`, `uv run ruff check <file>`, `uv run mypy <file>`, pytest đúng file test trên DB local

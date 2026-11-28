@@ -21,6 +21,7 @@ import {
   Palette,
   Pilcrow,
   Quote,
+  Sparkles,
   Strikethrough,
   Underline,
 } from "lucide-react";
@@ -46,7 +47,13 @@ import { TIPTAP_HIGHLIGHT_COLORS, TIPTAP_TEXT_COLORS } from "./tiptap-extensions
  * Thanh định dạng nổi kiểu Notion (`BubbleMenu`) dùng chung cho `TiptapEditor`: xuất hiện khi bôi
  * đen chữ, tự ẩn khi đang chọn ảnh (ảnh có thanh resize/căn lề riêng).
  */
-export function TiptapBubbleToolbar({ editor }: { editor: Editor }) {
+export function TiptapBubbleToolbar({
+  editor,
+  onOpenAi,
+}: {
+  editor: Editor;
+  onOpenAi?: () => void;
+}) {
   const t = useTranslations("common.editor");
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkValue, setLinkValue] = useState("");
@@ -360,6 +367,21 @@ export function TiptapBubbleToolbar({ editor }: { editor: Editor }) {
             </div>
           </PopoverContent>
         </Popover>
+        {onOpenAi ? (
+          <>
+            <Separator orientation="vertical" className="mx-0.5 h-5" />
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={onOpenAi}
+              className="text-primary hover:text-primary h-7 gap-1 rounded-md px-2 text-xs font-medium"
+            >
+              <Sparkles className="size-3.5" />
+              <span>AI</span>
+            </Button>
+          </>
+        ) : null}
       </div>
     </BubbleMenu>
   );

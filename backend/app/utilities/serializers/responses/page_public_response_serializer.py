@@ -20,6 +20,7 @@ class PagePublicResponseSerializer(serializers.Serializer[Any]):
     seo_description = serializers.CharField(help_text="Mô tả SEO hiệu lực.")
     avatar_url = serializers.URLField(allow_null=True, help_text="Ảnh đại diện hoặc null.")
     cover_url = serializers.URLField(allow_null=True, help_text="Ảnh bìa hoặc null.")
+    background_image_url = serializers.URLField(allow_null=True, help_text="Ảnh nền toàn trang hoặc null.")
     theme = serializers.JSONField(help_text="Theme đã validate.")
     page_type = serializers.CharField(help_text="Loại trang (AFFILIATE, BIO, DONATION, LEGACY_PAGE...).")
     template_key = serializers.CharField(help_text="Mã template.")

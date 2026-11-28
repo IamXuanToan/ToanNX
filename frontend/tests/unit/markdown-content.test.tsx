@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { AnchorHTMLAttributes } from "react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -134,5 +134,26 @@ describe("parseMarkdown & MarkdownContent (render Markdown an toàn cho Chatbot 
     expect(screen.queryByRole("link", { name: "Data" })).toBeNull();
     expect(container.textContent).toContain("XSS");
     expect(container.textContent).toContain("<script>alert(1)</script>");
+  });
+
+  it("bảng Markdown có nút sao chép TSV", () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+
+    const mdTable = [
+      "| Ngày | Thời gian | Sự kiện |",
+      "| --- | --- | --- |",
+      "| 2026-11-28 | 08:40 | Báo cáo công việc |",
+      "| 2026-11-28 | 11:00 | Nhắc lịch 11h |",
+    ].join("\n");
+
+    renderMd(mdTable);
+
+    expect(screen.getByText("2 dòng · 3 cột")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Sao chép bảng" }));
+    expect(writeText).toHaveBeenCalledWith(
+      "Ngày\tThời gian\tSự kiện\n2026-11-28\t08:40\tBáo cáo công việc\n2026-11-28\t11:00\tNhắc lịch 11h",
+    );
   });
 });

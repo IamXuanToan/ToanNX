@@ -48,10 +48,13 @@ export const pageService = {
    * @param url - Đường dẫn sản phẩm.
    * @returns Thông tin metadata đã trích xuất.
    */
-  async fetchMetadata(url: string): Promise<PageMetadataResult> {
+  async fetchMetadata(
+    url: string,
+    platforms?: Array<{ code: string; name?: string; urlPattern?: string }>,
+  ): Promise<PageMetadataResult> {
     const res = await apiClient.post<PageMetadataResult>(
       UTILITIES_API_ENDPOINTS.pageFetchMetadata,
-      { url },
+      { url, ...(platforms ? { platforms } : {}) },
     );
     return res.data;
   },

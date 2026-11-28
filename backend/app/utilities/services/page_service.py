@@ -26,6 +26,7 @@ from app.utilities.repositories.page_path_repository import PagePathRepository
 from app.utilities.repositories.page_repository import PageRepository
 from app.utilities.services.short_link_service import ShortLinkService
 from app.utilities.validators.page_content_validator import PageContentRefs, validate_page_content
+from app.utilities.validators.style_config_validator import validate_style_config
 from app.utilities.validators.theme_validator import validate_theme
 
 _SLUG_TAKEN = {"slug": ["Slug đã tồn tại trong đường dẫn giữa này."]}
@@ -106,6 +107,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
 
         avatar_url = self._image_url(page.avatar)
         cover_url = self._image_url(page.cover)
+        background_image_url = self._image_url(page.background_image)
         content_cfg = page.content_config if isinstance(page.content_config, dict) else {}
         profile_obj = content_cfg.get("profile")
         profile_cfg: dict[str, Any] = profile_obj if isinstance(profile_obj, dict) else {}
@@ -143,6 +145,7 @@ class PageService(CoreCrudService[Page, PageRepository]):
             "seo_description": page.seo_description or page.description,
             "avatar_url": avatar_url,
             "cover_url": cover_url,
+            "background_image_url": background_image_url,
             "theme": page.theme,
             "page_type": page.page_type,
             "template_key": page.template_key,
@@ -280,9 +283,11 @@ class PageService(CoreCrudService[Page, PageRepository]):
     def _prepare(
         self, owner: Any, fields: dict[str, Any], current_status: str | None, actor: Any | None = None
     ) -> None:
-        """Theme, ảnh đại diện/bìa (phải của owner hoặc actor có quyền), mốc công khai."""
+        """Theme, style_config, ảnh đại diện/bìa/nền, mốc công khai."""
         if "theme" in fields:
             fields["theme"] = validate_theme(fields["theme"])
+        if "style_config" in fields:
+            fields["style_config"] = validate_style_config(fields["style_config"])
         for source, target in (("avatar_id", "avatar"), ("cover_id", "cover")):
             if source in fields:
                 attachment_id = fields.pop(source)
@@ -291,8 +296,24 @@ class PageService(CoreCrudService[Page, PageRepository]):
                     if attachment_id is None
                     else self._owned_image(owner, attachment_id, source, actor=actor)
                 )
+        if "background_image_id" in fields:
+            bg_id = fields.pop("background_image_id")
+            fields["background_image"] = (
+                None
+                if bg_id is None
+                else self._public_image(owner, bg_id, "background_image_id", actor=actor)
+            )
         if fields.get("status") == Page.Status.PUBLISHED and current_status != Page.Status.PUBLISHED:
             fields["published_at"] = timezone.now()
+
+    def _public_image(
+        self, owner: Any, attachment_id: Any, field: str, actor: Any | None = None
+    ) -> Attachment:
+        """Ảnh nền trang công khai bắt buộc tồn tại, thuộc owner/manage_all và có `visibility=PUBLIC`."""
+        image = self._owned_image(owner, attachment_id, field, actor=actor)
+        if getattr(image, "visibility", None) != Attachment.Visibility.PUBLIC:
+            raise ValidationError(details={field: ["Ảnh nền trang công khai phải ở trạng thái công khai."]})
+        return image
 
     def _owned_image(
         self, owner: Any, attachment_id: Any, field: str, actor: Any | None = None

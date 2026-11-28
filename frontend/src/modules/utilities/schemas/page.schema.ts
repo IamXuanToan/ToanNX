@@ -3,6 +3,7 @@ import { z } from "zod";
 import { keysToCamel } from "@/shares/lib/api/case-conversion";
 import { slugField } from "@/shares/lib/field-schemas";
 
+import { DEFAULT_AFFILIATE_PLATFORMS } from "../constants/affiliate-platforms";
 import {
   ALL_PAGE_TYPES,
   PAGE_STATUSES,
@@ -48,6 +49,7 @@ export function pageSchema(t: Translate) {
     buttonStyle: z.enum(["rounded", "square", "pill"]),
     avatar: image,
     cover: image,
+    backgroundImage: image,
     content: z.custom<NonNullable<PageInput["content"]>>(),
   });
 }
@@ -69,6 +71,7 @@ export const PAGE_FORM_DEFAULTS: PageFormValues = {
       { id: "cat-1", name: "Tất cả", slug: "all", sortOrder: 0, isVisible: true },
       { id: "cat-2", name: "Đồ công nghệ", slug: "do-cong-nghe", sortOrder: 1, isVisible: true },
     ],
+    platforms: DEFAULT_AFFILIATE_PLATFORMS,
     items: [],
   },
   styleConfig: {
@@ -95,6 +98,7 @@ export const PAGE_FORM_DEFAULTS: PageFormValues = {
   buttonStyle: "rounded",
   avatar: null,
   cover: null,
+  backgroundImage: null,
   content: { type: "doc", content: [{ type: "paragraph" }] },
 };
 
@@ -110,8 +114,23 @@ export const PAGE_FORM_FIELDS = [
   "templateKey",
 ] as const;
 
+const CARD_RADIUS_ALIASES: Record<string, string> = {
+  rounded: "12px",
+  pill: "20px",
+  square: "0px",
+};
+
 /** @param page - Trang có sẵn. @returns Giá trị form. */
 export function fromPage(page: PageDetail): PageFormValues {
+  const rawStyleConfig = keysToCamel<Record<string, unknown>>(
+    (page.styleConfig as Record<string, unknown>) ?? PAGE_FORM_DEFAULTS.styleConfig,
+  );
+  if (
+    typeof rawStyleConfig.cardRadius === "string" &&
+    CARD_RADIUS_ALIASES[rawStyleConfig.cardRadius]
+  ) {
+    rawStyleConfig.cardRadius = CARD_RADIUS_ALIASES[rawStyleConfig.cardRadius];
+  }
   return {
     ...PAGE_FORM_DEFAULTS,
     pathId: page.path.id,
@@ -125,9 +144,7 @@ export function fromPage(page: PageDetail): PageFormValues {
     contentConfig: keysToCamel<Record<string, unknown>>(
       (page.contentConfig as Record<string, unknown>) ?? PAGE_FORM_DEFAULTS.contentConfig,
     ),
-    styleConfig: keysToCamel<Record<string, unknown>>(
-      (page.styleConfig as Record<string, unknown>) ?? PAGE_FORM_DEFAULTS.styleConfig,
-    ),
+    styleConfig: rawStyleConfig,
     responsiveConfig: keysToCamel<Record<string, unknown>>(
       (page.responsiveConfig as Record<string, unknown>) ?? PAGE_FORM_DEFAULTS.responsiveConfig,
     ),
@@ -140,6 +157,7 @@ export function fromPage(page: PageDetail): PageFormValues {
     buttonStyle: page.theme.buttonStyle ?? "rounded",
     avatar: page.avatar ? { ...page.avatar, name: "" } : null,
     cover: page.cover ? { ...page.cover, name: "" } : null,
+    backgroundImage: page.backgroundImage ? { ...page.backgroundImage, name: "" } : null,
     content: page.content,
   };
 }
@@ -179,6 +197,7 @@ export function toPageInput(
     theme,
     avatarId: values.avatar?.id ?? null,
     coverId: values.cover?.id ?? null,
+    backgroundImageId: values.backgroundImage?.id ?? null,
   };
   if (!page) return { ...base, template: values.template };
   return contentDirty

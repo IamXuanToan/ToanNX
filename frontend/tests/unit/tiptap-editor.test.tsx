@@ -483,3 +483,20 @@ describe("NotionDemoShowcase", () => {
     expect(container.querySelector('[data-slot="tiptap-comment-editor"]')).toBeTruthy();
   });
 });
+
+describe("TiptapEditor AI", () => {
+  it("hiển thị nút AI Viết bài trên thanh công cụ và mở hộp thoại AI khi bấm", async () => {
+    render(
+      <NextIntlClientProvider locale="vi" messages={ALL_MESSAGES}>
+        <TiptapEditor value={DOC} onChange={vi.fn()} label="Nội dung AI" />
+      </NextIntlClientProvider>,
+    );
+
+    const aiButton = await screen.findByRole("button", { name: /AI Viết bài/i });
+    expect(aiButton).toBeTruthy();
+
+    fireEvent.click(aiButton);
+    expect(await screen.findByRole("dialog")).toBeTruthy();
+    expect(screen.getByText("Trợ lý AI soạn thảo nội dung")).toBeTruthy();
+  });
+});

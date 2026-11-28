@@ -74,6 +74,7 @@ describe("Hệ thống Template Trang (Page Template System)", () => {
       buttonStyle: "rounded" as const,
       avatar: null,
       cover: null,
+      backgroundImage: null,
       seoTitle: "",
       seoDescription: "",
       content: { type: "doc", content: [] },
@@ -125,6 +126,7 @@ describe("Hệ thống Template Trang (Page Template System)", () => {
       responsiveConfig: { desktopColumns: 4 },
       avatar: null,
       cover: null,
+      backgroundImage: null,
       content: { type: "doc", content: [] },
       contentVersion: 2,
       publishedAt: "2026-11-22T00:00:00Z",
@@ -177,6 +179,7 @@ describe("Hệ thống Template Trang (Page Template System)", () => {
       responsiveConfig: { mobile_columns: 1 },
       avatar: null,
       cover: null,
+      backgroundImage: null,
       content: { type: "doc", content: [] },
       contentVersion: 1,
       publishedAt: "2026-11-20T00:00:00Z",
@@ -417,13 +420,13 @@ describe("Hệ thống Template Trang (Page Template System)", () => {
     expect(getLinkPlatformIcon("https://myblog.com", "Blog").color).toBe("text-primary");
   });
 
-  it("THEME_PRESETS: phân cụm sáng (19) và tối (15) rõ ràng, không trùng tên", () => {
+  it("THEME_PRESETS: phân cụm sáng (23) và tối (17) rõ ràng, không trùng tên", () => {
     const lightPresets = THEME_PRESETS.filter((p) => p.mode === "light");
     const darkPresets = THEME_PRESETS.filter((p) => p.mode === "dark");
 
-    expect(lightPresets.length).toBe(19);
-    expect(darkPresets.length).toBe(15);
-    expect(THEME_PRESETS.length).toBe(34);
+    expect(lightPresets.length).toBe(23);
+    expect(darkPresets.length).toBe(17);
+    expect(THEME_PRESETS.length).toBe(40);
 
     const names = new Set(THEME_PRESETS.map((p) => p.name.toLowerCase()));
     expect(names.size).toBe(THEME_PRESETS.length);

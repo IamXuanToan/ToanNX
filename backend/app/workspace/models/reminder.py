@@ -1,4 +1,4 @@
-"""Model Nhắc việc cá nhân (hỗ trợ lặp định kỳ với anchor_day)."""
+"""Model Nhắc việc cá nhân (hỗ trợ lặp định kỳ)."""
 
 from django.conf import settings
 from django.db import models
@@ -19,6 +19,7 @@ class Reminder(JournalTracker, CoreModel):
         "is_completed",
         "recurrence",
         "reminder_days_before",
+        "topic",
     )
 
     class Priority(models.TextChoices):
@@ -115,19 +116,15 @@ class Reminder(JournalTracker, CoreModel):
         help_text="Chu kỳ tự động tạo việc kế tiếp khi hoàn thành.",
         db_comment="Chu kỳ lặp lại",
     )
-    anchor_day = models.PositiveSmallIntegerField(
+    topic = models.ForeignKey(
+        "workspace.ReminderTopic",
         null=True,
         blank=True,
-        verbose_name="Ngày chốt định kỳ",
-        help_text="Ngày gốc (1–31) giữ mốc lặp khi cộng tháng.",
-        db_comment="Ngày gốc lặp",
-    )
-    tags = models.JSONField(
-        default=list,
-        blank=True,
-        verbose_name="Thẻ gắn",
-        help_text="Nhãn phân loại công việc.",
-        db_comment="Nhãn nhắc việc",
+        on_delete=models.SET_NULL,
+        related_name="reminders",
+        verbose_name="Chủ đề",
+        help_text="Chủ đề phân loại nhắc việc.",
+        db_comment="Chủ đề nhắc việc",
     )
 
     class Meta:

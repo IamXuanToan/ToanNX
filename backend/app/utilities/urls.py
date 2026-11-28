@@ -7,6 +7,8 @@ from app.utilities.views.donation_public_feed_view import DonationPublicFeedView
 from app.utilities.views.donation_public_leaderboard_view import DonationPublicLeaderboardView
 from app.utilities.views.donation_transaction_view_set import DonationTransactionViewSet
 from app.utilities.views.donation_webhook_view import DonationWebhookView
+from app.utilities.views.page_feedback_public_view import PageFeedbackPublicView
+from app.utilities.views.page_feedback_view_set import PageFeedbackViewSet
 from app.utilities.views.page_path_view_set import PagePathViewSet
 from app.utilities.views.page_public_view import PagePublicView
 from app.utilities.views.page_view_set import PageViewSet
@@ -23,6 +25,7 @@ router.register("short-links", ShortLinkViewSet, basename="short-links")
 router.register("qr-codes", QrCodeViewSet, basename="qr-codes")
 router.register("page-paths", PagePathViewSet, basename="page-paths")
 router.register("pages", PageViewSet, basename="pages")
+router.register("page-feedbacks", PageFeedbackViewSet, basename="page-feedbacks")
 router.register("donations", DonationTransactionViewSet, basename="donations")
 
 urlpatterns: list[URLPattern | URLResolver] = [
@@ -30,6 +33,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("qr-codes/preview", QrPreviewView.as_view(), name="qr-code-preview"),
     path("qr-codes/banks", QrBankView.as_view(), name="qr-code-banks"),
     path("pages/public/<str:segment>/<str:slug>", PagePublicView.as_view(), name="page-public"),
+    path("public/feedbacks", PageFeedbackPublicView.as_view(), name="page-feedback-public"),
     path(
         "pages/<uuid:page_id>/donations/feed",
         DonationPublicFeedView.as_view(),

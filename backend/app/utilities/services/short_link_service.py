@@ -59,6 +59,19 @@ class ShortLinkService(CoreCrudService[ShortLink, ShortLinkRepository]):
                 raise
             raise ConflictError("Slug đã được sử dụng.", details={"slug": ["Slug đã tồn tại."]}) from exc
 
+    def suggest_available_slugs(self, candidates: list[str], *, limit: int = 3) -> list[str]:
+        """Chuẩn hóa slug ứng viên, trả tối đa `limit` slug còn trống (1 query, bỏ qua hoa/thường)."""
+        normalized: list[str] = []
+        for raw in candidates:
+            try:
+                slug = normalize_slug(str(raw or ""), preserve_case=True)
+            except ValidationError:
+                continue
+            if slug and slug.lower() not in {item.lower() for item in normalized}:
+                normalized.append(slug)
+        taken = self.repository.existing_slugs_ci(normalized)
+        return [slug for slug in normalized if slug.lower() not in taken][: max(0, limit)]
+
     @transaction.atomic
     def update(self, actor: Any, pk: Any, data: dict[str, Any]) -> ShortLink:
         """Kiểm tra URL/slug/expiration trước khi sửa trong transaction."""

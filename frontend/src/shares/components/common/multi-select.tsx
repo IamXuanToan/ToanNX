@@ -20,7 +20,7 @@ import { useMultiSelect } from "./hooks/use-multi-select";
 import type { SelectOption } from "./select-field";
 
 /**
- * Chọn nhiều giá trị (theo CommonMultiSelect của Medoly, dựng cùng khuôn popover với `SelectField`):
+ * Chọn nhiều giá trị (dựng cùng khuôn popover với `SelectField`):
  * giá trị đã chọn là chip có nút xoá trong ô; popover có ô tìm (bỏ dấu), "Bỏ chọn tất cả",
  * danh sách có dấu tích. Điều khiển (controlled).
  *

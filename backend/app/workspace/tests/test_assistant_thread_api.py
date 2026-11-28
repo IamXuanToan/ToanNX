@@ -93,3 +93,24 @@ class TestAssistantThreadApi(BaseApiTestCase):
         ]
         # DELETE /thread vẫn dọn sạch tất cả bản ghi DB kể cả TOOL/stub ẩn
         assert self.assert_success(api.delete(URL))["deleted_count"] == 4
+
+    def test_old_message_with_copied_view_links_shows_link_only_in_card(
+        self, user: Any, login: Any, client: Any
+    ) -> None:
+        grant(user, P.CHAT)
+        conv = AssistantConversation.objects.create(owner=user, channel=AssistantConversation.Channel.WEB)
+        view_url = "https://toannx.com/vi/ca-nhan/nhac-viec/r-1"
+        AssistantMessage.objects.create(
+            conversation=conv,
+            role=AssistantMessage.Role.ASSISTANT,
+            content=(
+                "✅ Đã đổi tên nhắc việc thành **Test thôi V2**.\n\n"
+                f"[Xem chi tiết]({view_url})\n\n🔗 [Xem chi tiết nhắc việc]({view_url})"
+            ),
+            metadata={
+                "cards": [{"type": "reminder", "id": "r-1", "kind_label": "nhắc việc", "view_url": view_url}]
+            },
+        )
+        message = self.assert_success(login(user).get(URL))["messages"][-1]
+        assert message["content"] == "✅ Đã đổi tên nhắc việc thành **Test thôi V2**."
+        assert message["cards"][0]["view_url"] == view_url

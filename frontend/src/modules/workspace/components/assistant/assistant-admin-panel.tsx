@@ -238,6 +238,7 @@ export function AssistantAdminPanel({
                 control={form.control}
                 name="aiDailyTokenLimit"
                 label={t("fields.aiDailyTokenLimit")}
+                description={t("fields.aiDailyTokenLimitHint")}
               >
                 {(field) => (
                   <NumberInput

@@ -9,9 +9,11 @@ from app.core.tests.base.base_api_test_case import BaseApiTestCase
 from app.system.models.telegram_chat import TelegramChat
 from app.system.services.telegram_bot_service import TelegramBotService
 from app.system.tests.factories.user_factory import UserFactory
+from app.system.tests.helpers.permission_helper import grant
 from app.system.types.telegram_send_result import TelegramSendResult
 from app.workspace.models.assistant_conversation import AssistantConversation
 from app.workspace.models.assistant_message import AssistantMessage
+from app.workspace.permissions.workspace_dashboard_permission import WorkspaceDashboardPermission
 from app.workspace.services.assistant_config_service import AssistantConfigService
 
 pytestmark = pytest.mark.django_db
@@ -33,6 +35,9 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
 
         assert client.post(URL, {}, format="json").status_code == 404
 
+        # Chủ nhóm phải có quyền xem tổng hợp chi tiêu thì `/spending` mới trả dữ liệu riêng tư (gửi qua DM);
+        # thiếu quyền thì bot trả lỗi quyền — không phải dữ liệu riêng tư nên không đẩy sang DM.
+        grant(user, WorkspaceDashboardPermission.READ)
         owner2 = UserFactory()
         AssistantConfigService().update_config(
             user,
@@ -267,3 +272,127 @@ class TestTelegramAssistantAsyncApi(BaseApiTestCase):
         assert qstash_mock.call_count == 0
         assert slash_send_mock.call_count == 1
         assert slash_send_mock.call_args.args[1] == "-100888"
+
+    def test_reply_converts_markdown_to_telegram_html_safely(self, settings: Any) -> None:
+        from app.workspace.services.telegram_assistant_reply_service import (
+            TelegramAssistantReplyService,
+        )
+
+        settings.TELEGRAM_BOT_TOKEN = "123:TG-BOT"  # noqa: S105 - giá trị test
+        markdown_text = (
+            "### Hỗ trợ nhanh\n"
+            "- **Tạo nhắc việc** – thêm ghi chú & *ưu tiên*\n"
+            "- Dùng `/hom_nay` hoặc [mở trang](https://toannx.com)\n"
+            "<script>alert(1)</script>"
+        )
+        with patch(
+            "app.system.services.telegram_client.TelegramClient.send_message",
+            return_value=TelegramSendResult(ok=True),
+        ) as send_mock:
+            res = TelegramAssistantReplyService().send_reply("-100888", markdown_text)
+
+        assert res.ok is True
+        sent_html = send_mock.call_args.args[2]
+        assert "<b>Hỗ trợ nhanh</b>" in sent_html
+        assert "• <b>Tạo nhắc việc</b> – thêm ghi chú &amp; <i>ưu tiên</i>" in sent_html
+        assert "<code>/hom_nay</code>" in sent_html
+        assert '<a href="https://toannx.com">mở trang</a>' in sent_html
+        assert "&lt;script&gt;alert(1)&lt;/script&gt;" in sent_html
+
+    def test_group_reply_mode_all_messages_vs_mention_only_and_ignores_bots(
+        self, user: Any, client: Any, settings: Any
+    ) -> None:
+        """Nhóm chế độ all_messages đọc mọi tin nhắn không cần @mention; bot khác bị bỏ qua."""
+        settings.TELEGRAM_BOT_TOKEN = "123:TG-BOT"  # noqa: S105 - giá trị test
+        settings.TELEGRAM_BOT_USERNAME = "helper_bot"
+        settings.XKIRO_API_BASE = "https://xkiro.example.com/v1"
+        settings.XKIRO_API_KEY = "test-key"
+        settings.XKIRO_MODEL = "gpt-4o-mini"
+
+        AssistantConfigService().update_config(
+            user,
+            {"telegram_ai_enabled": True, "telegram_group_require_mention": True},
+        )
+        TelegramChat.objects.create(
+            owner=user,
+            chat_id="777001",
+            chat_type="private",
+            status=TelegramChat.Status.ACTIVE,
+            is_active=True,
+        )
+        group = TelegramChat.objects.create(
+            owner=user,
+            chat_id="-100777",
+            chat_type="group",
+            title="Nhóm 2 người",
+            status=TelegramChat.Status.ACTIVE,
+            is_active=True,
+            group_reply_mode=TelegramChat.GroupReplyMode.MENTION_ONLY,
+        )
+
+        secret = TelegramBotService().webhook_secret()
+        # 1. Chế độ mention_only: chat thường không @mention -> bỏ qua
+        res_skip = client.post(
+            "/api/v1/system/telegram/webhook",
+            {
+                "update_id": 9101,
+                "message": {
+                    "message_id": 11,
+                    "text": "tiền afff 30k",
+                    "from": {"id": 777001, "username": "toan"},
+                    "chat": {"id": -100777, "type": "group", "title": "Nhóm 2 người"},
+                },
+            },
+            format="json",
+            HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN=secret,
+        )
+        assert res_skip.status_code == 200
+
+        # 2. Chuyển sang all_messages -> đọc và trả lời mọi tin nhắn không cần @mention
+        group.group_reply_mode = TelegramChat.GroupReplyMode.ALL_MESSAGES
+        group.save(update_fields=["group_reply_mode"])
+
+        def fake_xkiro(self: Any, messages: Any, **kwargs: Any) -> dict[str, Any]:
+            return {"ok": True, "model": "gpt-4o-mini", "message": {"content": "Ok bạn!"}, "tokens": 5}
+
+        with (
+            patch("app.workspace.services.xkiro_client.XkiroClient.chat_completion", fake_xkiro),
+            patch(
+                "app.system.services.telegram_client.TelegramClient.send_message",
+                return_value=TelegramSendResult(ok=True),
+            ) as send_mock,
+        ):
+            res_ok = client.post(
+                "/api/v1/system/telegram/webhook",
+                {
+                    "update_id": 9102,
+                    "message": {
+                        "message_id": 12,
+                        "text": "tiền afff 30k",
+                        "from": {"id": 777001, "username": "toan"},
+                        "chat": {"id": -100777, "type": "group", "title": "Nhóm 2 người"},
+                    },
+                },
+                format="json",
+                HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN=secret,
+            )
+            assert res_ok.status_code == 200
+            assert send_mock.call_count == 1
+
+            # 3. Tin nhắn từ bot khác -> bỏ qua hoàn toàn
+            res_bot = client.post(
+                "/api/v1/system/telegram/webhook",
+                {
+                    "update_id": 9103,
+                    "message": {
+                        "message_id": 13,
+                        "text": "hello",
+                        "from": {"id": 888888, "is_bot": True, "username": "other_bot"},
+                        "chat": {"id": -100777, "type": "group", "title": "Nhóm 2 người"},
+                    },
+                },
+                format="json",
+                HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN=secret,
+            )
+            assert res_bot.status_code == 200
+            assert send_mock.call_count == 1

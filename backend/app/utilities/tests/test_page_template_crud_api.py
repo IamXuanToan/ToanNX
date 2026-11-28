@@ -43,7 +43,7 @@ class TestPageTemplateCrudApi(BaseApiTestCase):
                 "categories": [{"id": "cat-1", "name": "Bàn phím"}],
             },
             "style_config": {
-                "themePreset": "Emerald Green",
+                "themePreset": "emerald_green",
                 "primaryColor": "#3D812E",
                 "layout": "grid",
                 "showPrice": True,
@@ -65,7 +65,7 @@ class TestPageTemplateCrudApi(BaseApiTestCase):
         assert data["template_version"] == 1
         assert len(data["content_config"]["items"]) == 1
         assert data["content_config"]["items"][0]["title"] == "Bàn phím cơ không dây"
-        assert data["style_config"]["primaryColor"] == "#3D812E"
+        assert data["style_config"]["primary_color"] == "#3d812e"
         assert data["responsive_config"]["desktopColumns"] == 3
 
     def test_create_page_invalid_page_type(self, user: Any, login: Any) -> None:
@@ -154,7 +154,7 @@ class TestPageTemplateCrudApi(BaseApiTestCase):
         assert data_copy["template_key"] == "creator_profile"
         assert data_copy["content_config"]["profile"]["displayName"] == "Dev Guy"
         assert len(data_copy["content_config"]["links"]) == 1
-        assert data_copy["style_config"]["primaryColor"] == "#4F46E5"
+        assert data_copy["style_config"]["primary_color"] == "#4f46e5"
 
     def test_filter_pages_by_page_type(self, user: Any, login: Any) -> None:
         """Lọc danh sách trang theo page_type hoạt động chính xác."""
@@ -218,4 +218,4 @@ class TestPageTemplateCrudApi(BaseApiTestCase):
         assert data_public["page_type"] == "DONATION"
         assert data_public["template_key"] == "vietqr_donate"
         assert data_public["content_config"]["bankAccount"]["bankName"] == "Vietcombank"
-        assert data_public["style_config"]["primaryColor"] == "#0284C7"
+        assert data_public["style_config"]["primary_color"] == "#0284c7"

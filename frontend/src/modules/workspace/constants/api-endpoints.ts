@@ -8,6 +8,7 @@ export const WORKSPACE_API_ENDPOINTS = {
   vaultItems: "/workspace/vault-items",
   vaultItemReveal: (id: string) => `/workspace/vault-items/${id}/reveal`,
   reminders: "/workspace/reminders",
+  reminderTopics: "/workspace/reminder-topics",
   settings: "/workspace/settings",
   settingsByOwner: (ownerId: string) => `/workspace/settings/${ownerId}`,
   dashboardSummary: "/workspace/dashboard/summary",

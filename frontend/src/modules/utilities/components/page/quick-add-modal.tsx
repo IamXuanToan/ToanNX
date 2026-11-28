@@ -33,21 +33,13 @@ import { Label } from "@/shares/components/ui/label";
 import { CURRENCY_SYMBOLS } from "@/shares/constants/currency";
 import { formatDisplayNumber } from "@/shares/lib/number-format";
 
-import type { AffiliateCategory, AffiliateItem } from "../../types/page.types";
+import { DEFAULT_AFFILIATE_PLATFORMS } from "../../constants/affiliate-platforms";
+import type {
+  AffiliateCategory,
+  AffiliateItem,
+  AffiliatePlatformConfig,
+} from "../../types/page.types";
 import { useQuickAddModal } from "./hooks/use-quick-add-modal";
-
-const PLATFORM_VALUES = ["shopee", "lazada", "tiktok", "tiki", "amazon", "custom"] as const;
-
-const STATIC_PLATFORM_LABELS: Record<
-  Exclude<(typeof PLATFORM_VALUES)[number], "custom">,
-  string
-> = {
-  shopee: "Shopee",
-  lazada: "Lazada",
-  tiktok: "TikTok Shop",
-  tiki: "Tiki",
-  amazon: "Amazon",
-};
 
 const BADGE_PRESETS = [
   { key: "recommended", defaultBg: "#EF4444", defaultText: "#FFFFFF" },
@@ -79,6 +71,7 @@ const BADGE_COLOR_PRESETS = [
 export function QuickAddModal({
   open,
   categories,
+  platforms = DEFAULT_AFFILIATE_PLATFORMS,
   editingItem,
   initialMode = "manual",
   onAdd,
@@ -87,6 +80,7 @@ export function QuickAddModal({
 }: {
   open: boolean;
   categories: AffiliateCategory[];
+  platforms?: AffiliatePlatformConfig[];
   editingItem?: AffiliateItem | null;
   initialMode?: "quick" | "manual";
   onAdd?: (item: AffiliateItem) => void;
@@ -135,7 +129,14 @@ export function QuickAddModal({
     handleFetch,
     handleConfirm,
     isEditing,
-  } = useQuickAddModal({ onAdd, onSave, onClose, editingItem });
+  } = useQuickAddModal({ onAdd, onSave, onClose, editingItem, platforms });
+
+  const platformOptions = [
+    ...platforms
+      .filter((p) => p.isVisible !== false && p.code)
+      .map((p) => ({ value: p.code, label: p.name })),
+    { value: "custom", label: t("platformCustom") },
+  ];
 
   const categoryOptions = [
     { value: "", label: t("selectCategory") },
@@ -435,11 +436,9 @@ export function QuickAddModal({
                 <SelectField
                   id="quick-add-platform"
                   value={platform}
-                  onValueChange={(val) => setPlatform(val as AffiliateItem["platform"])}
-                  options={PLATFORM_VALUES.map((value) => ({
-                    value,
-                    label: value === "custom" ? t("platformCustom") : STATIC_PLATFORM_LABELS[value],
-                  }))}
+                  onValueChange={setPlatform}
+                  options={platformOptions}
+                  searchable={true}
                 />
               </div>
             </div>

@@ -13,6 +13,35 @@ export type AssistantAvatarSummary = {
   visibility: AttachmentVisibility;
 };
 
+/** Nút trả lời nhanh cho lựa chọn đang hỏi (khớp `AssistantQuickReplyResponse`). */
+export type AssistantQuickReply = {
+  caption: string;
+  text: string;
+};
+
+/** Ô nhập trực tiếp cho câu hỏi đang chờ (khớp `AssistantQuickInputResponse`). */
+export type AssistantQuickInput = {
+  kind: "number" | "text" | "secret";
+  unit: string;
+  placeholder: string;
+};
+
+/** Thẻ kết quả do server dựng từ dữ liệu thật (khớp `AssistantResultCardResponse`). */
+export type AssistantResultCard = {
+  type: string;
+  kindLabel: string;
+  action: string;
+  id: string;
+  title: string;
+  url: string;
+  viewUrl: string;
+  destinationUrl: string;
+  redirectMode: string;
+  hasPassword: boolean;
+  expiresAt: string | null;
+  status: string;
+};
+
 /** Một tin nhắn trong luồng chat Trợ lý AI (khớp `AssistantMessageResponse`). */
 export type AssistantMessage = {
   id: string;
@@ -27,6 +56,9 @@ export type AssistantMessage = {
   tokensUsed: number;
   containsPrivateData: boolean;
   isError: boolean;
+  quickReplies: AssistantQuickReply[];
+  quickInput: AssistantQuickInput | null;
+  cards: AssistantResultCard[];
   createdAt: string;
 };
 

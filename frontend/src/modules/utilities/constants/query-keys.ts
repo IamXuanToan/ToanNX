@@ -38,3 +38,6 @@ export const donationKeys = {
   feed: (pageId: string) => [UTILITIES_SCOPE, "donations", "feed", pageId] as const,
   leaderboard: (pageId: string) => [UTILITIES_SCOPE, "donations", "leaderboard", pageId] as const,
 };
+
+/** Query key của góp ý / báo lỗi ẩn danh (`PageFeedback`). */
+export const pageFeedbackKeys = createResourceKeys(UTILITIES_SCOPE, "page-feedbacks");

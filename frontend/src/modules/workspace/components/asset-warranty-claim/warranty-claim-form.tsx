@@ -64,15 +64,18 @@ export function WarrantyClaimForm({
           </FormSection>
         }
       >
-        <FormSection title={t("editTitle")}>
+        <FormSection title={t("sections.basic")}>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <FormField control={form.control} name="assetId" label={t("fields.assetId")} required>
                 {(field) => (
                   <SelectField
+                    id={field.id}
                     value={field.value}
                     onValueChange={field.onChange}
                     disabled={locked}
+                    searchable
+                    invalid={field["aria-invalid"]}
                     options={state.assetOptions}
                   />
                 )}
@@ -81,6 +84,7 @@ export function WarrantyClaimForm({
             <FormField control={form.control} name="claimType" label={t("fields.claimType")}>
               {(field) => (
                 <SelectField
+                  id={field.id}
                   value={field.value}
                   onValueChange={field.onChange}
                   disabled={locked}
@@ -94,6 +98,7 @@ export function WarrantyClaimForm({
             <FormField control={form.control} name="status" label={t("fields.status")}>
               {(field) => (
                 <SelectField
+                  id={field.id}
                   value={field.value}
                   onValueChange={field.onChange}
                   disabled={locked}
@@ -101,9 +106,16 @@ export function WarrantyClaimForm({
                 />
               )}
             </FormField>
-            <FormField control={form.control} name="claimCode" label={t("fields.claimCode")}>
-              {(field) => <Input {...field} disabled={locked} className="h-10" />}
-            </FormField>
+            <div className="sm:col-span-2">
+              <FormField control={form.control} name="claimCode" label={t("fields.claimCode")}>
+                {(field) => <Input {...field} disabled={locked} className="h-10" />}
+              </FormField>
+            </div>
+          </div>
+        </FormSection>
+
+        <FormSection title={t("sections.serviceCenter")}>
+          <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="submittedDate"
@@ -112,6 +124,7 @@ export function WarrantyClaimForm({
             >
               {(field) => (
                 <DatePicker
+                  id={field.id}
                   value={field.value}
                   onChange={field.onChange}
                   disabled={locked}
@@ -126,6 +139,7 @@ export function WarrantyClaimForm({
             >
               {(field) => (
                 <DatePicker
+                  id={field.id}
                   value={field.value}
                   onChange={field.onChange}
                   disabled={locked}
@@ -136,12 +150,20 @@ export function WarrantyClaimForm({
             <FormField control={form.control} name="returnedDate" label={t("fields.returnedDate")}>
               {(field) => (
                 <DatePicker
+                  id={field.id}
                   value={field.value}
                   onChange={field.onChange}
                   disabled={locked}
                   clearable
                 />
               )}
+            </FormField>
+            <FormField
+              control={form.control}
+              name="externalTicketCode"
+              label={t("fields.externalTicketCode")}
+            >
+              {(field) => <Input {...field} disabled={locked} className="h-10" />}
             </FormField>
             <FormField
               control={form.control}
@@ -167,14 +189,12 @@ export function WarrantyClaimForm({
                 {(field) => <Input {...field} disabled={locked} className="h-10" />}
               </FormField>
             </div>
-            <FormField
-              control={form.control}
-              name="externalTicketCode"
-              label={t("fields.externalTicketCode")}
-            >
-              {(field) => <Input {...field} disabled={locked} className="h-10" />}
-            </FormField>
-            <div className="flex items-center gap-2 pt-6">
+          </div>
+        </FormSection>
+
+        <FormSection title={t("sections.costAndParts")}>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex items-center gap-2 sm:col-span-2">
               <Controller
                 control={form.control}
                 name="isCoveredByWarranty"
@@ -211,26 +231,29 @@ export function WarrantyClaimForm({
                   value={field.value}
                   onValueChange={field.onChange}
                   disabled={locked}
+                  searchable
                   invalid={field["aria-invalid"]}
                   options={state.currencyOptions}
                 />
               )}
             </FormField>
             {state.isForeign ? (
-              <FormField
-                control={form.control}
-                name="exchangeRate"
-                label={t("fields.exchangeRate")}
-              >
-                {(field) => (
-                  <NumberInput
-                    {...field}
-                    onChange={(val) => field.onChange(val === "" ? "" : String(val))}
-                    disabled={locked}
-                    className="h-10"
-                  />
-                )}
-              </FormField>
+              <div className="sm:col-span-2">
+                <FormField
+                  control={form.control}
+                  name="exchangeRate"
+                  label={t("fields.exchangeRate")}
+                >
+                  {(field) => (
+                    <NumberInput
+                      {...field}
+                      onChange={(val) => field.onChange(val === "" ? "" : String(val))}
+                      disabled={locked}
+                      className="h-10"
+                    />
+                  )}
+                </FormField>
+              </div>
             ) : null}
             <FormField
               control={form.control}
@@ -254,6 +277,7 @@ export function WarrantyClaimForm({
             >
               {(field) => (
                 <DatePicker
+                  id={field.id}
                   value={field.value}
                   onChange={field.onChange}
                   disabled={locked}
@@ -261,25 +285,26 @@ export function WarrantyClaimForm({
                 />
               )}
             </FormField>
-            <div className="sm:col-span-2">
-              <FormField
-                control={form.control}
-                name="issueDescription"
-                label={t("fields.issueDescription")}
-                required
-              >
-                {(field) => <Textarea {...field} disabled={locked} rows={3} />}
-              </FormField>
-            </div>
-            <div className="sm:col-span-2">
-              <FormField
-                control={form.control}
-                name="resolutionNotes"
-                label={t("fields.resolutionNotes")}
-              >
-                {(field) => <Textarea {...field} disabled={locked} rows={2} />}
-              </FormField>
-            </div>
+          </div>
+        </FormSection>
+
+        <FormSection title={t("sections.description")}>
+          <div className="grid gap-4">
+            <FormField
+              control={form.control}
+              name="issueDescription"
+              label={t("fields.issueDescription")}
+              required
+            >
+              {(field) => <Textarea {...field} disabled={locked} rows={3} />}
+            </FormField>
+            <FormField
+              control={form.control}
+              name="resolutionNotes"
+              label={t("fields.resolutionNotes")}
+            >
+              {(field) => <Textarea {...field} disabled={locked} rows={2} />}
+            </FormField>
           </div>
         </FormSection>
       </FormLayout>

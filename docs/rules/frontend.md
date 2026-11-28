@@ -243,7 +243,10 @@ common/
 **Chiều cao control.** Mọi control tương tác cao **40px** (`h-10`), bo `rounded-xl`: `Button` (mọi `size`
 đều ra 40px, nút chỉ icon `size-10`), `Input`, `PasswordInput`, `SearchInput`, `SelectField`, mục menu,
 mục sidebar. Không tự đặt `h-8`, `h-9`, `size-8` cho nút/ô nhập trong module; nút nằm trong ô nhập
-(hiện mật khẩu, xoá từ khóa) là `size-9 rounded-lg` để lọt trong viền.
+(hiện mật khẩu, xoá từ khóa) là `size-9 rounded-lg` để lọt trong viền. **Ngoại lệ duy nhất**: khối trả lời nhanh
+trong khung chat Trợ lý AI (chip lựa chọn `h-7 rounded-full text-xs`, ô nhập nhanh `h-8 rounded-full`, nút thẻ kết
+quả `h-7`) để bong bóng chat gọn — `assistant-quick-replies.tsx`, `assistant-quick-input.tsx`,
+`assistant-result-card.tsx`.
 
 **Select.** Mọi ô chọn dùng `SelectField` (`shares/components/common/select-field`), không dùng `<select>`
 hay `ui/select` trực tiếp. Dưới 8 lựa chọn là Select thường; từ 8 lựa chọn trở lên tự thành dạng có ô tìm

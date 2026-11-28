@@ -11,6 +11,7 @@ _PAGE = "page"
 _PAGE_PATH = "page_path"
 _QR_CODE = "qr_code"
 _DONATION = "donation"
+_FEEDBACK = "feedback"
 
 
 class UtilitiesRateLimitKey(StrEnum):
@@ -23,3 +24,4 @@ class UtilitiesRateLimitKey(StrEnum):
     QR_CODE_CREATE = f"{_MODULE}.{_QR_CODE}.{RateLimitAction.CREATE}"
     QR_CODE_PREVIEW = f"{_MODULE}.{_QR_CODE}.{RateLimitAction.PREVIEW}"
     DONATION_WEBHOOK = f"{_MODULE}.{_DONATION}.{RateLimitAction.WEBHOOK}"
+    FEEDBACK_SUBMIT = f"{_MODULE}.{_FEEDBACK}.{RateLimitAction.CREATE}"

@@ -58,10 +58,19 @@ const settings = createResourceKeys(SYSTEM_SCOPE, "settings");
 
 /** Query key của cấu hình hệ thống. */
 export const settingKeys = {
-  all: settings.all,
-  settings: (filters: object) => settings.list(filters),
-  setting: (id: string) => settings.detail(id),
+  ...settings,
   public: () => [SYSTEM_SCOPE, "settings", "public"] as const,
+};
+
+/** Query key của mẫu email (`EmailTemplate`). */
+export const emailTemplateKeys = createResourceKeys(SYSTEM_SCOPE, "email-templates");
+
+const baseLanguageKeys = createResourceKeys(SYSTEM_SCOPE, "languages");
+
+/** Query key của danh mục ngôn ngữ (`Language`). */
+export const languageKeys = {
+  ...baseLanguageKeys,
+  active: () => [SYSTEM_SCOPE, "languages", "active"] as const,
 };
 
 /** Query key phần Thông báo (chuông, tùy chọn, thiết bị, Telegram, nhật ký gửi, thông báo hệ thống). */

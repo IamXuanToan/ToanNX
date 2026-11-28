@@ -13,7 +13,7 @@ import { useTimePickerPopover } from "./hooks/use-time-picker-popover";
 import { TimeScrollColumn } from "./time-scroll-column";
 
 /**
- * Nút chọn giờ dạng popover hai cột (giờ / phút), theo TimePickerPopover của Medoly.
+ * Nút chọn giờ dạng popover hai cột (giờ / phút).
  * Hỗ trợ chế độ `inline` khi nằm trong khung chung `DateTimePicker`/`TimePicker` và nút xoá giờ trong popover.
  *
  * @param props - Giờ, phút, các phút được chọn, callback và trạng thái.

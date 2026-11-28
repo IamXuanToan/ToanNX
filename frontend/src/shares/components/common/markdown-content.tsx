@@ -3,11 +3,12 @@
 import { Fragment, type ReactNode, useMemo } from "react";
 
 import { Link } from "@/i18n/navigation";
+import { MarkdownTableBlock } from "@/shares/components/common/markdown-table-block";
 import {
   type MarkdownBlock,
   type MarkdownInline,
   type MarkdownListItem,
-  type MarkdownTableAlign,
+  markdownTableToText,
   parseMarkdown,
 } from "@/shares/lib/markdown";
 import { cn } from "cn";
@@ -19,12 +20,6 @@ const HEADING_CLASSES: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
   4: "text-sm font-semibold",
   5: "text-[13px] font-semibold",
   6: "text-muted-foreground text-[13px] font-semibold",
-};
-
-const TABLE_ALIGN_CLASSES: Record<MarkdownTableAlign, string> = {
-  left: "text-left",
-  center: "text-center",
-  right: "text-right",
 };
 
 function renderInlines(nodes: MarkdownInline[], keyPrefix: string): ReactNode {
@@ -218,48 +213,17 @@ function renderBlock(block: MarkdownBlock, key: string): ReactNode {
     }
     case "table":
       return (
-        <div
+        <MarkdownTableBlock
           key={key}
-          className="border-border/70 bg-background/70 my-1 overflow-x-auto rounded-lg border"
-        >
-          <table className="w-full border-collapse text-xs">
-            <thead>
-              <tr className="border-border/60 bg-muted/60 border-b">
-                {block.headers.map((headerCell, colIdx) => (
-                  <th
-                    key={`${key}-th-${colIdx}`}
-                    className={cn(
-                      "px-2.5 py-1.5 font-semibold whitespace-nowrap",
-                      TABLE_ALIGN_CLASSES[block.alignments[colIdx] ?? "left"],
-                    )}
-                  >
-                    {renderInlines(headerCell, `${key}-th-${colIdx}`)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {block.rows.map((row, rowIdx) => (
-                <tr
-                  key={`${key}-tr-${rowIdx}`}
-                  className="border-border/40 border-b last:border-b-0"
-                >
-                  {row.map((cell, colIdx) => (
-                    <td
-                      key={`${key}-td-${rowIdx}-${colIdx}`}
-                      className={cn(
-                        "px-2.5 py-1.5 align-top",
-                        TABLE_ALIGN_CLASSES[block.alignments[colIdx] ?? "left"],
-                      )}
-                    >
-                      {renderInlines(cell, `${key}-td-${rowIdx}-${colIdx}`)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          headers={block.headers.map((headerCell, colIdx) =>
+            renderInlines(headerCell, `${key}-th-${colIdx}`),
+          )}
+          rows={block.rows.map((row, rowIdx) =>
+            row.map((cell, colIdx) => renderInlines(cell, `${key}-td-${rowIdx}-${colIdx}`)),
+          )}
+          alignments={block.alignments}
+          copyText={markdownTableToText(block)}
+        />
       );
   }
 }

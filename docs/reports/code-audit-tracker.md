@@ -1,7 +1,7 @@
 # Sổ theo dõi rà soát code toàn hệ thống (Code / Security / i18n / Permission)
 
-- **Cập nhật lần cuối**: `2026-11-27 22:24`
-- **Tổng file theo dõi**: `3226` · **PASS**: `3176` · **FIXED**: `48` · **NEEDS_CHECK**: `2`
+- **Cập nhật lần cuối**: `2026-11-29 01:03`
+- **Tổng file theo dõi**: `3487` · **PASS**: `3028` · **FIXED**: `22` · **NEEDS_CHECK**: `437`
 - **Script đồng bộ & truy vấn**: [`scripts/audit_tracker.py`](../../scripts/audit_tracker.py)
 
 ## Quy trình vận hành với các skill
@@ -30,41 +30,476 @@
 <!-- AUDIT_SUMMARY:START -->
 | Khu vực | Tổng file | PASS | FIXED | NEEDS_CHECK | Đạt Code | Đạt Security | Đạt i18n | Đạt Permission |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Backend · Core (`backend/app/core`) | 120 | 120 | 0 | 0 | 120/120 | 120/120 | 2/2 | 25/25 |
-| Backend · System (`backend/app/system`) | 505 | 505 | 0 | 0 | 505/505 | 493/493 | 5/5 | 205/205 |
-| Backend · Utilities (`backend/app/utilities`) | 180 | 180 | 0 | 0 | 180/180 | 174/174 | 1/1 | 33/33 |
+| Backend · Core (`backend/app/core`) | 123 | 121 | 0 | 2 | 121/123 | 121/123 | 2/2 | 24/25 |
+| Backend · System (`backend/app/system`) | 543 | 492 | 0 | 51 | 493/543 | 480/527 | 5/7 | 199/214 |
+| Backend · Utilities (`backend/app/utilities`) | 204 | 158 | 0 | 46 | 158/204 | 152/196 | 0/1 | 26/37 |
 | Backend · Novel (`backend/app/novel`) | 130 | 130 | 0 | 0 | 130/130 | 127/127 | 1/1 | 40/40 |
-| Backend · Finance (`backend/app/finance`) | 160 | 160 | 0 | 0 | 160/160 | 156/156 | 1/1 | 46/46 |
-| Backend · Workspace (`backend/app/workspace`) | 184 | 180 | 4 | 0 | 184/184 | 177/177 | 1/1 | 51/51 |
-| Backend · Config & Root (`backend/config`, env, pyproject) | 16 | 16 | 0 | 0 | 16/16 | 9/9 | N/A | N/A |
-| Frontend · Shares (`frontend/src/shares`) | 213 | 212 | 1 | 0 | 213/213 | 212/212 | 206/206 | 7/7 |
-| Frontend · System (`frontend/src/modules/system`) | 317 | 315 | 2 | 0 | 317/317 | 315/315 | 282/282 | 96/96 |
-| Frontend · Utilities (`frontend/src/modules/utilities`) | 162 | 160 | 2 | 0 | 162/162 | 160/160 | 147/147 | 37/37 |
+| Backend · Finance (`backend/app/finance`) | 160 | 159 | 0 | 1 | 159/160 | 155/156 | 1/1 | 45/46 |
+| Backend · Workspace (`backend/app/workspace`) | 269 | 152 | 4 | 113 | 157/269 | 149/258 | 0/1 | 41/69 |
+| Backend · Config & Root (`backend/config`, env, pyproject) | 16 | 12 | 0 | 4 | 12/16 | 6/9 | N/A | N/A |
+| Frontend · Shares (`frontend/src/shares`) | 217 | 197 | 0 | 20 | 197/217 | 197/216 | 191/210 | 7/7 |
+| Frontend · System (`frontend/src/modules/system`) | 360 | 304 | 0 | 56 | 305/360 | 304/358 | 272/321 | 94/108 |
+| Frontend · Utilities (`frontend/src/modules/utilities`) | 192 | 138 | 0 | 54 | 138/192 | 138/190 | 126/175 | 34/42 |
 | Frontend · Novel (`frontend/src/modules/novel`) | 144 | 144 | 0 | 0 | 144/144 | 142/142 | 128/128 | 37/37 |
 | Frontend · Finance (`frontend/src/modules/finance`) | 133 | 131 | 2 | 0 | 133/133 | 131/131 | 117/117 | 26/26 |
-| Frontend · Workspace (`frontend/src/modules/workspace`) | 148 | 146 | 0 | 2 | 148/148 | 146/146 | 125/127 | 39/39 |
-| Frontend · Portal (`frontend/src/modules/portal`) | 42 | 40 | 2 | 0 | 42/42 | 40/40 | 41/41 | 25/25 |
+| Frontend · Workspace (`frontend/src/modules/workspace`) | 161 | 130 | 0 | 31 | 134/161 | 128/159 | 116/138 | 34/40 |
+| Frontend · Portal (`frontend/src/modules/portal`) | 42 | 38 | 0 | 4 | 38/42 | 38/40 | 37/41 | 23/25 |
 | Frontend · Home (`frontend/src/modules/home`) | 31 | 31 | 0 | 0 | 31/31 | 31/31 | 29/29 | 7/7 |
 | Frontend · Manage App (`frontend/src/modules/manage-app`) | 31 | 31 | 0 | 0 | 31/31 | 29/29 | 31/31 | 31/31 |
-| Frontend · Core I18n, Proxy & Messages (`frontend/src/i18n`, `messages`, `proxy.ts`) | 10 | 8 | 2 | 0 | 10/10 | 8/8 | 10/10 | 1/1 |
-| Frontend · App Router (`frontend/src/app`) | 139 | 139 | 0 | 0 | 139/139 | 138/138 | 137/137 | 3/3 |
-| Frontend · Tests (`frontend/tests`) | 88 | 88 | 0 | 0 | 88/88 | 88/88 | 2/2 | 6/6 |
+| Frontend · Core I18n, Proxy & Messages (`frontend/src/i18n`, `messages`, `proxy.ts`) | 10 | 8 | 0 | 2 | 8/10 | 8/8 | 8/10 | 1/1 |
+| Frontend · App Router (`frontend/src/app`) | 152 | 137 | 0 | 15 | 137/152 | 137/151 | 136/150 | 3/3 |
+| Frontend · Tests (`frontend/tests`) | 92 | 84 | 0 | 8 | 84/92 | 84/92 | 2/2 | 6/6 |
 | Frontend · Config & Public (`frontend/*.ts`, `.env.example`, `public/`) | 17 | 16 | 1 | 0 | 17/17 | 3/3 | N/A | N/A |
-| Scripts & CI (`scripts/`, `.github/`) | 10 | 10 | 0 | 0 | 10/10 | 10/10 | N/A | N/A |
-| Rules, Skills & Prompts (`.agents/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md`) | 384 | 365 | 19 | 0 | 384/384 | 1/1 | N/A | N/A |
-| Tài liệu hệ thống (`docs/`) | 62 | 49 | 13 | 0 | 62/62 | N/A | N/A | N/A |
-| **TỔNG CỘNG** | **3226** | **3176** | **48** | **2** | — | — | — | — |
+| Scripts & CI (`scripts/`, `.github/`) | 10 | 9 | 0 | 1 | 9/10 | 9/10 | N/A | N/A |
+| Rules, Skills & Prompts (`.agents/`, `AGENTS.md`, `CLAUDE.md`, `prompt.md`) | 384 | 362 | 12 | 10 | 374/384 | 1/1 | N/A | N/A |
+| Tài liệu hệ thống (`docs/`) | 66 | 44 | 3 | 19 | 47/66 | N/A | N/A | N/A |
+| **TỔNG CỘNG** | **3487** | **3028** | **22** | **437** | — | — | — | — |
 <!-- AUDIT_SUMMARY:END -->
 
 ## 2. Hàng đợi file cần rà soát lại (`NEEDS_CHECK`)
 
 <!-- AUDIT_QUEUE:START -->
-Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần nhất hoặc mới tạo):
+Hiện có **437** file cần rà soát lại (đã sửa sau lần kiểm gần nhất hoặc mới tạo):
 
 | File | Nhóm | Thay đổi gần nhất | Nguồn | Trục chờ check | Ghi chú |
 | --- | --- | --- | --- | --- | --- |
-| `frontend/src/modules/workspace/messages/en.json` | frontend/workspace | 2026-11-27 | working-tree (MM) | i18n | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `frontend/src/modules/workspace/messages/vi.json` | frontend/workspace | 2026-11-27 | working-tree (MM) | i18n | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `.agents/rules/10-backend.md` | rules-skills | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `.agents/rules/21-frontend-ui.md` | rules-skills | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `.agents/skills/fix/SKILL.md` | rules-skills | 2026-11-29 | 137d2ce | code | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `.agents/skills/refactor/SKILL.md` | rules-skills | 2026-11-29 | 137d2ce | code | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `.agents/skills/start-task/SKILL.md` | rules-skills | 2026-11-29 | 137d2ce | code | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `.github/workflows/ci.yml` | scripts-ci | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `AGENTS.md` | rules-skills | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `CLAUDE.md` | rules-skills | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `README.md` | rules-skills | 2026-11-29 | working-tree (M) | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `SYSTEM_CONTEXT.md` | rules-skills | 2026-11-29 | working-tree (M) | code | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/.env.example` | backend/config | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/core/tests/test_endpoint_access.py` | backend/core | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/core/tests/test_list_query_count.py` | backend/core | 2026-11-29 | 137d2ce | code, security | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/finance/services/finance_report_service.py` | backend/finance | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/system/apps.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/constants/email_template_error_code.py` | backend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/constants/language_error_code.py` | backend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/constants/setting_key.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/filters/email_template_filter.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/filters/language_filter.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/migrations/0012_add_telegram_chat_group_reply_mode.py` | backend/system | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/system/migrations/0013_emailtemplate.py` | backend/system | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/migrations/0014_remove_emailtemplate_uniq_system_email_tpl_code_locale_and_more.py` | backend/system | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/migrations/0015_language_emailtemplatetranslation_and_more.py` | backend/system | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/models/__init__.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/models/email_template.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/models/email_template_translation.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/models/language.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/models/telegram_chat.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/system/module.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/permissions/email_template_permission.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/permissions/language_permission.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/repositories/email_template_repository.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/repositories/email_template_translation_repository.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/repositories/language_repository.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/responses/email_template_detail_response_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/responses/email_template_list_response_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/responses/email_template_owner_response_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/responses/email_template_preview_response_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/responses/language_response_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/responses/telegram_chat_response_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/system/serializers/validates/email_template_bulk_update_validate_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/email_template_create_validate_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/email_template_preview_validate_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/email_template_update_validate_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/language_bulk_update_validate_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/language_create_validate_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/language_update_validate_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/telegram_chat_update_validate_serializer.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/system/services/currency_service.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/system/services/email_service.py` | backend/system | 2026-11-29 | 137d2ce | security, permission | Đạt chuẩn sau tổng kiểm CI, review-code, UI/UX và sửa lỗi EmailService + AttachmentPicker mobile. |
+| `backend/app/system/services/email_template_seed_service.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/services/email_template_service.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/services/language_seed_service.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/services/language_service.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/services/setting_service.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/services/telegram_client.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/system/tests/test_email_template_api.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/tests/test_language_api.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/tests/test_password_reset_request_api.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/tests/test_telegram_chat_group_mode_api.py` | backend/system | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/system/urls.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/views/email_template_view_set.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/views/language_active_view.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/views/language_view_set.py` | backend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/constants/utilities_error_code.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/constants/utilities_notification_event.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/constants/utilities_rate_limit_key.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/filters/page_feedback_filter.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/migrations/0006_pagefeedback.py` | backend/utilities | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/migrations/0007_page_background_image.py` | backend/utilities | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/models/__init__.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/models/page.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/models/page_feedback.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/module.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/permissions/page_feedback_permission.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/repositories/page_feedback_repository.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/repositories/page_path_repository.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/utilities/repositories/page_repository.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/repositories/short_link_repository.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/utilities/serializers/responses/page_detail_response_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/responses/page_feedback_detail_response_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/responses/page_feedback_list_response_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/responses/page_feedback_public_response_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/responses/page_feedback_thank_response_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/responses/page_public_response_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_create_validate_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_feedback_bulk_update_validate_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_feedback_public_create_validate_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_feedback_thank_validate_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_feedback_update_validate_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_fetch_metadata_platform_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_fetch_metadata_validate_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
+| `backend/app/utilities/serializers/validates/page_update_validate_serializer.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/services/link_metadata_service.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
+| `backend/app/utilities/services/page_feedback_service.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/services/page_path_service.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/utilities/services/page_service.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/services/short_link_service.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/utilities/tests/test_page_create_api.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `backend/app/utilities/tests/test_page_feedback_list_api.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/tests/test_page_feedback_public_api.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/tests/test_page_feedback_thank_api.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/tests/test_page_fetch_metadata_api.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
+| `backend/app/utilities/tests/test_page_template_crud_api.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/tests/test_style_config_validator.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/urls.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/validators/style_config_validator.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/views/page_feedback_public_view.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/views/page_feedback_view_set.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/views/page_view_set.py` | backend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
+| `backend/app/workspace/apps.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_ask_fields.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_record_links.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_record_resources.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_scope_rules.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_tool_groups.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_tool_models.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_tool_permissions.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_tool_schemas.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_training_prompt.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/workspace_defaults.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/workspace_error_code.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/filters/reminder_filter.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/filters/reminder_topic_filter.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | — |
+| `backend/app/workspace/knowledge/client_portal/00-pham-vi-tro-ly.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/dich-vu-dinh-ky.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/ho-so-lich-thong-ke.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/hoa-don-file-ung-ho.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/ket-sat.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/lenh-nhanh-telegram.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/link-rut-gon.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/ma-qr-trang-ca-nhan.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/nhac-viec.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/tai-chinh-thu-nhap.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/thao-tac-chung.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/thiet-bi-bao-hanh.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/tiptap-ai-editor.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/trang-ca-nhan-duong-dan-giua.md` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/management/commands/sync_assistant_knowledge.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/migrations/0007_assistant_pending_action_and_metadata.py` | backend/workspace | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/migrations/0008_assistant_knowledge_chunk.py` | backend/workspace | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/migrations/0009_reminder_topic_and_replace_tags.py` | backend/workspace | 2026-11-29 | 137d2ce | code | — |
+| `backend/app/workspace/migrations/0010_remove_reminder_anchor_day.py` | backend/workspace | 2026-11-29 | 137d2ce | code | — |
+| `backend/app/workspace/models/__init__.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/models/assistant_conversation.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/models/assistant_knowledge_chunk.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/models/assistant_message.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/models/reminder.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/models/reminder_topic.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | — |
+| `backend/app/workspace/module.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/permissions/reminder_topic_permission.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | — |
+| `backend/app/workspace/repositories/assistant_knowledge_chunk_repository.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/repositories/reminder_repository.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/repositories/reminder_topic_repository.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | — |
+| `backend/app/workspace/serializers/responses/assistant_compose_response_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/serializers/responses/assistant_message_response_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/serializers/responses/assistant_quick_input_response_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/serializers/responses/assistant_quick_reply_response_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/serializers/responses/assistant_result_card_response_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/serializers/responses/reminder_response_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/serializers/responses/reminder_topic_response_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | — |
+| `backend/app/workspace/serializers/responses/reminder_topic_summary_response_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | — |
+| `backend/app/workspace/serializers/validates/assistant_compose_validate_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/serializers/validates/reminder_create_validate_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/serializers/validates/reminder_topic_create_validate_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | — |
+| `backend/app/workspace/serializers/validates/reminder_topic_update_validate_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | — |
+| `backend/app/workspace/serializers/validates/reminder_update_validate_serializer.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/assistant_compose_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/services/assistant_confirmation_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_conversation_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_datetime_parser.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_draft_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_embedding_client.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_knowledge_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_record_tools_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_reply_guard.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_result_card_builder.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_scope_guard.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/services/assistant_slash_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_tool_router.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_tool_spec_builder.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_tools_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_write_tools_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/reminder_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/reminder_topic_service.py` | backend/workspace | 2026-11-29 | 137d2ce | security, permission | Đạt chuẩn sau tổng kiểm CI, review-code, UI/UX và sửa lỗi EmailService + AttachmentPicker mobile. |
+| `backend/app/workspace/services/telegram_assistant_reply_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/telegram_assistant_router_service.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/xkiro_client.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tasks/sync_assistant_knowledge.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/helpers/__init__.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/helpers/assistant_generic_records.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_chat_api.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_compose_api.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_generic_draft.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/tests/test_assistant_generic_record_tools.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_knowledge_rag.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_rename_safety.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/tests/test_assistant_reply_guard.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_scope_guard.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_short_link_draft.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_superuser_personal_scope.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_thread_api.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_tool_router.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_tool_specs.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_tools_and_training.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_tools_outside_transaction.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_reminder_create_api.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/tests/test_reminder_topic_api.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | — |
+| `backend/app/workspace/tests/test_reminder_update_api.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/tests/test_telegram_assistant_async_api.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_telegram_assistant_quick_replies.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/types/__init__.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_ask_field.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_ask_slot.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_number_unit.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_record_link.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_record_resource.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_slot_option.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_tool_spec.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/urls.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/views/assistant_compose_view.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/views/reminder_topic_view_set.py` | backend/workspace | 2026-11-29 | 137d2ce | code, security, permission | — |
+| `backend/config/settings.py` | backend/config | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/conftest.py` | backend/config | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/pyproject.toml` | backend/config | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `docs/README.md` | docs | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `docs/architecture/infrastructure.md` | docs | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `docs/architecture/reference-audit.md` | docs | 2026-11-29 | working-tree (D) | code | — |
+| `docs/architecture/testing.md` | docs | 2026-11-29 | working-tree (M) | code | Đã rà soát đủ 4 trục (2026-11-27) |
+| `docs/common-catalog.md` | docs | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `docs/features/assistant-ai.md` | docs | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `docs/guides/deployment.md` | docs | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `docs/guides/telegram-webhook.md` | docs | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `docs/modules/system/README.md` | docs | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `docs/modules/utilities/README.md` | docs | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `docs/modules/workspace/README.md` | docs | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `docs/plans/2026/11/28/anonymous-feedback-and-email-template-plan.md` | docs | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `docs/plans/2026/11/28/assistant-learning-memory-plan.md` | docs | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `docs/plans/2026/11/28/custom-page-beacons-appearance-plan.md` | docs | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `docs/reports/foundation-report.html` | docs | 2026-11-29 | working-tree (M) | code | Đã rà soát đủ 4 trục (2026-11-27) |
+| `docs/reports/security-verification.md` | docs | 2026-11-29 | 137d2ce | code | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `docs/rules/backend.md` | docs | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `docs/rules/common.md` | docs | 2026-11-29 | working-tree (M) | code | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `docs/rules/frontend.md` | docs | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/app/[locale]/(admin)/admin/email-templates/[id]/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/email-templates/new/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/email-templates/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/feedbacks/[id]/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/feedbacks/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/languages/[id]/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/languages/new/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/languages/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(client)/portal/email-templates/[id]/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(client)/portal/email-templates/new/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(client)/portal/email-templates/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(client)/portal/feedbacks/[id]/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(client)/portal/feedbacks/page.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/layout.tsx` | frontend/app-routes | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/globals.css` | frontend/app-routes | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/messages/en.json` | frontend/core-i18n | 2026-11-29 | 137d2ce | code, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/messages/vi.json` | frontend/core-i18n | 2026-11-29 | 137d2ce | code, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/portal/constants/navigation.ts` | frontend/portal | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/portal/constants/routes.ts` | frontend/portal | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/portal/messages/en.json` | frontend/portal | 2026-11-29 | 137d2ce | code, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/portal/messages/vi.json` | frontend/portal | 2026-11-29 | 137d2ce | code, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/attachment/attachment-picker.tsx` | frontend/system | 2026-11-29 | 137d2ce | security, i18n | Đạt chuẩn sau tổng kiểm CI, review-code, UI/UX và sửa lỗi EmailService + AttachmentPicker mobile. |
+| `frontend/src/modules/system/components/email-template/email-template-form.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/email-template-preview-dialog.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/email-template-profile.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/email-template-table.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/hooks/use-email-template-form.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/hooks/use-email-template-table.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/merge-field-badge-view.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/merge-field-helpers.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/merge-field-node.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/language/hooks/use-language-form.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/language/hooks/use-language-table.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/language/language-form.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/system/components/language/language-profile.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/language/language-table.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/telegram-chat/hooks/use-telegram-chat-list.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/system/components/telegram-chat/telegram-chat-list.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/system/constants/api-endpoints.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/constants/journal-field-prefixes.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/constants/query-keys.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/constants/routes.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-active-languages.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-create-email-template.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-create-language.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-delete-email-template.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-delete-language.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-duplicate-email-template.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-email-template.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-email-templates.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-language.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-languages.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-preview-email-template.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-settings.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-supported-languages.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-update-email-template.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-update-language.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-update-telegram-chat.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/system/messages/en.json` | frontend/system | 2026-11-29 | 137d2ce | code, i18n | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/system/messages/vi.json` | frontend/system | 2026-11-29 | 137d2ce | code, i18n | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/system/navigation.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/permissions/email-template-permission.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/permissions/language-permission.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/schemas/email-template.schema.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/schemas/language.schema.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/services/email-template.service.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/services/language.service.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/services/telegram-chat.service.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/system/types/email-template.types.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/types/language.types.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/types/notification.types.ts` | frontend/system | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/system/views/email-template/email-template-create-view.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/views/email-template/email-template-detail-view.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/views/email-template/email-template-list-view.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/views/language/language-create-view.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/views/language/language-detail-view.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/views/language/language-list-view.tsx` | frontend/system | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/feedback-thank-dialog.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/hooks/use-feedback-thank-dialog.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/hooks/use-page-feedback-detail.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/hooks/use-page-feedback-table.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/hooks/use-public-feedback-widget.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/page-feedback-detail-form.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/page-feedback-profile.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/page-feedback-table.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/public-feedback-widget.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/affiliate-page-renderer.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/bio-page-renderer.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/donation-page-renderer.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/hooks/use-page-donation-qr-dialog.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/utilities/components/page/hooks/use-page-form.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/hooks/use-quick-add-modal.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
+| `frontend/src/modules/utilities/components/page/page-affiliate-platforms-editor.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-background-editor.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-background-layer.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-block-style-editor.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-donation-qr-dialog.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/utilities/components/page/page-form.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-header-style-editor.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-share-button.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-theme-editor.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-typography-layout-editor.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/public-page.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/quick-add-modal.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
+| `frontend/src/modules/utilities/components/short-link/hooks/use-short-link-landing.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/short-link/short-link-landing-card.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/constants/affiliate-platforms.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/constants/api-endpoints.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/constants/page-theme-presets.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/constants/query-keys.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/constants/routes.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/hooks/use-delete-page-feedback.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/hooks/use-page-feedback.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/hooks/use-page-feedbacks.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/hooks/use-submit-public-feedback.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/hooks/use-thank-page-feedback.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/hooks/use-update-page-feedback.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/lib/page-patterns.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/lib/page-theme.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/messages/en.json` | frontend/utilities | 2026-11-29 | 137d2ce | code, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/messages/vi.json` | frontend/utilities | 2026-11-29 | 137d2ce | code, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/navigation.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/permissions/page-feedback-permission.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/schemas/page-feedback.schema.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/schemas/page.schema.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/services/page-feedback.service.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/services/page.service.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
+| `frontend/src/modules/utilities/types/page-feedback.types.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/types/page.types.ts` | frontend/utilities | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/views/page-feedback/page-feedback-detail-view.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/views/page-feedback/page-feedback-list-view.tsx` | frontend/utilities | 2026-11-29 | 137d2ce | code, security, i18n, permission | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/workspace/components/asset-warranty-claim/warranty-claim-form.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | security, permission | Đạt 100% đối chiếu khóa vi/en và scan_hardcoded_vi. |
+| `frontend/src/modules/workspace/components/asset/asset-form.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | security, i18n, permission | Đạt chuẩn sau tổng kiểm CI, review-code, UI/UX và sửa lỗi EmailService + AttachmentPicker mobile. |
+| `frontend/src/modules/workspace/components/assistant/assistant-admin-panel.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | security | Đạt 100% đối chiếu khóa vi/en và scan_hardcoded_vi. |
+| `frontend/src/modules/workspace/components/assistant/assistant-chat.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/assistant-floating-widget.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/assistant-quick-input.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/assistant-quick-replies.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/assistant-result-card.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-chat-panel.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-floating-widget.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-quick-input.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-result-card.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-form.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-table.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-topic-manager.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | — |
+| `frontend/src/modules/workspace/components/reminder/reminder-form.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n, permission | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/reminder/reminder-table.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n, permission | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/reminder/reminder-topic-select.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | — |
+| `frontend/src/modules/workspace/components/subscription/subscription-form.tsx` | frontend/workspace | 2026-11-29 | 137d2ce | security, permission | Đạt 100% đối chiếu khóa vi/en và scan_hardcoded_vi. |
+| `frontend/src/modules/workspace/constants/api-endpoints.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/workspace/constants/defaults.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/constants/query-keys.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/hooks/use-delete-reminder-topic.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | — |
+| `frontend/src/modules/workspace/hooks/use-reminder-topics.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | — |
+| `frontend/src/modules/workspace/hooks/use-save-reminder-topic.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | — |
+| `frontend/src/modules/workspace/permissions/reminder-topic-permission.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, permission | — |
+| `frontend/src/modules/workspace/schemas/reminder.schema.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/services/reminder-topic.service.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security, i18n | — |
+| `frontend/src/modules/workspace/types/assistant.types.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/types/reminder-topic.types.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security | — |
+| `frontend/src/modules/workspace/types/reminder.types.ts` | frontend/workspace | 2026-11-29 | 137d2ce | code, security | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/shares/components/common/date-picker.tsx` | frontend/shares | 2026-11-29 | working-tree (M) | code, security, i18n | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/hooks/use-tiptap-ai.ts` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/shares/components/common/hooks/use-tiptap-editor.ts` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/shares/components/common/hooks/use-tiptap-slash-command.ts` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/components/common/markdown-content.tsx` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/components/common/markdown-table-block.tsx` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/components/common/month-select.tsx` | frontend/shares | 2026-11-29 | working-tree (M) | code, security, i18n | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/multi-select.tsx` | frontend/shares | 2026-11-29 | working-tree (M) | code, security, i18n | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/password-input.tsx` | frontend/shares | 2026-11-29 | working-tree (M) | code, security, i18n | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/select-field.tsx` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/time-picker-popover.tsx` | frontend/shares | 2026-11-29 | working-tree (M) | code, security, i18n | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/tiptap-ai-dialog.tsx` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/components/common/tiptap-bubble-toolbar.tsx` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/components/common/tiptap-editor.tsx` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/shares/components/common/tiptap-editor.types.ts` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/shares/components/common/tiptap-toolbar.tsx` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/components/ui/tooltip.tsx` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/lib/markdown.ts` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/services/tiptap-ai.service.ts` | frontend/shares | 2026-11-29 | 137d2ce | code, security, i18n | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/types/api-schema.gen.ts` | frontend/shares | 2026-11-29 | 137d2ce | code | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/tests/unit/affiliate-platforms.test.ts` | frontend/tests | 2026-11-29 | 137d2ce | code, security | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/tests/unit/assistant-chat.test.tsx` | frontend/tests | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/tests/unit/assistant-popup.test.tsx` | frontend/tests | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/tests/unit/assistant-quick-replies.test.tsx` | frontend/tests | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/tests/unit/markdown-content.test.tsx` | frontend/tests | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/tests/unit/page-template.test.ts` | frontend/tests | 2026-11-29 | 137d2ce | code, security | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/tests/unit/short-link-landing.test.tsx` | frontend/tests | 2026-11-29 | 137d2ce | code, security | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/tests/unit/tiptap-editor.test.tsx` | frontend/tests | 2026-11-29 | 137d2ce | code, security | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `prompt.md` | rules-skills | 2026-11-29 | 137d2ce | code | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 <!-- AUDIT_QUEUE:END -->
 
 ## 3. Nhật ký các đợt rà soát
@@ -86,7 +521,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 ## 4. Bảng theo dõi chi tiết từng file
 
 <!-- AUDIT_TABLES:START -->
-### Backend · Core (`backend/app/core`) (120 file)
+### Backend · Core (`backend/app/core`) (123 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -123,10 +558,12 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/core/filters/core_search_filter.py` | filter | 2026-11-15 | 57e39df | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/filters/core_uuid_in_filter.py` | filter | 2026-11-15 | a0e6900 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/logging/__init__.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/core/logging/max_level_filter.py` | be-module | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | N/A | N/A | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/core/logging/readable_console_formatter.py` | be-module | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | N/A | N/A | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/core/logging/request_context_filter.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/logging/step_timer.py` | be-module | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/middleware/__init__.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/core/middleware/request_context_middleware.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/core/middleware/request_context_middleware.py` | be-module | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | N/A | 2026-11-28 | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/core/models/__init__.py` | model | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/models/core_model.py` | model | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/models/core_query_set.py` | model | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -178,9 +615,10 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/core/tests/test_core_repository.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/tests/test_core_search_filter.py` | test | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/tests/test_csv_safety.py` | test | 2026-11-25 | 2d18438 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/core/tests/test_endpoint_access.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/core/tests/test_endpoint_access.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/core/tests/test_error_codes.py` | test | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/core/tests/test_list_query_count.py` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/core/tests/test_list_query_count.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/core/tests/test_logging_config.py` | test | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | N/A | N/A | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/core/tests/test_module_conventions.py` | test | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/tests/test_module_registry.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/tests/test_one_class_per_file.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -211,12 +649,12 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/core/views/core_api_view.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/core/views/core_model_view_set.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
-### Backend · System (`backend/app/system`) (505 file)
+### Backend · System (`backend/app/system`) (543 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `backend/app/system/__init__.py` | be-module | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/apps.py` | apps | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/apps.py` | apps | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/authentications/__init__.py` | be-module | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/authentications/cookie_jwt_authentication.py` | be-module | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/backends/__init__.py` | be-module | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -229,17 +667,19 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/constants/cloudflare_ip_ranges.py` | constant | 2026-11-22 | da96776 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/constants/currency_defaults.py` | constant | 2026-11-25 | 2d18438 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/constants/currency_error_code.py` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/constants/email_template_error_code.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/constants/iam_error_code.py` | constant | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/constants/language_error_code.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/constants/media_types.py` | constant | 2026-11-25 | 2d18438 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/constants/notification_channel.py` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/constants/notification_defaults.py` | constant | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/constants/notification_error_code.py` | constant | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/system/constants/notification_error_code.py` | constant | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/system/constants/notification_level.py` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/constants/notification_scope.py` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/constants/predefined_roles.py` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/constants/role_code.py` | constant | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/constants/setting_cache.py` | constant | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/constants/setting_key.py` | constant | 2026-11-27 | fc06142 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/constants/setting_key.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/constants/storage_cache.py` | constant | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/constants/system_notification_event.py` | constant | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/constants/system_rate_limit_key.py` | constant | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -250,8 +690,10 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/filters/attachment_filter.py` | filter | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/filters/attachment_folder_filter.py` | filter | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/filters/currency_filter.py` | filter | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/filters/email_template_filter.py` | filter | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/filters/exchange_rate_filter.py` | filter | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/filters/journal_entry_filter.py` | filter | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/filters/language_filter.py` | filter | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/filters/notification_delivery_filter.py` | filter | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/filters/permission_filter.py` | filter | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/filters/role_filter.py` | filter | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -278,15 +720,22 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/migrations/0009_currency_exchangerate_notification_and_more.py` | migration | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/migrations/0010_seed_currencies.py` | migration | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/migrations/0011_remove_telegrambot_created_by_and_more.py` | migration | 2026-11-26 | 6d46e0f | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/migrations/0012_add_telegram_chat_group_reply_mode.py` | migration | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/system/migrations/0013_emailtemplate.py` | migration | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/migrations/0014_remove_emailtemplate_uniq_system_email_tpl_code_locale_and_more.py` | migration | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/migrations/0015_language_emailtemplatetranslation_and_more.py` | migration | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/migrations/__init__.py` | migration | 2026-11-20 | 3bfdedf | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/models/__init__.py` | model | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/models/__init__.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/models/attachment.py` | model | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/attachment_folder.py` | model | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/auth_session.py` | model | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/auth_session_status.py` | model | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/currency.py` | model | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/models/email_template.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/models/email_template_translation.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/models/exchange_rate.py` | model | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/journal_entry.py` | model | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/models/language.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/models/notification.py` | model | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/notification_delivery.py` | model | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/notification_preference.py` | model | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -299,22 +748,24 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/models/role_permission.py` | model | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/setting.py` | model | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/system_announcement.py` | model | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/models/telegram_chat.py` | model | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/models/telegram_chat.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/system/models/user.py` | model | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/user_manager.py` | model | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/user_role.py` | model | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/models/user_social_account.py` | model | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/module.py` | module | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/module.py` | module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/permissions/__init__.py` | permission | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/permissions/announcement_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/permissions/attachment_folder_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/permissions/attachment_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/permissions/callback_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/permissions/currency_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/permissions/email_template_permission.py` | permission | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/permissions/exchange_rate_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/permissions/has_iam_permission.py` | permission | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/permissions/iam_permission.py` | permission | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/permissions/journal_entry_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/permissions/language_permission.py` | permission | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/permissions/notification_delivery_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/permissions/notification_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/permissions/notification_preference_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -332,8 +783,11 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/repositories/auth_session_repository.py` | repository | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/repositories/currency_repository.py` | repository | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/repositories/database_repository.py` | repository | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/repositories/email_template_repository.py` | repository | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/repositories/email_template_translation_repository.py` | repository | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/repositories/exchange_rate_repository.py` | repository | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/repositories/journal_entry_repository.py` | repository | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/system/repositories/language_repository.py` | repository | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/repositories/notification_delivery_repository.py` | repository | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/repositories/notification_preference_repository.py` | repository | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/repositories/notification_repository.py` | repository | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -363,11 +817,16 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/serializers/responses/csrf_response_serializer.py` | serializer | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/currency_response_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/current_user_response_serializer.py` | serializer | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/serializers/responses/email_template_detail_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/responses/email_template_list_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/responses/email_template_owner_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/responses/email_template_preview_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/serializers/responses/exchange_rate_resolve_response_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/exchange_rate_response_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/health_response_serializer.py` | serializer | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/invitation_detail_response_serializer.py` | serializer | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/journal_resource_response_serializer.py` | serializer | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/serializers/responses/language_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/serializers/responses/logout_all_response_serializer.py` | serializer | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/notification_delivery_response_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/notification_dispatch_response_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -392,7 +851,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/serializers/responses/system_announcement_response_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/telegram_bot_check_response_serializer.py` | serializer | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/telegram_bot_response_serializer.py` | serializer | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/serializers/responses/telegram_chat_response_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/serializers/responses/telegram_chat_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/system/serializers/responses/telegram_registration_response_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/user_connected_social_summary_response_serializer.py` | serializer | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/responses/user_detail_response_serializer.py` | serializer | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -412,11 +871,18 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/serializers/validates/currency_bulk_update_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/currency_update_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/currency_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/serializers/validates/email_template_bulk_update_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/email_template_create_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/email_template_preview_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/email_template_update_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/serializers/validates/email_verification_validate_serializer.py` | serializer | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/exchange_rate_fetch_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/exchange_rate_resolve_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/exchange_rate_update_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/exchange_rate_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/serializers/validates/language_bulk_update_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/language_create_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/serializers/validates/language_update_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/serializers/validates/login_validate_serializer.py` | serializer | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/me_update_validate_serializer.py` | serializer | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/notification_list_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -437,7 +903,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/serializers/validates/social_auth_code_validate_serializer.py` | serializer | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/social_auth_url_validate_serializer.py` | serializer | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/system_announcement_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/serializers/validates/telegram_chat_update_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/serializers/validates/telegram_chat_update_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/system/serializers/validates/telegram_registration_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/user_bulk_update_validate_serializer.py` | serializer | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/serializers/validates/user_create_validate_serializer.py` | serializer | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -457,10 +923,12 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/services/auth_session_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/callback_catalog_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/cleanup_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/services/currency_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/services/currency_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/system/services/current_user_service.py` | service | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/database_usage_service.py` | service | 2026-11-22 | cd12f82 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/services/email_service.py` | service | 2026-11-25 | 2d18438 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/services/email_service.py` | service | 2026-11-29 | 137d2ce | 2026-11-29 | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm CI, review-code, UI/UX và sửa lỗi EmailService + AttachmentPicker mobile. |
+| `backend/app/system/services/email_template_seed_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/services/email_template_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/services/email_verification_service.py` | service | 2026-11-25 | 2d18438 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/exchange_rate_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/fcm_client.py` | service | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -469,13 +937,15 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/services/health_service.py` | service | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/iam_sync_service.py` | service | 2026-11-27 | b38d277 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/system/services/journal_entry_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/services/language_seed_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/services/language_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/services/login_notification_service.py` | service | 2026-11-27 | fc06142 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/notification_delivery_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/notification_dispatcher.py` | service | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/notification_kick_service.py` | service | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/notification_message_formatter.py` | service | 2026-11-22 | cd12f82 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/services/notification_preference_service.py` | service | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/system/services/notification_service.py` | service | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/system/services/notification_preference_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/system/services/notification_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/system/services/oauth_provider_service.py` | service | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/oauth_service.py` | service | 2026-11-25 | 2d18438 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/password_reset_service.py` | service | 2026-11-25 | 2d18438 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -488,15 +958,15 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/services/role_permission_service.py` | service | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/role_seed_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/role_service.py` | service | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/services/setting_service.py` | service | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/services/setting_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/services/system_announcement_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/services/telegram_bot_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/system/services/telegram_bot_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/system/services/telegram_chat_service.py` | service | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/services/telegram_client.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/system/services/telegram_client.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/system/services/telegram_webhook_service.py` | service | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/user_invitation_service.py` | service | 2026-11-25 | 2d18438 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/user_role_service.py` | service | 2026-11-25 | 2d18438 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/services/user_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/system/services/user_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/system/services/vietcombank_rate_client.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/services/webhook_catalog_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/signals.py` | be-module | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -560,6 +1030,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/tests/test_currency_bulk_update_api.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_database_usage_service.py` | test | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_default_ordering.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/tests/test_email_template_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/tests/test_email_verification_send_api.py` | test | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_email_verification_verify_api.py` | test | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_exchange_rate_bulk_delete_api.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -574,6 +1045,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/tests/test_journal_entry_list_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_journal_resource_list_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_journal_tracker.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/tests/test_language_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/tests/test_login_api.py` | test | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_login_notification.py` | test | 2026-11-27 | fc06142 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_logout_all_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -582,14 +1054,14 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/tests/test_media_signatures.py` | test | 2026-11-27 | b38d277 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/system/tests/test_notification_delivery_bulk_delete_api.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_notification_delivery_delete_api.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/tests/test_notification_dispatch_api.py` | test | 2026-11-27 | working-tree (MM) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/system/tests/test_notification_dispatch_api.py` | test | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/system/tests/test_notification_kick_service.py` | test | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_notification_list_api.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_notification_message_formatter.py` | test | 2026-11-22 | cd12f82 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_notification_preference_api.py` | test | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_notification_service.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_password_reset_confirm_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/tests/test_password_reset_request_api.py` | test | 2026-11-25 | 2d18438 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/tests/test_password_reset_request_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_password_reset_validate_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_permission_checker.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_permission_list_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -622,7 +1094,8 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/tests/test_social_unlink_api.py` | test | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_system_announcement_bulk_delete_api.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_system_telegram_webhook_api.py` | test | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/tests/test_telegram_bot_api.py` | test | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/system/tests/test_telegram_bot_api.py` | test | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/system/tests/test_telegram_chat_group_mode_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/system/tests/test_user_agent.py` | test | 2026-11-22 | cd12f82 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_user_bulk_delete_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/tests/test_user_bulk_update_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -652,7 +1125,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/types/resolved_channels.py` | be-module | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/types/rotated_token.py` | be-module | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/types/telegram_send_result.py` | be-module | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/system/urls.py` | urls | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/urls.py` | urls | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/utils/__init__.py` | be-module | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/utils/client_ip.py` | be-module | 2026-11-22 | ef5d024 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/utils/file_signature.py` | be-module | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -674,6 +1147,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/views/client_error_view.py` | view | 2026-11-27 | b38d277 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/system/views/csrf_view.py` | view | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/views/currency_view_set.py` | view | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/views/email_template_view_set.py` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/views/exchange_rate_fetch_view.py` | view | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/views/exchange_rate_resolve_view.py` | view | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/views/exchange_rate_view_set.py` | view | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -681,6 +1155,8 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/views/invitation_validate_view.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/views/journal_entry_view_set.py` | view | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/views/journal_resource_view.py` | view | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/system/views/language_active_view.py` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/system/views/language_view_set.py` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/system/views/login_view.py` | view | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/views/logout_all_view.py` | view | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/views/logout_view.py` | view | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -721,7 +1197,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/system/views/verify_email_view.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/system/views/webhook_view.py` | view | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
-### Backend · Utilities (`backend/app/utilities`) (180 file)
+### Backend · Utilities (`backend/app/utilities`) (204 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -732,14 +1208,16 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/utilities/constants/donation_constants.py` | constant | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/constants/page_templates.py` | constant | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/constants/public_cache.py` | constant | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/constants/utilities_error_code.py` | constant | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/constants/utilities_rate_limit_key.py` | constant | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/constants/utilities_error_code.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/constants/utilities_notification_event.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/constants/utilities_rate_limit_key.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/constants/vietqr_banks.py` | constant | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/exceptions/__init__.py` | be-module | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/exceptions/short_link_expired_error.py` | be-module | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/exceptions/short_link_password_error.py` | be-module | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/filters/__init__.py` | filter | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/filters/donation_transaction_filter.py` | filter | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/filters/page_feedback_filter.py` | filter | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/filters/page_filter.py` | filter | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/filters/page_path_filter.py` | filter | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/filters/qr_code_filter.py` | filter | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -754,39 +1232,48 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/utilities/migrations/0003_shortlink_clicks_count_shortlink_last_accessed_at_and_more.py` | migration | 2026-11-22 | ee7f12d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/migrations/0004_page_content_config_page_page_type_and_more.py` | migration | 2026-11-24 | eb32524 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/migrations/0005_donationtransaction.py` | migration | 2026-11-25 | 93e6312 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/migrations/0006_pagefeedback.py` | migration | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/migrations/0007_page_background_image.py` | migration | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/migrations/__init__.py` | migration | 2026-11-20 | d2cb772 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/models/__init__.py` | model | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/models/__init__.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/models/donation_transaction.py` | model | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/models/page.py` | model | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/models/page.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/models/page_feedback.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/models/page_path.py` | model | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/models/qr_code.py` | model | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/models/short_link.py` | model | 2026-11-22 | ee7f12d | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/module.py` | module | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/module.py` | module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/permissions/__init__.py` | permission | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/permissions/donation_permission.py` | permission | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/permissions/page_feedback_permission.py` | permission | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/permissions/page_path_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/permissions/page_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/permissions/qr_code_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/permissions/short_link_permission.py` | permission | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/repositories/__init__.py` | repository | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/repositories/donation_transaction_repository.py` | repository | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/repositories/page_path_repository.py` | repository | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/repositories/page_repository.py` | repository | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/repositories/page_feedback_repository.py` | repository | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/repositories/page_path_repository.py` | repository | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/utilities/repositories/page_repository.py` | repository | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/repositories/qr_code_repository.py` | repository | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/repositories/short_link_repository.py` | repository | 2026-11-22 | ee7f12d | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/repositories/short_link_repository.py` | repository | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/utilities/serializers/__init__.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/responses/__init__.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/responses/donation_public_feed_response_serializer.py` | serializer | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/responses/donation_public_leaderboard_response_serializer.py` | serializer | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/responses/donation_stats_response_serializer.py` | serializer | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/responses/donation_transaction_response_serializer.py` | serializer | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/serializers/responses/page_detail_response_serializer.py` | serializer | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/serializers/responses/page_detail_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/responses/page_feedback_detail_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/responses/page_feedback_list_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/responses/page_feedback_public_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/responses/page_feedback_thank_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/serializers/responses/page_list_response_serializer.py` | serializer | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/responses/page_metadata_response_serializer.py` | serializer | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/responses/page_owner_response_serializer.py` | serializer | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/utilities/serializers/responses/page_path_response_serializer.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/responses/page_path_summary_response_serializer.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/serializers/responses/page_public_response_serializer.py` | serializer | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/serializers/responses/page_public_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/serializers/responses/qr_bank_response_serializer.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/responses/qr_code_detail_response_serializer.py` | serializer | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/responses/qr_code_list_response_serializer.py` | serializer | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -801,12 +1288,17 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/utilities/serializers/validates/donation_bulk_update_validate_serializer.py` | serializer | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/validates/donation_toggle_validate_serializer.py` | serializer | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/validates/page_bulk_update_validate_serializer.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/serializers/validates/page_create_validate_serializer.py` | serializer | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/serializers/validates/page_fetch_metadata_validate_serializer.py` | serializer | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/serializers/validates/page_create_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_feedback_bulk_update_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_feedback_public_create_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_feedback_thank_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_feedback_update_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_fetch_metadata_platform_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/serializers/validates/page_fetch_metadata_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
 | `backend/app/utilities/serializers/validates/page_path_bulk_update_validate_serializer.py` | serializer | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/validates/page_path_create_validate_serializer.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/validates/page_path_update_validate_serializer.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/serializers/validates/page_update_validate_serializer.py` | serializer | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/serializers/validates/page_update_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/serializers/validates/qr_bank_transfer_data_validate_serializer.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/validates/qr_code_create_validate_serializer.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/serializers/validates/qr_code_update_validate_serializer.py` | serializer | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -822,14 +1314,15 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/utilities/services/donation_content_filter.py` | service | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/services/donation_gift_classifier.py` | service | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/services/donation_seed_service.py` | service | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã kiểm (CLI seeder nội bộ, ghi nhận nợ kỹ thuật tách ORM sang Repository) |
-| `backend/app/utilities/services/donation_transaction_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/utilities/services/link_metadata_service.py` | service | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/services/page_path_service.py` | service | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/services/donation_transaction_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/utilities/services/link_metadata_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
+| `backend/app/utilities/services/page_feedback_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/services/page_path_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/utilities/services/page_seed_service.py` | service | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã kiểm (CLI seeder nội bộ, ghi nhận nợ kỹ thuật tách ORM sang Repository) |
-| `backend/app/utilities/services/page_service.py` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/services/page_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/services/qr_code_service.py` | service | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/services/short_link_seed_service.py` | service | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã kiểm (CLI seeder nội bộ, ghi nhận nợ kỹ thuật tách ORM sang Repository) |
-| `backend/app/utilities/services/short_link_service.py` | service | 2026-11-22 | ee7f12d | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/services/short_link_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/utilities/tests/__init__.py` | test | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/factories/__init__.py` | test | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/factories/short_link_factory.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -846,11 +1339,14 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/utilities/tests/test_donation_webhook_api.py` | test | 2026-11-27 | 1a5bc08 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_page_bulk_delete_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_page_bulk_update_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/tests/test_page_create_api.py` | test | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/tests/test_page_create_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
 | `backend/app/utilities/tests/test_page_delete_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_page_detail_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_page_duplicate_api.py` | test | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/tests/test_page_fetch_metadata_api.py` | test | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/tests/test_page_feedback_list_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/tests/test_page_feedback_public_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/tests/test_page_feedback_thank_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/tests/test_page_fetch_metadata_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
 | `backend/app/utilities/tests/test_page_history_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_page_list_api.py` | test | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/utilities/tests/test_page_path_bulk_delete_api.py` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -861,7 +1357,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/utilities/tests/test_page_path_list_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_page_path_update_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_page_public_api.py` | test | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/tests/test_page_template_crud_api.py` | test | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/tests/test_page_template_crud_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_page_update_api.py` | test | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_qr_code_banks_api.py` | test | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_qr_code_bulk_delete_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -882,8 +1378,9 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/utilities/tests/test_short_link_resolve_api.py` | test | 2026-11-22 | ee7f12d | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_short_link_update_api.py` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/tests/test_slug_concurrency.py` | test | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/tests/test_style_config_validator.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/tests/test_vietqr_payload.py` | test | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/urls.py` | urls | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/urls.py` | urls | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/utils/__init__.py` | be-module | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/utils/metadata_html_parser.py` | be-module | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/utils/qr_content.py` | be-module | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -891,15 +1388,18 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/utilities/utils/vietqr_payload.py` | be-module | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/validators/__init__.py` | be-module | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/validators/page_content_validator.py` | be-module | 2026-11-25 | 232742f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/validators/style_config_validator.py` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/validators/theme_validator.py` | be-module | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/views/__init__.py` | view | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/views/donation_public_feed_view.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/views/donation_public_leaderboard_view.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/views/donation_transaction_view_set.py` | view | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/views/donation_webhook_view.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/views/page_feedback_public_view.py` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/utilities/views/page_feedback_view_set.py` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/utilities/views/page_path_view_set.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/views/page_public_view.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/utilities/views/page_view_set.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/utilities/views/page_view_set.py` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
 | `backend/app/utilities/views/qr_bank_view.py` | view | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/views/qr_code_view_set.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/utilities/views/qr_preview_view.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1138,9 +1638,9 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/finance/services/classification_engine.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/finance/services/classification_rule_service.py` | service | 2026-11-25 | 873636e | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/finance/services/currency_converter.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/finance/services/finance_report_service.py` | service | 2026-11-27 | 1a5bc08 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/finance/services/finance_report_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/finance/services/finance_seed_service.py` | service | 2026-11-27 | 1a5bc08 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã kiểm (CLI seeder nội bộ, ghi nhận nợ kỹ thuật tách ORM sang Repository) |
-| `backend/app/finance/services/income_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/finance/services/income_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/finance/services/invoice_service.py` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/finance/services/platform_service.py` | service | 2026-11-27 | 1a5bc08 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/finance/services/platform_tax_rate_service.py` | service | 2026-11-27 | 1a5bc08 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1206,50 +1706,82 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/finance/views/sepay_secret_rotate_view.py` | view | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/finance/views/sepay_webhook_view.py` | view | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
-### Backend · Workspace (`backend/app/workspace`) (184 file)
+### Backend · Workspace (`backend/app/workspace`) (269 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `backend/app/workspace/__init__.py` | be-module | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/apps.py` | apps | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/apps.py` | apps | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_ask_fields.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/constants/assistant_launcher_size.py` | constant | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/constants/assistant_record_links.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_record_resources.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_scope_rules.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_tool_groups.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_tool_models.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_tool_permissions.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_tool_schemas.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/assistant_training_prompt.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/constants/group_tool_policy.py` | constant | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/constants/workspace_defaults.py` | constant | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/constants/workspace_error_code.py` | constant | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/constants/workspace_defaults.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/constants/workspace_error_code.py` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/constants/workspace_notification_event.py` | constant | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/constants/workspace_rate_limit_key.py` | constant | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/filters/__init__.py` | filter | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/filters/asset_filter.py` | filter | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/filters/asset_warranty_claim_filter.py` | filter | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/filters/reminder_filter.py` | filter | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/filters/reminder_filter.py` | filter | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/filters/reminder_topic_filter.py` | filter | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | — |
 | `backend/app/workspace/filters/subscription_filter.py` | filter | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/filters/subscription_payment_filter.py` | filter | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/filters/vault_item_filter.py` | filter | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/knowledge/client_portal/00-pham-vi-tro-ly.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/dich-vu-dinh-ky.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/ho-so-lich-thong-ke.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/hoa-don-file-ung-ho.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/ket-sat.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/lenh-nhanh-telegram.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/link-rut-gon.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/ma-qr-trang-ca-nhan.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/nhac-viec.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/tai-chinh-thu-nhap.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/thao-tac-chung.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/thiet-bi-bao-hanh.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/tiptap-ai-editor.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/knowledge/client_portal/trang-ca-nhan-duong-dan-giua.md` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/management/__init__.py` | command | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/management/commands/__init__.py` | command | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/management/commands/poll_telegram_assistant.py` | command | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/migrations/0001_initial.py` | migration | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `backend/app/workspace/management/commands/sync_assistant_knowledge.py` | command | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/migrations/0001_initial.py` | migration | 2026-11-27 | 44f39cc | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `backend/app/workspace/migrations/0002_workspacesetting_assistant_avatar_and_more.py` | migration | 2026-11-27 | c53d1ab | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/migrations/0003_remove_uptime_and_add_notification_channels.py` | migration | 2026-11-27 | 87f3761 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `backend/app/workspace/migrations/0004_seed_assistant_default_policy.py` | migration | 2026-11-27 | c53d1ab | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/migrations/0005_remove_notification_channels.py` | migration | 2026-11-27 | 87f3761 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `backend/app/workspace/migrations/0006_remove_workspacesetting_uq_workspace_setting_owner_and_more.py` | migration | 2026-11-27 | working-tree (??) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `backend/app/workspace/migrations/0006_remove_workspacesetting_uq_workspace_setting_owner_and_more.py` | migration | 2026-11-27 | 44f39cc | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `backend/app/workspace/migrations/0007_assistant_pending_action_and_metadata.py` | migration | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/migrations/0008_assistant_knowledge_chunk.py` | migration | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/migrations/0009_reminder_topic_and_replace_tags.py` | migration | 2026-11-29 | 137d2ce | PENDING | N/A | N/A | N/A | NEEDS_CHECK | — |
+| `backend/app/workspace/migrations/0010_remove_reminder_anchor_day.py` | migration | 2026-11-29 | 137d2ce | PENDING | N/A | N/A | N/A | NEEDS_CHECK | — |
 | `backend/app/workspace/migrations/__init__.py` | migration | 2026-11-26 | 03dfab1 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/models/__init__.py` | model | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/models/__init__.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/models/asset.py` | model | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/models/asset_warranty_claim.py` | model | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/models/assistant_conversation.py` | model | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/models/assistant_message.py` | model | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/models/reminder.py` | model | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/models/assistant_conversation.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/models/assistant_knowledge_chunk.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/models/assistant_message.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/models/reminder.py` | model | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/models/reminder_topic.py` | model | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | — |
 | `backend/app/workspace/models/subscription.py` | model | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/models/subscription_payment.py` | model | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/models/vault_item.py` | model | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/module.py` | module | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/module.py` | module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/permissions/asset_permission.py` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/permissions/asset_warranty_claim_permission.py` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/permissions/assistant_config_permission.py` | permission | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/permissions/assistant_permission.py` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/permissions/reminder_permission.py` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/permissions/reminder_topic_permission.py` | permission | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | PENDING | NEEDS_CHECK | — |
 | `backend/app/workspace/permissions/subscription_payment_permission.py` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/permissions/subscription_permission.py` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/permissions/vault_item_permission.py` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1258,8 +1790,10 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/workspace/repositories/asset_repository.py` | repository | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/repositories/asset_warranty_claim_repository.py` | repository | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/repositories/assistant_conversation_repository.py` | repository | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/repositories/assistant_knowledge_chunk_repository.py` | repository | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/repositories/assistant_message_repository.py` | repository | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/repositories/reminder_repository.py` | repository | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/repositories/reminder_repository.py` | repository | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/repositories/reminder_topic_repository.py` | repository | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | — |
 | `backend/app/workspace/repositories/subscription_payment_repository.py` | repository | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/repositories/subscription_repository.py` | repository | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/repositories/vault_item_repository.py` | repository | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1270,11 +1804,17 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/workspace/serializers/responses/assistant_bot_profile_response_serializer.py` | serializer | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/serializers/responses/assistant_chat_response_serializer.py` | serializer | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/serializers/responses/assistant_command_response_serializer.py` | serializer | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/serializers/responses/assistant_config_response_serializer.py` | serializer | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/serializers/responses/assistant_message_response_serializer.py` | serializer | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/serializers/responses/assistant_compose_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/serializers/responses/assistant_config_response_serializer.py` | serializer | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/serializers/responses/assistant_message_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/serializers/responses/assistant_quick_input_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/serializers/responses/assistant_quick_reply_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/serializers/responses/assistant_result_card_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/serializers/responses/assistant_thread_clear_response_serializer.py` | serializer | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/serializers/responses/assistant_thread_response_serializer.py` | serializer | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/serializers/responses/reminder_response_serializer.py` | serializer | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/serializers/responses/reminder_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/serializers/responses/reminder_topic_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | — |
+| `backend/app/workspace/serializers/responses/reminder_topic_summary_response_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | — |
 | `backend/app/workspace/serializers/responses/subscription_payment_response_serializer.py` | serializer | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/serializers/responses/subscription_response_serializer.py` | serializer | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/serializers/responses/telegram_async_process_response_serializer.py` | serializer | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1291,11 +1831,14 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/workspace/serializers/validates/asset_warranty_claim_create_validate_serializer.py` | serializer | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/serializers/validates/asset_warranty_claim_update_validate_serializer.py` | serializer | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/serializers/validates/assistant_chat_validate_serializer.py` | serializer | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/serializers/validates/assistant_config_update_validate_serializer.py` | serializer | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/serializers/validates/assistant_compose_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/serializers/validates/assistant_config_update_validate_serializer.py` | serializer | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/serializers/validates/assistant_thread_query_validate_serializer.py` | serializer | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/serializers/validates/reminder_bulk_update_validate_serializer.py` | serializer | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/serializers/validates/reminder_create_validate_serializer.py` | serializer | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/serializers/validates/reminder_update_validate_serializer.py` | serializer | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/serializers/validates/reminder_create_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/serializers/validates/reminder_topic_create_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | — |
+| `backend/app/workspace/serializers/validates/reminder_topic_update_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | — |
+| `backend/app/workspace/serializers/validates/reminder_update_validate_serializer.py` | serializer | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/serializers/validates/subscription_bulk_update_validate_serializer.py` | serializer | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/serializers/validates/subscription_create_validate_serializer.py` | serializer | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/serializers/validates/subscription_renew_validate_serializer.py` | serializer | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1305,31 +1848,48 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/workspace/serializers/validates/workspace_calendar_query_validate_serializer.py` | serializer | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/services/asset_service.py` | service | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/services/asset_warranty_claim_service.py` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/services/assistant_config_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/services/assistant_conversation_service.py` | service | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/services/assistant_service.py` | service | 2026-11-27 | working-tree (MM) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/services/assistant_slash_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/services/assistant_tools_service.py` | service | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/services/reminder_service.py` | service | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/assistant_compose_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/services/assistant_config_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/assistant_confirmation_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_conversation_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_datetime_parser.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_draft_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_embedding_client.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_knowledge_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_record_tools_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_reply_guard.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_result_card_builder.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_scope_guard.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/services/assistant_slash_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_tool_router.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_tool_spec_builder.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_tools_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/assistant_write_tools_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/reminder_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/reminder_topic_service.py` | service | 2026-11-29 | 137d2ce | 2026-11-29 | PENDING | N/A | PENDING | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm CI, review-code, UI/UX và sửa lỗi EmailService + AttachmentPicker mobile. |
 | `backend/app/workspace/services/subscription_payment_service.py` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/services/subscription_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/services/telegram_assistant_reply_service.py` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/services/telegram_assistant_router_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/subscription_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/telegram_assistant_reply_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/services/telegram_assistant_router_service.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/services/telegram_polling_service.py` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/services/vault_item_service.py` | service | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/services/workspace_alerts_cache_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/services/workspace_calendar_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/workspace_alerts_cache_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/workspace_calendar_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/services/workspace_cleanup_service.py` | service | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/services/workspace_cron_service.py` | service | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/services/workspace_dashboard_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/workspace_cron_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/workspace_dashboard_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/services/workspace_exchange_service.py` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/services/workspace_spending_service.py` | service | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/workspace_spending_service.py` | service | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/services/workspace_timezone_service.py` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/services/xkiro_client.py` | service | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/services/xkiro_client.py` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/tasks/purge_old_assistant_history.py` | task | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tasks/refresh_cron_schedules.py` | task | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/tasks/sync_assistant_knowledge.py` | task | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/tests/__init__.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/conftest.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/tests/helpers/__init__.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/helpers/assistant_generic_records.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/tests/test_asset_bulk_delete_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_asset_create_api.py` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/tests/test_asset_delete_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1337,18 +1897,32 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/workspace/tests/test_asset_list_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_asset_update_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_assistant_bot_profile_api.py` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/tests/test_assistant_chat_api.py` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/tests/test_assistant_chat_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_compose_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/tests/test_assistant_config_api.py` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/tests/test_assistant_thread_api.py` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `backend/app/workspace/tests/test_cron_dispatch_due_api.py` | test | 2026-11-27 | working-tree (MM) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/tests/test_assistant_generic_draft.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/tests/test_assistant_generic_record_tools.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_knowledge_rag.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_rename_safety.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `backend/app/workspace/tests/test_assistant_reply_guard.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_scope_guard.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_short_link_draft.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_superuser_personal_scope.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_thread_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_tool_router.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_tool_specs.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_tools_and_training.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_assistant_tools_outside_transaction.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_cron_dispatch_due_api.py` | test | 2026-11-28 | 4934aa5 | 2026-11-28 | 2026-11-28 | N/A | N/A | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/tests/test_cron_tick_api.py` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_reminder_bulk_delete_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_reminder_bulk_update_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/tests/test_reminder_create_api.py` | test | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/tests/test_reminder_create_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/tests/test_reminder_delete_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_reminder_detail_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_reminder_list_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/tests/test_reminder_update_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/tests/test_reminder_topic_api.py` | test | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | — |
+| `backend/app/workspace/tests/test_reminder_update_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_subscription_bulk_delete_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_subscription_bulk_update_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_subscription_create_api.py` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -1360,7 +1934,8 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/workspace/tests/test_subscription_payment_list_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_subscription_renew_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_subscription_update_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/tests/test_telegram_assistant_async_api.py` | test | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/tests/test_telegram_assistant_async_api.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/tests/test_telegram_assistant_quick_replies.py` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/app/workspace/tests/test_vault_bulk_delete_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_vault_create_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_vault_delete_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1374,17 +1949,27 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/app/workspace/tests/test_warranty_claim_detail_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_warranty_claim_list_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/tests/test_warranty_claim_update_api.py` | test | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/tests/test_workspace_calendar_api.py` | test | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/tests/test_workspace_calendar_api.py` | test | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `backend/app/workspace/tests/test_workspace_dashboard_summary_api.py` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/app/workspace/urls.py` | urls | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/app/workspace/types/__init__.py` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_ask_field.py` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_ask_slot.py` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_number_unit.py` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_record_link.py` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_record_resource.py` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_slot_option.py` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/types/assistant_tool_spec.py` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `backend/app/workspace/urls.py` | urls | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/utils/date_math.py` | be-module | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/views/__init__.py` | view | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/views/asset_view_set.py` | view | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/views/asset_warranty_claim_view_set.py` | view | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/views/assistant_bot_profile_view.py` | view | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/views/assistant_chat_view.py` | view | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/views/assistant_compose_view.py` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/app/workspace/views/assistant_config_view.py` | view | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/views/assistant_thread_view.py` | view | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/app/workspace/views/reminder_topic_view_set.py` | view | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | PENDING | NEEDS_CHECK | — |
 | `backend/app/workspace/views/reminder_view_set.py` | view | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/views/subscription_payment_view_set.py` | view | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/app/workspace/views/subscription_view_set.py` | view | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1399,7 +1984,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `backend/.env.example` | be-module | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/.env.example` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/.python-version` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/.vercelignore` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/README.md` | be-module | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1407,27 +1992,27 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `backend/build_files.sh` | be-module | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/config/__init__.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/config/asgi.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/config/settings.py` | settings | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `backend/config/settings.py` | settings | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `backend/config/urls.py` | urls | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/config/wsgi.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/conftest.py` | be-module | 2026-11-26 | 507f42d | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/conftest.py` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/manage.py` | be-module | 2026-11-14 | fb23efa | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `backend/pyproject.toml` | be-module | 2026-11-22 | ee7f12d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `backend/pyproject.toml` | be-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `backend/requirements.txt` | be-module | 2026-11-22 | 1b3e870 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `backend/vercel.json` | be-module | 2026-11-20 | 3bfdedf | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
-### Frontend · Shares (`frontend/src/shares`) (213 file)
+### Frontend · Shares (`frontend/src/shares`) (217 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `frontend/src/shares/components/analytics/app-analytics.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/analytics/app-analytics.tsx` | component | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | 2026-11-28 | N/A | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/shares/components/common/activity-change-row.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/activity-change-value.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/activity-timeline-item.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/activity-timeline.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/app-tooltip.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/checkbox-field.tsx` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/chip-list-input.tsx` | component | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/shares/components/common/chip-list-input.tsx` | component | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/choice-groups.tsx` | component | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/choice-list.tsx` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/choice-list.types.ts` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1437,7 +2022,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/shares/components/common/data-pagination.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/data-table.tsx` | component | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/data-table.types.ts` | component | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/date-picker.tsx` | component | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/date-picker.tsx` | component | 2026-11-29 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/date-time-picker.tsx` | component | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/edit-mode-button.tsx` | component | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/edit-mode-context.ts` | component | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1479,35 +2064,37 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/shares/components/common/hooks/use-table-bulk-bar.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/hooks/use-tags-input.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/hooks/use-time-picker-popover.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/hooks/use-tiptap-ai.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/shares/components/common/hooks/use-tiptap-basic-editor.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/hooks/use-tiptap-block-handle.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/hooks/use-tiptap-comment-editor.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/hooks/use-tiptap-editor.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/hooks/use-tiptap-editor.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/shares/components/common/hooks/use-tiptap-image-node.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/hooks/use-tiptap-plugins.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/hooks/use-tiptap-slash-command.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/hooks/use-tiptap-slash-command.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/shares/components/common/hooks/use-tiptap-toolbar.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/hooks/use-url-popover.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/image-upload.tsx` | component | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/image-upload.types.ts` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/inline-help-tooltip.tsx` | component | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/loading-state.tsx` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/markdown-content.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/shares/components/common/markdown-content.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/components/common/markdown-table-block.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/shares/components/common/message-avatar.tsx` | component | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/message-content.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/message-meta.tsx` | component | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/message-scroller.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/message.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/money-input.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/month-select.tsx` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/multi-select.tsx` | component | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/month-select.tsx` | component | 2026-11-29 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/multi-select.tsx` | component | 2026-11-29 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/number-input.tsx` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/page-header.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/shares/components/common/password-input.tsx` | component | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/password-input.tsx` | component | 2026-11-29 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/radio-group-field.tsx` | component | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/record-detail-tabs.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/search-input.tsx` | component | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/select-field.tsx` | component | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/select-field.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/slug-input.tsx` | component | 2026-11-22 | 2d36c1c | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/sortable-item.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/sortable-list.tsx` | component | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1520,26 +2107,27 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/shares/components/common/table-status-switch.tsx` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/table-toolbar.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/tags-input.tsx` | component | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/time-picker-popover.tsx` | component | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/time-picker-popover.tsx` | component | 2026-11-29 | working-tree (M) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/time-picker.tsx` | component | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/time-scroll-column.tsx` | component | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/timestamp-text.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/shares/components/common/tiptap-ai-dialog.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/shares/components/common/tiptap-basic-editor.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/tiptap-block-handle.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/shares/components/common/tiptap-bubble-toolbar.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/tiptap-bubble-toolbar.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/shares/components/common/tiptap-comment-editor.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/tiptap-content.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/tiptap-editor-extensions.ts` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/tiptap-editor.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/common/tiptap-editor.types.ts` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/common/tiptap-editor.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/shares/components/common/tiptap-editor.types.ts` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/shares/components/common/tiptap-extensions.ts` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/tiptap-image-node-view.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/common/tiptap-notion-url-dialog.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/tiptap-slash-menu.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/common/tiptap-toggle.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/shares/components/common/tiptap-toolbar.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/shares/components/common/tiptap-toolbar.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/shares/components/common/url-popover.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/shares/components/common/user-avatar.tsx` | component | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/shares/components/common/user-avatar.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/components/errors/error-state.tsx` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/errors/forbidden-view.tsx` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/errors/query-error-state.tsx` | component | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1579,8 +2167,8 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/shares/components/ui/table.tsx` | component | 2026-11-15 | 0fb19eb | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/ui/tabs.tsx` | component | 2026-11-25 | 35091cb | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/components/ui/textarea.tsx` | component | 2026-11-15 | 0fb19eb | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/components/ui/tooltip.tsx` | component | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/config/env.ts` | fe-module | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/shares/components/ui/tooltip.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/shares/config/env.ts` | fe-module | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | 2026-11-28 | N/A | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/shares/constants/auth-error-codes.ts` | constant | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/constants/auth-session.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/constants/currency.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1618,7 +2206,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/shares/lib/field-schemas.ts` | fe-module | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/lib/firebase-messaging.ts` | fe-module | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/lib/localized-route.ts` | fe-module | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/lib/markdown.ts` | fe-module | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/shares/lib/markdown.ts` | fe-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/shares/lib/number-format.ts` | fe-module | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/lib/permissions/resource-permissions.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/lib/presence.ts` | fe-module | 2026-11-15 | 0fb19eb | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1626,15 +2214,16 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/shares/lib/safe-url.ts` | fe-module | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/lib/search-text.ts` | fe-module | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/lib/seo.ts` | fe-module | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/shares/lib/user-display.ts` | fe-module | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/shares/lib/user-display.ts` | fe-module | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/shares/services/tiptap-ai.service.ts` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/shares/types/activity-timeline.types.ts` | types | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/shares/types/api-schema.gen.ts` | generated-types | 2026-11-27 | working-tree (UU) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `frontend/src/shares/types/api-schema.gen.ts` | generated-types | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/shares/types/api-schema.ts` | types | 2026-11-15 | 58e5782 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/types/api.types.ts` | types | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/shares/types/attachment.types.ts` | types | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/shares/types/navigation.types.ts` | types | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
-### Frontend · System (`frontend/src/modules/system`) (317 file)
+### Frontend · System (`frontend/src/modules/system`) (360 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1657,7 +2246,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/components/attachment/attachment-library.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/attachment/attachment-media-filters.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/components/attachment/attachment-move-dialog.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/components/attachment/attachment-picker.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/system/components/attachment/attachment-picker.tsx` | component | 2026-11-29 | 137d2ce | 2026-11-29 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm CI, review-code, UI/UX và sửa lỗi EmailService + AttachmentPicker mobile. |
 | `frontend/src/modules/system/components/attachment/attachment-preview.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/attachment/attachment-upload.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/components/attachment/attachment-video-player.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1702,9 +2291,18 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/components/currency/hooks/use-currency-table.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/components/current-user/account-email.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/current-user/hooks/use-profile-dialog.ts` | hook | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/system/components/current-user/hooks/use-user-menu.ts` | hook | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/system/components/current-user/profile-dialog.tsx` | component | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/system/components/current-user/hooks/use-user-menu.ts` | hook | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/system/components/current-user/profile-dialog.tsx` | component | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | 2026-11-28 | N/A | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/system/components/current-user/user-menu.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/components/email-template/email-template-form.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/email-template-preview-dialog.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/email-template-profile.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/email-template-table.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/hooks/use-email-template-form.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/hooks/use-email-template-table.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/merge-field-badge-view.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/merge-field-helpers.ts` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/email-template/merge-field-node.ts` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/components/exchange-rate/exchange-rate-form.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/exchange-rate/exchange-rate-table.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/exchange-rate/hooks/use-exchange-rate-form.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1716,6 +2314,11 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/components/journal-entry/journal-table.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/journal-entry/journal-value.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/journal-entry/record-history.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/system/components/language/hooks/use-language-form.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/language/hooks/use-language-table.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/language/language-form.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/system/components/language/language-profile.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/components/language/language-table.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/components/notification-delivery/hooks/use-notification-delivery-table.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/components/notification-delivery/notification-delivery-table.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/notification-preference/hooks/use-notification-preference-matrix.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1744,9 +2347,9 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/components/setting/setting-social-auth-card.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/components/setting/setting-table.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/telegram-bot/hooks/use-telegram-bot-card.ts` | hook | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/components/telegram-bot/telegram-bot-card.tsx` | component | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/system/components/telegram-chat/hooks/use-telegram-chat-list.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/components/telegram-chat/telegram-chat-list.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/components/telegram-bot/telegram-bot-card.tsx` | component | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/system/components/telegram-chat/hooks/use-telegram-chat-list.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/system/components/telegram-chat/telegram-chat-list.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/system/components/user-role/hooks/use-user-role-filter.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/components/user-role/hooks/use-user-role-picker.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/components/user-role/user-role-filter.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1761,20 +2364,21 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/components/user/user-social-accounts-section.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/components/user/user-table.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/components/webhook/webhook-list.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/constants/api-endpoints.ts` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/constants/api-endpoints.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/constants/auth-storage.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/constants/error-codes.ts` | constant | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/constants/image-editor.ts` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/constants/journal-field-prefixes.ts` | constant | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/system/constants/journal-field-prefixes.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/constants/journal-value-prefixes.ts` | constant | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/constants/media-player.ts` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/constants/media-types.ts` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/constants/notification-polling.ts` | constant | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/constants/profile-forms.ts` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/constants/query-keys.ts` | constant | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/constants/routes.ts` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/constants/query-keys.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/constants/routes.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-account-mutations.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-account-queries.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-active-languages.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-admin-session-users.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-admin-sessions.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-announcements.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1786,6 +2390,8 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/hooks/use-check-telegram-bot.ts` | hook | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-create-announcement.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-create-attachment-folder.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-create-email-template.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-create-language.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-create-user.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-currencies.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-currency-options.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1795,12 +2401,17 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/hooks/use-delete-attachment-folder.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-delete-attachments.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-delete-currency.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-delete-email-template.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-delete-exchange-rate.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-delete-journal-entry.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-delete-language.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-delete-notification-delivery.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-delete-setting.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-delete-telegram-chat.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-delete-user.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-duplicate-email-template.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-email-template.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-email-templates.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-exchange-rate-resolve.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-exchange-rates.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-fetch-exchange-rate.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1812,6 +2423,8 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/hooks/use-journal-format.ts` | hook | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/hooks/use-journal-resources.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-journal.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-language.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-languages.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-login.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-logout.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-mark-all-notifications-read.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1822,6 +2435,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/hooks/use-notifications.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-permission-choice-groups.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-permission.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-preview-email-template.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-public-settings.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-push-devices.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-record-history.ts` | hook | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -1832,16 +2446,20 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/hooks/use-save-exchange-rate.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-save-notification-preferences.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-set-attachment-visibility.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/hooks/use-settings.ts` | hook | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-settings.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-social-auth-exchange.ts` | hook | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-supported-languages.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-telegram-bot.ts` | hook | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-telegram-chat-action.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-telegram-chats.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-unread-count.ts` | hook | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-update-attachment-folder.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-update-attachment.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-update-email-template.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/hooks/use-update-language.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/hooks/use-update-profile.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-update-setting.ts` | hook | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/hooks/use-update-telegram-chat.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/system/hooks/use-update-user.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-upload-attachment.ts` | hook | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/hooks/use-user.ts` | hook | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1851,17 +2469,19 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/lib/notification-link.ts` | fe-module | 2026-11-27 | fc06142 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/lib/unregister-push-device.ts` | fe-module | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/lib/watermark-shadow.ts` | fe-module | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/messages/en.json` | messages | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | 2026-11-27 | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `frontend/src/modules/system/messages/vi.json` | messages | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | 2026-11-27 | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `frontend/src/modules/system/navigation.ts` | constant | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/messages/en.json` | messages | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/system/messages/vi.json` | messages | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/system/navigation.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/permissions/announcement-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/permissions/attachment-folder-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/permissions/attachment-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/permissions/callback-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/permissions/currency-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/permissions/email-template-permission.ts` | permission | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/permissions/exchange-rate-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/permissions/iam-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/permissions/journal-entry-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/permissions/language-permission.ts` | permission | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/permissions/notification-delivery-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/permissions/notification-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/permissions/notification-preference-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1873,9 +2493,11 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/permissions/webhook-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/schemas/announcement.schema.ts` | schema | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/schemas/currency.schema.ts` | schema | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/schemas/email-template.schema.ts` | schema | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/schemas/exchange-rate.schema.ts` | schema | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/schemas/forgot-password.schema.ts` | schema | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/schemas/invitation.schema.ts` | schema | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/schemas/language.schema.ts` | schema | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/schemas/login.schema.ts` | schema | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/schemas/profile.schema.ts` | schema | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/schemas/reset-password.schema.ts` | schema | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1889,8 +2511,10 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/services/callback.service.ts` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/services/currency.service.ts` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/services/current-user.service.ts` | service | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/services/email-template.service.ts` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/services/exchange-rate.service.ts` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/services/journal-entry.service.ts` | service | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/system/services/language.service.ts` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/services/notification-delivery.service.ts` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/services/notification-preference.service.ts` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/services/notification.service.ts` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1900,7 +2524,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/services/role.service.ts` | service | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/services/setting.service.ts` | service | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/services/telegram-bot.service.ts` | service | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/services/telegram-chat.service.ts` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/services/telegram-chat.service.ts` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/system/services/user-role.service.ts` | service | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/services/user.service.ts` | service | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/services/webhook.service.ts` | service | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1911,11 +2535,13 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/types/auth.types.ts` | types | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/types/callback.types.ts` | types | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/types/currency.types.ts` | types | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/types/email-template.types.ts` | types | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/types/iam.types.ts` | types | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/types/image-editor.types.ts` | types | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/types/journal-entry.types.ts` | types | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/types/journal.types.ts` | types | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/system/types/notification.types.ts` | types | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/types/language.types.ts` | types | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/types/notification.types.ts` | types | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/system/types/profile-tab.types.ts` | types | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/types/setting.types.ts` | types | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/types/user.types.ts` | types | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1938,11 +2564,17 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/views/currency/currency-create-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/views/currency/currency-detail-view.tsx` | view | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/system/views/currency/currency-list-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/views/email-template/email-template-create-view.tsx` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/views/email-template/email-template-detail-view.tsx` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/views/email-template/email-template-list-view.tsx` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/views/exchange-rate/exchange-rate-create-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/views/exchange-rate/exchange-rate-list-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/views/journal-entry/journal-entry-detail-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/views/journal-entry/journal-list-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/views/journal-entry/record-history-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/system/views/language/language-create-view.tsx` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/views/language/language-detail-view.tsx` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/system/views/language/language-list-view.tsx` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/system/views/notification-delivery/notification-delivery-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/views/permission/permission-list-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/views/role/role-create-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1956,11 +2588,20 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/system/views/user/user-list-view.tsx` | view | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/system/views/webhook/webhook-list-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
-### Frontend · Utilities (`frontend/src/modules/utilities`) (162 file)
+### Frontend · Utilities (`frontend/src/modules/utilities`) (192 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `frontend/src/modules/utilities/components/donation/donation-table.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/utilities/components/feedback/feedback-thank-dialog.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/hooks/use-feedback-thank-dialog.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/hooks/use-page-feedback-detail.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/hooks/use-page-feedback-table.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/hooks/use-public-feedback-widget.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/page-feedback-detail-form.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/page-feedback-profile.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/page-feedback-table.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/feedback/public-feedback-widget.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/page-path/hooks/use-page-path-form.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page-path/hooks/use-page-path-select.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page-path/hooks/use-page-path-table.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -1968,22 +2609,22 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/utilities/components/page-path/page-path-profile.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/page-path/page-path-select.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/page-path/page-path-table.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/components/page/affiliate-page-renderer.tsx` | component | 2026-11-26 | 33c1a39 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/components/page/affiliate-page-renderer.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/page/bio-link-icon.tsx` | component | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/components/page/bio-page-renderer.tsx` | component | 2026-11-26 | 33c1a39 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/components/page/bio-page-renderer.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/page/donation-amount-icon-picker.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/page/donation-amount-icon.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/components/page/donation-page-renderer.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/utilities/components/page/donation-page-renderer.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/page/donation-public-feed.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/page/hooks/use-affiliate-page-renderer.ts` | hook | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/hooks/use-donation-page-renderer.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/hooks/use-notion-demo.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/hooks/use-page-button-dialog.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/components/page/hooks/use-page-donation-qr-dialog.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/components/page/hooks/use-page-form.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/components/page/hooks/use-page-donation-qr-dialog.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/utilities/components/page/hooks/use-page-form.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/page/hooks/use-page-table.ts` | hook | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/hooks/use-preview-notice.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/components/page/hooks/use-quick-add-modal.ts` | hook | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/components/page/hooks/use-quick-add-modal.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
 | `frontend/src/modules/utilities/components/page/legacy-tiptap-page-renderer.tsx` | component | 2026-11-26 | 33c1a39 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/notion-demo-editor.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/page/notion-demo-showcase.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -1991,25 +2632,32 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/utilities/components/page/page-affiliate-import-dialog.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/page/page-affiliate-item-row.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/page/page-affiliate-items-editor.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/utilities/components/page/page-affiliate-platforms-editor.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-background-editor.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-background-layer.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/page/page-bio-editor.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/utilities/components/page/page-block-style-editor.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/page/page-button-dialog.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/page-create-button.tsx` | component | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/page-create-dialog.tsx` | component | 2026-11-26 | 33c1a39 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/page-create-flow.tsx` | component | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/page-donation-amount-dialog.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/page-donation-editor.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/utilities/components/page/page-donation-qr-dialog.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/components/page/page-donation-qr-dialog.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/utilities/components/page/page-donation-qr-item-card.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/utilities/components/page/page-form.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/utilities/components/page/page-form.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-header-style-editor.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/page/page-preview-frame.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/page/page-profile.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/page/page-renderer-dispatcher.tsx` | component | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/components/page/page-share-button.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/page/page-table.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/utilities/components/page/page-theme-editor.tsx` | component | 2026-11-26 | 33c1a39 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/components/page/page-theme-editor.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/page-typography-layout-editor.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/page/preset-amount-icon.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/page/preview-notice.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/components/page/public-page.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/components/page/quick-add-modal.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/components/page/public-page.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/components/page/quick-add-modal.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
 | `frontend/src/modules/utilities/components/page/template-demo-showcase.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/qr-code/hooks/use-qr-code-form.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/qr-code/hooks/use-qr-code-insert.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2023,22 +2671,23 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/utilities/components/short-link/destination-favicon.tsx` | component | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/short-link/hooks/use-short-link-button-insert.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/short-link/hooks/use-short-link-form.ts` | hook | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/components/short-link/hooks/use-short-link-landing.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/components/short-link/hooks/use-short-link-landing.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/short-link/hooks/use-short-link-table.ts` | hook | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/short-link/short-link-button-insert.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/components/short-link/short-link-form.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/utilities/components/short-link/short-link-landing-card.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/utilities/components/short-link/short-link-landing-card.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/components/short-link/short-link-profile.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/short-link/short-link-table.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/components/utilities-dashboard/utilities-dashboard.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/utilities/constants/api-endpoints.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/constants/affiliate-platforms.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/constants/api-endpoints.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/constants/donation-icons.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/constants/notion-demo-data.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/constants/page-constants.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/constants/page-theme-presets.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/constants/page-theme-presets.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/constants/polling.ts` | constant | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/constants/query-keys.ts` | constant | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/constants/routes.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/constants/query-keys.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/constants/routes.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/extensions/page-extensions.ts` | fe-module | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-bulk-delete-pages.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-bulk-delete-qr-codes.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2049,11 +2698,14 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/utilities/hooks/use-create-page.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-create-qr-code.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-create-short-link.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/hooks/use-delete-page-feedback.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/hooks/use-delete-page-path.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-delete-page.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-delete-qr-code.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-delete-short-link.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-duplicate-page.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/hooks/use-page-feedback.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/hooks/use-page-feedbacks.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/hooks/use-page-path-options.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-page-path.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-page-paths.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2070,38 +2722,48 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/utilities/hooks/use-short-link-options.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-short-link.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-short-links.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/hooks/use-submit-public-feedback.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/hooks/use-thank-page-feedback.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/hooks/use-update-page-feedback.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/hooks/use-update-page-path.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-update-page.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-update-qr-code.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/hooks/use-update-short-link.ts` | hook | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/lib/donation-icon.ts` | fe-module | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/lib/page-theme.ts` | fe-module | 2026-11-26 | 33c1a39 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/messages/en.json` | messages | 2026-11-27 | fc7b309 | 2026-11-27 | N/A | 2026-11-27 | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `frontend/src/modules/utilities/messages/vi.json` | messages | 2026-11-27 | fc7b309 | 2026-11-27 | N/A | 2026-11-27 | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `frontend/src/modules/utilities/navigation.ts` | constant | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/lib/page-patterns.ts` | fe-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/lib/page-theme.ts` | fe-module | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/messages/en.json` | messages | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/messages/vi.json` | messages | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/navigation.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/permissions/donation-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/permissions/page-feedback-permission.ts` | permission | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/permissions/page-path-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/permissions/page-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/permissions/qr-code-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/permissions/short-link-permission.ts` | permission | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/schemas/page-feedback.schema.ts` | schema | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/schemas/page-path.schema.ts` | schema | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/schemas/page.schema.ts` | schema | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/schemas/page.schema.ts` | schema | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/schemas/qr-code.schema.ts` | schema | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/schemas/short-link.schema.ts` | schema | 2026-11-22 | 2d36c1c | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/services/donation.service.ts` | service | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/services/page-feedback.service.ts` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/services/page-path.service.ts` | service | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/services/page.service.ts` | service | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/services/page.service.ts` | service | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối tính năng Nơi bán riêng & Lấy link nhanh ngày 2026-11-28 |
 | `frontend/src/modules/utilities/services/qr-code.service.ts` | service | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/services/short-link.service.ts` | service | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/types/custom-pages.types.ts` | types | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/types/donation.types.ts` | types | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/types/page-feedback.types.ts` | types | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/types/page-path.types.ts` | types | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/utilities/types/page.types.ts` | types | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/utilities/types/page.types.ts` | types | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/types/qr-code.types.ts` | types | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/types/qr-codes.types.ts` | types | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/types/short-link.types.ts` | types | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/utilities/types/short-links.types.ts` | types | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/views/donation/donation-list-view.tsx` | view | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/utilities/views/page-feedback/page-feedback-detail-view.tsx` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/utilities/views/page-feedback/page-feedback-list-view.tsx` | view | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/utilities/views/page-path/page-path-create-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/views/page-path/page-path-detail-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/utilities/views/page-path/page-path-list-view.tsx` | view | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2410,7 +3072,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/finance/views/platform/platform-list-view.tsx` | view | 2026-11-27 | 1a5bc08 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/finance/views/sepay-connection/sepay-view.tsx` | view | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
-### Frontend · Workspace (`frontend/src/modules/workspace`) (148 file)
+### Frontend · Workspace (`frontend/src/modules/workspace`) (161 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -2418,37 +3080,44 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/workspace/components/asset-warranty-claim/hooks/use-warranty-claim-form.ts` | hook | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/asset-warranty-claim/hooks/use-warranty-claim-table.ts` | hook | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/asset-warranty-claim/warranty-claim-detail.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/asset-warranty-claim/warranty-claim-form.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/asset-warranty-claim/warranty-claim-form.tsx` | component | 2026-11-29 | 137d2ce | 2026-11-29 | PENDING (cũ: 2026-11-27) | 2026-11-29 | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Đạt 100% đối chiếu khóa vi/en và scan_hardcoded_vi. |
 | `frontend/src/modules/workspace/components/asset-warranty-claim/warranty-claim-table.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/components/asset/asset-claims-tab.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/asset/asset-detail.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/asset/asset-form.tsx` | component | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/asset/asset-form.tsx` | component | 2026-11-29 | 137d2ce | 2026-11-29 | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm CI, review-code, UI/UX và sửa lỗi EmailService + AttachmentPicker mobile. |
 | `frontend/src/modules/workspace/components/asset/asset-invoices-field.tsx` | component | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/asset/asset-table.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/components/asset/hooks/use-asset-detail.ts` | hook | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/components/asset/hooks/use-asset-form.ts` | hook | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/components/asset/hooks/use-asset-invoices-field.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/asset/hooks/use-asset-table.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/workspace/components/assistant/assistant-admin-panel.tsx` | component | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/assistant/assistant-admin-panel.tsx` | component | 2026-11-29 | 137d2ce | 2026-11-29 | PENDING (cũ: 2026-11-27) | 2026-11-29 | N/A | NEEDS_CHECK | Đạt 100% đối chiếu khóa vi/en và scan_hardcoded_vi. |
 | `frontend/src/modules/workspace/components/assistant/assistant-avatar.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/assistant/assistant-chat.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/assistant/assistant-chat.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/workspace/components/assistant/assistant-command-badge.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/assistant/assistant-floating-widget.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/assistant/assistant-floating-widget.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/assistant-quick-input.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/assistant-quick-replies.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/assistant-result-card.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/workspace/components/assistant/assistant-slash-suggestions.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/assistant/assistant-telegram-commands-card.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/assistant/assistant-thinking-indicator.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-admin-panel.ts` | hook | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-chat-panel.ts` | hook | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-floating-widget.ts` | hook | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-admin-panel.ts` | hook | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-chat-panel.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-floating-widget.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-quick-input.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/components/assistant/hooks/use-assistant-result-card.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/workspace/components/calendar/hooks/use-portal-calendar.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/workspace/components/calendar/portal-calendar.tsx` | component | 2026-11-27 | working-tree (MM) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/calendar/portal-calendar.tsx` | component | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | 2026-11-28 | N/A | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/workspace/components/dashboard/workspace-summary-cards.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-detail.ts` | hook | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-form.ts` | hook | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-table.ts` | hook | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-form.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-table.ts` | hook | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/workspace/components/reminder/hooks/use-reminder-topic-manager.ts` | hook | 2026-11-29 | 137d2ce | PENDING | PENDING | PENDING | N/A | NEEDS_CHECK | — |
 | `frontend/src/modules/workspace/components/reminder/reminder-detail.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/reminder/reminder-form.tsx` | component | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/reminder/reminder-table.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/reminder/reminder-form.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/reminder/reminder-table.tsx` | component | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/reminder/reminder-topic-select.tsx` | component | 2026-11-29 | 137d2ce | PENDING | PENDING | PENDING | N/A | NEEDS_CHECK | — |
 | `frontend/src/modules/workspace/components/subscription-payment/hooks/use-subscription-payment-table.ts` | hook | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/subscription-payment/subscription-payment-table.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/components/subscription/hooks/use-subscription-detail.ts` | hook | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -2456,7 +3125,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/workspace/components/subscription/hooks/use-subscription-renew-dialog.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/subscription/hooks/use-subscription-table.ts` | hook | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/subscription/subscription-detail.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/components/subscription/subscription-form.tsx` | component | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/components/subscription/subscription-form.tsx` | component | 2026-11-29 | 137d2ce | 2026-11-29 | PENDING (cũ: 2026-11-27) | 2026-11-29 | PENDING (cũ: 2026-11-27) | NEEDS_CHECK | Đạt 100% đối chiếu khóa vi/en và scan_hardcoded_vi. |
 | `frontend/src/modules/workspace/components/subscription/subscription-payments-tab.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/subscription/subscription-renew-dialog.tsx` | component | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/components/subscription/subscription-table.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -2468,10 +3137,10 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/workspace/components/vault-item/vault-item-form.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/components/vault-item/vault-item-table.tsx` | component | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/components/vault-item/vault-reveal-dialog.tsx` | component | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/workspace/constants/api-endpoints.ts` | constant | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/workspace/constants/defaults.ts` | constant | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/constants/query-keys.ts` | constant | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/constants/routes.ts` | constant | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/constants/api-endpoints.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/workspace/constants/defaults.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/constants/query-keys.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/constants/routes.ts` | constant | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/hooks/use-asset-options.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-asset.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-assets.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2481,17 +3150,20 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/workspace/hooks/use-assistant-thread.ts` | hook | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-clear-assistant-thread.ts` | hook | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/hooks/use-delete-asset.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/workspace/hooks/use-delete-reminder-topic.ts` | hook | 2026-11-29 | 137d2ce | PENDING | PENDING | PENDING | N/A | NEEDS_CHECK | — |
 | `frontend/src/modules/workspace/hooks/use-delete-reminder.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-delete-subscription-payment.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-delete-subscription.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-delete-vault-item.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-delete-warranty-claim.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/workspace/hooks/use-reminder-topics.ts` | hook | 2026-11-29 | 137d2ce | PENDING | PENDING | PENDING | N/A | NEEDS_CHECK | — |
 | `frontend/src/modules/workspace/hooks/use-reminder.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-reminders.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-renew-subscription.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-reveal-vault-item.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-save-asset.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-save-assistant-config.ts` | hook | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/workspace/hooks/use-save-reminder-topic.ts` | hook | 2026-11-29 | 137d2ce | PENDING | PENDING | PENDING | N/A | NEEDS_CHECK | — |
 | `frontend/src/modules/workspace/hooks/use-save-reminder.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-save-subscription.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-save-vault-item.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2507,13 +3179,14 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/workspace/hooks/use-workspace-calendar.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-workspace-dashboard.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/hooks/use-workspace-owner-options.ts` | hook | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/messages/en.json` | messages | 2026-11-27 | working-tree (MM) | 2026-11-27 | N/A | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `frontend/src/modules/workspace/messages/vi.json` | messages | 2026-11-27 | working-tree (MM) | 2026-11-27 | N/A | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `frontend/src/modules/workspace/messages/en.json` | messages | 2026-11-29 | 137d2ce | 2026-11-29 | N/A | 2026-11-29 | N/A | PASS | Đạt 100% đối chiếu khóa vi/en và scan_hardcoded_vi. |
+| `frontend/src/modules/workspace/messages/vi.json` | messages | 2026-11-29 | 137d2ce | 2026-11-29 | N/A | 2026-11-29 | N/A | PASS | Đạt 100% đối chiếu khóa vi/en và scan_hardcoded_vi. |
 | `frontend/src/modules/workspace/permissions/asset-permission.ts` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/permissions/asset-warranty-claim-permission.ts` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/permissions/assistant-config-permission.ts` | permission | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/permissions/assistant-permission.ts` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/permissions/reminder-permission.ts` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/workspace/permissions/reminder-topic-permission.ts` | permission | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | PENDING | NEEDS_CHECK | — |
 | `frontend/src/modules/workspace/permissions/subscription-payment-permission.ts` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/permissions/subscription-permission.ts` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/permissions/vault-item-permission.ts` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2521,8 +3194,8 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/workspace/permissions/workspace-dashboard-permission.ts` | permission | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/schemas/asset-warranty-claim.schema.ts` | schema | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/schemas/asset.schema.ts` | schema | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/schemas/assistant-config.schema.ts` | schema | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/schemas/reminder.schema.ts` | schema | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/schemas/assistant-config.schema.ts` | schema | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/schemas/reminder.schema.ts` | schema | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/schemas/subscription-renew.schema.ts` | schema | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/schemas/subscription.schema.ts` | schema | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/schemas/vault-item.schema.ts` | schema | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2530,6 +3203,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/workspace/services/asset.service.ts` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/services/assistant-config.service.ts` | service | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/services/assistant.service.ts` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/workspace/services/reminder-topic.service.ts` | service | 2026-11-29 | 137d2ce | PENDING | PENDING | PENDING | N/A | NEEDS_CHECK | — |
 | `frontend/src/modules/workspace/services/reminder.service.ts` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/services/subscription-payment.service.ts` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/services/subscription.service.ts` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2538,8 +3212,9 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/modules/workspace/services/workspace-dashboard.service.ts` | service | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/workspace/types/asset-warranty-claim.types.ts` | types | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/types/asset.types.ts` | types | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/types/assistant.types.ts` | types | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/workspace/types/reminder.types.ts` | types | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/workspace/types/assistant.types.ts` | types | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/modules/workspace/types/reminder-topic.types.ts` | types | 2026-11-29 | 137d2ce | PENDING | PENDING | N/A | N/A | NEEDS_CHECK | — |
+| `frontend/src/modules/workspace/types/reminder.types.ts` | types | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | PENDING (cũ: 2026-11-27) | N/A | N/A | NEEDS_CHECK | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/types/subscription-payment.types.ts` | types | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/types/subscription.types.ts` | types | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/workspace/types/vault-item.types.ts` | types | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -2568,34 +3243,34 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `frontend/src/modules/portal/components/dashboard/hooks/use-portal-dashboard.ts` | hook | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/portal/components/dashboard/portal-dashboard.tsx` | component | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/portal/components/dashboard/portal-dashboard.tsx` | component | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/portal/components/dashboard/portal-donation-trend-chart.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/dashboard/portal-link-clicks-chart.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/donation/portal-donation-dashboard.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/donation/portal-donation-gift-chart.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/layout/hooks/use-portal-shell.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/layout/hooks/use-portal-sidebar-section.ts` | hook | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/portal/components/layout/portal-bottom-nav.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/portal/components/layout/portal-bottom-nav.tsx` | component | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | 2026-11-28 | 2026-11-28 | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/portal/components/layout/portal-header.tsx` | component | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/portal/components/layout/portal-shell.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/modules/portal/components/layout/portal-shell.tsx` | component | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | 2026-11-28 | 2026-11-28 | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/modules/portal/components/layout/portal-sidebar-section.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/layout/portal-sidebar.tsx` | component | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/library/portal-library.tsx` | component | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/page/portal-page-create.tsx` | component | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/page/portal-page-edit.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/portal/components/profile/hooks/use-portal-profile.ts` | hook | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/portal/components/profile/portal-profile.tsx` | component | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/portal/components/profile/portal-profile.tsx` | component | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/portal/components/qr-code/hooks/use-portal-qr-code-form.ts` | hook | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/components/qr-code/portal-qr-code-create.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/portal/components/qr-code/portal-qr-code-edit.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/portal/components/qr-code/portal-qr-code-form.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/portal/components/short-link/portal-short-link-create.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/portal/components/short-link/portal-short-link-edit.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/src/modules/portal/constants/navigation.ts` | constant | 2026-11-27 | working-tree (MM) | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/portal/constants/navigation.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/portal/constants/query-keys.ts` | constant | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/portal/constants/routes.ts` | constant | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/modules/portal/messages/en.json` | messages | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | 2026-11-27 | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `frontend/src/modules/portal/messages/vi.json` | messages | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | 2026-11-27 | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `frontend/src/modules/portal/constants/routes.ts` | constant | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/portal/messages/en.json` | messages | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/modules/portal/messages/vi.json` | messages | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/modules/portal/views/dashboard/portal-dashboard-view.tsx` | view | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/views/donation/portal-donation-view.tsx` | view | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/portal/views/library/portal-library-view.tsx` | view | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2650,7 +3325,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `frontend/src/modules/manage-app/components/launcher/hooks/use-module-launcher.ts` | hook | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/src/modules/manage-app/components/launcher/hooks/use-module-launcher.ts` | hook | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/manage-app/components/launcher/launcher-footer.tsx` | component | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/src/modules/manage-app/components/launcher/launcher-header.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/modules/manage-app/components/launcher/launcher-layout.tsx` | component | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2692,12 +3367,12 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/i18n/request-locale.ts` | fe-module | 2026-11-15 | 1985ce0 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/i18n/request.ts` | fe-module | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/i18n/routing.ts` | fe-module | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/messages/en.json` | messages | 2026-11-27 | fc7b309 | 2026-11-27 | N/A | 2026-11-27 | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `frontend/src/messages/vi.json` | messages | 2026-11-27 | fc7b309 | 2026-11-27 | N/A | 2026-11-27 | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `frontend/src/messages/en.json` | messages | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/src/messages/vi.json` | messages | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/src/proxy.ts` | fe-module | 2026-11-27 | fc06142 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/store/auth-store.ts` | fe-module | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
-### Frontend · App Router (`frontend/src/app`) (139 file)
+### Frontend · App Router (`frontend/src/app`) (152 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -2715,8 +3390,13 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/app/[locale]/(admin)/admin/currencies/new/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(admin)/admin/currencies/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(admin)/admin/donations/page.tsx` | route-page | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/app/[locale]/(admin)/admin/email-templates/[id]/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/email-templates/new/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/email-templates/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/app/[locale]/(admin)/admin/exchange-rates/new/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(admin)/admin/exchange-rates/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/app/[locale]/(admin)/admin/feedbacks/[id]/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/feedbacks/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/app/[locale]/(admin)/admin/finance/incomes/[id]/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(admin)/admin/finance/incomes/new/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(admin)/admin/finance/incomes/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2734,6 +3414,9 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/app/[locale]/(admin)/admin/genres/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(admin)/admin/journal/[id]/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(admin)/admin/journal/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/app/[locale]/(admin)/admin/languages/[id]/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/languages/new/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(admin)/admin/languages/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/app/[locale]/(admin)/admin/layout.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(admin)/admin/notifications/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(admin)/admin/novels/[id]/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2777,6 +3460,11 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/app/[locale]/(client)/portal/assets/new/page.tsx` | route-page | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(client)/portal/assets/page.tsx` | route-page | 2026-11-26 | 03dfab1 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(client)/portal/donations/page.tsx` | route-page | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/app/[locale]/(client)/portal/email-templates/[id]/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(client)/portal/email-templates/new/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(client)/portal/email-templates/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(client)/portal/feedbacks/[id]/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `frontend/src/app/[locale]/(client)/portal/feedbacks/page.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/app/[locale]/(client)/portal/files/page.tsx` | route-page | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(client)/portal/finance/incomes/[id]/page.tsx` | route-page | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/(client)/portal/finance/incomes/new/page.tsx` | route-page | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2831,17 +3519,17 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/src/app/[locale]/(public)/page.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/[...rest]/page.tsx` | route-page | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/[locale]/error.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/app/[locale]/layout.tsx` | route-page | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/app/[locale]/layout.tsx` | route-page | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/app/[locale]/not-found.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/global-error.tsx` | route-page | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/src/app/globals.css` | style | 2026-11-26 | 33c1a39 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/src/app/globals.css` | style | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/src/app/not-found.tsx` | route-page | 2026-11-21 | 4771ba5 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/robots.ts` | route-page | 2026-11-19 | 79be1f9 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/s/[slug]/page.tsx` | route-page | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/s/layout.tsx` | route-page | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/src/app/sitemap.ts` | route-page | 2026-11-14 | fb23efa | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
-### Frontend · Tests (`frontend/tests`) (88 file)
+### Frontend · Tests (`frontend/tests`) (92 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -2854,19 +3542,22 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/tests/e2e/finance.spec.ts` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/e2e/helpers.ts` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/e2e/localization.spec.ts` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/tests/e2e/portal-workspace.spec.ts` | test | 2026-11-27 | working-tree (UU) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/tests/e2e/portal-workspace.spec.ts` | test | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/e2e/protected-route.spec.ts` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/e2e/qr-logo.spec.ts` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/e2e/responsive.spec.ts` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/e2e/system-management.spec.ts` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/activity-timeline.test.tsx` | test | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/admin-navigation.test.ts` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/tests/unit/affiliate-platforms.test.ts` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `frontend/tests/unit/api-client-cancel.test.ts` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/tests/unit/api-contract.test.ts` | test | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/tests/unit/api-contract.test.ts` | test | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/tests/unit/app-analytics.test.tsx` | test | 2026-11-28 | 69dc537 | 2026-11-28 | 2026-11-28 | N/A | N/A | PASS | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/tests/unit/asset-warranty-claim.test.tsx` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/assistant-admin.test.tsx` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/tests/unit/assistant-chat.test.tsx` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/tests/unit/assistant-popup.test.tsx` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/tests/unit/assistant-chat.test.tsx` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/tests/unit/assistant-popup.test.tsx` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `frontend/tests/unit/assistant-quick-replies.test.tsx` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/tests/unit/attachment-detail-dialog.test.tsx` | test | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/attachment-image-editor.test.tsx` | test | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/attachment-media.test.ts` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2889,7 +3580,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/tests/unit/home-weather-logic.test.tsx` | test | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/iam-catalog-services.test.ts` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/login-form.test.tsx` | test | 2026-11-27 | fc06142 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/tests/unit/markdown-content.test.tsx` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/tests/unit/markdown-content.test.tsx` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/tests/unit/messages.test.ts` | test | 2026-11-15 | 038bc05 | 2026-11-27 | 2026-11-27 | 2026-11-27 | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/module-group-card.test.tsx` | test | 2026-11-22 | 1b3e870 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/module-registry.test.ts` | test | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2897,12 +3588,12 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/tests/unit/notification-link.test.ts` | test | 2026-11-27 | fc06142 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/one-unit-per-file.test.ts` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/page-form-tabs.test.tsx` | test | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/tests/unit/page-template.test.ts` | test | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/tests/unit/page-template.test.ts` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
 | `frontend/tests/unit/page-theme.test.ts` | test | 2026-11-26 | 33c1a39 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/platform-rules-dialog.test.tsx` | test | 2026-11-27 | 1a5bc08 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/tests/unit/portal-calendar.test.tsx` | test | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/tests/unit/portal-calendar.test.tsx` | test | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/portal-finance-scope.test.tsx` | test | 2026-11-25 | 102d505 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/tests/unit/portal-navigation.test.tsx` | test | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/tests/unit/portal-navigation.test.tsx` | test | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/portal-profile.test.tsx` | test | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/portal-shell.test.tsx` | test | 2026-11-27 | c53d1ab | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/profile-dialog.test.tsx` | test | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -2912,6 +3603,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/tests/unit/robots.test.ts` | test | 2026-11-19 | 79be1f9 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/search-input.test.tsx` | test | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/security-controls.test.ts` | test | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/tests/unit/short-link-landing.test.tsx` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
 | `frontend/tests/unit/social-auth-callback-view.test.tsx` | test | 2026-11-27 | fc06142 | 2026-11-27 | 2026-11-27 | N/A | 2026-11-27 | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/sortable-list.test.ts` | test | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/table-column-widths.test.ts` | test | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2922,12 +3614,12 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `frontend/tests/unit/telegram-bot-card.test.tsx` | test | 2026-11-26 | 6d46e0f | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/theme-switcher.test.tsx` | test | 2026-11-16 | 53a2aee | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/theme-tokens.test.ts` | test | 2026-11-22 | be17cfe | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `frontend/tests/unit/tiptap-editor.test.tsx` | test | 2026-11-27 | 51e32de | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `frontend/tests/unit/tiptap-editor.test.tsx` | test | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `frontend/tests/unit/unread-count.test.tsx` | test | 2026-11-26 | 296a57a | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/use-tab-state.test.ts` | test | 2026-11-25 | 93e6312 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/use-user-menu.test.tsx` | test | 2026-11-25 | 37e3f80 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `frontend/tests/unit/user-avatar.test.tsx` | test | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
-| `frontend/tests/unit/user-display.test.ts` | test | 2026-11-27 | working-tree (M) | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
+| `frontend/tests/unit/user-display.test.ts` | test | 2026-11-27 | 44f39cc | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/user-menu.test.tsx` | test | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/user-social-accounts-section.test.tsx` | test | 2026-11-27 | fc7b309 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `frontend/tests/unit/vault-reveal.test.tsx` | test | 2026-11-27 | 87f3761 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
@@ -2960,7 +3652,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `.github/workflows/ci.yml` | workflow | 2026-11-20 | d2cb772 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `.github/workflows/ci.yml` | workflow | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | PENDING (cũ: 2026-11-28) | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `scripts/audit_tracker.py` | script | 2026-11-27 | 644cb17 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Tái xác nhận toàn bộ SEC-* (227 test BE + FE security-controls/error-boundary-security) và bổ sung SEC-HOOK-03 vào security-verification.md. |
 | `scripts/build_brand_assets.py` | script | 2026-11-20 | 3bfdedf | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `scripts/check-all.ps1` | script | 2026-11-24 | eb32524 | 2026-11-27 | 2026-11-27 | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -2977,13 +3669,13 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `.agents/rules/00-core.md` | rule | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/rules/01-workflow.md` | rule | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `.agents/rules/10-backend.md` | rule | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `.agents/rules/10-backend.md` | rule | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `.agents/rules/11-tests.md` | rule | 2026-11-24 | eb32524 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/rules/20-frontend.md` | rule | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `.agents/rules/21-frontend-ui.md` | rule | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `.agents/rules/21-frontend-ui.md` | rule | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `.agents/rules/30-env-secrets.md` | rule | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/rules/40-docs-and-rules.md` | rule | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `.agents/rules/50-notifications.md` | rule | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `.agents/rules/50-notifications.md` | rule | 2026-11-27 | 44f39cc | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `.agents/rules/51-permissions.md` | rule | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/rules/52-free-tier-infra.md` | rule | 2026-11-24 | eb32524 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/rules/53-attachments.md` | rule | 2026-11-24 | eb32524 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -3000,7 +3692,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `.agents/skills/db-migration/SKILL.md` | skill | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `.agents/skills/django-perf-review/LICENSE` | skill | 2026-11-24 | eb32524 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/skills/django-perf-review/SKILL.md` | skill | 2026-11-24 | eb32524 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `.agents/skills/fix/SKILL.md` | skill | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `.agents/skills/fix/SKILL.md` | skill | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | N/A | N/A | N/A | NEEDS_CHECK | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `.agents/skills/fix/references/regression-matrix.md` | skill | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/skills/graphify/.graphify_version` | skill | 2026-11-14 | 7513476 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/skills/graphify/SKILL.md` | skill | 2026-11-14 | 7513476 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -3085,7 +3777,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `.agents/skills/playwright-cli/references/test-generation.md` | skill | 2026-11-20 | d2cb772 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/skills/playwright-cli/references/tracing.md` | skill | 2026-11-20 | d2cb772 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/skills/playwright-cli/references/video-recording.md` | skill | 2026-11-20 | d2cb772 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `.agents/skills/refactor/SKILL.md` | skill | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `.agents/skills/refactor/SKILL.md` | skill | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | N/A | N/A | N/A | NEEDS_CHECK | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `.agents/skills/refactor/references/refactor-checklist.md` | skill | 2026-11-25 | 77c4c61 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/skills/review-code/SKILL.md` | skill | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `.agents/skills/review-code/references/review-matrix.md` | skill | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -3133,7 +3825,7 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `.agents/skills/sepay/references/testing-go-live.md` | skill | 2026-11-21 | 4771ba5 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/skills/sepay/references/vietqr.md` | skill | 2026-11-21 | 4771ba5 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/skills/sepay/references/webhook.md` | skill | 2026-11-21 | 4771ba5 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `.agents/skills/start-task/SKILL.md` | skill | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `.agents/skills/start-task/SKILL.md` | skill | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-27) | N/A | N/A | N/A | NEEDS_CHECK | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `.agents/skills/start-task/references/acceptance-matrix.md` | skill | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.agents/skills/test/SKILL.md` | skill | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `.agents/skills/test/references/monkey-testing.md` | skill | 2026-11-25 | 77c4c61 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -3352,48 +4044,49 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `.vscode/extensions.json` | config | 2026-11-14 | fb23efa | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.vscode/settings.json` | config | 2026-11-19 | 79be1f9 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `.vscode/sftp.json` | config | 2026-11-22 | 1b3e870 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `AGENTS.md` | rule | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `CLAUDE.md` | rule | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `AGENTS.md` | rule | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `CLAUDE.md` | rule | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `DESIGN.md` | config | 2026-11-21 | 4771ba5 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `README.md` | config | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `SYSTEM_CONTEXT.md` | rule | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `prompt.md` | rule | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `README.md` | config | 2026-11-29 | working-tree (M) | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `SYSTEM_CONTEXT.md` | rule | 2026-11-29 | working-tree (M) | PENDING (cũ: 2026-11-27) | N/A | N/A | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
+| `prompt.md` | rule | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `skills-lock.json` | config | 2026-11-24 | eb32524 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
-### Tài liệu hệ thống (`docs/`) (62 file)
+### Tài liệu hệ thống (`docs/`) (66 file)
 
 | File | Loại | Thay đổi gần nhất | Thay đổi bởi / Commit | Code | Security | i18n | Permission | Trạng thái | Ghi chú |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `docs/README.md` | doc | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `docs/README.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `docs/architecture/architecture.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/architecture/authentication.md` | doc | 2026-11-27 | fc06142 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/architecture/authorization.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/architecture/i18n.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/architecture/infrastructure.md` | doc | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `docs/architecture/reference-audit.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/architecture/testing.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `docs/architecture/infrastructure.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `docs/architecture/reference-audit.md` | doc | 2026-11-29 | working-tree (D) | PENDING | N/A | N/A | N/A | NEEDS_CHECK | — |
+| `docs/architecture/testing.md` | doc | 2026-11-29 | working-tree (M) | PENDING (cũ: 2026-11-27) | N/A | N/A | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/audit/free-tier-optimization-handoff.md` | doc | 2026-11-26 | 296a57a | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/audit/infrastructure-free-tier-audit.md` | doc | 2026-11-26 | 296a57a | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/common-catalog.md` | doc | 2026-11-27 | working-tree (UU) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `docs/common-catalog.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `docs/features/admin-navigation.md` | doc | 2026-11-22 | 1b3e870 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `docs/features/assistant-ai.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `docs/features/attachment-visibility.md` | doc | 2026-11-26 | 296a57a | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/features/permission-scope.md` | doc | 2026-11-26 | 507f42d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/features/permission-ui.md` | doc | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `docs/features/table-actions.md` | doc | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `docs/features/web-push.md` | doc | 2026-11-26 | 296a57a | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/guides/cloudflare-r2.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/guides/deployment.md` | doc | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `docs/guides/deployment.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `docs/guides/finance-setup.md` | doc | 2026-11-26 | a427f8d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/guides/notification-setup.md` | doc | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `docs/guides/notification-setup.md` | doc | 2026-11-27 | 44f39cc | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
 | `docs/guides/oauth.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/guides/telegram-webhook.md` | doc | 2026-11-27 | working-tree (??) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `docs/guides/telegram-webhook.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `docs/modules/finance/README.md` | doc | 2026-11-27 | 1a5bc08 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/modules/home/README.md` | doc | 2026-11-26 | 296a57a | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/modules/manage-app/README.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/modules/novel/README.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/modules/system/README.md` | doc | 2026-11-27 | fc06142 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/modules/utilities/README.md` | doc | 2026-11-27 | 1a5bc08 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/modules/workspace/README.md` | doc | 2026-11-27 | working-tree (UU) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `docs/modules/system/README.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `docs/modules/utilities/README.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `docs/modules/workspace/README.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `docs/note.md` | doc | 2026-11-26 | 24b33af | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/plans/2026/11/15/system-standardization-plan.md` | doc | 2026-11-26 | a427f8d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/plans/2026/11/21/finance-module-plan.md` | doc | 2026-11-26 | a427f8d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
@@ -3415,16 +4108,19 @@ Hiện có **2** file cần rà soát lại (đã sửa sau lần kiểm gần n
 | `docs/plans/2026/11/22/template-ui-ux.md` | doc | 2026-11-26 | a427f8d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/plans/2026/11/22/template-wireframe.html` | doc | 2026-11-26 | a427f8d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/plans/2026/11/25/personal-assistant-plan.md` | doc | 2026-11-27 | c53d1ab | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
+| `docs/plans/2026/11/28/anonymous-feedback-and-email-template-plan.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `docs/plans/2026/11/28/assistant-learning-memory-plan.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
+| `docs/plans/2026/11/28/custom-page-beacons-appearance-plan.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
 | `docs/reports/2026-11-22-background-jobs-plan.md` | doc | 2026-11-26 | a427f8d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/reports/2026-11-22-bulk-actions-sidebar-profile.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/reports/2026-11-22-free-tier-optimization-result.md` | doc | 2026-11-26 | a427f8d | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/reports/2026-11-22-login-performance.md` | doc | 2026-11-22 | 1b3e870 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 | `docs/reports/2026-11-22-rule-audit.md` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/reports/foundation-report.html` | doc | 2026-11-22 | be17cfe | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
-| `docs/reports/security-verification.md` | doc | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `docs/rules/backend.md` | doc | 2026-11-27 | working-tree (M) | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `docs/rules/common.md` | doc | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
-| `docs/rules/frontend.md` | doc | 2026-11-27 | 644cb17 | 2026-11-27 | N/A | N/A | N/A | FIXED | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `docs/reports/foundation-report.html` | doc | 2026-11-29 | working-tree (M) | PENDING (cũ: 2026-11-27) | N/A | N/A | N/A | NEEDS_CHECK | Đã rà soát đủ 4 trục (2026-11-27) |
+| `docs/reports/security-verification.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát & tự sửa trong lượt tổng kiểm /review-code /i18n-audit /permission-audit /review-security (2026-11-28) |
+| `docs/rules/backend.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Đạt chuẩn sau tổng kiểm 4 trục (2026-11-28) |
+| `docs/rules/common.md` | doc | 2026-11-29 | working-tree (M) | PENDING (cũ: 2026-11-27) | N/A | N/A | N/A | NEEDS_CHECK | Đạt 227 test BE, 520 test FE (one-unit-per-file, code-conventions, module-structure, messages, portal-calendar), sync-ai-rules & check-workflow-skills. |
+| `docs/rules/frontend.md` | doc | 2026-11-29 | 137d2ce | PENDING (cũ: 2026-11-28) | N/A | N/A | N/A | NEEDS_CHECK | Rà soát cuối review-code, i18n-audit, permission-audit, review-security ngày 2026-11-28 |
 | `docs/rules/git.md` | doc | 2026-11-27 | 97e7d75 | 2026-11-27 | N/A | N/A | N/A | PASS | Đã rà soát đủ 4 trục (2026-11-27) |
 
 <!-- AUDIT_TABLES:END -->

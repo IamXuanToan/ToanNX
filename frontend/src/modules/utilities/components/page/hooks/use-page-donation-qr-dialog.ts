@@ -60,16 +60,6 @@ export function usePageDonationQrDialog({
     return generateSecureWebhookToken();
   });
 
-  // Cấu hình kiểu dáng QR
-  const [foreground, setForeground] = useState(initialItem?.design?.foreground ?? "#000000");
-  const [background, setBackground] = useState(initialItem?.design?.background ?? "#ffffff");
-  const [margin, setMargin] = useState(initialItem?.design?.margin ?? 2);
-  const [errorCorrection, setErrorCorrection] = useState<"L" | "M" | "Q" | "H">(
-    initialItem?.design?.errorCorrection ?? "M",
-  );
-  const [logoId, setLogoId] = useState<string | null>(initialItem?.logoId ?? null);
-  const [logoUrl, setLogoUrl] = useState<string | undefined>(initialItem?.logoUrl);
-
   // Ảnh mã QR tùy chỉnh do người dùng tải lên (MoMo, ZaloPay, PayPal, v.v.)
   const [customImageId, setCustomImageId] = useState<string | null>(
     initialItem?.customImageId ?? null,
@@ -171,19 +161,7 @@ export function usePageDonationQrDialog({
     }, PREVIEW_DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, [
-    type,
-    bankBin,
-    accountNumber,
-    accountHolder,
-    note,
-    foreground,
-    background,
-    margin,
-    errorCorrection,
-    logoId,
-    customImageUrl,
-  ]);
+  }, [type, bankBin, accountNumber, accountHolder, note, customImageUrl]);
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -203,18 +181,9 @@ export function usePageDonationQrDialog({
       hideAmount,
       webhookEnabled,
       webhookToken: webhookEnabled ? webhookToken : undefined,
-      design:
-        type === "BANK_TRANSFER"
-          ? {
-              foreground,
-              background,
-              margin,
-              size: 512,
-              errorCorrection,
-            }
-          : undefined,
-      logoId: type === "BANK_TRANSFER" ? logoId : undefined,
-      logoUrl: type === "BANK_TRANSFER" ? logoUrl : undefined,
+      design: undefined,
+      logoId: undefined,
+      logoUrl: undefined,
       previewSvg: type === "CUSTOM" ? customImageUrl : previewSvg || undefined,
       customImageId: type === "CUSTOM" ? customImageId : undefined,
       customImageUrl: type === "CUSTOM" ? customImageUrl : undefined,
@@ -249,18 +218,6 @@ export function usePageDonationQrDialog({
     webhookToken,
     webhookUrl,
     handleCopyWebhookUrl,
-    foreground,
-    setForeground,
-    background,
-    setBackground,
-    margin,
-    setMargin,
-    errorCorrection,
-    setErrorCorrection,
-    logoId,
-    setLogoId,
-    logoUrl,
-    setLogoUrl,
     customImageId,
     setCustomImageId,
     customImageUrl,

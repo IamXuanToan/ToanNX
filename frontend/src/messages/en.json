@@ -1,5 +1,11 @@
 {
   "common": {
+    "markdownTable": {
+      "dimensions": "{rows} rows · {cols} cols",
+      "copyTooltip": "Copy table",
+      "copiedToast": "Copied table to clipboard.",
+      "copyFailedToast": "Failed to copy table."
+    },
     "seo": {
       "title": "ToanNX",
       "description": "ToanNX's personal website."
@@ -377,6 +383,38 @@
       "charCount": "{count} / {max} chars",
       "commentPlaceholder": "Write your comment...",
       "commentSubmit": "Post comment",
+      "ai": {
+        "button": "AI Compose",
+        "slashLabel": "AI Write Content",
+        "slashDesc": "Generate or edit content with AI (with personal RAG)",
+        "title": "AI Content Assistant",
+        "modeLabel": "Mode",
+        "modes": {
+          "generate": "Generate new content",
+          "rewrite": "Rewrite professionally",
+          "expand": "Expand details",
+          "summarize": "Summarize",
+          "fix_grammar": "Fix grammar & spelling"
+        },
+        "defaultPrompts": {
+          "generate": "Write complete, well-structured content.",
+          "rewrite": "Rewrite this text to be clearer and more natural.",
+          "expand": "Expand this text with more details and examples.",
+          "summarize": "Summarize the key points concisely.",
+          "fix_grammar": "Fix spelling, punctuation, and grammar."
+        },
+        "selectedLabel": "Selected text",
+        "promptLabel": "Prompt for AI",
+        "promptPlaceholder": "e.g. Write a summary of this week's reminders and income...",
+        "useRagLabel": "Use personal data context (RBAC-scoped RAG)",
+        "previewLabel": "Tiptap preview",
+        "generate": "Generate",
+        "regenerate": "Regenerate",
+        "generating": "Generating...",
+        "insertContent": "Insert into document",
+        "replaceSelection": "Replace selection",
+        "errorFallback": "Unable to generate AI content right now."
+      },
       "commentSubmitting": "Sending...",
       "commentCancel": "Cancel",
       "commentShortcutHint": "Ctrl + Enter to send",
@@ -529,6 +567,14 @@
       "UTILITIES_PAGE_PATH_IN_USE": "This path still has pages and cannot be deleted.",
       "UTILITIES_PAGE_PATH_INACTIVE": "This path is disabled; new pages cannot be added to it.",
       "UTILITIES_PAGE_VERSION_CONFLICT": "This page was changed elsewhere. Reload to see the latest version.",
+      "UTILITIES_FEEDBACK_TARGET_NOT_FOUND": "The target page or short link does not exist or is inactive.",
+      "UTILITIES_FEEDBACK_NO_EMAIL": "This feedback has no sender email, so a thank-you email cannot be sent.",
+      "SYSTEM_EMAIL_TEMPLATE_CODE_CONFLICT": "An email template with this code already exists in this scope and locale.",
+      "SYSTEM_EMAIL_TEMPLATE_DEFAULT_PROTECTED": "System default email templates cannot be deleted; archive them instead.",
+      "SYSTEM_EMAIL_TEMPLATE_SYSTEM_DEFAULT_PROTECTED": "System default email templates cannot be deleted; archive them instead.",
+      "SYSTEM_LANGUAGE_CODE_CONFLICT": "This language code already exists.",
+      "SYSTEM_LANGUAGE_DEFAULT_PROTECTED": "System default languages cannot be disabled or deleted.",
+      "SYSTEM_LANGUAGE_IN_USE": "This language is referenced by existing translations and cannot be deleted.",
       "NOVEL_NOT_FOUND": "Novel not found.",
       "NOVEL_SLUG_EXISTS": "Novel slug already exists.",
       "NOVEL_FORBIDDEN": "You do not have permission to perform this action.",
@@ -587,7 +633,9 @@
       "WORKSPACE_DIGEST_SLOT_INVALID": "Digest time slot must follow HH:MM (00:00–23:59).",
       "WORKSPACE_CALENDAR_RANGE_TOO_LONG": "Calendar range cannot exceed 93 days.",
       "WORKSPACE_AI_NOT_CONFIGURED": "AI assistant endpoint is not configured; using Slash commands.",
-      "WORKSPACE_AI_DAILY_LIMIT_EXCEEDED": "Daily AI token quota exceeded."
+      "WORKSPACE_AI_UNAVAILABLE": "The AI system is temporarily overloaded or unresponsive. Please try again.",
+      "WORKSPACE_AI_DAILY_LIMIT_EXCEEDED": "Daily AI token quota exceeded.",
+      "WORKSPACE_REMINDER_TOPIC_SYSTEM_PROTECTED": "System default topics cannot be modified or deleted."
     },
     "generic": {
       "title": "Could not load data",

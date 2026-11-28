@@ -35,12 +35,59 @@ export function AssistantFloatingWidget() {
           data-testid="assistant-popup-panel"
           data-placement={widget.placement}
           style={widget.popupStyle}
-          className="border-border/80 bg-card fixed z-50 flex flex-col overflow-hidden rounded-2xl border shadow-2xl"
+          className={cn(
+            "border-border/80 bg-card fixed z-50 flex flex-col overflow-hidden rounded-2xl border shadow-2xl",
+            widget.isResizing && "select-none",
+          )}
         >
+          <div
+            aria-hidden
+            data-testid="assistant-resize-horizontal"
+            onPointerDown={(event) => widget.onResizePointerDown("x", event)}
+            onPointerMove={widget.onResizePointerMove}
+            onPointerUp={widget.onResizePointerUp}
+            onPointerCancel={widget.onResizePointerCancel}
+            className={cn(
+              "hover:bg-primary/40 absolute inset-y-3 z-20 hidden w-1.5 cursor-ew-resize touch-none transition-colors md:block",
+              widget.horizontalResizeEdge === "left" ? "left-0" : "right-0",
+            )}
+          />
+          <div
+            aria-hidden
+            data-testid="assistant-resize-vertical"
+            onPointerDown={(event) => widget.onResizePointerDown("y", event)}
+            onPointerMove={widget.onResizePointerMove}
+            onPointerUp={widget.onResizePointerUp}
+            onPointerCancel={widget.onResizePointerCancel}
+            className={cn(
+              "hover:bg-primary/40 absolute inset-x-3 z-20 hidden h-1.5 cursor-ns-resize touch-none transition-colors md:block",
+              widget.verticalResizeEdge === "top" ? "top-0" : "bottom-0",
+            )}
+          />
+          <div
+            aria-hidden
+            data-testid="assistant-resize-corner"
+            onPointerDown={(event) => widget.onResizePointerDown("xy", event)}
+            onPointerMove={widget.onResizePointerMove}
+            onPointerUp={widget.onResizePointerUp}
+            onPointerCancel={widget.onResizePointerCancel}
+            className={cn(
+              "hover:bg-primary/60 absolute z-30 hidden size-3.5 touch-none rounded-sm transition-colors md:block",
+              widget.verticalResizeEdge === "top" ? "top-0" : "bottom-0",
+              widget.horizontalResizeEdge === "left" ? "left-0" : "right-0",
+              widget.verticalResizeEdge === "top" && widget.horizontalResizeEdge === "left"
+                ? "cursor-nwse-resize"
+                : widget.verticalResizeEdge === "bottom" && widget.horizontalResizeEdge === "right"
+                  ? "cursor-nwse-resize"
+                  : "cursor-nesw-resize",
+            )}
+          />
           <AssistantChat
             variant="popup"
             canChat={widget.canChat}
             enabled={widget.isOpen}
+            isCustomSize={widget.isCustomSize}
+            onResetSize={widget.resetPopupSize}
             onClose={() => widget.setIsOpen(false)}
           />
         </section>

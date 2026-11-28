@@ -3,6 +3,7 @@
 from typing import Any
 
 from django.db.models import F, QuerySet
+from django.db.models.functions import Lower
 from django.utils import timezone
 
 from app.core.repositories.core_repository import CoreRepository
@@ -21,6 +22,19 @@ class ShortLinkRepository(CoreRepository[ShortLink]):
     def find_by_slug(self, slug: str) -> ShortLink | None:
         """Tìm liên kết theo slug không phân biệt hoa thường."""
         return self.get_queryset().filter(slug__iexact=slug).first()
+
+    def existing_slugs_ci(self, slugs: list[str]) -> set[str]:
+        """Tập slug (chữ thường) đã có trong DB trong danh sách cho trước, 1 query (kể cả bản ghi xóa mềm)."""
+        lowered = [slug.lower() for slug in slugs if slug]
+        if not lowered:
+            return set()
+        rows = (
+            self.get_queryset_with_deleted()
+            .annotate(slug_lower=Lower("slug"))
+            .filter(slug_lower__in=lowered)
+            .values_list("slug_lower", flat=True)
+        )
+        return {str(row) for row in rows}
 
     def record_access(self, link_id: Any, is_new_visitor: bool) -> None:
         """Ghi nhận lượt truy cập bằng F() expression, đảm bảo an toàn tranh chấp (concurrency).

@@ -17,7 +17,19 @@ import {
   PAGE_TYPE,
   PAGE_VERSION_CONFLICT_CODE,
 } from "../../../constants/page-constants";
+import { resolvePageAffiliatePlatforms } from "../../../constants/affiliate-platforms";
 import { UTILITIES_ROUTES } from "../../../constants/routes";
+import type {
+  AffiliateCategory,
+  AffiliateContentConfig,
+  AffiliateItem,
+  AffiliatePlatformConfig,
+  BioContentConfig,
+  DonationContentConfig,
+  DonationQrItem,
+  PageDetail,
+  PublicPage,
+} from "../../../types/page.types";
 import { useCreatePage } from "../../../hooks/use-create-page";
 import { usePagePathOptions } from "../../../hooks/use-page-path-options";
 import { useUpdatePage } from "../../../hooks/use-update-page";
@@ -29,16 +41,6 @@ import {
   type PageFormValues,
   toPageInput,
 } from "../../../schemas/page.schema";
-import type {
-  AffiliateCategory,
-  AffiliateContentConfig,
-  AffiliateItem,
-  BioContentConfig,
-  DonationContentConfig,
-  DonationQrItem,
-  PageDetail,
-  PublicPage,
-} from "../../../types/page.types";
 
 const VERSION_CONFLICT = PAGE_VERSION_CONFLICT_CODE;
 const DRAFT_PREFIX = CUSTOM_PAGE_DRAFT_STORAGE_PREFIX;
@@ -117,6 +119,7 @@ export function usePageForm({
   const status = useWatch({ control: form.control, name: "status" });
   const avatar = useWatch({ control: form.control, name: "avatar" });
   const cover = useWatch({ control: form.control, name: "cover" });
+  const backgroundImage = useWatch({ control: form.control, name: "backgroundImage" });
 
   const contentDirty = form.getFieldState("content", form.formState).isDirty;
   const [draft, setDraft] = useState<PageFormValues["content"] | null>(null);
@@ -174,6 +177,7 @@ export function usePageForm({
   const affiliateConfig = contentConfig as unknown as AffiliateContentConfig | undefined;
   const affiliateItems = affiliateConfig?.items ?? [];
   const affiliateCategories = affiliateConfig?.categories ?? [];
+  const affiliatePlatforms = resolvePageAffiliatePlatforms(affiliateConfig);
 
   const addAffiliateProduct = (newItem: AffiliateItem) => {
     const updated = {
@@ -262,6 +266,49 @@ export function usePageForm({
       categories: affiliateCategories.map((c) =>
         c.id === catId ? { ...c, name: newName.trim() } : c,
       ),
+    };
+    form.setValue("contentConfig", updated, { shouldDirty: true });
+  };
+
+  const addPlatform = (input: { name: string; code: string; urlPattern: string }) => {
+    const newPlat: AffiliatePlatformConfig = {
+      id: "plat-" + Date.now(),
+      code: input.code.trim(),
+      name: input.name.trim(),
+      urlPattern: input.urlPattern.trim(),
+      sortOrder: affiliatePlatforms.length,
+      isVisible: true,
+    };
+    const updated = {
+      ...(contentConfig ?? {}),
+      platforms: [...affiliatePlatforms, newPlat],
+    };
+    form.setValue("contentConfig", updated, { shouldDirty: true });
+  };
+
+  const updatePlatform = (
+    platId: string,
+    patch: Partial<Pick<AffiliatePlatformConfig, "name" | "code" | "urlPattern" | "isVisible">>,
+  ) => {
+    const updated = {
+      ...(contentConfig ?? {}),
+      platforms: affiliatePlatforms.map((p) => (p.id === platId ? { ...p, ...patch } : p)),
+    };
+    form.setValue("contentConfig", updated, { shouldDirty: true });
+  };
+
+  const removePlatform = (platId: string) => {
+    const updated = {
+      ...(contentConfig ?? {}),
+      platforms: affiliatePlatforms.filter((p) => p.id !== platId),
+    };
+    form.setValue("contentConfig", updated, { shouldDirty: true });
+  };
+
+  const reorderPlatforms = (newPlatforms: AffiliatePlatformConfig[]) => {
+    const updated = {
+      ...(contentConfig ?? {}),
+      platforms: newPlatforms.map((plat, idx) => ({ ...plat, sortOrder: idx })),
     };
     form.setValue("contentConfig", updated, { shouldDirty: true });
   };
@@ -402,6 +449,8 @@ export function usePageForm({
       avatarUrl: resolvedAvatarUrl,
       cover_url: resolvedCoverUrl,
       coverUrl: resolvedCoverUrl,
+      background_image_url: backgroundImage?.url ?? null,
+      backgroundImageUrl: backgroundImage?.url ?? null,
       pageType: pageType || PAGE_TYPE.AFFILIATE,
       templateKey: templateKey || "product_grid",
       templateVersion: 1,
@@ -430,6 +479,7 @@ export function usePageForm({
       description,
       resolvedAvatarUrl,
       resolvedCoverUrl,
+      backgroundImage,
       pageType,
       templateKey,
       contentConfig,
@@ -523,6 +573,7 @@ export function usePageForm({
     setPreviewDevice,
     affiliateItems,
     affiliateCategories,
+    affiliatePlatforms,
     addAffiliateProduct,
     removeAffiliateProduct,
     updateAffiliateProduct,
@@ -534,6 +585,10 @@ export function usePageForm({
     removeCategory,
     updateCategory,
     reorderCategories,
+    addPlatform,
+    updatePlatform,
+    removePlatform,
+    reorderPlatforms,
     showPrice,
     toggleShowPrice,
     bioConfig,

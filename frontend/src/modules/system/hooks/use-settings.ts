@@ -13,7 +13,5 @@ import type { SettingFilters } from "../types/setting.types";
  * @returns Truy vấn React Query danh sách cấu hình.
  */
 export function useSettings(filters: SettingFilters) {
-  return useListQuery(settingKeys.settings(filters), (signal) =>
-    settingService.list(filters, signal),
-  );
+  return useListQuery(settingKeys.list(filters), (signal) => settingService.list(filters, signal));
 }

@@ -824,6 +824,11 @@
       "openTelegram": "Open Telegram",
       "verify": "Verify",
       "test": "Send test",
+      "groupReplyModeLabel": "Group AI reply mode",
+      "groupReplyModes": {
+        "mention_only": "Reply only on @mention / command",
+        "all_messages": "Read all messages (2-member group)"
+      },
       "status": {
         "pending": "Pending",
         "active": "Active",
@@ -990,5 +995,133 @@
     "catalogs": "Catalogs",
     "integrations": "Integrations",
     "operations": "Operations"
+  },
+  "emailTemplates": {
+    "nav": "Email templates",
+    "title": "Email templates",
+    "description": "Manage system and personal email templates with Tiptap rich editor and merge fields.",
+    "createTitle": "Create email template",
+    "createDescription": "Design a new email template with dynamic merge variables.",
+    "detailTitle": "Email template detail",
+    "searchPlaceholder": "Search by code, name or subject...",
+    "empty": "No email templates found.",
+    "created": "Email template created.",
+    "updated": "Email template updated.",
+    "deleted": "Email template deleted.",
+    "bulkDeleted": "Deleted {count} email templates.",
+    "duplicated": "Duplicated to your personal templates.",
+    "fields": {
+      "code": "Template code",
+      "name": "Template name",
+      "description": "Description",
+      "locale": "Locale",
+      "scope": "Scope",
+      "category": "Category",
+      "status": "Status",
+      "subject": "Email subject",
+      "content": "Template content (Tiptap)",
+      "htmlBody": "HTML body",
+      "owner": "Owner",
+      "updatedAt": "Updated"
+    },
+    "scopes": {
+      "SYSTEM": "System",
+      "PERSONAL": "Personal"
+    },
+    "categories": {
+      "AUTH": "Authentication",
+      "NOTIFICATION": "Notification",
+      "FEEDBACK_THANKS": "Feedback thank-you",
+      "CUSTOM": "Custom"
+    },
+    "statuses": {
+      "ACTIVE": "Active",
+      "DRAFT": "Draft",
+      "ARCHIVED": "Archived"
+    },
+    "actions": {
+      "create": "Create template",
+      "duplicate": "Duplicate to personal",
+      "preview": "Preview merge"
+    },
+    "placeholders": {
+      "name": "e.g. Broken link thank-you email",
+      "description": "Short note about this template...",
+      "subject": "e.g. Thank you '{{sender_name}}' for your feedback on '{{page_title}}'"
+    },
+    "hints": {
+      "code": "Lowercase letters, numbers, and underscores (_) only."
+    },
+    "mergeFields": {
+      "title": "Supported merge fields",
+      "quickInsertHint": "Click to insert into body (or S to append to subject)",
+      "insertBodyTooltip": "Insert '{{'{key}'}}' into email body",
+      "insertSubjectTooltip": "Append '{{'{key}'}}' to email subject",
+      "hint": "Use the Insert menu or type / to insert '{{...}}' variables into the email body.",
+      "labels": {
+        "sender_name": "Sender name",
+        "target_title": "Target title",
+        "target_url": "Target URL",
+        "feedback_type": "Feedback type",
+        "resolution_note": "Resolution note",
+        "owner_name": "Owner name",
+        "full_name": "Full name",
+        "action_url": "Action URL"
+      }
+    },
+    "preview": {
+      "title": "Merged email preview",
+      "description": "Simulated output after variable substitution and HTML sanitization."
+    },
+    "languages": {
+      "manageButton": "Languages",
+      "title": "Manage email template languages",
+      "description": "Enabled languages appear as tabs inside the email template editor.",
+      "defaultBadge": "Default",
+      "removeTooltip": "Remove this language",
+      "addTitle": "Add a new language",
+      "namePlaceholder": "Display name (e.g. 日本語, 한국어)",
+      "addButton": "Add language",
+      "invalidCode": "Language code must be 2-10 lowercase letters (e.g. ja, ko, fr).",
+      "nameRequired": "Please enter a display name.",
+      "duplicateCode": "This language code already exists.",
+      "addedToast": "Language added.",
+      "removedToast": "Language removed.",
+      "primaryRequired": "Please enter Name and Subject for the primary language (VI)."
+    }
+  },
+  "languages": {
+    "nav": "Languages",
+    "title": "System languages",
+    "description": "Manage shared languages used across email templates and multilingual content.",
+    "createTitle": "Add language",
+    "detailTitle": "Language detail",
+    "searchPlaceholder": "Search by code or language name...",
+    "empty": "No languages found.",
+    "defaultBadge": "Default",
+    "created": "Language added.",
+    "updated": "Language updated.",
+    "deleted": "Language deleted.",
+    "bulkDeleted": "Deleted {count} languages.",
+    "bulkUpdated": "Updated status for {count} languages.",
+    "actions": {
+      "create": "Add language"
+    },
+    "hints": {
+      "code": "Lowercase language code (e.g. vi, en, ja, ko, zh-hans)."
+    },
+    "placeholders": {
+      "nativeName": "Japanese"
+    },
+    "fields": {
+      "code": "Language code",
+      "name": "Display name",
+      "nativeName": "Secondary name",
+      "flagEmoji": "Flag emoji",
+      "sortOrder": "Sort order",
+      "isDefault": "Default",
+      "isActive": "Active",
+      "updatedAt": "Updated"
+    }
   }
 }

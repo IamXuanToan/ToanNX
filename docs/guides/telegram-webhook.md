@@ -11,7 +11,7 @@ Tài liệu hướng dẫn cách thiết lập để hệ thống nhận cập n
 - **Xử lý bất đồng bộ (QStash)**:
   - Lệnh slash (`/hom_nay`, `/spending`, `@bot /spending`...) chạy đồng bộ ngay (< 200ms, 0 token AI).
   - Câu hỏi tự nhiên (`@bot hôm nay có gì`) nếu có Upstash QStash sẽ đẩy 1-hop sang `POST /api/v1/workspace/assistant/telegram-process` để webhook trả `200 OK` tức thì, tránh Telegram retry do timeout.
-- **Loại sự kiện đăng ký (`allowed_updates`)**: `["message", "my_chat_member"]` ([TelegramClient.set_webhook](../../backend/app/system/services/telegram_client.py)).
+- **Loại sự kiện đăng ký (`allowed_updates`)**: `["message", "my_chat_member", "callback_query"]` ([TelegramClient.set_webhook](../../backend/app/system/services/telegram_client.py)). `callback_query` là lần bấm nút lựa chọn inline của Trợ lý AI. **Bot đã gắn webhook trước ngày 28/11/2026 phải bấm “Kiểm tra bot” một lần** để Telegram nhận danh sách mới (Telegram giữ `allowed_updates` của lần `setWebhook` gần nhất).
 
 ---
 

@@ -103,5 +103,8 @@ class PageViewSet(CoreModelViewSet[Page]):
         """Đọc thông tin metadata từ URL sản phẩm/liên kết (bảo vệ SSRF)."""
         serializer = PageFetchMetadataValidateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = self.link_metadata_service.fetch_metadata(serializer.validated_data["url"])
+        data = self.link_metadata_service.fetch_metadata(
+            serializer.validated_data["url"],
+            platforms=serializer.validated_data.get("platforms"),
+        )
         return CoreResponse(PageMetadataResponseSerializer(data).data)

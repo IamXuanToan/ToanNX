@@ -35,6 +35,9 @@ class PageUpdateValidateSerializer(CoreValidateSerializer):
     responsive_config = serializers.JSONField(required=False, help_text="Cấu hình responsive theo thiết bị.")
     avatar_id = serializers.UUIDField(required=False, allow_null=True, help_text="Ảnh đại diện; null để gỡ.")
     cover_id = serializers.UUIDField(required=False, allow_null=True, help_text="Ảnh bìa; null để gỡ.")
+    background_image_id = serializers.UUIDField(
+        required=False, allow_null=True, help_text="Ảnh nền toàn trang (công khai); null để gỡ."
+    )
     content = serializers.JSONField(required=False, help_text="Tài liệu Tiptap JSON.")
     content_version = serializers.IntegerField(
         required=False, min_value=1, help_text="Phiên bản nội dung đang sửa; lệch → 409."

@@ -170,6 +170,12 @@
     "editTitle": "Claim Detail",
     "backToAsset": "Back to asset",
     "attachmentsSection": "Service Slips & Receipts (Private)",
+    "sections": {
+      "basic": "Claim & Asset Information",
+      "serviceCenter": "Service Center & Schedule",
+      "costAndParts": "Cost & Part Warranty",
+      "description": "Issue & Resolution Notes"
+    },
     "coveredYes": "Warranty Covered",
     "coveredNo": "Paid Service",
     "fields": {
@@ -220,6 +226,10 @@
     "renewTitle": "Renew \"{name}\"",
     "renewSuccess": "Payment recorded and next renewal date advanced.",
     "tabPayments": "Payment History ({count})",
+    "sections": {
+      "general": "Service Information",
+      "billing": "Billing Cycle & Payment"
+    },
     "advanceFromCycle": "Advance from scheduled renewal date",
     "advanceFromToday": "Advance from payment date",
     "fields": {
@@ -317,10 +327,11 @@
   "reminders": {
     "title": "Reminders",
     "subtitle": "Organize personal tasks, recurring schedules, and advance notifications.",
-    "searchPlaceholder": "Search by title, description, tags...",
+    "searchPlaceholder": "Search by title, description...",
     "create": "Add Reminder",
     "createTitle": "New Reminder",
     "editTitle": "Reminder Detail",
+    "scheduleSectionTitle": "Schedule & Advance Alerts",
     "completed": "Completed",
     "pending": "Pending",
     "toggleDone": "Mark completed",
@@ -337,9 +348,33 @@
       "isCompleted": "Completed",
       "completedAt": "Completed At",
       "recurrence": "Recurrence",
-      "anchorDay": "Anchor Day",
-      "reminderDaysBefore": "Notify Before (days)",
-      "tags": "Tags"
+      "topic": "Topic"
+    },
+    "topicPlaceholder": "Select topic...",
+    "topicNone": "No topic",
+    "topicManager": {
+      "manageButton": "Topics",
+      "shortcutTooltip": "Open dialog to quickly create, edit, or delete reminder topics",
+      "dialogTitle": "Manage Reminder Topics",
+      "dialogDescription": "Pick a preset topic or create, edit, and delete your personal topics right here.",
+      "createHeading": "Add New Topic",
+      "editHeading": "Edit Topic: {name}",
+      "cancelEdit": "Cancel",
+      "nameLabel": "Topic Name",
+      "namePlaceholder": "e.g., Study, Family, Project...",
+      "nameRequired": "Please enter a topic name.",
+      "colorLabel": "Badge Color",
+      "addButton": "Add Topic",
+      "saveButton": "Save Changes",
+      "listHeading": "Topics ({count})",
+      "systemBadge": "Default",
+      "selectedBadge": "Selected",
+      "selectButton": "Select",
+      "selectedButton": "Selected",
+      "systemLockedTooltip": "System default topics are protected and cannot be edited or deleted.",
+      "editTooltip": "Edit topic",
+      "deleteTooltip": "Delete topic",
+      "closeButton": "Close"
     },
     "reminderDaysDesc": "Pick preset milestones or type any number of days (e.g., 3, 6, 8) and press Enter.",
     "addReminderDayPlaceholder": "e.g., 3, 6, 8",
@@ -367,6 +402,7 @@
     "defaultName": "AI Assistant",
     "openPopup": "Open floating assistant",
     "closePopup": "Minimize assistant",
+    "resetPopupSize": "Reset to default size",
     "scrollToBottom": "Scroll to latest",
     "dragHint": "Drag AI button to snap to any screen edge",
     "readySubtitle": "Always ready",
@@ -403,6 +439,18 @@
       "remind": "Quickly create a reminder",
       "clear": "Clear current chat history to start fresh",
       "help": "Show command reference"
+    },
+    "quickRepliesLabel": "Quick reply options",
+    "resultCard": {
+      "copyLink": "Copy link",
+      "openLink": "Open link",
+      "copied": "Link copied",
+      "viewDetail": "View details"
+    },
+    "quickInput": {
+      "send": "Send",
+      "showSecret": "Show password",
+      "hideSecret": "Hide password"
     }
   },
   "assistantAdmin": {
@@ -474,7 +522,8 @@
       "assistantSystemPrompt": "AI Chatbot Policy / Response Instructions",
       "assistantSystemPromptPlaceholder": "e.g., Reply concisely using bullet points, summarize VND totals first...",
       "preferredAiModel": "Preferred AI Model",
-      "aiDailyTokenLimit": "Daily AI Token Limit per User (blank = unlimited)",
+      "aiDailyTokenLimit": "Daily AI Token Limit",
+      "aiDailyTokenLimitHint": "Leave blank for unlimited tokens per user/day.",
       "telegramAiEnabled": "Enable AI Chatbot via Telegram",
       "telegramGroupRequireMention": "Require @mention or reply in Telegram groups",
       "telegramGroupToolPolicy": "Group Personal Data Access Policy",

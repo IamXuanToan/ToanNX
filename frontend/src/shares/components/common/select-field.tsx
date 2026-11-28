@@ -31,6 +31,8 @@ export type SelectOption = {
   label: string;
   /** Dòng phụ dưới nhãn (mã, mô tả ngắn); cũng được tìm theo. */
   description?: string;
+  /** Mã màu tùy chọn hiển thị chấm tròn nhận diện trước nhãn. */
+  color?: string;
   disabled?: boolean;
 };
 
@@ -92,7 +94,15 @@ export function SelectField({
               disabled={option.disabled}
               className="h-10 rounded-lg px-3"
             >
-              {option.label}
+              <span className="flex items-center gap-2">
+                {option.color ? (
+                  <span
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: option.color }}
+                  />
+                ) : null}
+                <span>{option.label}</span>
+              </span>
             </SelectItem>
           ))}
         </SelectContent>
@@ -115,14 +125,25 @@ export function SelectField({
           disabled={disabled}
           className={cn(FORM_CONTROL_TRIGGER_CLASS, "justify-between", className)}
         >
-          <span className={cn("min-w-0 truncate", !selected && "text-muted-foreground")}>
-            {selected?.label ?? placeholder ?? t("placeholder")}
+          <span
+            className={cn(
+              "flex min-w-0 items-center gap-2 truncate",
+              !selected && "text-muted-foreground",
+            )}
+          >
+            {selected?.color ? (
+              <span
+                className="size-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: selected.color }}
+              />
+            ) : null}
+            <span className="truncate">{selected?.label ?? placeholder ?? t("placeholder")}</span>
           </span>
           <ChevronDown className="text-muted-foreground size-4 shrink-0" aria-hidden />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-(--radix-popover-trigger-width) min-w-60 p-0">
-        <Command className="rounded-xl">
+        <Command shouldFilter={false} className="rounded-xl">
           <CommandInput
             value={state.keyword}
             onValueChange={state.onKeywordChange}
@@ -143,13 +164,21 @@ export function SelectField({
                       onSelect={() => !option.disabled && state.select(option.value)}
                       className="cursor-pointer gap-2"
                     >
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate">{option.label}</span>
-                        {option.description ? (
-                          <span className="text-muted-foreground block truncate text-xs">
-                            {option.description}
-                          </span>
+                      <span className="flex min-w-0 flex-1 items-center gap-2">
+                        {option.color ? (
+                          <span
+                            className="size-2.5 shrink-0 rounded-full"
+                            style={{ backgroundColor: option.color }}
+                          />
                         ) : null}
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate">{option.label}</span>
+                          {option.description ? (
+                            <span className="text-muted-foreground block truncate text-xs">
+                              {option.description}
+                            </span>
+                          ) : null}
+                        </span>
                       </span>
                       {isSelected ? <Check className="text-primary size-4 shrink-0" /> : null}
                     </CommandItem>

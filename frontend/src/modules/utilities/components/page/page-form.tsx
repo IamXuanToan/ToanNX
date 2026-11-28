@@ -15,6 +15,7 @@ import {
   Settings,
   ShoppingBag,
   Sparkles,
+  Store,
   UserCheck,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -57,6 +58,7 @@ import { PagePathSelect } from "../page-path/page-path-select";
 import { usePageForm } from "./hooks/use-page-form";
 import { PageAffiliateCategoriesEditor } from "./page-affiliate-categories-editor";
 import { PageAffiliateItemsEditor } from "./page-affiliate-items-editor";
+import { PageAffiliatePlatformsEditor } from "./page-affiliate-platforms-editor";
 import { PageBioEditor } from "./page-bio-editor";
 import { PageDonationEditor } from "./page-donation-editor";
 import { PageButtonDialog } from "./page-button-dialog";
@@ -129,7 +131,7 @@ export function PageForm({
   const hasHistory = Boolean(history);
   const validTabs = useMemo(() => {
     const tabs = isLegacy ? ["settings"] : ["design", "settings"];
-    if (isAffiliate) tabs.unshift("products", "categories");
+    if (isAffiliate) tabs.unshift("products", "categories", "platforms");
     else if (isBio) tabs.unshift("bio");
     else if (isDonation) tabs.unshift("donation");
     else if (isLegacy) tabs.unshift("content");
@@ -162,6 +164,11 @@ export function PageForm({
       "styleConfig",
       {
         ...currentStyleConfig,
+        ...(preset.styleConfig ?? {
+          backgroundType: "solid",
+          ambientMotion: "none",
+          surfaceStyle: "solid",
+        }),
         themePreset: preset.name.toLowerCase().replace(/\s+/g, "_"),
         primaryColor: preset.primary,
         ...(nextMode === "system" ? {} : { backgroundColor: preset.bg, textColor: preset.text }),
@@ -379,6 +386,13 @@ export function PageForm({
                       <FolderTree className="size-3.5" />
                       <span>{t("tabs.categories")}</span>
                     </TabsTrigger>
+                    <TabsTrigger
+                      value="platforms"
+                      className="gap-1.5 px-3 py-1.5 text-xs font-medium"
+                    >
+                      <Store className="size-3.5" />
+                      <span>{t("tabs.platforms")}</span>
+                    </TabsTrigger>
                   </>
                 ) : null}
                 {isBio ? (
@@ -448,6 +462,16 @@ export function PageForm({
                         onRemoveCategory={state.removeCategory}
                         onUpdateCategory={state.updateCategory}
                         onReorderCategories={state.reorderCategories}
+                        disabled={locked}
+                      />
+                    </TabsContent>
+                    <TabsContent value="platforms">
+                      <PageAffiliatePlatformsEditor
+                        platforms={state.affiliatePlatforms}
+                        onAddPlatform={state.addPlatform}
+                        onUpdatePlatform={state.updatePlatform}
+                        onRemovePlatform={state.removePlatform}
+                        onReorderPlatforms={state.reorderPlatforms}
                         disabled={locked}
                       />
                     </TabsContent>
@@ -557,6 +581,7 @@ export function PageForm({
                     <PageThemeEditor
                       control={form.control}
                       setValue={form.setValue}
+                      pageType={state.pageType}
                       disabled={locked}
                       onApplyPreset={handleApplyPreset}
                     />
@@ -572,7 +597,10 @@ export function PageForm({
           {/* Live Preview Frame bên phải */}
           {showPreviewPanel ? (
             <div className="min-w-0 xl:col-span-6 2xl:col-span-5">
-              <div className="sticky top-[var(--tiptap-sticky-top,1.5rem)]">
+              <div
+                className="sticky"
+                style={{ top: "calc(var(--tiptap-sticky-top, 144px) + 8px)" }}
+              >
                 <PagePreviewFrame
                   page={state.livePreviewData}
                   device={state.previewDevice}
@@ -589,6 +617,7 @@ export function PageForm({
         open={state.quickAddOpen}
         initialMode={state.productModalMode}
         categories={state.affiliateCategories}
+        platforms={state.affiliatePlatforms}
         editingItem={state.editingProduct}
         onAdd={state.addAffiliateProduct}
         onSave={state.updateAffiliateProduct}

@@ -1,4 +1,4 @@
-"""Nghiệp vụ Nhắc việc cá nhân: lặp định kỳ với `anchor_day` và làm mới lịch W4."""
+"""Nghiệp vụ Nhắc việc cá nhân: lặp định kỳ và làm mới lịch W4."""
 
 from datetime import date, timedelta
 from typing import Any
@@ -7,11 +7,13 @@ from django.db import transaction
 from django.utils import timezone
 
 from app.core.constants.defaults import DEFAULT_TIMEZONE
+from app.core.exceptions.validation_error import ValidationError
 from app.core.services.core_crud_service import CoreCrudService
 from app.workspace.constants.workspace_defaults import AI_TOOL_ITEM_LIMIT
 from app.workspace.models.reminder import Reminder
 from app.workspace.permissions.reminder_permission import ReminderPermission
 from app.workspace.repositories.reminder_repository import ReminderRepository
+from app.workspace.repositories.reminder_topic_repository import ReminderTopicRepository
 from app.workspace.services.workspace_alerts_cache_service import WorkspaceAlertsCacheService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 from app.workspace.utils.date_math import add_months_clamped
@@ -27,20 +29,21 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
     def __init__(
         self,
         repository: ReminderRepository | None = None,
+        topic_repository: ReminderTopicRepository | None = None,
         alerts_cache_service: WorkspaceAlertsCacheService | None = None,
         tz_service: WorkspaceTimezoneService | None = None,
     ) -> None:
-        """Khởi tạo phụ thuộc repository nhắc việc, dịch vụ múi giờ và cache W4."""
+        """Khởi tạo phụ thuộc repository nhắc việc, chủ đề, dịch vụ múi giờ và cache W4."""
         super().__init__(repository or ReminderRepository())
+        self.topic_repository = topic_repository or ReminderTopicRepository()
         self.alerts_cache_service = alerts_cache_service or WorkspaceAlertsCacheService()
         self.tz_service = tz_service or WorkspaceTimezoneService()
 
     @transaction.atomic
     def create(self, actor: Any, data: dict[str, Any]) -> Reminder:
-        """Tạo nhắc việc mới, giữ `anchor_day` mặc định theo `due_date.day`."""
+        """Tạo nhắc việc mới."""
         payload = dict(data)
-        if not payload.get("anchor_day"):
-            payload["anchor_day"] = payload["due_date"].day
+        self._resolve_topic(actor, payload)
         if "reminder_days_before" in payload:
             payload["reminder_days_before"] = self._normalize_days_before(payload["reminder_days_before"])
         reminder = super().create(actor, payload)
@@ -52,6 +55,7 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
         """Đánh dấu hoàn thành (`is_completed=True`) → ghi `completed_at` và sinh kỳ lặp tiếp theo."""
         reminder = self.get_for_write(actor, pk)
         payload = dict(data)
+        self._resolve_topic(reminder.owner, payload)
         was_completed = reminder.is_completed
         target_completed = bool(payload.get("is_completed", was_completed))
 
@@ -67,11 +71,7 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
         updated = self.repository.update(reminder, actor=actor, **payload)
 
         if not was_completed and target_completed and updated.recurrence != Reminder.Recurrence.NONE:
-            next_due = self._next_due_date(
-                updated.due_date,
-                updated.recurrence,
-                updated.anchor_day or updated.due_date.day,
-            )
+            next_due = self._next_due_date(updated.due_date, updated.recurrence)
             self.repository.create(
                 actor=actor,
                 owner=updated.owner,
@@ -84,12 +84,24 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
                 priority=updated.priority,
                 is_completed=False,
                 recurrence=updated.recurrence,
-                anchor_day=updated.anchor_day or updated.due_date.day,
-                tags=list(updated.tags or []),
+                topic=updated.topic,
             )
 
         self.alerts_cache_service.schedule_alerts_next_due_on_commit()
         return updated
+
+    def _resolve_topic(self, owner: Any, payload: dict[str, Any]) -> None:
+        """Kiểm tra `topic_id` thuộc hệ thống hoặc thuộc chính `owner`."""
+        if "topic_id" not in payload:
+            return
+        topic_id = payload.pop("topic_id")
+        if topic_id is None:
+            payload["topic"] = None
+            return
+        topic = self.topic_repository.find_usable_for_actor(owner.pk, topic_id)
+        if topic is None:
+            raise ValidationError(details={"topic_id": ["Chủ đề không tồn tại hoặc không thuộc quyền dùng."]})
+        payload["topic"] = topic
 
     @transaction.atomic
     def delete(self, actor: Any, pk: Any) -> None:
@@ -117,15 +129,15 @@ class ReminderService(CoreCrudService[Reminder, ReminderRepository]):
             )
         return self.repository.list_pending_between(actor.pk, limit=AI_TOOL_ITEM_LIMIT)
 
-    def _next_due_date(self, current_due: date, recurrence: str, anchor_day: int) -> date:
+    def _next_due_date(self, current_due: date, recurrence: str) -> date:
         if recurrence == Reminder.Recurrence.DAILY:
             return current_due + timedelta(days=1)
         if recurrence == Reminder.Recurrence.WEEKLY:
             return current_due + timedelta(days=7)
         if recurrence == Reminder.Recurrence.MONTHLY:
-            return add_months_clamped(current_due, 1, anchor_day=anchor_day)
+            return add_months_clamped(current_due, 1)
         if recurrence == Reminder.Recurrence.YEARLY:
-            return add_months_clamped(current_due, 12, anchor_day=anchor_day)
+            return add_months_clamped(current_due, 12)
         return current_due
 
     @staticmethod

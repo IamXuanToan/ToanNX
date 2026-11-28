@@ -19,6 +19,5 @@ export const env = {
   /** Cờ xác định môi trường production (ẩn script analytics dev khi chạy local). */
   isProduction: process.env.NODE_ENV === "production",
   /** Mã định danh website Umami Analytics (công khai). Để trống nếu không dùng. */
-  umamiWebsiteId:
-    process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID ?? "90bcae66-8550-4461-a6fb-6b00f4b4dd7c",
+  umamiWebsiteId: (process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID ?? "").trim(),
 } as const;

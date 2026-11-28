@@ -26,6 +26,17 @@ export const PORTAL_ROUTES = {
   files: "/portal/library",
   profile: "/portal/profile",
   donations: "/portal/donations",
+  feedbacks: "/portal/feedbacks",
+  feedbackDetail: (id: string) => ({
+    pathname: "/portal/feedbacks/[id]" as const,
+    params: { id },
+  }),
+  emailTemplates: "/portal/email-templates",
+  emailTemplateCreate: "/portal/email-templates/new",
+  emailTemplateDetail: (id: string) => ({
+    pathname: "/portal/email-templates/[id]" as const,
+    params: { id },
+  }),
 
   // ---- Module Tài chính cá nhân ----
   finance: "/portal/finance",
@@ -109,6 +120,26 @@ export const PORTAL_PATHNAMES = {
   "/portal/donations": {
     vi: "/ca-nhan/quyen-gop",
     en: "/portal/donations",
+  },
+  "/portal/feedbacks": {
+    vi: "/ca-nhan/gop-y",
+    en: "/portal/feedbacks",
+  },
+  "/portal/feedbacks/[id]": {
+    vi: "/ca-nhan/gop-y/[id]",
+    en: "/portal/feedbacks/[id]",
+  },
+  "/portal/email-templates": {
+    vi: "/ca-nhan/mau-email",
+    en: "/portal/email-templates",
+  },
+  "/portal/email-templates/new": {
+    vi: "/ca-nhan/mau-email/tao-moi",
+    en: "/portal/email-templates/new",
+  },
+  "/portal/email-templates/[id]": {
+    vi: "/ca-nhan/mau-email/[id]",
+    en: "/portal/email-templates/[id]",
   },
 
   // ---- Pathname tiếng Việt/Anh cho Tài chính cá nhân ----

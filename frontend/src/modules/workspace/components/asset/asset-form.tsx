@@ -81,6 +81,7 @@ export function AssetForm({ asset, disabled = false }: { asset?: Asset; disabled
                   value={field.value}
                   onValueChange={field.onChange}
                   disabled={locked}
+                  searchable
                   invalid={field["aria-invalid"]}
                   options={ASSET_CATEGORIES.map((c) => ({
                     value: c,
@@ -140,6 +141,7 @@ export function AssetForm({ asset, disabled = false }: { asset?: Asset; disabled
                   value={field.value}
                   onValueChange={field.onChange}
                   disabled={locked}
+                  searchable
                   invalid={field["aria-invalid"]}
                   options={state.currencyOptions}
                 />
@@ -206,13 +208,15 @@ export function AssetForm({ asset, disabled = false }: { asset?: Asset; disabled
             >
               {(field) => <Input {...field} disabled={locked} className="h-10" />}
             </FormField>
-            <FormField
-              control={form.control}
-              name="purchaseOrderUrl"
-              label={t("fields.purchaseOrderUrl")}
-            >
-              {(field) => <Input {...field} disabled={locked} className="h-10" />}
-            </FormField>
+            <div className="sm:col-span-2">
+              <FormField
+                control={form.control}
+                name="purchaseOrderUrl"
+                label={t("fields.purchaseOrderUrl")}
+              >
+                {(field) => <Input {...field} disabled={locked} className="h-10" />}
+              </FormField>
+            </div>
             <div className="sm:col-span-2">
               <FormField
                 control={form.control}

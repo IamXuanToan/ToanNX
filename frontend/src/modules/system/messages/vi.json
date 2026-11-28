@@ -824,6 +824,11 @@
       "openTelegram": "Mở Telegram",
       "verify": "Kiểm tra",
       "test": "Gửi thử",
+      "groupReplyModeLabel": "Chế độ trả lời AI trong nhóm",
+      "groupReplyModes": {
+        "mention_only": "Chỉ trả lời khi @mention / lệnh",
+        "all_messages": "Đọc mọi tin nhắn (nhóm 2 người)"
+      },
       "status": {
         "pending": "Chờ xác minh",
         "active": "Hoạt động",
@@ -990,5 +995,133 @@
     "catalogs": "Danh mục",
     "integrations": "Tích hợp",
     "operations": "Vận hành"
+  },
+  "emailTemplates": {
+    "nav": "Mẫu email",
+    "title": "Mẫu email",
+    "description": "Quản lý mẫu email hệ thống và mẫu email cá nhân với trình soạn thảo Tiptap và trường trộn.",
+    "createTitle": "Tạo mẫu email",
+    "createDescription": "Thiết kế mẫu email mới hỗ trợ biến trộn động.",
+    "detailTitle": "Chi tiết mẫu email",
+    "searchPlaceholder": "Tìm theo mã, tên hoặc tiêu đề...",
+    "empty": "Chưa có mẫu email nào.",
+    "created": "Đã tạo mẫu email mới.",
+    "updated": "Đã cập nhật mẫu email.",
+    "deleted": "Đã xóa mẫu email.",
+    "bulkDeleted": "Đã xóa {count} mẫu email.",
+    "duplicated": "Đã nhân bản thành mẫu cá nhân.",
+    "fields": {
+      "code": "Mã mẫu",
+      "name": "Tên mẫu",
+      "description": "Mô tả",
+      "locale": "Ngôn ngữ",
+      "scope": "Phạm vi",
+      "category": "Nhóm",
+      "status": "Trạng thái",
+      "subject": "Tiêu đề email",
+      "content": "Nội dung mẫu (Tiptap)",
+      "htmlBody": "Nội dung HTML",
+      "owner": "Chủ sở hữu",
+      "updatedAt": "Cập nhật"
+    },
+    "scopes": {
+      "SYSTEM": "Hệ thống",
+      "PERSONAL": "Cá nhân"
+    },
+    "categories": {
+      "AUTH": "Xác thực",
+      "NOTIFICATION": "Thông báo",
+      "FEEDBACK_THANKS": "Cảm ơn góp ý",
+      "CUSTOM": "Tùy chỉnh"
+    },
+    "statuses": {
+      "ACTIVE": "Đang dùng",
+      "DRAFT": "Bản nháp",
+      "ARCHIVED": "Lưu trữ"
+    },
+    "actions": {
+      "create": "Tạo mẫu email",
+      "duplicate": "Nhân bản thành mẫu cá nhân",
+      "preview": "Xem trước trộn biến"
+    },
+    "placeholders": {
+      "name": "Ví dụ: Thư cảm ơn báo lỗi link",
+      "description": "Ghi chú mục đích sử dụng của mẫu...",
+      "subject": "Ví dụ: Cảm ơn '{{sender_name}}' đã góp ý cho '{{page_title}}'"
+    },
+    "hints": {
+      "code": "Chỉ gồm chữ thường, số và dấu gạch dưới (_)."
+    },
+    "mergeFields": {
+      "title": "Trường trộn hỗ trợ",
+      "quickInsertHint": "Bấm để chèn nhanh vào nội dung (hoặc S để thêm vào tiêu đề)",
+      "insertBodyTooltip": "Chèn '{{'{key}'}}' vào nội dung email",
+      "insertSubjectTooltip": "Thêm '{{'{key}'}}' vào tiêu đề email",
+      "hint": "Dùng menu Chèn trên thanh công cụ hoặc gõ / để chèn nhanh biến '{{...}}' vào nội dung.",
+      "labels": {
+        "sender_name": "Tên người gửi",
+        "target_title": "Tên trang / link",
+        "target_url": "Đường dẫn trang",
+        "feedback_type": "Loại góp ý",
+        "resolution_note": "Ghi chú xử lý",
+        "owner_name": "Tên chủ trang",
+        "full_name": "Họ và tên",
+        "action_url": "Liên kết xác nhận"
+      }
+    },
+    "preview": {
+      "title": "Xem trước email đã trộn biến",
+      "description": "Kết quả giả lập sau khi thay biến và làm sạch HTML."
+    },
+    "languages": {
+      "manageButton": "Ngôn ngữ",
+      "title": "Quản lý ngôn ngữ mẫu email",
+      "description": "Các ngôn ngữ được kích hoạt sẽ tự động hiển thị thành các tab trong biểu mẫu soạn thảo email.",
+      "defaultBadge": "Mặc định",
+      "removeTooltip": "Xóa ngôn ngữ này",
+      "addTitle": "Thêm ngôn ngữ mới",
+      "namePlaceholder": "Tên hiển thị (vd: 日本語, 한국어)",
+      "addButton": "Thêm ngôn ngữ",
+      "invalidCode": "Mã ngôn ngữ chỉ gồm 2-10 ký tự thường (vd: ja, ko, fr).",
+      "nameRequired": "Vui lòng nhập tên hiển thị ngôn ngữ.",
+      "duplicateCode": "Mã ngôn ngữ này đã tồn tại.",
+      "addedToast": "Đã thêm ngôn ngữ mới.",
+      "removedToast": "Đã xóa ngôn ngữ.",
+      "primaryRequired": "Vui lòng nhập đầy đủ Tên mẫu và Tiêu đề cho ngôn ngữ chính (VI)."
+    }
+  },
+  "languages": {
+    "nav": "Ngôn ngữ",
+    "title": "Ngôn ngữ hệ thống",
+    "description": "Quản lý danh mục ngôn ngữ dùng chung cho mẫu email và các nội dung đa ngôn ngữ.",
+    "createTitle": "Thêm ngôn ngữ",
+    "detailTitle": "Chi tiết ngôn ngữ",
+    "searchPlaceholder": "Tìm theo mã hoặc tên ngôn ngữ...",
+    "empty": "Chưa có ngôn ngữ nào.",
+    "defaultBadge": "Mặc định",
+    "created": "Đã thêm ngôn ngữ mới.",
+    "updated": "Đã cập nhật ngôn ngữ.",
+    "deleted": "Đã xóa ngôn ngữ.",
+    "bulkDeleted": "Đã xóa {count} ngôn ngữ.",
+    "bulkUpdated": "Đã cập nhật trạng thái cho {count} ngôn ngữ.",
+    "actions": {
+      "create": "Thêm ngôn ngữ"
+    },
+    "hints": {
+      "code": "Mã chuẩn chữ thường (vd: vi, en, ja, ko, zh-hans)."
+    },
+    "placeholders": {
+      "nativeName": "Tiếng Nhật"
+    },
+    "fields": {
+      "code": "Mã ngôn ngữ",
+      "name": "Tên hiển thị",
+      "nativeName": "Tên phụ",
+      "flagEmoji": "Emoji cờ",
+      "sortOrder": "Thứ tự",
+      "isDefault": "Mặc định",
+      "isActive": "Kích hoạt",
+      "updatedAt": "Cập nhật"
+    }
   }
 }

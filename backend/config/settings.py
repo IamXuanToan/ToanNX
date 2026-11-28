@@ -251,6 +251,11 @@ SPECTACULAR_SETTINGS = {
             "app.workspace.models.assistant_conversation.AssistantConversation.Channel"
         ),
         "WorkspaceAssistantRoleEnum": "app.workspace.models.assistant_message.AssistantMessage.Role",
+        "EmailTemplateScopeEnum": "app.system.models.email_template.EmailTemplate.Scope",
+        "NotificationScopeEnum": "app.system.constants.notification_scope.NotificationScope",
+        "EmailTemplateCategoryEnum": "app.system.models.email_template.EmailTemplate.Category",
+        "EmailTemplateStatusEnum": "app.system.models.email_template.EmailTemplate.Status",
+        "PageFeedbackStatusEnum": "app.utilities.models.page_feedback.PageFeedback.Status",
     },
 }
 
@@ -356,6 +361,7 @@ RATE_LIMITS: dict[StrEnum, tuple[int, int, str]] = {
     UtilitiesRateLimitKey.QR_CODE_CREATE: (env.int("RL_QR_CREATE", default=60), 3600, "user"),
     UtilitiesRateLimitKey.QR_CODE_PREVIEW: (env.int("RL_QR_PREVIEW", default=120), 60, "user"),
     UtilitiesRateLimitKey.DONATION_WEBHOOK: (env.int("RL_DONATION_WEBHOOK", default=120), 60, "ip"),
+    UtilitiesRateLimitKey.FEEDBACK_SUBMIT: (env.int("RL_FEEDBACK_SUBMIT", default=5), 60, "ip"),
     SystemRateLimitKey.CLIENT_ERROR_CREATE: (env.int("RL_CLIENT_ERROR", default=30), 60, "ip"),
     SystemRateLimitKey.ATTACHMENT_CONTENT: (env.int("RL_ATTACHMENT_CONTENT", default=120), 60, "user"),
     FinanceRateLimitKey.SEPAY_CALL: (env.int("RL_SEPAY_CALL", default=10), 60, "user"),
@@ -391,17 +397,23 @@ if SEPAY_ENV not in ("sandbox", "production"):
 # Telegram Bot chung toàn hệ thống (dùng cho thông báo + Trợ lý AI Telegram hai chiều).
 TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN", default="").strip()
 TELEGRAM_BOT_USERNAME = env.str("TELEGRAM_BOT_USERNAME", default="").lstrip("@").strip()
-# Trợ lý AI OpenAI-compatible (xKiro Multi-Model Fallback; mọi lượt gọi <= 5 giây).
+# Trợ lý AI OpenAI-compatible (xKiro Multi-Model Fallback).
 XKIRO_API_BASE = env.str("XKIRO_API_BASE", default="").strip()
 XKIRO_API_KEY = env.str("XKIRO_API_KEY", default="").strip()
 XKIRO_MODEL = env.str("XKIRO_MODEL", default="").strip()
 XKIRO_FALLBACK_MODELS: list[str] = [
     item.strip() for item in env.list("XKIRO_FALLBACK_MODELS", default=[]) if str(item).strip()
 ]
-XKIRO_TIMEOUT_SECONDS = env.float("XKIRO_TIMEOUT_SECONDS", default=5.0)
-if not (1.0 <= XKIRO_TIMEOUT_SECONDS <= 5.0):
-    raise ValueError("XKIRO_TIMEOUT_SECONDS phải nằm trong khoảng [1, 5] giây.")
+XKIRO_TIMEOUT_SECONDS = env.float("XKIRO_TIMEOUT_SECONDS", default=10.0)
+if not (1.0 <= XKIRO_TIMEOUT_SECONDS <= 60.0):
+    raise ValueError("XKIRO_TIMEOUT_SECONDS phải nằm trong khoảng [1, 60] giây.")
+XKIRO_COMPOSE_TIMEOUT_SECONDS = env.float("XKIRO_COMPOSE_TIMEOUT_SECONDS", default=35.0)
+if not (5.0 <= XKIRO_COMPOSE_TIMEOUT_SECONDS <= 120.0):
+    raise ValueError("XKIRO_COMPOSE_TIMEOUT_SECONDS phải nằm trong khoảng [5, 120] giây.")
 XKIRO_COOLDOWN_SECONDS = env.int("XKIRO_COOLDOWN_SECONDS", default=120)
+# Embedding cho trí nhớ Trợ lý AI (Google Gemini API gói free). Trống key: tắt tìm theo nghĩa, chỉ full-text.
+GEMINI_API_KEY = env.str("GEMINI_API_KEY", default="").strip()
+GEMINI_EMBEDDING_MODEL = env.str("GEMINI_EMBEDDING_MODEL", default="gemini-embedding-001").strip()
 # Firebase Cloud Messaging (thông báo trình duyệt); thiếu một trong hai thì kênh PUSH bị ẩn.
 FIREBASE_PROJECT_ID = env.str("FIREBASE_PROJECT_ID", default="")
 FIREBASE_SERVICE_ACCOUNT_JSON_BASE64 = env.str("FIREBASE_SERVICE_ACCOUNT_JSON_BASE64", default="")
@@ -492,19 +504,38 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
 
+_VALID_LOG_LEVELS = frozenset({"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"})
+_raw_log_level = env.str("LOG_LEVEL", default="INFO" if DEBUG else "WARNING").strip().upper()
+LOG_LEVEL = _raw_log_level if _raw_log_level in _VALID_LOG_LEVELS else ("INFO" if DEBUG else "WARNING")
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "filters": {"request_context": {"()": "app.core.logging.request_context_filter.RequestContextFilter"}},
+    "filters": {
+        "request_context": {"()": "app.core.logging.request_context_filter.RequestContextFilter"},
+        "max_info": {"()": "app.core.logging.max_level_filter.MaxLevelFilter"},
+    },
     "formatters": {
-        "default": {"format": "%(asctime)s %(levelname)s [%(request_id)s] %(name)s: %(message)s"},
+        "default": {"()": "app.core.logging.readable_console_formatter.ReadableConsoleFormatter"},
     },
     "handlers": {
-        "console": {
+        "console_stdout": {
             "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "default",
+            "filters": ["request_context", "max_info"],
+        },
+        "console_stderr": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+            "level": "WARNING",
             "formatter": "default",
             "filters": ["request_context"],
         },
     },
-    "root": {"handlers": ["console"], "level": env.str("LOG_LEVEL", default="INFO")},
+    "root": {"handlers": ["console_stdout", "console_stderr"], "level": LOG_LEVEL},
+    "loggers": {
+        "django.request": {"level": "WARNING", "propagate": True},
+        "urllib3": {"level": "WARNING", "propagate": True},
+    },
 }

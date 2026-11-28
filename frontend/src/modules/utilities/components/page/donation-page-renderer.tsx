@@ -23,6 +23,8 @@ import { useResolvedPageTheme } from "../../hooks/use-resolved-page-theme";
 import type { DonationQrItem, PublicPage } from "../../types/page.types";
 import { useDonationPageRenderer } from "./hooks/use-donation-page-renderer";
 import { DonationPublicFeed } from "./donation-public-feed";
+import { PageBackgroundLayer } from "./page-background-layer";
+import { PageShareButton } from "./page-share-button";
 import { PresetAmountIcon } from "./preset-amount-icon";
 
 /**
@@ -222,7 +224,16 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
     handleCopyNote,
   } = useDonationPageRenderer(qrCodes, fallbackBank.accountNumber, minAmount, displayMode);
 
-  const { pageThemeScope, buttonStyle, customStyle } = useResolvedPageTheme(page);
+  const {
+    pageThemeScope,
+    buttonStyle,
+    appearance,
+    surfaceClass,
+    hoverClass,
+    containerWidthClass,
+    cardRadiusClass,
+    customStyle,
+  } = useResolvedPageTheme(page);
   const buttonRadiusClass =
     buttonStyle === "square"
       ? "rounded-none"
@@ -288,13 +299,34 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
       style={customStyle}
       data-page-theme={pageThemeScope}
       className={cn(
-        "bg-background text-foreground flex min-h-svh flex-col items-center transition-colors duration-200",
+        "bg-background text-foreground relative flex min-h-full flex-col items-center overflow-x-hidden transition-colors duration-200",
         coverUrl ? "pb-16 sm:pb-20" : "px-4 py-8 sm:py-14",
       )}
     >
+      <PageBackgroundLayer
+        appearance={appearance}
+        backgroundImageUrl={page.backgroundImageUrl}
+        alt={page.title}
+      />
+
+      {appearance.showShareButton ? (
+        <div className="absolute top-4 right-4 z-30">
+          <PageShareButton title={page.title} url={page.canonicalUrl} />
+        </div>
+      ) : null}
+
       {/* 1. Ảnh bìa / Thumbnail */}
       {coverUrl ? (
-        <div className="relative h-40 w-full overflow-hidden sm:h-56">
+        <div
+          className={cn(
+            "relative z-10 w-full overflow-hidden",
+            appearance.coverHeight === "sm"
+              ? "h-28 sm:h-40"
+              : appearance.coverHeight === "lg"
+                ? "h-48 sm:h-68"
+                : "h-40 sm:h-56",
+          )}
+        >
           <Image
             src={normalizeMediaUrl(coverUrl)}
             alt={page.title}
@@ -304,39 +336,83 @@ export function DonationPageRenderer({ page }: { page: PublicPage }) {
             unoptimized
             className="object-cover"
           />
-          <div className="from-background/70 absolute inset-0 bg-gradient-to-t to-transparent" />
+          {appearance.coverFade ? (
+            <div className="from-background/80 absolute inset-0 bg-gradient-to-t to-transparent" />
+          ) : null}
         </div>
       ) : null}
 
-      <div className={cn("w-full max-w-xl sm:max-w-2xl", coverUrl && "px-4 pt-4")}>
+      <div className={cn("relative z-20 w-full", containerWidthClass, coverUrl && "px-4 pt-4")}>
         {/* 2. Header Lời nhắn & Avatar / Logo */}
-        <header className="mb-6 text-center">
+        <header
+          className={cn(
+            "mb-6 flex flex-col",
+            appearance.headerLayout === "editorial_left"
+              ? "items-start text-left"
+              : "items-center text-center",
+            appearance.headerLayout === "hero_card" &&
+              cn("p-5 sm:p-6", surfaceClass, cardRadiusClass),
+          )}
+        >
           {avatarUrl ? (
             <div
               className={cn(
-                "ring-primary/20 bg-card relative mx-auto mb-3 size-18 shrink-0 overflow-hidden rounded-full shadow-xl ring-4 sm:size-22",
-                coverUrl && "-mt-12 sm:-mt-16",
+                "bg-card relative z-20 mb-3 shrink-0 overflow-hidden",
+                appearance.avatarSize === "sm"
+                  ? "size-16 sm:size-20"
+                  : appearance.avatarSize === "lg"
+                    ? "size-24 sm:size-28"
+                    : "size-20 sm:size-24",
+                appearance.avatarShape === "square"
+                  ? "rounded-xl"
+                  : appearance.avatarShape === "squircle"
+                    ? "rounded-3xl"
+                    : "rounded-full",
+                appearance.avatarRing === "none"
+                  ? "ring-0"
+                  : appearance.avatarRing === "gradient_glow"
+                    ? "ring-primary/50 shadow-[0_0_24px_-4px_var(--primary)] ring-4"
+                    : "ring-primary/25 shadow-xl ring-4",
+                coverUrl && appearance.headerLayout !== "hero_card" && "-mt-12 sm:-mt-16",
               )}
             >
               <Image
                 src={normalizeMediaUrl(avatarUrl)}
                 alt={page.title}
                 fill
-                sizes="88px"
+                sizes="112px"
                 unoptimized
                 className="object-cover"
               />
             </div>
           ) : null}
 
+          {appearance.statusPill ? (
+            <span className="bg-primary/15 text-primary border-primary/25 mb-2 inline-flex rounded-full border px-3 py-0.5 text-[11px] font-semibold">
+              {appearance.statusPill}
+            </span>
+          ) : null}
+
           <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{page.title}</h1>
-          <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-xs leading-relaxed sm:text-sm">
+          <p
+            className={cn(
+              "text-muted-foreground mt-2 max-w-sm text-xs leading-relaxed sm:text-sm",
+              appearance.headerLayout === "editorial_left" ? "text-left" : "mx-auto",
+            )}
+          >
             {creatorMessage || page.description || t("defaultMessage")}
           </p>
         </header>
 
         {/* 3. Khung Thẻ QR & Phương thức nhận tiền */}
-        <div className="border-border/80 bg-card shadow-primary/5 rounded-3xl border p-4 shadow-xl sm:p-6">
+        <div
+          className={cn(
+            "shadow-primary/5 p-4 shadow-xl sm:p-6",
+            surfaceClass,
+            hoverClass,
+            cardRadiusClass,
+          )}
+        >
           {/* Thanh chọn phương thức (khi ở chế độ nhiều mã) */}
           {showMultipleTabs && (
             <div className="mb-5 space-y-2">

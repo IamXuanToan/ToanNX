@@ -131,11 +131,13 @@ export function useTiptapEditor({
 
   // Giá trị đổi từ ngoài (tải lại, đặt lại mẫu, sao chép) thì nạp vào editor mà không phát onChange.
   useEffect(() => {
-    if (!editor || !value) return;
+    if (!editor || editor.isDestroyed || !value) return;
     if (JSON.stringify(editor.getJSON()) !== JSON.stringify(value)) {
       editor.commands.setContent(value, { emitUpdate: false });
       queueMicrotask(() => {
-        setStats(measureStats(editor.getJSON(), editor.getText()));
+        if (!editor.isDestroyed) {
+          setStats(measureStats(editor.getJSON(), editor.getText()));
+        }
       });
     }
   }, [editor, value]);

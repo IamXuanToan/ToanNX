@@ -19,9 +19,11 @@ from app.system.permissions.attachment_folder_permission import AttachmentFolder
 from app.system.permissions.attachment_permission import AttachmentPermission
 from app.system.permissions.callback_permission import CallbackPermission
 from app.system.permissions.currency_permission import CurrencyPermission
+from app.system.permissions.email_template_permission import EmailTemplatePermission
 from app.system.permissions.exchange_rate_permission import ExchangeRatePermission
 from app.system.permissions.iam_permission import IamPermission
 from app.system.permissions.journal_entry_permission import JournalEntryPermission
+from app.system.permissions.language_permission import LanguagePermission
 from app.system.permissions.notification_delivery_permission import NotificationDeliveryPermission
 from app.system.permissions.notification_permission import NotificationPermission
 from app.system.permissions.notification_preference_permission import NotificationPreferencePermission
@@ -55,7 +57,9 @@ MODULE = ModuleDescriptor(
         *NotificationDeliveryPermission.all(),
         *AnnouncementPermission.all(),
         *CurrencyPermission.all(),
+        *EmailTemplatePermission.all(),
         *ExchangeRatePermission.all(),
+        *LanguagePermission.all(),
         *WebhookPermission.all(),
         *CallbackPermission.all(),
     ),
@@ -68,7 +72,9 @@ MODULE = ModuleDescriptor(
         *TelegramChatPermission.member(),
         *NotificationDeliveryPermission.member(),
         *CurrencyPermission.member(),
+        *EmailTemplatePermission.member(),
         *ExchangeRatePermission.member(),
+        *LanguagePermission.member(),
     ),
     notification_events=(
         NotificationEventDefinition(

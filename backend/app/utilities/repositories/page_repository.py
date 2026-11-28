@@ -16,7 +16,7 @@ class PageRepository(CoreRepository[Page]):
 
     def get_queryset(self) -> QuerySet[Page]:
         """Trang còn tồn tại."""
-        return super().get_queryset().select_related("path", "owner", "avatar", "cover")
+        return super().get_queryset().select_related("path", "owner", "avatar", "cover", "background_image")
 
     def list_active_donation_pages(self) -> QuerySet[Page]:
         """Danh sách trang DONATION chưa xóa mềm dùng để tra cứu webhook token."""

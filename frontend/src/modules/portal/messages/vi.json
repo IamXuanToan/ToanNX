@@ -28,7 +28,9 @@
     "profile": "Hồ sơ cá nhân",
     "goToAdmin": "Trang quản trị (Admin)",
     "logout": "Đăng xuất",
-    "donations": "Giao dịch ủng hộ"
+    "donations": "Giao dịch ủng hộ",
+    "feedbacks": "Góp ý & Báo lỗi",
+    "emailTemplates": "Mẫu email"
   },
   "dashboard": {
     "title": "Không gian cá nhân",

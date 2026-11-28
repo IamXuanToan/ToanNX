@@ -714,7 +714,7 @@ export function ProfileDialog({
         {/* Footer cố định ở đáy Dialog */}
         {/* Chiều cao dialog cố định: đổi tab chỉ thân cuộn, không nhảy kích thước. `mx-0 mb-0` bỏ lề âm mặc định
             của DialogFooter (dành cho DialogContent có p-4; ở đây p-0 nên lề âm đẩy footer lệch ra ngoài). */}
-        <DialogFooter className="border-border/60 bg-background/95 mx-0 mb-0 flex shrink-0 items-center justify-end gap-2.5 border-t px-6 py-3.5 backdrop-blur-xs">
+        <DialogFooter className="border-border/60 bg-background/95 mx-0 mb-0 flex shrink-0 flex-row items-center justify-end gap-2.5 border-t px-4 py-3 backdrop-blur-xs sm:px-6 sm:py-3.5">
           <Button
             type="button"
             variant="outline"

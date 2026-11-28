@@ -1,9 +1,63 @@
 import type { CSSProperties } from "react";
 
-import type { PublicPage } from "../types/page.types";
+import { PAGE_PATTERN_KEYS, type PagePatternKey } from "./page-patterns";
+import type { PageStyleConfig, PublicPage } from "../types/page.types";
+
+/** Cấu hình giao diện mở rộng đã chuẩn hóa giá trị mặc định. */
+export interface ResolvedAppearance {
+  backgroundType: "solid" | "gradient" | "image" | "pattern";
+  gradientType: "linear" | "radial";
+  gradientAngle: number;
+  gradientColors: string[];
+  patternKey: PagePatternKey;
+  backgroundFit: "cover" | "contain" | "tile";
+  backgroundBlur: number;
+  overlayColor: string;
+  overlayOpacity: number;
+  ambientMotion: "none" | "gradient_flow" | "floating_orbs";
+  headerLayout: "centered" | "banner_overlap" | "hero_card" | "editorial_left";
+  avatarShape: "circle" | "squircle" | "square";
+  avatarSize: "sm" | "md" | "lg";
+  avatarRing: "none" | "solid" | "gradient_glow";
+  showVerifiedBadge: boolean;
+  statusPill: string;
+  coverHeight: "sm" | "md" | "lg";
+  coverFade: boolean;
+  socialPosition: "top" | "bottom" | "hidden";
+  socialStyle: "pill" | "circle_outline" | "minimal";
+  showShareButton: boolean;
+  surfaceStyle: "solid" | "outline" | "soft" | "glass" | "elevated" | "hard_shadow";
+  cardRadius: "0px" | "4px" | "8px" | "12px" | "20px";
+  cardShadow: "none" | "sm" | "md" | "lg";
+  hoverEffect: "none" | "lift" | "scale" | "glow" | "shine" | "hard_push";
+  entranceAnimation: "none" | "fade_up" | "scale_in" | "blur_in";
+  highlightEffect: "none" | "pulse_ring" | "wiggle" | "shimmer";
+  linkLayout:
+    | "classic_bar"
+    | "thumbnail_card"
+    | "featured_hero"
+    | "grid_2col"
+    | "bento_grid"
+    | "compact_pills";
+  buttonTextAlign: "left" | "center";
+  layout: "grid" | "list" | "links" | "carousel_featured";
+  cardDensity: "compact" | "standard" | "detailed";
+  imageAspectRatio: "1:1" | "4:3" | "16:9" | "4:5";
+  ctaStyle: "full_button" | "icon_circle" | "inline_arrow";
+  showDiscountBadge: boolean;
+  showPlatformBadge: boolean;
+  stickyFilterBar: boolean;
+  qrCardStyle: "fintech_glass" | "split_modern" | "minimal_card";
+  presetButtonStyle: "gift_cards" | "pill_tags" | "compact_grid";
+  leaderboardStyle: "podium" | "list" | "hidden";
+  fontFamily: "inter" | "plus_jakarta" | "be_vietnam" | "playfair" | "jetbrains_mono";
+  containerWidth: "compact" | "standard" | "wide";
+  blockSpacing: "compact" | "normal" | "relaxed";
+  footerStyle: "minimal" | "pill" | "hidden";
+}
 
 /**
- * Kết quả chuẩn hóa giao diện (light/dark, biến CSS) cho trang công khai.
+ * Kết quả chuẩn hóa giao diện (light/dark, biến CSS, hiệu ứng và bố cục) cho trang công khai.
  */
 export interface ResolvedPageTheme {
   /** Có đang hiển thị ở nền tối hay không. */
@@ -16,6 +70,22 @@ export interface ResolvedPageTheme {
   primaryForeground: string;
   /** Bo góc nút theo cấu hình (`rounded-none`, `rounded-full`, `rounded-2xl` / `rounded-xl`). */
   buttonStyle: "rounded" | "square" | "pill";
+  /** Toàn bộ cấu hình hiển thị & hiệu ứng đã chuẩn hóa. */
+  appearance: ResolvedAppearance;
+  /** Class bề mặt cho card/button dựa trên `surfaceStyle`. */
+  surfaceClass: string;
+  /** Class hiệu ứng hover cho card/button. */
+  hoverClass: string;
+  /** Class hiệu ứng xuất hiện cho card/button. */
+  entranceClass: string;
+  /** Class hiệu ứng nhấn mạnh cho mục nổi bật. */
+  highlightClass: string;
+  /** Class độ rộng khung chứa chính. */
+  containerWidthClass: string;
+  /** Class khoảng cách giữa các khối. */
+  blockGapClass: string;
+  /** Class bo góc thẻ. */
+  cardRadiusClass: string;
   /** Các CSS custom properties gắn trực tiếp lên phần tử gốc của trang. */
   customStyle: CSSProperties;
 }
@@ -96,6 +166,116 @@ export function isLightHexColor(hex?: string | null): boolean {
  * @param systemResolvedTheme - Theme đang hiệu lực của hệ thống (`light` hoặc `dark`).
  * @returns Thông số giao diện đã phân giải.
  */
+const FONT_STACKS: Record<ResolvedAppearance["fontFamily"], string> = {
+  inter: "var(--font-sans), ui-sans-serif, system-ui, sans-serif",
+  plus_jakarta: "var(--font-plus-jakarta), var(--font-sans), sans-serif",
+  be_vietnam: "var(--font-be-vietnam), var(--font-sans), sans-serif",
+  playfair: "var(--font-playfair), Georgia, serif",
+  jetbrains_mono: "var(--font-jetbrains-mono), ui-monospace, monospace",
+};
+
+function resolveAppearance(raw: Record<string, unknown>, isDark: boolean): ResolvedAppearance {
+  const s = raw as PageStyleConfig;
+  const pick = <T extends string>(val: unknown, allowed: readonly T[], fallback: T): T =>
+    typeof val === "string" && (allowed as readonly string[]).includes(val) ? (val as T) : fallback;
+
+  const rawColors = Array.isArray(s.gradientColors) ? s.gradientColors : [];
+  const gradientColors =
+    rawColors.length >= 2 && rawColors.every((c) => typeof c === "string")
+      ? (rawColors as string[]).slice(0, 3)
+      : isDark
+        ? ["#0F172A", "#1E1B4B", "#312E81"]
+        : ["#F0FDF4", "#DCFCE7", "#BBF7D0"];
+
+  return {
+    backgroundType: pick(s.backgroundType, ["solid", "gradient", "image", "pattern"], "solid"),
+    gradientType: pick(s.gradientType, ["linear", "radial"], "linear"),
+    gradientAngle:
+      typeof s.gradientAngle === "number" ? Math.min(360, Math.max(0, s.gradientAngle)) : 135,
+    gradientColors,
+    patternKey: pick(s.patternKey, PAGE_PATTERN_KEYS, "dots"),
+    backgroundFit: pick(s.backgroundFit, ["cover", "contain", "tile"], "cover"),
+    backgroundBlur:
+      typeof s.backgroundBlur === "number" ? Math.min(24, Math.max(0, s.backgroundBlur)) : 0,
+    overlayColor: typeof s.overlayColor === "string" && s.overlayColor ? s.overlayColor : "#000000",
+    overlayOpacity:
+      typeof s.overlayOpacity === "number" ? Math.min(85, Math.max(0, s.overlayOpacity)) : 35,
+    ambientMotion: pick(s.ambientMotion, ["none", "gradient_flow", "floating_orbs"], "none"),
+    headerLayout: pick(
+      s.headerLayout,
+      ["centered", "banner_overlap", "hero_card", "editorial_left"],
+      "centered",
+    ),
+    avatarShape: pick(s.avatarShape, ["circle", "squircle", "square"], "circle"),
+    avatarSize: pick(s.avatarSize, ["sm", "md", "lg"], "md"),
+    avatarRing: pick(s.avatarRing, ["none", "solid", "gradient_glow"], "solid"),
+    showVerifiedBadge: s.showVerifiedBadge !== false,
+    statusPill: typeof s.statusPill === "string" ? s.statusPill.trim() : "",
+    coverHeight: pick(s.coverHeight, ["sm", "md", "lg"], "md"),
+    coverFade: s.coverFade !== false,
+    socialPosition: pick(s.socialPosition, ["top", "bottom", "hidden"], "top"),
+    socialStyle: pick(s.socialStyle, ["pill", "circle_outline", "minimal"], "pill"),
+    showShareButton: s.showShareButton !== false,
+    surfaceStyle: pick(
+      s.surfaceStyle,
+      ["solid", "outline", "soft", "glass", "elevated", "hard_shadow"],
+      "solid",
+    ),
+    cardRadius: pick(s.cardRadius, ["0px", "4px", "8px", "12px", "20px"], "12px"),
+    cardShadow: pick(s.cardShadow, ["none", "sm", "md", "lg"], "sm"),
+    hoverEffect: pick(
+      s.hoverEffect,
+      ["none", "lift", "scale", "glow", "shine", "hard_push"],
+      "lift",
+    ),
+    entranceAnimation: pick(
+      s.entranceAnimation,
+      ["none", "fade_up", "scale_in", "blur_in"],
+      "none",
+    ),
+    highlightEffect: pick(s.highlightEffect, ["none", "pulse_ring", "wiggle", "shimmer"], "none"),
+    linkLayout: pick(
+      s.linkLayout,
+      [
+        "classic_bar",
+        "thumbnail_card",
+        "featured_hero",
+        "grid_2col",
+        "bento_grid",
+        "compact_pills",
+      ],
+      "classic_bar",
+    ),
+    buttonTextAlign: pick(s.buttonTextAlign, ["left", "center"], "left"),
+    layout: pick(s.layout, ["grid", "list", "links", "carousel_featured"], "grid"),
+    cardDensity: pick(s.cardDensity, ["compact", "standard", "detailed"], "standard"),
+    imageAspectRatio: pick(s.imageAspectRatio, ["1:1", "4:3", "16:9", "4:5"], "1:1"),
+    ctaStyle: pick(s.ctaStyle, ["full_button", "icon_circle", "inline_arrow"], "full_button"),
+    showDiscountBadge: s.showDiscountBadge !== false,
+    showPlatformBadge: s.showPlatformBadge !== false,
+    stickyFilterBar: s.stickyFilterBar !== false,
+    qrCardStyle: pick(
+      s.qrCardStyle,
+      ["fintech_glass", "split_modern", "minimal_card"],
+      "split_modern",
+    ),
+    presetButtonStyle: pick(
+      s.presetButtonStyle,
+      ["gift_cards", "pill_tags", "compact_grid"],
+      "gift_cards",
+    ),
+    leaderboardStyle: pick(s.leaderboardStyle, ["podium", "list", "hidden"], "podium"),
+    fontFamily: pick(
+      s.fontFamily,
+      ["inter", "plus_jakarta", "be_vietnam", "playfair", "jetbrains_mono"],
+      "inter",
+    ),
+    containerWidth: pick(s.containerWidth, ["compact", "standard", "wide"], "standard"),
+    blockSpacing: pick(s.blockSpacing, ["compact", "normal", "relaxed"], "normal"),
+    footerStyle: pick(s.footerStyle, ["minimal", "pill", "hidden"], "minimal"),
+  };
+}
+
 export function resolvePageTheme(
   page: PublicPage,
   systemResolvedTheme?: string,
@@ -221,12 +401,75 @@ export function resolvePageTheme(
     customStyle["--accent-foreground"] = textRaw;
   }
 
+  const appearance = resolveAppearance(styleConfig, isDark);
+  customStyle.fontFamily = FONT_STACKS[appearance.fontFamily];
+
+  const surfaceMap: Record<ResolvedAppearance["surfaceStyle"], string> = {
+    solid: "bg-card text-card-foreground border border-border/80 shadow-xs",
+    outline: "bg-transparent text-foreground border-2 border-border hover:border-primary/60",
+    soft: "bg-primary/10 text-foreground border border-primary/20",
+    glass: "bg-card/75 text-card-foreground border border-border/70 backdrop-blur-md shadow-sm",
+    elevated: "bg-card text-card-foreground border border-border/60 shadow-md",
+    hard_shadow: "bg-card text-card-foreground border page-surface-hard_shadow",
+  };
+
+  const hoverMap: Record<ResolvedAppearance["hoverEffect"], string> = {
+    none: "",
+    lift: "page-hover-lift",
+    scale: "page-hover-scale",
+    glow: "page-hover-glow",
+    shine: "page-hover-shine",
+    hard_push: "page-hover-hard_push",
+  };
+
+  const entranceMap: Record<ResolvedAppearance["entranceAnimation"], string> = {
+    none: "",
+    fade_up: "page-enter-fade_up",
+    scale_in: "page-enter-scale_in",
+    blur_in: "page-enter-blur_in",
+  };
+
+  const highlightMap: Record<ResolvedAppearance["highlightEffect"], string> = {
+    none: "",
+    pulse_ring: "page-highlight-pulse_ring",
+    wiggle: "page-highlight-wiggle",
+    shimmer: "page-highlight-shimmer",
+  };
+
+  const widthMap: Record<ResolvedAppearance["containerWidth"], string> = {
+    compact: "max-w-md",
+    standard: "max-w-xl",
+    wide: "max-w-4xl",
+  };
+
+  const gapMap: Record<ResolvedAppearance["blockSpacing"], string> = {
+    compact: "space-y-2.5",
+    normal: "space-y-3.5",
+    relaxed: "space-y-5",
+  };
+
+  const radiusMap: Record<ResolvedAppearance["cardRadius"], string> = {
+    "0px": "rounded-none",
+    "4px": "rounded",
+    "8px": "rounded-lg",
+    "12px": "rounded-xl",
+    "20px": "rounded-2xl",
+  };
+
   return {
     isDark,
     pageThemeScope,
     primaryColor,
     primaryForeground,
     buttonStyle,
+    appearance,
+    surfaceClass: surfaceMap[appearance.surfaceStyle],
+    hoverClass: hoverMap[appearance.hoverEffect],
+    entranceClass: entranceMap[appearance.entranceAnimation],
+    highlightClass: highlightMap[appearance.highlightEffect],
+    containerWidthClass: widthMap[appearance.containerWidth],
+    blockGapClass: gapMap[appearance.blockSpacing],
+    cardRadiusClass: radiusMap[appearance.cardRadius],
     customStyle: customStyle as CSSProperties,
   };
 }

@@ -1,6 +1,8 @@
 import {
   Bell,
   Coins,
+  Languages,
+  Mail,
   Megaphone,
   TrendingUp,
   History,
@@ -20,9 +22,11 @@ import { SYSTEM_ROUTES } from "./constants/routes";
 import { ATTACHMENT_PERMISSIONS } from "./permissions/attachment-permission";
 import { CALLBACK_PERMISSIONS } from "./permissions/callback-permission";
 import { CURRENCY_PERMISSIONS } from "./permissions/currency-permission";
+import { EMAIL_TEMPLATE_PERMISSIONS } from "./permissions/email-template-permission";
 import { EXCHANGE_RATE_PERMISSIONS } from "./permissions/exchange-rate-permission";
 import { IAM_PERMISSIONS } from "./permissions/iam-permission";
 import { JOURNAL_ENTRY_PERMISSIONS } from "./permissions/journal-entry-permission";
+import { LANGUAGE_PERMISSIONS } from "./permissions/language-permission";
 import { ANNOUNCEMENT_PERMISSIONS } from "./permissions/announcement-permission";
 import { NOTIFICATION_DELIVERY_PERMISSIONS } from "./permissions/notification-delivery-permission";
 import { WEBHOOK_PERMISSIONS } from "./permissions/webhook-permission";
@@ -91,6 +95,13 @@ export const systemNavigation: AdminModuleNavigation = {
       section: "system.navSections.notifications",
     },
     {
+      labelKey: "system.emailTemplates.nav",
+      href: SYSTEM_ROUTES.emailTemplates,
+      icon: Mail,
+      permission: EMAIL_TEMPLATE_PERMISSIONS.read,
+      section: "system.navSections.notifications",
+    },
+    {
       labelKey: "system.currencies.nav",
       href: SYSTEM_ROUTES.currencies,
       icon: Coins,
@@ -102,6 +113,13 @@ export const systemNavigation: AdminModuleNavigation = {
       href: SYSTEM_ROUTES.exchangeRates,
       icon: TrendingUp,
       permission: EXCHANGE_RATE_PERMISSIONS.read,
+      section: "system.navSections.catalogs",
+    },
+    {
+      labelKey: "system.languages.nav",
+      href: SYSTEM_ROUTES.languages,
+      icon: Languages,
+      permission: LANGUAGE_PERMISSIONS.read,
       section: "system.navSections.catalogs",
     },
     {

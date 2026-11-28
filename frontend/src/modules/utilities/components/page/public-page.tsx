@@ -8,6 +8,7 @@ import { keysToCamel } from "@/shares/lib/api/case-conversion";
 
 import { usePublicPage } from "../../hooks/use-public-page";
 import type { PublicPage as PublicPageData } from "../../types/page.types";
+import { PublicFeedbackWidget } from "../feedback/public-feedback-widget";
 import { PageRendererDispatcher } from "./page-renderer-dispatcher";
 import { PreviewNotice } from "./preview-notice";
 
@@ -65,6 +66,9 @@ export function PublicPage({
     <>
       <PageRendererDispatcher page={page} />
       {showPreviewNotice && page.preview ? <PreviewNotice status={page.status} /> : null}
+      {!page.preview ? (
+        <PublicFeedbackWidget targetType="PAGE" targetId={page.id} targetTitle={page.title} />
+      ) : null}
     </>
   );
 }

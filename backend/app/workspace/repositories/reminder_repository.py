@@ -15,8 +15,8 @@ class ReminderRepository(CoreRepository[Reminder]):
     model = Reminder
 
     def get_queryset(self) -> QuerySet[Reminder]:
-        """Nạp trước owner."""
-        return super().get_queryset().select_related("owner")
+        """Nạp trước owner và chủ đề."""
+        return super().get_queryset().select_related("owner", "topic")
 
     def list_pending_between(
         self, owner_id: Any, *, start_date: date | None = None, end_date: date | None = None, limit: int = 15

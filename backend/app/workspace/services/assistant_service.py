@@ -2,22 +2,37 @@
 
 import json
 import time
+from datetime import date
 from datetime import time as dt_time
 from typing import Any
 
 from app.core.constants.defaults import DEFAULT_TIMEZONE
+from app.core.context.user_context import get_current_request
+from app.system.utils.frontend_url import get_frontend_origin
+from app.workspace.constants.assistant_record_links import ASSISTANT_RECORD_LINKS_BY_TYPE
+from app.workspace.constants.assistant_training_prompt import ASSISTANT_CORE_SYSTEM_PROMPT
 from app.workspace.constants.workspace_defaults import (
     AI_HISTORY_CONTEXT_LIMIT,
     AI_MAX_TOOL_ROUNDS,
     AI_REQUEST_DEADLINE_SECONDS,
+    ASSISTANT_MASKED_SECRET_TEXT,
+    DISPLAY_DATE_FORMAT,
+    RECENT_RECORDS_LIMIT,
     SLASH_COMMAND_ALIASES,
     SLASH_COMMAND_NAMES,
 )
+from app.workspace.constants.workspace_error_code import WorkspaceErrorCode
 from app.workspace.models.assistant_conversation import AssistantConversation
 from app.workspace.models.assistant_message import AssistantMessage
 from app.workspace.services.assistant_config_service import AssistantConfigService
 from app.workspace.services.assistant_conversation_service import AssistantConversationService
+from app.workspace.services.assistant_draft_service import AssistantDraftService
+from app.workspace.services.assistant_knowledge_service import AssistantKnowledgeService
+from app.workspace.services.assistant_reply_guard import AssistantReplyGuard
+from app.workspace.services.assistant_result_card_builder import AssistantResultCardBuilder
+from app.workspace.services.assistant_scope_guard import AssistantScopeGuard
 from app.workspace.services.assistant_slash_service import AssistantSlashService
+from app.workspace.services.assistant_tool_router import AssistantToolRouter
 from app.workspace.services.assistant_tools_service import AssistantToolsService
 from app.workspace.services.workspace_timezone_service import WorkspaceTimezoneService
 from app.workspace.services.xkiro_client import XkiroClient
@@ -32,19 +47,7 @@ WEEKDAY_NAMES_VI = (
     "Chủ Nhật",
 )
 
-SYSTEM_PROMPT = (
-    "Bạn là Trợ lý AI cá nhân thông minh trong hệ thống ToanNX. "
-    "Chốt an toàn bắt buộc: tuyệt đối KHÔNG nói về khủng bố, bạo lực cực đoan, vũ khí, quân sự, "
-    "chiến tranh hay phân biệt vùng miền, sắc tộc, tôn giáo, giới tính; nếu bị hỏi hãy từ chối ngắn gọn. "
-    "Trả lời súc tích, lịch sự bằng tiếng Việt có dấu (trừ khi người dùng dùng tiếng Anh), trình bày "
-    "Markdown rõ ràng (**in đậm**, danh sách gạch đầu dòng `- `, bảng khi có nhiều mục). "
-    "Chỉ dùng dữ liệu thật từ các tool đã cung cấp, tuyệt đối không bịa đặt số liệu "
-    "và không bao giờ truy cập hay suy đoán mật khẩu/API key trong Két sắt. "
-    "Khi người dùng hỏi về lịch/sự kiện sắp tới, tuần tới hoặc các hạn sắp đến, hãy ưu tiên gọi "
-    "`get_upcoming_events` (hoặc kết hợp nhắc việc + dịch vụ sắp gia hạn). "
-    "Khi tạo nhắc việc xong (`create_quick_reminder`), xác nhận rõ tiêu đề, ngày, giờ và mức ưu tiên. "
-    "Tuyệt đối KHÔNG bao giờ in JSON thô hay UUID nội bộ ra câu trả lời cho người dùng."
-)
+SYSTEM_PROMPT = ASSISTANT_CORE_SYSTEM_PROMPT
 
 
 class AssistantService:
@@ -58,6 +61,12 @@ class AssistantService:
         xkiro_client: XkiroClient | None = None,
         tools_service: AssistantToolsService | None = None,
         slash_service: AssistantSlashService | None = None,
+        draft_service: AssistantDraftService | None = None,
+        result_card_builder: AssistantResultCardBuilder | None = None,
+        reply_guard: AssistantReplyGuard | None = None,
+        tool_router: AssistantToolRouter | None = None,
+        scope_guard: AssistantScopeGuard | None = None,
+        knowledge_service: AssistantKnowledgeService | None = None,
     ) -> None:
         """Khởi tạo service hội thoại, cấu hình Bot Admin, client AI và bộ tool."""
         self.conversation_service = conversation_service or AssistantConversationService()
@@ -69,6 +78,12 @@ class AssistantService:
             tools_service=self.tools_service,
             tz_service=self.tz_service,
         )
+        self.draft_service = draft_service or AssistantDraftService()
+        self.result_card_builder = result_card_builder or AssistantResultCardBuilder()
+        self.reply_guard = reply_guard or AssistantReplyGuard()
+        self.tool_router = tool_router or AssistantToolRouter()
+        self.scope_guard = scope_guard or AssistantScopeGuard()
+        self.knowledge_service = knowledge_service or AssistantKnowledgeService()
 
     def chat(
         self,
@@ -110,7 +125,42 @@ class AssistantService:
             )
             return self._build_response(conversation, saved, is_fallback=False, fallback_attempts=0)
 
-        self.conversation_service.append_message(
+        if not cmd and allow_personal_tools and is_owner:
+            draft_res = self.draft_service.answer(conversation, cleaned)
+            if draft_res is not None:
+                return self._continue_draft(
+                    owner,
+                    conversation,
+                    cleaned,
+                    draft_res,
+                    sender_telegram_id=sender_telegram_id,
+                    sender_name=sender_name,
+                    is_owner=is_owner,
+                    hide_amounts=hide_amounts,
+                )
+
+        refusal = None if cmd else self.scope_guard.refusal_for(cleaned)
+        if refusal is not None:
+            # Chặn bằng code trước LLM/tool: kể cả superuser cũng chỉ thao tác dữ liệu cá nhân Client Portal.
+            self.conversation_service.append_message(
+                conversation,
+                role=AssistantMessage.Role.USER,
+                content=cleaned,
+                sender_telegram_id=sender_telegram_id,
+                sender_name=sender_name,
+            )
+            saved = self.conversation_service.append_message(
+                conversation,
+                role=AssistantMessage.Role.ASSISTANT,
+                content=refusal,
+                model_used="scope_guard",
+                tokens_used=0,
+                contains_private_data=False,
+                is_error=False,
+            )
+            return self._build_response(conversation, saved, is_fallback=False, fallback_attempts=0)
+
+        user_msg = self.conversation_service.append_message(
             conversation,
             role=AssistantMessage.Role.USER,
             content=cleaned,
@@ -160,6 +210,11 @@ class AssistantService:
                 attempts=0,
             )
 
+        history = self.conversation_service.recent_context_messages(
+            conversation.pk,
+            limit=AI_HISTORY_CONTEXT_LIMIT,
+            exclude_private=exclude_private_history,
+        )
         llm_messages = self._assemble_llm_context(
             conversation.pk,
             tz_name=DEFAULT_TIMEZONE,
@@ -167,8 +222,20 @@ class AssistantService:
             hide_amounts=hide_amounts,
             allow_tools=allow_personal_tools,
             custom_policy=custom_policy,
+            query_text=cleaned,
+            history=history,
         )
-        tools = self.tools_service.tool_schemas(is_owner=is_owner) if allow_personal_tools else None
+        # Tool sửa của bản ghi vừa thao tác luôn có mặt để "đổi tên cái vừa tạo" không bị router lọc mất.
+        recent_tools = tuple(
+            link.update_tool
+            for card in self._recent_cards(history)
+            if (link := ASSISTANT_RECORD_LINKS_BY_TYPE.get(str(card.get("type") or ""))) and link.update_tool
+        )
+        tools = self.tool_router.select(
+            self.tools_service.tool_schemas(is_owner=is_owner, actor=owner) if allow_personal_tools else None,
+            cleaned,
+            keep_tools=recent_tools,
+        )
 
         deadline = time.monotonic() + AI_REQUEST_DEADLINE_SECONDS
         total_tokens = 0
@@ -177,6 +244,7 @@ class AssistantService:
         used_private_tool = False
         executed_tools: list[tuple[str, dict[str, Any]]] = []
         seen_signatures: set[str] = set()
+        choice_request: dict[str, Any] | None = None
 
         for round_idx in range(AI_MAX_TOOL_ROUNDS):
             result = self.xkiro_client.chat_completion(
@@ -192,7 +260,7 @@ class AssistantService:
                 return self._save_fallback(
                     conversation,
                     "Hệ thống AI tạm thời quá tải hoặc đang giới hạn tốc độ.",
-                    code="WORKSPACE_AI_UNAVAILABLE",
+                    code=WorkspaceErrorCode.AI_UNAVAILABLE,
                     attempts=fallback_attempts,
                 )
 
@@ -205,6 +273,7 @@ class AssistantService:
                 reply_text = self._finalize_reply_text(
                     str(ai_msg.get("content") or ""), executed_tools, default_text="Mình đã ghi nhận yêu cầu."
                 )
+                reply_text, metadata = self._ground_reply(reply_text, llm_messages, executed_tools)
                 saved = self.conversation_service.append_message(
                     conversation,
                     role=AssistantMessage.Role.ASSISTANT,
@@ -213,6 +282,7 @@ class AssistantService:
                     tokens_used=total_tokens,
                     contains_private_data=used_private_tool,
                     is_error=False,
+                    metadata=metadata,
                 )
                 return self._build_response(
                     conversation,
@@ -246,6 +316,7 @@ class AssistantService:
                 }
             )
 
+            confirmation_requested = False
             for call in normalized_calls:
                 fn = call["function"]
                 fn_name = fn["name"]
@@ -256,7 +327,15 @@ class AssistantService:
                     fn["arguments"],
                     is_owner=is_owner,
                     hide_amounts=hide_amounts,
+                    conversation_id=str(conversation.pk),
+                    turn_id=str(user_msg.pk),
+                    user_text=cleaned,
                 )
+                if tool_out.get("requires_confirmation") or tool_out.get("needs_clarification"):
+                    confirmation_requested = True
+                if isinstance(tool_out.get("needs_choice"), dict):
+                    choice_request = tool_out
+                    confirmation_requested = True
                 executed_tools.append((fn_name, tool_out))
                 serialized_out = json.dumps(tool_out, ensure_ascii=False)
                 self.conversation_service.append_message(
@@ -274,6 +353,25 @@ class AssistantService:
                         "content": serialized_out,
                     }
                 )
+            if confirmation_requested:
+                break
+
+        if choice_request is not None:
+            # Hỏi lựa chọn bằng câu do server dựng (0 token), không để model tự diễn giải lại.
+            question = choice_request["needs_choice"]
+            saved = self.conversation_service.append_message(
+                conversation,
+                role=AssistantMessage.Role.ASSISTANT,
+                content=self._draft_question_text(question, choice_request.get("draft")),
+                model_used=last_model,
+                tokens_used=total_tokens,
+                contains_private_data=True,
+                is_error=False,
+                metadata=self._question_metadata(question),
+            )
+            return self._build_response(
+                conversation, saved, is_fallback=False, fallback_attempts=fallback_attempts
+            )
 
         final_res = self.xkiro_client.chat_completion(
             llm_messages,
@@ -297,9 +395,10 @@ class AssistantService:
             return self._save_fallback(
                 conversation,
                 "Đã tra cứu dữ liệu nhưng không thể tổng hợp phản hồi lúc này.",
-                code="WORKSPACE_AI_UNAVAILABLE",
+                code=WorkspaceErrorCode.AI_UNAVAILABLE,
                 attempts=fallback_attempts,
             )
+        reply_text, final_metadata = self._ground_reply(reply_text, llm_messages, executed_tools)
 
         saved = self.conversation_service.append_message(
             conversation,
@@ -309,10 +408,156 @@ class AssistantService:
             tokens_used=total_tokens,
             contains_private_data=used_private_tool,
             is_error=False,
+            metadata=final_metadata,
         )
         return self._build_response(
             conversation, saved, is_fallback=False, fallback_attempts=fallback_attempts
         )
+
+    # ------------------------------------------------------------------ Nháp → chọn → tạo & grounding
+    def _continue_draft(
+        self,
+        owner: Any,
+        conversation: AssistantConversation,
+        cleaned: str,
+        draft_res: dict[str, Any],
+        *,
+        sender_telegram_id: int | None,
+        sender_name: str,
+        is_owner: bool,
+        hide_amounts: bool,
+    ) -> dict[str, Any]:
+        """Ghép câu trả lời vào nháp đang chờ: hỏi ô kế tiếp hoặc thực thi tool khi đã đủ (0 token)."""
+        is_secret = bool(draft_res.get("secret"))
+        user_msg = self.conversation_service.append_message(
+            conversation,
+            role=AssistantMessage.Role.USER,
+            content=ASSISTANT_MASKED_SECRET_TEXT if is_secret else cleaned,
+            sender_telegram_id=sender_telegram_id,
+            sender_name=sender_name,
+            contains_private_data=is_secret,
+        )
+        if not draft_res.get("done"):
+            question = draft_res["question"]
+            saved = self.conversation_service.append_message(
+                conversation,
+                role=AssistantMessage.Role.ASSISTANT,
+                content=self._draft_question_text(question, None),
+                model_used="draft",
+                tokens_used=0,
+                contains_private_data=False,
+                is_error=False,
+                metadata=self._question_metadata(question),
+            )
+            return self._build_response(conversation, saved, is_fallback=False, fallback_attempts=0)
+
+        tool_name = str(draft_res["tool"])
+        tool_out = self.tools_service.execute_tool(
+            owner,
+            tool_name,
+            {**draft_res["args"], "slot_values": draft_res["chosen"]},
+            is_owner=is_owner,
+            hide_amounts=hide_amounts,
+            conversation_id=str(conversation.pk),
+            turn_id=str(user_msg.pk),
+        )
+        executed = [(tool_name, tool_out)]
+        cards = self.result_card_builder.build(executed)
+        reply_text = self._compose_with_cards(self._synthesize_reply_from_tools(executed), cards)
+        saved = self.conversation_service.append_message(
+            conversation,
+            role=AssistantMessage.Role.ASSISTANT,
+            content=reply_text,
+            model_used="draft",
+            tokens_used=0,
+            contains_private_data=True,
+            is_error=not tool_out.get("ok"),
+            metadata={"cards": cards} if cards else {},
+        )
+        response = self._build_response(conversation, saved, is_fallback=False, fallback_attempts=0)
+        response["user_input_masked"] = is_secret
+        return response
+
+    def cancel_pending(self, conversation_id: str) -> None:
+        """Bỏ nháp / yêu cầu xác nhận đang chờ của hội thoại (VD không thu mật khẩu trong nhóm Telegram)."""
+        self.draft_service.confirmation_service.clear(conversation_id)
+
+    def _draft_question_text(self, question: dict[str, Any], draft: Any) -> str:
+        """Tóm tắt nháp + câu hỏi gọn; lựa chọn hiện bằng nút (Web: chip, Telegram: nút inline) nên không lặp
+        danh sách trong nội dung. Trả lời bằng số thứ tự hoặc gõ "N đơn vị" vẫn được hiểu.
+
+        Phần tóm tắt nháp dùng nhãn `verbose_name` của model nên áp dụng chung cho mọi tool tạo mới.
+        """
+        lines: list[str] = []
+        if isinstance(draft, dict) and draft.get("title"):
+            fields = draft.get("fields") or []
+            kind = str(draft["title"]).lower()
+            lines.append(f"📝 Mình đã chuẩn bị **{kind}** mới:" if fields else f"📝 Tạo **{kind}** mới.")
+            lines.extend(f"- {row['label']}: **{row['value']}**" for row in fields)
+            lines.extend(str(note) for note in draft.get("notes") or [])
+            lines.append("")
+        lines.append(f"**{question.get('question')}**")
+        if question.get("accepts_number") and question.get("unit"):
+            lines.append(f"Chọn nhanh bên dưới hoặc gõ số {question['unit']} khác.")
+        return "\n".join(lines)
+
+    def _question_metadata(self, question: dict[str, Any]) -> dict[str, Any]:
+        """Nút lựa chọn + ô nhập nhanh (số kèm đơn vị / chữ / bí mật) cho câu hỏi đang chờ."""
+        metadata: dict[str, Any] = {"quick_replies": self._quick_replies(question)}
+        quick_input = self._quick_input(question)
+        if quick_input is not None:
+            metadata["quick_input"] = quick_input
+        return metadata
+
+    def _quick_input(self, question: dict[str, Any]) -> dict[str, Any] | None:
+        """Ô nhập trực tiếp: `secret` (mật khẩu), `text` (gõ tự do, ngày, giờ), `number` (số kèm đơn vị)."""
+        custom_placeholder = str(question.get("placeholder") or "")
+        if question.get("free_text") or question.get("input_kind") in ("time", "date"):
+            kind = "secret" if question.get("secret") else "text"
+            placeholder = custom_placeholder or ("Nhập mật khẩu…" if kind == "secret" else "Nhập nội dung…")
+            return {"kind": kind, "unit": "", "placeholder": placeholder}
+        if question.get("accepts_number") and question.get("unit"):
+            unit = str(question["unit"])
+            return {"kind": "number", "unit": unit, "placeholder": f"Số {unit} khác"}
+        return None
+
+    def _quick_replies(self, question: dict[str, Any]) -> list[dict[str, str]]:
+        """Nút trả lời nhanh: bấm là gửi đúng nhãn lựa chọn."""
+        return [
+            {"caption": str(option.get("label") or ""), "text": str(option.get("label") or "")}
+            for option in question.get("options") or []
+        ]
+
+    def _ground_reply(
+        self,
+        reply_text: str,
+        llm_messages: list[dict[str, Any]],
+        executed_tools: list[tuple[str, dict[str, Any]]],
+    ) -> tuple[str, dict[str, Any]]:
+        """Có thẻ kết quả → dùng nội dung server dựng; không thì gỡ URL không có trong ngữ cảnh lượt này."""
+        cards = self.result_card_builder.build(executed_tools)
+        trusted = [
+            str(msg.get("content") or "") for msg in llm_messages if isinstance(msg.get("content"), str)
+        ]
+        trusted.extend(json.dumps(out, ensure_ascii=False) for _, out in executed_tools)
+        origin = get_frontend_origin(get_current_request(), prefer_configured=True)
+        guarded = self.reply_guard.sanitize(reply_text, trusted_texts=trusted, origin=origin, cards=cards)
+        if not cards:
+            return guarded, {}
+        return self._compose_with_cards(guarded, cards), {"cards": cards}
+
+    def _compose_with_cards(self, lead: str, cards: list[dict[str, Any]]) -> str:
+        """Ghép lời dẫn + thẻ kết quả.
+
+        Link xem lại CHỈ nằm ở thẻ (Web vẽ nút, Telegram tự gắn một dòng khi gửi), nên mọi link Portal
+        model tự chép vào lời dẫn đều bị gỡ để không lặp "Xem chi tiết".
+        """
+        if not cards:
+            return lead
+        if self.result_card_builder.has_full_summary(cards):
+            return self.result_card_builder.to_markdown(cards)
+        cleaned = self.result_card_builder.strip_view_links(lead, cards)
+        return cleaned or self.result_card_builder.to_markdown(cards)
 
     def _normalize_tool_calls(self, raw_calls: list[Any], round_idx: int) -> list[dict[str, Any]]:
         normalized: list[dict[str, Any]] = []
@@ -349,7 +594,7 @@ class AssistantService:
         *,
         default_text: str,
     ) -> str:
-        cleaned = (raw_text or "").strip()
+        cleaned = self.reply_guard.strip_tool_markup(raw_text or "")
         if cleaned and not self._looks_like_leaked_tool_json(cleaned):
             return cleaned
         if executed_tools:
@@ -372,14 +617,34 @@ class AssistantService:
         if not executed_tools:
             return "Mình đã ghi nhận yêu cầu."
         fn_name, result = executed_tools[-1]
+        if result.get("requires_confirmation"):
+            summary = str(result.get("target_summary") or "mục đã chọn")
+            return (
+                f"⚠️ Bạn có chắc chắn muốn xóa **{summary}** không?\n"
+                "Hãy trả lời **Đồng ý xóa** (hoặc **Xác nhận**) để mình thực hiện."
+            )
+        if result.get("needs_clarification"):
+            return str(result.get("error") or "Mình cần bạn xác nhận thêm thông tin trước khi thực hiện.")
         if not result.get("ok"):
             return f"⚠️ Không thể thực hiện: {result.get('error') or 'Dữ liệu không hợp lệ.'}"
         if fn_name == "create_quick_reminder" and isinstance(result.get("created"), dict):
             created = result["created"]
             title_str = str(created.get("title") or "")
-            date_str = str(created.get("due_date") or "")
+            date_str = self._display_date(created.get("due_date"))
             time_part = f" lúc **{created['due_time']}**" if created.get("due_time") else ""
-            return f"✅ Đã tạo nhắc việc **{title_str}** vào ngày **{date_str}**{time_part}."
+            notify_mins = created.get("notify_minutes_before")
+            notify_part = f" (báo trước **{notify_mins} phút**)" if notify_mins else ""
+            return f"✅ Đã tạo nhắc việc **{title_str}** vào ngày **{date_str}**{time_part}{notify_part}."
+        if fn_name == "create_finance_income" and isinstance(result.get("created"), dict):
+            created = result["created"]
+            amt = f"{int(created.get('amount_vnd') or 0):,}".replace(",", ".")
+            received = self._display_date(created.get("received_date"))
+            return (
+                f"✅ Đã ghi nhận thu nhập **{amt} đ** từ **{created.get('platform')}** "
+                f"(ngày **{received}**, nội dung: {created.get('content')})."
+            )
+        if fn_name == "delete_personal_record" and isinstance(result.get("deleted"), dict):
+            return f"🗑️ Đã xóa {result['deleted'].get('summary') or 'mục đã chọn'}."
         items = result.get("items")
         if isinstance(items, list):
             if not items:
@@ -395,6 +660,14 @@ class AssistantService:
                 return "\n".join(lines)
         return "Mình đã tra cứu và xử lý xong yêu cầu của bạn."
 
+    def _display_date(self, value: Any) -> str:
+        """Ngày ISO (`YYYY-MM-DD`) → `dd/MM/yyyy` theo chuẩn hiển thị; giá trị lạ giữ nguyên."""
+        raw = str(value or "")
+        try:
+            return date.fromisoformat(raw[:10]).strftime(DISPLAY_DATE_FORMAT)
+        except ValueError:
+            return raw
+
     def _tokens_used_today(self, owner_id: Any, tz_name: str) -> int:
         local_today = self.tz_service.local_today(tz_name)
         day_start_utc = self.tz_service.local_to_utc(local_today, dt_time.min, tz_name)
@@ -409,6 +682,8 @@ class AssistantService:
         hide_amounts: bool,
         allow_tools: bool,
         custom_policy: str = "",
+        query_text: str = "",
+        history: list[AssistantMessage] | None = None,
     ) -> list[dict[str, Any]]:
         local_now = self.tz_service.local_now(tz_name)
         weekday = WEEKDAY_NAMES_VI[local_now.weekday()]
@@ -429,11 +704,20 @@ class AssistantService:
                 "Nhóm đang tắt đọc dữ liệu cá nhân: chỉ trả lời kiến thức chung, không đoán dữ liệu."
             )
 
-        history = self.conversation_service.recent_context_messages(
-            conversation_id,
-            limit=AI_HISTORY_CONTEXT_LIMIT,
-            exclude_private=exclude_private,
-        )
+        # RAG: đoạn hướng dẫn Client Portal liên quan câu hỏi (nhóm Telegram không gửi câu hỏi sang Gemini).
+        knowledge = self.knowledge_service.prompt_block(query_text, use_vector=not exclude_private)
+        if knowledge:
+            prompt_parts.append("\n\n" + knowledge)
+
+        if history is None:
+            history = self.conversation_service.recent_context_messages(
+                conversation_id,
+                limit=AI_HISTORY_CONTEXT_LIMIT,
+                exclude_private=exclude_private,
+            )
+        recent_block = self._recent_records_block(history)
+        if recent_block:
+            prompt_parts.append("\n\n" + recent_block)
         messages: list[dict[str, Any]] = [{"role": "system", "content": " ".join(prompt_parts)}]
         for msg in history:
             if msg.role not in (AssistantMessage.Role.USER, AssistantMessage.Role.ASSISTANT):
@@ -442,6 +726,47 @@ class AssistantService:
                 continue
             messages.append({"role": msg.role.lower(), "content": msg.content})
         return messages
+
+    def _recent_cards(self, history: list[AssistantMessage]) -> list[dict[str, Any]]:
+        """Thẻ kết quả (bản ghi đã tạo/sửa) trong lịch sử gần, mới nhất trước, mỗi bản ghi một lần."""
+        seen: set[str] = set()
+        cards: list[dict[str, Any]] = []
+        for msg in reversed(history):
+            metadata = msg.metadata if isinstance(msg.metadata, dict) else {}
+            for card in reversed(metadata.get("cards") or []):
+                if not isinstance(card, dict) or not card.get("id") or str(card["id"]) in seen:
+                    continue
+                seen.add(str(card["id"]))
+                cards.append(card)
+        return cards
+
+    def _recent_records_block(self, history: list[AssistantMessage]) -> str:
+        """Bản ghi vừa tạo/sửa trong hội thoại (từ thẻ kết quả đã lưu) kèm ID + tool sửa, mới nhất trước.
+
+        Giúp model hiểu "đổi tên cái vừa tạo", "sửa giờ nhắc đó", "xóa link đó" mà không phải tra cứu lại hay
+        tự xóa rồi tạo lại bản ghi.
+        """
+        lines: list[str] = []
+        for card in self._recent_cards(history)[:RECENT_RECORDS_LIMIT]:
+            link = ASSISTANT_RECORD_LINKS_BY_TYPE.get(str(card.get("type") or ""))
+            if link is None or not link.update_tool:
+                continue
+            action = "vừa tạo" if card.get("action") == "created" else "vừa sửa"
+            title = f' "{card["title"]}"' if card.get("title") else ""
+            resource_arg = f'resource="{link.card_type}", ' if link.update_tool == "update_my_record" else ""
+            lines.append(
+                f"- {link.label}{title} ({action}) → sửa: "
+                f'`{link.update_tool}({resource_arg}{link.id_arg}="{card["id"]}")`; '
+                f'xóa: `delete_personal_record(resource_type="{link.card_type}", record_id="{card["id"]}")`'
+            )
+        if not lines:
+            return ""
+        return (
+            'BẢN GHI VỪA THAO TÁC TRONG HỘI THOẠI (mới nhất trước). Khi người dùng nói "cái đó", "vừa tạo", '
+            '"đổi tên", "sửa giờ"... thì dùng ĐÚNG ID dưới đây với tool `update_*`; đổi/sửa thì KHÔNG '
+            "xóa rồi "
+            "tạo lại:\n" + "\n".join(lines)
+        )
 
     def _save_fallback(
         self, conversation: AssistantConversation, reason: str, *, code: str, attempts: int

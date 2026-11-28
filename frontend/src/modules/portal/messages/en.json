@@ -28,7 +28,9 @@
     "profile": "Profile",
     "goToAdmin": "Admin Console",
     "logout": "Log Out",
-    "donations": "Support Receipts"
+    "donations": "Support Receipts",
+    "feedbacks": "Feedback & Reports",
+    "emailTemplates": "Email Templates"
   },
   "dashboard": {
     "title": "Creator Studio",
